@@ -62,4 +62,26 @@ test.describe('D1 — stock-detail price chart (was a permanent placeholder)', (
     expect(asked, 'news card asked the real adviser').toBeTruthy();
     await context.close();
   });
+
+  test('D3 — dividends & corporate actions are real (not the hardcoded SAR 0.375 table)', async ({ browser }) => {
+    const context = await browser.newContext();
+    await apiLogin(context, QA_EMAIL, QA_PASSWORD);
+    const page = await context.newPage();
+    const diag = attachDiagnostics(page);
+    await page.goto('/stock-detail.html?ticker=2222_TADAWUL', { waitUntil: 'domcontentloaded' });
+    const tb = page.locator('#dividendsBody');
+    await expect(tb).not.toContainText('Loading', { timeout: 12000 });
+    const html = await tb.innerHTML();
+    // the old hardcoded table is gone
+    expect(html, 'no fake 0.375 dividend amount').not.toContain('0.375');
+    expect(html, 'no fake "Quarterly Dividend" label').not.toContain('Quarterly Dividend');
+    // Aramco pays real dividends → real rows, amount in the stock currency
+    const rows = await tb.locator('tr').count();
+    expect(rows, 'real corporate rows render').toBeGreaterThan(0);
+    expect(html, 'a real dividend amount in SAR').toContain('SAR ');
+    expect(html.toLowerCase(), 'a real Dividend row').toContain('dividend');
+    await shot(page, 'd3-dividends');
+    expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
+    await context.close();
+  });
 });

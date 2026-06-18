@@ -644,11 +644,8 @@
             <div class="expand-body">
               <table class="data-table">
                 <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
-                <tbody>
-                  <tr><td>Sep 15, 2026</td><td>Quarterly Dividend</td><td>SAR 0.375</td><td>Upcoming</td></tr>
-                  <tr><td>Jun 15, 2026</td><td>Quarterly Dividend</td><td>SAR 0.375</td><td>Paid</td></tr>
-                  <tr><td>Mar 15, 2026</td><td>Quarterly Dividend</td><td>SAR 0.375</td><td>Paid</td></tr>
-                  <tr><td>Dec 15, 2025</td><td>Quarterly Dividend</td><td>SAR 0.375</td><td>Paid</td></tr>
+                <tbody id="dividendsBody">
+                  <tr><td colspan="4" style="text-align:center;color:var(--fg-dim);padding:14px;">Loading…</td></tr>
                 </tbody>
               </table>
             </div>
@@ -857,6 +854,58 @@
       }).catch(() => { host.innerHTML = '<div class="news-empty" style="padding:12px;color:var(--fg-dim);font-size:13px;">Couldn’t load news right now.</div>'; });
     }
 
+    // D3: real dividends + corporate actions from /api/ticker/{key}/corporate
+    // (replaces a hardcoded "SAR 0.375 quarterly" table). Honest empty state when none.
+    function loadCorporate(tk, currency) {
+      const tb = document.getElementById('dividendsBody'); if (!tb) return;
+      const cur = currency || 'SAR';
+      const fmtDate = (iso) => {
+        if (!iso) return '—';
+        const dt = new Date(String(iso) + 'T00:00:00');
+        if (isNaN(dt)) return String(iso);
+        return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      };
+      const cleanNote = (n) => String(n || '').replace(/_/g, ' ').replace(/\s+/g, ' ').replace(/Q\s+(\d)/g, 'Q$1').trim();
+      API.get('/api/ticker/' + encodeURIComponent(tk) + '/corporate').then((c) => {
+        const rows = [];
+        const today = new Date().toISOString().slice(0, 10);
+        const divs = (c && c.dividends && c.dividends.history) || [];
+        divs.forEach((d) => {
+          const when = d.pay_date || d.ex_date || d.announce_date || '';
+          const note = cleanNote(d.note);
+          rows.push({
+            sort: when,
+            date: fmtDate(when),
+            type: 'Dividend' + (note ? ' · ' + note : ''),
+            amount: d.dps != null ? cur + ' ' + Number(d.dps).toFixed(2) : '—',
+            status: when && when <= today ? 'Paid' : 'Upcoming'
+          });
+        });
+        const caps = (c && c.corporate_actions && c.corporate_actions.capital_changes) || [];
+        caps.forEach((a) => {
+          const pct = (a.change_pct != null && Number(a.change_pct) !== 0)
+            ? ((Number(a.change_pct) > 0 ? '+' : '') + a.change_pct + '%') : '—';
+          rows.push({
+            sort: a.date || '',
+            date: fmtDate(a.date),
+            type: a.change_type || 'Corporate Action',
+            amount: pct,
+            status: '—'
+          });
+        });
+        if (!rows.length) {
+          tb.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--fg-dim);padding:14px;">No dividends or corporate actions on record.</td></tr>';
+          return;
+        }
+        rows.sort((a, b) => String(b.sort).localeCompare(String(a.sort)));
+        tb.innerHTML = rows.slice(0, 12).map((r) =>
+          '<tr><td>' + _esc(r.date) + '</td><td>' + _esc(r.type) + '</td><td>' + _esc(r.amount) + '</td><td>' + _esc(r.status) + '</td></tr>'
+        ).join('');
+      }).catch(() => {
+        tb.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--fg-dim);padding:14px;">Couldn’t load dividends right now.</td></tr>';
+      });
+    }
+
     // REAL stock header from /api/ticker/{key}: name, exchange, live price.
     // (Thesis radar / fundamentals / news on this page are wired in a follow-up step.)
     async function loadRealStock() {
@@ -882,6 +931,7 @@
 
       initPriceChart(currentStock.tickerKey);   // D1: render the real price chart
       loadTickerNews(currentStock.tickerKey);   // D2: real recent news
+      loadCorporate(currentStock.tickerKey, currentStock.currency);  // D3: real dividends + corporate actions
 
       // ---- REAL fundamentals into the gauge detail rows (no fabricated figures) ----
       function setGaugeRow(label, value){
