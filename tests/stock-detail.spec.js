@@ -123,4 +123,54 @@ test.describe('D1 — stock-detail price chart (was a permanent placeholder)', (
     expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
     await context.close();
   });
+
+  test('D5 — signal from real composite score + the user’s real position (not hardcoded 320 / SAR 9,248)', async ({ browser }) => {
+    const context = await browser.newContext();
+    await apiLogin(context, QA_EMAIL, QA_PASSWORD);
+    const page = await context.newPage();
+    const diag = attachDiagnostics(page);
+
+    // QA seed holds 2222 → position shown with REAL values
+    await page.goto('/stock-detail.html?ticker=2222_TADAWUL', { waitUntil: 'domcontentloaded' });
+
+    // ---- Signal: derived from the composite score, not a fabricated "High Confidence" ----
+    const banner = page.locator('.signal-banner');
+    await expect(banner).toBeVisible({ timeout: 12000 });
+    await expect(banner, 'no fabricated confidence claim').not.toContainText('High Confidence');
+    const sig = (await banner.locator('.signal-badge').textContent() || '').trim();
+    expect(['BUY', 'HOLD', 'REDUCE'], 'signal is a real derived label').toContain(sig);
+    await expect(banner.locator('.confidence-badge'), 'shows the real composite score').toContainText('/100');
+
+    // ---- Position: the signed-in user's real holding (fakes gone) ----
+    const pos = page.locator('.position-card');
+    await expect(pos, 'position shown for a held ticker').toBeVisible({ timeout: 12000 });
+    const posHTML = await pos.innerHTML();
+    expect(posHTML, 'no hardcoded SAR 9,248 value').not.toContain('9,248');
+    expect(posHTML, 'no hardcoded SAR 28.15 avg cost').not.toContain('28.15');
+    expect(posHTML, 'no hardcoded +SAR 240 P&L').not.toContain('+SAR 240');
+    // toast-only stubs are gone (buttons wired to real add/remove)
+    const html = await page.content();
+    expect(html, 'no Adjust toast stub').not.toContain('Opening position adjustment flow');
+    expect(html, 'no Record Sale toast stub').not.toContain('Opening partial sale modal');
+
+    // ---- Adjust Position → real POST /api/portfolio/holdings (stubbed; DB not mutated) ----
+    let posted = false;
+    await page.route('**/api/portfolio/holdings', (route) => {
+      if (route.request().method() === 'POST') { posted = true; route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }); }
+      else route.continue();
+    });
+    await page.evaluate(() => { window.prompt = () => '100'; });
+    await page.locator('.position-btn', { hasText: 'Adjust Position' }).click();
+    await expect.poll(() => posted, { timeout: 6000 }).toBeTruthy();
+
+    await shot(page, 'd5-signal-position');
+
+    // ---- A ticker the QA user does NOT hold → position card hidden (user-specific) ----
+    const page2 = await context.newPage();
+    await page2.goto('/stock-detail.html?ticker=1120_TADAWUL', { waitUntil: 'domcontentloaded' });
+    await expect(page2.locator('.position-card'), 'position hidden when not held').toBeHidden({ timeout: 12000 });
+
+    expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
+    await context.close();
+  });
 });

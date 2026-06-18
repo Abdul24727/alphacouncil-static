@@ -408,23 +408,23 @@
         </div>
       </header>
 
-      <!-- Signal Banner -->
-      <div class="signal-banner hold">
+      <!-- Signal Banner — D5: populated by renderSignal() from the real composite score; hidden until then -->
+      <div class="signal-banner" style="display:none">
         <div class="signal-left">
-          <span class="signal-badge">HOLD</span>
+          <span class="signal-badge">—</span>
           <div class="signal-content">
-            <h3>AlphaCouncil Signal: Hold Position</h3>
-            <p>Data suggests maintaining current exposure. Valuation appears reasonable but oil price volatility warrants monitoring.</p>
+            <h3>AlphaCouncil Signal</h3>
+            <p>Loading…</p>
           </div>
         </div>
         <div class="signal-right">
-          <span class="confidence-badge">High Confidence</span>
-          <a href="#" class="signal-link" onclick="showSignalExplanation()">Why this signal? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          <span class="confidence-badge">—</span>
+          <a href="#" class="signal-link" onclick="showSignalExplanation(); return false;">Why this signal? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
         </div>
       </div>
 
-      <!-- Your Position -->
-      <div class="position-card">
+      <!-- Your Position — D5: populated by renderPosition() from the signed-in user's real holding; hidden when not held -->
+      <div class="position-card" style="display:none">
         <div class="position-header">
           <span class="position-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>Your Position</span>
           <div class="position-actions">
@@ -433,10 +433,10 @@
           </div>
         </div>
         <div class="position-grid">
-          <div class="position-item"><label>Shares</label><div class="value">320</div></div>
-          <div class="position-item"><label>Avg Cost</label><div class="value">SAR 28.15</div></div>
-          <div class="position-item"><label>Current Value</label><div class="value">SAR 9,248</div></div>
-          <div class="position-item"><label>Unrealized P&L</label><div class="value profit">+SAR 240 (+2.66%)</div></div>
+          <div class="position-item"><label>Shares</label><div class="value">—</div></div>
+          <div class="position-item"><label>Avg Cost</label><div class="value">—</div></div>
+          <div class="position-item"><label>Current Value</label><div class="value">—</div></div>
+          <div class="position-item"><label>Unrealized P&L</label><div class="value">—</div></div>
         </div>
       </div>
 
@@ -920,6 +920,60 @@
       });
     }
 
+    // ---- D5: real BUY/HOLD/REDUCE signal from the composite score (no fabricated "confidence") ----
+    let _signal = null;
+    function renderSignal(scores) {
+      const banner = document.querySelector('.signal-banner'); if (!banner) return;
+      const raw = scores && scores.composite_score;
+      if (raw == null || !isFinite(Number(raw))) { banner.style.display = 'none'; _signal = null; return; }
+      const s = Number(raw);
+      let sig, cls, title;
+      if (s >= 66) { sig = 'BUY'; cls = ''; title = 'Constructive'; }
+      else if (s >= 40) { sig = 'HOLD'; cls = 'hold'; title = 'Hold / Neutral'; }
+      else { sig = 'REDUCE'; cls = 'caution'; title = 'Cautious'; }
+      _signal = sig;
+      banner.style.display = '';
+      banner.className = 'signal-banner' + (cls ? ' ' + cls : '');
+      const badge = banner.querySelector('.signal-badge'); if (badge) badge.textContent = sig;
+      const h3 = banner.querySelector('.signal-content h3'); if (h3) h3.textContent = 'AlphaCouncil Signal: ' + title;
+      const p = banner.querySelector('.signal-content p'); if (p) p.textContent = 'Derived from AlphaCouncil’s composite score of ' + Math.round(s) + '/100 — a blend of fundamentals, technicals and news flow. A model output, not investment advice.';
+      const conf = banner.querySelector('.confidence-badge'); if (conf) conf.textContent = 'Score ' + Math.round(s) + '/100';
+    }
+
+    // ---- D5: the signed-in user's REAL position for this ticker (hidden when not held) ----
+    function _myHolding() {
+      const list = (window.AlphaCouncil && AlphaCouncil.getHoldings && AlphaCouncil.getHoldings()) || [];
+      const tk = currentStock && currentStock.tickerKey;
+      if (!tk) return null;
+      return list.find(function (x) { return x.tickerKey === tk || x.ticker === currentStock.ticker; }) || null;
+    }
+    function _setPosItem(card, label, text, cls) {
+      const items = card.querySelectorAll('.position-item');
+      for (let i = 0; i < items.length; i++) {
+        const lab = items[i].querySelector('label');
+        if (lab && lab.textContent.trim().toLowerCase() === label.toLowerCase()) {
+          const v = items[i].querySelector('.value');
+          if (v) { v.textContent = text; if (cls !== undefined) v.className = 'value' + (cls ? ' ' + cls : ''); }
+          return;
+        }
+      }
+    }
+    function renderPosition() {
+      const card = document.querySelector('.position-card'); if (!card) return;
+      const h = _myHolding();
+      if (!h || !(Number(h.shares) > 0)) { card.style.display = 'none'; return; }
+      card.style.display = '';
+      const cur = h.currency || (currentStock && currentStock.currency) || 'SAR';
+      const money = function (v, dp) { return cur + ' ' + Number(v).toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp }); };
+      _setPosItem(card, 'Shares', Number(h.shares).toLocaleString('en-US'));
+      _setPosItem(card, 'Avg Cost', money(h.avgCost, 2));
+      _setPosItem(card, 'Current Value', money(h.value, 0));
+      const pnl = Number(h.pnl || 0), pct = Number(h.pnlPct || 0), up = pnl >= 0;
+      _setPosItem(card, 'Unrealized P&L', (up ? '+' : '−') + cur + ' ' + Math.abs(pnl).toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' (' + (up ? '+' : '') + pct.toFixed(2) + '%)', up ? 'profit' : 'loss');
+    }
+    // re-render the position whenever real holdings load or change (add / sale)
+    window.onPortfolioReady = function () { renderPosition(); };
+
     // REAL stock header from /api/ticker/{key}: name, exchange, live price.
     // (Thesis radar / fundamentals / news on this page are wired in a follow-up step.)
     async function loadRealStock() {
@@ -951,6 +1005,8 @@
       renderTechnicals(d.tech || {}, currentStock.currency);
       loadFundamentalGauges(currentStock.tickerKey);
 
+      renderSignal(d.scores);   // D5: BUY/HOLD/REDUCE from the real composite score
+      renderPosition();         // D5: the signed-in user's real position (or hidden)
       AlphaCouncil.setStockContext(currentStock);
       loadThesis();
     }
@@ -1056,11 +1112,27 @@
     function setAlert() {
       AlphaCouncil.openAlertModal(currentStock.tickerKey);
     }
+    // D5: real position edits — upsert/reduce via the live portfolio API (no toast no-ops).
     function adjustPosition() {
-      AlphaCouncil.showToast('Adjust Position', 'Opening position adjustment flow', 'info');
+      if (!currentStock || !currentStock.tickerKey) return;
+      const h = _myHolding();
+      const shares = prompt('Total shares of ' + currentStock.name + ' you now hold:', h ? h.shares : '');
+      if (shares === null || String(shares).trim() === '') return;
+      const cost = prompt('Average cost per share (' + (currentStock.currency || 'SAR') + '):', h ? h.avgCost : '');
+      if (cost === null || String(cost).trim() === '') return;
+      AlphaCouncil.addHolding(currentStock.tickerKey, Number(shares), Number(cost));   // upserts, reloads, re-renders via onPortfolioReady
     }
     function recordSale() {
-      AlphaCouncil.showToast('Record Sale', 'Opening partial sale modal', 'info');
+      if (!currentStock || !currentStock.tickerKey) return;
+      const h = _myHolding();
+      if (!h || !(Number(h.shares) > 0)) { AlphaCouncil.showToast('No position', 'You have no recorded position in ' + currentStock.name + '.', 'info'); return; }
+      const sold = prompt('How many shares did you sell? (you hold ' + h.shares + ')', h.shares);
+      if (sold === null || String(sold).trim() === '') return;
+      const n = Number(sold);
+      if (!(n > 0)) return;
+      const remaining = Math.max(0, Number(h.shares) - n);
+      if (remaining <= 0) { AlphaCouncil.removeHolding(currentStock.tickerKey); }
+      else { AlphaCouncil.addHolding(currentStock.tickerKey, remaining, h.avgCost); AlphaCouncil.showToast('Sale recorded', n + ' shares sold · ' + remaining + ' remaining', 'success'); }
     }
     function openCouncilModal() {
       AlphaCouncil.openCouncilModal(currentStock);
@@ -1068,37 +1140,16 @@
     function openMethodology() {
       window.location.href = 'methodology.html';
     }
+    // D5: route the "Why this signal?" link to the REAL adviser (no canned per-company text).
     function showSignalExplanation() {
-      AlphaCouncil.openSidebar();
-      setTimeout(() => {
-        AlphaCouncil.addChatMessage('<strong>Why HOLD signal?</strong><br><br>The HOLD signal reflects:<br>• Valuation at fair value (P/E 14.2x)<br>• Strong profitability (ROE 32%)<br>• Oil price volatility risk<br>• Already in your portfolio at reasonable weight<br><br>Data suggests maintaining current exposure rather than adding or reducing.');
-      }, 400);
+      const q = 'Why is AlphaCouncil’s signal "' + (_signal || 'neutral') + '" for ' + (currentStock.name || 'this company') + '? Explain what drives its composite score.';
+      if (window.AlphaCouncil) { if (AlphaCouncil.openSidebar) AlphaCouncil.openSidebar(); if (AlphaCouncil.askQuestion) AlphaCouncil.askQuestion(q); }
     }
 
-    // News contextual ask
-    function askAboutNews(id) {
-      const newsItems = {
-        'aramco-pif': { headline: 'PIF Increases Stake in Saudi Aramco to 8.2%', tickers: ['2222'] },
-        'aramco-cso': { headline: 'Aramco Appoints New Chief Strategy Officer', tickers: ['2222'] },
-        'aramco-hydrogen': { headline: 'Aramco Expands Blue Hydrogen Production', tickers: ['2222'] },
-        'aramco-q2': { headline: 'Aramco Q2 Profit Rises 4%', tickers: ['2222'] }
-      };
-      const news = newsItems[id];
-      if (news) {
-        AlphaCouncil.askAboutNews(id, news.headline, news.tickers);
-      }
-    }
-
-    // Chart tabs
-    document.querySelectorAll('.chart-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-      });
-    });
-    document.querySelectorAll('.overlay-btn').forEach(btn => {
-      btn.addEventListener('click', e => { e.stopPropagation(); btn.classList.toggle('active'); });
-    });
+    // D5: removed dead code — the local askAboutNews() with a hardcoded news map
+    // (superseded by D2's real /api/ticker/{key}/news cards) and duplicate
+    // .chart-tab/.overlay-btn click listeners (superseded by D1's initPriceChart,
+    // which owns timeframe + overlay state and was double-toggling the active class).
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
