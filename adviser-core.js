@@ -1167,7 +1167,9 @@ const AlphaCouncil = (function() {
   // email local-part). Never a hardcoded "SK".
   function initialsFromUser(u) {
     u = u || {};
-    let src = String(u.name || u.username || u.full_name || '').trim();
+    const fn = String(u.first_name || '').trim(), ln = String(u.last_name || '').trim();
+    if (fn && ln) return (fn[0] + ln[0]).toUpperCase();   // real name → real initials
+    let src = String(u.name || u.username || u.full_name || fn || ln || '').trim();
     if (!src) src = String(u.email || '').split('@')[0];
     if (!src) return '';
     const parts = src.split(/[\s._-]+/).filter(Boolean);
@@ -1249,7 +1251,8 @@ const AlphaCouncil = (function() {
       document.body.appendChild(panel);
     }
     const u = state.user || {};
-    const name = u.username || u.name || u.full_name || 'Your account';
+    const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ').trim();
+    const name = fullName || u.username || u.name || u.full_name || 'Your account';
     const email = u.email || '';
     panel.innerHTML =
       '<div class="ac-dd-user"><div class="nm">' + escapeHtml(name) + '</div>' + (email ? '<div class="em">' + escapeHtml(email) + '</div>' : '') + '</div>'

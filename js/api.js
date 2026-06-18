@@ -74,7 +74,14 @@
 
     // ---- Auth ----
     login: function (email, password, remember) { return API.post('/api/auth/login', { email: email, password: password, remember: !!remember }); },
-    register: function (email, password, lang) { return API.post('/api/auth/register', { email: email, password: password, preferred_language: lang || 'en' }); },
+    register: function (email, password, opts) {
+      opts = (opts && typeof opts === 'object') ? opts : { lang: opts };  // back-compat: 3rd arg used to be lang
+      return API.post('/api/auth/register', {
+        email: email, password: password,
+        preferred_language: opts.lang || 'en',
+        first_name: opts.firstName || '', last_name: opts.lastName || '', market: opts.market || ''
+      });
+    },
     me: function () { return API.get('/api/auth/me'); },
     logout: function () { return API.post('/api/auth/logout', {}); },
     forgotPassword: function (email) { return API.post('/api/auth/forgot-password', { email: email }); },

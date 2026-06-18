@@ -831,8 +831,11 @@
     document.getElementById('signupForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
+      const market = document.getElementById('market').value;
       const terms = document.getElementById('terms').checked;
       if (!email || !password) { showToast('error', 'Missing details', 'Enter your email and a password.'); return; }
       if (password.length < 8) { showToast('error', 'Password too short', 'Use at least 8 characters.'); return; }
@@ -845,7 +848,7 @@
       btn.disabled = true;
 
       try {
-        await API.register(email, password, 'en');
+        await API.register(email, password, { firstName: firstName, lastName: lastName, market: market, lang: 'en' });
         // Try to establish a session immediately (most deployments auto-login on register).
         try {
           await API.login(email, password);
