@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Features — AlphaCouncil</title>
+  <meta name="description" content="Powerful features for clearer GCC portfolio decisions. Portfolio intelligence, AI Analyst Council, news monitoring, stock thesis scoring, and more.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #07111F;
+      --bg-base: #0B1020;
+      --bg-elevated: #101624;
+      --surface: #111A2B;
+      --surface-elevated: #141D2F;
+      --surface-glass: rgba(17, 26, 43, 0.7);
+      --fg: #F8FAFC;
+      --fg-muted: #AAB6C5;
+      --fg-dim: #6B7A8F;
+      --accent-primary: #27D3C3;
+      --accent-primary-glow: rgba(39, 211, 195, 0.2);
+      --accent-gold: #D7B76A;
+      --accent-gold-glow: rgba(215, 183, 106, 0.15);
+      --accent-violet: #8B5CF6;
+      --accent-violet-glow: rgba(139, 92, 246, 0.15);
+      --accent-emerald: #10B981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.15);
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.12);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --container: 1200px;
+      --nav-height: 72px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-sans); background: var(--bg-deep); color: var(--fg); line-height: 1.6; overflow-x: hidden; }
+
+    /* Atmosphere */
+    .atmosphere { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
+    .atmosphere-base { position: absolute; inset: 0; background: linear-gradient(180deg, var(--bg-deep) 0%, #050a16 30%, #071120 60%, var(--bg-deep) 100%); }
+    .atmosphere-noise { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); opacity: 0.025; }
+    .atmosphere-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 100% 40% at 75% 15%, rgba(39, 211, 195, 0.06) 0%, transparent 60%), radial-gradient(ellipse 80% 50% at 20% 45%, rgba(139, 92, 246, 0.04) 0%, transparent 50%), radial-gradient(ellipse 70% 40% at 85% 70%, rgba(215, 183, 106, 0.035) 0%, transparent 50%); }
+    .atmosphere-waves { position: absolute; bottom: 20%; left: 0; right: 0; height: 300px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 100'%3E%3Cpath fill='none' stroke='rgba(39,211,195,0.08)' stroke-width='1' d='M0,50 Q360,20 720,50 T1440,50'/%3E%3Cpath fill='none' stroke='rgba(215,183,106,0.05)' stroke-width='1' d='M0,60 Q360,30 720,60 T1440,60'/%3E%3C/svg%3E"); background-size: 200% 100%; animation: wave-drift 30s linear infinite; opacity: 0.7; }
+    @keyframes wave-drift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+    .atmosphere-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 50%, transparent 20%, rgba(5, 10, 22, 0.5) 100%); }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .stagger-1 { transition-delay: 0ms; }
+    .stagger-2 { transition-delay: 80ms; }
+    .stagger-3 { transition-delay: 160ms; }
+    .stagger-4 { transition-delay: 240ms; }
+    .stagger-5 { transition-delay: 320ms; }
+    .stagger-6 { transition-delay: 400ms; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } .atmosphere-waves { animation: none; } }
+
+    /* Nav */
+    .nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-height); background: rgba(7, 17, 31, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; transition: background 0.3s ease; }
+    .nav.scrolled { background: rgba(7, 17, 31, 0.95); border-color: var(--border-strong); }
+    .nav-inner { max-width: var(--container); height: 100%; margin: 0 auto; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; text-decoration: none; font-size: 18px; font-weight: 700; color: var(--fg); letter-spacing: -0.02em; transition: color 0.2s ease; }
+    .nav-logo:hover { color: var(--accent-primary); }
+    .nav-logo img { height: 28px; width: auto; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { color: var(--fg-muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s ease; }
+    .nav-links a:hover { color: var(--fg); }
+    .nav-links a.active { color: var(--accent-primary); }
+    .nav-actions { display: flex; align-items: center; gap: 16px; }
+    .nav-signin { color: var(--fg-muted); text-decoration: none; font-size: 14px; font-weight: 500; }
+    .nav-signin:hover { color: var(--fg); }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; transition: all 0.3s var(--ease-out); }
+    .btn-primary { background: linear-gradient(135deg, var(--accent-primary), #1AB3A5); color: var(--bg-deep); box-shadow: 0 4px 20px var(--accent-primary-glow); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-primary-glow); }
+    .btn-secondary { background: var(--surface); color: var(--fg); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--surface-elevated); border-color: var(--border-strong); }
+    .btn-lg { padding: 14px 28px; font-size: 15px; border-radius: 12px; }
+
+    /* Sections */
+    section { position: relative; padding: 100px 32px; }
+    .section-inner { max-width: var(--container); margin: 0 auto; }
+    .section-eyebrow { display: inline-block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-primary); margin-bottom: 16px; }
+    .section-title { font-size: clamp(32px, 4vw, 44px); font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .section-subtitle { font-size: 17px; color: var(--fg-muted); max-width: 700px; line-height: 1.7; }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-header .section-subtitle { margin: 0 auto; }
+
+    /* Hero */
+    .hero { min-height: 85vh; display: flex; align-items: center; padding-top: var(--nav-height); position: relative; overflow: hidden; }
+    .hero-bg { position: absolute; inset: 0; pointer-events: none; }
+    .hero-gradient { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(39, 211, 195, 0.08) 0%, transparent 50%), radial-gradient(ellipse 60% 80% at 80% 50%, rgba(139, 92, 246, 0.06) 0%, transparent 50%); }
+    .hero-inner { position: relative; max-width: var(--container); width: 100%; margin: 0 auto; padding: 80px 32px; text-align: center; z-index: 1; }
+    .hero-content { max-width: 800px; margin: 0 auto; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--surface-glass); border: 1px solid var(--border); border-radius: 100px; font-size: 13px; font-weight: 600; color: var(--accent-primary); margin-bottom: 24px; backdrop-filter: blur(8px); }
+    .hero-title { font-size: clamp(36px, 5vw, 56px); font-weight: 700; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 24px; }
+    .hero-title .highlight { background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-subtitle { font-size: 18px; color: var(--fg-muted); line-height: 1.7; margin-bottom: 40px; max-width: 700px; margin-left: auto; margin-right: auto; }
+    .hero-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+    .hero-trust { font-size: 13px; color: var(--fg-dim); }
+
+    /* Feature Grid */
+    .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .feature-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; transition: all 0.3s var(--ease-out); position: relative; overflow: hidden; }
+    .feature-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent-primary), var(--accent-gold)); opacity: 0; transition: opacity 0.3s; }
+    .feature-card:hover { border-color: var(--accent-primary); transform: translateY(-4px); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-card-icon { width: 48px; height: 48px; background: var(--accent-primary-glow); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+    .feature-card-icon svg { width: 24px; height: 24px; color: var(--accent-primary); }
+    .feature-card:nth-child(2) .feature-card-icon { background: var(--accent-violet-glow); }
+    .feature-card:nth-child(2) .feature-card-icon svg { color: var(--accent-violet); }
+    .feature-card:nth-child(3) .feature-card-icon { background: var(--accent-gold-glow); }
+    .feature-card:nth-child(3) .feature-card-icon svg { color: var(--accent-gold); }
+    .feature-card:nth-child(4) .feature-card-icon { background: var(--accent-emerald-glow); }
+    .feature-card:nth-child(4) .feature-card-icon svg { color: var(--accent-emerald); }
+    .feature-card:nth-child(5) .feature-card-icon { background: rgba(56, 189, 248, 0.15); }
+    .feature-card:nth-child(5) .feature-card-icon svg { color: #38BDF8; }
+    .feature-card:nth-child(6) .feature-card-icon { background: rgba(245, 158, 11, 0.15); }
+    .feature-card:nth-child(6) .feature-card-icon svg { color: var(--warning); }
+    .feature-card:nth-child(7) .feature-card-icon { background: var(--accent-primary-glow); }
+    .feature-card:nth-child(8) .feature-card-icon { background: var(--accent-violet-glow); }
+    .feature-card:nth-child(8) .feature-card-icon svg { color: var(--accent-violet); }
+    .feature-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .feature-card p { font-size: 13px; color: var(--fg-muted); line-height: 1.6; margin-bottom: 16px; }
+    .feature-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .feature-tag { padding: 4px 10px; background: var(--bg-elevated); border-radius: 6px; font-size: 11px; color: var(--fg-dim); }
+
+    /* Showcase Section */
+    .showcase { background: var(--bg-base); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .showcase-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 64px; align-items: center; }
+    .showcase-grid.reverse { grid-template-columns: 1.2fr 1fr; }
+    .showcase-content h3 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+    .showcase-content > p { color: var(--fg-muted); line-height: 1.8; margin-bottom: 24px; }
+    .showcase-points { display: flex; flex-direction: column; gap: 12px; }
+    .showcase-point { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .showcase-point svg { width: 18px; height: 18px; color: var(--accent-primary); flex-shrink: 0; margin-top: 2px; }
+    .showcase-point span { font-size: 14px; color: var(--fg-muted); }
+
+    /* Portfolio Dashboard Mockup */
+    .portfolio-mockup { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .mockup-header { background: var(--bg-elevated); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; align-items: center; gap: 8px; }
+    .mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mockup-dot:nth-child(1) { background: #FF5F57; }
+    .mockup-dot:nth-child(2) { background: #FFBD2E; }
+    .mockup-dot:nth-child(3) { background: #28CA42; }
+    .mockup-body { padding: 20px; }
+    .portfolio-score { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .score-circle { width: 80px; height: 80px; background: conic-gradient(var(--accent-primary) 0deg 252deg, var(--border) 252deg 360deg); border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; }
+    .score-circle::before { content: ''; position: absolute; inset: 8px; background: var(--surface); border-radius: 50%; }
+    .score-value { position: relative; font-size: 24px; font-weight: 700; color: var(--accent-primary); }
+    .score-info h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .score-info p { font-size: 12px; color: var(--fg-dim); }
+    .portfolio-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+    .portfolio-stat { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+    .portfolio-stat-label { font-size: 11px; color: var(--fg-dim); margin-bottom: 4px; }
+    .portfolio-stat-value { font-size: 16px; font-weight: 600; }
+    .portfolio-stat-value.positive { color: var(--accent-emerald); }
+    .portfolio-stat-value.warning { color: var(--warning); }
+    .portfolio-warning { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 10px; }
+    .portfolio-warning svg { width: 18px; height: 18px; color: var(--warning); flex-shrink: 0; }
+    .portfolio-warning span { font-size: 12px; color: var(--warning); }
+
+    /* Council Section */
+    .council-visual { display: flex; gap: 24px; align-items: center; }
+    .council-members-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; flex: 1; }
+    .council-member { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; transition: all 0.3s; }
+    .council-member:hover { border-color: var(--accent-violet); }
+    .council-member-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .council-member-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .council-member-icon svg { width: 16px; height: 16px; }
+    .council-member.risk .council-member-icon { background: rgba(245, 158, 11, 0.15); }
+    .council-member.risk .council-member-icon svg { color: var(--warning); }
+    .council-member.value .council-member-icon { background: var(--accent-emerald-glow); }
+    .council-member.value .council-member-icon svg { color: var(--accent-emerald); }
+    .council-member.income .council-member-icon { background: var(--accent-gold-glow); }
+    .council-member.income .council-member-icon svg { color: var(--accent-gold); }
+    .council-member.momentum .council-member-icon { background: var(--accent-primary-glow); }
+    .council-member.momentum .council-member-icon svg { color: var(--accent-primary); }
+    .council-member.news .council-member-icon { background: var(--accent-violet-glow); }
+    .council-member.news .council-member-icon svg { color: var(--accent-violet); }
+    .council-member.macro .council-member-icon { background: rgba(56, 189, 248, 0.15); }
+    .council-member.macro .council-member-icon svg { color: #38BDF8; }
+    .council-member h4 { font-size: 13px; font-weight: 600; }
+    .council-member p { font-size: 11px; color: var(--fg-dim); line-height: 1.5; }
+    .council-arrow { display: flex; flex-direction: column; gap: 4px; padding: 0 8px; }
+    .council-arrow-line { width: 40px; height: 2px; background: linear-gradient(90deg, var(--accent-violet), transparent); }
+    .council-synthesis { background: var(--surface); border: 2px solid var(--accent-violet); border-radius: 16px; padding: 24px; width: 280px; box-shadow: 0 0 40px var(--accent-violet-glow); }
+    .council-synthesis-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .council-synthesis-badge { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent-violet), var(--accent-primary)); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .council-synthesis-badge svg { width: 20px; height: 20px; color: white; }
+    .council-synthesis h4 { font-size: 14px; font-weight: 600; }
+    .council-synthesis > p { font-size: 13px; color: var(--fg-muted); line-height: 1.6; font-style: italic; }
+
+    /* Chat Demo */
+    .chat-demo { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .chat-header { background: var(--bg-elevated); border-bottom: 1px solid var(--border); padding: 14px 18px; display: flex; align-items: center; gap: 12px; }
+    .chat-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-gold)); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .chat-avatar svg { width: 18px; height: 18px; color: var(--bg-deep); }
+    .chat-info h4 { font-size: 14px; font-weight: 600; }
+    .chat-status { font-size: 12px; color: var(--accent-emerald); }
+    .chat-messages { padding: 20px; display: flex; flex-direction: column; gap: 14px; min-height: 280px; }
+    .chat-msg { display: flex; gap: 10px; max-width: 85%; }
+    .chat-msg.user { align-self: flex-end; flex-direction: row-reverse; }
+    .chat-msg-avatar { width: 28px; height: 28px; background: var(--bg-elevated); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .chat-msg-avatar svg { width: 14px; height: 14px; color: var(--fg-dim); }
+    .chat-msg.user .chat-msg-avatar { background: var(--accent-primary); }
+    .chat-msg.user .chat-msg-avatar svg { color: var(--bg-deep); }
+    .chat-msg-content { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; }
+    .chat-msg.user .chat-msg-content { background: var(--accent-primary); border-color: var(--accent-primary); color: var(--bg-deep); }
+    .chat-msg-content p { font-size: 13px; line-height: 1.6; }
+    .chat-msg-content.rtl { direction: rtl; text-align: right; }
+
+    /* News Feed */
+    .news-feed { display: flex; flex-direction: column; gap: 12px; }
+    .news-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; transition: all 0.3s; }
+    .news-item:hover { border-color: var(--accent-primary); }
+    .news-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .news-item-source { display: flex; align-items: center; gap: 8px; }
+    .news-item-source-icon { width: 28px; height: 28px; background: var(--bg-elevated); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .news-item-source-icon svg { width: 14px; height: 14px; color: var(--fg-dim); }
+    .news-item-source span { font-size: 12px; color: var(--fg-dim); }
+    .news-impact { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+    .news-impact.bearish { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+    .news-impact.neutral { background: rgba(107, 122, 143, 0.15); color: var(--fg-dim); }
+    .news-impact.bullish { background: var(--accent-emerald-glow); color: var(--accent-emerald); }
+    .news-item h4 { font-size: 14px; font-weight: 600; margin-bottom: 8px; line-height: 1.4; }
+    .news-item-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .news-meta-chip { display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--bg-elevated); border-radius: 6px; font-size: 11px; color: var(--fg-dim); }
+    .news-meta-chip svg { width: 12px; height: 12px; }
+    .news-meta-chip.holding { background: var(--accent-primary-glow); color: var(--accent-primary); }
+
+    /* Thesis Card */
+    .thesis-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+    .thesis-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .thesis-stock { display: flex; align-items: center; gap: 12px; }
+    .thesis-stock-icon { width: 44px; height: 44px; background: var(--bg-elevated); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--accent-primary); }
+    .thesis-stock-info h4 { font-size: 16px; font-weight: 600; }
+    .thesis-stock-info span { font-size: 12px; color: var(--fg-dim); }
+    .thesis-overall { text-align: right; }
+    .thesis-overall-label { font-size: 11px; color: var(--fg-dim); margin-bottom: 4px; }
+    .thesis-overall-score { font-size: 24px; font-weight: 700; color: var(--accent-emerald); }
+    .thesis-dimensions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .thesis-dim { background: var(--bg-elevated); border-radius: 8px; padding: 10px 12px; }
+    .thesis-dim-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .thesis-dim-name { font-size: 11px; color: var(--fg-dim); }
+    .thesis-dim-score { font-size: 12px; font-weight: 600; }
+    .thesis-dim-score.high { color: var(--accent-emerald); }
+    .thesis-dim-score.mid { color: var(--accent-gold); }
+    .thesis-dim-score.low { color: var(--danger); }
+    .thesis-dim-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .thesis-dim-fill { height: 100%; border-radius: 2px; }
+    .thesis-dim-fill.high { background: var(--accent-emerald); }
+    .thesis-dim-fill.mid { background: var(--accent-gold); }
+    .thesis-dim-fill.low { background: var(--danger); }
+    .thesis-summary { background: var(--bg-elevated); border-radius: 10px; padding: 14px; }
+    .thesis-summary p { font-size: 13px; color: var(--fg-muted); line-height: 1.6; }
+
+    /* GCC Markets */
+    .gcc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .gcc-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; text-align: center; transition: all 0.3s; }
+    .gcc-card:hover { border-color: var(--accent-primary); transform: translateY(-2px); }
+    .gcc-flag { width: 48px; height: 48px; background: var(--bg-elevated); border-radius: 12px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .gcc-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .gcc-card p { font-size: 12px; color: var(--fg-dim); }
+    .gcc-exchanges { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
+    .gcc-exchange { padding: 4px 10px; background: var(--bg-elevated); border-radius: 6px; font-size: 11px; color: var(--fg-muted); }
+
+    /* Analysis Stack */
+    .stack-visual { max-width: 700px; margin: 0 auto; }
+    .stack-layer { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 28px; margin-bottom: -16px; position: relative; transition: all 0.3s; }
+    .stack-layer:hover { transform: translateY(-4px); z-index: 10; }
+    .stack-layer:last-child { margin-bottom: 0; }
+    .stack-layer.user { background: linear-gradient(135deg, var(--surface), rgba(215, 183, 106, 0.1)); border-color: var(--accent-gold); z-index: 6; }
+    .stack-layer.data { z-index: 5; margin-left: 16px; margin-right: 16px; }
+    .stack-layer.analysis { z-index: 4; margin-left: 32px; margin-right: 32px; }
+    .stack-layer.ai { background: linear-gradient(135deg, var(--surface), rgba(139, 92, 246, 0.1)); border-color: var(--accent-violet); z-index: 3; margin-left: 48px; margin-right: 48px; }
+    .stack-layer.output { background: linear-gradient(135deg, var(--surface), rgba(39, 211, 195, 0.1)); border-color: var(--accent-primary); z-index: 2; margin-left: 64px; margin-right: 64px; }
+    .stack-layer-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .stack-layer-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+    .stack-layer-icon svg { width: 18px; height: 18px; }
+    .stack-layer.user .stack-layer-icon { background: var(--accent-gold-glow); }
+    .stack-layer.user .stack-layer-icon svg { color: var(--accent-gold); }
+    .stack-layer.data .stack-layer-icon { background: var(--accent-emerald-glow); }
+    .stack-layer.data .stack-layer-icon svg { color: var(--accent-emerald); }
+    .stack-layer.analysis .stack-layer-icon { background: rgba(56, 189, 248, 0.15); }
+    .stack-layer.analysis .stack-layer-icon svg { color: #38BDF8; }
+    .stack-layer.ai .stack-layer-icon { background: var(--accent-violet-glow); }
+    .stack-layer.ai .stack-layer-icon svg { color: var(--accent-violet); }
+    .stack-layer.output .stack-layer-icon { background: var(--accent-primary-glow); }
+    .stack-layer.output .stack-layer-icon svg { color: var(--accent-primary); }
+    .stack-layer h4 { font-size: 14px; font-weight: 600; }
+    .stack-items { display: flex; flex-wrap: wrap; gap: 6px; }
+    .stack-item { padding: 5px 12px; background: var(--bg-elevated); border-radius: 6px; font-size: 11px; color: var(--fg-muted); }
+
+    /* Bilingual */
+    .bilingual-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .bilingual-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+    .bilingual-card.rtl { direction: rtl; text-align: right; }
+    .bilingual-label { display: inline-block; padding: 4px 12px; background: var(--bg-elevated); border-radius: 6px; font-size: 12px; color: var(--fg-dim); margin-bottom: 16px; }
+    .bilingual-card h4 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+    .bilingual-card p { font-size: 14px; color: var(--fg-muted); line-height: 1.7; }
+
+    /* Trust */
+    .trust-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .trust-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; text-align: center; }
+    .trust-icon { width: 52px; height: 52px; background: var(--accent-primary-glow); border-radius: 14px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; }
+    .trust-icon svg { width: 26px; height: 26px; color: var(--accent-primary); }
+    .trust-card:nth-child(2) .trust-icon { background: var(--accent-gold-glow); }
+    .trust-card:nth-child(2) .trust-icon svg { color: var(--accent-gold); }
+    .trust-card:nth-child(3) .trust-icon { background: var(--accent-violet-glow); }
+    .trust-card:nth-child(3) .trust-icon svg { color: var(--accent-violet); }
+    .trust-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+    .trust-card p { font-size: 13px; color: var(--fg-muted); line-height: 1.6; }
+
+    /* Compliance Note */
+    .compliance-note { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 24px; display: flex; align-items: flex-start; gap: 16px; max-width: 800px; margin: 0 auto; }
+    .compliance-icon { width: 40px; height: 40px; background: rgba(107, 122, 143, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .compliance-icon svg { width: 20px; height: 20px; color: var(--fg-dim); }
+    .compliance-text h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    .compliance-text p { font-size: 13px; color: var(--fg-dim); line-height: 1.6; }
+
+    /* Final CTA */
+    .final-cta { text-align: center; padding: 120px 32px; position: relative; overflow: hidden; }
+    .final-cta-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 40% at 50% 50%, rgba(39, 211, 195, 0.1) 0%, transparent 60%), radial-gradient(ellipse 40% 30% at 30% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 50%); pointer-events: none; }
+    .final-cta-content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+    .final-cta-title { font-size: clamp(28px, 4vw, 40px); font-weight: 700; line-height: 1.2; margin-bottom: 20px; }
+    .final-cta-subtitle { font-size: 17px; color: var(--fg-muted); margin-bottom: 32px; line-height: 1.7; }
+    .final-cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+    .final-cta-note { font-size: 13px; color: var(--fg-dim); }
+
+    /* Footer */
+    .footer { background: var(--bg-base); border-top: 1px solid var(--border); padding: 64px 32px 32px; }
+    .footer-inner { max-width: var(--container); margin: 0 auto; }
+    .footer-top { display: grid; grid-template-columns: 2fr repeat(3, 1fr); gap: 48px; margin-bottom: 48px; }
+    .footer-brand p { color: var(--fg-dim); font-size: 14px; line-height: 1.7; margin-top: 16px; max-width: 280px; }
+    .footer-links-col h4 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--fg-dim); margin-bottom: 16px; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a { color: var(--fg-muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent-primary); }
+    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-copyright { font-size: 13px; color: var(--fg-dim); }
+    .footer-legal { display: flex; gap: 24px; }
+    .footer-legal a { font-size: 13px; color: var(--fg-dim); text-decoration: none; }
+    .footer-legal a:hover { color: var(--fg-muted); }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .showcase-grid, .showcase-grid.reverse { grid-template-columns: 1fr; }
+      .council-visual { flex-direction: column; }
+      .council-arrow { transform: rotate(90deg); padding: 16px 0; }
+      .council-synthesis { width: 100%; }
+      .gcc-grid { grid-template-columns: repeat(2, 1fr); }
+      .trust-features { grid-template-columns: 1fr; }
+      .bilingual-demo { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      section { padding: 80px 24px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .council-members-grid { grid-template-columns: 1fr; }
+      .thesis-dimensions { grid-template-columns: repeat(2, 1fr); }
+      .gcc-grid { grid-template-columns: 1fr; }
+      .stack-layer.data, .stack-layer.analysis, .stack-layer.ai, .stack-layer.output { margin-left: 0; margin-right: 0; }
+      .footer-top { grid-template-columns: 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+    }
+  
+    /* ---- AlphaCouncil structured footer (self-contained, consistent across pages) ---- */
+    .ac-footer { border-top: 1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.015) 100%); margin-top: 96px; }
+    .ac-footer-inner { max-width: 1200px; margin: 0 auto; padding: 72px 32px 36px; }
+    .ac-footer-top { display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr; gap: 56px; padding-bottom: 44px; border-bottom: 1px solid var(--border); }
+    .ac-footer-brand .ac-flogo { display: inline-block; font-weight: 700; font-size: 20px; letter-spacing: -0.02em; color: var(--fg); text-decoration: none; margin-bottom: 16px; }
+    .ac-footer-brand p { font-size: 14px; line-height: 1.75; color: var(--fg-muted); max-width: 320px; }
+    .ac-footer-col h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg-dim); margin-bottom: 20px; }
+    .ac-footer-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+    .ac-footer-col a { font-size: 14px; color: var(--fg-muted); text-decoration: none; transition: color 0.2s ease; }
+    .ac-footer-col a:hover { color: var(--accent-primary); }
+    .ac-footer-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 28px; gap: 16px; flex-wrap: wrap; }
+    .ac-footer-bottom .ac-copy { font-size: 13px; color: var(--fg-dim); }
+    .ac-footer-bottom .ac-legal { display: flex; gap: 28px; }
+    .ac-footer-bottom .ac-legal a { font-size: 13px; color: var(--fg-dim); text-decoration: none; transition: color 0.2s ease; }
+    .ac-footer-bottom .ac-legal a:hover { color: var(--accent-primary); }
+    @media (max-width: 880px) {
+      .ac-footer-top { grid-template-columns: 1fr 1fr; gap: 36px 32px; }
+      .ac-footer-brand { grid-column: 1 / -1; }
+      .ac-footer-inner { padding: 56px 24px 32px; }
+      .ac-footer-bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Atmosphere -->
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atmosphere-base"></div>
+    <div class="atmosphere-noise"></div>
+    <div class="atmosphere-glow"></div>
+    <div class="atmosphere-waves"></div>
+    <div class="atmosphere-vignette"></div>
+  </div>
+
+  <!-- Navigation -->
+    <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+      </a>
+      <ul class="nav-links" style="gap:22px;">
+        <li><a href="how-it-works.html">How it works</a></li>
+        <li><a href="features.html" class="active">Features</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="methodology.html">Methodology</a></li>
+        <li><a href="markets.html">Markets</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="login.html" class="nav-signin">Sign in</a>
+        <a href="signup.html" class="btn btn-primary">Start free</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"><div class="hero-gradient"></div></div>
+    <div class="hero-inner">
+      <div class="hero-content reveal">
+        <div class="hero-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/></svg>
+          Product Features
+        </div>
+        <h1 class="hero-title">Powerful features for clearer<br><span class="highlight">GCC portfolio decisions.</span></h1>
+        <p class="hero-subtitle">AlphaCouncil combines portfolio intelligence, GCC market data, news, fundamentals, technicals, dividends, alerts, and AI analysis into one clear workspace — in English or Arabic.</p>
+        <div class="hero-ctas">
+          <a href="signup.html" class="btn btn-primary btn-lg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Start free
+          </a>
+          <a href="Sample-Dashboard.html" class="btn btn-secondary btn-lg">View sample dashboard</a>
+        </div>
+        <p class="hero-trust">Portfolio-aware. GCC-native. Source-linked. AI-assisted.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Overview -->
+  <section class="showcase">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Overview</p>
+        <h2 class="section-title">One workspace for portfolio intelligence.</h2>
+        <p class="section-subtitle">AlphaCouncil connects the data investors normally check separately — holdings, news, charts, fundamentals, dividends, risk, and market context — into one portfolio-aware view.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card reveal stagger-1">
+          <div class="feature-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <h3>Portfolio Intelligence</h3>
+          <p>See exposure, concentration, diversification, risk, and portfolio structure in one place.</p>
+          <div class="feature-tags"><span class="feature-tag">Exposure</span><span class="feature-tag">Risk</span><span class="feature-tag">Allocation</span></div>
+        </div>
+        <div class="feature-card reveal stagger-2">
+          <div class="feature-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/></svg></div>
+          <h3>AI Analyst Council</h3>
+          <p>Multiple AI analysts review your portfolio from different angles before synthesizing one clear view.</p>
+          <div class="feature-tags"><span class="feature-tag">Risk</span><span class="feature-tag">Value</span><span class="feature-tag">Momentum</span></div>
+        </div>
+        <div class="feature-card reveal stagger-3">
+          <div class="feature-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <h3>AlphaCouncil Adviser</h3>
+          <p>Ask questions on any page. The Adviser understands your portfolio, holdings, and market context.</p>
+          <div class="feature-tags"><span class="feature-tag">Chat</span><span class="feature-tag">EN + AR</span><span class="feature-tag">Contextual</span></div>
+        </div>
+        <div class="feature-card reveal stagger-4">
+          <div class="feature-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16"/></svg></div>
+          <h3>Portfolio-aware News</h3>
+          <p>News connected to your actual holdings with impact analysis and AI summaries.</p>
+          <div class="feature-tags"><span class="feature-tag">Impact</span><span class="feature-tag">Holdings</span><span class="feature-tag">Summarized</span></div>
+        </div>
+        <div class="feature-card reveal stagger-5">
+          <div class="feature-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+          <h3>Stock Thesis Scoring</h3>
+          <p>Every stock scored across 12 dimensions: valuation, growth, profitability, quality, dividends, governance, and more.</p>
+          <div class="feature-tags"><span class="feature-tag">12 Dimensions</span><span class="feature-tag">Scored</span></div>
+        </div>
+        <div class="feature-card reveal stagger-6">
+          <div class="feature-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <h3>Alerts & Monitoring</h3>
+          <p>News alerts, dividend events, earnings calendar, and portfolio movement notifications.</p>
+          <div class="feature-tags"><span class="feature-tag">News</span><span class="feature-tag">Events</span><span class="feature-tag">Movement</span></div>
+        </div>
+        <div class="feature-card reveal stagger-1">
+          <div class="feature-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <h3>GCC Market Coverage</h3>
+          <p>Saudi, UAE, Qatar, Kuwait, Bahrain, and Oman markets with local context.</p>
+          <div class="feature-tags"><span class="feature-tag">7 Markets</span><span class="feature-tag">700+ Stocks</span></div>
+        </div>
+        <div class="feature-card reveal stagger-2">
+          <div class="feature-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8h14M5 8a2 2 0 1 1 0-4h14a2 2 0 1 1 0 4M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"/></svg></div>
+          <h3>Arabic + English</h3>
+          <p>Explanations, summaries, and AI responses in the language you prefer.</p>
+          <div class="feature-tags"><span class="feature-tag">Bilingual</span><span class="feature-tag">RTL Ready</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio Intelligence -->
+  <section>
+    <div class="section-inner">
+      <div class="showcase-grid">
+        <div class="showcase-content reveal">
+          <p class="section-eyebrow">Portfolio Intelligence</p>
+          <h3>Understand what your portfolio is really exposed to.</h3>
+          <p>AlphaCouncil analyzes your holdings as a connected portfolio, not as isolated stocks. See the full picture of allocation, concentration, risk, and performance.</p>
+          <div class="showcase-points">
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Portfolio value and daily movement</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Sector and market exposure breakdown</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Concentration risk warnings</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Dividend income dependency</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Overall portfolio score</span></div>
+          </div>
+        </div>
+        <div class="portfolio-mockup reveal stagger-2">
+          <div class="mockup-header"><span class="mockup-dot"></span><span class="mockup-dot"></span><span class="mockup-dot"></span></div>
+          <div class="mockup-body">
+            <div class="portfolio-score">
+              <div class="score-circle"><span class="score-value">70</span></div>
+              <div class="score-info"><h4>Portfolio Score</h4><p>Moderate risk, adequate diversification</p></div>
+            </div>
+            <div class="portfolio-stats">
+              <div class="portfolio-stat"><div class="portfolio-stat-label">Portfolio Value</div><div class="portfolio-stat-value">SAR 847,250</div></div>
+              <div class="portfolio-stat"><div class="portfolio-stat-label">Today's P/L</div><div class="portfolio-stat-value positive">+2,340 (0.28%)</div></div>
+              <div class="portfolio-stat"><div class="portfolio-stat-label">Banking Exposure</div><div class="portfolio-stat-value warning">42%</div></div>
+              <div class="portfolio-stat"><div class="portfolio-stat-label">Dividend Yield</div><div class="portfolio-stat-value">3.8%</div></div>
+            </div>
+            <div class="portfolio-warning">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span>Concentration elevated in banking sector. Consider reviewing exposure.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Analyst Council -->
+  <section class="showcase">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">AI Analyst Council</p>
+        <h2 class="section-title">Institutional-grade portfolio review, automated.</h2>
+        <p class="section-subtitle">The AI Analyst Council examines your portfolio across fundamentals, valuation, technicals, macro conditions, sector outlook, ownership flows, news impact, and peer comparisons — then delivers a unified strategic synthesis across all GCC markets.</p>
+      </div>
+      <div class="council-visual reveal">
+        <div class="council-members-grid">
+          <div class="council-member risk"><div class="council-member-header"><div class="council-member-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div><h4>Risk Analyst</h4></div><p>Flags concentration, downside exposure, and volatility mismatches against your risk profile.</p></div>
+          <div class="council-member value"><div class="council-member-header"><div class="council-member-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/></svg></div><h4>Valuation Analyst</h4></div><p>Benchmarks P/E, P/B, and earnings multiples against sector peers and historical ranges.</p></div>
+          <div class="council-member income"><div class="council-member-header"><div class="council-member-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><h4>Income Analyst</h4></div><p>Evaluates dividend sustainability, payout ratios, and income concentration across holdings.</p></div>
+          <div class="council-member momentum"><div class="council-member-header"><div class="council-member-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg></div><h4>Technical Analyst</h4></div><p>Assesses trend strength, relative performance, and technical positioning vs. GCC peers.</p></div>
+          <div class="council-member news"><div class="council-member-header"><div class="council-member-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16"/></svg></div><h4>News & Flows Analyst</h4></div><p>Tracks disclosures, ownership changes, and news sentiment affecting your positions.</p></div>
+          <div class="council-member macro"><div class="council-member-header"><div class="council-member-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg></div><h4>Macro & Sector Analyst</h4></div><p>Maps oil, rates, liquidity, and regional conditions to sector-level opportunity and risk.</p></div>
+        </div>
+        <div class="council-arrow"><div class="council-arrow-line"></div><div class="council-arrow-line"></div><div class="council-arrow-line"></div></div>
+        <div class="council-synthesis">
+          <div class="council-synthesis-header"><div class="council-synthesis-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/></svg></div><h4>Strategic Synthesis</h4></div>
+          <p>"Data suggests trimming weaker momentum holdings and comparing them against stronger GCC peers. Consider reallocating toward sectors with better valuation, earnings visibility, and macro support — such as select banks, real estate, or dividend-quality names. The portfolio shows overconcentration in Saudi banking and is missing opportunities in UAE and Qatari markets."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Adviser -->
+  <section>
+    <div class="section-inner">
+      <div class="showcase-grid reverse">
+        <div class="chat-demo reveal">
+          <div class="chat-header"><div class="chat-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 20 2 20"/></svg></div><div class="chat-info"><h4>AlphaCouncil Adviser</h4><span class="chat-status">Online · Portfolio-aware</span></div></div>
+          <div class="chat-messages">
+            <div class="chat-msg user"><div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="chat-msg-content"><p>Why did my portfolio move today?</p></div></div>
+            <div class="chat-msg"><div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 20 2 20"/></svg></div><div class="chat-msg-content"><p>Most of today's move came from banking exposure. Two holdings reacted to rate expectations, while energy holdings remained stable.</p></div></div>
+            <div class="chat-msg user"><div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="chat-msg-content"><p>Explain this stock in Arabic.</p></div></div>
+            <div class="chat-msg"><div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 20 2 20"/></svg></div><div class="chat-msg-content rtl"><p>هذا السهم يظهر جودة مالية جيدة، لكن التقييم ليس منخفضًا مقارنة بالقطاع. يجب مراقبة الأرباح القادمة.</p></div></div>
+          </div>
+        </div>
+        <div class="showcase-content reveal stagger-2">
+          <p class="section-eyebrow">AlphaCouncil Adviser</p>
+          <h3>An AI adviser on every page.</h3>
+          <p>Ask questions wherever you are. The Adviser understands the page, the stock, the news, the portfolio, and your holdings. It responds in English or Arabic.</p>
+          <div class="showcase-points">
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Explain portfolio movement</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Answer stock questions</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Summarize relevant news</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Explain thesis dimensions</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Respond in English or Arabic</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- News -->
+  <section class="showcase">
+    <div class="section-inner">
+      <div class="showcase-grid">
+        <div class="showcase-content reveal">
+          <p class="section-eyebrow">Portfolio-aware News</p>
+          <h3>News that knows what you own.</h3>
+          <p>AlphaCouncil connects news to the stocks in your portfolio and explains why it matters. Impact classification, AI summaries, and source links included.</p>
+          <div class="showcase-points">
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>News linked to your holdings</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Impact: bullish / neutral / bearish</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>AI-generated summaries</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Portfolio exposure shown</span></div>
+          </div>
+        </div>
+        <div class="news-feed reveal stagger-2">
+          <div class="news-item">
+            <div class="news-item-header"><div class="news-item-source"><div class="news-item-source-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16"/></svg></div><span>Argaam · 2h ago</span></div><span class="news-impact bearish">Bearish</span></div>
+            <h4>Fed signals potential rate hikes, pressure on GCC banking margins expected</h4>
+            <div class="news-item-meta"><span class="news-meta-chip holding"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Al Rajhi</span><span class="news-meta-chip">Banking</span><span class="news-meta-chip">14.2% exposure</span></div>
+          </div>
+          <div class="news-item">
+            <div class="news-item-header"><div class="news-item-source"><div class="news-item-source-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16"/></svg></div><span>Tadawul · 5h ago</span></div><span class="news-impact bullish">Bullish</span></div>
+            <h4>SABIC announces Q3 dividend of SAR 2.25 per share</h4>
+            <div class="news-item-meta"><span class="news-meta-chip holding"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>SABIC</span><span class="news-meta-chip">Petrochemicals</span><span class="news-meta-chip">8.5% exposure</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stock Thesis -->
+  <section>
+    <div class="section-inner">
+      <div class="showcase-grid reverse">
+        <div class="thesis-card reveal">
+          <div class="thesis-header">
+            <div class="thesis-stock"><div class="thesis-stock-icon">1120</div><div class="thesis-stock-info"><h4>Al Rajhi Bank</h4><span>Banking · Tadawul</span></div></div>
+            <div class="thesis-overall"><div class="thesis-overall-label">Thesis Score</div><div class="thesis-overall-score">72</div></div>
+          </div>
+          <div class="thesis-dimensions">
+            <div class="thesis-dim"><div class="thesis-dim-header"><span class="thesis-dim-name">Quality</span><span class="thesis-dim-score high">8.2</span></div><div class="thesis-dim-bar"><div class="thesis-dim-fill high" style="width: 82%"></div></div></div>
+            <div class="thesis-dim"><div class="thesis-dim-header"><span class="thesis-dim-name">Value</span><span class="thesis-dim-score mid">6.5</span></div><div class="thesis-dim-bar"><div class="thesis-dim-fill mid" style="width: 65%"></div></div></div>
+            <div class="thesis-dim"><div class="thesis-dim-header"><span class="thesis-dim-name">Momentum</span><span class="thesis-dim-score mid">5.8</span></div><div class="thesis-dim-bar"><div class="thesis-dim-fill mid" style="width: 58%"></div></div></div>
+            <div class="thesis-dim"><div class="thesis-dim-header"><span class="thesis-dim-name">Income</span><span class="thesis-dim-score high">7.6</span></div><div class="thesis-dim-bar"><div class="thesis-dim-fill high" style="width: 76%"></div></div></div>
+            <div class="thesis-dim"><div class="thesis-dim-header"><span class="thesis-dim-name">Growth</span><span class="thesis-dim-score mid">6.8</span></div><div class="thesis-dim-bar"><div class="thesis-dim-fill mid" style="width: 68%"></div></div></div>
+            <div class="thesis-dim"><div class="thesis-dim-header"><span class="thesis-dim-name">Risk</span><span class="thesis-dim-score low">4.2</span></div><div class="thesis-dim-bar"><div class="thesis-dim-fill low" style="width: 42%"></div></div></div>
+          </div>
+          <div class="thesis-summary"><p>Strong quality fundamentals with stable dividend profile. Valuation near sector average. Momentum weakened after recent rate sensitivity. Risk elevated due to concentration in portfolio.</p></div>
+        </div>
+        <div class="showcase-content reveal stagger-2">
+          <p class="section-eyebrow">Stock Thesis</p>
+          <h3>Every stock gets a structured thesis.</h3>
+          <p>AlphaCouncil reviews stocks across 12 dimensions so you can understand the full picture, not just the price chart.</p>
+          <div class="showcase-points">
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Business durability and quality</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Value and growth assessment</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Momentum and technical position</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Income and dividend profile</span></div>
+            <div class="showcase-point"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Risk and news impact</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GCC Markets -->
+  <section class="showcase">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">GCC Coverage</p>
+        <h2 class="section-title">Built around GCC markets, not adapted from US tools.</h2>
+        <p class="section-subtitle">AlphaCouncil is designed for the structure, behavior, disclosures, dividends, and regional context of GCC markets.</p>
+      </div>
+      <div class="gcc-grid">
+        <div class="gcc-card reveal stagger-1"><div class="gcc-flag">🇸🇦</div><h4>Saudi Arabia</h4><p>Main market and SME market coverage</p><div class="gcc-exchanges"><span class="gcc-exchange">Tadawul</span><span class="gcc-exchange">Nomu</span></div></div>
+        <div class="gcc-card reveal stagger-2"><div class="gcc-flag">🇦🇪</div><h4>United Arab Emirates</h4><p>Abu Dhabi and Dubai markets</p><div class="gcc-exchanges"><span class="gcc-exchange">ADX</span><span class="gcc-exchange">DFM</span></div></div>
+        <div class="gcc-card reveal stagger-3"><div class="gcc-flag">🇶🇦</div><h4>Qatar</h4><p>Qatar Stock Exchange coverage</p><div class="gcc-exchanges"><span class="gcc-exchange">QSE</span></div></div>
+        <div class="gcc-card reveal stagger-4"><div class="gcc-flag">🇰🇼</div><h4>Kuwait</h4><p>Boursa Kuwait coverage</p><div class="gcc-exchanges"><span class="gcc-exchange">Boursa</span></div></div>
+        <div class="gcc-card reveal stagger-5"><div class="gcc-flag">🇧🇭</div><h4>Bahrain</h4><p>Bahrain Bourse coverage</p><div class="gcc-exchanges"><span class="gcc-exchange">BHB</span></div></div>
+        <div class="gcc-card reveal stagger-6"><div class="gcc-flag">🇴🇲</div><h4>Oman</h4><p>Muscat Securities Market</p><div class="gcc-exchanges"><span class="gcc-exchange">MSX</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Analysis Stack -->
+  <section>
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Analysis Engine</p>
+        <h2 class="section-title">The analysis stack behind every answer.</h2>
+        <p class="section-subtitle">AlphaCouncil combines multiple layers of information before explaining what the data suggests.</p>
+      </div>
+      <div class="stack-visual reveal">
+        <div class="stack-layer user"><div class="stack-layer-header"><div class="stack-layer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h4>Your Portfolio</h4></div><div class="stack-items"><span class="stack-item">Holdings</span><span class="stack-item">Buy prices</span><span class="stack-item">Allocation</span><span class="stack-item">Goals</span></div></div>
+        <div class="stack-layer data"><div class="stack-layer-header"><div class="stack-layer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/></svg></div><h4>Market Data</h4></div><div class="stack-items"><span class="stack-item">Holdings</span><span class="stack-item">Sectors</span><span class="stack-item">Markets</span><span class="stack-item">Prices</span></div></div>
+        <div class="stack-layer analysis"><div class="stack-layer-header"><div class="stack-layer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg></div><h4>Analysis Layers</h4></div><div class="stack-items"><span class="stack-item">Fundamentals</span><span class="stack-item">Valuation</span><span class="stack-item">Technicals</span><span class="stack-item">Dividends</span><span class="stack-item">News</span><span class="stack-item">Macro</span></div></div>
+        <div class="stack-layer ai"><div class="stack-layer-header"><div class="stack-layer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/></svg></div><h4>AI Processing</h4></div><div class="stack-items"><span class="stack-item">AI Analyst Council</span><span class="stack-item">Adviser</span><span class="stack-item">Thesis scoring</span></div></div>
+        <div class="stack-layer output"><div class="stack-layer-header"><div class="stack-layer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><h4>Clear Explanation</h4></div><div class="stack-items"><span class="stack-item">Portfolio review</span><span class="stack-item">Stock thesis</span><span class="stack-item">Risk assessment</span><span class="stack-item">Action suggestions</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bilingual -->
+  <section class="showcase">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Bilingual</p>
+        <h2 class="section-title">Understand the market in English or Arabic.</h2>
+        <p class="section-subtitle">AlphaCouncil explains stocks, news, portfolio movement, and risk in the language you're most comfortable with.</p>
+      </div>
+      <div class="bilingual-demo reveal">
+        <div class="bilingual-card"><span class="bilingual-label">English</span><h4>Al Rajhi Bank Analysis</h4><p>Strong quality fundamentals with stable dividend profile. Valuation is near sector average. Momentum weakened after recent price action. Consider monitoring rate sensitivity before adding exposure.</p></div>
+        <div class="bilingual-card rtl"><span class="bilingual-label">العربية</span><h4>تحليل مصرف الراجحي</h4><p>جودة أساسية قوية مع توزيعات أرباح مستقرة. التقييم قريب من متوسط القطاع. ضعف الزخم بعد حركة السعر الأخيرة. يُنصح بمراقبة حساسية أسعار الفائدة قبل زيادة التعرض.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust -->
+  <section>
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Methodology</p>
+        <h2 class="section-title">Source-linked. Methodology-driven. Portfolio-aware.</h2>
+        <p class="section-subtitle">AlphaCouncil explains why an answer was given, not just produces a generic AI response.</p>
+      </div>
+      <div class="trust-features">
+        <div class="trust-card reveal stagger-1"><div class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div><h4>Source-linked</h4><p>Every answer shows where the data came from with source chips and links.</p></div>
+        <div class="trust-card reveal stagger-2"><div class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h4>Methodology-driven</h4><p>Clear explanations of how scores and assessments are calculated.</p></div>
+        <div class="trust-card reveal stagger-3"><div class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><h4>Data freshness</h4><p>Know when the data was last updated with clear timestamps.</p></div>
+      </div>
+      <div class="compliance-note reveal" style="margin-top: 48px;">
+        <div class="compliance-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+        <div class="compliance-text"><h4>Analysis, not trade execution.</h4><p>AlphaCouncil provides data-driven market analysis and educational insights. It does not execute trades, manage money, guarantee returns, or replace licensed financial advice.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="final-cta">
+    <div class="final-cta-bg"></div>
+    <div class="final-cta-content reveal">
+      <h2 class="final-cta-title">Bring your portfolio into one intelligent workspace.</h2>
+      <p class="final-cta-subtitle">Add your holdings, connect them to GCC market intelligence, and ask AlphaCouncil what the data suggests.</p>
+      <div class="final-cta-buttons">
+        <a href="signup.html" class="btn btn-primary btn-lg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Start free</a>
+        <a href="Sample-Dashboard.html" class="btn btn-secondary btn-lg">View sample dashboard</a>
+      </div>
+      <p class="final-cta-note">No credit card required. Set up in minutes.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+      <footer class="ac-footer">
+    <div class="ac-footer-inner">
+      <div class="ac-footer-top">
+        <div class="ac-footer-brand">
+          <a href="index.html" class="ac-flogo">AlphaCouncil</a>
+          <p>AI-powered portfolio intelligence for GCC stock investors. Understand your portfolio before the market moves.</p>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+            <li><a href="methodology.html">Methodology</a></li>
+          </ul>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Markets</h4>
+          <ul>
+            <li><a href="markets.html#saudi">Saudi (Tadawul)</a></li>
+            <li><a href="markets.html#uae">UAE (ADX / DFM)</a></li>
+            <li><a href="markets.html#qatar">Qatar (QSE)</a></li>
+            <li><a href="markets.html#kuwait">Kuwait (Boursa)</a></li>
+          </ul>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="login.html">Sign in</a></li>
+            <li><a href="signup.html">Start free</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="ac-footer-bottom">
+        <p class="ac-copy">&copy; 2026 AlphaCouncil. All rights reserved.</p>
+        <div class="ac-legal">
+          <a href="legal.html#terms">Terms</a>
+          <a href="legal.html#privacy">Privacy</a>
+          <a href="legal.html#disclaimer">Disclaimer</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 50); });
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => { anchor.addEventListener('click', function(e) { const target = document.querySelector(this.getAttribute('href')); if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }); });
+  </script>
+  <script>/* brand logo -> dashboard when signed in (ac_csrf cookie present), else index */
+  (function(){try{if(document.cookie.indexOf('ac_csrf=')>-1){var e=document.querySelectorAll('.nav-logo,.ac-flogo');for(var i=0;i<e.length;i++)e[i].setAttribute('href','dashboard.html');}}catch(x){}})();</script>
+</body>
+</html>

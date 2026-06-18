@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Methodology — AlphaCouncil</title>
+  <meta name="description" content="How AlphaCouncil generates analysis. Transparent methodology, 12-dimension stock thesis, AI Analyst Council, and source-linked insights for GCC investors.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #07111F;
+      --bg-base: #0B1120;
+      --bg-elevated: #101624;
+      --surface: #111A2B;
+      --surface-elevated: #141D2F;
+      --surface-glass: rgba(17, 26, 43, 0.7);
+      --fg: #F8FAFC;
+      --fg-muted: #AAB6C5;
+      --fg-dim: #6B7A8F;
+      --accent-primary: #27D3C3;
+      --accent-primary-glow: rgba(39, 211, 195, 0.2);
+      --accent-gold: #D7B76A;
+      --accent-gold-glow: rgba(215, 183, 106, 0.15);
+      --accent-violet: #8B5CF6;
+      --accent-violet-glow: rgba(139, 92, 246, 0.15);
+      --accent-emerald: #10B981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.15);
+      --accent-sky: #38BDF8;
+      --accent-sky-glow: rgba(56, 189, 248, 0.15);
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.12);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --container: 1200px;
+      --nav-height: 72px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-sans); background: var(--bg-deep); color: var(--fg); line-height: 1.6; overflow-x: hidden; }
+
+    /* Atmosphere */
+    .atmosphere { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
+    .atmosphere-base { position: absolute; inset: 0; background: linear-gradient(180deg, var(--bg-deep) 0%, #050a16 30%, #071120 60%, var(--bg-deep) 100%); }
+    .atmosphere-noise { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); opacity: 0.025; }
+    .atmosphere-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 100% 40% at 75% 15%, rgba(39, 211, 195, 0.05) 0%, transparent 60%), radial-gradient(ellipse 80% 50% at 20% 45%, rgba(139, 92, 246, 0.04) 0%, transparent 50%), radial-gradient(ellipse 70% 40% at 85% 70%, rgba(215, 183, 106, 0.03) 0%, transparent 50%); }
+    .atmosphere-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 50%, transparent 20%, rgba(5, 10, 22, 0.5) 100%); }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .stagger-1 { transition-delay: 0ms; }
+    .stagger-2 { transition-delay: 80ms; }
+    .stagger-3 { transition-delay: 160ms; }
+    .stagger-4 { transition-delay: 240ms; }
+    .stagger-5 { transition-delay: 320ms; }
+    .stagger-6 { transition-delay: 400ms; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+    /* Nav */
+    .nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-height); background: rgba(7, 17, 31, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; transition: background 0.3s ease; }
+    .nav.scrolled { background: rgba(7, 17, 31, 0.95); border-color: var(--border-strong); }
+    .nav-inner { max-width: var(--container); height: 100%; margin: 0 auto; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; text-decoration: none; font-size: 18px; font-weight: 700; color: var(--fg); letter-spacing: -0.02em; transition: color 0.2s ease; }
+    .nav-logo:hover { color: var(--accent-primary); }
+    .nav-logo img { height: 28px; width: auto; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { color: var(--fg-muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s ease; }
+    .nav-links a:hover { color: var(--fg); }
+    .nav-links a.active { color: var(--accent-primary); }
+    .nav-actions { display: flex; align-items: center; gap: 16px; }
+    .nav-signin { color: var(--fg-muted); text-decoration: none; font-size: 14px; font-weight: 500; }
+    .nav-signin:hover { color: var(--fg); }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; transition: all 0.3s var(--ease-out); }
+    .btn-primary { background: linear-gradient(135deg, var(--accent-primary), #1AB3A5); color: var(--bg-deep); box-shadow: 0 4px 20px var(--accent-primary-glow); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-primary-glow); }
+    .btn-secondary { background: var(--surface); color: var(--fg); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--surface-elevated); border-color: var(--border-strong); }
+    .btn-lg { padding: 14px 28px; font-size: 15px; border-radius: 12px; }
+
+    /* Sections */
+    section { position: relative; padding: 100px 32px; }
+    .section-inner { max-width: var(--container); margin: 0 auto; }
+    .section-eyebrow { display: inline-block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-primary); margin-bottom: 16px; }
+    .section-title { font-size: clamp(32px, 4vw, 44px); font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .section-subtitle { font-size: 17px; color: var(--fg-muted); max-width: 700px; line-height: 1.7; }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-header .section-subtitle { margin: 0 auto; }
+
+    /* Hero */
+    .hero { min-height: 70vh; display: flex; align-items: center; padding-top: var(--nav-height); position: relative; overflow: hidden; }
+    .hero-bg { position: absolute; inset: 0; pointer-events: none; }
+    .hero-gradient { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139, 92, 246, 0.08) 0%, transparent 50%), radial-gradient(ellipse 60% 80% at 80% 50%, rgba(39, 211, 195, 0.06) 0%, transparent 50%); }
+    .hero-inner { position: relative; max-width: var(--container); width: 100%; margin: 0 auto; padding: 80px 32px; text-align: center; z-index: 1; }
+    .hero-content { max-width: 800px; margin: 0 auto; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--surface-glass); border: 1px solid var(--border); border-radius: 100px; font-size: 13px; font-weight: 600; color: var(--accent-violet); margin-bottom: 24px; backdrop-filter: blur(8px); }
+    .hero-badge svg { width: 16px; height: 16px; }
+    .hero-title { font-size: clamp(36px, 5vw, 52px); font-weight: 700; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 24px; }
+    .hero-title .highlight { background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-violet) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-subtitle { font-size: 18px; color: var(--fg-muted); line-height: 1.7; margin-bottom: 32px; max-width: 680px; margin-left: auto; margin-right: auto; }
+    .hero-disclaimer { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 24px; display: inline-flex; align-items: center; gap: 12px; font-size: 14px; color: var(--fg-muted); }
+    .hero-disclaimer svg { width: 20px; height: 20px; color: var(--accent-gold); flex-shrink: 0; }
+
+    /* Dimension Grid */
+    .dimension-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .dimension-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: all 0.3s var(--ease-out); position: relative; overflow: hidden; }
+    .dimension-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; opacity: 0; transition: opacity 0.3s; }
+    .dimension-card:hover { border-color: var(--border-strong); transform: translateY(-4px); }
+    .dimension-card:hover::before { opacity: 1; }
+    .dimension-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .dimension-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .dimension-icon svg { width: 20px; height: 20px; }
+    .dimension-number { font-size: 11px; font-weight: 700; color: var(--fg-dim); background: var(--bg-elevated); padding: 4px 8px; border-radius: 6px; margin-left: auto; }
+    .dimension-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .dimension-card > p { font-size: 13px; color: var(--fg-muted); line-height: 1.6; margin-bottom: 12px; }
+    .dimension-gcc { background: var(--bg-elevated); border-radius: 8px; padding: 10px 12px; border-left: 3px solid var(--accent-gold); }
+    .dimension-gcc p { font-size: 12px; color: var(--fg-dim); line-height: 1.5; font-style: italic; }
+
+    /* Horizon Groups */
+    .horizon-group { margin-bottom: 48px; }
+    .horizon-group:last-child { margin-bottom: 0; }
+    .horizon-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .horizon-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; }
+    .horizon-badge.investment { background: var(--accent-emerald-glow); color: var(--accent-emerald); }
+    .horizon-badge.trading { background: var(--accent-primary-glow); color: var(--accent-primary); }
+    .horizon-badge.bridge { background: var(--accent-violet-glow); color: var(--accent-violet); }
+    .horizon-badge svg { width: 16px; height: 16px; }
+    .horizon-info h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .horizon-info p { font-size: 13px; color: var(--fg-dim); }
+
+    /* Color variations */
+    .dimension-card.investment::before { background: linear-gradient(90deg, var(--accent-emerald), var(--accent-primary)); }
+    .dimension-card.investment .dimension-icon { background: var(--accent-emerald-glow); }
+    .dimension-card.investment .dimension-icon svg { color: var(--accent-emerald); }
+
+    .dimension-card.trading::before { background: linear-gradient(90deg, var(--accent-primary), var(--accent-sky)); }
+    .dimension-card.trading .dimension-icon { background: var(--accent-primary-glow); }
+    .dimension-card.trading .dimension-icon svg { color: var(--accent-primary); }
+
+    .dimension-card.bridge::before { background: linear-gradient(90deg, var(--accent-violet), var(--accent-gold)); }
+    .dimension-card.bridge .dimension-icon { background: var(--accent-violet-glow); }
+    .dimension-card.bridge .dimension-icon svg { color: var(--accent-violet); }
+
+    /* Philosophy Note */
+    .philosophy-note { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 48px; display: flex; align-items: flex-start; gap: 16px; }
+    .philosophy-icon { width: 44px; height: 44px; background: var(--accent-primary-glow); border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .philosophy-icon svg { width: 22px; height: 22px; color: var(--accent-primary); }
+    .philosophy-content h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+    .philosophy-content p { font-size: 14px; color: var(--fg-muted); line-height: 1.7; }
+
+    /* Calibration Example */
+    .calibration-example { background: var(--bg-elevated); border-radius: 8px; padding: 12px 14px; margin-top: 12px; border-left: 3px solid var(--accent-primary); }
+    .calibration-example p { font-size: 12px; color: var(--fg-dim); line-height: 1.5; font-style: italic; }
+
+    /* Scoring Section */
+    .scoring-section { background: var(--bg-base); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .scoring-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+    .scoring-content h3 { font-size: 28px; font-weight: 700; margin-bottom: 20px; line-height: 1.3; }
+    .scoring-content > p { color: var(--fg-muted); line-height: 1.8; margin-bottom: 24px; font-size: 16px; }
+    .scoring-principles { display: flex; flex-direction: column; gap: 16px; }
+    .scoring-principle { display: flex; align-items: flex-start; gap: 14px; padding: 16px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+    .scoring-principle-icon { width: 36px; height: 36px; background: var(--accent-primary-glow); border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .scoring-principle-icon svg { width: 18px; height: 18px; color: var(--accent-primary); }
+    .scoring-principle h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .scoring-principle p { font-size: 13px; color: var(--fg-dim); line-height: 1.5; }
+
+    /* Scoring Visual */
+    .scoring-visual { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; }
+    .scoring-visual-header { text-align: center; margin-bottom: 24px; }
+    .scoring-visual-header h4 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .scoring-visual-header p { font-size: 13px; color: var(--fg-dim); }
+    .score-example { background: var(--bg-elevated); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .score-example-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .score-example-stock { display: flex; align-items: center; gap: 10px; }
+    .score-example-icon { width: 36px; height: 36px; background: var(--surface); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--accent-primary); }
+    .score-example-name { font-size: 14px; font-weight: 600; }
+    .score-example-sector { font-size: 12px; color: var(--fg-dim); }
+    .score-example-overall { text-align: right; }
+    .score-example-overall-label { font-size: 11px; color: var(--fg-dim); }
+    .score-example-overall-value { font-size: 24px; font-weight: 700; color: var(--accent-emerald); }
+    .score-bars { display: flex; flex-direction: column; gap: 10px; }
+    .score-bar { display: flex; align-items: center; gap: 12px; }
+    .score-bar-label { width: 90px; font-size: 11px; color: var(--fg-dim); }
+    .score-bar-track { flex: 1; height: 8px; background: var(--surface); border-radius: 4px; overflow: hidden; }
+    .score-bar-fill { height: 100%; border-radius: 4px; }
+    .score-bar-fill.high { background: var(--accent-emerald); }
+    .score-bar-fill.mid { background: var(--accent-gold); }
+    .score-bar-fill.low { background: var(--danger); }
+    .score-bar-value { width: 32px; font-size: 12px; font-weight: 600; text-align: right; }
+    .scoring-note { background: rgba(215, 183, 106, 0.1); border: 1px solid rgba(215, 183, 106, 0.3); border-radius: 10px; padding: 14px; display: flex; align-items: flex-start; gap: 10px; }
+    .scoring-note svg { width: 18px; height: 18px; color: var(--accent-gold); flex-shrink: 0; margin-top: 1px; }
+    .scoring-note p { font-size: 12px; color: var(--accent-gold); line-height: 1.5; }
+
+    /* Council Section */
+    .council-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
+    .council-member { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; transition: all 0.3s; }
+    .council-member:hover { border-color: var(--accent-violet); transform: translateY(-4px); }
+    .council-member-icon { width: 48px; height: 48px; border-radius: 12px; margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; }
+    .council-member-icon svg { width: 24px; height: 24px; }
+    .council-member h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    .council-member p { font-size: 12px; color: var(--fg-dim); line-height: 1.5; }
+
+    .council-member.risk .council-member-icon { background: rgba(245, 158, 11, 0.15); }
+    .council-member.risk .council-member-icon svg { color: var(--warning); }
+    .council-member.value .council-member-icon { background: var(--accent-emerald-glow); }
+    .council-member.value .council-member-icon svg { color: var(--accent-emerald); }
+    .council-member.income .council-member-icon { background: var(--accent-gold-glow); }
+    .council-member.income .council-member-icon svg { color: var(--accent-gold); }
+    .council-member.momentum .council-member-icon { background: var(--accent-primary-glow); }
+    .council-member.momentum .council-member-icon svg { color: var(--accent-primary); }
+    .council-member.news .council-member-icon { background: var(--accent-violet-glow); }
+    .council-member.news .council-member-icon svg { color: var(--accent-violet); }
+    .council-member.macro .council-member-icon { background: var(--accent-sky-glow); }
+    .council-member.macro .council-member-icon svg { color: var(--accent-sky); }
+    .council-member.strategist .council-member-icon { background: linear-gradient(135deg, var(--accent-violet-glow), var(--accent-primary-glow)); }
+    .council-member.strategist .council-member-icon svg { color: var(--accent-violet); }
+
+    .council-synthesis { background: var(--surface); border: 2px solid var(--accent-violet); border-radius: 16px; padding: 28px; box-shadow: 0 0 40px var(--accent-violet-glow); }
+    .council-synthesis-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .council-synthesis-icon { width: 52px; height: 52px; background: linear-gradient(135deg, var(--accent-violet), var(--accent-primary)); border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+    .council-synthesis-icon svg { width: 26px; height: 26px; color: white; }
+    .council-synthesis-title h4 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .council-synthesis-title p { font-size: 13px; color: var(--fg-dim); }
+    .synthesis-points { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .synthesis-point { background: var(--bg-elevated); border-radius: 10px; padding: 16px; text-align: center; }
+    .synthesis-point svg { width: 24px; height: 24px; color: var(--accent-primary); margin-bottom: 10px; }
+    .synthesis-point h5 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .synthesis-point p { font-size: 11px; color: var(--fg-dim); line-height: 1.5; }
+
+    /* News Impact Section */
+    .news-impact-section { background: var(--bg-base); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .news-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 64px; align-items: center; }
+    .news-visual { display: flex; flex-direction: column; gap: 16px; }
+    .news-example { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; transition: all 0.3s; }
+    .news-example:hover { border-color: var(--accent-primary); }
+    .news-example-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .news-example-source { display: flex; align-items: center; gap: 8px; }
+    .news-example-source-icon { width: 28px; height: 28px; background: var(--bg-elevated); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+    .news-example-source-icon svg { width: 14px; height: 14px; color: var(--fg-dim); }
+    .news-example-source span { font-size: 12px; color: var(--fg-dim); }
+    .news-impact-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+    .news-impact-badge.direct { background: var(--accent-primary-glow); color: var(--accent-primary); }
+    .news-impact-badge.indirect { background: var(--accent-gold-glow); color: var(--accent-gold); }
+    .news-example h4 { font-size: 14px; font-weight: 600; margin-bottom: 10px; line-height: 1.4; }
+    .news-example-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .news-meta-tag { display: flex; align-items: center; gap: 5px; padding: 4px 10px; background: var(--bg-elevated); border-radius: 6px; font-size: 11px; color: var(--fg-dim); }
+    .news-meta-tag svg { width: 12px; height: 12px; }
+    .news-meta-tag.holding { background: var(--accent-emerald-glow); color: var(--accent-emerald); }
+
+    /* Source Linked Section */
+    .source-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .source-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; text-align: center; transition: all 0.3s; }
+    .source-card:hover { border-color: var(--accent-primary); transform: translateY(-4px); }
+    .source-icon { width: 56px; height: 56px; background: var(--accent-primary-glow); border-radius: 14px; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center; }
+    .source-icon svg { width: 28px; height: 28px; color: var(--accent-primary); }
+    .source-card:nth-child(2) .source-icon { background: var(--accent-gold-glow); }
+    .source-card:nth-child(2) .source-icon svg { color: var(--accent-gold); }
+    .source-card:nth-child(3) .source-icon { background: var(--accent-violet-glow); }
+    .source-card:nth-child(3) .source-icon svg { color: var(--accent-violet); }
+    .source-card h4 { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+    .source-card p { font-size: 13px; color: var(--fg-muted); line-height: 1.6; }
+
+    /* Limitations Section */
+    .limitations-section { background: var(--bg-elevated); }
+    .limitations-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+    .limitation-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; display: flex; align-items: flex-start; gap: 16px; }
+    .limitation-icon { width: 44px; height: 44px; background: rgba(107, 122, 143, 0.15); border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .limitation-icon svg { width: 22px; height: 22px; color: var(--fg-dim); }
+    .limitation-content h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .limitation-content p { font-size: 13px; color: var(--fg-dim); line-height: 1.6; }
+
+    .what-we-are-not { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; }
+    .what-we-are-not h3 { font-size: 20px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .what-we-are-not h3 svg { width: 24px; height: 24px; color: var(--fg-dim); }
+    .not-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .not-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--bg-elevated); border-radius: 10px; font-size: 14px; color: var(--fg-muted); }
+    .not-item svg { width: 18px; height: 18px; color: var(--fg-dim); flex-shrink: 0; }
+
+    /* Final Note */
+    .final-note { text-align: center; padding: 80px 32px; }
+    .final-note-content { max-width: 700px; margin: 0 auto; }
+    .final-note-icon { width: 64px; height: 64px; background: var(--accent-primary-glow); border-radius: 16px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; }
+    .final-note-icon svg { width: 32px; height: 32px; color: var(--accent-primary); }
+    .final-note h3 { font-size: 24px; font-weight: 700; margin-bottom: 16px; }
+    .final-note p { font-size: 16px; color: var(--fg-muted); line-height: 1.7; margin-bottom: 28px; }
+
+    /* Footer */
+    .footer { background: var(--bg-base); border-top: 1px solid var(--border); padding: 64px 32px 32px; }
+    .footer-inner { max-width: var(--container); margin: 0 auto; }
+    .footer-top { display: grid; grid-template-columns: 2fr repeat(3, 1fr); gap: 48px; margin-bottom: 48px; }
+    .footer-brand .nav-logo { margin-bottom: 16px; }
+    .footer-brand p { color: var(--fg-dim); font-size: 14px; line-height: 1.7; max-width: 280px; }
+    .footer-brand .footer-slogan { font-size: 12px; color: var(--fg-dim); margin-top: 8px; font-style: italic; }
+    .footer-links-col h4 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--fg-dim); margin-bottom: 16px; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a { color: var(--fg-muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent-primary); }
+    .footer-disclaimer { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 32px; }
+    .footer-disclaimer p { font-size: 12px; color: var(--fg-dim); line-height: 1.6; }
+    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-copyright { font-size: 13px; color: var(--fg-dim); }
+    .footer-legal { display: flex; gap: 24px; }
+    .footer-legal a { font-size: 13px; color: var(--fg-dim); text-decoration: none; }
+    .footer-legal a:hover { color: var(--fg-muted); }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .dimension-grid { grid-template-columns: repeat(2, 1fr); }
+      .scoring-grid { grid-template-columns: 1fr; gap: 48px; }
+      .council-grid { grid-template-columns: repeat(2, 1fr); }
+      .synthesis-points { grid-template-columns: 1fr; }
+      .news-grid { grid-template-columns: 1fr; gap: 48px; }
+      .source-grid { grid-template-columns: repeat(2, 1fr); }
+      .limitations-grid { grid-template-columns: 1fr; }
+      .not-list { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      section { padding: 80px 24px; }
+      .dimension-grid { grid-template-columns: 1fr; }
+      .council-grid { grid-template-columns: 1fr; }
+      .source-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+      .hero-disclaimer { flex-direction: column; text-align: center; }
+    }
+  
+    /* ---- AlphaCouncil structured footer (self-contained, consistent across pages) ---- */
+    .ac-footer { border-top: 1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.015) 100%); margin-top: 96px; }
+    .ac-footer-inner { max-width: 1200px; margin: 0 auto; padding: 72px 32px 36px; }
+    .ac-footer-top { display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr; gap: 56px; padding-bottom: 44px; border-bottom: 1px solid var(--border); }
+    .ac-footer-brand .ac-flogo { display: inline-block; font-weight: 700; font-size: 20px; letter-spacing: -0.02em; color: var(--fg); text-decoration: none; margin-bottom: 16px; }
+    .ac-footer-brand p { font-size: 14px; line-height: 1.75; color: var(--fg-muted); max-width: 320px; }
+    .ac-footer-col h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg-dim); margin-bottom: 20px; }
+    .ac-footer-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+    .ac-footer-col a { font-size: 14px; color: var(--fg-muted); text-decoration: none; transition: color 0.2s ease; }
+    .ac-footer-col a:hover { color: var(--accent-primary); }
+    .ac-footer-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 28px; gap: 16px; flex-wrap: wrap; }
+    .ac-footer-bottom .ac-copy { font-size: 13px; color: var(--fg-dim); }
+    .ac-footer-bottom .ac-legal { display: flex; gap: 28px; }
+    .ac-footer-bottom .ac-legal a { font-size: 13px; color: var(--fg-dim); text-decoration: none; transition: color 0.2s ease; }
+    .ac-footer-bottom .ac-legal a:hover { color: var(--accent-primary); }
+    @media (max-width: 880px) {
+      .ac-footer-top { grid-template-columns: 1fr 1fr; gap: 36px 32px; }
+      .ac-footer-brand { grid-column: 1 / -1; }
+      .ac-footer-inner { padding: 56px 24px 32px; }
+      .ac-footer-bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Atmosphere -->
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atmosphere-base"></div>
+    <div class="atmosphere-noise"></div>
+    <div class="atmosphere-glow"></div>
+    <div class="atmosphere-vignette"></div>
+  </div>
+
+  <!-- Navigation -->
+    <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+      </a>
+      <ul class="nav-links" style="gap:22px;">
+        <li><a href="how-it-works.html">How it works</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="methodology.html" class="active">Methodology</a></li>
+        <li><a href="markets.html">Markets</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="login.html" class="nav-signin">Sign in</a>
+        <a href="signup.html" class="btn btn-primary">Start free</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg"><div class="hero-gradient"></div></div>
+    <div class="hero-inner">
+      <div class="hero-content reveal">
+        <div class="hero-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Transparent Methodology
+        </div>
+        <h1 class="hero-title">How We <span class="highlight">Generate Analysis</span></h1>
+        <p class="hero-subtitle">AlphaCouncil provides data-driven market analysis and educational insights for GCC investors. This page explains our methodology — how we score stocks, synthesize perspectives, and present information. Transparency builds trust.</p>
+        <div class="hero-disclaimer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span>This platform provides analysis and education, not licensed financial advice.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12-Dimension Stock Thesis -->
+  <section id="dimensions">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">Stock Thesis Framework</span>
+        <h2 class="section-title">The 12-Dimension Analysis</h2>
+        <p class="section-subtitle">Every stock is distilled into 12 calibrated scores (1&ndash;10, higher = better). The dimensions are grouped by time horizon &mdash; separating &ldquo;is this a good company?&rdquo; from &ldquo;is this a good moment?&rdquo; &mdash; with a sentiment layer reading the current narrative.</p>
+      </div>
+
+      <div class="philosophy-note reveal">
+        <div class="philosophy-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+        <div class="philosophy-content">
+          <h4>Separating Quality from Timing</h4>
+          <p>The Investment Horizon dimensions answer whether the underlying business is fundamentally sound and worth owning over a multi-year period. The Trading Horizon dimensions answer whether the current setup offers an attractive entry or exit point. The Bridge Horizon reads the market&rsquo;s current sentiment and news flow. Every dimension uses explicit calibration anchors &mdash; so a score of 8 on Profitability means the same thing across all stocks, not a subjective ranking. These 12 scores are one structured input into the AI Analyst Council synthesis, not standalone buy/sell signals.</p>
+        </div>
+      </div>
+
+      <div class="horizon-group reveal">
+        <div class="horizon-header">
+          <div class="horizon-badge investment"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Investment Horizon</div>
+          <div class="horizon-info">
+            <h3>6-Month to 5-Year View</h3>
+            <p>9 dimensions assessing long-term company quality and fundamental merit</p>
+          </div>
+        </div>
+        <div class="dimension-grid">
+          <div class="dimension-card investment reveal stagger-1">
+            <div class="dimension-header">
+              <div class="dimension-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+              <span class="dimension-number">01</span>
+            </div>
+            <h3>Valuation</h3>
+            <p>How reasonably priced the stock is &mdash; P/E, P/B, EV/EBITDA and other multiples versus peers and the stock&rsquo;s own history.</p>
+            <div class="dimension-gcc">
+              <p><strong>Focus:</strong> Price vs fundamentals &amp; peers &middot; <strong>Horizon:</strong> Medium-term</p>
+            </div>
+          </div>
+
+          <div class="dimension-card investment reveal stagger-2">
+            <div class="dimension-header">
+              <div class="dimension-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></div>
+              <span class="dimension-number">02</span>
+            </div>
+            <h3>Growth</h3>
+            <p>Top-line and bottom-line growth potential &mdash; the trajectory of revenue and earnings and how durable it is.</p>
+            <div class="dimension-gcc">
+              <p><strong>Focus:</strong> Revenue &amp; earnings trajectory &middot; <strong>Horizon:</strong> Medium / Long-term</p>
+            </div>
+          </div>
+
+          <div class="dimension-card investment reveal stagger-3">
+            <div class="dimension-header">
+              <div class="dimension-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></div>
+              <span class="dimension-number">03</span>
+            </div>
+            <h3>Profitability</h3>
+            <p>How efficiently and consistently the company turns revenue into profit &mdash; margins, ROE, ROA and earnings quality.</p>
+            <div class="dimension-gcc">
+              <p><strong>Focus:</strong> Margins, ROE, ROA, earnings quality &middot; <strong>Horizon:</strong> Medium / Long-term</p>
+            </div>
+          </div>
+
+          <div class="dimension-card investment reveal stagger-4">
+            <div class="dimension-header">
+              <div class="dimension-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+              <span class="dimension-number">04</span>
+            </div>
+            <h3>Quality</h3>
+            <p>Strength of the business model and balance sheet &mdash; competitive moat, durability and financial resilience.</p>
+            <div class="dimension-gcc">
+              <p><strong>Focus:</strong> Business durability, moat, financial strength &middot; <strong>Horizon:</strong> Long-term</p>
+            </div>
+          </div>
+
+          <div class="dimension-card investment reveal stagger-5">
+            <div class="dimension-header">
+              <div class="dimension-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></div>
+              <span class="dimension-number">05</span>
+            </div>
+            <h3>Dividends</h3>
+            <p>Dividend reliability and income generation &mdash; yield, track record and the sustainability of the payout.</p>
+            <div class="dimension-gcc">
+              <p><strong>Focus:</strong> Yield, history &amp; sustainability &middot; <strong>Horizon:</strong> Medium / Long-term</p>
+            </div>
+          </div>
+
+          <div class="dimension-card investment reveal stagger-6">
+            <div class="dimension-header">
+              <div class="dimension-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+              <span class="dimension-number">06</span>
+            </div>
+            <h3>Ownership</h3>
+            <p>Alignment and stability of the major shareholders &mdash; institutional, insider and strategic holders.</p>
+            <div class="dimension-gcc">
+              <p><strong>Focus:</strong> Institutional, insider &amp; strategic holders &middot; <strong>Horizon:</strong> Long-term</p>
+            </div>
+          </div>
+
+          <div class="dimension-card investment reveal stagger-1">
+            <div class="dimension-header">
+              <div class="dimension-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M4 10h16M12 3l8 5H4l8-5zM6 10v8M10 10v8M14 10v8M18 10v8"/></svg></div>
+              <span class="dimension-number">07</span>
+            </div>
+            <h3>Governance</h3>
+            <p>Corporate-governance standards and shareholder protection &mdash; board quality, transparency and alignment.</p>
+            <div class="dimension-gcc">
+              <p><strong>Focus:</strong> Board quality, transparency, alignment &middot; <strong>Horizon:</strong> Long-term</p>
+            </div>
+          </div>
+
+          <div class="dimension-card investment reveal stagger-2">
+            <div class="dimension-header">
+              <div class="dimension-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.52-4.48 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></svg></div>
+              <span class="dimension-number">08</span>
+            </div>
+            <h3>ESG</h3>
+            <p>Sustainability and responsible business practices across environmental, social and governance factors.</p>
+            <div class="dimension-gcc">
+              <p><strong>Focus:</strong> Environmental, Social &amp; Governance &middot; <strong>Horizon:</strong> Long-term</p>
+            </div>
+          </div>
+
+          <div class="dimension-card investment reveal stagger-3">
+            <div class="dimension-header">
+              <div class="dimension-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+              <span class="dimension-number">09</span>
+            </div>
+            <h3>Macro</h3>
+            <p>Sensitivity to external shocks &mdash; exposure to interest rates, oil prices, geopolitics and regional liquidity.</p>
+            <div class="dimension-gcc">
+              <p><strong>Focus:</strong> Macro sensitivity &amp; external shocks &middot; <strong>Horizon:</strong> Medium-term</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="horizon-group reveal">
+        <div class="horizon-header">
+          <div class="horizon-badge trading"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg> Trading Horizon</div>
+          <div class="horizon-info">
+            <h3>Days to 3-Month View</h3>
+            <p>2 dimensions assessing near-term momentum and technical positioning</p>
+          </div>
+        </div>
+        <div class="dimension-grid" style="grid-template-columns: repeat(2, 1fr);">
+          <div class="dimension-card trading reveal stagger-1">
+            <div class="dimension-header">
+              <div class="dimension-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+              <span class="dimension-number">10</span>
+            </div>
+            <h3>Momentum</h3>
+            <p>Recent trend strength and earnings surprises &mdash; price and earnings momentum over the near term.</p>
+            <div class="dimension-gcc">
+              <p><strong>Focus:</strong> Price &amp; earnings momentum &middot; <strong>Horizon:</strong> Short / Medium-term</p>
+            </div>
+          </div>
+
+          <div class="dimension-card trading reveal stagger-2">
+            <div class="dimension-header">
+              <div class="dimension-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg></div>
+              <span class="dimension-number">11</span>
+            </div>
+            <h3>Technicals</h3>
+            <p>Chart patterns and technical indicators &mdash; support/resistance, moving averages, RSI and related signals.</p>
+            <div class="dimension-gcc">
+              <p><strong>Focus:</strong> Chart patterns &amp; technical indicators &middot; <strong>Horizon:</strong> Short-term</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="horizon-group reveal">
+        <div class="horizon-header">
+          <div class="horizon-badge bridge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Bridge Horizon</div>
+          <div class="horizon-info">
+            <h3>Live Sentiment</h3>
+            <p>1 dimension capturing market sentiment, news flow and analyst views</p>
+          </div>
+        </div>
+        <div class="dimension-grid" style="grid-template-columns: 1fr;">
+          <div class="dimension-card bridge reveal stagger-1" style="max-width: 600px;">
+            <div class="dimension-header">
+              <div class="dimension-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+              <span class="dimension-number">12</span>
+            </div>
+            <h3>Sentiment &amp; News</h3>
+            <p>The current market narrative &mdash; media tone, news flow and analyst revisions shaping how the stock is perceived.</p>
+            <div class="dimension-gcc">
+              <p><strong>Focus:</strong> Market sentiment, news flow &amp; analyst views &middot; <strong>Horizon:</strong> Short-term</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How Scoring Works -->
+  <section class="scoring-section">
+    <div class="section-inner">
+      <div class="scoring-grid">
+        <div class="scoring-content reveal">
+          <span class="section-eyebrow">Understanding Scores</span>
+          <h3>Scores Are Relative, Not Absolute</h3>
+          <p>Every dimension score is computed relative to GCC sector peers and each stock's own historical range. A "high" value score means the stock appears cheaper than its typical valuation — not that it's universally cheap.</p>
+          <div class="scoring-principles">
+            <div class="scoring-principle">
+              <div class="scoring-principle-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div>
+                <h4>Peer-Relative</h4>
+                <p>Scores compare against GCC sector peers, not global benchmarks that may not reflect regional realities.</p>
+              </div>
+            </div>
+            <div class="scoring-principle">
+              <div class="scoring-principle-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              </div>
+              <div>
+                <h4>Historically-Grounded</h4>
+                <p>Current scores are contextualized against each stock's own historical distributions to identify meaningful deviations.</p>
+              </div>
+            </div>
+            <div class="scoring-principle">
+              <div class="scoring-principle-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div>
+                <h4>One Input, Not The Decision</h4>
+                <p>Scores inform analysis but do not constitute recommendations. No single score equals a buy or sell signal.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scoring-visual reveal stagger-2">
+          <div class="scoring-visual-header">
+            <h4>Example Score Breakdown</h4>
+            <p>How dimensions combine into a holistic view</p>
+          </div>
+          <div class="score-example">
+            <div class="score-example-header">
+              <div class="score-example-stock">
+                <div class="score-example-icon">SABIC</div>
+                <div>
+                  <div class="score-example-name">SABIC</div>
+                  <div class="score-example-sector">Materials — Saudi</div>
+                </div>
+              </div>
+              <div class="score-example-overall">
+                <div class="score-example-overall-label">Thesis Score</div>
+                <div class="score-example-overall-value">72</div>
+              </div>
+            </div>
+            <div class="score-bars">
+              <div class="score-bar">
+                <span class="score-bar-label">Quality</span>
+                <div class="score-bar-track"><div class="score-bar-fill high" style="width: 82%;"></div></div>
+                <span class="score-bar-value">82</span>
+              </div>
+              <div class="score-bar">
+                <span class="score-bar-label">Value</span>
+                <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 65%;"></div></div>
+                <span class="score-bar-value">65</span>
+              </div>
+              <div class="score-bar">
+                <span class="score-bar-label">Momentum</span>
+                <div class="score-bar-track"><div class="score-bar-fill high" style="width: 78%;"></div></div>
+                <span class="score-bar-value">78</span>
+              </div>
+              <div class="score-bar">
+                <span class="score-bar-label">Risk</span>
+                <div class="score-bar-track"><div class="score-bar-fill mid" style="width: 58%;"></div></div>
+                <span class="score-bar-value">58</span>
+              </div>
+              <div class="score-bar">
+                <span class="score-bar-label">Income</span>
+                <div class="score-bar-track"><div class="score-bar-fill high" style="width: 85%;"></div></div>
+                <span class="score-bar-value">85</span>
+              </div>
+            </div>
+          </div>
+          <div class="scoring-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <p>This score suggests review may be warranted — not that action should be taken. Always verify with your own analysis.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Analyst Council -->
+  <section id="council">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">Multi-Perspective Analysis</span>
+        <h2 class="section-title">The AI Analyst Council</h2>
+        <p class="section-subtitle">Several specialized AI models analyze your portfolio independently, then a chairman model synthesizes their views into one balanced read. Conflicting signals are surfaced, not hidden — because real analysis involves tradeoffs.</p>
+      </div>
+
+      <div class="council-grid reveal">
+        <div class="council-member risk">
+          <div class="council-member-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+          </div>
+          <h4>Risk Analyst</h4>
+          <p>Identifies concentration risks, volatility patterns, and potential red flags across holdings.</p>
+        </div>
+
+        <div class="council-member value">
+          <div class="council-member-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <h4>Valuation Analyst</h4>
+          <p>Compares current valuations to historical ranges and identifies potential mispricings.</p>
+        </div>
+
+        <div class="council-member income">
+          <div class="council-member-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          </div>
+          <h4>Income Analyst</h4>
+          <p>Tracks dividend sustainability, yield changes, and income generation potential.</p>
+        </div>
+
+        <div class="council-member momentum">
+          <div class="council-member-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
+          </div>
+          <h4>Momentum Analyst</h4>
+          <p>Analyzes price trends, relative strength, and technical positioning signals.</p>
+        </div>
+
+        <div class="council-member news">
+          <div class="council-member-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h4>News Analyst</h4>
+          <p>Monitors news flow for material developments affecting your specific holdings.</p>
+        </div>
+
+        <div class="council-member macro">
+          <div class="council-member-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h4>Macro Analyst</h4>
+          <p>Links oil, currency, and regional economic indicators to portfolio exposures.</p>
+        </div>
+
+        <div class="council-member strategist" style="grid-column: span 2;">
+          <div class="council-member-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <h4>Portfolio Strategist</h4>
+          <p>Synthesizes all perspectives into coherent portfolio-level observations and identifies the highest-priority considerations.</p>
+        </div>
+      </div>
+
+      <div class="council-synthesis reveal stagger-2">
+        <div class="council-synthesis-header">
+          <div class="council-synthesis-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div class="council-synthesis-title">
+            <h4>Structured Synthesis</h4>
+            <p>How the Council delivers analysis</p>
+          </div>
+        </div>
+        <div class="synthesis-points">
+          <div class="synthesis-point">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+            <h5>Independent Analysis</h5>
+            <p>Each analyst perspective runs independently before synthesis, preventing groupthink.</p>
+          </div>
+          <div class="synthesis-point">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <h5>Conflicts Surfaced</h5>
+            <p>Disagreements between analysts are explicitly shown, not averaged away into false consensus.</p>
+          </div>
+          <div class="synthesis-point">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <h5>Actionable Output</h5>
+            <p>Final synthesis prioritizes what matters most for your specific portfolio composition.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- News Impact Classification -->
+  <section class="news-impact-section">
+    <div class="section-inner">
+      <div class="news-grid">
+        <div class="news-visual reveal">
+          <div class="news-example">
+            <div class="news-example-header">
+              <div class="news-example-source">
+                <div class="news-example-source-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                </div>
+                <span>Tadawul Exchange</span>
+              </div>
+              <span class="news-impact-badge direct">Direct Impact</span>
+            </div>
+            <h4>Saudi Aramco announces Q3 dividend of $31.1B, maintaining payout amid oil price volatility</h4>
+            <div class="news-example-meta">
+              <span class="news-meta-tag holding">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                In Portfolio
+              </span>
+              <span class="news-meta-tag">High Relevance</span>
+              <span class="news-meta-tag">Income Impact</span>
+            </div>
+          </div>
+
+          <div class="news-example">
+            <div class="news-example-header">
+              <div class="news-example-source">
+                <div class="news-example-source-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </div>
+                <span>Reuters</span>
+              </div>
+              <span class="news-impact-badge indirect">Indirect Impact</span>
+            </div>
+            <h4>OPEC+ considers extending production cuts through Q1 2027 — oil prices rise 2.3%</h4>
+            <div class="news-example-meta">
+              <span class="news-meta-tag">Sector-Wide</span>
+              <span class="news-meta-tag">Energy Exposure</span>
+              <span class="news-meta-tag">Macro Signal</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scoring-content reveal stagger-2">
+          <span class="section-eyebrow">News Classification</span>
+          <h3>How News Impact Is Scored</h3>
+          <p>Not all news matters equally to your portfolio. Our news engine classifies each story by its relevance to your actual holdings — distinguishing between direct impacts on stocks you own and indirect sector or macro effects.</p>
+          <div class="scoring-principles">
+            <div class="scoring-principle">
+              <div class="scoring-principle-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </div>
+              <div>
+                <h4>Direct vs. Indirect</h4>
+                <p>Stories about your specific holdings are prioritized over general sector or market news.</p>
+              </div>
+            </div>
+            <div class="scoring-principle">
+              <div class="scoring-principle-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+              </div>
+              <div>
+                <h4>Sentiment Analysis</h4>
+                <p>Each story is classified as constructive, cautionary, or neutral based on content analysis.</p>
+              </div>
+            </div>
+            <div class="scoring-principle">
+              <div class="scoring-principle-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div>
+                <h4>Source Credibility</h4>
+                <p>Official exchange announcements and regulatory filings are weighted higher than general news sources.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Source-Linked Analysis -->
+  <section id="sources">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">Data Integrity</span>
+        <h2 class="section-title">Source-Linked Analysis</h2>
+        <p class="section-subtitle">Every data point and insight can be traced back to its origin. We don't aggregate black boxes — we curate verifiable information with clear provenance.</p>
+      </div>
+
+      <div class="source-grid reveal">
+        <div class="source-card">
+          <div class="source-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </div>
+          <h4>Traceable Sources</h4>
+          <p>Click through to original filings, exchange announcements, and data provider records. Every claim links to evidence.</p>
+        </div>
+        <div class="source-card">
+          <div class="source-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+          </div>
+          <h4>Confidence Indicators</h4>
+          <p>Analysis includes confidence levels based on data completeness, recency, and source reliability.</p>
+        </div>
+        <div class="source-card">
+          <div class="source-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <h4>Data Freshness</h4>
+          <p>Timestamps show when data was last updated, with alerts for stale information that may require review.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Limitations Section -->
+  <section class="limitations-section">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">Important Considerations</span>
+        <h2 class="section-title">Limitations & Boundaries</h2>
+        <p class="section-subtitle">Transparency means acknowledging what we cannot do as clearly as what we can. Understanding these limitations is essential to using AlphaCouncil effectively.</p>
+      </div>
+
+      <div class="limitations-grid reveal">
+        <div class="limitation-card">
+          <div class="limitation-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div class="limitation-content">
+            <h4>Data Lags</h4>
+            <p>Financial statements are available after reporting periods close. Price data may have 15-minute delays. News processing takes time. Real-time decisions require real-time data sources.</p>
+          </div>
+        </div>
+        <div class="limitation-card">
+          <div class="limitation-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+          </div>
+          <div class="limitation-content">
+            <h4>Model Uncertainty</h4>
+            <p>All scoring models involve assumptions and statistical uncertainty. Historical patterns may not predict future performance. Edge cases exist that models may not handle well.</p>
+          </div>
+        </div>
+        <div class="limitation-card">
+          <div class="limitation-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div class="limitation-content">
+            <h4>Coverage Limits</h4>
+            <p>We cover GCC-listed equities comprehensively, but some smaller or newly-listed instruments may have limited historical data or reduced analytical depth.</p>
+          </div>
+        </div>
+        <div class="limitation-card">
+          <div class="limitation-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="limitation-content">
+            <h4>No Execution</h4>
+            <p>AlphaCouncil does not execute trades, connect to brokerages, or manage money. Analysis is purely informational — all trading decisions and execution remain with you.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="what-we-are-not reveal stagger-2">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+          What AlphaCouncil Is Not
+        </h3>
+        <div class="not-list">
+          <div class="not-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            Not licensed financial advice
+          </div>
+          <div class="not-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            Not a trading platform or broker
+          </div>
+          <div class="not-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            Not an asset manager or fund
+          </div>
+          <div class="not-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            Not a guarantee of investment returns
+          </div>
+          <div class="not-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            Not a substitute for professional advice
+          </div>
+          <div class="not-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            Not a prediction of future performance
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final Note -->
+  <section class="final-note">
+    <div class="final-note-content reveal">
+      <div class="final-note-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h3>Built for Informed Decision-Making</h3>
+      <p>AlphaCouncil exists to help GCC investors understand their portfolios more clearly. We provide the data, the analysis framework, and the multi-perspective synthesis. The decisions — and their outcomes — remain entirely yours.</p>
+      <a href="features.html" class="btn btn-primary btn-lg">Explore Features</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+      <footer class="ac-footer">
+    <div class="ac-footer-inner">
+      <div class="ac-footer-top">
+        <div class="ac-footer-brand">
+          <a href="index.html" class="ac-flogo">AlphaCouncil</a>
+          <p>AI-powered portfolio intelligence for GCC stock investors. Understand your portfolio before the market moves.</p>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+            <li><a href="methodology.html">Methodology</a></li>
+          </ul>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Markets</h4>
+          <ul>
+            <li><a href="markets.html#saudi">Saudi (Tadawul)</a></li>
+            <li><a href="markets.html#uae">UAE (ADX / DFM)</a></li>
+            <li><a href="markets.html#qatar">Qatar (QSE)</a></li>
+            <li><a href="markets.html#kuwait">Kuwait (Boursa)</a></li>
+          </ul>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="login.html">Sign in</a></li>
+            <li><a href="signup.html">Start free</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="ac-footer-bottom">
+        <p class="ac-copy">&copy; 2026 AlphaCouncil. All rights reserved.</p>
+        <div class="ac-legal">
+          <a href="legal.html#terms">Terms</a>
+          <a href="legal.html#privacy">Privacy</a>
+          <a href="legal.html#disclaimer">Disclaimer</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Reveal animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Nav scroll effect
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    });
+  </script>
+  <script>/* brand logo -> dashboard when signed in (ac_csrf cookie present), else index */
+  (function(){try{if(document.cookie.indexOf('ac_csrf=')>-1){var e=document.querySelectorAll('.nav-logo,.ac-flogo');for(var i=0;i<e.length;i++)e[i].setAttribute('href','dashboard.html');}}catch(x){}})();</script>
+</body>
+</html>

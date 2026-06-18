@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Council History — AlphaCouncil</title>
+  <meta name="description" content="Review past AI Analyst Council reviews and track how your portfolio's intelligence has evolved over time.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #07111F;
+      --bg-base: #0B1120;
+      --bg-elevated: #101624;
+      --surface: #111A2B;
+      --surface-elevated: #141D2F;
+      --surface-glass: rgba(17, 26, 43, 0.95);
+      --fg: #F8FAFC;
+      --fg-muted: #AAB6C5;
+      --fg-dim: #6B7A8F;
+      --accent-primary: #27D3C3;
+      --accent-primary-glow: rgba(39, 211, 195, 0.2);
+      --accent-gold: #D7B76A;
+      --accent-gold-glow: rgba(215, 183, 106, 0.15);
+      --accent-violet: #8B5CF6;
+      --accent-violet-glow: rgba(139, 92, 246, 0.15);
+      --accent-blue: #3B82F6;
+      --accent-blue-glow: rgba(59, 130, 246, 0.15);
+      --success: #10B981;
+      --success-glow: rgba(16, 185, 129, 0.15);
+      --danger: #EF4444;
+      --danger-glow: rgba(239, 68, 68, 0.15);
+      --warning: #F59E0B;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.12);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --nav-height: 56px;
+      --indices-height: 40px;
+      --sidebar-width: 400px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-sans); background: var(--bg-deep); color: var(--fg); line-height: 1.5; overflow-x: hidden; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--fg-dim); }
+
+    .atmosphere { position: fixed; inset: 0; pointer-events: none; z-index: -1; }
+    .atmosphere::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 50% at 20% 20%, rgba(139, 92, 246, 0.04) 0%, transparent 50%), radial-gradient(ellipse 60% 40% at 80% 60%, rgba(39, 211, 195, 0.03) 0%, transparent 50%); }
+
+    /* App Nav */
+    .app-nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-height); background: var(--bg-base); border-bottom: 1px solid var(--border); z-index: 100; }
+    .app-nav-inner { height: 100%; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .app-logo { font-size: 17px; font-weight: 700; color: var(--fg); text-decoration: none; display: flex; align-items: center; gap: 8px; letter-spacing: -0.02em; }
+    .app-logo:hover { color: var(--accent-primary); }
+    .app-logo img { height: 28px; width: auto; }
+    .app-nav-links { display: flex; gap: 2px; }
+    .app-nav-links a { padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--fg-muted); text-decoration: none; border-radius: 8px; transition: all 0.2s; }
+    .app-nav-links a:hover { color: var(--fg); background: var(--surface); }
+    .app-nav-links a.active { color: var(--accent-primary); background: var(--accent-primary-glow); }
+    .app-nav-right { display: flex; align-items: center; gap: 10px; }
+    .app-search { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--fg-dim); cursor: pointer; transition: all 0.2s; min-width: 200px; }
+    .app-search:hover { border-color: var(--border-strong); }
+    .app-search svg { width: 14px; height: 14px; }
+    .app-search kbd { background: var(--bg-elevated); padding: 2px 6px; border-radius: 4px; font-size: 10px; font-family: inherit; margin-left: auto; }
+    .lang-toggle { display: flex; gap: 2px; background: var(--surface); border-radius: 6px; padding: 2px; }
+    .lang-toggle button { padding: 4px 10px; font-size: 12px; font-weight: 500; background: transparent; border: none; color: var(--fg-dim); border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+    .lang-toggle button.active { background: var(--accent-primary); color: var(--bg-deep); }
+    .nav-icon-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--fg-muted); cursor: pointer; transition: all 0.2s; position: relative; }
+    .nav-icon-btn:hover { border-color: var(--border-strong); color: var(--fg); }
+    .nav-icon-btn.active { background: var(--accent-primary-glow); border-color: var(--accent-primary); color: var(--accent-primary); }
+    .nav-icon-btn svg { width: 18px; height: 18px; }
+    .nav-icon-btn .badge { position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; background: var(--danger); border: 2px solid var(--bg-base); border-radius: 50%; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; color: white; }
+    .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-primary), var(--accent-violet)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--bg-deep); cursor: pointer; border: 2px solid var(--border); transition: all 0.2s; }
+    .user-avatar:hover { border-color: var(--accent-primary); }
+
+    /* Market Indices Bar */
+    .indices-bar { position: fixed; top: var(--nav-height); left: 0; right: 0; height: var(--indices-height); background: var(--bg-elevated); border-bottom: 1px solid var(--border); z-index: 99; overflow: hidden; }
+    .indices-inner { height: 100%; padding: 0 20px; display: flex; align-items: center; gap: 28px; }
+    .index-item { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+    .index-name { color: var(--fg-dim); font-weight: 500; }
+    .index-value { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .index-change { font-weight: 600; font-variant-numeric: tabular-nums; }
+    .index-change.up { color: var(--success); }
+    .index-change.down { color: var(--danger); }
+    .indices-time { margin-left: auto; font-size: 11px; color: var(--fg-dim); display: flex; align-items: center; gap: 6px; }
+    .indices-time::before { content: ''; width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* Content-Shift Layout */
+    .app-wrapper { display: flex; min-height: 100vh; padding-top: calc(var(--nav-height) + var(--indices-height)); }
+    .app-main { flex: 1; min-width: 0; padding: 24px; padding-bottom: 48px; transition: all 0.3s var(--ease-out); }
+    .adviser-sidebar { width: 0; min-width: 0; overflow: hidden; background: var(--surface-glass); backdrop-filter: blur(20px); border-left: 1px solid transparent; display: flex; flex-direction: column; transition: all 0.3s var(--ease-out); position: sticky; top: calc(var(--nav-height) + var(--indices-height)); height: calc(100vh - var(--nav-height) - var(--indices-height)); }
+    .adviser-sidebar.open { width: var(--sidebar-width); min-width: var(--sidebar-width); border-left-color: var(--border); }
+    .sidebar-inner { width: var(--sidebar-width); min-width: var(--sidebar-width); height: 100%; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.2s ease 0s; }
+    .adviser-sidebar.open .sidebar-inner { opacity: 1; transition: opacity 0.2s ease 0.1s; }
+
+    /* Page Header */
+    .page-header { margin-bottom: 28px; display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+    .page-header-left { flex: 1; }
+    .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; display: flex; align-items: center; gap: 14px; }
+    .page-title-icon { width: 44px; height: 44px; background: linear-gradient(135deg, var(--accent-violet), var(--accent-primary)); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px var(--accent-violet-glow); }
+    .page-title-icon svg { width: 24px; height: 24px; color: white; }
+    .page-subtitle { font-size: 15px; color: var(--fg-muted); max-width: 500px; line-height: 1.6; }
+    .page-actions { display: flex; gap: 12px; flex-shrink: 0; }
+    .btn { padding: 12px 20px; font-size: 13px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+    .btn svg { width: 16px; height: 16px; }
+    .btn-primary { background: var(--accent-primary); border: none; color: var(--bg-deep); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-primary-glow); }
+    .btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--fg); }
+    .btn-secondary:hover { border-color: var(--border-strong); background: var(--surface-elevated); }
+
+    /* Stats Row */
+    .stats-row { display: flex; gap: 24px; margin-bottom: 24px; padding: 16px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+    .stat-item { display: flex; align-items: center; gap: 10px; }
+    .stat-icon { width: 36px; height: 36px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .stat-icon svg { width: 16px; height: 16px; color: var(--fg-dim); }
+    .stat-icon.primary { background: var(--accent-primary-glow); border-color: rgba(39, 211, 195, 0.3); }
+    .stat-icon.primary svg { color: var(--accent-primary); }
+    .stat-icon.violet { background: var(--accent-violet-glow); border-color: rgba(139, 92, 246, 0.3); }
+    .stat-icon.violet svg { color: var(--accent-violet); }
+    .stat-icon.gold { background: var(--accent-gold-glow); border-color: rgba(215, 183, 106, 0.3); }
+    .stat-icon.gold svg { color: var(--accent-gold); }
+    .stat-content { display: flex; flex-direction: column; }
+    .stat-value { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .stat-label { font-size: 11px; color: var(--fg-dim); }
+    .stat-divider { width: 1px; background: var(--border); margin: 0 8px; }
+
+    /* Filters & Tabs */
+    .filters-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    .tab-group { display: flex; gap: 2px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 3px; }
+    .tab-btn { padding: 10px 18px; font-size: 13px; font-weight: 500; background: transparent; border: none; color: var(--fg-muted); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .tab-btn:hover { color: var(--fg); }
+    .tab-btn.active { background: var(--accent-primary); color: var(--bg-deep); }
+    .filter-group { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+    .filter-select { padding: 10px 14px; padding-right: 36px; font-size: 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--fg); cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7A8F' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; transition: all 0.2s; }
+    .filter-select:hover { border-color: var(--border-strong); }
+    .filter-select:focus { outline: none; border-color: var(--accent-primary); }
+    .search-filter { position: relative; }
+    .search-filter input { padding: 10px 14px 10px 38px; font-size: 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--fg); width: 180px; transition: all 0.2s; }
+    .search-filter input::placeholder { color: var(--fg-dim); }
+    .search-filter input:focus { outline: none; border-color: var(--accent-primary); width: 220px; }
+    .search-filter svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--fg-dim); pointer-events: none; }
+
+    /* Main Content Grid */
+    .content-grid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
+    body.sidebar-open .content-grid { grid-template-columns: 1fr; }
+
+    /* History List */
+    .history-list { display: flex; flex-direction: column; gap: 14px; }
+    .history-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; transition: all 0.3s var(--ease-out); position: relative; overflow: hidden; cursor: pointer; }
+    .history-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-violet), var(--accent-primary), transparent); opacity: 0; transition: opacity 0.3s; }
+    .history-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+    .history-card:hover::before { opacity: 1; }
+    .history-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+    .history-card-left { display: flex; align-items: flex-start; gap: 14px; flex: 1; }
+    .history-icon { width: 44px; height: 44px; background: linear-gradient(135deg, var(--accent-violet-glow), var(--accent-primary-glow)); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .history-icon svg { width: 22px; height: 22px; color: var(--accent-violet); }
+    .history-icon.portfolio { background: var(--accent-primary-glow); border-color: rgba(39, 211, 195, 0.2); }
+    .history-icon.portfolio svg { color: var(--accent-primary); }
+    .history-icon.stock { background: var(--accent-gold-glow); border-color: rgba(215, 183, 106, 0.2); }
+    .history-icon.stock svg { color: var(--accent-gold); }
+    .history-meta { flex: 1; }
+    .history-date { font-size: 11px; color: var(--fg-dim); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .history-date svg { width: 12px; height: 12px; }
+    .history-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+    .history-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+    .history-badge.portfolio { background: var(--accent-primary-glow); border: 1px solid rgba(39, 211, 195, 0.3); color: var(--accent-primary); }
+    .history-badge.stock { background: var(--accent-gold-glow); border: 1px solid rgba(215, 183, 106, 0.3); color: var(--accent-gold); }
+    .history-badge.ticker { background: var(--surface-elevated); border: 1px solid var(--border); color: var(--fg); font-family: monospace; letter-spacing: 0.02em; }
+    .history-summary { font-size: 14px; color: var(--fg-muted); line-height: 1.6; }
+    .history-summary strong { color: var(--fg); font-weight: 500; }
+    .history-summary .highlight { color: var(--accent-primary); }
+    .history-summary .caution { color: var(--accent-gold); }
+    .history-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px solid var(--border); }
+    .history-signals { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg-dim); }
+    .history-signals svg { width: 14px; height: 14px; color: var(--accent-violet); }
+    .history-signals strong { color: var(--fg-muted); font-weight: 600; }
+    .history-actions { display: flex; gap: 6px; }
+    .action-btn { padding: 8px 14px; font-size: 12px; font-weight: 500; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; color: var(--fg-muted); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+    .action-btn svg { width: 14px; height: 14px; }
+    .action-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); background: var(--accent-primary-glow); }
+    .action-btn.primary { background: var(--accent-primary); border-color: var(--accent-primary); color: var(--bg-deep); }
+    .action-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px var(--accent-primary-glow); }
+
+    /* Right Sidebar Panel */
+    .insights-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; height: fit-content; position: sticky; top: calc(var(--nav-height) + var(--indices-height) + 24px); }
+    .insights-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+    .insights-header svg { width: 18px; height: 18px; color: var(--accent-violet); }
+    .insights-header h3 { font-size: 14px; font-weight: 600; }
+    .insight-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .insight-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .insight-label { font-size: 11px; color: var(--fg-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .insight-text { font-size: 13px; color: var(--fg-muted); line-height: 1.5; }
+    .insight-text strong { color: var(--fg); font-weight: 500; }
+    .insight-text .highlight { color: var(--accent-primary); }
+    .insight-text .caution { color: var(--accent-gold); }
+    .insights-actions { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+    .insights-actions .btn { width: 100%; justify-content: center; }
+
+    /* Empty State */
+    .empty-state { text-align: center; padding: 80px 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
+    .empty-icon { width: 80px; height: 80px; margin: 0 auto 24px; background: linear-gradient(135deg, var(--accent-violet-glow), var(--accent-primary-glow)); border: 1px solid var(--border); border-radius: 20px; display: flex; align-items: center; justify-content: center; }
+    .empty-icon svg { width: 40px; height: 40px; color: var(--accent-violet); }
+    .empty-title { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+    .empty-text { font-size: 15px; color: var(--fg-muted); max-width: 400px; margin: 0 auto 28px; line-height: 1.6; }
+    .empty-state .btn { margin: 0 auto; }
+
+    /* Detail Modal */
+    .detail-modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; visibility: hidden; transition: all 0.3s var(--ease-out); }
+    .detail-modal-overlay.open { opacity: 1; visibility: visible; }
+    .detail-modal { background: var(--bg-base); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 1100px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; transform: scale(0.95) translateY(20px); opacity: 0; transition: all 0.4s var(--ease-out); box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.1) inset; }
+    .detail-modal-overlay.open .detail-modal { transform: scale(1) translateY(0); opacity: 1; }
+    .detail-header { padding: 24px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; background: linear-gradient(180deg, rgba(139, 92, 246, 0.08) 0%, transparent 100%); flex-shrink: 0; }
+    .detail-header-left { display: flex; align-items: flex-start; gap: 16px; }
+    .detail-icon { width: 56px; height: 56px; background: linear-gradient(135deg, var(--accent-violet), var(--accent-primary)); border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 8px 24px var(--accent-violet-glow); }
+    .detail-icon svg { width: 28px; height: 28px; color: white; }
+    .detail-title-group { display: flex; flex-direction: column; gap: 6px; }
+    .detail-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; display: flex; align-items: center; gap: 12px; }
+    .detail-subtitle { font-size: 14px; color: var(--fg-muted); display: flex; align-items: center; gap: 8px; }
+    .detail-subtitle svg { width: 14px; height: 14px; color: var(--accent-violet); }
+    .detail-close { width: 44px; height: 44px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--fg-muted); transition: all 0.2s; flex-shrink: 0; }
+    .detail-close:hover { border-color: var(--border-strong); color: var(--fg); background: var(--surface-elevated); }
+    .detail-close svg { width: 20px; height: 20px; }
+    .detail-body { flex: 1; overflow-y: auto; padding: 28px; }
+
+    /* Synthesis Section */
+    .synthesis-section { margin-bottom: 32px; }
+    .synthesis-card { background: linear-gradient(135deg, var(--surface) 0%, var(--surface-elevated) 100%); border: 1px solid var(--border); border-radius: 16px; padding: 24px; position: relative; overflow: hidden; }
+    .synthesis-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent-violet), var(--accent-primary), var(--accent-gold)); }
+    .synthesis-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .synthesis-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-violet); display: flex; align-items: center; gap: 6px; }
+    .synthesis-label svg { width: 14px; height: 14px; }
+    .synthesis-timestamp { font-size: 11px; color: var(--fg-dim); margin-left: auto; }
+    .synthesis-text { font-size: 15px; color: var(--fg-muted); line-height: 1.8; }
+    .synthesis-text strong { color: var(--fg); font-weight: 500; }
+    .synthesis-text .highlight { color: var(--accent-primary); font-weight: 500; }
+    .synthesis-text .caution { color: var(--accent-gold); font-weight: 500; }
+
+    /* Perspectives Grid */
+    .perspectives-section { margin-bottom: 32px; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .section-title { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .section-title svg { width: 18px; height: 18px; color: var(--accent-primary); }
+    .perspectives-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .perspective-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; transition: all 0.3s var(--ease-out); position: relative; }
+    .perspective-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+    .perspective-card::after { content: ''; position: absolute; top: 0; left: 20px; right: 20px; height: 2px; border-radius: 0 0 2px 2px; opacity: 0; transition: opacity 0.3s; }
+    .perspective-card:hover::after { opacity: 1; }
+    .perspective-card.risk::after { background: var(--danger); }
+    .perspective-card.valuation::after { background: var(--accent-gold); }
+    .perspective-card.income::after { background: var(--success); }
+    .perspective-card.momentum::after { background: var(--accent-blue); }
+    .perspective-card.news::after { background: var(--accent-primary); }
+    .perspective-card.macro::after { background: var(--accent-violet); }
+    .perspective-card.strategist::after { background: linear-gradient(90deg, var(--accent-violet), var(--accent-primary)); }
+    .perspective-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .perspective-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .perspective-icon svg { width: 20px; height: 20px; }
+    .perspective-card.risk .perspective-icon { background: var(--danger-glow); color: var(--danger); }
+    .perspective-card.valuation .perspective-icon { background: var(--accent-gold-glow); color: var(--accent-gold); }
+    .perspective-card.income .perspective-icon { background: var(--success-glow); color: var(--success); }
+    .perspective-card.momentum .perspective-icon { background: var(--accent-blue-glow); color: var(--accent-blue); }
+    .perspective-card.news .perspective-icon { background: var(--accent-primary-glow); color: var(--accent-primary); }
+    .perspective-card.macro .perspective-icon { background: var(--accent-violet-glow); color: var(--accent-violet); }
+    .perspective-card.strategist .perspective-icon { background: linear-gradient(135deg, var(--accent-violet-glow), var(--accent-primary-glow)); color: var(--accent-primary); }
+    .perspective-name { font-size: 14px; font-weight: 600; }
+    .perspective-observations { list-style: none; margin-bottom: 14px; }
+    .perspective-observations li { font-size: 12px; color: var(--fg-dim); line-height: 1.6; padding: 6px 0; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 8px; }
+    .perspective-observations li:last-child { border-bottom: none; }
+    .perspective-observations li::before { content: ''; width: 4px; height: 4px; background: var(--fg-dim); border-radius: 50%; flex-shrink: 0; margin-top: 7px; }
+    .perspective-signal { padding: 10px 12px; background: var(--bg-elevated); border-radius: 8px; font-size: 11px; color: var(--fg-muted); display: flex; align-items: flex-start; gap: 8px; }
+    .perspective-signal svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
+    .perspective-card.risk .perspective-signal svg { color: var(--danger); }
+    .perspective-card.valuation .perspective-signal svg { color: var(--accent-gold); }
+    .perspective-card.income .perspective-signal svg { color: var(--success); }
+    .perspective-card.momentum .perspective-signal svg { color: var(--accent-blue); }
+    .perspective-card.news .perspective-signal svg { color: var(--accent-primary); }
+    .perspective-card.macro .perspective-signal svg { color: var(--accent-violet); }
+    .perspective-card.strategist .perspective-signal svg { color: var(--accent-primary); }
+    .signal-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--fg-dim); display: block; margin-bottom: 2px; }
+    .perspective-card.strategist { grid-column: span 3; display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: start; background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(39, 211, 195, 0.05)); }
+    .perspective-card.strategist .perspective-observations { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 24px; margin-bottom: 0; }
+
+    /* Thesis Section */
+    .thesis-section { margin-bottom: 32px; }
+    .thesis-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+    .thesis-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .thesis-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .thesis-title svg { width: 16px; height: 16px; color: var(--accent-gold); }
+    .thesis-overall { display: flex; align-items: center; gap: 10px; }
+    .thesis-score-badge { padding: 6px 14px; background: var(--accent-primary-glow); border: 1px solid var(--accent-primary); border-radius: 8px; font-size: 16px; font-weight: 700; color: var(--accent-primary); }
+    .thesis-score-label { font-size: 11px; color: var(--fg-dim); }
+    .thesis-dimensions { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+    .dimension-item { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 12px 10px; text-align: center; transition: all 0.2s; }
+    .dimension-item:hover { border-color: var(--border-strong); }
+    .dimension-name { font-size: 10px; color: var(--fg-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.03em; }
+    .dimension-score { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .dimension-score.high { color: var(--success); }
+    .dimension-score.medium { color: var(--accent-gold); }
+    .dimension-score.low { color: var(--danger); }
+    .dimension-bar { height: 3px; background: var(--bg-deep); border-radius: 2px; overflow: hidden; }
+    .dimension-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s var(--ease-out); }
+    .dimension-bar-fill.high { background: var(--success); }
+    .dimension-bar-fill.medium { background: var(--accent-gold); }
+    .dimension-bar-fill.low { background: var(--danger); }
+
+    /* Modal Footer */
+    .detail-footer { padding: 20px 28px; border-top: 1px solid var(--border); background: var(--bg-elevated); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-shrink: 0; }
+    .footer-left { display: flex; align-items: center; gap: 12px; }
+    .footer-right { display: flex; align-items: center; gap: 12px; }
+    .footer-btn { padding: 12px 18px; font-size: 13px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+    .footer-btn svg { width: 16px; height: 16px; }
+    .footer-btn.primary { background: var(--accent-primary); border: none; color: var(--bg-deep); }
+    .footer-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-primary-glow); }
+    .footer-btn.secondary { background: var(--surface); border: 1px solid var(--border); color: var(--fg); }
+    .footer-btn.secondary:hover { border-color: var(--border-strong); background: var(--surface-elevated); }
+    .footer-btn.ghost { background: transparent; border: none; color: var(--fg-muted); padding: 12px 14px; }
+    .footer-btn.ghost:hover { color: var(--fg); background: var(--surface); }
+
+    /* Adviser Sidebar Content */
+    .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .sidebar-title { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+    .sidebar-title svg { width: 20px; height: 20px; color: var(--accent-primary); }
+    .sidebar-close { width: 32px; height: 32px; background: transparent; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--fg-muted); transition: all 0.2s; }
+    .sidebar-close:hover { border-color: var(--border-strong); color: var(--fg); }
+    .sidebar-close svg { width: 16px; height: 16px; }
+    .chat-messages { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+    .chat-message { display: flex; gap: 10px; max-width: 95%; }
+    .chat-message.user { flex-direction: row-reverse; margin-left: auto; }
+    .chat-avatar { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+    .chat-message.adviser .chat-avatar { background: linear-gradient(135deg, var(--accent-primary), var(--accent-gold)); color: var(--bg-deep); }
+    .chat-message.user .chat-avatar { background: var(--accent-violet); color: white; }
+    .chat-bubble { padding: 12px 16px; border-radius: 14px; font-size: 13px; line-height: 1.6; }
+    .chat-message.adviser .chat-bubble { background: var(--bg-elevated); border: 1px solid var(--border); color: var(--fg-muted); border-top-left-radius: 4px; }
+    .chat-message.adviser .chat-bubble strong { color: var(--fg); font-weight: 500; }
+    .chat-message.user .chat-bubble { background: var(--accent-primary); color: var(--bg-deep); border-top-right-radius: 4px; font-weight: 500; }
+    .chat-time { font-size: 10px; color: var(--fg-dim); margin-top: 4px; }
+    .chat-message.user .chat-time { text-align: right; }
+    .suggested-questions { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; background: var(--bg-elevated); }
+    .suggested-label { font-size: 10px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .suggested-question { padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; font-size: 12px; color: var(--fg-muted); cursor: pointer; transition: all 0.2s; text-align: left; }
+    .suggested-question:hover { border-color: var(--accent-primary); color: var(--accent-primary); background: var(--accent-primary-glow); }
+    .chat-input-area { padding: 16px; border-top: 1px solid var(--border); background: var(--bg-base); flex-shrink: 0; }
+    .chat-input-row { display: flex; gap: 10px; }
+    .chat-input { flex: 1; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; font-size: 13px; color: var(--fg); outline: none; resize: none; font-family: inherit; transition: border-color 0.2s; }
+    .chat-input::placeholder { color: var(--fg-dim); }
+    .chat-input:focus { border-color: var(--accent-primary); }
+    .chat-send { width: 44px; height: 44px; background: var(--accent-primary); border: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+    .chat-send:hover { transform: scale(1.05); }
+    .chat-send svg { width: 18px; height: 18px; color: var(--bg-deep); }
+
+    /* Footer */
+    .app-footer { background: var(--bg-base); border-top: 1px solid var(--border); padding: 24px; margin-top: 48px; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .footer-brand { display: flex; flex-direction: column; gap: 4px; }
+    .footer-logo { font-size: 15px; font-weight: 700; color: var(--fg); display: flex; align-items: center; gap: 8px; }
+    .footer-logo img { height: 24px; }
+    .footer-slogan { font-size: 11px; color: var(--fg-dim); font-style: italic; }
+    .footer-disclaimer { max-width: 600px; font-size: 10px; color: var(--fg-dim); line-height: 1.5; text-align: right; }
+
+    /* Responsive */
+    @media (max-width: 1400px) {
+      .content-grid { grid-template-columns: 1fr 280px; }
+    }
+    @media (max-width: 1200px) {
+      .content-grid { grid-template-columns: 1fr; }
+      .insights-panel { display: none; }
+      :root { --sidebar-width: 360px; }
+    }
+    @media (max-width: 1024px) {
+      .adviser-sidebar { position: fixed; top: 0; right: 0; bottom: 0; height: 100vh; z-index: 150; transform: translateX(100%); }
+      .adviser-sidebar.open { transform: translateX(0); }
+      .sidebar-inner { padding-top: calc(var(--nav-height) + var(--indices-height)); }
+      .app-nav-links { display: none; }
+      .perspectives-grid { grid-template-columns: repeat(2, 1fr); }
+      .perspective-card.strategist { grid-column: span 2; grid-template-columns: 1fr; }
+      .perspective-card.strategist .perspective-observations { grid-template-columns: 1fr; }
+      .thesis-dimensions { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .app-search { min-width: auto; }
+      .app-search span { display: none; }
+      .page-header { flex-direction: column; align-items: flex-start; }
+      .page-actions { width: 100%; }
+      .page-actions .btn { flex: 1; justify-content: center; }
+      .stats-row { flex-wrap: wrap; gap: 16px; }
+      .stat-divider { display: none; }
+      .filters-bar { flex-direction: column; align-items: stretch; }
+      .tab-group { width: 100%; justify-content: center; }
+      .filter-group { margin-left: 0; width: 100%; }
+      .filter-select { flex: 1; }
+      .search-filter { width: 100%; }
+      .search-filter input { width: 100%; }
+      .search-filter input:focus { width: 100%; }
+      .history-card-footer { flex-direction: column; gap: 12px; align-items: stretch; }
+      .history-actions { justify-content: stretch; }
+      .history-actions .action-btn { flex: 1; justify-content: center; }
+      :root { --sidebar-width: 100%; }
+      .perspectives-grid { grid-template-columns: 1fr; }
+      .perspective-card.strategist { grid-column: span 1; }
+      .thesis-dimensions { grid-template-columns: repeat(3, 1fr); }
+      .detail-modal { max-height: 100vh; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip Link for Accessibility -->
+  <a href="#mainContent" class="ac-skip-link">Skip to main content</a>
+
+  <!-- Live Region for Screen Reader Announcements -->
+  <div id="liveRegion" class="ac-live-region" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="app-nav" role="navigation" aria-label="Main navigation">
+    <div class="app-nav-inner">
+      <a href="index.html" class="app-logo">
+        <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+      </a>
+      <div class="app-nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="portfolio.html">Watchlist</a>
+        <a href="markets.html">Markets</a>
+        <a href="news.html">News</a>
+        <a href="council-history.html" class="active">Council</a>
+        <a href="alerts.html">Alerts</a>
+      </div>
+      <div class="app-nav-right">
+        <div class="app-search" id="searchBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <span>Search reviews...</span>
+          <kbd>/</kbd>
+        </div>
+        <div class="lang-toggle">
+          <button class="active">EN</button>
+          <button>AR</button>
+        </div>
+        <button class="nav-icon-btn" id="adviserToggle" title="Toggle AI Adviser" aria-label="Toggle AI Adviser sidebar" aria-expanded="false" aria-controls="adviserSidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="nav-icon-btn" id="notificationsBtn" aria-label="Notifications, 2 unread">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="badge" aria-hidden="true">2</span>
+        </button>
+        <button class="nav-icon-btn" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button class="user-avatar" id="userMenu" aria-label="User menu for Sami" aria-haspopup="true">SK</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Indices Bar -->
+  <div class="indices-bar" role="region" aria-label="Live market indices">
+    <div class="indices-inner">
+      <div class="index-item"><span class="index-name">TASI</span><span class="index-value">12,847.32</span><span class="index-change up">+0.82%</span></div>
+      <div class="index-item"><span class="index-name">ADX</span><span class="index-value">9,234.18</span><span class="index-change up">+0.34%</span></div>
+      <div class="index-item"><span class="index-name">DFM</span><span class="index-value">4,156.92</span><span class="index-change down">-0.21%</span></div>
+      <div class="index-item"><span class="index-name">QSE</span><span class="index-value">10,892.45</span><span class="index-change up">+0.56%</span></div>
+      <div class="index-item"><span class="index-name">Brent</span><span class="index-value">$82.34</span><span class="index-change down">-0.45%</span></div>
+      <span class="indices-time">Live · 14:32 GST</span>
+    </div>
+  </div>
+
+  <!-- App Wrapper -->
+  <div class="app-wrapper" id="appWrapper">
+    <main class="app-main" id="mainContent" role="main" aria-label="Council history content">
+
+      <!-- Page Header -->
+      <div style="margin:0 0 20px;padding:12px 16px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;color:var(--fg-muted);font-size:13px;line-height:1.5;">
+        <strong style="color:#f59e0b;">Preview</strong> — the review shown below is an illustrative example. A saved history of your own Council reviews will appear here once review archiving is live.
+      </div>
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">
+            <div class="page-title-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </div>
+            Council History
+          </h1>
+          <p class="page-subtitle">Review past analyses and track how your portfolio's intelligence has evolved over time.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary" onclick="exportAllReports()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export All
+          </button>
+          <button class="btn btn-primary" onclick="runNewReview()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            Run New Review
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-icon primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Reviews Saved</div>
+          </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-icon violet">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">2 days ago</div>
+            <div class="stat-label">Last Review</div>
+          </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-icon gold">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">7</div>
+            <div class="stat-label">Portfolio Reviews</div>
+          </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">5</div>
+            <div class="stat-label">Stock Reviews</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters & Tabs -->
+      <div class="filters-bar">
+        <div class="tab-group">
+          <button class="tab-btn active" data-tab="all">All Reviews</button>
+          <button class="tab-btn" data-tab="portfolio">Portfolio-wide</button>
+          <button class="tab-btn" data-tab="stock">Stock-level</button>
+        </div>
+        <div class="filter-group">
+          <select class="filter-select" id="dateFilter">
+            <option value="all">All time</option>
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+            <option value="90d">Last 90 days</option>
+          </select>
+          <select class="filter-select" id="sortFilter">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="conviction">Highest conviction</option>
+            <option value="signals">Most signals</option>
+          </select>
+          <div class="search-filter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" placeholder="Search ticker..." id="tickerSearch">
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="content-grid">
+        <!-- History List -->
+        <div class="history-list" id="historyList">
+
+          <!-- Review Card 1 - Portfolio-wide -->
+          <div class="history-card" onclick="openDetailModal('review1')">
+            <div class="history-card-header">
+              <div class="history-card-left">
+                <div class="history-icon portfolio">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                </div>
+                <div class="history-meta">
+                  <div class="history-date">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    June 14, 2026 · 10:23 AM GST
+                  </div>
+                  <div class="history-badges">
+                    <span class="history-badge portfolio">Portfolio-wide</span>
+                  </div>
+                  <p class="history-summary">
+                    Data suggests <strong>reviewing banking concentration</strong> (32% of portfolio). <span class="highlight">Stronger peer opportunity exists in UAE names</span>. Consider rebalancing toward diversified industrial exposure.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="history-card-footer">
+              <div class="history-signals">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <strong>4</strong> perspectives flagged concentration risk
+              </div>
+              <div class="history-actions">
+                <button class="action-btn" onclick="event.stopPropagation(); compareReview('review1')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                  Compare
+                </button>
+                <button class="action-btn" onclick="event.stopPropagation(); exportReview('review1')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  PDF
+                </button>
+                <button class="action-btn primary" onclick="event.stopPropagation(); openDetailModal('review1')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  View
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review Card 2 - Stock-level -->
+          <div class="history-card" onclick="openDetailModal('review2')">
+            <div class="history-card-header">
+              <div class="history-card-left">
+                <div class="history-icon stock">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                </div>
+                <div class="history-meta">
+                  <div class="history-date">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    June 12, 2026 · 3:45 PM GST
+                  </div>
+                  <div class="history-badges">
+                    <span class="history-badge stock">Stock Review</span>
+                    <span class="history-badge ticker">2222</span>
+                  </div>
+                  <p class="history-summary">
+                    <strong>Saudi Aramco (2222)</strong> maintains strong thesis score of <span class="highlight">7.8/10</span>. Dividend yield remains attractive at 5.2%. <span class="caution">Oil price sensitivity elevated</span> given recent volatility.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="history-card-footer">
+              <div class="history-signals">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <strong>2</strong> perspectives noted macro sensitivity
+              </div>
+              <div class="history-actions">
+                <button class="action-btn" onclick="event.stopPropagation(); compareReview('review2')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                  Compare
+                </button>
+                <button class="action-btn" onclick="event.stopPropagation(); exportReview('review2')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  PDF
+                </button>
+                <button class="action-btn primary" onclick="event.stopPropagation(); openDetailModal('review2')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  View
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review Card 3 - Portfolio-wide -->
+          <div class="history-card" onclick="openDetailModal('review3')">
+            <div class="history-card-header">
+              <div class="history-card-left">
+                <div class="history-icon portfolio">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                </div>
+                <div class="history-meta">
+                  <div class="history-date">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    June 8, 2026 · 9:15 AM GST
+                  </div>
+                  <div class="history-badges">
+                    <span class="history-badge portfolio">Portfolio-wide</span>
+                  </div>
+                  <p class="history-summary">
+                    Overall portfolio thesis score improved to <span class="highlight">7.4/10</span>. <strong>Telecom allocation appears underweight</strong> relative to sector momentum. UAE banking names showing relative strength.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="history-card-footer">
+              <div class="history-signals">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <strong>3</strong> perspectives identified opportunity
+              </div>
+              <div class="history-actions">
+                <button class="action-btn" onclick="event.stopPropagation(); compareReview('review3')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                  Compare
+                </button>
+                <button class="action-btn" onclick="event.stopPropagation(); exportReview('review3')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  PDF
+                </button>
+                <button class="action-btn primary" onclick="event.stopPropagation(); openDetailModal('review3')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  View
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review Card 4 - Stock-level -->
+          <div class="history-card" onclick="openDetailModal('review4')">
+            <div class="history-card-header">
+              <div class="history-card-left">
+                <div class="history-icon stock">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                </div>
+                <div class="history-meta">
+                  <div class="history-date">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    June 5, 2026 · 2:30 PM GST
+                  </div>
+                  <div class="history-badges">
+                    <span class="history-badge stock">Stock Review</span>
+                    <span class="history-badge ticker">1120</span>
+                  </div>
+                  <p class="history-summary">
+                    <strong>Al Rajhi Bank (1120)</strong> thesis score at <span class="highlight">8.1/10</span>. Strong fundamentals with <span class="caution">elevated valuation multiples</span>. Islamic banking leadership position intact.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="history-card-footer">
+              <div class="history-signals">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <strong>1</strong> perspective noted valuation concern
+              </div>
+              <div class="history-actions">
+                <button class="action-btn" onclick="event.stopPropagation(); compareReview('review4')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                  Compare
+                </button>
+                <button class="action-btn" onclick="event.stopPropagation(); exportReview('review4')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  PDF
+                </button>
+                <button class="action-btn primary" onclick="event.stopPropagation(); openDetailModal('review4')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  View
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review Card 5 - Portfolio-wide -->
+          <div class="history-card" onclick="openDetailModal('review5')">
+            <div class="history-card-header">
+              <div class="history-card-left">
+                <div class="history-icon portfolio">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                </div>
+                <div class="history-meta">
+                  <div class="history-date">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    June 1, 2026 · 11:00 AM GST
+                  </div>
+                  <div class="history-badges">
+                    <span class="history-badge portfolio">Portfolio-wide</span>
+                  </div>
+                  <p class="history-summary">
+                    <span class="caution">Sector concentration risk identified</span> in financials (38%). Data suggests reviewing diversification strategy. <span class="highlight">Energy names showing relative strength</span> amid oil price recovery.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="history-card-footer">
+              <div class="history-signals">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <strong>5</strong> perspectives flagged concentration
+              </div>
+              <div class="history-actions">
+                <button class="action-btn" onclick="event.stopPropagation(); compareReview('review5')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                  Compare
+                </button>
+                <button class="action-btn" onclick="event.stopPropagation(); exportReview('review5')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  PDF
+                </button>
+                <button class="action-btn primary" onclick="event.stopPropagation(); openDetailModal('review5')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  View
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Insights Panel -->
+        <div class="insights-panel">
+          <div class="insights-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <h3>Trends Across Reviews</h3>
+          </div>
+
+          <div class="insight-item">
+            <div class="insight-label">Recurring Theme</div>
+            <p class="insight-text"><span class="caution">Concentration risk</span> has been flagged in <strong>4 of your last 6 reviews</strong>. Consider reviewing sector allocation.</p>
+          </div>
+
+          <div class="insight-item">
+            <div class="insight-label">Thesis Trend</div>
+            <p class="insight-text">Average portfolio thesis score has <span class="highlight">improved 0.3 points</span> over the past month from 7.1 to 7.4.</p>
+          </div>
+
+          <div class="insight-item">
+            <div class="insight-label">Top Performer</div>
+            <p class="insight-text"><strong>Al Rajhi Bank (1120)</strong> consistently scores highest across reviews with an average thesis of <span class="highlight">8.1/10</span>.</p>
+          </div>
+
+          <div class="insight-item">
+            <div class="insight-label">Attention Needed</div>
+            <p class="insight-text"><strong>SABIC (2010)</strong> thesis has declined <span class="caution">0.5 points</span> over the past 3 reviews. Consider reviewing position.</p>
+          </div>
+
+          <div class="insights-actions">
+            <button class="btn btn-primary" onclick="runNewReview()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              Run New Review
+            </button>
+            <button class="btn btn-secondary" onclick="exportAllReports()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export All Reports
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <div class="footer-logo">
+              <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+            </div>
+            <div class="footer-slogan">Understand your portfolio before the market moves.</div>
+          </div>
+          <p class="footer-disclaimer">AlphaCouncil provides market data and AI-powered analysis for informational purposes only. This does not constitute investment advice. Past performance does not guarantee future results. Always conduct your own research before making investment decisions.</p>
+        </div>
+      </footer>
+
+    </main>
+
+    <!-- Adviser Sidebar -->
+    <aside class="adviser-sidebar" id="adviserSidebar">
+      <div class="sidebar-inner">
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            AI Adviser
+          </div>
+          <button class="sidebar-close" id="closeSidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-message adviser">
+            <div class="chat-avatar">AI</div>
+            <div>
+              <div class="chat-bubble">
+                Welcome to Council History. I can help you <strong>understand patterns</strong> across your past reviews, <strong>compare specific reviews</strong>, or <strong>explain any insights</strong> you see. What would you like to explore?
+              </div>
+              <div class="chat-time">Just now</div>
+            </div>
+          </div>
+        </div>
+        <div class="suggested-questions">
+          <div class="suggested-label">Suggested Questions</div>
+          <button class="suggested-question" onclick="askQuestion('Why does concentration risk keep appearing?')">Why does concentration risk keep appearing?</button>
+          <button class="suggested-question" onclick="askQuestion('Compare my last two portfolio reviews')">Compare my last two portfolio reviews</button>
+          <button class="suggested-question" onclick="askQuestion('Which holdings have improved most?')">Which holdings have improved most?</button>
+        </div>
+        <div class="chat-input-area">
+          <div class="chat-input-row">
+            <textarea class="chat-input" id="chatInput" placeholder="Ask about your review history..." rows="1"></textarea>
+            <button class="chat-send" id="chatSend">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="detail-modal-overlay" id="detailModal">
+    <div class="detail-modal">
+      <div class="detail-header">
+        <div class="detail-header-left">
+          <div class="detail-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="detail-title-group">
+            <div class="detail-title">
+              Portfolio-wide Review
+              <span class="history-badge portfolio">Portfolio</span>
+            </div>
+            <div class="detail-subtitle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              June 14, 2026 · 10:23 AM GST · 7 holdings analyzed
+            </div>
+          </div>
+        </div>
+        <button class="detail-close" onclick="closeDetailModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="detail-body">
+        <!-- Strategic Synthesis -->
+        <div class="synthesis-section">
+          <div class="synthesis-card">
+            <div class="synthesis-header">
+              <div class="synthesis-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                Strategic Synthesis
+              </div>
+              <div class="synthesis-timestamp">Generated June 14, 2026 at 10:23 AM</div>
+            </div>
+            <p class="synthesis-text">
+              Your portfolio demonstrates <strong>solid fundamentals</strong> with an overall thesis score of <span class="highlight">7.4/10</span>. However, the Council has identified <span class="caution">significant concentration in the banking sector</span> at 32% of total allocation. This exceeds typical diversification guidelines and introduces correlated risk during financial sector downturns.
+              <br><br>
+              Data suggests <span class="highlight">reviewing exposure to UAE banking names</span> such as First Abu Dhabi Bank (FAB), which shows stronger relative momentum and lower correlation to your existing Saudi banking positions. Additionally, <span class="caution">telecom allocation appears underweight</span> relative to sector momentum — consider reviewing stc (7010) position sizing.
+            </p>
+          </div>
+        </div>
+
+        <!-- 7 Council Perspectives -->
+        <div class="perspectives-section">
+          <div class="section-header">
+            <div class="section-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              AI Analyst Council (7 Perspectives)
+            </div>
+          </div>
+          <div class="perspectives-grid">
+            <!-- Risk Analyst -->
+            <div class="perspective-card risk">
+              <div class="perspective-header">
+                <div class="perspective-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div class="perspective-name">Risk Analyst</div>
+              </div>
+              <ul class="perspective-observations">
+                <li>Banking sector concentration at 32% poses correlated downside risk</li>
+                <li>Geographic concentration in Saudi Arabia (68%)</li>
+                <li>Portfolio beta of 1.12 above market average</li>
+              </ul>
+              <div class="perspective-signal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <div><span class="signal-label">Key Signal</span>Review sector allocation to reduce concentration risk</div>
+              </div>
+            </div>
+
+            <!-- Valuation Analyst -->
+            <div class="perspective-card valuation">
+              <div class="perspective-header">
+                <div class="perspective-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                </div>
+                <div class="perspective-name">Valuation Analyst</div>
+              </div>
+              <ul class="perspective-observations">
+                <li>Portfolio trades at 14.2x weighted P/E vs 15.8x sector average</li>
+                <li>Al Rajhi (1120) premium valuation justified by growth</li>
+                <li>SABIC (2010) discount reflects cyclical headwinds</li>
+              </ul>
+              <div class="perspective-signal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div><span class="signal-label">Key Signal</span>Aggregate valuation reasonable relative to quality</div>
+              </div>
+            </div>
+
+            <!-- Income Analyst -->
+            <div class="perspective-card income">
+              <div class="perspective-header">
+                <div class="perspective-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div class="perspective-name">Income Analyst</div>
+              </div>
+              <ul class="perspective-observations">
+                <li>Portfolio yield of 3.2% above TASI average of 2.8%</li>
+                <li>Aramco (2222) provides 42% of total dividend income</li>
+                <li>Dividend growth sustainable based on payout ratios</li>
+              </ul>
+              <div class="perspective-signal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div><span class="signal-label">Key Signal</span>Income stream diversified and sustainable</div>
+              </div>
+            </div>
+
+            <!-- Momentum Analyst -->
+            <div class="perspective-card momentum">
+              <div class="perspective-header">
+                <div class="perspective-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                </div>
+                <div class="perspective-name">Momentum Analyst</div>
+              </div>
+              <ul class="perspective-observations">
+                <li>5 of 7 holdings above 50-day moving average</li>
+                <li>stc (7010) showing strongest relative momentum</li>
+                <li>SABIC (2010) in technical downtrend, consider review</li>
+              </ul>
+              <div class="perspective-signal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div><span class="signal-label">Key Signal</span>Overall momentum positive, one laggard identified</div>
+              </div>
+            </div>
+
+            <!-- News Analyst -->
+            <div class="perspective-card news">
+              <div class="perspective-header">
+                <div class="perspective-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1"/><path d="M17 14h-6"/><path d="M17 10h-6"/><path d="M17 6h-6"/></svg>
+                </div>
+                <div class="perspective-name">News Analyst</div>
+              </div>
+              <ul class="perspective-observations">
+                <li>Vision 2030 updates positive for diversified industrials</li>
+                <li>Banking sector regulatory changes neutral impact</li>
+                <li>Oil price stability supporting energy names</li>
+              </ul>
+              <div class="perspective-signal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div><span class="signal-label">Key Signal</span>News flow generally supportive, no major concerns</div>
+              </div>
+            </div>
+
+            <!-- Macro Analyst -->
+            <div class="perspective-card macro">
+              <div class="perspective-header">
+                <div class="perspective-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </div>
+                <div class="perspective-name">Macro Analyst</div>
+              </div>
+              <ul class="perspective-observations">
+                <li>GCC growth outlook remains positive at 3.2% GDP</li>
+                <li>Interest rate environment supportive for banks</li>
+                <li>USD peg provides currency stability</li>
+              </ul>
+              <div class="perspective-signal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div><span class="signal-label">Key Signal</span>Macro backdrop favorable for portfolio positioning</div>
+              </div>
+            </div>
+
+            <!-- Chief Strategist (spans full width) -->
+            <div class="perspective-card strategist">
+              <div class="perspective-header" style="margin-bottom: 0;">
+                <div class="perspective-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+                <div class="perspective-name">Chief Strategist</div>
+              </div>
+              <ul class="perspective-observations">
+                <li>Portfolio quality solid with 7.4/10 aggregate thesis</li>
+                <li>Primary concern: sector concentration warrants attention</li>
+                <li>Consider trimming banking to add UAE diversification</li>
+                <li>Telecom underweight relative to momentum signals</li>
+              </ul>
+              <div class="perspective-signal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div><span class="signal-label">Key Recommendation</span>Review banking concentration; consider UAE names and telecom rebalancing for improved risk-adjusted positioning</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 12-Dimension Thesis Snapshot -->
+        <div class="thesis-section">
+          <div class="thesis-card">
+            <div class="thesis-header">
+              <div class="thesis-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                12-Dimension Thesis Snapshot
+              </div>
+              <div class="thesis-overall">
+                <div class="thesis-score-label">Overall Score</div>
+                <div class="thesis-score-badge">7.4</div>
+              </div>
+            </div>
+            <div class="thesis-dimensions">
+              <div class="dimension-item">
+                <div class="dimension-name">Valuation</div>
+                <div class="dimension-score high">7.8</div>
+                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 78%;"></div></div>
+              </div>
+              <div class="dimension-item">
+                <div class="dimension-name">Quality</div>
+                <div class="dimension-score high">8.2</div>
+                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 82%;"></div></div>
+              </div>
+              <div class="dimension-item">
+                <div class="dimension-name">Momentum</div>
+                <div class="dimension-score medium">6.9</div>
+                <div class="dimension-bar"><div class="dimension-bar-fill medium" style="width: 69%;"></div></div>
+              </div>
+              <div class="dimension-item">
+                <div class="dimension-name">Growth</div>
+                <div class="dimension-score high">7.4</div>
+                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 74%;"></div></div>
+              </div>
+              <div class="dimension-item">
+                <div class="dimension-name">Dividend</div>
+                <div class="dimension-score high">8.1</div>
+                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 81%;"></div></div>
+              </div>
+              <div class="dimension-item">
+                <div class="dimension-name">Risk</div>
+                <div class="dimension-score medium">6.2</div>
+                <div class="dimension-bar"><div class="dimension-bar-fill medium" style="width: 62%;"></div></div>
+              </div>
+              <div class="dimension-item">
+                <div class="dimension-name">Liquidity</div>
+                <div class="dimension-score high">8.5</div>
+                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 85%;"></div></div>
+              </div>
+              <div class="dimension-item">
+                <div class="dimension-name">Sentiment</div>
+                <div class="dimension-score high">7.3</div>
+                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 73%;"></div></div>
+              </div>
+              <div class="dimension-item">
+                <div class="dimension-name">Volatility</div>
+                <div class="dimension-score medium">6.8</div>
+                <div class="dimension-bar"><div class="dimension-bar-fill medium" style="width: 68%;"></div></div>
+              </div>
+              <div class="dimension-item">
+                <div class="dimension-name">Governance</div>
+                <div class="dimension-score high">8.4</div>
+                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 84%;"></div></div>
+              </div>
+              <div class="dimension-item">
+                <div class="dimension-name">Sector</div>
+                <div class="dimension-score medium">6.5</div>
+                <div class="dimension-bar"><div class="dimension-bar-fill medium" style="width: 65%;"></div></div>
+              </div>
+              <div class="dimension-item">
+                <div class="dimension-name">Macro</div>
+                <div class="dimension-score high">7.6</div>
+                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 76%;"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-footer">
+        <div class="footer-left">
+          <button class="footer-btn ghost" onclick="askAdviser('Tell me more about this review')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Ask Adviser
+          </button>
+          <button class="footer-btn secondary" onclick="compareWithLatest()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Compare with Latest
+          </button>
+        </div>
+        <div class="footer-right">
+          <button class="footer-btn secondary" onclick="exportReview('current')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Export PDF
+          </button>
+          <button class="footer-btn primary" onclick="closeDetailModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State Template (hidden by default) -->
+  <template id="emptyStateTemplate">
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <h2 class="empty-title">No Council Reviews Yet</h2>
+      <p class="empty-text">Run your first AI Analyst Council review to get comprehensive portfolio intelligence. The Council analyzes your holdings across 12 dimensions with 7 specialized perspectives.</p>
+      <button class="btn btn-primary" onclick="runNewReview()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Run Your First Review
+      </button>
+    </div>
+  </template>
+
+  <script src="js/api.js"></script>
+  <script src="adviser-core.js"></script>
+  <script>
+    // Initialize AlphaCouncil
+    if (typeof AlphaCouncil !== 'undefined') {
+      AlphaCouncil.init('council-history');
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterReviews(btn.dataset.tab);
+      });
+    });
+
+    function filterReviews(tab) {
+      const cards = document.querySelectorAll('.history-card');
+      cards.forEach(card => {
+        const isPortfolio = card.querySelector('.history-badge.portfolio');
+        const isStock = card.querySelector('.history-badge.stock');
+
+        if (tab === 'all') {
+          card.style.display = '';
+        } else if (tab === 'portfolio' && isPortfolio) {
+          card.style.display = '';
+        } else if (tab === 'stock' && isStock) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Detail Modal
+    function openDetailModal(reviewId) {
+      document.getElementById('detailModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // Close modal on overlay click
+    document.getElementById('detailModal').addEventListener('click', (e) => {
+      if (e.target.classList.contains('detail-modal-overlay')) {
+        closeDetailModal();
+      }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeDetailModal();
+      }
+    });
+
+    // Sidebar toggle
+    const adviserToggle = document.getElementById('adviserToggle');
+    const adviserSidebar = document.getElementById('adviserSidebar');
+    const closeSidebar = document.getElementById('closeSidebar');
+
+    if (adviserToggle) {
+      adviserToggle.addEventListener('click', () => {
+        adviserSidebar.classList.toggle('open');
+        adviserToggle.classList.toggle('active');
+        document.body.classList.toggle('sidebar-open');
+      });
+    }
+
+    if (closeSidebar) {
+      closeSidebar.addEventListener('click', () => {
+        adviserSidebar.classList.remove('open');
+        adviserToggle.classList.remove('active');
+        document.body.classList.remove('sidebar-open');
+      });
+    }
+
+    // Action functions
+    function runNewReview() {
+      if (typeof AlphaCouncil !== 'undefined' && AlphaCouncil.openCouncilModal) {
+        AlphaCouncil.openCouncilModal({ type: 'portfolio' });
+      } else {
+        showToast('Council Review', 'Opening AI Analyst Council...', 'info');
+      }
+    }
+
+    function exportReview(reviewId) {
+      showToast('Export Started', 'Generating PDF report...', 'info');
+      setTimeout(() => {
+        showToast('Export Complete', 'PDF downloaded successfully', 'success');
+      }, 1500);
+    }
+
+    function exportAllReports() {
+      showToast('Export Started', 'Generating all reports...', 'info');
+      setTimeout(() => {
+        showToast('Export Complete', '12 reports downloaded', 'success');
+      }, 2000);
+    }
+
+    function compareReview(reviewId) {
+      showToast('Compare', 'Loading comparison view...', 'info');
+    }
+
+    function compareWithLatest() {
+      closeDetailModal();
+      showToast('Compare', 'Loading comparison with latest review...', 'info');
+    }
+
+    function askAdviser(question) {
+      closeDetailModal();
+
+      if (typeof AlphaCouncil !== 'undefined') {
+        AlphaCouncil.openSidebar();
+        setTimeout(() => {
+          AlphaCouncil.addChatMessage(question, true);
+          setTimeout(() => {
+            AlphaCouncil.addChatMessage('Based on your June 14th review, <strong>concentration risk</strong> was the primary concern. Your banking sector allocation at 32% exceeds the typical 20-25% guideline for a diversified portfolio. Data suggests reviewing positions in Al Rajhi (1120) and considering allocation to UAE names like FAB for geographic diversification.');
+          }, 600);
+        }, 300);
+      } else {
+        adviserSidebar.classList.add('open');
+        adviserToggle.classList.add('active');
+        document.body.classList.add('sidebar-open');
+
+        const chatMessages = document.getElementById('chatMessages');
+        const userMsg = document.createElement('div');
+        userMsg.className = 'chat-message user';
+        userMsg.innerHTML = `
+          <div class="chat-avatar">SK</div>
+          <div>
+            <div class="chat-bubble">${question}</div>
+            <div class="chat-time">Just now</div>
+          </div>
+        `;
+        chatMessages.appendChild(userMsg);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        setTimeout(() => {
+          const adviserMsg = document.createElement('div');
+          adviserMsg.className = 'chat-message adviser';
+          adviserMsg.innerHTML = `
+            <div class="chat-avatar">AI</div>
+            <div>
+              <div class="chat-bubble">
+                Based on your June 14th review, <strong>concentration risk</strong> was the primary concern. Your banking sector allocation at 32% exceeds the typical 20-25% guideline for a diversified portfolio. Data suggests reviewing positions in Al Rajhi (1120) and considering allocation to UAE names like FAB for geographic diversification.
+              </div>
+              <div class="chat-time">Just now</div>
+            </div>
+          `;
+          chatMessages.appendChild(adviserMsg);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 1000);
+      }
+    }
+
+    function askQuestion(question) {
+      const chatInput = document.getElementById('chatInput');
+      chatInput.value = question;
+      document.getElementById('chatSend').click();
+    }
+
+    // Chat functionality
+    const chatSend = document.getElementById('chatSend');
+    const chatInput = document.getElementById('chatInput');
+
+    if (chatSend && chatInput) {
+      chatSend.addEventListener('click', () => {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        const chatMessages = document.getElementById('chatMessages');
+
+        // Add user message
+        const userMsg = document.createElement('div');
+        userMsg.className = 'chat-message user';
+        userMsg.innerHTML = `
+          <div class="chat-avatar">SK</div>
+          <div>
+            <div class="chat-bubble">${message}</div>
+            <div class="chat-time">Just now</div>
+          </div>
+        `;
+        chatMessages.appendChild(userMsg);
+        chatInput.value = '';
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Simulate response
+        setTimeout(() => {
+          const responses = {
+            'concentration': 'Concentration risk appears in your reviews because your banking sector allocation has consistently exceeded 30%. The Council recommends keeping any single sector below 25% for optimal diversification.',
+            'compare': 'Comparing your last two portfolio reviews: Your thesis score improved from 7.1 to 7.4, driven by stronger momentum in telecom holdings. However, concentration risk persists in banking.',
+            'improved': 'Your top improvers over the last 3 reviews are: stc (7010) +0.6 points, FAB +0.4 points, and QNB +0.3 points. All showing stronger momentum and improved sentiment scores.'
+          };
+
+          let response = 'I can help you understand patterns in your Council reviews. The most common themes I see are concentration risk in banking and opportunities in UAE diversification. Would you like me to elaborate on either topic?';
+
+          for (const [key, value] of Object.entries(responses)) {
+            if (message.toLowerCase().includes(key)) {
+              response = value;
+              break;
+            }
+          }
+
+          const adviserMsg = document.createElement('div');
+          adviserMsg.className = 'chat-message adviser';
+          adviserMsg.innerHTML = `
+            <div class="chat-avatar">AI</div>
+            <div>
+              <div class="chat-bubble">${response}</div>
+              <div class="chat-time">Just now</div>
+            </div>
+          `;
+          chatMessages.appendChild(adviserMsg);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 800);
+      });
+
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          chatSend.click();
+        }
+      });
+    }
+
+    // Toast notification
+    function showToast(title, text, type = 'success') {
+      if (typeof AlphaCouncil !== 'undefined' && AlphaCouncil.showToast) {
+        AlphaCouncil.showToast(title, text, type);
+      } else {
+        console.log(`Toast: ${title} - ${text}`);
+      }
+    }
+
+    // Keyboard shortcut for search
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+        const activeEl = document.activeElement;
+        if (activeEl.tagName !== 'INPUT' && activeEl.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          document.getElementById('tickerSearch').focus();
+        }
+      }
+    });
+
+    // Filter functionality
+    document.getElementById('dateFilter').addEventListener('change', applyFilters);
+    document.getElementById('sortFilter').addEventListener('change', applyFilters);
+    document.getElementById('tickerSearch').addEventListener('input', applyFilters);
+
+    function applyFilters() {
+      // Placeholder for filter logic
+      const dateFilter = document.getElementById('dateFilter').value;
+      const sortFilter = document.getElementById('sortFilter').value;
+      const tickerSearch = document.getElementById('tickerSearch').value.toLowerCase();
+
+      const cards = document.querySelectorAll('.history-card');
+      cards.forEach(card => {
+        const tickerBadge = card.querySelector('.history-badge.ticker');
+        const ticker = tickerBadge ? tickerBadge.textContent.toLowerCase() : '';
+
+        if (tickerSearch && !ticker.includes(tickerSearch)) {
+          card.style.display = 'none';
+        } else {
+          card.style.display = '';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

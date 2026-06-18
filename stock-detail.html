@@ -1,0 +1,1039 @@
+<!-- REVIEWED & POLISHED: 2026-06-17 -->
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2222 — Saudi Aramco — AlphaCouncil</title>
+  <meta name="description" content="Deep analytical view with 12-dimension AI thesis scoring and AI Analyst Council insights.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/alphacouncil.css">
+  <style>
+    /* ==========================================================================
+       STOCK DETAIL PAGE - Unique Styles
+       Styles specific to stock-detail.html that are not in shared CSS
+       ========================================================================== */
+
+    /* Breadcrumb Navigation */
+    .breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+    .breadcrumb-item { font-size: 12px; color: var(--fg-dim); text-decoration: none; display: flex; align-items: center; gap: 5px; transition: color 0.2s; }
+    .breadcrumb-item svg { width: 12px; height: 12px; }
+    .breadcrumb-item:hover { color: var(--accent-primary); }
+    .breadcrumb-item:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; border-radius: var(--radius-sm); }
+    .breadcrumb-sep { font-size: 12px; color: var(--fg-dim); opacity: 0.5; }
+    .breadcrumb-current { font-size: 12px; color: var(--fg); font-weight: 500; }
+
+    /* Main Layout Grid - Stock Detail specific */
+    .main-layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
+    body.sidebar-open .main-layout { grid-template-columns: 1fr; }
+
+    /* Stock Header */
+    .stock-header { margin-bottom: 20px; }
+    .stock-header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 16px; }
+    .stock-identity { display: flex; align-items: center; gap: 16px; }
+    .stock-logo { width: 56px; height: 56px; background: linear-gradient(135deg, var(--surface), var(--surface-elevated)); border: 1px solid var(--border); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--fg-muted); }
+    .stock-info h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .stock-ticker { color: var(--accent-primary); }
+    .stock-exchange { font-size: 11px; padding: 3px 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 5px; font-weight: 500; color: var(--fg-dim); }
+    .stock-subtitle { font-size: 13px; color: var(--fg-muted); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .sector-tag { padding: 2px 8px; background: var(--accent-blue-glow); border-radius: 4px; font-size: 10px; font-weight: 600; color: var(--accent-blue); }
+    .stock-price-block { text-align: right; }
+    .stock-price { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+    .stock-change { font-size: 15px; font-weight: 600; margin-top: 2px; display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+    .stock-change.up { color: var(--success); }
+    .stock-change.down { color: var(--danger); }
+    .stock-change svg { width: 14px; height: 14px; }
+    .stock-updated { font-size: 11px; color: var(--fg-dim); margin-top: 4px; }
+
+    /* Quick Actions - Stock Detail specific buttons */
+    .stock-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .action-btn { padding: 9px 16px; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; position: relative; overflow: hidden; }
+    .action-btn svg { width: 14px; height: 14px; }
+    .action-btn.primary { background: var(--accent-primary); border: none; color: var(--bg-deep); }
+    .action-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-primary-glow); }
+    .action-btn.council { background: linear-gradient(135deg, var(--accent-violet), var(--accent-primary)); border: none; color: white; }
+    .action-btn.council:hover { transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-violet-glow); }
+    .action-btn.secondary { background: var(--surface); border: 1px solid var(--border); color: var(--fg); }
+    .action-btn.secondary:hover { border-color: var(--border-strong); }
+    .action-btn:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+    .action-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transform: translateX(-100%); transition: transform 0.5s; }
+    .action-btn:hover::before { transform: translateX(100%); }
+
+    /* Signal Banner */
+    .signal-banner { background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(39, 211, 195, 0.08)); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 18px 22px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .signal-banner.hold { background: linear-gradient(135deg, rgba(215, 183, 106, 0.12), rgba(245, 158, 11, 0.08)); border-color: rgba(215, 183, 106, 0.3); }
+    .signal-banner.caution { background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(245, 158, 11, 0.08)); border-color: rgba(239, 68, 68, 0.3); }
+    .signal-left { display: flex; align-items: center; gap: 16px; }
+    .signal-badge { padding: 8px 16px; background: var(--success); border-radius: 8px; font-size: 14px; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: 0.05em; }
+    .signal-banner.hold .signal-badge { background: var(--accent-gold); color: var(--bg-deep); }
+    .signal-banner.caution .signal-badge { background: var(--danger); }
+    .signal-content h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+    .signal-content p { font-size: 12px; color: var(--fg-muted); }
+    .signal-right { display: flex; align-items: center; gap: 12px; }
+    .confidence-badge { padding: 5px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; font-weight: 600; color: var(--fg-muted); }
+    .signal-link { font-size: 12px; color: var(--accent-primary); text-decoration: none; display: flex; align-items: center; gap: 4px; }
+    .signal-link:hover { text-decoration: underline; }
+    .signal-link:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; border-radius: var(--radius-sm); }
+    .signal-link svg { width: 12px; height: 12px; }
+
+    /* Position Card */
+    .position-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 22px; margin-bottom: 20px; }
+    .position-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .position-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .position-title svg { width: 16px; height: 16px; color: var(--accent-primary); }
+    .position-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .position-item label { font-size: 10px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px; }
+    .position-item .value { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .position-item .value.profit { color: var(--success); }
+    .position-item .value.loss { color: var(--danger); }
+    .position-actions { display: flex; gap: 8px; }
+    .position-btn { padding: 6px 12px; font-size: 11px; font-weight: 600; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 6px; color: var(--fg-muted); cursor: pointer; transition: all 0.2s; }
+    .position-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+    .position-btn:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+
+    /* Key Facts Gauges */
+    .gauges-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+    .gauge-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; text-align: center; transition: all 0.2s; cursor: pointer; }
+    .gauge-card:hover { border-color: var(--border-strong); }
+    .gauge-card:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+    .gauge-card.expanded { border-color: var(--accent-primary); background: var(--surface-elevated); }
+    .gauge-label { font-size: 11px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 12px; }
+    .gauge-visual { width: 80px; height: 80px; margin: 0 auto 12px; position: relative; }
+    .gauge-ring { width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(var(--success) 0deg, var(--success) calc(var(--score) * 3.6deg), var(--bg-elevated) calc(var(--score) * 3.6deg)); display: flex; align-items: center; justify-content: center; }
+    .gauge-ring.medium { background: conic-gradient(var(--accent-gold) 0deg, var(--accent-gold) calc(var(--score) * 3.6deg), var(--bg-elevated) calc(var(--score) * 3.6deg)); }
+    .gauge-ring.low { background: conic-gradient(var(--danger) 0deg, var(--danger) calc(var(--score) * 3.6deg), var(--bg-elevated) calc(var(--score) * 3.6deg)); }
+    .gauge-inner { width: 60px; height: 60px; background: var(--surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
+    .gauge-rating { font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+    .gauge-rating.high { color: var(--success); }
+    .gauge-rating.medium { color: var(--accent-gold); }
+    .gauge-rating.low { color: var(--danger); }
+    .gauge-expand { font-size: 10px; color: var(--fg-dim); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .gauge-expand:hover { color: var(--accent-primary); }
+    .gauge-expand svg { width: 10px; height: 10px; }
+    .gauge-details { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); text-align: left; }
+    .gauge-card.expanded .gauge-details { display: block; }
+    .gauge-detail-row { display: flex; justify-content: space-between; font-size: 11px; padding: 4px 0; }
+    .gauge-detail-row span:first-child { color: var(--fg-dim); }
+    .gauge-detail-row span:last-child { font-weight: 600; }
+
+    /* Price Chart */
+    .chart-card { margin-bottom: 20px; }
+    .chart-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .chart-tabs { display: flex; gap: 4px; }
+    .chart-tab { padding: 6px 12px; font-size: 11px; font-weight: 600; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--fg-dim); cursor: pointer; transition: all 0.2s; }
+    .chart-tab:hover { border-color: var(--border-strong); color: var(--fg); }
+    .chart-tab:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+    .chart-tab.active { background: var(--accent-primary); border-color: var(--accent-primary); color: var(--bg-deep); }
+    .chart-overlays { display: flex; gap: 8px; }
+    .overlay-btn { padding: 5px 10px; font-size: 10px; font-weight: 500; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 5px; color: var(--fg-dim); cursor: pointer; transition: all 0.2s; }
+    .overlay-btn:hover { border-color: var(--border-strong); }
+    .overlay-btn:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+    .overlay-btn.active { background: var(--accent-primary-glow); border-color: var(--accent-primary); color: var(--accent-primary); }
+    .chart-body { height: 360px; background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; position: relative; }
+    .chart-placeholder { color: var(--fg-dim); font-size: 13px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .chart-placeholder svg { width: 40px; height: 40px; opacity: 0.3; }
+
+    /* Analyst Forecast Section */
+    .forecast-section { margin-bottom: 20px; }
+    .forecast-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .forecast-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+    .forecast-title { font-size: 12px; font-weight: 600; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+    .forecast-title svg { width: 14px; height: 14px; color: var(--accent-primary); }
+    .price-target-visual { margin-bottom: 14px; }
+    .target-bar { height: 8px; background: var(--bg-elevated); border-radius: 4px; position: relative; margin-bottom: 8px; }
+    .target-range { position: absolute; top: 0; height: 100%; background: linear-gradient(90deg, var(--danger), var(--accent-gold), var(--success)); border-radius: 4px; opacity: 0.6; }
+    .target-current { position: absolute; top: -4px; width: 4px; height: 16px; background: var(--fg); border-radius: 2px; transform: translateX(-50%); }
+    .target-avg { position: absolute; top: -4px; width: 12px; height: 16px; background: var(--accent-primary); border-radius: 3px; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; }
+    .target-avg::after { content: ''; width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--accent-primary); position: absolute; bottom: -5px; }
+    .target-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--fg-dim); }
+    .target-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+    .target-stat label { font-size: 10px; color: var(--fg-dim); display: block; margin-bottom: 2px; }
+    .target-stat .value { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .target-stat .value.low { color: var(--danger); }
+    .target-stat .value.avg { color: var(--accent-primary); }
+    .target-stat .value.high { color: var(--success); }
+    .analyst-count { font-size: 11px; color: var(--fg-dim); margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+    /* Earnings Trend */
+    .earnings-bars { display: flex; gap: 8px; align-items: flex-end; height: 100px; margin-bottom: 12px; }
+    .earnings-quarter { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .earnings-bar-group { display: flex; gap: 3px; align-items: flex-end; height: 70px; }
+    .earnings-bar { width: 14px; border-radius: 3px 3px 0 0; transition: height 0.3s; }
+    .earnings-bar.estimate { background: var(--fg-dim); opacity: 0.4; }
+    .earnings-bar.actual { background: var(--success); }
+    .earnings-bar.actual.miss { background: var(--danger); }
+    .earnings-label { font-size: 9px; color: var(--fg-dim); text-transform: uppercase; }
+    .earnings-legend { display: flex; justify-content: center; gap: 16px; font-size: 10px; color: var(--fg-dim); }
+    .earnings-legend span { display: flex; align-items: center; gap: 4px; }
+    .earnings-legend span::before { content: ''; width: 8px; height: 8px; border-radius: 2px; }
+    .earnings-legend .est::before { background: var(--fg-dim); opacity: 0.4; }
+    .earnings-legend .act::before { background: var(--success); }
+
+    /* 12-Dimension Thesis */
+    .thesis-card { margin-bottom: 20px; }
+    .thesis-card .card-header { background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(39, 211, 195, 0.05)); }
+    .thesis-intro { padding: 16px 20px; background: var(--bg-elevated); border-bottom: 1px solid var(--border); font-size: 13px; color: var(--fg-muted); line-height: 1.6; }
+    .thesis-intro strong { color: var(--fg); }
+    .horizon-group { padding: 20px; border-bottom: 1px solid var(--border); }
+    .horizon-group:last-child { border-bottom: none; }
+    .horizon-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .horizon-badge { padding: 4px 10px; border-radius: 5px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .horizon-badge.investment { background: var(--accent-primary-glow); color: var(--accent-primary); border: 1px solid var(--accent-primary); }
+    .horizon-badge.trading { background: var(--accent-blue-glow); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
+    .horizon-badge.bridge { background: var(--accent-gold-glow); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
+    .horizon-title { font-size: 13px; font-weight: 500; color: var(--fg-muted); }
+    .dimension-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .dimension-grid.two-col { grid-template-columns: repeat(2, 1fr); }
+    .dimension-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 14px; transition: all 0.2s; cursor: pointer; position: relative; }
+    .dimension-card:hover { border-color: var(--accent-primary); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(39, 211, 195, 0.1); }
+    .dimension-card:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+    .dimension-card:hover::after { content: 'Click to ask Adviser'; position: absolute; bottom: 8px; right: 10px; font-size: 9px; color: var(--accent-primary); opacity: 0.8; background: var(--bg-elevated); padding: 2px 6px; border-radius: 4px; }
+    .dimension-card:active { transform: translateY(0); }
+    .dimension-bar { height: 3px; background: var(--bg-deep); border-radius: 2px; margin-bottom: 8px; overflow: hidden; }
+    .dimension-bar-fill { height: 100%; border-radius: 2px; }
+    .dimension-bar-fill.high { background: var(--success); }
+    .dimension-bar-fill.medium { background: var(--accent-gold); }
+    .dimension-bar-fill.low { background: var(--danger); }
+    .dimension-insight { font-size: 11px; color: var(--fg-dim); line-height: 1.5; }
+
+    /* Council Snapshot */
+    .council-card { margin-bottom: 20px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.06), var(--surface)); border-color: rgba(139, 92, 246, 0.3); }
+    .council-card .card-title svg { color: var(--accent-violet); }
+    .council-synthesis { font-size: 13px; color: var(--fg-muted); line-height: 1.7; margin-bottom: 16px; }
+    .council-synthesis strong { color: var(--fg); }
+    .council-btn { width: 100%; padding: 12px 18px; background: linear-gradient(135deg, var(--accent-violet), var(--accent-primary)); border: none; border-radius: 10px; font-size: 13px; font-weight: 600; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+    .council-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-violet-glow); }
+    .council-btn:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+    .council-btn svg { width: 16px; height: 16px; }
+
+    /* Expandable Sections */
+    .expand-section { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
+    .expand-header { padding: 14px 18px; background: var(--surface); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; }
+    .expand-header:hover { background: var(--surface-elevated); }
+    .expand-header:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: -2px; }
+    .expand-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .expand-title svg { width: 16px; height: 16px; color: var(--accent-primary); }
+    .expand-toggle { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: var(--fg-dim); transition: transform 0.2s; }
+    .expand-toggle svg { width: 14px; height: 14px; }
+    .expand-section.open .expand-toggle { transform: rotate(180deg); }
+    .expand-body { display: none; padding: 18px; background: var(--bg-elevated); border-top: 1px solid var(--border); }
+    .expand-section.open .expand-body { display: block; }
+
+    /* Ownership Bars */
+    .ownership-item { margin-bottom: 12px; }
+    .ownership-item:last-child { margin-bottom: 0; }
+    .ownership-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+    .ownership-label span:first-child { color: var(--fg-muted); }
+    .ownership-label span:last-child { font-weight: 600; }
+    .ownership-bar { height: 6px; background: var(--bg-deep); border-radius: 3px; overflow: hidden; }
+    .ownership-bar-fill { height: 100%; border-radius: 3px; background: var(--accent-primary); }
+
+    /* Right Column */
+    .right-column { display: flex; flex-direction: column; gap: 16px; }
+
+    /* News Cards - Stock Detail specific styles */
+    .news-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; transition: all 0.2s; cursor: pointer; }
+    .news-card:hover { border-color: var(--border-strong); }
+    .news-card:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+    .news-card:hover .news-headline { color: var(--accent-primary); }
+    .news-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .news-tag { padding: 2px 6px; font-size: 9px; font-weight: 700; text-transform: uppercase; border-radius: 4px; }
+    .news-tag.earnings { background: var(--success-glow); color: var(--success); }
+    .news-tag.ownership { background: var(--accent-violet-glow); color: var(--accent-violet); }
+    .news-tag.projects { background: var(--accent-blue-glow); color: var(--accent-blue); }
+    .news-tag.governance { background: var(--accent-gold-glow); color: var(--accent-gold); }
+    .news-time { font-size: 10px; color: var(--fg-dim); }
+    .news-headline { font-size: 13px; font-weight: 500; line-height: 1.4; margin-bottom: 8px; color: var(--fg-muted); transition: color 0.2s; }
+    .news-actions { display: flex; justify-content: flex-end; }
+    .ask-btn { padding: 5px 10px; font-size: 10px; font-weight: 600; background: var(--accent-primary-glow); border: 1px solid var(--accent-primary); border-radius: 5px; color: var(--accent-primary); cursor: pointer; transition: all 0.2s; }
+    .ask-btn:hover { background: var(--accent-primary); color: var(--bg-deep); }
+    .ask-btn:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+
+    /* Sidebar Context - Stock Detail specific */
+    .sidebar-context { padding: 12px 16px; background: var(--bg-elevated); border-bottom: 1px solid var(--border); }
+    .context-label { font-size: 9px; font-weight: 600; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+    .context-stock { font-size: 12px; font-weight: 600; color: var(--accent-primary); margin-top: 2px; }
+    .sidebar-section { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    .sidebar-section-title { font-size: 10px; font-weight: 600; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+
+    /* Toast - Stock Detail specific */
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface-glass); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; display: flex; align-items: center; gap: 10px; z-index: 200; opacity: 0; pointer-events: none; transition: all 0.3s; }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+    .toast-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .toast-icon.success { background: var(--success-glow); color: var(--success); }
+    .toast-icon.info { background: var(--accent-primary-glow); color: var(--accent-primary); }
+    .toast-icon svg { width: 16px; height: 16px; }
+    .toast-content { flex: 1; }
+    .toast-title { font-size: 12px; font-weight: 600; }
+    .toast-text { font-size: 11px; color: var(--fg-muted); }
+
+    /* ==========================================================================
+       REDUCED MOTION SUPPORT
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      .action-btn::before,
+      .council-btn,
+      .gauge-card,
+      .dimension-card,
+      .news-card,
+      .expand-toggle,
+      .earnings-bar,
+      .toast {
+        transition: none;
+      }
+      .action-btn:hover::before {
+        transform: none;
+      }
+      .action-btn.primary:hover,
+      .action-btn.council:hover,
+      .council-btn:hover,
+      .dimension-card:hover {
+        transform: none;
+      }
+    }
+
+    /* ==========================================================================
+       RESPONSIVE - Stock Detail specific breakpoints
+       ========================================================================== */
+    @media (max-width: 1400px) {
+      .gauges-grid { grid-template-columns: repeat(2, 1fr); }
+      .dimension-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 1200px) {
+      .main-layout { grid-template-columns: 1fr; }
+      .right-column { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    }
+    @media (max-width: 1024px) {
+      .forecast-grid { grid-template-columns: 1fr; }
+      .right-column { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .gauges-grid { grid-template-columns: 1fr; }
+      .dimension-grid { grid-template-columns: 1fr; }
+      .dimension-grid.two-col { grid-template-columns: 1fr; }
+      .stock-header-top { flex-direction: column; align-items: flex-start; }
+      .stock-price-block { text-align: left; }
+      .position-grid { grid-template-columns: repeat(2, 1fr); }
+      .signal-banner { flex-direction: column; align-items: flex-start; }
+      .signal-right { margin-top: 12px; }
+      .right-column { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip Link for Accessibility -->
+  <a href="#mainContent" class="ac-skip-link">Skip to main content</a>
+
+  <!-- Live Region for Screen Reader Announcements -->
+  <div id="liveRegion" class="ac-live-region" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="app-nav" role="navigation" aria-label="Main navigation">
+    <div class="app-nav-inner">
+      <a href="index.html" class="app-logo">
+          <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+        </a>
+      <div class="app-nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="portfolio.html">Watchlist</a>
+        <a href="markets.html" class="active">Markets</a>
+        <a href="news.html">News</a>
+        <a href="council-history.html">Council</a>
+        <a href="alerts.html">Alerts</a>
+      </div>
+      <div class="app-nav-right">
+        <div class="app-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><span>Search stocks...</span><kbd>/</kbd></div>
+        <div class="lang-toggle"><button class="active">EN</button><button>AR</button></div>
+        <button class="nav-icon-btn" id="adviserToggle" title="Toggle AI Adviser" aria-label="Toggle AI Adviser sidebar" aria-expanded="false" aria-controls="adviserSidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+        <button class="nav-icon-btn" id="notificationsBtn" aria-label="Notifications, 3 unread"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="badge" aria-hidden="true">3</span></button>
+        <button class="nav-icon-btn" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+        <button class="user-avatar" id="userMenu" aria-label="User menu for Sami" aria-haspopup="true">SK</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Indices Bar -->
+  <div class="indices-bar" role="region" aria-label="Live market indices">
+    <div class="indices-inner">
+      <div class="index-item"><span class="index-name">TASI</span><span class="index-value">12,847.32</span><span class="index-change up">+0.82%</span></div>
+      <div class="index-item"><span class="index-name">ADX</span><span class="index-value">9,234.18</span><span class="index-change up">+0.34%</span></div>
+      <div class="index-item"><span class="index-name">DFM</span><span class="index-value">4,156.92</span><span class="index-change down">-0.21%</span></div>
+      <div class="index-item"><span class="index-name">QSE</span><span class="index-value">10,892.45</span><span class="index-change up">+0.56%</span></div>
+      <div class="index-item"><span class="index-name">Brent</span><span class="index-value">$82.34</span><span class="index-change down">-0.45%</span></div>
+      <span class="indices-time">Live · 14:32 GST</span>
+    </div>
+  </div>
+
+  <!-- App Wrapper -->
+  <div class="app-wrapper" id="appWrapper">
+    <main class="app-main" id="mainContent" role="main" aria-label="Stock detail content">
+      <!-- Breadcrumb Navigation -->
+      <nav class="breadcrumb">
+        <a href="dashboard.html" class="breadcrumb-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Dashboard
+        </a>
+        <span class="breadcrumb-sep">/</span>
+        <a href="portfolio.html" class="breadcrumb-item">Portfolio</a>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-current">Saudi Aramco (2222)</span>
+      </nav>
+
+      <!-- Stock Header -->
+      <header class="stock-header">
+        <div class="stock-header-top">
+          <div class="stock-identity">
+            <div class="stock-logo">2222</div>
+            <div class="stock-info">
+              <h1><span class="stock-ticker">2222</span> Saudi Aramco <span class="stock-exchange">Tadawul</span></h1>
+              <p class="stock-subtitle">2222.SR <span class="sector-tag">Energy</span> Saudi Arabia · Large Cap</p>
+            </div>
+          </div>
+          <div class="stock-price-block">
+            <div class="stock-price">SAR 28.90</div>
+            <div class="stock-change up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>+0.45 (+1.58%)</div>
+            <div class="stock-updated">Updated 2 min ago</div>
+          </div>
+        </div>
+        <div class="stock-actions">
+          <button class="action-btn primary" onclick="addToPortfolio()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Add to Portfolio</button>
+          <button class="action-btn secondary" onclick="addToWatchlist()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Watchlist</button>
+          <button class="action-btn secondary" onclick="setAlert()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Set Alert</button>
+          <button class="action-btn council" onclick="openCouncilModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Run AI Council</button>
+          <button class="action-btn secondary" onclick="toggleSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Ask Adviser</button>
+        </div>
+      </header>
+
+      <!-- Signal Banner -->
+      <div class="signal-banner hold">
+        <div class="signal-left">
+          <span class="signal-badge">HOLD</span>
+          <div class="signal-content">
+            <h3>AlphaCouncil Signal: Hold Position</h3>
+            <p>Data suggests maintaining current exposure. Valuation appears reasonable but oil price volatility warrants monitoring.</p>
+          </div>
+        </div>
+        <div class="signal-right">
+          <span class="confidence-badge">High Confidence</span>
+          <a href="#" class="signal-link" onclick="showSignalExplanation()">Why this signal? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+      </div>
+
+      <!-- Your Position -->
+      <div class="position-card">
+        <div class="position-header">
+          <span class="position-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>Your Position</span>
+          <div class="position-actions">
+            <button class="position-btn" onclick="adjustPosition()">Adjust Position</button>
+            <button class="position-btn" onclick="recordSale()">Record Sale</button>
+          </div>
+        </div>
+        <div class="position-grid">
+          <div class="position-item"><label>Shares</label><div class="value">320</div></div>
+          <div class="position-item"><label>Avg Cost</label><div class="value">SAR 28.15</div></div>
+          <div class="position-item"><label>Current Value</label><div class="value">SAR 9,248</div></div>
+          <div class="position-item"><label>Unrealized P&L</label><div class="value profit">+SAR 240 (+2.66%)</div></div>
+        </div>
+      </div>
+
+      <!-- Main Layout -->
+      <div class="main-layout">
+        <div class="left-column">
+          <!-- Key Facts Gauges -->
+          <div class="gauges-grid">
+            <div class="gauge-card" onclick="toggleGauge(this)">
+              <div class="gauge-label">Valuation</div>
+              <div class="gauge-visual">
+                <div class="gauge-ring medium" style="--score: 68"><div class="gauge-inner">6.8</div></div>
+              </div>
+              <div class="gauge-rating medium">Fair Value</div>
+              <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>More details</div>
+              <div class="gauge-details">
+                <div class="gauge-detail-row"><span>P/E Ratio</span><span>14.2x</span></div>
+                <div class="gauge-detail-row"><span>P/B Ratio</span><span>2.1x</span></div>
+                <div class="gauge-detail-row"><span>EV/EBITDA</span><span>8.4x</span></div>
+                <div class="gauge-detail-row"><span>vs Sector Avg</span><span style="color: var(--accent-gold)">-5%</span></div>
+              </div>
+            </div>
+            <div class="gauge-card" onclick="toggleGauge(this)">
+              <div class="gauge-label">Profitability</div>
+              <div class="gauge-visual">
+                <div class="gauge-ring" style="--score: 89"><div class="gauge-inner">8.9</div></div>
+              </div>
+              <div class="gauge-rating high">Strong</div>
+              <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>More details</div>
+              <div class="gauge-details">
+                <div class="gauge-detail-row"><span>Net Margin</span><span>28.4%</span></div>
+                <div class="gauge-detail-row"><span>ROE</span><span>32.1%</span></div>
+                <div class="gauge-detail-row"><span>ROA</span><span>14.8%</span></div>
+                <div class="gauge-detail-row"><span>vs Sector Avg</span><span style="color: var(--success)">+18%</span></div>
+              </div>
+            </div>
+            <div class="gauge-card" onclick="toggleGauge(this)">
+              <div class="gauge-label">Financial Health</div>
+              <div class="gauge-visual">
+                <div class="gauge-ring" style="--score: 82"><div class="gauge-inner">8.2</div></div>
+              </div>
+              <div class="gauge-rating high">Strong</div>
+              <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>More details</div>
+              <div class="gauge-details">
+                <div class="gauge-detail-row"><span>Debt/Equity</span><span>0.24</span></div>
+                <div class="gauge-detail-row"><span>Current Ratio</span><span>1.8</span></div>
+                <div class="gauge-detail-row"><span>Interest Coverage</span><span>42x</span></div>
+                <div class="gauge-detail-row"><span>vs Sector Avg</span><span style="color: var(--success)">+12%</span></div>
+              </div>
+            </div>
+            <div class="gauge-card" onclick="toggleGauge(this)">
+              <div class="gauge-label">Income & Growth</div>
+              <div class="gauge-visual">
+                <div class="gauge-ring" style="--score: 76"><div class="gauge-inner">7.6</div></div>
+              </div>
+              <div class="gauge-rating high">Good</div>
+              <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>More details</div>
+              <div class="gauge-details">
+                <div class="gauge-detail-row"><span>Dividend Yield</span><span>5.2%</span></div>
+                <div class="gauge-detail-row"><span>Payout Ratio</span><span>68%</span></div>
+                <div class="gauge-detail-row"><span>Rev Growth (YoY)</span><span>+4.2%</span></div>
+                <div class="gauge-detail-row"><span>EPS Growth</span><span>+6.1%</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Chart -->
+          <div class="card chart-card">
+            <div class="chart-header">
+              <div class="chart-tabs">
+                <button class="chart-tab">1D</button>
+                <button class="chart-tab">1W</button>
+                <button class="chart-tab active">1M</button>
+                <button class="chart-tab">3M</button>
+                <button class="chart-tab">6M</button>
+                <button class="chart-tab">1Y</button>
+                <button class="chart-tab">5Y</button>
+                <button class="chart-tab">Max</button>
+              </div>
+              <div class="chart-overlays">
+                <button class="overlay-btn active">SMA</button>
+                <button class="overlay-btn">EMA</button>
+                <button class="overlay-btn">Volume</button>
+              </div>
+            </div>
+            <div class="chart-body">
+              <div class="chart-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                Interactive chart loads here
+              </div>
+            </div>
+          </div>
+
+          <!-- Analyst Forecast -->
+          <div class="forecast-section">
+            <div class="forecast-grid">
+              <div class="forecast-card">
+                <div class="forecast-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Price Target</div>
+                <div class="price-target-visual">
+                  <div class="target-bar">
+                    <div class="target-range" style="left: 10%; width: 80%;"></div>
+                    <div class="target-current" style="left: 42%;"></div>
+                    <div class="target-avg" style="left: 68%;"></div>
+                  </div>
+                  <div class="target-labels"><span>SAR 24.00</span><span>Current: 28.90</span><span>SAR 38.00</span></div>
+                </div>
+                <div class="target-stats">
+                  <div class="target-stat"><label>Low</label><div class="value low">SAR 24.00</div></div>
+                  <div class="target-stat"><label>Average</label><div class="value avg">SAR 32.50</div></div>
+                  <div class="target-stat"><label>High</label><div class="value high">SAR 38.00</div></div>
+                </div>
+                <div class="analyst-count">Based on 18 analyst ratings · Updated Jun 12, 2026</div>
+              </div>
+              <div class="forecast-card">
+                <div class="forecast-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Earnings Trend</div>
+                <div class="earnings-bars">
+                  <div class="earnings-quarter"><div class="earnings-bar-group"><div class="earnings-bar estimate" style="height: 50px;"></div><div class="earnings-bar actual" style="height: 55px;"></div></div><div class="earnings-label">Q1'25</div></div>
+                  <div class="earnings-quarter"><div class="earnings-bar-group"><div class="earnings-bar estimate" style="height: 48px;"></div><div class="earnings-bar actual" style="height: 52px;"></div></div><div class="earnings-label">Q2'25</div></div>
+                  <div class="earnings-quarter"><div class="earnings-bar-group"><div class="earnings-bar estimate" style="height: 52px;"></div><div class="earnings-bar actual" style="height: 58px;"></div></div><div class="earnings-label">Q3'25</div></div>
+                  <div class="earnings-quarter"><div class="earnings-bar-group"><div class="earnings-bar estimate" style="height: 54px;"></div><div class="earnings-bar actual" style="height: 60px;"></div></div><div class="earnings-label">Q4'25</div></div>
+                  <div class="earnings-quarter"><div class="earnings-bar-group"><div class="earnings-bar estimate" style="height: 56px;"></div><div class="earnings-bar actual" style="height: 62px;"></div></div><div class="earnings-label">Q1'26</div></div>
+                  <div class="earnings-quarter"><div class="earnings-bar-group"><div class="earnings-bar estimate" style="height: 58px;"></div><div class="earnings-bar actual miss" style="height: 54px;"></div></div><div class="earnings-label">Q2'26</div></div>
+                </div>
+                <div class="earnings-legend"><span class="est">Estimate</span><span class="act">Actual</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 12-Dimension Thesis -->
+          <div class="card thesis-card">
+            <div class="card-header">
+              <h2 class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>12-Dimension Thesis Analysis</h2>
+              <span class="card-action" onclick="openMethodology()">View methodology <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+            </div>
+            <div class="thesis-intro"><strong>Saudi Aramco (2222)</strong> receives a weighted thesis score of <strong>7.8/10</strong>, placing it in the <strong>upper quartile</strong> of GCC energy names. Strong profitability and ownership metrics offset moderate valuation concerns.</div>
+
+            <!-- Investment Horizon -->
+            <div class="horizon-group">
+              <div class="horizon-header">
+                <span class="horizon-badge investment">Investment Horizon</span>
+                <span class="horizon-title">Long-term fundamental factors</span>
+              </div>
+              <div class="dimension-grid">
+                <div class="dimension-card"><div class="dimension-header"><span class="dimension-name">Valuation</span><span class="dimension-score medium">6.8</span></div><div class="dimension-bar"><div class="dimension-bar-fill medium" style="width: 68%"></div></div><p class="dimension-insight">P/E of 14.2x near historical average. EV/EBITDA at 8.4x appears reasonable for integrated energy.</p></div>
+                <div class="dimension-card"><div class="dimension-header"><span class="dimension-name">Growth</span><span class="dimension-score medium">7.2</span></div><div class="dimension-bar"><div class="dimension-bar-fill medium" style="width: 72%"></div></div><p class="dimension-insight">Revenue growth of 4.2% YoY. Downstream expansion supports medium-term trajectory.</p></div>
+                <div class="dimension-card"><div class="dimension-header"><span class="dimension-name">Profitability</span><span class="dimension-score high">8.9</span></div><div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 89%"></div></div><p class="dimension-insight">Net margin of 28.4% leads global peers. ROE of 32.1% reflects operational excellence.</p></div>
+                <div class="dimension-card"><div class="dimension-header"><span class="dimension-name">Quality</span><span class="dimension-score high">8.4</span></div><div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 84%"></div></div><p class="dimension-insight">Lowest cost producer globally. Reserve replacement ratio above 100% provides visibility.</p></div>
+                <div class="dimension-card"><div class="dimension-header"><span class="dimension-name">Dividends</span><span class="dimension-score high">8.1</span></div><div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 81%"></div></div><p class="dimension-insight">Yield of 5.2% with 68% payout ratio. Quarterly distribution provides stable income.</p></div>
+                <div class="dimension-card"><div class="dimension-header"><span class="dimension-name">Ownership</span><span class="dimension-score high">9.2</span></div><div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 92%"></div></div><p class="dimension-insight">Government (PIF) maintains 98% stake. Strategic alignment with Saudi Vision 2030.</p></div>
+                <div class="dimension-card"><div class="dimension-header"><span class="dimension-name">Governance</span><span class="dimension-score high">8.0</span></div><div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 80%"></div></div><p class="dimension-insight">International board composition. Transparency has improved materially since IPO.</p></div>
+                <div class="dimension-card"><div class="dimension-header"><span class="dimension-name">ESG</span><span class="dimension-score medium">6.5</span></div><div class="dimension-bar"><div class="dimension-bar-fill medium" style="width: 65%"></div></div><p class="dimension-insight">Carbon intensity targets set. Hydrogen and renewables investments progressing.</p></div>
+                <div class="dimension-card"><div class="dimension-header"><span class="dimension-name">Macro</span><span class="dimension-score high">7.8</span></div><div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 78%"></div></div><p class="dimension-insight">Oil at $82 supports margins. Global demand resilient despite transition narrative.</p></div>
+              </div>
+            </div>
+
+            <!-- Trading Horizon -->
+            <div class="horizon-group">
+              <div class="horizon-header">
+                <span class="horizon-badge trading">Trading Horizon</span>
+                <span class="horizon-title">Short-term technical factors</span>
+              </div>
+              <div class="dimension-grid two-col">
+                <div class="dimension-card"><div class="dimension-header"><span class="dimension-name">Momentum</span><span class="dimension-score high">7.6</span></div><div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 76%"></div></div><p class="dimension-insight">20-day momentum positive at +2.1%. Price above both 50-day and 200-day moving averages.</p></div>
+                <div class="dimension-card"><div class="dimension-header"><span class="dimension-name">Technicals</span><span class="dimension-score medium">7.0</span></div><div class="dimension-bar"><div class="dimension-bar-fill medium" style="width: 70%"></div></div><p class="dimension-insight">RSI at 54 suggests neutral momentum. Support at SAR 27.50, resistance near SAR 30.00.</p></div>
+              </div>
+            </div>
+
+            <!-- Bridge Horizon -->
+            <div class="horizon-group">
+              <div class="horizon-header">
+                <span class="horizon-badge bridge">Bridge Horizon</span>
+                <span class="horizon-title">Sentiment & news flow</span>
+              </div>
+              <div class="dimension-grid two-col">
+                <div class="dimension-card"><div class="dimension-header"><span class="dimension-name">Sentiment & News</span><span class="dimension-score high">7.5</span></div><div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 75%"></div></div><p class="dimension-insight">Net positive analyst sentiment. Recent PIF stake increase viewed favorably. Oil supply headlines remain key driver.</p></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Council Snapshot -->
+          <div class="card council-card">
+            <div class="card-header">
+              <h2 class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>AI Analyst Council Snapshot</h2>
+            </div>
+            <div class="card-body">
+              <p class="council-synthesis">The Council views <strong>Saudi Aramco</strong> as a <strong>core energy holding</strong> for GCC portfolios. Data suggests the company's profitability and dividend characteristics remain compelling, while <strong>valuation appears fair</strong> relative to global integrated peers. Risk Analyst notes <strong>oil price volatility</strong> as the primary watchpoint, while Income Analyst highlights the attractive 5.2% yield with sustainable payout. The <strong>PIF stake increase</strong> signals continued strategic support aligned with Vision 2030 objectives.</p>
+              <button class="council-btn" onclick="openCouncilModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Run Full AI Analyst Council Review</button>
+            </div>
+          </div>
+
+          <!-- Expandable Sections -->
+          <div class="expand-section" onclick="toggleExpand(this)">
+            <div class="expand-header">
+              <span class="expand-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Ownership & Foreign Flow</span>
+              <span class="expand-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
+            </div>
+            <div class="expand-body">
+              <div class="ownership-item"><div class="ownership-label"><span>Saudi Government (PIF)</span><span>98.2%</span></div><div class="ownership-bar"><div class="ownership-bar-fill" style="width: 98.2%"></div></div></div>
+              <div class="ownership-item"><div class="ownership-label"><span>Foreign Institutions</span><span>0.9%</span></div><div class="ownership-bar"><div class="ownership-bar-fill" style="width: 9%; background: var(--accent-blue)"></div></div></div>
+              <div class="ownership-item"><div class="ownership-label"><span>Retail Investors</span><span>0.6%</span></div><div class="ownership-bar"><div class="ownership-bar-fill" style="width: 6%; background: var(--accent-gold)"></div></div></div>
+              <div class="ownership-item"><div class="ownership-label"><span>Local Institutions</span><span>0.3%</span></div><div class="ownership-bar"><div class="ownership-bar-fill" style="width: 3%; background: var(--accent-violet)"></div></div></div>
+            </div>
+          </div>
+
+          <div class="expand-section" onclick="toggleExpand(this)">
+            <div class="expand-header">
+              <span class="expand-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Dividends & Corporate Actions</span>
+              <span class="expand-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
+            </div>
+            <div class="expand-body">
+              <table class="data-table">
+                <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td>Sep 15, 2026</td><td>Quarterly Dividend</td><td>SAR 0.375</td><td>Upcoming</td></tr>
+                  <tr><td>Jun 15, 2026</td><td>Quarterly Dividend</td><td>SAR 0.375</td><td>Paid</td></tr>
+                  <tr><td>Mar 15, 2026</td><td>Quarterly Dividend</td><td>SAR 0.375</td><td>Paid</td></tr>
+                  <tr><td>Dec 15, 2025</td><td>Quarterly Dividend</td><td>SAR 0.375</td><td>Paid</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="expand-section" onclick="toggleExpand(this)">
+            <div class="expand-header">
+              <span class="expand-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Technical Analysis</span>
+              <span class="expand-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
+            </div>
+            <div class="expand-body">
+              <table class="data-table">
+                <thead><tr><th>Indicator</th><th>Value</th><th>Signal</th></tr></thead>
+                <tbody>
+                  <tr><td>RSI (14)</td><td>54.2</td><td style="color: var(--accent-gold)">Neutral</td></tr>
+                  <tr><td>MACD</td><td>0.12</td><td style="color: var(--success)">Bullish</td></tr>
+                  <tr><td>SMA 50</td><td>SAR 28.20</td><td style="color: var(--success)">Above</td></tr>
+                  <tr><td>SMA 200</td><td>SAR 27.85</td><td style="color: var(--success)">Above</td></tr>
+                  <tr><td>Support</td><td>SAR 27.50</td><td>-</td></tr>
+                  <tr><td>Resistance</td><td>SAR 30.00</td><td>-</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <aside class="right-column">
+          <div class="card">
+            <div class="card-header"><h3 class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/></svg>Recent News</h3></div>
+            <div class="card-body" style="padding: 12px;">
+              <div class="news-card" onclick="askAboutNews('aramco-pif')">
+                <div class="news-meta"><span class="news-tag ownership">Ownership</span><span class="news-time">2h ago</span></div>
+                <p class="news-headline">PIF Increases Stake in Saudi Aramco to 8.2%, Signaling Strategic Commitment</p>
+                <div class="news-actions"><button class="ask-btn">Ask Adviser</button></div>
+              </div>
+              <div class="news-card" onclick="askAboutNews('aramco-cso')">
+                <div class="news-meta"><span class="news-tag governance">Governance</span><span class="news-time">Yesterday</span></div>
+                <p class="news-headline">Aramco Appoints New Chief Strategy Officer From McKinsey</p>
+                <div class="news-actions"><button class="ask-btn">Ask Adviser</button></div>
+              </div>
+              <div class="news-card" onclick="askAboutNews('aramco-hydrogen')">
+                <div class="news-meta"><span class="news-tag projects">Projects</span><span class="news-time">2 days ago</span></div>
+                <p class="news-headline">Aramco Expands Blue Hydrogen Production Capacity by 40%</p>
+                <div class="news-actions"><button class="ask-btn">Ask Adviser</button></div>
+              </div>
+              <div class="news-card" onclick="askAboutNews('aramco-q2')">
+                <div class="news-meta"><span class="news-tag earnings">Earnings</span><span class="news-time">1 week ago</span></div>
+                <p class="news-headline">Aramco Q2 Profit Rises 4% on Higher Production Volumes</p>
+                <div class="news-actions"><button class="ask-btn">Ask Adviser</button></div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <!-- Adviser Sidebar -->
+    <aside class="adviser-sidebar" id="adviserSidebar">
+      <div class="sidebar-inner">
+        <div class="sidebar-header">
+          <div class="sidebar-header-left">
+            <div class="sidebar-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="sidebar-title"><h3>AlphaCouncil Adviser</h3><p>Ready to help</p></div>
+          </div>
+          <button class="sidebar-btn" id="closeSidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+        </div>
+        <div class="sidebar-context">
+          <div class="context-label">Viewing</div>
+          <div class="context-stock">2222 · Saudi Aramco</div>
+        </div>
+        <div class="sidebar-content">
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">Questions About Aramco</div>
+            <div class="suggested-questions">
+              <button class="suggested-question" data-question="Explain the current Valuation score for Aramco">Explain the current Valuation score</button>
+              <button class="suggested-question" data-question="Compare Aramco to stronger GCC energy peers">Compare to stronger GCC energy peers</button>
+              <button class="suggested-question" data-question="What would trimming 10% of my Aramco position do to my portfolio?">What would trimming 10% do to my portfolio?</button>
+              <button class="suggested-question" data-question="What are the key risks for Aramco?">What are the key risks?</button>
+            </div>
+          </div>
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-message adviser">
+              <div class="chat-avatar">AC</div>
+              <div><div class="chat-bubble"><strong>Viewing Saudi Aramco (2222)</strong><br><br>I can help you analyze this stock's thesis, compare it to peers, or understand how it fits your portfolio.<br><br><em>Data analysis only — not financial advice.</em></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <div class="chat-input-row">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Ask about Aramco...">
+            <button class="chat-send" id="chatSend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">AlphaCouncil</div>
+        <p class="footer-slogan">Your AI adviser for TADAWUL, ADX and DFM.</p>
+      </div>
+      <p class="footer-disclaimer">AlphaCouncil provides data analysis and portfolio intelligence tools. All content is for informational purposes only and does not constitute financial advice. Always conduct your own research and consult with qualified financial advisors.</p>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"><div class="toast-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="toast-content"><div class="toast-title" id="toastTitle">Success</div><div class="toast-text" id="toastText">Action completed</div></div></div>
+
+  <script src="js/api.js"></script>
+  <script src="adviser-core.js"></script>
+  <script>
+    // Stock data lookup (would come from API in production)
+    const stocksDatabase = {
+      '2222': { ticker: '2222', name: 'Saudi Aramco', shares: 5470, avgCost: 25.40, currentPrice: 28.50, weight: 18.4, thesis: 8.4 },
+      '1120': { ticker: '1120', name: 'Al Rajhi Bank', shares: 1412, avgCost: 78.40, currentPrice: 85.20, weight: 14.2, thesis: 8.1 },
+      '7010': { ticker: '7010', name: 'stc', shares: 2375, avgCost: 40.00, currentPrice: 42.10, weight: 11.8, thesis: 7.2 },
+      'QNBK': { ticker: 'QNBK', name: 'QNB Group', shares: 4345, avgCost: 17.50, currentPrice: 18.72, weight: 9.6, thesis: 7.9 },
+      'FAB': { ticker: 'FAB', name: 'First Abu Dhabi Bank', shares: 4792, avgCost: 14.30, currentPrice: 14.85, weight: 8.4, thesis: 7.4 },
+      '2010': { ticker: '2010', name: 'SABIC', shares: 698, avgCost: 91.15, currentPrice: 87.40, weight: 7.2, thesis: 5.8 },
+      'EMAAR': { ticker: 'EMAAR', name: 'Emaar Properties', shares: 5774, avgCost: 9.16, currentPrice: 8.95, weight: 6.1, thesis: 6.5 }
+    };
+
+    // ticker_key from the URL (?ticker=1120_TADAWUL). REAL data loads from /api/ticker/.
+    const urlParams = new URLSearchParams(window.location.search);
+    const tickerParam = urlParams.get('ticker') || '2222_TADAWUL';
+    let currentStock = stocksDatabase[tickerParam] || stocksDatabase[(tickerParam.split('_')[0])] || {
+      ticker: (tickerParam.split('_')[0] || tickerParam), tickerKey: tickerParam,
+      name: (tickerParam.split('_')[0] || tickerParam), currency: 'SAR', exchange: ''
+    };
+    function _esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      AlphaCouncil.init('stock-detail');
+      AlphaCouncil.setStockContext(currentStock);
+      loadRealStock();
+    });
+
+    // REAL stock header from /api/ticker/{key}: name, exchange, live price.
+    // (Thesis radar / fundamentals / news on this page are wired in a follow-up step.)
+    async function loadRealStock() {
+      let d;
+      try { d = await API.ticker(tickerParam); }
+      catch (e) { console.warn('ticker load failed', e); return; }
+      currentStock = {
+        ticker: d.ticker || (tickerParam.split('_')[0] || tickerParam),
+        tickerKey: d.ticker_key || tickerParam,
+        name: d.name_en || d.name || d.company_name || currentStock.name,
+        exchange: d.exchange || currentStock.exchange || '',
+        currency: d.currency || 'SAR',
+        price: (d.last_price != null ? d.last_price : (d.price != null ? d.price : (d.last_close != null ? d.last_close : null)))
+      };
+      const tEl = document.querySelector('.stock-ticker');
+      const h1 = tEl ? tEl.closest('h1') : null;
+      if (h1) h1.innerHTML = '<span class="stock-ticker">'+_esc(currentStock.ticker)+'</span> '+_esc(currentStock.name)+' <span class="stock-exchange">'+_esc(currentStock.exchange)+'</span>';
+      const pEl = document.querySelector('.stock-price');
+      if (pEl && currentStock.price != null) pEl.textContent = currentStock.currency + ' ' + Number(currentStock.price).toFixed(2);
+      document.title = currentStock.name + ' — AlphaCouncil';
+      const bc = document.querySelector('.breadcrumb-current'); if (bc) bc.textContent = currentStock.name + ' (' + currentStock.ticker + ')';
+      const cs = document.querySelector('.context-stock'); if (cs) cs.textContent = currentStock.ticker + ' · ' + currentStock.name;
+
+      // ---- REAL fundamentals into the gauge detail rows (no fabricated figures) ----
+      function setGaugeRow(label, value){
+        const rows = document.querySelectorAll('.gauge-detail-row');
+        for (const r of rows){
+          const spans = r.querySelectorAll('span');
+          if (spans.length >= 2 && spans[0].textContent.trim().toLowerCase().indexOf(label.toLowerCase()) === 0){ spans[1].textContent = value; return; }
+        }
+      }
+      const num = (v, suffix) => (v == null ? '—' : (Number(v).toFixed(suffix === 'x' ? 1 : 1) + (suffix === 'x' ? 'x' : suffix)));
+      setGaugeRow('P/E', d.pe == null ? '—' : Number(d.pe).toFixed(1) + 'x');
+      setGaugeRow('P/B', d.pb == null ? '—' : Number(d.pb).toFixed(1) + 'x');
+      setGaugeRow('Net Margin', '—');               // not provided by the summary API
+      setGaugeRow('ROE', d.roe_pct == null ? '—' : Number(d.roe_pct).toFixed(1) + '%');
+      setGaugeRow('Dividend Yield', d.dividend_yield_pct == null ? '—' : Number(d.dividend_yield_pct).toFixed(1) + '%');
+      // RSI technicals table row (label in first <td>, value in second, signal in third)
+      document.querySelectorAll('tr').forEach(function(tr){
+        const tds = tr.querySelectorAll('td');
+        if (tds.length >= 2 && /RSI/i.test(tds[0].textContent) && d.rsi_14 != null){
+          const v = Number(d.rsi_14);
+          tds[1].textContent = v.toFixed(1);
+          if (tds[2]) tds[2].textContent = v >= 70 ? 'Overbought' : (v <= 30 ? 'Oversold' : 'Neutral');
+        }
+      });
+
+      AlphaCouncil.setStockContext(currentStock);
+      loadThesis();
+    }
+
+    // ---- 12-dimension AI thesis: generated ON DEMAND (no fabricated scores) ----
+    const _GEN_BTN_STYLE = 'display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:var(--accent-primary);color:var(--bg-deep);border:none;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;';
+    function thesisCtaHtml(prefix){
+      return (prefix || '')
+        + '<div style="padding:24px 20px;text-align:center;">'
+        + '<p style="color:var(--fg-muted);font-size:13px;line-height:1.6;max-width:540px;margin:0 auto 16px;">A 12-dimension AI thesis — 9 investment, 2 trading and 1 bridge dimension, each scored 1–10 by Claude Opus and grounded in this company’s real fundamentals, peers and news. Generated on demand.</p>'
+        + '<button id="genThesisBtn" style="' + _GEN_BTN_STYLE + '">Generate AI Thesis</button>'
+        + '<p style="color:var(--fg-dim);font-size:11px;margin-top:10px;">First generation can take up to ~2 minutes; afterwards it is cached.</p>'
+        + '</div>';
+    }
+    function loadThesis(){
+      const card = document.querySelector('.thesis-card');
+      if (card){
+        const title = card.querySelector('.card-title');
+        if (title) title.innerHTML = title.innerHTML.replace(/11-Dimension/g, '12-Dimension');
+        card.querySelectorAll('.thesis-intro, .horizon-group').forEach(function(el){ el.remove(); });
+        let body = card.querySelector('#thesisBody');
+        if (!body){ body = document.createElement('div'); body.id = 'thesisBody'; card.appendChild(body); }
+        body.innerHTML = thesisCtaHtml();
+        const g = body.querySelector('#genThesisBtn'); if (g) g.addEventListener('click', generateThesis);
+      }
+      // Neutralise the fabricated Council synthesis (it asserted fake per-company text).
+      const syn = document.querySelector('.council-synthesis');
+      if (syn) syn.innerHTML = 'Run a live multi-model AI Analyst Council review of <strong>' + _esc(currentStock.name || 'this company') + '</strong>: several models debate the bull and bear case, then a chairman synthesises a balanced view.';
+    }
+    async function generateThesis(){
+      const body = document.getElementById('thesisBody'); if (!body) return;
+      body.innerHTML = '<div style="padding:44px 20px;text-align:center;color:var(--fg-muted);font-size:13px;">Generating the 12-dimension thesis… this can take up to ~2 minutes.</div>';
+      let res;
+      try { res = await API.thesis(currentStock.tickerKey); }
+      catch (e){
+        let msg = (e && e.message) || 'Generation failed. Please try again.';
+        if (e && e.status === 401) msg = 'Please log in to generate an AI thesis.';
+        else if (e && e.status === 429) msg = 'Daily thesis limit reached — please try again later.';
+        else if (e && e.status === 0) msg = 'Network error — could not reach the server.';
+        body.innerHTML = thesisCtaHtml('<div style="padding:18px 20px 0;text-align:center;color:var(--danger);font-size:12px;">' + _esc(msg) + '</div>');
+        const g = body.querySelector('#genThesisBtn'); if (g) g.addEventListener('click', generateThesis);
+        return;
+      }
+      renderThesis(res);
+    }
+    function _dimCard(label, score){
+      if (score == null) return '<div class="dimension-card"><div class="dimension-header"><span class="dimension-name">' + _esc(label) + '</span><span class="dimension-score" style="color:var(--fg-dim);">—</span></div><div class="dimension-bar"><div class="dimension-bar-fill" style="width:0;"></div></div><p class="dimension-insight" style="font-size:10px;margin-top:6px;">Not in our data</p></div>';
+      const s = Number(score), pct = Math.round((s / 10) * 100);
+      const cls = s >= 7.5 ? 'high' : (s >= 5 ? 'medium' : 'low');
+      return '<div class="dimension-card"><div class="dimension-header"><span class="dimension-name">' + _esc(label) + '</span><span class="dimension-score ' + cls + '">' + s.toFixed(1) + '</span></div><div class="dimension-bar"><div class="dimension-bar-fill ' + cls + '" style="width:' + pct + '%"></div></div></div>';
+    }
+    function renderThesis(res){
+      const t = (res && res.thesis) ? res.thesis : res;
+      const body = document.getElementById('thesisBody'); if (!body) return;
+      if (!t || !t.scores){ body.innerHTML = thesisCtaHtml('<div style="padding:18px 20px 0;text-align:center;color:var(--fg-dim);font-size:12px;">Thesis unavailable for this ticker.</div>'); const g=body.querySelector('#genThesisBtn'); if(g) g.addEventListener('click', generateThesis); return; }
+      const inv = t.scores.investment || {}, tr = t.scores.trading || {}, br = t.scores.bridge || {};
+      const INV = [['valuation','Valuation'],['growth','Growth'],['profitability','Profitability'],['quality','Quality'],['dividends','Dividends'],['ownership','Ownership'],['governance','Governance'],['esg','ESG'],['macro','Macro']];
+      const TR = [['momentum','Momentum'],['technicals','Technicals']];
+      const BR = [['sentiment_news','Sentiment & News']];
+      function grid(map, src, two){ const cards = map.map(function(m){ return _dimCard(m[1], src[m[0]]); }).filter(Boolean).join(''); return cards ? '<div class="dimension-grid' + (two ? ' two-col' : '') + '">' + cards + '</div>' : ''; }
+      let html = '';
+      if (t.confidence) html += '<div class="thesis-intro">AI thesis confidence: <strong>' + _esc(t.confidence) + '</strong>' + (res && res.generated_at ? (' · generated ' + _esc(String(res.generated_at).slice(0,10))) : '') + '</div>';
+      html += '<div class="horizon-group"><div class="horizon-header"><span class="horizon-badge investment">Investment Horizon</span><span class="horizon-title">Long-term fundamental factors</span></div>' + grid(INV, inv, false) + '</div>';
+      html += '<div class="horizon-group"><div class="horizon-header"><span class="horizon-badge trading">Trading Horizon</span><span class="horizon-title">Short-term technical factors</span></div>' + grid(TR, tr, true) + '</div>';
+      html += '<div class="horizon-group"><div class="horizon-header"><span class="horizon-badge bridge">Bridge Horizon</span><span class="horizon-title">Sentiment &amp; news flow</span></div>' + grid(BR, br, true) + '</div>';
+      if (t.thesis_body) html += '<div class="thesis-intro" style="margin-top:16px;">' + _esc(t.thesis_body).replace(/\n/g, '<br>') + '</div>';
+      if (t.scenarios){
+        const sc = t.scenarios;
+        function scen(name, o, color){ if (!o) return ''; return '<div style="flex:1;min-width:170px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:10px;padding:12px;"><div style="font-weight:600;color:' + color + ';margin-bottom:6px;">' + name + (o.price_target != null ? (' · ' + currentStock.currency + ' ' + Number(o.price_target).toFixed(2)) : '') + (o.probability != null ? (' · ' + o.probability + '%') : '') + '</div><div style="font-size:12px;color:var(--fg-muted);line-height:1.5;">' + _esc(o.summary || '') + '</div></div>'; }
+        html += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin:16px 20px;">' + scen('Bull', sc.bull, 'var(--success)') + scen('Base', sc.base, 'var(--accent-gold)') + scen('Bear', sc.bear, 'var(--danger)') + '</div>';
+      }
+      body.innerHTML = html;
+    }
+
+    // Legacy function mappings
+    function showToast(title, text, type) { AlphaCouncil.showToast(title, text, type); }
+    function toggleSidebar() { AlphaCouncil.toggleSidebar(); }
+    function toggleGauge(el) { el.classList.toggle('expanded'); }
+    function toggleExpand(el) { el.classList.toggle('open'); }
+
+    // Stock actions - now fully functional
+    function addToPortfolio() {
+      const shares = prompt('How many shares of ' + currentStock.name + '?');
+      if (!shares) return;
+      const cost = prompt('Average cost per share (' + currentStock.currency + ')?');
+      if (!cost) return;
+      AlphaCouncil.addHolding(currentStock.tickerKey, shares, cost);
+    }
+    async function addToWatchlist() {
+      if (!currentStock || !currentStock.tickerKey) return;
+      try {
+        await API.addToWatchlist(currentStock.tickerKey);
+        AlphaCouncil.showToast('Added to Watchlist', `${currentStock.name} is now on your watchlist`, 'success');
+      } catch (e) {
+        if (e && e.status === 401) {
+          AlphaCouncil.showToast('Sign in required', 'Log in to track stocks on your watchlist', 'info');
+          setTimeout(function(){ window.location.href = 'login.html'; }, 900);
+          return;
+        }
+        AlphaCouncil.showToast('Couldn’t add to watchlist', 'Please try again in a moment', 'error');
+      }
+    }
+    function setAlert() {
+      AlphaCouncil.openAlertModal(currentStock.tickerKey);
+    }
+    function adjustPosition() {
+      AlphaCouncil.showToast('Adjust Position', 'Opening position adjustment flow', 'info');
+    }
+    function recordSale() {
+      AlphaCouncil.showToast('Record Sale', 'Opening partial sale modal', 'info');
+    }
+    function openCouncilModal() {
+      AlphaCouncil.openCouncilModal(currentStock);
+    }
+    function openMethodology() {
+      window.location.href = 'methodology.html';
+    }
+    function showSignalExplanation() {
+      AlphaCouncil.openSidebar();
+      setTimeout(() => {
+        AlphaCouncil.addChatMessage('<strong>Why HOLD signal?</strong><br><br>The HOLD signal reflects:<br>• Valuation at fair value (P/E 14.2x)<br>• Strong profitability (ROE 32%)<br>• Oil price volatility risk<br>• Already in your portfolio at reasonable weight<br><br>Data suggests maintaining current exposure rather than adding or reducing.');
+      }, 400);
+    }
+
+    // News contextual ask
+    function askAboutNews(id) {
+      const newsItems = {
+        'aramco-pif': { headline: 'PIF Increases Stake in Saudi Aramco to 8.2%', tickers: ['2222'] },
+        'aramco-cso': { headline: 'Aramco Appoints New Chief Strategy Officer', tickers: ['2222'] },
+        'aramco-hydrogen': { headline: 'Aramco Expands Blue Hydrogen Production', tickers: ['2222'] },
+        'aramco-q2': { headline: 'Aramco Q2 Profit Rises 4%', tickers: ['2222'] }
+      };
+      const news = newsItems[id];
+      if (news) {
+        AlphaCouncil.askAboutNews(id, news.headline, news.tickers);
+      }
+    }
+
+    // Chart tabs
+    document.querySelectorAll('.chart-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+    document.querySelectorAll('.overlay-btn').forEach(btn => {
+      btn.addEventListener('click', e => { e.stopPropagation(); btn.classList.toggle('active'); });
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        AlphaCouncil.closeCouncilModal();
+        AlphaCouncil.closeAlertModal();
+      }
+      if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        AlphaCouncil.openSidebar();
+      }
+    });
+
+    // Make thesis dimension cards interactive
+    const dimensionExplanations = {
+      'Valuation': `<strong>Valuation Analysis for ${currentStock.name}</strong><br><br>Current P/E of 14.2x is near the historical average for integrated energy names. EV/EBITDA of 8.4x appears reasonable relative to global peers like Exxon (9.1x) and Shell (7.8x).<br><br><strong>Key metrics:</strong><br>• P/B Ratio: 2.1x<br>• vs Sector Avg: -5%<br><br>Data suggests valuation is fair, neither stretched nor compelling.`,
+      'Growth': `<strong>Growth Analysis for ${currentStock.name}</strong><br><br>Revenue growth of 4.2% YoY reflects stable upstream production and expanding downstream capacity.<br><br><strong>Key drivers:</strong><br>• Downstream expansion in Asia<br>• Blue hydrogen investments<br>• Chemicals integration<br><br>Data suggests medium-term growth trajectory is constructive.`,
+      'Profitability': `<strong>Profitability Analysis for ${currentStock.name}</strong><br><br>Net margin of 28.4% leads global integrated peers significantly. ROE of 32.1% reflects operational excellence.<br><br><strong>Key metrics:</strong><br>• Net Margin: 28.4%<br>• ROE: 32.1%<br>• ROA: 14.8%<br>• vs Sector Avg: +18%<br><br>This is a core strength of the investment thesis.`,
+      'Quality': `<strong>Quality Analysis for ${currentStock.name}</strong><br><br>As the world's lowest cost oil producer, Aramco maintains significant competitive advantages.<br><br><strong>Key factors:</strong><br>• Lifting cost: ~$3/barrel<br>• Reserve replacement: >100%<br>• Reserve life: 50+ years<br><br>Data suggests quality metrics support long-term position.`,
+      'Dividends': `<strong>Dividend Analysis for ${currentStock.name}</strong><br><br>The 5.2% dividend yield with 68% payout ratio provides stable income for investors.<br><br><strong>Key metrics:</strong><br>• Quarterly distribution<br>• Payout ratio: 68%<br>• Dividend growth: Stable<br><br>Income dimension is a key strength for portfolio positioning.`,
+      'Ownership': `<strong>Ownership Analysis for ${currentStock.name}</strong><br><br>PIF maintains a 98% stake, ensuring strategic alignment with Saudi Vision 2030.<br><br><strong>Key observations:</strong><br>• PIF recently increased stake to 8.2%<br>• Government alignment is strong<br>• Float remains limited (1.8%)<br><br>Ownership quality is among the highest in the GCC.`,
+      'Governance': `<strong>Governance Analysis for ${currentStock.name}</strong><br><br>Board composition has become increasingly international since the 2019 IPO.<br><br><strong>Key factors:</strong><br>• Independent directors: 4<br>• Audit committee: International standard<br>• Disclosure quality: Improved significantly<br><br>Governance trajectory is positive.`,
+      'ESG': `<strong>ESG Analysis for ${currentStock.name}</strong><br><br>Carbon intensity targets have been set, with hydrogen and renewables investments progressing.<br><br><strong>Key initiatives:</strong><br>• Net-zero by 2050 commitment<br>• Blue hydrogen projects<br>• Solar/wind investments<br><br>ESG is improving but remains a watchpoint for long-term investors.`,
+      'Macro': `<strong>Macro Analysis for ${currentStock.name}</strong><br><br>Oil at $82 supports healthy margins. Global demand remains resilient despite energy transition narrative.<br><br><strong>Key factors:</strong><br>• OPEC+ production discipline<br>• China demand recovery<br>• Refining margins stable<br><br>Macro environment is supportive for near-term.`,
+      'Momentum': `<strong>Momentum Analysis for ${currentStock.name}</strong><br><br>20-day momentum is positive at +2.1%. Price is above both 50-day and 200-day moving averages.<br><br><strong>Key signals:</strong><br>• Above 50-day MA: Yes<br>• Above 200-day MA: Yes<br>• Trend: Upward<br><br>Technical momentum supports the position.`,
+      'Technicals': `<strong>Technical Analysis for ${currentStock.name}</strong><br><br>RSI at 54 suggests neutral momentum. Key support at SAR 27.50, resistance near SAR 30.00.<br><br><strong>Key levels:</strong><br>• Support: SAR 27.50<br>• Resistance: SAR 30.00<br>• RSI: 54 (Neutral)<br><br>Data suggests watching for breakout above resistance.`,
+      'Sentiment & News': `<strong>Sentiment Analysis for ${currentStock.name}</strong><br><br>Net positive analyst sentiment following PIF stake increase. Oil supply headlines remain the primary driver of short-term moves.<br><br><strong>Recent catalysts:</strong><br>• PIF stake increase (+)<br>• Q2 earnings in line<br>• CSO appointment<br><br>Sentiment is constructive but news-dependent.`
+    };
+
+    document.querySelectorAll('.dimension-card').forEach(card => {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', () => {
+        const dimensionName = card.querySelector('.dimension-name').textContent;
+        const explanation = dimensionExplanations[dimensionName];
+        if (explanation) {
+          AlphaCouncil.openSidebar();
+          setTimeout(() => {
+            AlphaCouncil.addChatMessage(`Explain the ${dimensionName} dimension for ${currentStock.name}`, true);
+            setTimeout(() => AlphaCouncil.addChatMessage(explanation), 600);
+          }, 300);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

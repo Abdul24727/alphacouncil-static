@@ -1,0 +1,2755 @@
+<!-- REVIEWED & POLISHED: 2026-06-17 -->
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio — AlphaCouncil</title>
+  <meta name="description" content="Manage your GCC portfolio holdings, track performance, and run deep AI analysis.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/alphacouncil.css">
+  <style>
+    /* ==========================================================================
+       PORTFOLIO PAGE - SPECIFIC STYLES
+       Styles unique to portfolio.html that are not in the shared design system.
+       ========================================================================== */
+
+    /* Metrics Row - Portfolio-specific 6-column layout */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .metric-sub {
+      font-size: 11px;
+      color: var(--fg-dim);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .metric-sub.up { color: var(--success); }
+    .metric-sub.down { color: var(--danger); }
+
+    .metric-badge {
+      display: inline-flex;
+      padding: 3px 8px;
+      background: var(--accent-gold-glow);
+      border: 1px solid rgba(215, 183, 106, 0.3);
+      border-radius: 5px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent-gold);
+    }
+
+    /* Main Grid - Portfolio-specific 2-column layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 20px;
+    }
+
+    /* Holdings Table - Portfolio-specific */
+    .holdings-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .holdings-table th {
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .holdings-table th:last-child { text-align: right; }
+
+    .holdings-table td {
+      padding: 14px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .holdings-table tbody tr {
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .holdings-table tbody tr:hover {
+      background: var(--accent-primary-glow);
+    }
+
+    .holdings-table tbody tr:hover td { border-color: transparent; }
+    .holdings-table tr:last-child td { border-bottom: none; }
+
+    .holding-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .holding-logo {
+      width: 32px;
+      height: 32px;
+      background: var(--bg-elevated);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--fg-muted);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .holding-ticker { font-weight: 600; }
+    .holding-company { font-size: 11px; color: var(--fg-dim); }
+
+    .weight-cell { font-variant-numeric: tabular-nums; }
+
+    .weight-bar {
+      width: 48px;
+      height: 4px;
+      background: var(--bg-elevated);
+      border-radius: 2px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+
+    .weight-bar-fill {
+      height: 100%;
+      background: var(--accent-primary);
+      border-radius: 2px;
+      transition: width 0.3s var(--ease-out);
+    }
+
+    .pnl-cell { text-align: right; }
+
+    .pnl-amount {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pnl-amount.up { color: var(--success); }
+    .pnl-amount.down { color: var(--danger); }
+    .pnl-pct { font-size: 11px; color: var(--fg-dim); }
+
+    .thesis-score {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      position: relative;
+    }
+
+    .thesis-score::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .thesis-score:hover::before { opacity: 1; }
+    .thesis-score.high { background: var(--success-glow); color: var(--success); }
+    .thesis-score.medium { background: var(--accent-gold-glow); color: var(--accent-gold); }
+    .thesis-score.low { background: var(--danger-glow); color: var(--danger); }
+
+    .thesis-score .score-bar {
+      width: 40px;
+      height: 4px;
+      background: var(--bg-deep);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .thesis-score .score-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.5s var(--ease-out);
+    }
+
+    .thesis-score.high .score-bar-fill { background: var(--success); }
+    .thesis-score.medium .score-bar-fill { background: var(--accent-gold); }
+    .thesis-score.low .score-bar-fill { background: var(--danger); }
+
+    .row-actions {
+      display: flex;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    tr:hover .row-actions { opacity: 1; }
+
+    .row-action {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--fg-dim);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .row-action:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .row-action:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .row-action.danger:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+      background: var(--danger-glow);
+    }
+
+    .row-action svg { width: 12px; height: 12px; }
+
+    /* Expandable Row Enhancements */
+    .holding-row { position: relative; }
+    .holding-row.expanded { background: var(--bg-elevated); }
+    .holding-row.expanded td { border-color: transparent; }
+
+    .expand-toggle {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: var(--fg-dim);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 8px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .expand-toggle:hover {
+      color: var(--accent-primary);
+      background: var(--accent-primary-glow);
+    }
+
+    .expand-toggle:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .expand-toggle svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.3s var(--ease-out);
+    }
+
+    .holding-row.expanded .expand-toggle svg { transform: rotate(90deg); }
+    .holding-name-wrapper { display: flex; align-items: center; }
+
+    .row-meta {
+      font-size: 10px;
+      color: var(--fg-dim);
+      margin-top: 2px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .holding-row:hover .row-meta { opacity: 1; }
+
+    .thesis-cell { position: relative; }
+
+    /* Transaction History Panel */
+    .tx-history-row { display: none; }
+    .tx-history-row.open { display: table-row; }
+
+    .tx-history-row td {
+      padding: 0 !important;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-deep);
+    }
+
+    .tx-history-panel {
+      padding: 16px 20px 20px 56px;
+      animation: slideDown 0.3s var(--ease-out);
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tx-history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .tx-history-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tx-history-actions { display: flex; gap: 8px; }
+
+    .tx-btn {
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .tx-btn:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .tx-btn svg { width: 12px; height: 12px; }
+    .tx-btn-primary { background: var(--accent-primary); border: none; color: var(--bg-deep); }
+    .tx-btn-primary:hover { transform: translateY(-1px); }
+
+    .tx-btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--fg-muted);
+    }
+
+    .tx-btn-secondary:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .tx-btn-danger {
+      background: var(--danger-glow);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--danger);
+    }
+
+    .tx-btn-danger:hover { background: var(--danger); color: white; }
+
+    /* Transaction Table */
+    .tx-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .tx-table th {
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tx-table td {
+      padding: 10px 12px;
+      font-size: 12px;
+      color: var(--fg-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tx-table tr:last-child td { border-bottom: none; }
+    .tx-table tr:hover td { background: var(--surface-elevated); }
+
+    .tx-type {
+      display: inline-flex;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .tx-type.buy { background: var(--success-glow); color: var(--success); }
+    .tx-type.sell { background: var(--danger-glow); color: var(--danger); }
+    .tx-type.partial { background: var(--warning-glow); color: var(--warning); }
+
+    .tx-note {
+      font-size: 11px;
+      color: var(--fg-dim);
+      font-style: italic;
+      max-width: 150px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tx-realized { font-weight: 600; font-variant-numeric: tabular-nums; }
+    .tx-realized.profit { color: var(--success); }
+    .tx-realized.loss { color: var(--danger); }
+
+    /* Position Summary */
+    .tx-summary {
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, var(--accent-primary-glow), var(--accent-violet-glow));
+      border: 1px solid var(--accent-primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .tx-summary-left { display: flex; align-items: center; gap: 20px; }
+
+    .tx-summary-item { display: flex; flex-direction: column; gap: 2px; }
+
+    .tx-summary-label {
+      font-size: 10px;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .tx-summary-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--fg);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tx-summary-value.up { color: var(--success); }
+    .tx-summary-value.down { color: var(--danger); }
+
+    /* Allocation Cards */
+    .allocation-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .allocation-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .allocation-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .allocation-title {
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .allocation-title svg { width: 16px; height: 16px; color: var(--accent-primary); }
+    .allocation-items { display: flex; flex-direction: column; gap: 14px; }
+
+    .allocation-item { display: flex; align-items: center; gap: 12px; }
+
+    .allocation-label {
+      font-size: 12px;
+      color: var(--fg-muted);
+      width: 90px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .allocation-label .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .allocation-bar-container { flex: 1; display: flex; align-items: center; gap: 10px; }
+
+    .allocation-bar-bg {
+      flex: 1;
+      height: 10px;
+      background: var(--bg-elevated);
+      border-radius: 5px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .allocation-bar {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.5s var(--ease-out);
+      position: relative;
+    }
+
+    .allocation-bar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+    }
+
+    .allocation-bar.banking { background: linear-gradient(90deg, #27D3C3, #1FA89A); }
+    .allocation-bar.energy { background: linear-gradient(90deg, #D7B76A, #C9A84E); }
+    .allocation-bar.telecom { background: linear-gradient(90deg, #8B5CF6, #7C3AED); }
+    .allocation-bar.materials { background: linear-gradient(90deg, #3B82F6, #2563EB); }
+    .allocation-bar.realestate { background: linear-gradient(90deg, #EF4444, #DC2626); }
+    .allocation-bar.other { background: linear-gradient(90deg, #6B7A8F, #556070); }
+    .allocation-bar.saudi { background: linear-gradient(90deg, #10B981, #059669); }
+    .allocation-bar.uae { background: linear-gradient(90deg, #D7B76A, #C9A84E); }
+    .allocation-bar.qatar { background: linear-gradient(90deg, #8B5CF6, #7C3AED); }
+    .allocation-bar.kuwait { background: linear-gradient(90deg, #3B82F6, #2563EB); }
+
+    .allocation-pct {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--fg);
+      width: 50px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .council-flag {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 10px 12px;
+      background: var(--warning-glow);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 8px;
+    }
+
+    .council-flag svg {
+      width: 14px;
+      height: 14px;
+      color: var(--warning);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .council-flag-text { font-size: 11px; color: var(--warning); line-height: 1.4; }
+
+    /* Commentary Card */
+    .commentary-card { margin-bottom: 16px; }
+    .commentary-text { font-size: 13px; color: var(--fg-muted); line-height: 1.7; }
+    .commentary-text strong { color: var(--fg); font-weight: 500; }
+    .commentary-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+
+    .commentary-tag {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .commentary-tag.danger {
+      background: var(--danger-glow);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--danger);
+    }
+
+    .commentary-tag.warning {
+      background: var(--warning-glow);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--warning);
+    }
+
+    .commentary-tag.success {
+      background: var(--success-glow);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--success);
+    }
+
+    .commentary-tag svg { width: 12px; height: 12px; }
+
+    /* Council Card - Portfolio-specific variant */
+    .council-card {
+      background: linear-gradient(180deg, rgba(139, 92, 246, 0.1) 0%, var(--surface) 100%);
+      border-color: rgba(139, 92, 246, 0.3);
+      margin-bottom: 16px;
+    }
+
+    .council-card .card-header { border-color: rgba(139, 92, 246, 0.2); }
+    .council-card .card-title svg { color: var(--accent-violet); }
+
+    .council-synthesis {
+      font-size: 13px;
+      color: var(--fg-muted);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .council-synthesis strong { color: var(--fg); font-weight: 500; }
+    .council-perspectives { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+
+    .council-perspective {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--fg-dim);
+      transition: all 0.2s;
+      cursor: default;
+    }
+
+    .council-perspective:hover {
+      border-color: var(--accent-violet);
+      color: var(--accent-violet);
+    }
+
+    .council-perspective svg { width: 12px; height: 12px; }
+
+    .council-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent-violet);
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .council-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px var(--accent-violet-glow);
+    }
+
+    .council-btn:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .council-btn svg { width: 16px; height: 16px; }
+
+    /* Alerts Card - Portfolio-specific */
+    .alerts-card { margin-bottom: 16px; }
+
+    .alert-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin: 0 -8px;
+      padding-left: 8px;
+      padding-right: 8px;
+      border-radius: 8px;
+    }
+
+    .alert-item:hover { background: var(--surface-elevated); }
+
+    .alert-item:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .alert-item:last-child { border-bottom: none; }
+
+    .alert-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .alert-icon svg { width: 16px; height: 16px; }
+    .alert-icon.growth { background: var(--success-glow); color: var(--success); }
+    .alert-icon.value { background: var(--accent-blue-glow); color: var(--accent-blue); }
+    .alert-icon.risk { background: var(--danger-glow); color: var(--danger); }
+    .alert-icon.macro { background: var(--accent-gold-glow); color: var(--accent-gold); }
+
+    .alert-content { flex: 1; min-width: 0; }
+
+    .alert-source {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--fg-dim);
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .alert-text { font-size: 12px; color: var(--fg-muted); line-height: 1.4; }
+    .alert-time { font-size: 10px; color: var(--fg-dim); white-space: nowrap; }
+
+    /* News Grid - Portfolio-specific */
+    .news-grid { display: flex; flex-direction: column; gap: 10px; }
+
+    .news-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .news-item:hover { border-color: var(--border-strong); }
+
+    .news-item:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .news-thumb {
+      width: 48px;
+      height: 48px;
+      background: var(--surface);
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .news-thumb svg { width: 20px; height: 20px; color: var(--fg-dim); }
+    .news-content { flex: 1; min-width: 0; }
+
+    .news-source {
+      font-size: 10px;
+      color: var(--accent-primary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 3px;
+    }
+
+    .news-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--fg);
+      margin-bottom: 4px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .news-meta { font-size: 10px; color: var(--fg-dim); }
+
+    .news-ask {
+      font-size: 10px;
+      padding: 4px 8px;
+      background: var(--accent-primary-glow);
+      border: 1px solid var(--accent-primary);
+      border-radius: 5px;
+      color: var(--accent-primary);
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      align-self: center;
+    }
+
+    .news-ask:hover { background: var(--accent-primary); color: var(--bg-deep); }
+
+    .news-ask:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    /* Portfolio Page Header - specific overrides */
+    .page-header-text h1 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
+    }
+
+    .page-header-text p { font-size: 14px; color: var(--fg-muted); }
+    .page-header-actions { display: flex; gap: 10px; flex-shrink: 0; }
+
+    /* Upload Zone - Portfolio import specific */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 14px;
+      padding: 40px;
+      text-align: center;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .upload-zone:hover {
+      border-color: var(--accent-primary);
+      background: var(--accent-primary-glow);
+    }
+
+    .upload-zone:focus-within {
+      border-color: var(--accent-primary);
+      box-shadow: var(--focus-ring);
+    }
+
+    .upload-zone svg { width: 48px; height: 48px; color: var(--fg-dim); margin-bottom: 16px; }
+    .upload-zone h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+    .upload-zone p { font-size: 13px; color: var(--fg-dim); }
+
+    /* ==========================================================================
+       PORTFOLIO PAGE ANIMATIONS
+       ========================================================================== */
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; transform: translateY(-10px); }
+    }
+
+    /* ==========================================================================
+       REDUCED MOTION SUPPORT
+       ========================================================================== */
+
+    @media (prefers-reduced-motion: reduce) {
+      .tx-history-panel,
+      .weight-bar-fill,
+      .thesis-score .score-bar-fill,
+      .allocation-bar,
+      .expand-toggle svg,
+      .row-action,
+      .tx-btn,
+      .council-btn,
+      .news-item,
+      .alert-item {
+        transition: none;
+      }
+
+      @keyframes slideDown {
+        from { opacity: 1; transform: none; }
+        to { opacity: 1; transform: none; }
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 1; transform: none; }
+        to { opacity: 1; transform: none; }
+      }
+
+      @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+      }
+    }
+
+    /* ==========================================================================
+       RESPONSIVE - PORTFOLIO-SPECIFIC OVERRIDES
+       ========================================================================== */
+
+    @media (max-width: 1400px) {
+      .metrics-row { grid-template-columns: repeat(3, 1fr); }
+      .main-grid { grid-template-columns: 1fr 340px; }
+    }
+
+    @media (max-width: 1200px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .metrics-row { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 1024px) {
+      .allocation-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .metrics-row { grid-template-columns: repeat(2, 1fr); }
+      .page-header { flex-direction: column; align-items: stretch; }
+      .page-header-actions { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip Link for Accessibility -->
+  <a href="#mainContent" class="ac-skip-link">Skip to main content</a>
+
+  <!-- Live Region for Screen Reader Announcements -->
+  <div id="liveRegion" class="ac-live-region" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="app-nav" role="navigation" aria-label="Main navigation">
+    <div class="app-nav-inner">
+      <a href="index.html" class="app-logo">
+          <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+        </a>
+      <div class="app-nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="portfolio.html" class="active">Portfolio</a>
+        <a href="portfolio.html">Watchlist</a>
+        <a href="markets.html">Markets</a>
+        <a href="news.html">News</a>
+        <a href="council-history.html">Council</a>
+        <a href="alerts.html">Alerts</a>
+      </div>
+      <div class="app-nav-right">
+        <div class="app-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <span>Search stocks...</span>
+          <kbd>/</kbd>
+        </div>
+        <div class="lang-toggle">
+          <button class="active">EN</button>
+          <button>AR</button>
+        </div>
+        <button class="nav-icon-btn" id="adviserToggle" title="Toggle AI Adviser" aria-label="Toggle AI Adviser sidebar" aria-expanded="false" aria-controls="adviserSidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="nav-icon-btn" id="notificationsBtn" aria-label="Notifications, 3 unread">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="badge" aria-hidden="true">3</span>
+        </button>
+        <button class="nav-icon-btn" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button class="user-avatar" id="userMenu" aria-label="User menu for Sami" aria-haspopup="true">SK</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Market Indices -->
+  <div class="indices-bar" role="region" aria-label="Live market indices">
+    <div class="indices-inner">
+      <div class="index-item">
+        <span class="index-name">TASI</span>
+        <span class="index-value">12,847.32</span>
+        <span class="index-change up">+0.82%</span>
+      </div>
+      <div class="index-item">
+        <span class="index-name">ADX</span>
+        <span class="index-value">9,234.18</span>
+        <span class="index-change up">+0.34%</span>
+      </div>
+      <div class="index-item">
+        <span class="index-name">DFM</span>
+        <span class="index-value">4,156.92</span>
+        <span class="index-change down">-0.21%</span>
+      </div>
+      <div class="index-item">
+        <span class="index-name">QSE</span>
+        <span class="index-value">10,892.45</span>
+        <span class="index-change up">+0.56%</span>
+      </div>
+      <div class="index-item">
+        <span class="index-name">Boursa Kuwait</span>
+        <span class="index-value">7,234.67</span>
+        <span class="index-change up">+0.18%</span>
+      </div>
+      <div class="index-item">
+        <span class="index-name">Brent</span>
+        <span class="index-value">$82.34</span>
+        <span class="index-change down">-0.45%</span>
+      </div>
+      <span class="indices-time">Live · 14:32 GST</span>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="app-wrapper">
+    <main class="app-main" id="mainContent" role="main" aria-label="Portfolio content">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="page-header-text">
+          <h1>Portfolio</h1>
+          <p>Manage holdings, track performance, and run deep analysis</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-secondary" id="importBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Import from screenshot/PDF
+          </button>
+          <button class="btn btn-primary" id="addHoldingBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+            Add holding
+          </button>
+        </div>
+      </div>
+
+      <!-- Metrics Row -->
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Total Portfolio Value
+          </div>
+          <div class="metric-value">SAR 847,250</div>
+          <div class="metric-sub up">+2.4% this month</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            Total Cost
+          </div>
+          <div class="metric-value">SAR 808,338</div>
+          <div class="metric-sub">Avg hold: 14 months</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Unrealized P&L
+          </div>
+          <div class="metric-value" style="color: var(--success);">+SAR 38,912</div>
+          <div class="metric-sub up">+4.8% overall</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            Portfolio Yield (TTM)
+          </div>
+          <div class="metric-value">3.2%</div>
+          <div class="metric-sub">SAR 27,112 dividends</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            Holdings
+          </div>
+          <div class="metric-value">7</div>
+          <div class="metric-sub">Across 4 sectors</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Risk Score
+          </div>
+          <div class="metric-value">64</div>
+          <div class="metric-badge">Moderate</div>
+        </div>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="main-grid">
+        <!-- Left Column -->
+        <div class="main-left">
+          <!-- Holdings Table -->
+          <div class="card" id="holdingsCard">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                Holdings Overview
+              </div>
+              <div class="card-actions">
+                <span class="card-action">Export CSV</span>
+              </div>
+            </div>
+            <div style="overflow-x: auto;">
+              <table class="holdings-table" id="holdingsTable">
+                <thead>
+                  <tr>
+                    <th style="width: 280px;">Holding</th>
+                    <th>Weight</th>
+                    <th>Value</th>
+                    <th>P&L</th>
+                    <th style="width: 130px;">Thesis Score</th>
+                    <th style="width: 100px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="holdingsBody">
+                  <tr data-ticker="2222" class="holding-row">
+                    <td>
+                      <div class="holding-name-wrapper">
+                        <button class="expand-toggle" onclick="toggleExpand('2222')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+                        <div class="holding-logo">2222</div>
+                        <div>
+                          <div class="holding-ticker">Saudi Aramco</div>
+                          <div class="holding-company">2222.SR · Energy</div>
+                          <div class="row-meta">Council reviewed: 2 days ago</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="weight-cell">
+                      18.4%
+                      <div class="weight-bar"><div class="weight-bar-fill" style="width: 92%;"></div></div>
+                    </td>
+                    <td>SAR 155,894</td>
+                    <td class="pnl-cell">
+                      <div class="pnl-amount up">+12.3%</div>
+                      <div class="pnl-pct">+SAR 17,065</div>
+                    </td>
+                    <td class="thesis-cell"><span class="thesis-score high">8.4/10<span class="score-bar"><span class="score-bar-fill" style="width: 84%;"></span></span></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <button class="row-action" title="View Details" onclick="viewHolding('2222')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                        <button class="row-action" title="Ask Adviser" onclick="askAboutHolding('2222', 'Saudi Aramco')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+                        <button class="row-action" title="Run Council" onclick="runCouncilForHolding('2222', 'Saudi Aramco')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
+                        <button class="row-action" title="Set Alert" onclick="setAlertForHolding('2222')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+                        <button class="row-action" title="Adjust Position" onclick="openAdjustModal('2222')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                        <button class="row-action danger" title="Remove" onclick="removeHolding('2222', 'Saudi Aramco')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="tx-history-row" data-ticker-history="2222">
+                    <td colspan="6">
+                      <div class="tx-history-panel">
+                        <div class="tx-history-header">
+                          <span class="tx-history-title">Transaction History</span>
+                          <div class="tx-history-actions">
+                            <button class="tx-btn tx-btn-primary" onclick="openAddLotModal('2222')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Add Lot</button>
+                            <button class="tx-btn tx-btn-secondary" onclick="openSellModal('2222')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Partial Sale</button>
+                          </div>
+                        </div>
+                        <table class="tx-table">
+                          <thead>
+                            <tr><th>Date</th><th>Type</th><th>Shares</th><th>Price</th><th>Realized P&L</th><th>Remaining</th><th>Notes</th></tr>
+                          </thead>
+                          <tbody>
+                            <tr><td>Jan 15, 2025</td><td><span class="tx-type buy">Buy</span></td><td>3,500</td><td>SAR 24.80</td><td>—</td><td>3,500</td><td class="tx-note">Initial position</td></tr>
+                            <tr><td>Mar 22, 2025</td><td><span class="tx-type buy">Buy</span></td><td>2,000</td><td>SAR 26.50</td><td>—</td><td>5,500</td><td class="tx-note">Added on dip</td></tr>
+                            <tr><td>May 10, 2025</td><td><span class="tx-type sell">Sell</span></td><td>500</td><td>SAR 29.10</td><td class="tx-realized profit">+SAR 2,150</td><td>5,000</td><td class="tx-note">Trimmed 9% per rebalance</td></tr>
+                            <tr><td>Jun 05, 2026</td><td><span class="tx-type buy">Buy</span></td><td>470</td><td>SAR 27.40</td><td>—</td><td>5,470</td><td class="tx-note">Added before earnings</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="tx-summary">
+                          <div class="tx-summary-left">
+                            <div class="tx-summary-item">
+                              <span class="tx-summary-label">Current Position</span>
+                              <span class="tx-summary-value">5,470 shares</span>
+                            </div>
+                            <div class="tx-summary-item">
+                              <span class="tx-summary-label">Blended Avg Cost</span>
+                              <span class="tx-summary-value">SAR 25.40</span>
+                            </div>
+                            <div class="tx-summary-item">
+                              <span class="tx-summary-label">Unrealized P&L</span>
+                              <span class="tx-summary-value up">+SAR 17,065 (+12.3%)</span>
+                            </div>
+                            <div class="tx-summary-item">
+                              <span class="tx-summary-label">Total Realized</span>
+                              <span class="tx-summary-value up">+SAR 2,150</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr data-ticker="1120" class="holding-row">
+                    <td>
+                      <div class="holding-name-wrapper">
+                        <button class="expand-toggle" onclick="toggleExpand('1120')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+                        <div class="holding-logo">1120</div>
+                        <div>
+                          <div class="holding-ticker">Al Rajhi Bank</div>
+                          <div class="holding-company">1120.SR · Banking</div>
+                          <div class="row-meta">Council reviewed: 3 days ago</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="weight-cell">
+                      14.2%
+                      <div class="weight-bar"><div class="weight-bar-fill" style="width: 71%;"></div></div>
+                    </td>
+                    <td>SAR 120,310</td>
+                    <td class="pnl-cell">
+                      <div class="pnl-amount up">+8.7%</div>
+                      <div class="pnl-pct">+SAR 9,635</div>
+                    </td>
+                    <td class="thesis-cell"><span class="thesis-score high">8.1/10<span class="score-bar"><span class="score-bar-fill" style="width: 81%;"></span></span></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <button class="row-action" title="View Details" onclick="viewHolding('1120')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                        <button class="row-action" title="Ask Adviser" onclick="askAboutHolding('1120', 'Al Rajhi Bank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+                        <button class="row-action" title="Run Council" onclick="runCouncilForHolding('1120', 'Al Rajhi Bank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
+                        <button class="row-action" title="Set Alert" onclick="setAlertForHolding('1120')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+                        <button class="row-action" title="Adjust Position" onclick="openAdjustModal('1120')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                        <button class="row-action danger" title="Remove" onclick="removeHolding('1120', 'Al Rajhi Bank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="tx-history-row" data-ticker-history="1120">
+                    <td colspan="6">
+                      <div class="tx-history-panel">
+                        <div class="tx-history-header">
+                          <span class="tx-history-title">Transaction History</span>
+                          <div class="tx-history-actions">
+                            <button class="tx-btn tx-btn-primary" onclick="openAddLotModal('1120')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Add Lot</button>
+                            <button class="tx-btn tx-btn-secondary" onclick="openSellModal('1120')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Partial Sale</button>
+                          </div>
+                        </div>
+                        <table class="tx-table">
+                          <thead>
+                            <tr><th>Date</th><th>Type</th><th>Shares</th><th>Price</th><th>Realized P&L</th><th>Remaining</th><th>Notes</th></tr>
+                          </thead>
+                          <tbody>
+                            <tr><td>Feb 08, 2025</td><td><span class="tx-type buy">Buy</span></td><td>1,200</td><td>SAR 76.50</td><td>—</td><td>1,200</td><td class="tx-note">Initial position</td></tr>
+                            <tr><td>Apr 15, 2025</td><td><span class="tx-type buy">Buy</span></td><td>212</td><td>SAR 82.30</td><td>—</td><td>1,412</td><td class="tx-note">Added on strength</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="tx-summary">
+                          <div class="tx-summary-left">
+                            <div class="tx-summary-item">
+                              <span class="tx-summary-label">Current Position</span>
+                              <span class="tx-summary-value">1,412 shares</span>
+                            </div>
+                            <div class="tx-summary-item">
+                              <span class="tx-summary-label">Blended Avg Cost</span>
+                              <span class="tx-summary-value">SAR 78.40</span>
+                            </div>
+                            <div class="tx-summary-item">
+                              <span class="tx-summary-label">Unrealized P&L</span>
+                              <span class="tx-summary-value up">+SAR 9,635 (+8.7%)</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr data-ticker="7010" class="holding-row">
+                    <td>
+                      <div class="holding-name-wrapper">
+                        <button class="expand-toggle" onclick="toggleExpand('7010')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+                        <div class="holding-logo">STC</div>
+                        <div>
+                          <div class="holding-ticker">stc</div>
+                          <div class="holding-company">7010.SR · Telecom</div>
+                          <div class="row-meta">Council reviewed: 5 days ago</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="weight-cell">
+                      11.8%
+                      <div class="weight-bar"><div class="weight-bar-fill" style="width: 59%;"></div></div>
+                    </td>
+                    <td>SAR 99,975</td>
+                    <td class="pnl-cell">
+                      <div class="pnl-amount up">+5.2%</div>
+                      <div class="pnl-pct">+SAR 4,951</div>
+                    </td>
+                    <td class="thesis-cell"><span class="thesis-score medium">7.2/10<span class="score-bar"><span class="score-bar-fill" style="width: 72%;"></span></span></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <button class="row-action" title="View Details" onclick="viewHolding('7010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                        <button class="row-action" title="Ask Adviser" onclick="askAboutHolding('7010', 'stc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+                        <button class="row-action" title="Run Council" onclick="runCouncilForHolding('7010', 'stc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
+                        <button class="row-action" title="Set Alert" onclick="setAlertForHolding('7010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+                        <button class="row-action" title="Adjust Position" onclick="openAdjustModal('7010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                        <button class="row-action danger" title="Remove" onclick="removeHolding('7010', 'stc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="tx-history-row" data-ticker-history="7010">
+                    <td colspan="6">
+                      <div class="tx-history-panel">
+                        <div class="tx-history-header">
+                          <span class="tx-history-title">Transaction History</span>
+                          <div class="tx-history-actions">
+                            <button class="tx-btn tx-btn-primary" onclick="openAddLotModal('7010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Add Lot</button>
+                            <button class="tx-btn tx-btn-secondary" onclick="openSellModal('7010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Partial Sale</button>
+                          </div>
+                        </div>
+                        <table class="tx-table">
+                          <thead><tr><th>Date</th><th>Type</th><th>Shares</th><th>Price</th><th>Realized P&L</th><th>Remaining</th><th>Notes</th></tr></thead>
+                          <tbody>
+                            <tr><td>Dec 10, 2024</td><td><span class="tx-type buy">Buy</span></td><td>2,375</td><td>SAR 40.00</td><td>—</td><td>2,375</td><td class="tx-note">Dividend play</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="tx-summary">
+                          <div class="tx-summary-left">
+                            <div class="tx-summary-item"><span class="tx-summary-label">Current Position</span><span class="tx-summary-value">2,375 shares</span></div>
+                            <div class="tx-summary-item"><span class="tx-summary-label">Blended Avg Cost</span><span class="tx-summary-value">SAR 40.00</span></div>
+                            <div class="tx-summary-item"><span class="tx-summary-label">Unrealized P&L</span><span class="tx-summary-value up">+SAR 4,951 (+5.2%)</span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr data-ticker="QNBK" class="holding-row">
+                    <td>
+                      <div class="holding-name-wrapper">
+                        <button class="expand-toggle" onclick="toggleExpand('QNBK')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+                        <div class="holding-logo">QNB</div>
+                        <div>
+                          <div class="holding-ticker">QNB Group</div>
+                          <div class="holding-company">QNBK.QA · Banking</div>
+                          <div class="row-meta">Council reviewed: 1 day ago</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="weight-cell">
+                      9.6%
+                      <div class="weight-bar"><div class="weight-bar-fill" style="width: 48%;"></div></div>
+                    </td>
+                    <td>SAR 81,336</td>
+                    <td class="pnl-cell">
+                      <div class="pnl-amount up">+6.8%</div>
+                      <div class="pnl-pct">+SAR 5,178</div>
+                    </td>
+                    <td class="thesis-cell"><span class="thesis-score high">7.9/10<span class="score-bar"><span class="score-bar-fill" style="width: 79%;"></span></span></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <button class="row-action" title="View Details" onclick="viewHolding('QNBK')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                        <button class="row-action" title="Ask Adviser" onclick="askAboutHolding('QNBK', 'QNB Group')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+                        <button class="row-action" title="Run Council" onclick="runCouncilForHolding('QNBK', 'QNB Group')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
+                        <button class="row-action" title="Set Alert" onclick="setAlertForHolding('QNBK')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+                        <button class="row-action" title="Adjust Position" onclick="openAdjustModal('QNBK')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                        <button class="row-action danger" title="Remove" onclick="removeHolding('QNBK', 'QNB Group')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="tx-history-row" data-ticker-history="QNBK">
+                    <td colspan="6">
+                      <div class="tx-history-panel">
+                        <div class="tx-history-header">
+                          <span class="tx-history-title">Transaction History</span>
+                          <div class="tx-history-actions">
+                            <button class="tx-btn tx-btn-primary" onclick="openAddLotModal('QNBK')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Add Lot</button>
+                            <button class="tx-btn tx-btn-secondary" onclick="openSellModal('QNBK')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Partial Sale</button>
+                          </div>
+                        </div>
+                        <table class="tx-table">
+                          <thead><tr><th>Date</th><th>Type</th><th>Shares</th><th>Price</th><th>Realized P&L</th><th>Remaining</th><th>Notes</th></tr></thead>
+                          <tbody>
+                            <tr><td>Nov 20, 2024</td><td><span class="tx-type buy">Buy</span></td><td>4,345</td><td>QAR 17.50</td><td>—</td><td>4,345</td><td class="tx-note">Regional diversification</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="tx-summary">
+                          <div class="tx-summary-left">
+                            <div class="tx-summary-item"><span class="tx-summary-label">Current Position</span><span class="tx-summary-value">4,345 shares</span></div>
+                            <div class="tx-summary-item"><span class="tx-summary-label">Blended Avg Cost</span><span class="tx-summary-value">QAR 17.50</span></div>
+                            <div class="tx-summary-item"><span class="tx-summary-label">Unrealized P&L</span><span class="tx-summary-value up">+SAR 5,178 (+6.8%)</span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr data-ticker="FAB" class="holding-row">
+                    <td>
+                      <div class="holding-name-wrapper">
+                        <button class="expand-toggle" onclick="toggleExpand('FAB')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+                        <div class="holding-logo">FAB</div>
+                        <div>
+                          <div class="holding-ticker">First Abu Dhabi Bank</div>
+                          <div class="holding-company">FAB.AD · Banking</div>
+                          <div class="row-meta">Council reviewed: 4 days ago</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="weight-cell">
+                      8.4%
+                      <div class="weight-bar"><div class="weight-bar-fill" style="width: 42%;"></div></div>
+                    </td>
+                    <td>SAR 71,169</td>
+                    <td class="pnl-cell">
+                      <div class="pnl-amount up">+3.9%</div>
+                      <div class="pnl-pct">+SAR 2,673</div>
+                    </td>
+                    <td class="thesis-cell"><span class="thesis-score medium">7.4/10<span class="score-bar"><span class="score-bar-fill" style="width: 74%;"></span></span></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <button class="row-action" title="View Details" onclick="viewHolding('FAB')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                        <button class="row-action" title="Ask Adviser" onclick="askAboutHolding('FAB', 'First Abu Dhabi Bank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+                        <button class="row-action" title="Run Council" onclick="runCouncilForHolding('FAB', 'First Abu Dhabi Bank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
+                        <button class="row-action" title="Set Alert" onclick="setAlertForHolding('FAB')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+                        <button class="row-action" title="Adjust Position" onclick="openAdjustModal('FAB')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                        <button class="row-action danger" title="Remove" onclick="removeHolding('FAB', 'First Abu Dhabi Bank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="tx-history-row" data-ticker-history="FAB">
+                    <td colspan="6">
+                      <div class="tx-history-panel">
+                        <div class="tx-history-header">
+                          <span class="tx-history-title">Transaction History</span>
+                          <div class="tx-history-actions">
+                            <button class="tx-btn tx-btn-primary" onclick="openAddLotModal('FAB')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Add Lot</button>
+                            <button class="tx-btn tx-btn-secondary" onclick="openSellModal('FAB')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Partial Sale</button>
+                          </div>
+                        </div>
+                        <table class="tx-table">
+                          <thead><tr><th>Date</th><th>Type</th><th>Shares</th><th>Price</th><th>Realized P&L</th><th>Remaining</th><th>Notes</th></tr></thead>
+                          <tbody>
+                            <tr><td>Jan 05, 2025</td><td><span class="tx-type buy">Buy</span></td><td>4,792</td><td>AED 14.30</td><td>—</td><td>4,792</td><td class="tx-note">UAE exposure</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="tx-summary">
+                          <div class="tx-summary-left">
+                            <div class="tx-summary-item"><span class="tx-summary-label">Current Position</span><span class="tx-summary-value">4,792 shares</span></div>
+                            <div class="tx-summary-item"><span class="tx-summary-label">Blended Avg Cost</span><span class="tx-summary-value">AED 14.30</span></div>
+                            <div class="tx-summary-item"><span class="tx-summary-label">Unrealized P&L</span><span class="tx-summary-value up">+SAR 2,673 (+3.9%)</span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr data-ticker="2010" class="holding-row">
+                    <td>
+                      <div class="holding-name-wrapper">
+                        <button class="expand-toggle" onclick="toggleExpand('2010')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+                        <div class="holding-logo">SAB</div>
+                        <div>
+                          <div class="holding-ticker">SABIC</div>
+                          <div class="holding-company">2010.SR · Materials</div>
+                          <div class="row-meta">Council reviewed: 1 day ago · Flagged</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="weight-cell">
+                      7.2%
+                      <div class="weight-bar"><div class="weight-bar-fill" style="width: 36%;"></div></div>
+                    </td>
+                    <td>SAR 61,002</td>
+                    <td class="pnl-cell">
+                      <div class="pnl-amount down">-4.1%</div>
+                      <div class="pnl-pct">-SAR 2,610</div>
+                    </td>
+                    <td class="thesis-cell"><span class="thesis-score low">5.8/10<span class="score-bar"><span class="score-bar-fill" style="width: 58%;"></span></span></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <button class="row-action" title="View Details" onclick="viewHolding('2010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                        <button class="row-action" title="Ask Adviser" onclick="askAboutHolding('2010', 'SABIC')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+                        <button class="row-action" title="Run Council" onclick="runCouncilForHolding('2010', 'SABIC')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
+                        <button class="row-action" title="Set Alert" onclick="setAlertForHolding('2010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+                        <button class="row-action" title="Adjust Position" onclick="openAdjustModal('2010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                        <button class="row-action danger" title="Remove" onclick="removeHolding('2010', 'SABIC')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="tx-history-row" data-ticker-history="2010">
+                    <td colspan="6">
+                      <div class="tx-history-panel">
+                        <div class="tx-history-header">
+                          <span class="tx-history-title">Transaction History</span>
+                          <div class="tx-history-actions">
+                            <button class="tx-btn tx-btn-primary" onclick="openAddLotModal('2010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Add Lot</button>
+                            <button class="tx-btn tx-btn-secondary" onclick="openSellModal('2010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Partial Sale</button>
+                          </div>
+                        </div>
+                        <table class="tx-table">
+                          <thead><tr><th>Date</th><th>Type</th><th>Shares</th><th>Price</th><th>Realized P&L</th><th>Remaining</th><th>Notes</th></tr></thead>
+                          <tbody>
+                            <tr><td>Oct 18, 2024</td><td><span class="tx-type buy">Buy</span></td><td>698</td><td>SAR 91.15</td><td>—</td><td>698</td><td class="tx-note">Materials exposure</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="tx-summary">
+                          <div class="tx-summary-left">
+                            <div class="tx-summary-item"><span class="tx-summary-label">Current Position</span><span class="tx-summary-value">698 shares</span></div>
+                            <div class="tx-summary-item"><span class="tx-summary-label">Blended Avg Cost</span><span class="tx-summary-value">SAR 91.15</span></div>
+                            <div class="tx-summary-item"><span class="tx-summary-label">Unrealized P&L</span><span class="tx-summary-value down">-SAR 2,610 (-4.1%)</span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr data-ticker="EMAAR" class="holding-row">
+                    <td>
+                      <div class="holding-name-wrapper">
+                        <button class="expand-toggle" onclick="toggleExpand('EMAAR')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+                        <div class="holding-logo">EMA</div>
+                        <div>
+                          <div class="holding-ticker">Emaar Properties</div>
+                          <div class="holding-company">EMAAR.DU · Real Estate</div>
+                          <div class="row-meta">Council reviewed: 6 days ago</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="weight-cell">
+                      6.1%
+                      <div class="weight-bar"><div class="weight-bar-fill" style="width: 30%;"></div></div>
+                    </td>
+                    <td>SAR 51,682</td>
+                    <td class="pnl-cell">
+                      <div class="pnl-amount down">-2.3%</div>
+                      <div class="pnl-pct">-SAR 1,214</div>
+                    </td>
+                    <td class="thesis-cell"><span class="thesis-score medium">6.5/10<span class="score-bar"><span class="score-bar-fill" style="width: 65%;"></span></span></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <button class="row-action" title="View Details" onclick="viewHolding('EMAAR')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                        <button class="row-action" title="Ask Adviser" onclick="askAboutHolding('EMAAR', 'Emaar Properties')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+                        <button class="row-action" title="Run Council" onclick="runCouncilForHolding('EMAAR', 'Emaar Properties')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
+                        <button class="row-action" title="Set Alert" onclick="setAlertForHolding('EMAAR')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+                        <button class="row-action" title="Adjust Position" onclick="openAdjustModal('EMAAR')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                        <button class="row-action danger" title="Remove" onclick="removeHolding('EMAAR', 'Emaar Properties')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="tx-history-row" data-ticker-history="EMAAR">
+                    <td colspan="6">
+                      <div class="tx-history-panel">
+                        <div class="tx-history-header">
+                          <span class="tx-history-title">Transaction History</span>
+                          <div class="tx-history-actions">
+                            <button class="tx-btn tx-btn-primary" onclick="openAddLotModal('EMAAR')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Add Lot</button>
+                            <button class="tx-btn tx-btn-secondary" onclick="openSellModal('EMAAR')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Partial Sale</button>
+                          </div>
+                        </div>
+                        <table class="tx-table">
+                          <thead><tr><th>Date</th><th>Type</th><th>Shares</th><th>Price</th><th>Realized P&L</th><th>Remaining</th><th>Notes</th></tr></thead>
+                          <tbody>
+                            <tr><td>Sep 12, 2024</td><td><span class="tx-type buy">Buy</span></td><td>5,774</td><td>AED 9.16</td><td>—</td><td>5,774</td><td class="tx-note">Real estate exposure</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="tx-summary">
+                          <div class="tx-summary-left">
+                            <div class="tx-summary-item"><span class="tx-summary-label">Current Position</span><span class="tx-summary-value">5,774 shares</span></div>
+                            <div class="tx-summary-item"><span class="tx-summary-label">Blended Avg Cost</span><span class="tx-summary-value">AED 9.16</span></div>
+                            <div class="tx-summary-item"><span class="tx-summary-label">Unrealized P&L</span><span class="tx-summary-value down">-SAR 1,214 (-2.3%)</span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Allocation Cards -->
+          <div class="allocation-grid">
+            <!-- Sector Allocation -->
+            <div class="allocation-card">
+              <div class="allocation-header">
+                <div class="allocation-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                  Sector Allocation
+                </div>
+              </div>
+              <div class="allocation-items">
+                <div class="allocation-item">
+                  <div class="allocation-label"><span class="dot" style="background: var(--accent-primary);"></span>Banking</div>
+                  <div class="allocation-bar-container">
+                    <div class="allocation-bar-bg"><div class="allocation-bar banking" style="width: 32.2%;"></div></div>
+                    <span class="allocation-pct">32.2%</span>
+                  </div>
+                </div>
+                <div class="allocation-item">
+                  <div class="allocation-label"><span class="dot" style="background: var(--accent-gold);"></span>Energy</div>
+                  <div class="allocation-bar-container">
+                    <div class="allocation-bar-bg"><div class="allocation-bar energy" style="width: 18.4%;"></div></div>
+                    <span class="allocation-pct">18.4%</span>
+                  </div>
+                </div>
+                <div class="allocation-item">
+                  <div class="allocation-label"><span class="dot" style="background: var(--accent-violet);"></span>Telecom</div>
+                  <div class="allocation-bar-container">
+                    <div class="allocation-bar-bg"><div class="allocation-bar telecom" style="width: 11.8%;"></div></div>
+                    <span class="allocation-pct">11.8%</span>
+                  </div>
+                </div>
+                <div class="allocation-item">
+                  <div class="allocation-label"><span class="dot" style="background: var(--accent-blue);"></span>Materials</div>
+                  <div class="allocation-bar-container">
+                    <div class="allocation-bar-bg"><div class="allocation-bar materials" style="width: 7.2%;"></div></div>
+                    <span class="allocation-pct">7.2%</span>
+                  </div>
+                </div>
+                <div class="allocation-item">
+                  <div class="allocation-label"><span class="dot" style="background: var(--danger);"></span>Real Estate</div>
+                  <div class="allocation-bar-container">
+                    <div class="allocation-bar-bg"><div class="allocation-bar realestate" style="width: 6.1%;"></div></div>
+                    <span class="allocation-pct">6.1%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="council-flag">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span class="council-flag-text">Banking concentration 18% above peer median — flagged by Risk Analyst</span>
+              </div>
+            </div>
+
+            <!-- Country Allocation -->
+            <div class="allocation-card">
+              <div class="allocation-header">
+                <div class="allocation-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                  Country Allocation
+                </div>
+              </div>
+              <div class="allocation-items">
+                <div class="allocation-item">
+                  <div class="allocation-label"><span class="dot" style="background: var(--success);"></span>Saudi Arabia</div>
+                  <div class="allocation-bar-container">
+                    <div class="allocation-bar-bg"><div class="allocation-bar saudi" style="width: 51.6%;"></div></div>
+                    <span class="allocation-pct">51.6%</span>
+                  </div>
+                </div>
+                <div class="allocation-item">
+                  <div class="allocation-label"><span class="dot" style="background: var(--accent-gold);"></span>UAE</div>
+                  <div class="allocation-bar-container">
+                    <div class="allocation-bar-bg"><div class="allocation-bar uae" style="width: 14.5%;"></div></div>
+                    <span class="allocation-pct">14.5%</span>
+                  </div>
+                </div>
+                <div class="allocation-item">
+                  <div class="allocation-label"><span class="dot" style="background: var(--accent-violet);"></span>Qatar</div>
+                  <div class="allocation-bar-container">
+                    <div class="allocation-bar-bg"><div class="allocation-bar qatar" style="width: 9.6%;"></div></div>
+                    <span class="allocation-pct">9.6%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="council-flag">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                <span class="council-flag-text">Saudi dominance at 51.6% — consider reviewing geographic diversification</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Portfolio Commentary -->
+          <div class="card commentary-card" style="margin-top: 20px;">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                Portfolio Commentary
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="commentary-text">
+                <strong>Concentration risk detected:</strong> Banking sector allocation at 32.2% significantly exceeds typical diversification guidelines of 25% per sector. While recent performance appears strong across banking names, valuation metrics suggest some positions may be stretched relative to historical averages.
+                <br><br>
+                <strong>Materials position review:</strong> SABIC (thesis score 5.8/10) shows weakening momentum with margin compression signals. Data suggests reviewing alignment with portfolio objectives given current commodity pricing dynamics.
+                <br><br>
+                <strong>Dividend income:</strong> Portfolio yield of 3.2% TTM remains healthy, supported by consistent payers in banking and energy sectors.
+              </p>
+              <div class="commentary-tags">
+                <span class="commentary-tag danger">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+                  Banking: 32.2%
+                </span>
+                <span class="commentary-tag warning">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                  Low thesis: SABIC
+                </span>
+                <span class="commentary-tag success">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                  Yield: 3.2% TTM
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="main-right">
+          <!-- AI Analyst Council -->
+          <div class="card council-card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                AI Analyst Council
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="council-synthesis">
+                <strong>Strategic synthesis:</strong> Data suggests reviewing portfolio concentration in the banking sector (32.2% weight). While recent performance appears strong, valuation metrics indicate some names may be stretched relative to stronger peer opportunities. Materials exposure (7.2%) may warrant attention given commodity pricing dynamics.
+              </p>
+              <div class="council-perspectives">
+                <div class="council-perspective">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                  Growth
+                </div>
+                <div class="council-perspective">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  Value
+                </div>
+                <div class="council-perspective">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  Risk
+                </div>
+                <div class="council-perspective">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg>
+                  Macro
+                </div>
+                <div class="council-perspective">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  Income
+                </div>
+              </div>
+              <button class="council-btn" id="openCouncilModal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Run full AI Council review
+              </button>
+            </div>
+          </div>
+
+          <!-- Intelligent Alerts -->
+          <div class="card alerts-card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                Intelligent Alerts
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="alert-item">
+                <div class="alert-icon risk">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div class="alert-content">
+                  <div class="alert-source">Risk Analyst</div>
+                  <div class="alert-text">Banking concentration exceeds 30% threshold. Data suggests reviewing sector weights.</div>
+                </div>
+                <span class="alert-time">2h ago</span>
+              </div>
+              <div class="alert-item">
+                <div class="alert-icon value">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div class="alert-content">
+                  <div class="alert-source">Value Analyst</div>
+                  <div class="alert-text">SABIC trading below intrinsic value estimate but momentum weak. Monitor for entry timing.</div>
+                </div>
+                <span class="alert-time">5h ago</span>
+              </div>
+              <div class="alert-item">
+                <div class="alert-icon macro">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>
+                </div>
+                <div class="alert-content">
+                  <div class="alert-source">Macro Analyst</div>
+                  <div class="alert-text">Brent crude below $83 may impact Aramco dividend outlook. Portfolio oil exposure: 18.4%.</div>
+                </div>
+                <span class="alert-time">1d ago</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- News for Holdings -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/></svg>
+                News for Your Holdings
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="news-grid">
+                <div class="news-item">
+                  <div class="news-thumb">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>
+                  </div>
+                  <div class="news-content">
+                    <div class="news-source">Reuters</div>
+                    <div class="news-title">Saudi Aramco Q2 profits decline amid lower oil prices</div>
+                    <div class="news-meta">2h ago · 2222.SR</div>
+                  </div>
+                  <button class="news-ask">Ask Adviser</button>
+                </div>
+                <div class="news-item">
+                  <div class="news-thumb">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>
+                  </div>
+                  <div class="news-content">
+                    <div class="news-source">Bloomberg</div>
+                    <div class="news-title">Al Rajhi Bank reports strong digital growth in retail banking</div>
+                    <div class="news-meta">5h ago · 1120.SR</div>
+                  </div>
+                  <button class="news-ask">Ask Adviser</button>
+                </div>
+                <div class="news-item">
+                  <div class="news-thumb">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>
+                  </div>
+                  <div class="news-content">
+                    <div class="news-source">Gulf News</div>
+                    <div class="news-title">SABIC faces margin pressure from petrochemical downturn</div>
+                    <div class="news-meta">1d ago · 2010.SR</div>
+                  </div>
+                  <button class="news-ask">Ask Adviser</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watchlist -->
+      <div class="card" id="watchlistCard" style="margin-top:20px;">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Watchlist
+          </div>
+          <div class="card-actions"><span class="card-action" style="color:var(--fg-dim);cursor:default;">Open any stock and tap ☆ Watchlist to add</span></div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="holdings-table" id="watchlistTable">
+            <thead><tr><th>Stock</th><th>Price</th><th>Day</th><th></th></tr></thead>
+            <tbody id="watchlistBody"><tr><td colspan="4" style="text-align:center;padding:24px;color:var(--fg-dim);">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <span class="footer-logo">AlphaCouncil</span>
+            <span class="footer-slogan">Understand your portfolio before the market moves.</span>
+          </div>
+          <p class="footer-disclaimer">AlphaCouncil provides data-driven market analysis and educational insights. It does not provide licensed financial advice, execute trades, manage money, or guarantee returns. Always verify information before making investment decisions.</p>
+        </div>
+      </footer>
+    </main>
+
+    <!-- Adviser Sidebar -->
+    <aside class="adviser-sidebar" id="adviserSidebar" role="complementary" aria-label="AI Adviser" aria-hidden="true">
+      <div class="sidebar-inner">
+        <div class="sidebar-header">
+          <div class="sidebar-header-left">
+            <div class="sidebar-logo" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="sidebar-title">
+              <h3>Adviser</h3>
+              <p aria-live="polite">Online</p>
+            </div>
+          </div>
+          <div class="sidebar-header-right">
+            <button class="sidebar-btn" id="sidebarPin" title="Keep open" aria-label="Pin sidebar open" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4.76z"/></svg>
+            </button>
+            <button class="sidebar-btn" id="sidebarClose" aria-label="Close sidebar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-tabs">
+          <button class="sidebar-tab active" data-tab="page">Current page</button>
+          <button class="sidebar-tab" data-tab="portfolio">Your portfolio</button>
+        </div>
+
+        <div class="sidebar-content">
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">Suggested questions</div>
+            <div class="suggested-questions">
+              <button class="suggested-question" data-question="Which holding has the weakest thesis?">Which holding has the weakest thesis?</button>
+              <button class="suggested-question" data-question="How can I reduce banking concentration?">How can I reduce banking concentration?</button>
+              <button class="suggested-question" data-question="Compare my GCC allocation to benchmarks">Compare my GCC allocation to benchmarks</button>
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">Quick actions</div>
+            <div class="quick-actions">
+              <button class="quick-action" data-action="add">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                Add holding
+              </button>
+              <button class="quick-action" data-action="remove">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
+                Remove holding
+              </button>
+              <button class="quick-action" data-action="edit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit position
+              </button>
+              <button class="quick-action" data-action="council">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Run Council
+              </button>
+            </div>
+          </div>
+
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-message adviser">
+              <div class="chat-avatar">AC</div>
+              <div>
+                <div class="chat-bubble">I can see your portfolio page. You have <strong>7 holdings</strong> across 4 sectors with total value of <strong>SAR 847,250</strong>. Your banking concentration is at 32.2%. How can I assist you today?</div>
+                <div class="chat-time">Just now</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <div class="chat-input-row">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Add/remove holdings, ask about positions...">
+            <button class="chat-send" id="chatSend">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <div class="toast-icon success">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+    </div>
+    <div class="toast-content">
+      <div class="toast-title">Action completed</div>
+      <div class="toast-text">Your request has been processed.</div>
+    </div>
+  </div>
+
+  <!-- Add Holding Modal -->
+  <div class="modal-overlay" id="addHoldingModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <div class="modal-icon primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+          </div>
+          <div>
+            <h2>Add Holding</h2>
+            <p>Add a new position to your portfolio</p>
+          </div>
+        </div>
+        <button class="modal-close" id="closeAddModal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Stock Symbol or Name</label>
+          <input type="text" class="form-input" id="stockSearch" placeholder="Search for stock (e.g., 2222.SR, Aramco)">
+          <div class="form-hint">Search by ticker, name, or ISIN across GCC markets</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Number of Shares</label>
+            <input type="number" class="form-input" id="sharesInput" placeholder="Enter quantity">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Average Cost (per share)</label>
+            <input type="number" class="form-input" id="costInput" placeholder="Enter price">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-secondary" id="cancelAddBtn">Cancel</button>
+          <button class="btn btn-primary" id="confirmAddBtn">Add to Portfolio</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Modal -->
+  <div class="modal-overlay" id="importModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <div class="modal-icon primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <div>
+            <h2>Import Holdings</h2>
+            <p>Upload a screenshot or PDF of your brokerage statement</p>
+          </div>
+        </div>
+        <button class="modal-close" id="closeImportModal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="upload-zone" id="uploadZone">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <h4>Drop file here or click to upload</h4>
+          <p>Supports PNG, JPG, PDF up to 10MB</p>
+        </div>
+        <div class="form-hint" style="margin-top: 16px; text-align: center;">
+          AI will extract holdings from your statement and allow you to review before importing.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Council Modal -->
+  <div class="modal-overlay" id="councilModal">
+    <div class="modal" style="max-width: 800px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <div class="modal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+          </div>
+          <div>
+            <h2>AI Analyst Council Review</h2>
+            <p>Full 12-dimension portfolio assessment</p>
+          </div>
+        </div>
+        <button class="modal-close" id="closeCouncilModal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <div class="modal-section-title">Council Synthesis</div>
+          <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px;">
+            <p style="font-size: 14px; color: var(--fg-muted); line-height: 1.8;">
+              Based on 7-perspective deliberation, <strong style="color: var(--fg);">data suggests your portfolio maintains constructive positioning</strong> with notable banking sector quality. However, concentration risk at 32.2% warrants monitoring.
+              <br><br>
+              <strong style="color: var(--fg);">Materials exposure</strong> (SABIC at 7.2%) shows weakening thesis signals with score of 5.8/10. Consider reviewing alignment with risk tolerance given commodity pricing dynamics.
+              <br><br>
+              <strong style="color: var(--fg);">Geographic allocation</strong> appears balanced across Saudi (51.6%), UAE (14.5%), and Qatar (9.6%), though Saudi dominance may warrant review for regional diversification.
+            </p>
+          </div>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-title">Council Verdict</div>
+          <div style="background: linear-gradient(135deg, var(--accent-violet-glow), var(--accent-primary-glow)); border: 1px solid var(--accent-violet); border-radius: 14px; padding: 24px; text-align: center;">
+            <div style="font-size: 11px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px;">Portfolio Assessment</div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--fg); margin-bottom: 10px;">Constructive with Concentration Concerns</div>
+            <p style="font-size: 14px; color: var(--fg-muted); line-height: 1.6;">Data suggests maintaining core positions while reviewing Materials exposure and considering banking sector rebalancing to manage concentration risk.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Adjust Position Modal -->
+  <div class="modal-overlay" id="adjustModal">
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <div class="modal-icon primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <div>
+            <h2 id="adjustModalTitle">Adjust Position</h2>
+            <p id="adjustModalSubtitle">Add lot or record partial sale</p>
+          </div>
+        </div>
+        <button class="modal-close" id="closeAdjustModal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+          <button class="tx-btn tx-btn-primary" id="adjustTypeBuy" style="flex: 1; justify-content: center; padding: 12px;" onclick="setAdjustType('buy')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+            Add New Lot
+          </button>
+          <button class="tx-btn tx-btn-secondary" id="adjustTypeSell" style="flex: 1; justify-content: center; padding: 12px;" onclick="setAdjustType('sell')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            Partial Sale
+          </button>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Shares</label>
+            <input type="number" class="form-input" id="adjustShares" placeholder="Number of shares">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price (per share)</label>
+            <input type="number" class="form-input" id="adjustPrice" placeholder="SAR 0.00">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input type="date" class="form-input" id="adjustDate">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Note (optional)</label>
+          <input type="text" class="form-input" id="adjustNote" placeholder="e.g., Added on dip, Trimmed per Council">
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-secondary" onclick="closeAdjustModal()">Cancel</button>
+          <button class="btn btn-primary" id="confirmAdjustBtn" onclick="confirmAdjust()">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="adviser-core.js"></script>
+  <script>
+    // Initialize AlphaCouncil for portfolio page
+    document.addEventListener('DOMContentLoaded', () => {
+      AlphaCouncil.init('portfolio');
+
+      // ---- REAL DATA: summary metrics + holdings table from the live DB ----
+      function escP(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+      const IC_VIEW='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+      const IC_ASK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+      const IC_COUNCIL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>';
+      const IC_DEL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>';
+      window.onPortfolioReady = function(holdings){
+        const tv=holdings.reduce(function(s,h){return s+(h.valueSar||0);},0);
+        const tc=holdings.reduce(function(s,h){return s+(h.costSar||0);},0);
+        const pnl=tv-tc, pnlPct=tc>0?(pnl/tc)*100:0;
+        const wY=tv>0?holdings.reduce(function(s,h){return s+((h.valueSar||0)*(h.divYield||0));},0)/tv:0;
+        const mv=document.querySelectorAll('.metric-value');
+        if(mv[0]) mv[0].textContent=formatCurrency(tv,'SAR');
+        if(mv[1]) mv[1].textContent=formatCurrency(tc,'SAR');
+        if(mv[2]){ mv[2].textContent=(pnl>=0?'+':'')+formatCurrency(pnl,'SAR'); mv[2].style.color=pnl>=0?'var(--success)':'var(--danger)'; }
+        if(mv[3]){ mv[3].textContent=wY>0?wY.toFixed(1)+'%':'—'; const sub=mv[3].parentElement.querySelector('.metric-sub'); if(sub) sub.style.display='none'; }
+        if(mv[4]) mv[4].textContent=String(holdings.length);
+        if(mv[5]) mv[5].textContent='—';
+        const tbody=document.getElementById('holdingsBody');
+        if(!tbody) return;
+        if(!holdings.length){ tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--fg-dim);">No holdings yet — click “Add Holding” to start.</td></tr>'; return; }
+        const maxW=Math.max.apply(null,holdings.map(function(h){return h.weight||0;}))||1;
+        tbody.innerHTML=holdings.map(function(h){
+          const up=(h.pnlPct||0)>=0, sec=h.sector?(' · '+escP(h.sector)):'';
+          return '<tr data-ticker="'+escP(h.tickerKey)+'" class="holding-row">'
+            +'<td><div class="holding-name-wrapper"><div class="holding-logo">'+escP(h.ticker)+'</div><div><div class="holding-ticker">'+escP(h.name)+'</div><div class="holding-company">'+escP(h.ticker)+sec+'</div></div></div></td>'
+            +'<td class="weight-cell">'+(h.weight!=null?h.weight.toFixed(1)+'%':'—')+'<div class="weight-bar"><div class="weight-bar-fill" style="width:'+Math.round((h.weight||0)/maxW*100)+'%;"></div></div></td>'
+            +'<td>'+formatCurrency(h.value,h.currency)+'</td>'
+            +'<td class="pnl-cell"><div class="pnl-amount '+(up?'up':'down')+'">'+formatPercent(h.pnlPct)+'</div><div class="pnl-pct">'+(h.pnl>=0?'+':'')+formatCurrency(h.pnl,h.currency)+'</div></td>'
+            +'<td class="thesis-cell"><span class="thesis-score">—</span></td>'
+            +'<td><div class="row-actions">'
+              +'<button class="row-action" data-act="view" title="View details">'+IC_VIEW+'</button>'
+              +'<button class="row-action" data-act="ask" title="Ask Adviser">'+IC_ASK+'</button>'
+              +'<button class="row-action" data-act="council" title="Run Council">'+IC_COUNCIL+'</button>'
+              +'<button class="row-action" data-act="remove" title="Remove">'+IC_DEL+'</button>'
+            +'</div></td></tr>';
+        }).join('');
+      };
+      // Delegated row actions (no inline onclick escaping).
+      const _hb=document.getElementById('holdingsBody');
+      if(_hb) _hb.addEventListener('click', function(e){
+        const btn=e.target.closest('.row-action'); if(!btn) return;
+        const row=btn.closest('tr[data-ticker]'); if(!row) return;
+        const key=row.getAttribute('data-ticker'), act=btn.getAttribute('data-act');
+        if(act==='view') window.location.href='stock-detail.html?ticker='+encodeURIComponent(key);
+        else if(act==='ask'){ AlphaCouncil.openSidebar(); AlphaCouncil.askQuestion('Analyse my position in '+key.split('_')[0]); }
+        else if(act==='council') AlphaCouncil.openCouncilModal({tickerKey:key});
+        else if(act==='remove') AlphaCouncil.removeHolding(key);
+      });
+      // Add Holding button → real add (writes to the DB, reloads).
+      const _add=document.getElementById('addHoldingBtn');
+      if(_add) _add.addEventListener('click', function(){ AlphaCouncil.openAddHoldingModal(); });
+      if (AlphaCouncil.getHoldings && AlphaCouncil.getHoldings().length) window.onPortfolioReady(AlphaCouncil.getHoldings());
+
+      // ---- Watchlist (real, per-user) ----
+      window.reloadWatchlist = async function(){
+        const tb=document.getElementById('watchlistBody'); if(!tb) return;
+        try{
+          const rows=await API.watchlist();
+          if(!rows||!rows.length){ tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:28px;color:var(--fg-dim);line-height:1.5;">Your watchlist is empty. Open any stock and tap <strong>☆ Watchlist</strong> to track it here.</td></tr>'; return; }
+          tb.innerHTML=rows.map(function(r){
+            const up=(r.day_change_pct||0)>=0;
+            const code=r.ticker_short||String(r.ticker).split('_')[0];
+            const nm=r.name_en||code;
+            return '<tr data-ticker="'+escP(r.ticker)+'" class="holding-row">'
+              +'<td><div class="holding-name-wrapper"><div class="holding-logo">'+escP(code)+'</div><div><div class="holding-ticker">'+escP(nm)+'</div><div class="holding-company">'+escP(code)+'</div></div></div></td>'
+              +'<td>'+(r.last_price!=null?formatCurrency(r.last_price,r.currency):'—')+'</td>'
+              +'<td class="pnl-cell"><div class="pnl-amount '+(up?'up':'down')+'">'+(r.day_change_pct!=null?formatPercent(r.day_change_pct):'—')+'</div></td>'
+              +'<td><div class="row-actions">'
+                +'<button class="row-action" data-act="view" title="View details">'+IC_VIEW+'</button>'
+                +'<button class="row-action" data-act="unwatch" title="Remove from watchlist">'+IC_DEL+'</button>'
+              +'</div></td></tr>';
+          }).join('');
+        }catch(e){
+          if(e&&e.status===401){ tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--fg-dim);">Sign in to use your watchlist.</td></tr>'; return; }
+          tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--fg-dim);">Couldn’t load your watchlist.</td></tr>';
+        }
+      };
+      const _wb=document.getElementById('watchlistBody');
+      if(_wb) _wb.addEventListener('click', async function(e){
+        const btn=e.target.closest('.row-action'); if(!btn) return;
+        const row=btn.closest('tr[data-ticker]'); if(!row) return;
+        const key=row.getAttribute('data-ticker'), act=btn.getAttribute('data-act');
+        if(act==='view') window.location.href='stock-detail.html?ticker='+encodeURIComponent(key);
+        else if(act==='unwatch'){
+          try{ await API.removeFromWatchlist(key); AlphaCouncil.showToast('Removed','Removed from your watchlist','success'); window.reloadWatchlist(); }
+          catch(err){ AlphaCouncil.showToast('Couldn’t remove','Please try again','error'); }
+        }
+      });
+      window.reloadWatchlist();
+    });
+
+    // Legacy function mappings - delegate to AlphaCouncil
+    function showToast(title, text, type) { AlphaCouncil.showToast(title, text, type); }
+    function toggleSidebar(forceState) {
+      if (forceState === true) AlphaCouncil.openSidebar();
+      else if (forceState === false) AlphaCouncil.closeSidebar();
+      else AlphaCouncil.toggleSidebar();
+    }
+    function addChatMessage(text, isUser) { AlphaCouncil.addChatMessage(text, isUser); }
+
+    // Holdings data for context
+    const holdingsData = {
+      '2222': { ticker: '2222', name: 'Saudi Aramco', shares: 5470, avgCost: 25.40, currentPrice: 28.50, weight: 18.4, thesis: 8.4 },
+      '1120': { ticker: '1120', name: 'Al Rajhi Bank', shares: 1412, avgCost: 78.40, currentPrice: 85.20, weight: 14.2, thesis: 8.1 },
+      '7010': { ticker: '7010', name: 'stc', shares: 2375, avgCost: 40.00, currentPrice: 42.10, weight: 11.8, thesis: 7.2 },
+      'QNBK': { ticker: 'QNBK', name: 'QNB Group', shares: 4345, avgCost: 17.50, currentPrice: 18.72, weight: 9.6, thesis: 7.9 },
+      'FAB': { ticker: 'FAB', name: 'First Abu Dhabi Bank', shares: 4792, avgCost: 14.30, currentPrice: 14.85, weight: 8.4, thesis: 7.4 },
+      '2010': { ticker: '2010', name: 'SABIC', shares: 698, avgCost: 91.15, currentPrice: 87.40, weight: 7.2, thesis: 5.8 },
+      'EMAAR': { ticker: 'EMAAR', name: 'Emaar Properties', shares: 5774, avgCost: 9.16, currentPrice: 8.95, weight: 6.1, thesis: 6.5 }
+    };
+
+    // Row action functions
+    function viewHolding(ticker) {
+      const stock = holdingsData[ticker];
+      if (stock) {
+        window.location.href = `stock-detail.html?ticker=${ticker}`;
+      }
+    }
+
+    function runCouncilForHolding(ticker, name) {
+      const stock = holdingsData[ticker];
+      if (stock) {
+        AlphaCouncil.openCouncilModal(stock);
+      } else {
+        AlphaCouncil.openCouncilModal({ ticker, name });
+      }
+    }
+
+    function setAlertForHolding(ticker) {
+      AlphaCouncil.openAlertModal(ticker);
+    }
+
+    function askAboutHolding(ticker, name) {
+      const stock = holdingsData[ticker];
+      if (stock) {
+        AlphaCouncil.setStockContext(stock);
+      }
+      AlphaCouncil.openSidebar();
+      setTimeout(() => {
+        AlphaCouncil.askQuestion(`Analyze ${name} (${ticker}) in the context of my current position`);
+      }, 300);
+    }
+
+    function removeHolding(ticker, name) {
+      if (confirm(`Remove ${name} (${ticker}) from your portfolio? This cannot be undone.`)) {
+        const mainRow = document.querySelector(`tr[data-ticker="${ticker}"]`);
+        const historyRow = document.querySelector(`tr[data-ticker-history="${ticker}"]`);
+
+        if (mainRow) {
+          mainRow.style.animation = 'fadeOut 0.3s ease';
+          setTimeout(() => {
+            mainRow.remove();
+            if (historyRow) historyRow.remove();
+          }, 300);
+        }
+
+        AlphaCouncil.showToast('Holding Removed', `${name} has been removed from your portfolio`, 'success');
+      }
+    }
+
+    // Page-specific elements
+    const holdingsBody = document.getElementById('holdingsBody');
+    const chatInput = document.getElementById('chatInput');
+    let isPinned = false;
+
+    // Pin functionality (portfolio-specific)
+    const sidebarPin = document.getElementById('sidebarPin');
+    const sidebarClose = document.getElementById('sidebarClose');
+    if (sidebarPin) {
+      sidebarPin.addEventListener('click', () => {
+        isPinned = !isPinned;
+        sidebarPin.classList.toggle('active', isPinned);
+      });
+    }
+    if (sidebarClose) {
+      sidebarClose.addEventListener('click', () => { if (!isPinned) AlphaCouncil.closeSidebar(); });
+    }
+
+    // Sidebar tabs
+    document.querySelectorAll('.sidebar-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+
+    function addHoldingRow(data) {
+      const row = document.createElement('tr');
+      row.className = 'holding-row';
+      row.dataset.ticker = data.ticker;
+      row.innerHTML = `
+        <td>
+          <div class="holding-name">
+            <div class="holding-logo">${data.logo}</div>
+            <div>
+              <div class="holding-ticker">${data.name}</div>
+              <div class="holding-company">${data.ticker} · ${data.sector}</div>
+            </div>
+          </div>
+        </td>
+        <td class="weight-cell">
+          ${data.weight}%
+          <div class="weight-bar"><div class="weight-bar-fill" style="width: ${data.weight * 5}%;"></div></div>
+        </td>
+        <td>${data.value}</td>
+        <td class="pnl-cell">
+          <div class="pnl-amount up">+0.0%</div>
+          <div class="pnl-pct">+SAR 0</div>
+        </td>
+        <td><span class="thesis-score medium">—/10</span></td>
+        <td>
+          <div class="row-actions">
+            <button class="row-action" title="View"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            <button class="row-action" title="Council"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></button>
+            <button class="row-action" title="Alert"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg></button>
+          </div>
+        </td>
+      `;
+      row.style.animation = 'fadeIn 0.3s ease';
+      holdingsBody.appendChild(row);
+    }
+
+    function removeHoldingRow(ticker) {
+      const row = holdingsBody.querySelector(`tr[data-ticker="${ticker}"]`);
+      if (row) {
+        row.style.animation = 'fadeOut 0.3s ease';
+        setTimeout(() => row.remove(), 300);
+        return true;
+      }
+      return false;
+    }
+
+    function processChat() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      const lowerText = text.toLowerCase();
+
+      // Handle trim commands first
+      if (lowerText.includes('trim') && (lowerText.includes('rajhi') || lowerText.includes('1120'))) {
+        addChatMessage(text, true);
+        chatInput.value = '';
+
+        const pctMatch = lowerText.match(/(\d+)%/);
+        const trimPct = pctMatch ? parseInt(pctMatch[1]) : 15;
+        const currentShares = 1412;
+        const sharesToSell = Math.round(currentShares * trimPct / 100);
+        const currentPrice = 85.20;
+
+        setTimeout(() => {
+          addChatMessage(`I'll help you trim <strong>${trimPct}%</strong> of your Al Rajhi position.<br><br>
+            <strong>Current position:</strong> 1,412 shares<br>
+            <strong>Shares to sell:</strong> ${sharesToSell} shares<br>
+            <strong>Current price:</strong> SAR ${currentPrice.toFixed(2)}<br>
+            <strong>Estimated proceeds:</strong> SAR ${(sharesToSell * currentPrice).toLocaleString()}<br><br>
+            Recording this partial sale now...`);
+
+          setTimeout(() => {
+            const historyRow = document.querySelector('tr[data-ticker-history="1120"]');
+            if (historyRow) {
+              const tbody = historyRow.querySelector('.tx-table tbody');
+              const newRow = document.createElement('tr');
+              newRow.style.animation = 'fadeIn 0.3s ease';
+              const realizedPnl = Math.round((currentPrice - 78.40) * sharesToSell);
+              newRow.innerHTML = `
+                <td>Jun 16, 2026</td>
+                <td><span class="tx-type sell">Sell</span></td>
+                <td>${sharesToSell}</td>
+                <td>SAR ${currentPrice.toFixed(2)}</td>
+                <td class="tx-realized profit">+SAR ${realizedPnl.toLocaleString()}</td>
+                <td>${currentShares - sharesToSell}</td>
+                <td class="tx-note">Trimmed ${trimPct}% per Council</td>
+              `;
+              tbody.appendChild(newRow);
+            }
+
+            addChatMessage(`Done! Partial sale recorded:<br><br>
+              • <strong>Sold:</strong> ${sharesToSell} shares @ SAR ${currentPrice.toFixed(2)}<br>
+              • <strong>Realized P&L:</strong> +SAR ${Math.round((currentPrice - 78.40) * sharesToSell).toLocaleString()}<br>
+              • <strong>Remaining:</strong> ${currentShares - sharesToSell} shares<br><br>
+              Banking concentration has decreased. Check the Al Rajhi history panel for details.`);
+
+            showToast('Position trimmed', `Sold ${sharesToSell} Al Rajhi shares`, 'success');
+            toggleExpand('1120');
+          }, 1200);
+        }, 800);
+        return;
+      }
+
+      addChatMessage(text, true);
+      chatInput.value = '';
+
+      setTimeout(() => {
+        let response = `I can help you manage your portfolio. You can ask me to add holdings, remove positions, trim positions, or analyze your allocation.`;
+
+        if (lowerText.includes('add') && lowerText.includes('snb')) {
+          addHoldingRow({
+            ticker: '1180.SR',
+            logo: 'SNB',
+            name: 'Saudi National Bank',
+            sector: 'Banking',
+            weight: '5.2',
+            value: 'SAR 44,000'
+          });
+          response = `Done! I've added <strong>Saudi National Bank (SNB)</strong> to your portfolio:<br><br>• Weight: 5.2%<br>• Value: SAR 44,000<br><br>Note: This increases your banking concentration to 37.4%. Data suggests monitoring sector exposure.`;
+          showToast('Holding added', 'SNB added to portfolio', 'success');
+        } else if (lowerText.includes('remove') && lowerText.includes('sabic')) {
+          if (removeHoldingRow('2010')) {
+            response = `Done! I've removed <strong>SABIC</strong> from your portfolio.<br><br>Your Materials sector allocation is now 0%. This reduces your overall portfolio risk score.`;
+            showToast('Holding removed', 'SABIC removed from portfolio', 'success');
+          }
+        } else if (lowerText.includes('weak') && lowerText.includes('thesis')) {
+          response = `Your <strong>weakest thesis score</strong> is <strong>SABIC at 5.8/10</strong>.<br><br>Key concerns:<br>• Margin compression from commodity pricing<br>• Below-peer earnings momentum<br>• Elevated sector risk exposure<br><br>Data suggests reviewing this position relative to your overall portfolio objectives.`;
+        } else if (lowerText.includes('banking') && lowerText.includes('concentration')) {
+          response = `To reduce banking concentration from 32.2%:<br><br>1. <strong>Reduce largest positions</strong> — Al Rajhi (14.2%) or QNB (9.6%)<br>2. <strong>Add non-bank holdings</strong> — Consider telecom, utilities, or consumer names<br>3. <strong>Diversify geographically</strong> — Your UAE exposure is only 14.5%<br><br>Would you like specific alternatives to consider?`;
+        } else if (lowerText.includes('allocation') || lowerText.includes('benchmark')) {
+          response = `Your GCC allocation vs benchmarks:<br><br><strong>Your Portfolio:</strong><br>• Saudi: 51.6% (benchmark: 48%)<br>• UAE: 14.5% (benchmark: 22%)<br>• Qatar: 9.6% (benchmark: 15%)<br><br>Data suggests you may be underweight UAE and Qatar relative to regional benchmarks. Consider reviewing geographic diversification.`;
+        } else if ((lowerText.includes('add') || lowerText.includes('buy')) && (lowerText.includes('aramco') || lowerText.includes('2222'))) {
+          const sharesMatch = lowerText.match(/(\d+)\s*shares?/);
+          const newShares = sharesMatch ? parseInt(sharesMatch[1]) : 100;
+          response = `I'll help you add to your <strong>Saudi Aramco</strong> position.<br><br>
+            • <strong>Current:</strong> 320 shares @ SAR 28.15 avg<br>
+            • <strong>Adding:</strong> ${newShares} shares @ SAR 28.90 (current)<br>
+            • <strong>New position:</strong> ${320 + newShares} shares<br><br>
+            Click the expand arrow on Aramco's row to add this lot, or I can record it now.`;
+          showToast('Review lot', 'Check Aramco transaction history', 'info');
+          toggleExpand('2222');
+        } else if ((lowerText.includes('reduce') || lowerText.includes('sell')) && (lowerText.includes('stc') || lowerText.includes('7010'))) {
+          response = `To reduce your <strong>stc</strong> position:<br><br>
+            • <strong>Current:</strong> 520 shares @ SAR 9.35 avg<br>
+            • <strong>Current value:</strong> SAR 4,862<br>
+            • <strong>Unrealized P&L:</strong> -SAR 88 (-1.8%)<br><br>
+            Click the expand arrow on stc's row and use "Partial Sale" to record the transaction, or tell me how many shares to sell.`;
+          toggleExpand('7010');
+        } else if (lowerText.includes('rebalance') || lowerText.includes('optimize')) {
+          response = `Based on your current allocation, data suggests considering:<br><br>
+            <strong>Potential adjustments:</strong><br>
+            1. Trim Al Rajhi 10-15% (reduce banking from 32%)<br>
+            2. Add UAE exposure (currently underweight)<br>
+            3. Review SABIC thesis (score: 5.8/10)<br><br>
+            These are observations based on your portfolio data, not recommendations. Would you like me to model any specific changes?`;
+        }
+
+        addChatMessage(response);
+      }, 800);
+    }
+
+    chatSend.addEventListener('click', processChat);
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        processChat();
+      }
+    });
+
+    document.querySelectorAll('.suggested-question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        chatInput.value = btn.dataset.question;
+        processChat();
+      });
+    });
+
+    document.querySelectorAll('.quick-action').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.dataset.action;
+        if (action === 'add') AlphaCouncil.openAddHoldingModal();
+        else if (action === 'remove') {
+          const chatInput = document.getElementById('chatInput');
+          if (chatInput) chatInput.value = 'Remove SABIC from my portfolio';
+          processChat();
+        } else if (action === 'council') AlphaCouncil.openCouncilModal();
+        else if (action === 'alert') AlphaCouncil.openAlertModal();
+        else if (action === 'edit') AlphaCouncil.showToast('Edit mode', 'Click any holding to edit position', 'info');
+      });
+    });
+
+    // Modals - wire up header buttons
+    const addHoldingBtn = document.getElementById('addHoldingBtn');
+    const importBtn = document.getElementById('importBtn');
+    const openCouncilModalBtn = document.getElementById('openCouncilModal');
+
+    if (addHoldingBtn) addHoldingBtn.addEventListener('click', () => AlphaCouncil.openAddHoldingModal());
+    if (importBtn) importBtn.addEventListener('click', () => document.getElementById('importModal')?.classList.add('open'));
+    if (openCouncilModalBtn) openCouncilModalBtn.addEventListener('click', () => AlphaCouncil.openCouncilModal());
+
+    document.getElementById('closeAddModal').addEventListener('click', () => document.getElementById('addHoldingModal').classList.remove('open'));
+    document.getElementById('closeImportModal').addEventListener('click', () => document.getElementById('importModal').classList.remove('open'));
+    document.getElementById('closeCouncilModal').addEventListener('click', () => document.getElementById('councilModal').classList.remove('open'));
+    document.getElementById('cancelAddBtn').addEventListener('click', () => document.getElementById('addHoldingModal').classList.remove('open'));
+
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
+    });
+
+    document.getElementById('confirmAddBtn').addEventListener('click', () => {
+      const stockInput = document.getElementById('stockSearch').value;
+      const sharesInput = parseInt(document.getElementById('sharesInput').value);
+      const costInput = parseFloat(document.getElementById('costInput').value);
+
+      if (!stockInput || !sharesInput) {
+        showToast('Missing fields', 'Please select a stock and enter shares', 'warning');
+        return;
+      }
+
+      // Extract ticker and name from search input (format: "Name (TICKER)")
+      const match = stockInput.match(/(.+?)\s*\(([^)]+)\)/);
+      const name = match ? match[1].trim() : stockInput;
+      const ticker = match ? match[2] : stockInput.toUpperCase().replace(/\s/g, '');
+
+      // Check if already exists
+      if (holdingsData[ticker]) {
+        showToast('Already owned', `${name} is already in your portfolio. Use Adjust Position instead.`, 'warning');
+        return;
+      }
+
+      // Create new holding data
+      const avgCost = costInput || 100;
+      const currentPrice = avgCost * (1 + (Math.random() * 0.1 - 0.05));
+      const totalValue = sharesInput * currentPrice;
+
+      holdingsData[ticker] = {
+        ticker: ticker,
+        name: name,
+        shares: sharesInput,
+        avgCost: avgCost,
+        currentPrice: currentPrice,
+        weight: 2.5,
+        thesis: 7.0
+      };
+
+      // Add row to table
+      addHoldingRow({
+        ticker: ticker,
+        name: name,
+        logo: ticker.substring(0, 3),
+        sector: 'GCC Equity',
+        weight: 2.5,
+        value: `SAR ${Math.round(totalValue).toLocaleString()}`
+      });
+
+      showToast('Holding added', `${name} added to portfolio`, 'success');
+      document.getElementById('addHoldingModal').classList.remove('open');
+
+      // Clear form
+      document.getElementById('stockSearch').value = '';
+      document.getElementById('sharesInput').value = '';
+      document.getElementById('costInput').value = '';
+    });
+
+    // Expand/Collapse Transaction History
+    function toggleExpand(ticker) {
+      const mainRow = document.querySelector(`tr[data-ticker="${ticker}"]`);
+      const historyRow = document.querySelector(`tr[data-ticker-history="${ticker}"]`);
+
+      if (mainRow && historyRow) {
+        const isExpanded = mainRow.classList.contains('expanded');
+
+        // Collapse all other rows first
+        document.querySelectorAll('.holding-row.expanded').forEach(row => {
+          if (row.dataset.ticker !== ticker) {
+            row.classList.remove('expanded');
+          }
+        });
+        document.querySelectorAll('.tx-history-row.open').forEach(row => {
+          if (row.dataset.tickerHistory !== ticker) {
+            row.classList.remove('open');
+          }
+        });
+
+        // Toggle current row
+        mainRow.classList.toggle('expanded', !isExpanded);
+        historyRow.classList.toggle('open', !isExpanded);
+      }
+    }
+
+    // Adjust Modal Functions
+    let currentAdjustTicker = null;
+    let currentAdjustType = 'buy';
+
+    function openAdjustModal(ticker) {
+      currentAdjustTicker = ticker;
+      const holdingName = document.querySelector(`tr[data-ticker="${ticker}"] .holding-ticker`).textContent;
+      document.getElementById('adjustModalTitle').textContent = `Adjust ${holdingName}`;
+      document.getElementById('adjustModal').classList.add('open');
+      setAdjustType('buy');
+      document.getElementById('adjustDate').valueAsDate = new Date();
+    }
+
+    function openAddLotModal(ticker) {
+      openAdjustModal(ticker);
+      setAdjustType('buy');
+    }
+
+    function openSellModal(ticker) {
+      openAdjustModal(ticker);
+      setAdjustType('sell');
+    }
+
+    function closeAdjustModal() {
+      document.getElementById('adjustModal').classList.remove('open');
+      currentAdjustTicker = null;
+    }
+
+    function setAdjustType(type) {
+      currentAdjustType = type;
+      const buyBtn = document.getElementById('adjustTypeBuy');
+      const sellBtn = document.getElementById('adjustTypeSell');
+      const confirmBtn = document.getElementById('confirmAdjustBtn');
+
+      if (type === 'buy') {
+        buyBtn.className = 'tx-btn tx-btn-primary';
+        buyBtn.style.flex = '1';
+        buyBtn.style.justifyContent = 'center';
+        buyBtn.style.padding = '12px';
+        sellBtn.className = 'tx-btn tx-btn-secondary';
+        sellBtn.style.flex = '1';
+        sellBtn.style.justifyContent = 'center';
+        sellBtn.style.padding = '12px';
+        confirmBtn.textContent = 'Add Lot';
+      } else {
+        sellBtn.className = 'tx-btn tx-btn-danger';
+        sellBtn.style.flex = '1';
+        sellBtn.style.justifyContent = 'center';
+        sellBtn.style.padding = '12px';
+        buyBtn.className = 'tx-btn tx-btn-secondary';
+        buyBtn.style.flex = '1';
+        buyBtn.style.justifyContent = 'center';
+        buyBtn.style.padding = '12px';
+        confirmBtn.textContent = 'Record Sale';
+      }
+    }
+
+    function confirmAdjust() {
+      const sharesInput = parseInt(document.getElementById('adjustShares').value);
+      const priceInput = parseFloat(document.getElementById('adjustPrice').value);
+      const date = document.getElementById('adjustDate').value;
+      const note = document.getElementById('adjustNote').value;
+
+      if (!sharesInput || !priceInput) {
+        showToast('Missing fields', 'Please enter shares and price', 'info');
+        return;
+      }
+
+      const holding = holdingsData[currentAdjustTicker];
+      if (!holding) return;
+
+      // Update holdings data
+      if (currentAdjustType === 'buy') {
+        const totalCost = (holding.shares * holding.avgCost) + (sharesInput * priceInput);
+        const newShares = holding.shares + sharesInput;
+        holding.avgCost = totalCost / newShares;
+        holding.shares = newShares;
+      } else {
+        holding.shares = Math.max(0, holding.shares - sharesInput);
+      }
+
+      // Update DOM - find the holding row and refresh values
+      const holdingRow = document.querySelector(`tr.holding-row[data-ticker="${currentAdjustTicker}"]`);
+      if (holdingRow && holding) {
+        const totalValue = holding.shares * holding.currentPrice;
+        const totalCostBasis = holding.shares * holding.avgCost;
+        const pnlPct = ((holding.currentPrice - holding.avgCost) / holding.avgCost * 100).toFixed(1);
+        const pnlAmt = Math.round(totalValue - totalCostBasis);
+        const isUp = pnlAmt >= 0;
+
+        // Update value cell (third td after name and weight)
+        const cells = holdingRow.querySelectorAll('td');
+        if (cells[2]) cells[2].textContent = `SAR ${totalValue.toLocaleString()}`;
+
+        // Update P&L cell
+        const pnlCell = holdingRow.querySelector('.pnl-cell');
+        if (pnlCell) {
+          pnlCell.innerHTML = `
+            <div class="pnl-amount ${isUp ? 'up' : 'down'}">${isUp ? '+' : ''}${pnlPct}%</div>
+            <div class="pnl-pct">${isUp ? '+' : ''}SAR ${Math.abs(pnlAmt).toLocaleString()}</div>
+          `;
+        }
+
+        // Flash highlight animation
+        holdingRow.style.background = 'rgba(39, 211, 195, 0.1)';
+        setTimeout(() => holdingRow.style.background = '', 1000);
+      }
+
+      // Add transaction to history
+      const historyRow = document.querySelector(`tr[data-ticker-history="${currentAdjustTicker}"]`);
+      if (historyRow) {
+        const tbody = historyRow.querySelector('.tx-table tbody');
+        const formattedDate = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const newRow = document.createElement('tr');
+        newRow.style.animation = 'fadeIn 0.3s ease';
+
+        if (currentAdjustType === 'buy') {
+          newRow.innerHTML = `
+            <td>${formattedDate}</td>
+            <td><span class="tx-type buy">Buy</span></td>
+            <td>${sharesInput.toLocaleString()}</td>
+            <td>SAR ${priceInput.toFixed(2)}</td>
+            <td>—</td>
+            <td>—</td>
+            <td class="tx-note">${note || 'New lot added'}</td>
+          `;
+          showToast('Lot added', `Added ${sharesInput} shares at SAR ${priceInput}`, 'success');
+        } else {
+          const realizedPnl = Math.round((priceInput - holding.avgCost) * sharesInput);
+          newRow.innerHTML = `
+            <td>${formattedDate}</td>
+            <td><span class="tx-type sell">Sell</span></td>
+            <td>${sharesInput.toLocaleString()}</td>
+            <td>SAR ${priceInput.toFixed(2)}</td>
+            <td class="tx-realized ${realizedPnl >= 0 ? 'profit' : 'loss'}">${realizedPnl >= 0 ? '+' : ''}SAR ${Math.abs(realizedPnl).toLocaleString()}</td>
+            <td>—</td>
+            <td class="tx-note">${note || 'Partial sale'}</td>
+          `;
+          showToast('Sale recorded', `Sold ${sharesInput} shares at SAR ${priceInput}`, 'success');
+        }
+
+        tbody.appendChild(newRow);
+      }
+
+      closeAdjustModal();
+
+      // Clear form
+      document.getElementById('adjustShares').value = '';
+      document.getElementById('adjustPrice').value = '';
+      document.getElementById('adjustNote').value = '';
+    }
+
+    document.getElementById('closeAdjustModal').addEventListener('click', closeAdjustModal);
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+# dependencies
+node_modules/
+
+# test + secrets (never commit credentials)
+.env
+.env.test
+.env.local
+test-results/
+playwright-report/
+playwright/.cache/
+
+# os
+Thumbs.db
+.DS_Store

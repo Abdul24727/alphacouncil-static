@@ -1,0 +1,947 @@
+<!-- REVIEWED & POLISHED: 2026-06-17 -->
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up — AlphaCouncil</title>
+  <meta name="description" content="Create your AlphaCouncil account and start analyzing GCC stocks with AI.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/alphacouncil.css">
+  <style>
+    /* ==========================================================================
+       SIGNUP PAGE - Unique Styles
+       Shared styles (variables, reset, forms, buttons, etc.) loaded from alphacouncil.css
+       ========================================================================== */
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Auth Header (different from app-nav) */
+    .auth-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(11, 17, 32, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+    }
+
+    .header-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--fg);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-logo img {
+      height: 28px;
+      width: auto;
+    }
+
+    .header-logo:hover {
+      color: var(--accent-primary);
+      text-decoration: none;
+    }
+
+    .header-logo:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+      color: var(--fg-muted);
+    }
+
+    .header-right a {
+      color: var(--accent-primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .header-right a:hover {
+      text-decoration: underline;
+    }
+
+    .header-right a:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Auth Main Layout */
+    .auth-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 96px 24px 48px;
+    }
+
+    /* Auth Card */
+    .auth-card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+    }
+
+    .auth-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .auth-subtitle {
+      font-size: 14px;
+      color: var(--fg-muted);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    /* Form Row Grid (2 columns) */
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* Signup-specific form adjustments */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: var(--fg-muted);
+    }
+
+    .form-input {
+      padding: 14px 16px;
+      font-size: 15px;
+    }
+
+    .form-input.error {
+      border-color: var(--danger);
+    }
+
+    /* Form Select */
+    .form-select {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      color: var(--fg);
+      font-family: inherit;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7A8F' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      transition: all 0.2s;
+    }
+
+    .form-select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: var(--focus-ring);
+    }
+
+    .form-select option {
+      background: var(--bg-elevated);
+      color: var(--fg);
+    }
+
+    /* Password Field */
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--fg-dim);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      transition: color 0.2s;
+    }
+
+    .password-toggle:hover {
+      color: var(--fg-muted);
+    }
+
+    .password-toggle:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .password-toggle svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+
+    /* Password Strength Indicator */
+    .password-strength {
+      margin-top: 10px;
+    }
+
+    .strength-bar {
+      height: 4px;
+      background: var(--bg-elevated);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .strength-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s var(--ease-out), background-color 0.3s;
+      width: 0;
+    }
+
+    .strength-fill.weak { width: 25%; background: var(--danger); }
+    .strength-fill.fair { width: 50%; background: var(--warning); }
+    .strength-fill.good { width: 75%; background: var(--accent-primary); }
+    .strength-fill.strong { width: 100%; background: var(--success); }
+
+    .strength-text {
+      font-size: 12px;
+      color: var(--fg-dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .strength-text svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .strength-text.weak { color: var(--danger); }
+    .strength-text.fair { color: var(--warning); }
+    .strength-text.good { color: var(--accent-primary); }
+    .strength-text.strong { color: var(--success); }
+
+    /* Checkbox */
+    .checkbox-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--fg-muted);
+      cursor: pointer;
+      margin-bottom: 24px;
+    }
+
+    .checkbox-label input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .checkbox-box {
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+      transition: all 0.2s;
+    }
+
+    .checkbox-label input:checked + .checkbox-box {
+      background: var(--accent-primary);
+      border-color: var(--accent-primary);
+    }
+
+    .checkbox-label input:focus-visible + .checkbox-box {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .checkbox-box svg {
+      width: 12px;
+      height: 12px;
+      color: var(--bg-deep);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .checkbox-label input:checked + .checkbox-box svg {
+      opacity: 1;
+    }
+
+    .checkbox-label a {
+      color: var(--accent-primary);
+      text-decoration: none;
+    }
+
+    .checkbox-label a:hover {
+      text-decoration: underline;
+    }
+
+    .checkbox-label a:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Primary Button (signup-specific styling) */
+    .btn-primary {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--accent-primary), #1FA89A);
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--bg-deep);
+      cursor: pointer;
+      transition: all 0.3s var(--ease-out);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--accent-primary-glow);
+    }
+
+    .btn-primary:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .btn-primary:disabled {
+      background: #C7D2E0;
+      color: #7A8699;
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-primary:disabled:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Keep the button looking active (teal) while a request is in flight, even though it is disabled. */
+    .btn-primary.is-loading {
+      background: linear-gradient(135deg, var(--accent-primary), #1FA89A);
+      color: var(--bg-deep);
+      opacity: 1;
+    }
+
+    /* Helper text shown until the user accepts the terms. */
+    .terms-helper {
+      font-size: 12px;
+      color: var(--fg-dim);
+      text-align: center;
+      margin-top: 10px;
+      transition: opacity 0.2s;
+    }
+
+    .terms-helper.hidden { display: none; }
+
+    .btn-primary .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid transparent;
+      border-top-color: var(--bg-deep);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* Auth Divider */
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 28px 0;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .auth-divider span {
+      font-size: 12px;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Social Buttons */
+    .social-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-social {
+      flex: 1;
+      padding: 12px 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--fg);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-family: inherit;
+    }
+
+    .btn-social:hover {
+      border-color: var(--border-strong);
+      background: var(--surface-elevated);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn-social:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .btn-social svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* "Coming soon" badge — Apple button only. Subtle gold-tinted pill. */
+    .soon-badge {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      line-height: 1.4;
+      white-space: nowrap;
+      color: var(--accent-gold);
+      background: rgba(215, 183, 106, 0.12);
+      border: 1px solid rgba(215, 183, 106, 0.28);
+      padding: 2px 7px;
+      border-radius: 100px;
+    }
+
+    /* Auth Footer */
+    .auth-footer {
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--fg-dim);
+    }
+
+    .auth-footer a {
+      color: var(--fg-muted);
+      text-decoration: none;
+      margin: 0 12px;
+    }
+
+    .auth-footer a:hover {
+      color: var(--accent-primary);
+    }
+
+    .auth-footer a:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Toast (signup-specific positioning) */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--surface-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 1000;
+      opacity: 0;
+      transition: transform 0.3s var(--ease-out), opacity 0.3s var(--ease-out);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toast-icon.success {
+      background: var(--success-glow);
+      color: var(--success);
+    }
+
+    .toast-icon.error {
+      background: var(--danger-glow);
+      color: var(--danger);
+    }
+
+    .toast-icon.info {
+      background: var(--accent-primary-glow);
+      color: var(--accent-primary);
+    }
+
+    .toast-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .toast-content {
+      font-size: 14px;
+    }
+
+    .toast-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .toast-text {
+      color: var(--fg-muted);
+      font-size: 13px;
+    }
+
+    /* ==========================================================================
+       Reduced Motion Support
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      .strength-fill {
+        transition: none;
+      }
+
+      .toast {
+        transition: opacity 0.1s;
+      }
+
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      .btn-primary {
+        transition: none;
+      }
+
+      .btn-primary:hover {
+        transform: none;
+      }
+
+      .btn-primary .spinner {
+        animation: none;
+        border-color: var(--bg-deep);
+        border-top-color: transparent;
+      }
+
+      .btn-social,
+      .password-toggle,
+      .checkbox-box,
+      .form-input,
+      .form-select {
+        transition: none;
+      }
+    }
+
+    /* ==========================================================================
+       Responsive
+       ========================================================================== */
+    @media (max-width: 540px) {
+      .auth-header {
+        padding: 0 16px;
+      }
+
+      .auth-card {
+        padding: 32px 24px;
+        margin: 0 16px;
+      }
+
+      .form-row-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .social-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="atmosphere"></div>
+
+  <header class="auth-header">
+    <a href="index.html" class="header-logo">
+      <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+    </a>
+    <div class="header-right">
+      Already have an account? <a href="login.html">Sign in</a>
+    </div>
+  </header>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      <h1 class="auth-title">Create your account</h1>
+      <p class="auth-subtitle">Start analyzing GCC markets with AI-powered intelligence</p>
+
+      <form id="signupForm">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label" for="firstName">First name</label>
+            <input type="text" class="form-input" id="firstName" placeholder="Sami" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lastName">Last name</label>
+            <input type="text" class="form-input" id="lastName" placeholder="Al-Khouri" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email address</label>
+          <input type="email" class="form-input" id="email" placeholder="you@company.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="password-wrapper">
+            <input type="password" class="form-input" id="password" placeholder="Create a strong password" required minlength="8" aria-describedby="passwordStrengthText">
+            <button type="button" class="password-toggle" onclick="togglePassword()" aria-label="Show password" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="eyeIcon" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="password-strength" id="strengthIndicator" style="display: none;" aria-live="polite">
+            <div class="strength-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="strength-fill" id="strengthFill"></div></div>
+            <div class="strength-text" id="strengthText">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              <span id="passwordStrengthText"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="market">Primary GCC market</label>
+          <select class="form-select" id="market" required>
+            <option value="" disabled selected>Select your market</option>
+            <option value="SA">Saudi Arabia (Tadawul)</option>
+            <option value="AE">UAE (ADX / DFM)</option>
+            <option value="QA">Qatar (QSE)</option>
+            <option value="KW">Kuwait (Boursa Kuwait)</option>
+            <option value="BH">Bahrain (BSE)</option>
+            <option value="OM">Oman (MSX)</option>
+          </select>
+        </div>
+
+        <label class="checkbox-label">
+          <input type="checkbox" id="terms" required>
+          <span class="checkbox-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          <span>I agree to the <a href="legal.html#terms" target="_blank" rel="noopener">Terms of Service</a> and <a href="legal.html#privacy" target="_blank" rel="noopener">Privacy Policy</a>. I understand AlphaCouncil provides analysis, not financial advice.</span>
+        </label>
+
+        <button type="submit" class="btn-primary" id="signupBtn" disabled>
+          <span>Create account</span>
+        </button>
+        <p class="terms-helper" id="termsHelper">Please accept the Terms of Service and Privacy Policy to continue.</p>
+      </form>
+
+      <div class="auth-divider"><span>or continue with</span></div>
+
+      <!-- Social login (placeholders). Backend: replace socialSignup() with the real OAuth redirect per data-provider. -->
+      <div class="social-buttons">
+        <button type="button" class="btn-social" data-provider="Google" onclick="socialSignup('Google')">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          <span>Google</span>
+        </button>
+        <button type="button" class="btn-social btn-soon" data-provider="Apple" onclick="socialSignup('Apple')">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+          <span>Apple</span>
+          <span class="soon-badge">Coming soon</span>
+        </button>
+        <button type="button" class="btn-social" data-provider="Microsoft" onclick="socialSignup('Microsoft')">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F25022" d="M11.4 11.4H2V2h9.4v9.4z"/><path fill="#7FBA00" d="M22 11.4h-9.4V2H22v9.4z"/><path fill="#00A4EF" d="M11.4 22H2v-9.4h9.4V22z"/><path fill="#FFB900" d="M22 22h-9.4v-9.4H22V22z"/></svg>
+          <span>Microsoft</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="auth-footer">
+    <a href="index.html">Home</a>
+    <a href="legal.html#privacy" target="_blank" rel="noopener">Privacy Policy</a>
+    <a href="legal.html#terms" target="_blank" rel="noopener">Terms of Service</a>
+    <a href="contact.html">Help</a>
+  </footer>
+
+  <div class="toast" id="toast" role="alert" aria-live="assertive">
+    <div class="toast-icon success">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="toast-content">
+      <div class="toast-title">Success</div>
+      <div class="toast-text">Account created.</div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    const passwordInput = document.getElementById('password');
+    const strengthIndicator = document.getElementById('strengthIndicator');
+    const strengthFill = document.getElementById('strengthFill');
+    const strengthText = document.getElementById('strengthText');
+    const strengthBar = strengthIndicator.querySelector('.strength-bar');
+
+    passwordInput.addEventListener('input', function() {
+      const password = this.value;
+
+      if (password.length === 0) {
+        strengthIndicator.style.display = 'none';
+        return;
+      }
+
+      strengthIndicator.style.display = 'block';
+
+      let score = 0;
+
+      if (password.length >= 8) score++;
+      if (password.length >= 12) score++;
+      if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+      if (/\d/.test(password)) score++;
+      if (/[^a-zA-Z0-9]/.test(password)) score++;
+
+      const levels = ['weak', 'weak', 'fair', 'good', 'strong', 'strong'];
+      const messages = [
+        'Very weak - add more characters',
+        'Weak - try mixing letters and numbers',
+        'Fair - add special characters',
+        'Good - almost there',
+        'Strong password',
+        'Very strong password'
+      ];
+      const percentages = [0, 25, 50, 75, 100, 100];
+
+      const level = levels[score];
+      strengthFill.className = 'strength-fill ' + level;
+      strengthText.className = 'strength-text ' + level;
+      strengthText.querySelector('span').textContent = messages[score];
+
+      // Update progressbar ARIA attributes
+      strengthBar.setAttribute('aria-valuenow', percentages[score]);
+      strengthBar.setAttribute('aria-valuetext', messages[score]);
+    });
+
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const icon = document.getElementById('eyeIcon');
+      const button = document.querySelector('.password-toggle');
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        button.setAttribute('aria-label', 'Hide password');
+        button.setAttribute('aria-pressed', 'true');
+        icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+      } else {
+        input.type = 'password';
+        button.setAttribute('aria-label', 'Show password');
+        button.setAttribute('aria-pressed', 'false');
+        icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+      }
+    }
+
+    // Keyboard support for password toggle
+    document.querySelector('.password-toggle').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        togglePassword();
+      }
+    });
+
+    document.getElementById('signupForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const terms = document.getElementById('terms').checked;
+      if (!email || !password) { showToast('error', 'Missing details', 'Enter your email and a password.'); return; }
+      if (password.length < 8) { showToast('error', 'Password too short', 'Use at least 8 characters.'); return; }
+      if (!terms) { showToast('error', 'Terms required', 'Please accept the terms to continue.'); return; }
+
+      const btn = document.getElementById('signupBtn');
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<div class="spinner"></div>';
+      btn.classList.add('is-loading');
+      btn.disabled = true;
+
+      try {
+        await API.register(email, password, 'en');
+        // Try to establish a session immediately (most deployments auto-login on register).
+        try {
+          await API.login(email, password);
+          showToast('success', 'Account created', 'Setting up your workspace…');
+          setTimeout(() => { window.location.href = 'onboarding.html'; }, 1000);
+        } catch (le) {
+          // Registered but a session wasn't established (e.g. email verification required).
+          showToast('success', 'Account created', 'Please log in to continue.');
+          setTimeout(() => { window.location.href = 'login.html'; }, 1600);
+        }
+      } catch (err) {
+        btn.innerHTML = orig; btn.disabled = false; btn.classList.remove('is-loading');
+        let msg = 'Could not create account. Please try again.';
+        if (err && err.status === 409) msg = 'An account with this email already exists — try logging in.';
+        else if (err && err.status === 400) msg = (err.message || 'Please check your details and try again.');
+        else if (err && err.status === 0) msg = 'Network error — could not reach the server.';
+        else if (err && err.message) msg = err.message;
+        showToast('error', 'Sign-up failed', msg);
+      }
+    });
+
+    // ── Social login ──────────────────────────────────────────────────────
+    // Google  → real OAuth: redirect to /auth/google (backend handles the flow,
+    //           callback at /auth/google/callback).
+    // Apple   → "Coming soon" (badge + message), no real flow.
+    // Microsoft → real OAuth: redirect to /auth/microsoft.
+    // Backend module: backend/auth/oauth/.
+    function socialSignup(provider) {
+      const key = (provider || '').toLowerCase();
+      if (key === 'apple') {
+        showToast('info', 'Apple Sign In is coming soon',
+          'We’re currently finalizing the integration. You can use Google or Microsoft to sign up for now.');
+        return;
+      }
+      if (key === 'google') {
+        window.location.href = '/auth/google';   // live Google OAuth
+        return;
+      }
+      if (key === 'microsoft') {
+        window.location.href = '/auth/microsoft'; // live Microsoft OAuth
+        return;
+      }
+      const name = provider.charAt(0).toUpperCase() + provider.slice(1);
+      showToast('info', name, name + ' login will be available soon.');
+    }
+
+    // Surface OAuth callback errors (backend redirects back with ?oauth_error=...).
+    (function showOAuthError() {
+      const params = new URLSearchParams(location.search);
+      const err = params.get('oauth_error');
+      if (!err) return;
+      const prov = params.get('provider') || 'Social';
+      const cap = prov.charAt(0).toUpperCase() + prov.slice(1);
+      const MSG = {
+        cancelled: 'Sign-in was cancelled.',
+        not_configured: cap + ' login isn’t configured yet.',
+        bad_state: 'Your sign-in session expired — please try again.',
+        exchange_failed: 'Could not complete ' + cap + ' sign-in. Please try again.',
+        provider_unavailable: cap + ' is temporarily unavailable. Please try again shortly.',
+        provider_error: cap + ' sign-in failed. Please try again.',
+        no_email: 'We need an email from ' + cap + ' to create your account — please allow email sharing.',
+        missing_params: 'Sign-in didn’t complete. Please try again.'
+      };
+      showToast('error', cap + ' sign-in', MSG[err] || (cap + ' sign-in failed. Please try again.'));
+      history.replaceState({}, '', location.pathname);
+    })();
+
+    // Enable the Create-account button only once the agreement is checked.
+    (function () {
+      const cb = document.getElementById('terms');
+      const btn = document.getElementById('signupBtn');
+      const helper = document.getElementById('termsHelper');
+      if (!cb || !btn) return;
+      function sync() {
+        const ok = cb.checked;
+        btn.disabled = !ok;
+        if (helper) helper.classList.toggle('hidden', ok);
+      }
+      cb.addEventListener('change', sync);
+      sync(); // set initial state (disabled + helper visible)
+    })();
+
+    function showToast(type, title, text) {
+      const toast = document.getElementById('toast');
+      const icon = toast.querySelector('.toast-icon');
+      icon.className = 'toast-icon ' + type;
+      icon.innerHTML = type === 'success'
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>'
+        : type === 'info'
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>';
+      toast.querySelector('.toast-title').textContent = title;
+      toast.querySelector('.toast-text').textContent = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markets — AlphaCouncil</title>
+  <meta name="description" content="Deep, native coverage of all six GCC stock markets. Saudi Arabia, UAE, Qatar, Kuwait, Bahrain, and Oman — built for the nuances that matter.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #07111F;
+      --bg-base: #0B1120;
+      --bg-elevated: #101624;
+      --surface: #111A2B;
+      --surface-elevated: #141D2F;
+      --surface-glass: rgba(17, 26, 43, 0.7);
+      --fg: #F8FAFC;
+      --fg-muted: #AAB6C5;
+      --fg-dim: #6B7A8F;
+      --accent-primary: #27D3C3;
+      --accent-primary-glow: rgba(39, 211, 195, 0.2);
+      --accent-gold: #D7B76A;
+      --accent-gold-glow: rgba(215, 183, 106, 0.15);
+      --accent-violet: #8B5CF6;
+      --accent-violet-glow: rgba(139, 92, 246, 0.15);
+      --accent-emerald: #10B981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.15);
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.12);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --container: 1200px;
+      --nav-height: 72px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-sans); background: var(--bg-deep); color: var(--fg); line-height: 1.6; overflow-x: hidden; }
+
+    /* Atmosphere */
+    .atmosphere { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
+    .atmosphere-base { position: absolute; inset: 0; background: linear-gradient(180deg, var(--bg-deep) 0%, #050a16 30%, #071120 60%, var(--bg-deep) 100%); }
+    .atmosphere-noise { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); opacity: 0.025; }
+    .atmosphere-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 100% 40% at 75% 15%, rgba(39, 211, 195, 0.06) 0%, transparent 60%), radial-gradient(ellipse 80% 50% at 20% 45%, rgba(139, 92, 246, 0.04) 0%, transparent 50%), radial-gradient(ellipse 70% 40% at 85% 70%, rgba(215, 183, 106, 0.035) 0%, transparent 50%); }
+    .atmosphere-waves { position: absolute; bottom: 20%; left: 0; right: 0; height: 300px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 100'%3E%3Cpath fill='none' stroke='rgba(39,211,195,0.08)' stroke-width='1' d='M0,50 Q360,20 720,50 T1440,50'/%3E%3Cpath fill='none' stroke='rgba(215,183,106,0.05)' stroke-width='1' d='M0,60 Q360,30 720,60 T1440,60'/%3E%3C/svg%3E"); background-size: 200% 100%; animation: wave-drift 30s linear infinite; opacity: 0.7; }
+    @keyframes wave-drift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+    .atmosphere-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 50%, transparent 20%, rgba(5, 10, 22, 0.5) 100%); }
+
+    /* Floating Particles */
+    .particles { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
+    .particle { position: absolute; width: 4px; height: 4px; background: var(--accent-primary); border-radius: 50%; opacity: 0.3; animation: float-particle 20s ease-in-out infinite; }
+    .particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 25%; top: 60%; animation-delay: -5s; background: var(--accent-gold); }
+    .particle:nth-child(3) { left: 45%; top: 30%; animation-delay: -10s; }
+    .particle:nth-child(4) { left: 70%; top: 70%; animation-delay: -15s; background: var(--accent-violet); }
+    .particle:nth-child(5) { left: 85%; top: 40%; animation-delay: -8s; }
+    .particle:nth-child(6) { left: 60%; top: 15%; animation-delay: -12s; background: var(--accent-gold); }
+    @keyframes float-particle { 0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; } 50% { transform: translateY(-30px) scale(1.2); opacity: 0.5; } }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .stagger-1 { transition-delay: 0ms; }
+    .stagger-2 { transition-delay: 80ms; }
+    .stagger-3 { transition-delay: 160ms; }
+    .stagger-4 { transition-delay: 240ms; }
+    .stagger-5 { transition-delay: 320ms; }
+    .stagger-6 { transition-delay: 400ms; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } .atmosphere-waves, .particle { animation: none; } }
+
+    /* Nav */
+    .nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-height); background: rgba(7, 17, 31, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; transition: background 0.3s ease; }
+    .nav.scrolled { background: rgba(7, 17, 31, 0.95); border-color: var(--border-strong); }
+    .nav-inner { max-width: var(--container); height: 100%; margin: 0 auto; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; text-decoration: none; font-size: 18px; font-weight: 700; color: var(--fg); letter-spacing: -0.02em; transition: color 0.2s ease; }
+    .nav-logo:hover { color: var(--accent-primary); }
+    .nav-logo img { height: 28px; width: auto; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { color: var(--fg-muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s ease; }
+    .nav-links a:hover { color: var(--fg); }
+    .nav-links a.active { color: var(--accent-primary); }
+    .nav-actions { display: flex; align-items: center; gap: 16px; }
+    .nav-signin { color: var(--fg-muted); text-decoration: none; font-size: 14px; font-weight: 500; }
+    .nav-signin:hover { color: var(--fg); }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; transition: all 0.3s var(--ease-out); }
+    .btn-primary { background: linear-gradient(135deg, var(--accent-primary), #1AB3A5); color: var(--bg-deep); box-shadow: 0 4px 20px var(--accent-primary-glow); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-primary-glow); }
+    .btn-secondary { background: var(--surface); color: var(--fg); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--surface-elevated); border-color: var(--border-strong); }
+    .btn-lg { padding: 14px 28px; font-size: 15px; border-radius: 12px; }
+
+    /* Sections */
+    section { position: relative; padding: 100px 32px; }
+    .section-inner { max-width: var(--container); margin: 0 auto; }
+    .section-eyebrow { display: inline-block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-primary); margin-bottom: 16px; }
+    .section-title { font-size: clamp(32px, 4vw, 44px); font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .section-subtitle { font-size: 17px; color: var(--fg-muted); max-width: 700px; line-height: 1.7; }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-header .section-subtitle { margin: 0 auto; }
+
+    /* Hero */
+    .hero { min-height: 85vh; display: flex; align-items: center; padding-top: var(--nav-height); position: relative; overflow: hidden; }
+    .hero-bg { position: absolute; inset: 0; pointer-events: none; }
+    .hero-gradient { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(39, 211, 195, 0.08) 0%, transparent 50%), radial-gradient(ellipse 60% 80% at 80% 50%, rgba(215, 183, 106, 0.06) 0%, transparent 50%); }
+    .hero-inner { position: relative; max-width: var(--container); width: 100%; margin: 0 auto; padding: 80px 32px; text-align: center; z-index: 1; }
+    .hero-content { max-width: 850px; margin: 0 auto; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--surface-glass); border: 1px solid var(--border); border-radius: 100px; font-size: 13px; font-weight: 600; color: var(--accent-gold); margin-bottom: 24px; backdrop-filter: blur(8px); }
+    .hero-badge svg { width: 16px; height: 16px; }
+    .hero-title { font-size: clamp(36px, 5vw, 56px); font-weight: 700; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 24px; }
+    .hero-title .highlight { background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-subtitle { font-size: 18px; color: var(--fg-muted); line-height: 1.7; margin-bottom: 40px; max-width: 720px; margin-left: auto; margin-right: auto; }
+    .hero-stats { display: flex; gap: 48px; justify-content: center; flex-wrap: wrap; margin-top: 48px; }
+    .hero-stat { text-align: center; }
+    .hero-stat-value { font-size: 36px; font-weight: 700; color: var(--accent-primary); margin-bottom: 4px; }
+    .hero-stat-label { font-size: 13px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* Why GCC Native */
+    .why-native { background: var(--bg-base); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+    .why-content h3 { font-size: 28px; font-weight: 700; margin-bottom: 20px; line-height: 1.3; }
+    .why-content > p { color: var(--fg-muted); line-height: 1.8; margin-bottom: 28px; font-size: 16px; }
+    .why-points { display: flex; flex-direction: column; gap: 16px; }
+    .why-point { display: flex; align-items: flex-start; gap: 14px; padding: 16px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; transition: all 0.3s; }
+    .why-point:hover { border-color: var(--accent-primary); transform: translateX(4px); }
+    .why-point-icon { width: 40px; height: 40px; background: var(--accent-primary-glow); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .why-point-icon svg { width: 20px; height: 20px; color: var(--accent-primary); }
+    .why-point-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .why-point-content p { font-size: 13px; color: var(--fg-dim); line-height: 1.5; }
+
+    /* Comparison Visual */
+    .comparison-visual { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; }
+    .comparison-header { text-align: center; margin-bottom: 28px; }
+    .comparison-header h4 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .comparison-header p { font-size: 13px; color: var(--fg-dim); }
+    .comparison-bars { display: flex; flex-direction: column; gap: 20px; }
+    .comparison-bar { display: flex; align-items: center; gap: 16px; }
+    .comparison-bar-label { width: 140px; font-size: 13px; color: var(--fg-muted); flex-shrink: 0; }
+    .comparison-bar-track { flex: 1; height: 32px; background: var(--bg-elevated); border-radius: 8px; overflow: hidden; position: relative; display: flex; }
+    .comparison-bar-fill { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 12px; font-size: 11px; font-weight: 600; border-radius: 8px 0 0 8px; }
+    .comparison-bar-fill.generic { background: linear-gradient(90deg, rgba(107, 122, 143, 0.3), rgba(107, 122, 143, 0.5)); color: var(--fg-dim); }
+    .comparison-bar-fill.native { background: linear-gradient(90deg, var(--accent-primary-glow), var(--accent-primary)); color: var(--bg-deep); }
+
+    /* Market Cards */
+    .markets-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .market-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px; transition: all 0.4s var(--ease-out); position: relative; overflow: hidden; }
+    .market-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent-primary), var(--accent-gold)); opacity: 0; transition: opacity 0.3s; }
+    .market-card:hover { border-color: var(--accent-primary); transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); }
+    .market-card:hover::before { opacity: 1; }
+    .market-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .market-flag { width: 52px; height: 52px; background: var(--bg-elevated); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+    .market-info h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .market-exchanges { display: flex; gap: 6px; flex-wrap: wrap; }
+    .market-exchange { padding: 3px 8px; background: var(--bg-elevated); border-radius: 5px; font-size: 10px; color: var(--fg-dim); font-weight: 500; }
+    .market-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+    .market-stat { text-align: center; padding: 12px; background: var(--bg-elevated); border-radius: 10px; }
+    .market-stat-value { font-size: 20px; font-weight: 700; color: var(--accent-primary); margin-bottom: 2px; }
+    .market-stat-label { font-size: 10px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+    .market-strengths { margin-bottom: 20px; }
+    .market-strengths h4 { font-size: 11px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+    .market-strength-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .market-strength-tag { padding: 5px 10px; background: var(--accent-primary-glow); border-radius: 6px; font-size: 11px; color: var(--accent-primary); font-weight: 500; }
+    .market-insight { background: var(--bg-elevated); border-radius: 10px; padding: 14px; border-left: 3px solid var(--accent-gold); }
+    .market-insight p { font-size: 12px; color: var(--fg-muted); line-height: 1.6; font-style: italic; }
+
+    /* Data Depth Section */
+    .data-depth { background: var(--bg-base); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .depth-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .depth-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-align: center; transition: all 0.3s var(--ease-out); }
+    .depth-card:hover { border-color: var(--accent-primary); transform: translateY(-4px); }
+    .depth-icon { width: 56px; height: 56px; background: var(--accent-primary-glow); border-radius: 14px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; }
+    .depth-icon svg { width: 28px; height: 28px; color: var(--accent-primary); }
+    .depth-card:nth-child(2) .depth-icon { background: var(--accent-gold-glow); }
+    .depth-card:nth-child(2) .depth-icon svg { color: var(--accent-gold); }
+    .depth-card:nth-child(3) .depth-icon { background: var(--accent-violet-glow); }
+    .depth-card:nth-child(3) .depth-icon svg { color: var(--accent-violet); }
+    .depth-card:nth-child(4) .depth-icon { background: var(--accent-emerald-glow); }
+    .depth-card:nth-child(4) .depth-icon svg { color: var(--accent-emerald); }
+    .depth-card:nth-child(5) .depth-icon { background: rgba(56, 189, 248, 0.15); }
+    .depth-card:nth-child(5) .depth-icon svg { color: #38BDF8; }
+    .depth-card:nth-child(6) .depth-icon { background: rgba(245, 158, 11, 0.15); }
+    .depth-card:nth-child(6) .depth-icon svg { color: var(--warning); }
+    .depth-card:nth-child(7) .depth-icon { background: var(--accent-primary-glow); }
+    .depth-card:nth-child(8) .depth-icon { background: var(--accent-violet-glow); }
+    .depth-card:nth-child(8) .depth-icon svg { color: var(--accent-violet); }
+    .depth-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+    .depth-card p { font-size: 13px; color: var(--fg-muted); line-height: 1.5; }
+
+    /* Differentiation */
+    .differentiation-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    .diff-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; position: relative; overflow: hidden; }
+    .diff-card.generic { opacity: 0.7; }
+    .diff-card.native { border-color: var(--accent-primary); box-shadow: 0 0 40px var(--accent-primary-glow); }
+    .diff-card.native::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent-primary), var(--accent-gold)); }
+    .diff-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px; }
+    .diff-badge.generic { background: rgba(107, 122, 143, 0.2); color: var(--fg-dim); }
+    .diff-badge.native { background: var(--accent-primary-glow); color: var(--accent-primary); }
+    .diff-card h4 { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+    .diff-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .diff-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--fg-muted); line-height: 1.5; }
+    .diff-list li svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; }
+    .diff-card.generic .diff-list li svg { color: var(--fg-dim); }
+    .diff-card.native .diff-list li svg { color: var(--accent-primary); }
+
+    /* Language Support */
+    .language-section { text-align: center; }
+    .language-visual { display: flex; gap: 32px; justify-content: center; align-items: center; margin-top: 48px; }
+    .language-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px 40px; flex: 1; max-width: 340px; transition: all 0.3s; }
+    .language-card:hover { border-color: var(--accent-primary); }
+    .language-flag { font-size: 32px; margin-bottom: 12px; }
+    .language-card h4 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .language-card p { font-size: 14px; color: var(--fg-muted); }
+    .language-card.rtl { direction: rtl; text-align: right; }
+    .language-connector { display: flex; align-items: center; gap: 8px; color: var(--fg-dim); }
+    .language-connector span { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
+
+    /* Compliance Note */
+    .compliance-note { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 24px; display: flex; align-items: flex-start; gap: 16px; max-width: 900px; margin: 0 auto; }
+    .compliance-icon { width: 40px; height: 40px; background: rgba(107, 122, 143, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .compliance-icon svg { width: 20px; height: 20px; color: var(--fg-dim); }
+    .compliance-text h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    .compliance-text p { font-size: 13px; color: var(--fg-dim); line-height: 1.6; }
+
+    /* Final CTA */
+    .final-cta { text-align: center; padding: 120px 32px; position: relative; overflow: hidden; }
+    .final-cta-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 40% at 50% 50%, rgba(39, 211, 195, 0.1) 0%, transparent 60%), radial-gradient(ellipse 40% 30% at 30% 70%, rgba(215, 183, 106, 0.08) 0%, transparent 50%); pointer-events: none; }
+    .final-cta-content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+    .final-cta-title { font-size: clamp(28px, 4vw, 40px); font-weight: 700; line-height: 1.2; margin-bottom: 20px; }
+    .final-cta-subtitle { font-size: 17px; color: var(--fg-muted); margin-bottom: 32px; line-height: 1.7; }
+    .final-cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+    .final-cta-note { font-size: 13px; color: var(--fg-dim); }
+
+    /* Footer */
+    .footer { background: var(--bg-base); border-top: 1px solid var(--border); padding: 64px 32px 32px; }
+    .footer-inner { max-width: var(--container); margin: 0 auto; }
+    .footer-top { display: grid; grid-template-columns: 2fr repeat(3, 1fr); gap: 48px; margin-bottom: 48px; }
+    .footer-brand .nav-logo { margin-bottom: 16px; }
+    .footer-brand p { color: var(--fg-dim); font-size: 14px; line-height: 1.7; max-width: 280px; }
+    .footer-brand .footer-slogan { font-size: 12px; color: var(--fg-dim); margin-top: 8px; font-style: italic; }
+    .footer-links-col h4 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--fg-dim); margin-bottom: 16px; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a { color: var(--fg-muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent-primary); }
+    .footer-disclaimer { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 32px; }
+    .footer-disclaimer p { font-size: 12px; color: var(--fg-dim); line-height: 1.6; }
+    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-copyright { font-size: 13px; color: var(--fg-dim); }
+    .footer-legal { display: flex; gap: 24px; }
+    .footer-legal a { font-size: 13px; color: var(--fg-dim); text-decoration: none; }
+    .footer-legal a:hover { color: var(--fg-muted); }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .markets-grid { grid-template-columns: repeat(2, 1fr); }
+      .depth-grid { grid-template-columns: repeat(2, 1fr); }
+      .why-grid { grid-template-columns: 1fr; gap: 48px; }
+      .differentiation-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: repeat(2, 1fr); }
+      .hero-stats { gap: 32px; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      section { padding: 80px 24px; }
+      .markets-grid { grid-template-columns: 1fr; }
+      .depth-grid { grid-template-columns: 1fr; }
+      .language-visual { flex-direction: column; }
+      .language-connector { transform: rotate(90deg); }
+      .footer-top { grid-template-columns: 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+      .hero-stats { flex-direction: column; gap: 24px; }
+      .comparison-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .comparison-bar-label { width: auto; }
+    }
+  
+    /* ---- AlphaCouncil structured footer (self-contained, consistent across pages) ---- */
+    .ac-footer { border-top: 1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.015) 100%); margin-top: 96px; }
+    .ac-footer-inner { max-width: 1200px; margin: 0 auto; padding: 72px 32px 36px; }
+    .ac-footer-top { display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr; gap: 56px; padding-bottom: 44px; border-bottom: 1px solid var(--border); }
+    .ac-footer-brand .ac-flogo { display: inline-block; font-weight: 700; font-size: 20px; letter-spacing: -0.02em; color: var(--fg); text-decoration: none; margin-bottom: 16px; }
+    .ac-footer-brand p { font-size: 14px; line-height: 1.75; color: var(--fg-muted); max-width: 320px; }
+    .ac-footer-col h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg-dim); margin-bottom: 20px; }
+    .ac-footer-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+    .ac-footer-col a { font-size: 14px; color: var(--fg-muted); text-decoration: none; transition: color 0.2s ease; }
+    .ac-footer-col a:hover { color: var(--accent-primary); }
+    .ac-footer-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 28px; gap: 16px; flex-wrap: wrap; }
+    .ac-footer-bottom .ac-copy { font-size: 13px; color: var(--fg-dim); }
+    .ac-footer-bottom .ac-legal { display: flex; gap: 28px; }
+    .ac-footer-bottom .ac-legal a { font-size: 13px; color: var(--fg-dim); text-decoration: none; transition: color 0.2s ease; }
+    .ac-footer-bottom .ac-legal a:hover { color: var(--accent-primary); }
+    @media (max-width: 880px) {
+      .ac-footer-top { grid-template-columns: 1fr 1fr; gap: 36px 32px; }
+      .ac-footer-brand { grid-column: 1 / -1; }
+      .ac-footer-inner { padding: 56px 24px 32px; }
+      .ac-footer-bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Atmosphere -->
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atmosphere-base"></div>
+    <div class="atmosphere-noise"></div>
+    <div class="atmosphere-glow"></div>
+    <div class="atmosphere-waves"></div>
+    <div class="atmosphere-vignette"></div>
+  </div>
+
+  <!-- Floating Particles -->
+  <div class="particles" aria-hidden="true">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <!-- Navigation -->
+    <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+      </a>
+      <ul class="nav-links" style="gap:22px;">
+        <li><a href="how-it-works.html">How it works</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="methodology.html">Methodology</a></li>
+        <li><a href="markets.html" class="active">Markets</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="login.html" class="nav-signin">Sign in</a>
+        <a href="signup.html" class="btn btn-primary">Start free</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg"><div class="hero-gradient"></div></div>
+    <div class="hero-inner">
+      <div class="hero-content reveal">
+        <div class="hero-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          GCC-Native Intelligence
+        </div>
+        <h1 class="hero-title">Built for the <span class="highlight">Gulf Markets</span>. Not Adapted. Native.</h1>
+        <p class="hero-subtitle">AlphaCouncil isn't a global platform with a regional filter. It's purpose-built around the structure, disclosures, dynamics, and realities of GCC capital markets — oil sensitivity, family business governance, dividend culture, Arabic filings, and the regulatory nuances that shape real portfolio decisions.</p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-value">6</div>
+            <div class="hero-stat-label">GCC Markets</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">1,200+</div>
+            <div class="hero-stat-label">Listed Instruments</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">15+</div>
+            <div class="hero-stat-label">Years Historical Data</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">EN/AR</div>
+            <div class="hero-stat-label">Bilingual Coverage</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why GCC-Native Matters -->
+  <section class="why-native">
+    <div class="section-inner">
+      <div class="why-grid">
+        <div class="why-content reveal">
+          <span class="section-eyebrow">Why GCC-Native Matters</span>
+          <h3>Generic global platforms miss what drives returns in the Gulf.</h3>
+          <p>GCC markets operate on different fundamentals. Oil price movements trigger sector rotations that don't exist elsewhere. Family-controlled conglomerates require ownership analysis that standard screeners ignore. Dividend yields often exceed 6%, making income tracking essential. And critical filings arrive in Arabic first — sometimes only in Arabic.</p>
+          <div class="why-points">
+            <div class="why-point">
+              <div class="why-point-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+              <div class="why-point-content">
+                <h4>Oil & Macro Sensitivity</h4>
+                <p>Every holding is assessed for Brent correlation and OPEC decision impact — standard in our analysis, invisible on Bloomberg Terminal.</p>
+              </div>
+            </div>
+            <div class="why-point">
+              <div class="why-point-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div class="why-point-content">
+                <h4>Family & Sovereign Ownership</h4>
+                <p>We track major shareholder movements, related-party transactions, and government stake changes that drive price action.</p>
+              </div>
+            </div>
+            <div class="why-point">
+              <div class="why-point-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              </div>
+              <div class="why-point-content">
+                <h4>Arabic-First Disclosures</h4>
+                <p>Material announcements and regulatory filings are processed in both languages, with source links to official exchange documents.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="comparison-visual reveal stagger-2">
+          <div class="comparison-header">
+            <h4>Data Coverage Depth</h4>
+            <p>Comparing typical global platform vs. AlphaCouncil for GCC markets</p>
+          </div>
+          <div class="comparison-bars">
+            <div class="comparison-bar">
+              <span class="comparison-bar-label">Price Data</span>
+              <div class="comparison-bar-track">
+                <div class="comparison-bar-fill generic" style="width: 85%;">Global</div>
+                <div class="comparison-bar-fill native" style="width: 98%;">Native</div>
+              </div>
+            </div>
+            <div class="comparison-bar">
+              <span class="comparison-bar-label">Financial Statements</span>
+              <div class="comparison-bar-track">
+                <div class="comparison-bar-fill generic" style="width: 70%;">Global</div>
+                <div class="comparison-bar-fill native" style="width: 95%;">Native</div>
+              </div>
+            </div>
+            <div class="comparison-bar">
+              <span class="comparison-bar-label">Ownership Data</span>
+              <div class="comparison-bar-track">
+                <div class="comparison-bar-fill generic" style="width: 40%;">Global</div>
+                <div class="comparison-bar-fill native" style="width: 92%;">Native</div>
+              </div>
+            </div>
+            <div class="comparison-bar">
+              <span class="comparison-bar-label">Arabic Filings</span>
+              <div class="comparison-bar-track">
+                <div class="comparison-bar-fill generic" style="width: 15%;">Global</div>
+                <div class="comparison-bar-fill native" style="width: 100%;">Native</div>
+              </div>
+            </div>
+            <div class="comparison-bar">
+              <span class="comparison-bar-label">Dividend History</span>
+              <div class="comparison-bar-track">
+                <div class="comparison-bar-fill generic" style="width: 55%;">Global</div>
+                <div class="comparison-bar-fill native" style="width: 98%;">Native</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Market Coverage Grid -->
+  <section id="coverage">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">Complete GCC Coverage</span>
+        <h2 class="section-title">Six Markets. One Unified View.</h2>
+        <p class="section-subtitle">Deep, institutional-grade coverage across every GCC exchange — each with its own market structure, regulatory framework, and investment characteristics.</p>
+      </div>
+
+      <div class="markets-grid">
+        <!-- Saudi Arabia -->
+        <div class="market-card reveal stagger-1" id="saudi" style="scroll-margin-top:90px;">
+          <div class="market-header">
+            <div class="market-flag">🇸🇦</div>
+            <div class="market-info">
+              <h3>Saudi Arabia</h3>
+              <div class="market-exchanges">
+                <span class="market-exchange">Tadawul</span>
+                <span class="market-exchange">Nomu</span>
+              </div>
+            </div>
+          </div>
+          <div class="market-stats">
+            <div class="market-stat">
+              <div class="market-stat-value">280+</div>
+              <div class="market-stat-label">Instruments</div>
+            </div>
+            <div class="market-stat">
+              <div class="market-stat-value">$2.8T</div>
+              <div class="market-stat-label">Market Cap</div>
+            </div>
+          </div>
+          <div class="market-strengths">
+            <h4>Data Depth</h4>
+            <div class="market-strength-tags">
+              <span class="market-strength-tag">Full Fundamentals</span>
+              <span class="market-strength-tag">Ownership Flows</span>
+              <span class="market-strength-tag">Tadawul Filings</span>
+              <span class="market-strength-tag">Sukuk Coverage</span>
+            </div>
+          </div>
+          <div class="market-insight">
+            <p>The region's largest market with deep liquidity. Vision 2030 exposure creates sector-specific opportunities worth monitoring across industrials and entertainment.</p>
+          </div>
+        </div>
+
+        <!-- UAE -->
+        <div class="market-card reveal stagger-2" id="uae" style="scroll-margin-top:90px;">
+          <div class="market-header">
+            <div class="market-flag">🇦🇪</div>
+            <div class="market-info">
+              <h3>United Arab Emirates</h3>
+              <div class="market-exchanges">
+                <span class="market-exchange">ADX</span>
+                <span class="market-exchange">DFM</span>
+              </div>
+            </div>
+          </div>
+          <div class="market-stats">
+            <div class="market-stat">
+              <div class="market-stat-value">180+</div>
+              <div class="market-stat-label">Instruments</div>
+            </div>
+            <div class="market-stat">
+              <div class="market-stat-value">$850B</div>
+              <div class="market-stat-label">Market Cap</div>
+            </div>
+          </div>
+          <div class="market-strengths">
+            <h4>Data Depth</h4>
+            <div class="market-strength-tags">
+              <span class="market-strength-tag">Real Estate Cycles</span>
+              <span class="market-strength-tag">Banking Liquidity</span>
+              <span class="market-strength-tag">FTSE Flows</span>
+              <span class="market-strength-tag">Tourism Metrics</span>
+            </div>
+          </div>
+          <div class="market-insight">
+            <p>Dual-exchange structure with distinct sector concentrations. DFM offers real estate exposure while ADX provides broader industrial and utility coverage.</p>
+          </div>
+        </div>
+
+        <!-- Qatar -->
+        <div class="market-card reveal stagger-3" id="qatar" style="scroll-margin-top:90px;">
+          <div class="market-header">
+            <div class="market-flag">🇶🇦</div>
+            <div class="market-info">
+              <h3>Qatar</h3>
+              <div class="market-exchanges">
+                <span class="market-exchange">QSE</span>
+              </div>
+            </div>
+          </div>
+          <div class="market-stats">
+            <div class="market-stat">
+              <div class="market-stat-value">55+</div>
+              <div class="market-stat-label">Instruments</div>
+            </div>
+            <div class="market-stat">
+              <div class="market-stat-value">$170B</div>
+              <div class="market-stat-label">Market Cap</div>
+            </div>
+          </div>
+          <div class="market-strengths">
+            <h4>Data Depth</h4>
+            <div class="market-strength-tags">
+              <span class="market-strength-tag">LNG Revenue Links</span>
+              <span class="market-strength-tag">Foreign Ownership</span>
+              <span class="market-strength-tag">Banking Sector</span>
+              <span class="market-strength-tag">MSCI Tracking</span>
+            </div>
+          </div>
+          <div class="market-insight">
+            <p>Concentrated market with high LNG correlation. Banks and industrials dominate, with foreign ownership limits creating supply constraints worth reviewing.</p>
+          </div>
+        </div>
+
+        <!-- Kuwait -->
+        <div class="market-card reveal stagger-4" id="kuwait" style="scroll-margin-top:90px;">
+          <div class="market-header">
+            <div class="market-flag">🇰🇼</div>
+            <div class="market-info">
+              <h3>Kuwait</h3>
+              <div class="market-exchanges">
+                <span class="market-exchange">Boursa Kuwait</span>
+              </div>
+            </div>
+          </div>
+          <div class="market-stats">
+            <div class="market-stat">
+              <div class="market-stat-value">175+</div>
+              <div class="market-stat-label">Instruments</div>
+            </div>
+            <div class="market-stat">
+              <div class="market-stat-value">$140B</div>
+              <div class="market-stat-label">Market Cap</div>
+            </div>
+          </div>
+          <div class="market-strengths">
+            <h4>Data Depth</h4>
+            <div class="market-strength-tags">
+              <span class="market-strength-tag">Dividend Yields</span>
+              <span class="market-strength-tag">Premier Market</span>
+              <span class="market-strength-tag">Family Holdings</span>
+              <span class="market-strength-tag">Sector Rotation</span>
+            </div>
+          </div>
+          <div class="market-insight">
+            <p>Strong income characteristics with several names yielding 5-7%. The Premier Market tier offers better disclosure and liquidity for core positions.</p>
+          </div>
+        </div>
+
+        <!-- Bahrain -->
+        <div class="market-card reveal stagger-5">
+          <div class="market-header">
+            <div class="market-flag">🇧🇭</div>
+            <div class="market-info">
+              <h3>Bahrain</h3>
+              <div class="market-exchanges">
+                <span class="market-exchange">Bahrain Bourse</span>
+              </div>
+            </div>
+          </div>
+          <div class="market-stats">
+            <div class="market-stat">
+              <div class="market-stat-value">45+</div>
+              <div class="market-stat-label">Instruments</div>
+            </div>
+            <div class="market-stat">
+              <div class="market-stat-value">$28B</div>
+              <div class="market-stat-label">Market Cap</div>
+            </div>
+          </div>
+          <div class="market-strengths">
+            <h4>Data Depth</h4>
+            <div class="market-strength-tags">
+              <span class="market-strength-tag">Islamic Finance</span>
+              <span class="market-strength-tag">Banking Hub</span>
+              <span class="market-strength-tag">Insurance Sector</span>
+              <span class="market-strength-tag">Full Disclosures</span>
+            </div>
+          </div>
+          <div class="market-insight">
+            <p>Regional Islamic finance hub with established banks and insurers. Smaller market but strong disclosure standards and stable dividend policies.</p>
+          </div>
+        </div>
+
+        <!-- Oman -->
+        <div class="market-card reveal stagger-6">
+          <div class="market-header">
+            <div class="market-flag">🇴🇲</div>
+            <div class="market-info">
+              <h3>Oman</h3>
+              <div class="market-exchanges">
+                <span class="market-exchange">MSX</span>
+              </div>
+            </div>
+          </div>
+          <div class="market-stats">
+            <div class="market-stat">
+              <div class="market-stat-value">80+</div>
+              <div class="market-stat-label">Instruments</div>
+            </div>
+            <div class="market-stat">
+              <div class="market-stat-value">$22B</div>
+              <div class="market-stat-label">Market Cap</div>
+            </div>
+          </div>
+          <div class="market-strengths">
+            <h4>Data Depth</h4>
+            <div class="market-strength-tags">
+              <span class="market-strength-tag">Utility Yields</span>
+              <span class="market-strength-tag">Energy Exposure</span>
+              <span class="market-strength-tag">Oman Vision</span>
+              <span class="market-strength-tag">Sector Coverage</span>
+            </div>
+          </div>
+          <div class="market-insight">
+            <p>Diversification play with lower correlation to Saudi. Utilities and energy dominate, with Oman Vision 2040 driving infrastructure opportunities.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Data Depth Section -->
+  <section class="data-depth">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">Institutional-Grade Data</span>
+        <h2 class="section-title">The Data That Drives Decisions</h2>
+        <p class="section-subtitle">Every data point is source-linked, timestamped, and available in both English and Arabic. We don't aggregate — we curate.</p>
+      </div>
+
+      <div class="depth-grid">
+        <div class="depth-card reveal stagger-1">
+          <div class="depth-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>
+          </div>
+          <h4>Price Data</h4>
+          <p>Real-time and 15+ years historical OHLCV across all exchanges with corporate action adjustments.</p>
+        </div>
+        <div class="depth-card reveal stagger-2">
+          <div class="depth-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          </div>
+          <h4>Financial Statements</h4>
+          <p>Quarterly and annual financials with standardized ratios, peer comparisons, and trend analysis.</p>
+        </div>
+        <div class="depth-card reveal stagger-3">
+          <div class="depth-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h4>Ownership & Flows</h4>
+          <p>Major shareholder tracking, institutional ownership changes, and foreign investor flow monitoring.</p>
+        </div>
+        <div class="depth-card reveal stagger-4">
+          <div class="depth-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <h4>Dividends & Actions</h4>
+          <p>Complete dividend history, stock splits, rights issues, and bonus shares with yield calculations.</p>
+        </div>
+        <div class="depth-card reveal stagger-5">
+          <div class="depth-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h4>News & Filings</h4>
+          <p>Exchange announcements, regulatory filings, and news with AI-assessed portfolio relevance scoring.</p>
+        </div>
+        <div class="depth-card reveal stagger-6">
+          <div class="depth-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h4>Macro Indicators</h4>
+          <p>Oil prices, currency rates, interest rates, and regional economic indicators linked to holdings.</p>
+        </div>
+        <div class="depth-card reveal stagger-1">
+          <div class="depth-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
+          </div>
+          <h4>Sector Classification</h4>
+          <p>GCC-specific sector mapping with sub-industry detail and peer group definitions.</p>
+        </div>
+        <div class="depth-card reveal stagger-2">
+          <div class="depth-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <h4>Technical Analysis</h4>
+          <p>Moving averages, RSI, MACD, support/resistance levels, and volume analysis for timing context.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Differentiation Section -->
+  <section>
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">The Difference</span>
+        <h2 class="section-title">Native Intelligence vs. Filtered Data</h2>
+        <p class="section-subtitle">Generic platforms adapt global tools for regional use. AlphaCouncil was built from the ground up for how GCC markets actually work.</p>
+      </div>
+
+      <div class="differentiation-grid">
+        <div class="diff-card generic reveal">
+          <span class="diff-badge generic">Generic Global Platform</span>
+          <h4>Adapted for the Region</h4>
+          <ul class="diff-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
+              Price data available, fundamentals often incomplete
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
+              Ownership data limited to major indices
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
+              Arabic filings rarely processed or translated
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
+              Dividend tracking inconsistent across exchanges
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
+              No oil/macro sensitivity in analysis models
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
+              Sector classifications based on global standards
+            </li>
+          </ul>
+        </div>
+
+        <div class="diff-card native reveal stagger-2">
+          <span class="diff-badge native">AlphaCouncil Native</span>
+          <h4>Built for the Region</h4>
+          <ul class="diff-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              Complete fundamentals with 15+ years of history
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              Deep ownership tracking including family stakes
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              Full Arabic filing coverage with source links
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              Complete dividend history and yield tracking
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              Oil and macro indicators integrated in analysis
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              GCC-specific sector and peer classification
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Language Support -->
+  <section class="language-section">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">Bilingual by Design</span>
+        <h2 class="section-title">English and Arabic. Natively.</h2>
+        <p class="section-subtitle">Every interface, every analysis, every insight — available in both languages. Switch seamlessly. Work in your preferred language.</p>
+      </div>
+
+      <div class="language-visual reveal">
+        <div class="language-card">
+          <div class="language-flag">EN</div>
+          <h4>English Interface</h4>
+          <p>Full platform access with institutional terminology and professional analysis language.</p>
+        </div>
+        <div class="language-connector">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <span>Seamless</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <div class="language-card rtl">
+          <div class="language-flag">عربي</div>
+          <h4>واجهة عربية</h4>
+          <p>الوصول الكامل للمنصة مع المصطلحات المؤسسية ولغة التحليل المهني.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Compliance Note -->
+  <section>
+    <div class="section-inner">
+      <div class="compliance-note reveal">
+        <div class="compliance-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="compliance-text">
+          <h4>Data Analysis, Not Financial Advice</h4>
+          <p>AlphaCouncil provides market data, analytical tools, and AI-generated insights to help you understand your portfolio. We do not provide licensed financial advice, execute trades, manage money, or guarantee investment returns. Always verify information independently before making investment decisions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="final-cta">
+    <div class="final-cta-bg"></div>
+    <div class="final-cta-content reveal">
+      <h2 class="final-cta-title">Ready to See Your GCC Portfolio Clearly?</h2>
+      <p class="final-cta-subtitle">Join investors who understand that regional depth beats global breadth. Start with complete coverage of the markets that matter to you.</p>
+      <div class="final-cta-buttons">
+        <a href="signup.html" class="btn btn-primary btn-lg">Start free</a>
+        <a href="Sample-Dashboard.html" class="btn btn-secondary btn-lg">View sample dashboard</a>
+      </div>
+      <p class="final-cta-note">No credit card required. Full access to all 6 GCC markets.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+      <footer class="ac-footer">
+    <div class="ac-footer-inner">
+      <div class="ac-footer-top">
+        <div class="ac-footer-brand">
+          <a href="index.html" class="ac-flogo">AlphaCouncil</a>
+          <p>AI-powered portfolio intelligence for GCC stock investors. Understand your portfolio before the market moves.</p>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+            <li><a href="methodology.html">Methodology</a></li>
+          </ul>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Markets</h4>
+          <ul>
+            <li><a href="markets.html#saudi">Saudi (Tadawul)</a></li>
+            <li><a href="markets.html#uae">UAE (ADX / DFM)</a></li>
+            <li><a href="markets.html#qatar">Qatar (QSE)</a></li>
+            <li><a href="markets.html#kuwait">Kuwait (Boursa)</a></li>
+          </ul>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="login.html">Sign in</a></li>
+            <li><a href="signup.html">Start free</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="ac-footer-bottom">
+        <p class="ac-copy">&copy; 2026 AlphaCouncil. All rights reserved.</p>
+        <div class="ac-legal">
+          <a href="legal.html#terms">Terms</a>
+          <a href="legal.html#privacy">Privacy</a>
+          <a href="legal.html#disclaimer">Disclaimer</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Reveal animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Nav scroll effect
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    });
+  </script>
+  <script>/* brand logo -> dashboard when signed in (ac_csrf cookie present), else index */
+  (function(){try{if(document.cookie.indexOf('ac_csrf=')>-1){var e=document.querySelectorAll('.nav-logo,.ac-flogo');for(var i=0;i<e.length;i++)e[i].setAttribute('href','dashboard.html');}}catch(x){}})();</script>
+</body>
+</html>

@@ -1,0 +1,2311 @@
+<!-- REVIEWED & POLISHED: 2026-06-17 -->
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings — AlphaCouncil</title>
+  <meta name="description" content="Manage your account, preferences, and how AlphaCouncil works for you.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/alphacouncil.css">
+  <style>
+    /* ==========================================================================
+       Settings Page - Unique Styles
+       Only styles specific to settings.html that are not in alphacouncil.css
+       ========================================================================== */
+
+    /* Avatar Upload */
+    .avatar-upload {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .avatar-preview {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-violet));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--bg-deep);
+      border: 3px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .avatar-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .avatar-actions .btn {
+      width: fit-content;
+    }
+
+    /* Segmented Control */
+    .segmented-control {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .segment-btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 14px 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--fg-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      font-family: inherit;
+    }
+
+    .segment-btn:hover {
+      border-color: var(--border-strong);
+      color: var(--fg);
+    }
+
+    .segment-btn:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .segment-btn.active {
+      background: var(--accent-primary-glow);
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .segment-btn .segment-icon {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .segment-btn .segment-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .segment-btn .segment-desc {
+      display: block;
+      font-size: 11px;
+      color: var(--fg-dim);
+      margin-top: 4px;
+    }
+
+    /* Toggle Row (settings-specific layout) */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .toggle-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .toggle-row:first-child {
+      padding-top: 0;
+    }
+
+    .toggle-info {
+      flex: 1;
+    }
+
+    .toggle-label {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .toggle-desc {
+      font-size: 12px;
+      color: var(--fg-dim);
+    }
+
+    /* Form Row Layouts */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    /* Plan Card */
+    .plan-card {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface-elevated) 100%);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .plan-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-violet), var(--accent-primary), var(--accent-gold));
+    }
+
+    .plan-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .plan-badge {
+      padding: 6px 14px;
+      background: var(--accent-gold-glow);
+      border: 1px solid rgba(215, 183, 106, 0.3);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .plan-name {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .plan-price {
+      font-size: 14px;
+      color: var(--fg-muted);
+    }
+
+    .plan-price strong {
+      color: var(--fg);
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .plan-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .plan-feature {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--fg-muted);
+    }
+
+    .plan-feature svg {
+      width: 16px;
+      height: 16px;
+      color: var(--success);
+      flex-shrink: 0;
+    }
+
+    .plan-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    /* Billing History Table */
+    .billing-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .billing-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .billing-table td {
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--fg-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .billing-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .billing-status {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .billing-status.paid {
+      background: var(--success-glow);
+      color: var(--success);
+    }
+
+    .billing-status.pending {
+      background: var(--accent-gold-glow);
+      color: var(--accent-gold);
+    }
+
+    /* Payment Method */
+    .payment-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .payment-icon {
+      width: 48px;
+      height: 32px;
+      background: linear-gradient(135deg, #1a1f71, #00579f);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 0.05em;
+    }
+
+    .payment-details {
+      flex: 1;
+    }
+
+    .payment-number {
+      font-size: 14px;
+      font-weight: 500;
+      font-family: monospace;
+      letter-spacing: 0.05em;
+    }
+
+    .payment-expiry {
+      font-size: 12px;
+      color: var(--fg-dim);
+    }
+
+    /* Methodology Cards */
+    .methodology-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .methodology-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .methodology-card:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+    }
+
+    .methodology-card:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .methodology-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .methodology-card-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent-primary-glow);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .methodology-card-icon svg {
+      width: 18px;
+      height: 18px;
+      color: var(--accent-primary);
+    }
+
+    .methodology-card-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .methodology-card-text {
+      font-size: 13px;
+      color: var(--fg-dim);
+      line-height: 1.6;
+    }
+
+    /* Session List */
+    .session-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .session-item:last-child {
+      border-bottom: none;
+    }
+
+    .session-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .session-icon svg {
+      width: 20px;
+      height: 20px;
+      color: var(--fg-dim);
+    }
+
+    .session-icon.current {
+      background: var(--success-glow);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .session-icon.current svg {
+      color: var(--success);
+    }
+
+    .session-info {
+      flex: 1;
+    }
+
+    .session-device {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .session-current-badge {
+      padding: 2px 8px;
+      background: var(--success-glow);
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--success);
+    }
+
+    .session-details {
+      font-size: 12px;
+      color: var(--fg-dim);
+    }
+
+    /* Export Options */
+    .export-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .export-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .export-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .export-card-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent-primary-glow);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .export-card-icon svg {
+      width: 20px;
+      height: 20px;
+      color: var(--accent-primary);
+    }
+
+    .export-card-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .export-card-desc {
+      font-size: 13px;
+      color: var(--fg-dim);
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .export-formats {
+      display: flex;
+      gap: 8px;
+    }
+
+    .format-btn {
+      padding: 8px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--fg-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .format-btn:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .format-btn:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    /* 2FA Setup */
+    .twofa-section {
+      margin-top: 24px;
+      padding: 24px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .twofa-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .twofa-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .twofa-title svg {
+      width: 20px;
+      height: 20px;
+      color: var(--accent-primary);
+    }
+
+    .twofa-badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .twofa-badge.enabled {
+      background: var(--success-glow);
+      color: var(--success);
+    }
+
+    .twofa-badge.disabled {
+      background: var(--danger-glow);
+      color: var(--danger);
+    }
+
+    .twofa-setup-steps {
+      display: none;
+    }
+
+    .twofa-setup-steps.active {
+      display: block;
+    }
+
+    .twofa-step {
+      display: none;
+      padding-top: 16px;
+    }
+
+    .twofa-step.active {
+      display: block;
+      animation: twofaFadeIn 0.3s;
+    }
+
+    @keyframes twofaFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .qr-container {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .qr-box {
+      width: 180px;
+      height: 180px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      flex-shrink: 0;
+    }
+
+    .qr-placeholder {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 2px;
+    }
+
+    .qr-placeholder span {
+      background: #000;
+      border-radius: 1px;
+    }
+
+    .qr-placeholder span:nth-child(odd) {
+      background: transparent;
+    }
+
+    .qr-info {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .qr-info h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .qr-info p {
+      font-size: 13px;
+      color: var(--fg-dim);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .manual-key {
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      color: var(--fg);
+      word-break: break-all;
+    }
+
+    .manual-key-label {
+      font-size: 11px;
+      color: var(--fg-dim);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .code-inputs {
+      display: flex;
+      gap: 8px;
+      margin: 20px 0;
+    }
+
+    .code-inputs input {
+      width: 48px;
+      height: 56px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--fg);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .code-inputs input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: var(--focus-ring);
+    }
+
+    .code-inputs input.filled {
+      border-color: var(--accent-primary);
+      background: var(--accent-primary-glow);
+    }
+
+    .backup-codes {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .backup-code {
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      text-align: center;
+      color: var(--fg);
+    }
+
+    .backup-codes-warning {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 14px;
+      background: var(--accent-gold-glow);
+      border: 1px solid rgba(215, 183, 106, 0.2);
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--accent-gold);
+      margin-bottom: 20px;
+    }
+
+    .backup-codes-warning svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .twofa-success {
+      text-align: center;
+      padding: 24px 0;
+    }
+
+    .twofa-success-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--success-glow);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .twofa-success-icon svg {
+      width: 32px;
+      height: 32px;
+      color: var(--success);
+    }
+
+    .twofa-success h4 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .twofa-success p {
+      font-size: 14px;
+      color: var(--fg-muted);
+    }
+
+    .twofa-enabled-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--success-glow);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .twofa-enabled-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--success);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .twofa-enabled-icon svg {
+      width: 20px;
+      height: 20px;
+      color: white;
+    }
+
+    .twofa-enabled-text {
+      flex: 1;
+    }
+
+    .twofa-enabled-text h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--success);
+      margin-bottom: 2px;
+    }
+
+    .twofa-enabled-text p {
+      font-size: 12px;
+      color: var(--fg-muted);
+    }
+
+    /* Danger Zone */
+    .danger-zone {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .danger-zone-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .danger-zone-header svg {
+      width: 18px;
+      height: 18px;
+      color: var(--danger);
+    }
+
+    .danger-zone-header h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--danger);
+    }
+
+    .danger-zone-text {
+      font-size: 13px;
+      color: var(--fg-dim);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .danger-zone .btn-danger {
+      background: transparent;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .danger-zone .btn-danger:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    /* ==========================================================================
+       Prefers Reduced Motion - Settings-specific animations
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      .twofa-step.active {
+        animation: none;
+      }
+
+      .methodology-card:hover {
+        transform: none;
+      }
+
+      .segment-btn,
+      .format-btn,
+      .methodology-card {
+        transition: none;
+      }
+    }
+
+    /* ==========================================================================
+       Responsive - Settings-specific
+       ========================================================================== */
+    @media (max-width: 768px) {
+      .form-row,
+      .form-row-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .segmented-control {
+        flex-direction: column;
+      }
+
+      .segment-btn {
+        min-width: 100%;
+      }
+
+      .plan-features {
+        grid-template-columns: 1fr;
+      }
+
+      .methodology-grid,
+      .export-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .qr-container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .qr-info {
+        text-align: center;
+      }
+
+      .backup-codes {
+        grid-template-columns: 1fr;
+      }
+
+      .code-inputs {
+        justify-content: center;
+      }
+
+      .code-inputs input {
+        width: 40px;
+        height: 48px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip Link for Accessibility -->
+  <a href="#mainContent" class="skip-link">Skip to main content</a>
+
+  <!-- Live Region for Screen Reader Announcements -->
+  <div id="liveRegion" class="live-region" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="app-nav" role="navigation" aria-label="Main navigation">
+    <div class="app-nav-inner">
+      <a href="index.html" class="app-logo">
+        <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+      </a>
+      <div class="app-nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="portfolio.html">Watchlist</a>
+        <a href="markets.html">Markets</a>
+        <a href="news.html">News</a>
+        <a href="council-history.html">Council</a>
+        <a href="alerts.html">Alerts</a>
+      </div>
+      <div class="app-nav-right">
+        <div class="app-search" id="searchBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <span>Search...</span>
+          <kbd>/</kbd>
+        </div>
+        <div class="lang-toggle">
+          <button class="active">EN</button>
+          <button>AR</button>
+        </div>
+        <button class="nav-icon-btn" id="adviserToggle" title="Toggle AI Adviser" aria-label="Toggle AI Adviser sidebar" aria-expanded="false" aria-controls="adviserSidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="nav-icon-btn" id="notificationsBtn" aria-label="Notifications, 2 unread">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="badge" aria-hidden="true">2</span>
+        </button>
+        <button class="nav-icon-btn active" aria-label="Settings (current page)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button class="user-avatar" id="userMenu" aria-label="User menu for Sami" aria-haspopup="true">SK</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Indices Bar -->
+  <div class="indices-bar" role="region" aria-label="Live market indices">
+    <div class="indices-inner">
+      <div class="index-item"><span class="index-name">TASI</span><span class="index-value">12,847.32</span><span class="index-change up">+0.82%</span></div>
+      <div class="index-item"><span class="index-name">ADX</span><span class="index-value">9,234.18</span><span class="index-change up">+0.34%</span></div>
+      <div class="index-item"><span class="index-name">DFM</span><span class="index-value">4,156.92</span><span class="index-change down">-0.21%</span></div>
+      <div class="index-item"><span class="index-name">QSE</span><span class="index-value">10,892.45</span><span class="index-change up">+0.56%</span></div>
+      <div class="index-item"><span class="index-name">Brent</span><span class="index-value">$82.34</span><span class="index-change down">-0.45%</span></div>
+      <span class="indices-time">Live · 14:32 GST</span>
+    </div>
+  </div>
+
+  <!-- App Wrapper -->
+  <div class="app-wrapper" id="appWrapper">
+    <main class="app-main" id="mainContent" role="main" aria-label="Settings content">
+
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1 class="page-title">
+          <div class="page-title-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+          Settings
+        </h1>
+        <p class="page-subtitle">Manage your account, preferences, and how AlphaCouncil works for you.</p>
+      </div>
+
+      <!-- Settings Layout -->
+      <div class="settings-layout">
+
+        <!-- Settings Navigation -->
+        <nav class="settings-nav" aria-label="Settings sections">
+          <a href="#profile" class="settings-nav-item active" data-section="profile">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profile
+          </a>
+          <a href="#preferences" class="settings-nav-item" data-section="preferences">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Investment Preferences
+          </a>
+          <a href="#notifications" class="settings-nav-item" data-section="notifications">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            Notifications
+          </a>
+          <a href="#billing" class="settings-nav-item" data-section="billing">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Billing & Plan
+          </a>
+          <div class="settings-nav-divider"></div>
+          <a href="#methodology" class="settings-nav-item" data-section="methodology">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Methodology & Data
+          </a>
+          <a href="#security" class="settings-nav-item" data-section="security">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Security
+          </a>
+          <a href="#export" class="settings-nav-item" data-section="export">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Data & Export
+          </a>
+        </nav>
+
+        <!-- Settings Content -->
+        <div class="settings-content">
+
+          <!-- Profile Section -->
+          <section class="settings-section" id="profile">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="section-title-group">
+                <h2>Profile</h2>
+                <p>Manage your personal information and preferences</p>
+              </div>
+            </div>
+            <div class="section-body">
+              <div class="form-group">
+                <label class="form-label">Profile Photo</label>
+                <div class="avatar-upload">
+                  <div class="avatar-preview">SK</div>
+                  <div class="avatar-actions">
+                    <button class="btn btn-secondary btn-sm">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      Upload Photo
+                    </button>
+                    <button class="btn btn-secondary btn-sm">Remove</button>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="firstName">First Name</label>
+                  <input type="text" id="firstName" class="form-input" value="Saeed" placeholder="Enter first name">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="lastName">Last Name</label>
+                  <input type="text" id="lastName" class="form-input" value="Al-Khalidi" placeholder="Enter last name">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="email">Email Address</label>
+                <input type="email" id="email" class="form-input" value="saeed.khalidi@example.com" placeholder="Enter email">
+                <p class="form-hint">This email is used for account notifications and recovery.</p>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="defaultMarket">Default Market</label>
+                  <select id="defaultMarket" class="form-input form-select">
+                    <option value="sa" selected>Saudi Arabia (Tadawul)</option>
+                    <option value="ae-adx">UAE (ADX)</option>
+                    <option value="ae-dfm">UAE (DFM)</option>
+                    <option value="qa">Qatar (QSE)</option>
+                    <option value="kw">Kuwait (Boursa)</option>
+                    <option value="bh">Bahrain (Bahrain Bourse)</option>
+                    <option value="om">Oman (MSM)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="language">Language</label>
+                  <select id="language" class="form-input form-select">
+                    <option value="en" selected>English</option>
+                    <option value="ar">العربية (Arabic)</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display: flex; gap: 12px; margin-top: 8px;">
+                <button class="btn btn-primary">Save Changes</button>
+                <button class="btn btn-secondary">Cancel</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Investment Preferences Section -->
+          <section class="settings-section hidden" id="preferences">
+            <div class="section-header">
+              <div class="section-icon violet">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              </div>
+              <div class="section-title-group">
+                <h2>Investment Preferences</h2>
+                <p>These preferences help tailor Council reviews to your investment style</p>
+              </div>
+            </div>
+            <div class="section-body">
+              <div class="form-group">
+                <label class="form-label">Primary Investment Goal</label>
+                <div class="segmented-control" role="radiogroup" aria-label="Primary Investment Goal">
+                  <button class="segment-btn" role="radio" aria-checked="false">
+                    <span class="segment-icon">📈</span>
+                    <span class="segment-label">Growth</span>
+                    <span class="segment-desc">Capital appreciation</span>
+                  </button>
+                  <button class="segment-btn active" role="radio" aria-checked="true">
+                    <span class="segment-icon">💰</span>
+                    <span class="segment-label">Income</span>
+                    <span class="segment-desc">Dividend focus</span>
+                  </button>
+                  <button class="segment-btn" role="radio" aria-checked="false">
+                    <span class="segment-icon">⚖️</span>
+                    <span class="segment-label">Balanced</span>
+                    <span class="segment-desc">Growth + Income</span>
+                  </button>
+                  <button class="segment-btn" role="radio" aria-checked="false">
+                    <span class="segment-icon">🛡️</span>
+                    <span class="segment-label">Preservation</span>
+                    <span class="segment-desc">Protect capital</span>
+                  </button>
+                </div>
+                <p class="form-hint">This helps the Council prioritize relevant insights in your reviews.</p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Investment Time Horizon</label>
+                <div class="segmented-control" role="radiogroup" aria-label="Investment Time Horizon">
+                  <button class="segment-btn" role="radio" aria-checked="false">
+                    <span class="segment-label">Short-term</span>
+                    <span class="segment-desc">Less than 1 year</span>
+                  </button>
+                  <button class="segment-btn active" role="radio" aria-checked="true">
+                    <span class="segment-label">Medium-term</span>
+                    <span class="segment-desc">1–5 years</span>
+                  </button>
+                  <button class="segment-btn" role="radio" aria-checked="false">
+                    <span class="segment-label">Long-term</span>
+                    <span class="segment-desc">5+ years</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Risk Tolerance</label>
+                <div class="segmented-control" role="radiogroup" aria-label="Risk Tolerance">
+                  <button class="segment-btn" role="radio" aria-checked="false">
+                    <span class="segment-label">Conservative</span>
+                    <span class="segment-desc">Minimize volatility</span>
+                  </button>
+                  <button class="segment-btn active" role="radio" aria-checked="true">
+                    <span class="segment-label">Moderate</span>
+                    <span class="segment-desc">Balanced approach</span>
+                  </button>
+                  <button class="segment-btn" role="radio" aria-checked="false">
+                    <span class="segment-label">Aggressive</span>
+                    <span class="segment-desc">Higher risk/reward</span>
+                  </button>
+                </div>
+                <p class="form-hint">The Risk Analyst perspective in Council reviews will adjust based on this setting.</p>
+              </div>
+
+              <div style="display: flex; gap: 12px; margin-top: 8px;">
+                <button class="btn btn-primary">Save Preferences</button>
+                <button class="btn btn-secondary">Reset to Default</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Notifications Section -->
+          <section class="settings-section hidden" id="notifications">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </div>
+              <div class="section-title-group">
+                <h2>Notifications</h2>
+                <p>Control how and when AlphaCouncil contacts you</p>
+              </div>
+            </div>
+            <div class="section-body">
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <div class="toggle-label">New Council Reviews Ready</div>
+                  <div class="toggle-desc">Get notified when a new AI Council review is available for your portfolio</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked aria-label="New Council Reviews Ready">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <div class="toggle-label">Intelligent Alerts on Holdings</div>
+                  <div class="toggle-desc">Receive alerts when significant changes affect your holdings</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked aria-label="Intelligent Alerts on Holdings">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <div class="toggle-label">Major News Impact on Portfolio</div>
+                  <div class="toggle-desc">Get notified when breaking news may affect your positions</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked aria-label="Major News Impact on Portfolio">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <div class="toggle-label">Weekly Portfolio Summary</div>
+                  <div class="toggle-desc">Receive a weekly email summarizing your portfolio performance</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" aria-label="Weekly Portfolio Summary">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <div class="toggle-label">Marketing & Product Updates</div>
+                  <div class="toggle-desc">Stay informed about new features and improvements</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" aria-label="Marketing & Product Updates">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="form-group" style="margin-top: 24px;">
+                <label class="form-label">Quiet Hours <span>(optional)</span></label>
+                <div class="form-row">
+                  <select class="form-input form-select" aria-label="Quiet hours time range">
+                    <option value="">No quiet hours</option>
+                    <option value="22-08" selected>10:00 PM – 8:00 AM</option>
+                    <option value="23-07">11:00 PM – 7:00 AM</option>
+                    <option value="custom">Custom</option>
+                  </select>
+                  <select class="form-input form-select" aria-label="Timezone">
+                    <option value="gst" selected>GST (Gulf Standard Time)</option>
+                    <option value="ast">AST (Arabia Standard Time)</option>
+                    <option value="utc">UTC</option>
+                  </select>
+                </div>
+                <p class="form-hint">Non-urgent notifications will be held during quiet hours.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Billing & Plan Section -->
+          <section class="settings-section hidden" id="billing">
+            <div class="section-header">
+              <div class="section-icon gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              </div>
+              <div class="section-title-group">
+                <h2>Billing & Plan</h2>
+                <p>Manage your subscription and payment details</p>
+              </div>
+            </div>
+            <div class="section-body">
+              <!-- Current Plan -->
+              <div class="plan-card">
+                <div class="plan-header">
+                  <div>
+                    <div class="plan-name">Analyst Plan</div>
+                    <div class="plan-price"><strong>$49</strong> / month</div>
+                  </div>
+                  <div class="plan-badge">Current Plan</div>
+                </div>
+                <div class="plan-features">
+                  <div class="plan-feature">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Unlimited Council reviews
+                  </div>
+                  <div class="plan-feature">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    12-dimension thesis scoring
+                  </div>
+                  <div class="plan-feature">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    All 7 analyst perspectives
+                  </div>
+                  <div class="plan-feature">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Priority AI Adviser access
+                  </div>
+                  <div class="plan-feature">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Export reports to PDF
+                  </div>
+                  <div class="plan-feature">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Email support
+                  </div>
+                </div>
+                <div class="plan-actions">
+                  <button class="btn btn-primary">Upgrade to Council</button>
+                  <button class="btn btn-secondary">Manage Subscription</button>
+                </div>
+              </div>
+
+              <!-- Payment Method -->
+              <div class="form-group" style="margin-top: 24px;">
+                <label class="form-label">Payment Method</label>
+                <div class="payment-card">
+                  <div class="payment-icon">VISA</div>
+                  <div class="payment-details">
+                    <div class="payment-number">•••• •••• •••• 4242</div>
+                    <div class="payment-expiry">Expires 12/2027</div>
+                  </div>
+                  <button class="btn btn-secondary btn-sm">Update</button>
+                </div>
+              </div>
+
+              <!-- Billing History -->
+              <div class="form-group" style="margin-top: 24px;">
+                <label class="form-label">Billing History</label>
+                <div class="table-responsive">
+                  <table class="billing-table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Jun 1, 2026</td>
+                        <td>Analyst Plan - Monthly</td>
+                        <td>$49.00</td>
+                        <td><span class="billing-status paid">Paid</span></td>
+                        <td><a href="#" style="color: var(--accent-primary); text-decoration: none; font-size: 12px;">Receipt</a></td>
+                      </tr>
+                      <tr>
+                        <td>May 1, 2026</td>
+                        <td>Analyst Plan - Monthly</td>
+                        <td>$49.00</td>
+                        <td><span class="billing-status paid">Paid</span></td>
+                        <td><a href="#" style="color: var(--accent-primary); text-decoration: none; font-size: 12px;">Receipt</a></td>
+                      </tr>
+                      <tr>
+                        <td>Apr 1, 2026</td>
+                        <td>Analyst Plan - Monthly</td>
+                        <td>$49.00</td>
+                        <td><span class="billing-status paid">Paid</span></td>
+                        <td><a href="#" style="color: var(--accent-primary); text-decoration: none; font-size: 12px;">Receipt</a></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Methodology & Data Section -->
+          <section class="settings-section hidden" id="methodology">
+            <div class="section-header">
+              <div class="section-icon gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <div class="section-title-group">
+                <h2>Methodology & Data</h2>
+                <p>Understand how AlphaCouncil generates analysis</p>
+              </div>
+            </div>
+            <div class="section-body">
+              <div class="methodology-grid">
+                <div class="methodology-card" tabindex="0" role="button" onclick="window.open('methodology.html', '_blank')">
+                  <div class="methodology-card-header">
+                    <div class="methodology-card-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    <div class="methodology-card-title">12-Dimension Thesis</div>
+                  </div>
+                  <p class="methodology-card-text">Learn how we score stocks across 12 dimensions including valuation, momentum, quality, growth, dividend, risk, and more.</p>
+                </div>
+                <div class="methodology-card" tabindex="0" role="button">
+                  <div class="methodology-card-header">
+                    <div class="methodology-card-icon" style="background: var(--accent-violet-glow);">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-violet);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <div class="methodology-card-title">7 Council Perspectives</div>
+                  </div>
+                  <p class="methodology-card-text">Understand how each AI analyst perspective (Risk, Valuation, Income, Momentum, News, Macro, Strategist) contributes to reviews.</p>
+                </div>
+                <div class="methodology-card" tabindex="0" role="button">
+                  <div class="methodology-card-header">
+                    <div class="methodology-card-icon" style="background: var(--success-glow);">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--success);"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    </div>
+                    <div class="methodology-card-title">Data Sources</div>
+                  </div>
+                  <p class="methodology-card-text">We aggregate data from official GCC exchange feeds, regulatory filings, and news sources. Data refreshes every 15 minutes during market hours.</p>
+                </div>
+                <div class="methodology-card" tabindex="0" role="button">
+                  <div class="methodology-card-header">
+                    <div class="methodology-card-icon" style="background: var(--accent-gold-glow);">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-gold);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="methodology-card-title">Analysis Generation</div>
+                  </div>
+                  <p class="methodology-card-text">Council reviews are generated using advanced AI models trained on financial analysis patterns, GCC market dynamics, and institutional research methodologies.</p>
+                </div>
+              </div>
+
+              <div style="margin-top: 24px; padding: 20px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px;">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; color: var(--fg-dim);"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                  Data Freshness
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                  <div>
+                    <div style="font-size: 12px; color: var(--fg-dim); margin-bottom: 4px;">Price Data</div>
+                    <div style="font-size: 14px; font-weight: 500; color: var(--success);">Live (15-min delay)</div>
+                  </div>
+                  <div>
+                    <div style="font-size: 12px; color: var(--fg-dim); margin-bottom: 4px;">Fundamentals</div>
+                    <div style="font-size: 14px; font-weight: 500;">Updated daily</div>
+                  </div>
+                  <div>
+                    <div style="font-size: 12px; color: var(--fg-dim); margin-bottom: 4px;">News & Sentiment</div>
+                    <div style="font-size: 14px; font-weight: 500; color: var(--success);">Real-time</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Security Section -->
+          <section class="settings-section hidden" id="security">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div class="section-title-group">
+                <h2>Security</h2>
+                <p>Protect your account and manage access</p>
+              </div>
+            </div>
+            <div class="section-body">
+              <div class="form-group">
+                <label class="form-label">Password</label>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                  <input type="password" class="form-input" value="••••••••••••" disabled style="max-width: 300px;" aria-label="Current password (masked)">
+                  <button class="btn btn-secondary btn-sm">Change Password</button>
+                </div>
+                <p class="form-hint">Last changed 45 days ago</p>
+              </div>
+
+              <!-- Two-Factor Authentication Section -->
+              <div class="twofa-section" id="twofaSection">
+                <div class="twofa-header">
+                  <div class="twofa-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Two-Factor Authentication
+                  </div>
+                  <span class="twofa-badge disabled" id="twofaBadge">Disabled</span>
+                </div>
+
+                <!-- 2FA Disabled State -->
+                <div id="twofaDisabled">
+                  <p style="font-size: 13px; color: var(--fg-dim); margin-bottom: 16px; line-height: 1.6;">
+                    Add an extra layer of security to your account. When enabled, you'll need to enter a code from your authenticator app when signing in.
+                  </p>
+                  <button class="btn btn-primary" onclick="startTwofaSetup()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Enable 2FA
+                  </button>
+                </div>
+
+                <!-- 2FA Setup Flow -->
+                <div class="twofa-setup-steps" id="twofaSetup">
+                  <!-- Step 1: Scan QR Code -->
+                  <div class="twofa-step active" id="twofaStep1">
+                    <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 16px;">Step 1: Scan QR Code</h4>
+                    <div class="qr-container">
+                      <div class="qr-box">
+                        <div class="qr-placeholder" id="qrPlaceholder"></div>
+                      </div>
+                      <div class="qr-info">
+                        <h4>Scan with your authenticator app</h4>
+                        <p>Open your authenticator app (Google Authenticator, Authy, 1Password, etc.) and scan this QR code to add your account.</p>
+                        <div class="manual-key-label">Or enter this key manually:</div>
+                        <div class="manual-key" id="manualKey">ABCD-EFGH-IJKL-MNOP-QRST</div>
+                      </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 20px;">
+                      <button class="btn btn-primary" onclick="goToStep(2)">Continue</button>
+                      <button class="btn btn-secondary" onclick="cancelTwofaSetup()">Cancel</button>
+                    </div>
+                  </div>
+
+                  <!-- Step 2: Verify Code -->
+                  <div class="twofa-step" id="twofaStep2">
+                    <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 8px;">Step 2: Verify Setup</h4>
+                    <p style="font-size: 13px; color: var(--fg-dim); margin-bottom: 16px;">Enter the 6-digit code from your authenticator app to verify setup.</p>
+                    <div class="code-inputs" id="verifyCodeInputs">
+                      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Code digit 1">
+                      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Code digit 2">
+                      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Code digit 3">
+                      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Code digit 4">
+                      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Code digit 5">
+                      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Code digit 6">
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                      <button class="btn btn-primary" id="verifyCodeBtn" onclick="verifyTwofaCode()" disabled>Verify & Enable</button>
+                      <button class="btn btn-secondary" onclick="goToStep(1)">Back</button>
+                    </div>
+                  </div>
+
+                  <!-- Step 3: Backup Codes -->
+                  <div class="twofa-step" id="twofaStep3">
+                    <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 8px;">Step 3: Save Backup Codes</h4>
+                    <div class="backup-codes-warning">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                      <span>Save these backup codes in a secure place. Each code can only be used once to sign in if you lose access to your authenticator app.</span>
+                    </div>
+                    <div class="backup-codes" id="backupCodes">
+                      <div class="backup-code">A1B2-C3D4-E5F6</div>
+                      <div class="backup-code">G7H8-I9J0-K1L2</div>
+                      <div class="backup-code">M3N4-O5P6-Q7R8</div>
+                      <div class="backup-code">S9T0-U1V2-W3X4</div>
+                      <div class="backup-code">Y5Z6-A7B8-C9D0</div>
+                      <div class="backup-code">E1F2-G3H4-I5J6</div>
+                      <div class="backup-code">K7L8-M9N0-O1P2</div>
+                      <div class="backup-code">Q3R4-S5T6-U7V8</div>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                      <button class="btn btn-secondary" onclick="downloadBackupCodes()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Download Codes
+                      </button>
+                      <button class="btn btn-secondary" onclick="copyBackupCodes()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Copy Codes
+                      </button>
+                    </div>
+                    <div style="margin-top: 20px;">
+                      <label style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--fg-muted); cursor: pointer;">
+                        <input type="checkbox" id="confirmBackupSaved" onchange="updateFinishBtn()">
+                        <span>I have saved my backup codes in a secure location</span>
+                      </label>
+                    </div>
+                    <div style="margin-top: 16px;">
+                      <button class="btn btn-primary" id="finishSetupBtn" onclick="finishTwofaSetup()" disabled>Finish Setup</button>
+                    </div>
+                  </div>
+
+                  <!-- Success State -->
+                  <div class="twofa-step" id="twofaSuccess">
+                    <div class="twofa-success">
+                      <div class="twofa-success-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                      </div>
+                      <h4>Two-Factor Authentication Enabled</h4>
+                      <p>Your account is now protected with 2FA. You'll need to enter a code when signing in.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 2FA Enabled State -->
+                <div id="twofaEnabled" style="display: none;">
+                  <div class="twofa-enabled-info">
+                    <div class="twofa-enabled-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="twofa-enabled-text">
+                      <h4>2FA is Active</h4>
+                      <p>Your account is protected with two-factor authentication</p>
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="showBackupCodes()">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                      View Backup Codes
+                    </button>
+                    <button class="btn btn-secondary" onclick="regenerateBackupCodes()">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                      Regenerate Codes
+                    </button>
+                    <button class="btn btn-danger" onclick="disableTwofa()">Disable 2FA</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-top: 24px;">
+                <label class="form-label">Active Sessions</label>
+                <div class="session-item">
+                  <div class="session-icon current">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                  </div>
+                  <div class="session-info">
+                    <div class="session-device">MacBook Pro · Chrome <span class="session-current-badge">Current</span></div>
+                    <div class="session-details">Riyadh, Saudi Arabia · Active now</div>
+                  </div>
+                </div>
+                <div class="session-item">
+                  <div class="session-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                  </div>
+                  <div class="session-info">
+                    <div class="session-device">iPhone 15 Pro · Safari</div>
+                    <div class="session-details">Riyadh, Saudi Arabia · 2 hours ago</div>
+                  </div>
+                  <button class="btn btn-secondary btn-sm">Revoke</button>
+                </div>
+                <div class="session-item">
+                  <div class="session-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                  </div>
+                  <div class="session-info">
+                    <div class="session-device">Windows PC · Edge</div>
+                    <div class="session-details">Dubai, UAE · 3 days ago</div>
+                  </div>
+                  <button class="btn btn-secondary btn-sm">Revoke</button>
+                </div>
+              </div>
+
+              <div style="margin-top: 24px;">
+                <button class="btn btn-secondary">Sign Out All Other Sessions</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Data & Export Section -->
+          <section class="settings-section hidden" id="export">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </div>
+              <div class="section-title-group">
+                <h2>Data & Export</h2>
+                <p>Export your data or manage data preferences</p>
+              </div>
+            </div>
+            <div class="section-body">
+              <div class="export-grid">
+                <div class="export-card">
+                  <div class="export-card-header">
+                    <div class="export-card-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                    </div>
+                    <div class="export-card-title">Export Portfolio</div>
+                  </div>
+                  <p class="export-card-desc">Download your current portfolio holdings with all transaction history and cost basis data.</p>
+                  <div class="export-formats">
+                    <button class="format-btn" onclick="exportData('portfolio', 'csv')">CSV</button>
+                    <button class="format-btn" onclick="exportData('portfolio', 'pdf')">PDF</button>
+                    <button class="format-btn" onclick="exportData('portfolio', 'xlsx')">Excel</button>
+                  </div>
+                </div>
+                <div class="export-card">
+                  <div class="export-card-header">
+                    <div class="export-card-icon" style="background: var(--accent-violet-glow);">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-violet);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
+                    <div class="export-card-title">Export Council History</div>
+                  </div>
+                  <p class="export-card-desc">Download all your past AI Analyst Council reviews and reports in a comprehensive format.</p>
+                  <div class="export-formats">
+                    <button class="format-btn" onclick="exportData('council', 'pdf')">PDF Bundle</button>
+                    <button class="format-btn" onclick="exportData('council', 'json')">JSON</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Danger Zone -->
+              <div class="danger-zone" style="margin-top: 32px;">
+                <div class="danger-zone-header">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <h4>Danger Zone</h4>
+                </div>
+                <p class="danger-zone-text">Once you delete your account, there is no going back. This action will permanently remove all your data, portfolio information, Council history, and preferences. Please be certain.</p>
+                <div style="display: flex; gap: 12px;">
+                  <button class="btn btn-danger" onclick="requestDataExport()">Request Data Export</button>
+                  <button class="btn btn-danger" onclick="deleteAccount()">Delete Account</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <div class="footer-logo">
+              <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+            </div>
+            <div class="footer-slogan">Understand your portfolio before the market moves.</div>
+          </div>
+          <p class="footer-disclaimer">AlphaCouncil provides market data and AI-powered analysis for informational purposes only. This does not constitute investment advice. Past performance does not guarantee future results. Always conduct your own research before making investment decisions.</p>
+        </div>
+      </footer>
+
+    </main>
+
+    <!-- Adviser Sidebar -->
+    <aside class="adviser-sidebar" id="adviserSidebar">
+      <div class="sidebar-inner">
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            AI Adviser
+          </div>
+          <button class="sidebar-close" id="closeSidebar" aria-label="Close AI Adviser sidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-message adviser">
+            <div class="chat-avatar">AI</div>
+            <div>
+              <div class="chat-bubble">
+                I can help you understand your settings and how they affect your AlphaCouncil experience. <strong>Investment preferences</strong> help tailor Council reviews to your style. What would you like to know?
+              </div>
+              <div class="chat-time">Just now</div>
+            </div>
+          </div>
+        </div>
+        <div class="suggested-questions">
+          <div class="suggested-label">Suggested Questions</div>
+          <button class="suggested-question" onclick="askQuestion('How do my preferences affect Council reviews?')">How do my preferences affect Council reviews?</button>
+          <button class="suggested-question" onclick="askQuestion('Explain the risk tolerance options')">Explain the risk tolerance options</button>
+          <button class="suggested-question" onclick="askQuestion('What data does AlphaCouncil store?')">What data does AlphaCouncil store?</button>
+        </div>
+        <div class="chat-input-area">
+          <div class="chat-input-row">
+            <textarea class="chat-input" id="chatInput" placeholder="Ask about your settings..." rows="1" aria-label="Ask a question about settings"></textarea>
+            <button class="chat-send" id="chatSend" aria-label="Send message">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="adviser-core.js"></script>
+  <script>
+    // Initialize AlphaCouncil
+    if (typeof AlphaCouncil !== 'undefined') {
+      AlphaCouncil.init('settings');
+    }
+
+    // ============ REAL account identity + plan + risk profile ============
+    // Clear demo identity immediately so no fake email/plan flashes before load.
+    (function(){ const em = document.getElementById('email'); if (em) em.value = ''; })();
+
+    let _rp = { risk_style: null, max_position_pct: null, hedge_appetite: null };
+
+    window.onUserReady = function(u){
+      if(!u) return;
+      const em = document.getElementById('email');
+      if(em && u.email){ em.value = u.email; em.setAttribute('readonly','readonly'); em.style.opacity='0.85'; em.title='Email changes aren’t available yet'; }
+      const plan = (u.plan || 'free').toLowerCase();
+      const label = plan.charAt(0).toUpperCase() + plan.slice(1);
+      const nameEl = document.querySelector('.plan-name'); if(nameEl) nameEl.textContent = label + ' Plan';
+      const priceEl = document.querySelector('.plan-price');
+      if(priceEl) priceEl.innerHTML = plan==='free' ? '<strong>$0</strong> / month' : '<strong>'+label+'</strong> tier';
+      const upg = document.querySelector('.plan-actions .btn-primary');
+      if(upg){
+        if(plan==='elite'){ upg.textContent='You are on the top tier'; upg.disabled=true; }
+        else { upg.textContent = (plan==='free' ? 'Upgrade' : 'Manage plan'); upg.onclick=function(){ window.location.href='pricing.html'; }; }
+      }
+    };
+
+    // Risk Tolerance is the 3rd segmented-control in #preferences; maps to risk_style.
+    function _riskSegBtns(){
+      const groups = document.querySelectorAll('#preferences .segmented-control');
+      return groups.length >= 3 ? Array.from(groups[2].querySelectorAll('.segment-btn')) : [];
+    }
+    const STYLE_BY_INDEX = ['conservative','balanced','aggressive']; // Conservative | Moderate | Aggressive
+    function _setActiveRisk(style){
+      const btns = _riskSegBtns(); if(!btns.length) return;
+      let idx = STYLE_BY_INDEX.indexOf((style||'balanced').toLowerCase()); if(idx<0) idx=1;
+      btns.forEach(function(b,i){ const on=(i===idx); b.classList.toggle('active',on); b.setAttribute('aria-checked', on?'true':'false'); });
+    }
+    function _selectedRiskStyle(){
+      const btns = _riskSegBtns();
+      for(let i=0;i<btns.length;i++){ if(btns[i].classList.contains('active')) return STYLE_BY_INDEX[i] || 'balanced'; }
+      return 'balanced';
+    }
+    _riskSegBtns().forEach(function(b){ b.addEventListener('click', function(){ _setActiveRisk(STYLE_BY_INDEX[_riskSegBtns().indexOf(b)]); }); });
+
+    // Save Preferences -> persist risk_style (preserving the other profile fields).
+    (function(){
+      const btns = document.querySelectorAll('#preferences .section-body .btn');
+      const saveBtn = Array.from(btns).find(function(b){ return /Save Preferences/i.test(b.textContent); });
+      const resetBtn = Array.from(btns).find(function(b){ return /Reset to Default/i.test(b.textContent); });
+      if(saveBtn) saveBtn.addEventListener('click', async function(){
+        const style = _selectedRiskStyle();
+        const orig = saveBtn.textContent; saveBtn.textContent='Saving…'; saveBtn.disabled=true;
+        try {
+          _rp = await API.saveRiskProfile({ risk_style: style, max_position_pct: (_rp&&_rp.max_position_pct)||null, hedge_appetite: (_rp&&_rp.hedge_appetite)||null });
+          if(AlphaCouncil.showToast) AlphaCouncil.showToast('Saved','Risk profile updated — the Council will use it.','success');
+        } catch(e){
+          if(AlphaCouncil.showToast) AlphaCouncil.showToast(e&&e.status===401?'Sign in required':'Save failed', e&&e.status===401?'Log in to save your preferences.':((e&&e.message)||'Please try again.'),'error');
+        } finally { saveBtn.textContent=orig; saveBtn.disabled=false; }
+      });
+      if(resetBtn) resetBtn.addEventListener('click', function(){ _setActiveRisk('balanced'); });
+    })();
+
+    // Auth guard + load identity/risk on entry (redirects to login on 401).
+    (async function(){
+      let u = null;
+      try { u = await API.requireAuth(); } catch(e){ return; }
+      if(!u) return;
+      if(typeof window.onUserReady==='function') window.onUserReady(u);
+      try { _rp = await API.riskProfile(); _setActiveRisk(_rp && _rp.risk_style); } catch(e){}
+    })();
+
+    // Logout via the user-menu avatar.
+    (function(){
+      const av = document.getElementById('userMenu');
+      if(av) av.addEventListener('click', async function(){
+        if(!confirm('Sign out of AlphaCouncil?')) return;
+        try { await API.logout(); } catch(e){}
+        try { localStorage.removeItem('ac.auth.token'); } catch(e){}
+        window.location.href = 'login.html';
+      });
+    })();
+
+    // Section Navigation
+    document.querySelectorAll('.settings-nav-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = item.dataset.section;
+
+        // Update nav active state
+        document.querySelectorAll('.settings-nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+
+        // Show/hide sections
+        document.querySelectorAll('.settings-section').forEach(s => {
+          s.classList.toggle('hidden', s.id !== section);
+        });
+
+        // Scroll to top on mobile
+        if (window.innerWidth <= 768) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // Segmented Control
+    document.querySelectorAll('.segmented-control').forEach(control => {
+      control.querySelectorAll('.segment-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          control.querySelectorAll('.segment-btn').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-checked', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-checked', 'true');
+        });
+      });
+    });
+
+    // Sidebar toggle
+    const adviserToggle = document.getElementById('adviserToggle');
+    const adviserSidebar = document.getElementById('adviserSidebar');
+    const closeSidebar = document.getElementById('closeSidebar');
+
+    if (adviserToggle) {
+      adviserToggle.addEventListener('click', () => {
+        const isOpen = adviserSidebar.classList.toggle('open');
+        adviserToggle.classList.toggle('active');
+        adviserToggle.setAttribute('aria-expanded', isOpen);
+        document.body.classList.toggle('sidebar-open');
+      });
+    }
+
+    if (closeSidebar) {
+      closeSidebar.addEventListener('click', () => {
+        adviserSidebar.classList.remove('open');
+        adviserToggle.classList.remove('active');
+        adviserToggle.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('sidebar-open');
+      });
+    }
+
+    // Export functions
+    function exportData(type, format) {
+      showToast('Export Started', `Preparing ${type} export as ${format.toUpperCase()}...`, 'info');
+      setTimeout(() => {
+        showToast('Export Complete', `Your ${type} data has been downloaded.`, 'success');
+      }, 1500);
+    }
+
+    function requestDataExport() {
+      if (confirm('We will email you a complete export of all your data within 24 hours. Continue?')) {
+        showToast('Request Submitted', 'You will receive an email with your data export link.', 'success');
+      }
+    }
+
+    function deleteAccount() {
+      if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        if (confirm('This will permanently delete all your data, portfolio, and Council history. Type "DELETE" to confirm.')) {
+          showToast('Account Deletion', 'Please check your email to confirm account deletion.', 'warning');
+        }
+      }
+    }
+
+    // Chat functionality
+    function askQuestion(question) {
+      const chatInput = document.getElementById('chatInput');
+      chatInput.value = question;
+      document.getElementById('chatSend').click();
+    }
+
+    const chatSend = document.getElementById('chatSend');
+    const chatInput = document.getElementById('chatInput');
+
+    if (chatSend && chatInput) {
+      chatSend.addEventListener('click', () => {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        const chatMessages = document.getElementById('chatMessages');
+
+        // Add user message
+        const userMsg = document.createElement('div');
+        userMsg.className = 'chat-message user';
+        userMsg.innerHTML = `
+          <div class="chat-avatar">SK</div>
+          <div>
+            <div class="chat-bubble">${message}</div>
+            <div class="chat-time">Just now</div>
+          </div>
+        `;
+        chatMessages.appendChild(userMsg);
+        chatInput.value = '';
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Simulate response
+        setTimeout(() => {
+          const responses = {
+            'preferences': 'Your investment preferences help the AI Council tailor its analysis. For example, if you select "Income" as your goal, the Income Analyst perspective will be emphasized, and dividend-related insights will be prioritized in your reviews.',
+            'risk': 'Risk tolerance settings affect how the Risk Analyst perspective evaluates your portfolio. Conservative settings will flag higher volatility positions more aggressively, while Aggressive settings will focus more on opportunity cost of not being in higher-risk/reward positions.',
+            'data': 'AlphaCouncil stores your portfolio holdings, transaction history, Council review history, and preferences. All data is encrypted and stored securely. You can export or delete your data at any time from the Data & Export section.'
+          };
+
+          let response = 'Your settings help personalize your AlphaCouncil experience. Investment preferences affect how Council reviews are tailored, while notification settings control how you stay informed. Is there a specific setting you would like me to explain?';
+
+          for (const [key, value] of Object.entries(responses)) {
+            if (message.toLowerCase().includes(key)) {
+              response = value;
+              break;
+            }
+          }
+
+          const adviserMsg = document.createElement('div');
+          adviserMsg.className = 'chat-message adviser';
+          adviserMsg.innerHTML = `
+            <div class="chat-avatar">AI</div>
+            <div>
+              <div class="chat-bubble">${response}</div>
+              <div class="chat-time">Just now</div>
+            </div>
+          `;
+          chatMessages.appendChild(adviserMsg);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 800);
+      });
+
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          chatSend.click();
+        }
+      });
+    }
+
+    // Toast notification
+    function showToast(title, text, type = 'success') {
+      if (typeof AlphaCouncil !== 'undefined' && AlphaCouncil.showToast) {
+        AlphaCouncil.showToast(title, text, type);
+      } else {
+        console.log(`Toast: ${title} - ${text}`);
+      }
+    }
+
+    // URL hash navigation
+    if (window.location.hash) {
+      const section = window.location.hash.substring(1);
+      const navItem = document.querySelector(`.settings-nav-item[data-section="${section}"]`);
+      if (navItem) {
+        navItem.click();
+      }
+    }
+
+    // =====================
+    // 2FA Management
+    // =====================
+    const TWOFA_STORAGE_KEY = 'alphacouncil_2fa_enabled';
+    const BACKUP_CODES_KEY = 'alphacouncil_backup_codes';
+
+    // Generate random backup codes
+    function generateBackupCodes() {
+      const codes = [];
+      for (let i = 0; i < 8; i++) {
+        const part1 = Math.random().toString(36).substring(2, 6).toUpperCase();
+        const part2 = Math.random().toString(36).substring(2, 6).toUpperCase();
+        const part3 = Math.random().toString(36).substring(2, 6).toUpperCase();
+        codes.push(`${part1}-${part2}-${part3}`);
+      }
+      return codes;
+    }
+
+    // Generate QR-like placeholder pattern
+    function generateQRPattern() {
+      const qr = document.getElementById('qrPlaceholder');
+      if (!qr) return;
+      qr.innerHTML = '';
+      for (let i = 0; i < 64; i++) {
+        const span = document.createElement('span');
+        span.style.background = Math.random() > 0.5 ? '#000' : '#fff';
+        qr.appendChild(span);
+      }
+    }
+
+    // Generate manual key
+    function generateManualKey() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+      let key = '';
+      for (let i = 0; i < 20; i++) {
+        if (i > 0 && i % 4 === 0) key += '-';
+        key += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return key;
+    }
+
+    // Initialize 2FA state on page load
+    function initTwofaState() {
+      const isEnabled = localStorage.getItem(TWOFA_STORAGE_KEY) === 'true';
+      updateTwofaUI(isEnabled);
+    }
+
+    function updateTwofaUI(isEnabled) {
+      const badge = document.getElementById('twofaBadge');
+      const disabledState = document.getElementById('twofaDisabled');
+      const enabledState = document.getElementById('twofaEnabled');
+      const setupState = document.getElementById('twofaSetup');
+
+      if (isEnabled) {
+        badge.textContent = 'Enabled';
+        badge.className = 'twofa-badge enabled';
+        disabledState.style.display = 'none';
+        enabledState.style.display = 'block';
+        setupState.classList.remove('active');
+      } else {
+        badge.textContent = 'Disabled';
+        badge.className = 'twofa-badge disabled';
+        disabledState.style.display = 'block';
+        enabledState.style.display = 'none';
+        setupState.classList.remove('active');
+      }
+    }
+
+    function startTwofaSetup() {
+      document.getElementById('twofaDisabled').style.display = 'none';
+      document.getElementById('twofaSetup').classList.add('active');
+
+      // Generate QR and key
+      generateQRPattern();
+      document.getElementById('manualKey').textContent = generateManualKey();
+
+      // Generate backup codes
+      const codes = generateBackupCodes();
+      localStorage.setItem(BACKUP_CODES_KEY, JSON.stringify(codes));
+      const codesContainer = document.getElementById('backupCodes');
+      codesContainer.innerHTML = codes.map(code => `<div class="backup-code">${code}</div>`).join('');
+
+      goToStep(1);
+    }
+
+    function cancelTwofaSetup() {
+      document.getElementById('twofaSetup').classList.remove('active');
+      document.getElementById('twofaDisabled').style.display = 'block';
+      resetTwofaSteps();
+    }
+
+    function goToStep(step) {
+      document.querySelectorAll('.twofa-step').forEach(s => s.classList.remove('active'));
+      document.getElementById(`twofaStep${step}`).classList.add('active');
+
+      if (step === 2) {
+        setupCodeInputs();
+      }
+    }
+
+    function setupCodeInputs() {
+      const inputs = document.querySelectorAll('#verifyCodeInputs input');
+      const verifyBtn = document.getElementById('verifyCodeBtn');
+
+      inputs.forEach((input, index) => {
+        input.value = '';
+        input.classList.remove('filled');
+
+        input.addEventListener('input', (e) => {
+          const val = e.target.value.replace(/[^0-9]/g, '');
+          e.target.value = val;
+
+          if (val) {
+            e.target.classList.add('filled');
+            if (index < inputs.length - 1) {
+              inputs[index + 1].focus();
+            }
+          } else {
+            e.target.classList.remove('filled');
+          }
+
+          // Check if all filled
+          const allFilled = Array.from(inputs).every(i => i.value.length === 1);
+          verifyBtn.disabled = !allFilled;
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !e.target.value && index > 0) {
+            inputs[index - 1].focus();
+          }
+        });
+
+        // Handle paste
+        input.addEventListener('paste', (e) => {
+          e.preventDefault();
+          const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+          paste.split('').slice(0, 6).forEach((char, i) => {
+            if (inputs[i]) {
+              inputs[i].value = char;
+              inputs[i].classList.add('filled');
+            }
+          });
+          const lastFilledIndex = Math.min(paste.length, 6) - 1;
+          if (inputs[lastFilledIndex]) inputs[lastFilledIndex].focus();
+          verifyBtn.disabled = paste.length < 6;
+        });
+      });
+
+      inputs[0].focus();
+    }
+
+    function verifyTwofaCode() {
+      const inputs = document.querySelectorAll('#verifyCodeInputs input');
+      const code = Array.from(inputs).map(i => i.value).join('');
+
+      // Simulate verification (in production, verify with server)
+      showToast('Verifying...', 'Checking your code', 'info');
+
+      setTimeout(() => {
+        // Accept any 6-digit code for demo
+        if (code.length === 6) {
+          showToast('Code Verified', 'Your authenticator is set up correctly', 'success');
+          goToStep(3);
+        } else {
+          showToast('Invalid Code', 'Please enter a valid 6-digit code', 'error');
+        }
+      }, 800);
+    }
+
+    function updateFinishBtn() {
+      const checkbox = document.getElementById('confirmBackupSaved');
+      const btn = document.getElementById('finishSetupBtn');
+      btn.disabled = !checkbox.checked;
+    }
+
+    function downloadBackupCodes() {
+      const codes = JSON.parse(localStorage.getItem(BACKUP_CODES_KEY) || '[]');
+      const content = `AlphaCouncil Backup Codes\n========================\n\nSave these codes in a secure location.\nEach code can only be used once.\n\n${codes.join('\n')}\n\nGenerated: ${new Date().toISOString()}`;
+
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'alphacouncil-backup-codes.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+
+      showToast('Downloaded', 'Backup codes saved to file', 'success');
+    }
+
+    function copyBackupCodes() {
+      const codes = JSON.parse(localStorage.getItem(BACKUP_CODES_KEY) || '[]');
+      navigator.clipboard.writeText(codes.join('\n')).then(() => {
+        showToast('Copied', 'Backup codes copied to clipboard', 'success');
+      });
+    }
+
+    function finishTwofaSetup() {
+      localStorage.setItem(TWOFA_STORAGE_KEY, 'true');
+
+      // Show success briefly then update UI
+      document.querySelectorAll('.twofa-step').forEach(s => s.classList.remove('active'));
+      document.getElementById('twofaSuccess').classList.add('active');
+
+      setTimeout(() => {
+        updateTwofaUI(true);
+        showToast('2FA Enabled', 'Your account is now protected with two-factor authentication', 'success');
+      }, 2000);
+    }
+
+    function resetTwofaSteps() {
+      document.querySelectorAll('.twofa-step').forEach(s => s.classList.remove('active'));
+      document.getElementById('twofaStep1').classList.add('active');
+      document.getElementById('confirmBackupSaved').checked = false;
+      document.getElementById('finishSetupBtn').disabled = true;
+      document.getElementById('verifyCodeBtn').disabled = true;
+    }
+
+    function showBackupCodes() {
+      const codes = JSON.parse(localStorage.getItem(BACKUP_CODES_KEY) || '[]');
+      if (codes.length === 0) {
+        showToast('No Codes', 'No backup codes found. Try regenerating.', 'warning');
+        return;
+      }
+
+      const modal = document.createElement('div');
+      modal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
+      modal.innerHTML = `
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; max-width: 400px; width: 100%;">
+          <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Your Backup Codes</h3>
+          <p style="font-size: 13px; color: var(--fg-dim); margin-bottom: 16px;">Each code can only be used once.</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px;">
+            ${codes.map(c => `<div style="padding: 10px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 6px; font-family: monospace; font-size: 12px; text-align: center;">${c}</div>`).join('')}
+          </div>
+          <div style="display: flex; gap: 12px;">
+            <button class="btn btn-secondary" onclick="copyBackupCodes(); this.closest('div[style*=fixed]').remove();">Copy</button>
+            <button class="btn btn-primary" onclick="this.closest('div[style*=fixed]').remove();">Close</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
+    }
+
+    function regenerateBackupCodes() {
+      if (!confirm('This will invalidate your existing backup codes. Continue?')) return;
+
+      const codes = generateBackupCodes();
+      localStorage.setItem(BACKUP_CODES_KEY, JSON.stringify(codes));
+      showToast('Codes Regenerated', 'New backup codes have been created', 'success');
+      showBackupCodes();
+    }
+
+    function disableTwofa() {
+      if (!confirm('Are you sure you want to disable two-factor authentication? This will make your account less secure.')) return;
+
+      localStorage.setItem(TWOFA_STORAGE_KEY, 'false');
+      localStorage.removeItem(BACKUP_CODES_KEY);
+      updateTwofaUI(false);
+      resetTwofaSteps();
+      showToast('2FA Disabled', 'Two-factor authentication has been turned off', 'warning');
+    }
+
+    // Initialize 2FA state on page load
+    document.addEventListener('DOMContentLoaded', initTwofaState);
+    initTwofaState();
+  </script>
+</body>
+</html>

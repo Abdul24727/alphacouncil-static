@@ -1,0 +1,2841 @@
+<!-- FINAL CLEANUP: Core JS consolidation + shared toast system | 2026-06-17 -->
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome — AlphaCouncil</title>
+  <meta name="description" content="Set up your GCC portfolio in minutes. Connect your holdings to AI-powered analysis.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/alphacouncil.css">
+  <style>
+    /* ==========================================================================
+       ONBOARDING-SPECIFIC STYLES
+       Only styles unique to the onboarding wizard flow
+       ========================================================================== */
+
+    /* Onboarding Header (simplified version without full nav) */
+    .onboarding-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: var(--bg-base);
+      border-bottom: 1px solid var(--border);
+      z-index: var(--z-fixed);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+    }
+
+    .header-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--fg);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-logo img {
+      height: 32px;
+      width: auto;
+    }
+
+    .header-logo:hover {
+      color: var(--accent-primary);
+    }
+
+    .header-logo:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-help {
+      font-size: 13px;
+      color: var(--fg-muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+    }
+
+    .header-help:hover {
+      color: var(--accent-primary);
+    }
+
+    .header-help:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .header-help svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Skip-setup link — subtle escape hatch available on every onboarding step */
+    .header-skip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--fg-muted);
+      background: none;
+      border: none;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .header-skip:hover {
+      color: var(--fg);
+      background: var(--surface);
+    }
+
+    .header-skip:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .header-skip svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .adviser-toggle {
+      width: 40px;
+      height: 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--fg-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .adviser-toggle:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .adviser-toggle:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .adviser-toggle.active {
+      background: var(--accent-primary-glow);
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .adviser-toggle svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Onboarding Layout Override */
+    .app-wrapper {
+      padding-top: 64px;
+    }
+
+    .app-main {
+      display: flex;
+      flex-direction: column;
+    }
+
+    body.sidebar-open .app-main {
+      margin-right: var(--sidebar-width);
+    }
+
+    /* Progress Bar */
+    .progress-bar {
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--bg-elevated);
+      z-index: calc(var(--z-fixed) - 1);
+    }
+
+    body.sidebar-open .progress-bar {
+      right: var(--sidebar-width);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-gold));
+      border-radius: 0 2px 2px 0;
+      transition: width 0.5s var(--ease-out);
+    }
+
+    /* Step Indicator */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 24px;
+      role: tablist;
+    }
+
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border-strong);
+      transition: all 0.3s var(--ease-out);
+    }
+
+    .step-dot.active {
+      width: 24px;
+      border-radius: 4px;
+      background: var(--accent-primary);
+    }
+
+    .step-dot.completed {
+      background: var(--success);
+    }
+
+    /* Steps Container */
+    .steps-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+
+    .step {
+      display: none;
+      width: 100%;
+      max-width: 800px;
+      animation: stepFadeIn 0.4s var(--ease-out);
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    @keyframes stepFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Welcome Step */
+    .welcome-step {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .welcome-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 32px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-gold));
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 40px var(--accent-primary-glow);
+    }
+
+    .welcome-icon svg {
+      width: 40px;
+      height: 40px;
+      color: var(--bg-deep);
+    }
+
+    .welcome-title {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--fg), var(--fg-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .welcome-subtitle {
+      font-size: 18px;
+      color: var(--fg-muted);
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .welcome-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-primary-large {
+      padding: 16px 48px;
+      background: linear-gradient(135deg, var(--accent-primary), #1FA89A);
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--bg-deep);
+      cursor: pointer;
+      transition: all 0.3s var(--ease-out);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-primary-large:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px var(--accent-primary-glow);
+    }
+
+    .btn-primary-large:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring), 0 8px 32px var(--accent-primary-glow);
+    }
+
+    .btn-primary-large svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .btn-link {
+      font-size: 14px;
+      color: var(--fg-dim);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .btn-link:hover {
+      color: var(--accent-primary);
+    }
+
+    .btn-link:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    /* Method Selection Step */
+    .method-step {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .method-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .method-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .method-subtitle {
+      font-size: 15px;
+      color: var(--fg-muted);
+    }
+
+    .method-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      role: radiogroup;
+    }
+
+    .method-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      cursor: pointer;
+      transition: all 0.3s var(--ease-out);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .method-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--accent-primary-glow), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .method-card:hover {
+      border-color: var(--accent-primary);
+      transform: translateY(-4px);
+    }
+
+    .method-card:hover::before {
+      opacity: 1;
+    }
+
+    .method-card:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+      border-color: var(--accent-primary);
+    }
+
+    .method-card.selected {
+      border-color: var(--accent-primary);
+      background: var(--surface-elevated);
+    }
+
+    .method-card.selected::before {
+      opacity: 1;
+    }
+
+    .method-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .method-icon svg {
+      width: 28px;
+      height: 28px;
+      color: var(--accent-primary);
+    }
+
+    .method-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .method-card-desc {
+      font-size: 14px;
+      color: var(--fg-muted);
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+
+    .method-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 4px 10px;
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-primary));
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .method-features {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .method-feature {
+      padding: 4px 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--fg-dim);
+    }
+
+    /* Manual Entry Step */
+    .manual-step {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .manual-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .manual-title {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .manual-count {
+      font-size: 14px;
+      color: var(--fg-muted);
+    }
+
+    /* Search Box */
+    .search-box {
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 16px 20px 16px 52px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font-size: 15px;
+      color: var(--fg);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-input::placeholder {
+      color: var(--fg-dim);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: var(--focus-ring);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      color: var(--fg-dim);
+      pointer-events: none;
+    }
+
+    .search-results {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: var(--z-dropdown);
+      display: none;
+    }
+
+    .search-results.show {
+      display: block;
+    }
+
+    .search-result {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .search-result:last-child {
+      border-bottom: none;
+    }
+
+    .search-result:hover,
+    .search-result:focus {
+      background: var(--accent-primary-glow);
+    }
+
+    .search-result:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: -2px;
+    }
+
+    .result-logo {
+      width: 36px;
+      height: 36px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--fg-muted);
+    }
+
+    .result-info {
+      flex: 1;
+    }
+
+    .result-name {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .result-ticker {
+      font-size: 12px;
+      color: var(--fg-dim);
+    }
+
+    .result-exchange {
+      font-size: 11px;
+      color: var(--accent-primary);
+      padding: 2px 8px;
+      background: var(--accent-primary-glow);
+      border-radius: 4px;
+    }
+
+    /* Add Form */
+    .add-form {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      display: none;
+    }
+
+    .add-form.show {
+      display: block;
+      animation: stepFadeIn 0.3s var(--ease-out);
+    }
+
+    .form-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .form-stock {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .form-stock-logo {
+      width: 44px;
+      height: 44px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--fg-muted);
+    }
+
+    .form-stock-info h4 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .form-stock-info p {
+      font-size: 13px;
+      color: var(--fg-dim);
+    }
+
+    .form-close {
+      width: 32px;
+      height: 32px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--fg-dim);
+      transition: all 0.2s;
+    }
+
+    .form-close:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .form-close:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .form-close svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    /* Holdings Preview */
+    .holdings-preview {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .holdings-preview-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .holdings-preview-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .holdings-preview-title svg {
+      width: 16px;
+      height: 16px;
+      color: var(--accent-primary);
+    }
+
+    .holdings-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .holdings-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .holdings-table td {
+      padding: 14px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .holdings-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .holdings-table tbody tr:hover {
+      background: var(--accent-primary-glow);
+    }
+
+    .holding-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .holding-logo {
+      width: 32px;
+      height: 32px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--fg-muted);
+    }
+
+    .holding-ticker {
+      font-weight: 600;
+    }
+
+    .holding-company {
+      font-size: 11px;
+      color: var(--fg-dim);
+    }
+
+    .holding-remove {
+      width: 28px;
+      height: 28px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--fg-dim);
+      transition: all 0.2s;
+    }
+
+    .holding-remove:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+      background: var(--danger-glow);
+    }
+
+    .holding-remove:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .holding-remove svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .empty-state {
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 16px;
+      background: var(--bg-elevated);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .empty-icon svg {
+      width: 28px;
+      height: 28px;
+      color: var(--fg-dim);
+    }
+
+    .empty-text {
+      font-size: 14px;
+      color: var(--fg-dim);
+    }
+
+    /* Upload Step */
+    .upload-step {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .upload-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .upload-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .upload-subtitle {
+      font-size: 14px;
+      color: var(--fg-muted);
+    }
+
+    .upload-zone {
+      background: var(--surface);
+      border: 2px dashed var(--border);
+      border-radius: 20px;
+      padding: 48px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .upload-zone:hover {
+      border-color: var(--accent-primary);
+      background: var(--accent-primary-glow);
+    }
+
+    .upload-zone:focus-visible {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: var(--focus-ring);
+    }
+
+    .upload-zone.dragover {
+      border-color: var(--accent-primary);
+      background: var(--accent-primary-glow);
+      transform: scale(1.01);
+    }
+
+    .upload-zone.processing {
+      pointer-events: none;
+    }
+
+    .upload-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, var(--accent-violet-glow), var(--accent-primary-glow));
+      border: 1px solid var(--accent-violet);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .upload-icon svg {
+      width: 36px;
+      height: 36px;
+      color: var(--accent-primary);
+    }
+
+    .upload-text {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .upload-hint {
+      font-size: 13px;
+      color: var(--fg-muted);
+      margin-bottom: 20px;
+    }
+
+    .upload-formats {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .format-tag {
+      padding: 5px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--fg-dim);
+    }
+
+    .upload-input {
+      display: none;
+    }
+
+    .upload-btn {
+      padding: 12px 28px;
+      background: var(--accent-primary);
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--bg-deep);
+      cursor: pointer;
+      margin-top: 24px;
+      transition: all 0.2s;
+    }
+
+    .upload-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px var(--accent-primary-glow);
+    }
+
+    .upload-btn:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    /* Processing State */
+    .processing-state {
+      display: none;
+      text-align: center;
+      padding: 48px;
+    }
+
+    .processing-state.show {
+      display: block;
+      animation: stepFadeIn 0.4s var(--ease-out);
+    }
+
+    .processing-spinner {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 28px;
+      position: relative;
+    }
+
+    .processing-spinner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: processingSpinner 1s linear infinite;
+    }
+
+    .processing-spinner::after {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border: 3px solid transparent;
+      border-top-color: var(--accent-violet);
+      border-radius: 50%;
+      animation: processingSpinner 1.5s linear infinite reverse;
+    }
+
+    @keyframes processingSpinner {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .processing-text {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .processing-hint {
+      font-size: 14px;
+      color: var(--fg-muted);
+      margin-bottom: 24px;
+    }
+
+    .processing-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    .processing-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--fg-dim);
+      transition: all 0.3s;
+    }
+
+    .processing-step.active {
+      border-color: var(--accent-primary);
+      color: var(--fg);
+    }
+
+    .processing-step.done {
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .processing-step svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .processing-step.active svg {
+      animation: processingPulse 1s ease infinite;
+    }
+
+    @keyframes processingPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .processing-step.done svg {
+      color: var(--success);
+    }
+
+    /* Extracted Holdings */
+    .extracted-holdings {
+      display: none;
+      margin-top: 24px;
+    }
+
+    .extracted-holdings.show {
+      display: block;
+      animation: stepFadeIn 0.4s var(--ease-out);
+    }
+
+    .extracted-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .extracted-title {
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .extracted-badge {
+      padding: 4px 10px;
+      background: var(--success-glow);
+      border: 1px solid var(--success);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--success);
+    }
+
+    .extracted-hint {
+      font-size: 13px;
+      color: var(--fg-muted);
+    }
+
+    /* Profile Step */
+    .profile-step {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .profile-header {
+      margin-bottom: 40px;
+    }
+
+    .profile-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .profile-subtitle {
+      font-size: 14px;
+      color: var(--fg-muted);
+    }
+
+    .profile-questions {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      text-align: left;
+    }
+
+    .profile-question {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .question-label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .question-label svg {
+      width: 18px;
+      height: 18px;
+      color: var(--accent-primary);
+    }
+
+    .option-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .option-btn {
+      padding: 12px 20px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--fg-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+    }
+
+    .option-btn:hover {
+      border-color: var(--border-strong);
+      color: var(--fg);
+    }
+
+    .option-btn:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .option-btn.selected {
+      border-color: var(--accent-primary);
+      background: var(--accent-primary-glow);
+      color: var(--accent-primary);
+    }
+
+    .profile-actions {
+      margin-top: 40px;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    /* Success Step */
+    .success-step {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .success-icon {
+      width: 88px;
+      height: 88px;
+      margin: 0 auto 24px;
+      background: linear-gradient(135deg, var(--success), var(--accent-primary));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 40px var(--success-glow);
+      animation: successPop 0.5s var(--ease-out);
+    }
+
+    @keyframes successPop {
+      0% {
+        transform: scale(0);
+      }
+      60% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .success-icon svg {
+      width: 44px;
+      height: 44px;
+      color: white;
+    }
+
+    .success-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .success-subtitle {
+      font-size: 16px;
+      color: var(--fg-muted);
+      margin-bottom: 32px;
+    }
+
+    /* Portfolio Preview */
+    .portfolio-preview {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 32px;
+      text-align: left;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .preview-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preview-value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .preview-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .preview-metric {
+      text-align: center;
+    }
+
+    .preview-metric-value {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .preview-metric-value.up {
+      color: var(--success);
+    }
+
+    .preview-metric-label {
+      font-size: 11px;
+      color: var(--fg-dim);
+    }
+
+    .preview-holdings {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .preview-holding {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-elevated);
+      border-radius: 10px;
+    }
+
+    .preview-holding-logo {
+      width: 36px;
+      height: 36px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--fg-muted);
+    }
+
+    .preview-holding-info {
+      flex: 1;
+    }
+
+    .preview-holding-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .preview-holding-ticker {
+      font-size: 11px;
+      color: var(--fg-dim);
+    }
+
+    .preview-holding-value {
+      text-align: right;
+    }
+
+    .preview-holding-amount {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .preview-holding-pnl {
+      font-size: 11px;
+      color: var(--success);
+    }
+
+    /* Success Actions */
+    .success-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-council {
+      padding: 16px 32px;
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-primary));
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-council:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px var(--accent-violet-glow);
+    }
+
+    .btn-council:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring), 0 8px 32px var(--accent-violet-glow);
+    }
+
+    .btn-council svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .btn-dashboard {
+      padding: 16px 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--fg);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-dashboard:hover {
+      border-color: var(--border-strong);
+    }
+
+    .btn-dashboard:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    /* Step Footer */
+    .step-footer {
+      padding: 24px 32px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-base);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .step-footer.hidden {
+      display: none;
+    }
+
+    .footer-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--fg-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .footer-back:hover {
+      color: var(--accent-primary);
+    }
+
+    .footer-back:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .footer-back svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .footer-continue {
+      padding: 12px 28px;
+      background: var(--accent-primary);
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--bg-deep);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-continue:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px var(--accent-primary-glow);
+    }
+
+    .footer-continue:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    .footer-continue:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .footer-continue svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Onboarding Adviser Sidebar (positioned for onboarding layout) */
+    .adviser-sidebar {
+      position: fixed;
+      top: 64px;
+      right: 0;
+      bottom: 0;
+      z-index: var(--z-fixed);
+    }
+
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .context-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .context-value {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+
+    .sidebar-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-gold));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-logo svg {
+      width: 20px;
+      height: 20px;
+      color: var(--bg-deep);
+    }
+
+    .sidebar-title h3 {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .sidebar-title p {
+      font-size: 11px;
+      color: var(--fg-dim);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sidebar-title p::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      background: var(--success);
+      border-radius: 50%;
+    }
+
+    /* Disclaimer */
+    .disclaimer {
+      padding: 24px 32px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+    }
+
+    .disclaimer p {
+      font-size: 11px;
+      color: var(--fg-dim);
+      line-height: 1.6;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ==========================================================================
+       PREFERS-REDUCED-MOTION SUPPORT
+       ========================================================================== */
+
+    @media (prefers-reduced-motion: reduce) {
+      .step {
+        animation: none;
+      }
+
+      .add-form.show,
+      .processing-state.show,
+      .extracted-holdings.show {
+        animation: none;
+      }
+
+      .progress-fill {
+        transition: none;
+      }
+
+      .step-dot {
+        transition: none;
+      }
+
+      .method-card,
+      .method-card::before {
+        transition: none;
+      }
+
+      .processing-spinner::before,
+      .processing-spinner::after {
+        animation: none;
+        border-top-color: var(--accent-primary);
+      }
+
+      .processing-step.active svg {
+        animation: none;
+      }
+
+      .success-icon {
+        animation: none;
+      }
+
+      .upload-zone.dragover {
+        transform: none;
+      }
+
+      .btn-primary-large:hover,
+      .btn-council:hover,
+      .footer-continue:hover,
+      .upload-btn:hover {
+        transform: none;
+      }
+
+      .method-card:hover {
+        transform: none;
+      }
+    }
+
+    /* ==========================================================================
+       RESPONSIVE STYLES
+       ========================================================================== */
+
+    @media (max-width: 1024px) {
+      .adviser-sidebar {
+        transform: translateX(100%);
+      }
+
+      .adviser-sidebar.open {
+        transform: translateX(0);
+      }
+
+      body.sidebar-open .app-main {
+        margin-right: 0;
+      }
+
+      :root {
+        --sidebar-width: 360px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .method-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .option-buttons {
+        flex-direction: column;
+      }
+
+      .option-btn {
+        min-width: auto;
+      }
+
+      :root {
+        --sidebar-width: 100%;
+      }
+
+      .onboarding-header {
+        padding: 0 16px;
+      }
+
+      .steps-container {
+        padding: 16px;
+      }
+
+      .welcome-title {
+        font-size: 28px;
+      }
+
+      .success-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip Link for Accessibility -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <div class="atmosphere"></div>
+
+  <header class="onboarding-header" role="banner">
+    <a href="index.html" class="header-logo" aria-label="AlphaCouncil home">
+      <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+    </a>
+    <div class="header-right">
+      <button type="button" class="header-skip" onclick="skipOnboarding()" aria-label="Skip setup and go straight to the dashboard">
+        Skip setup
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <a href="#" class="header-help" aria-label="Get help with onboarding">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Need help?
+      </a>
+      <button class="adviser-toggle" id="adviserToggle" aria-label="Toggle AI Adviser" aria-expanded="false" aria-controls="adviserSidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="progress-bar" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" aria-label="Onboarding progress">
+    <div class="progress-fill" id="progressFill" style="width: 20%;"></div>
+  </div>
+
+  <div class="app-wrapper">
+    <main class="app-main" id="main-content" role="main">
+      <nav class="step-indicator" id="stepIndicator" role="tablist" aria-label="Onboarding steps">
+        <div class="step-dot active" data-step="1" role="tab" aria-selected="true" aria-label="Step 1: Welcome" tabindex="0"></div>
+        <div class="step-dot" data-step="2" role="tab" aria-selected="false" aria-label="Step 2: Choose method" tabindex="-1"></div>
+        <div class="step-dot" data-step="3" role="tab" aria-selected="false" aria-label="Step 3: Add holdings" tabindex="-1"></div>
+        <div class="step-dot" data-step="4" role="tab" aria-selected="false" aria-label="Step 4: Profile" tabindex="-1"></div>
+        <div class="step-dot" data-step="5" role="tab" aria-selected="false" aria-label="Step 5: Complete" tabindex="-1"></div>
+      </nav>
+
+      <div class="steps-container">
+        <!-- Step 1: Welcome -->
+        <section class="step active" id="step1" role="tabpanel" aria-labelledby="step1-heading">
+          <div class="welcome-step">
+            <div class="welcome-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </div>
+            <h1 class="welcome-title" id="step1-heading">Welcome to AlphaCouncil</h1>
+            <p class="welcome-subtitle">Add your GCC holdings and connect them to real-time market data, news, and AI-powered analysis — so you know what the data suggests.</p>
+            <div class="welcome-actions">
+              <button class="btn-primary-large" onclick="goToStep(2)" aria-describedby="step1-heading">
+                Get Started
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+              <button class="btn-link" onclick="window.location.href='dashboard.html'">I already have a portfolio</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 2: Choose Method -->
+        <section class="step" id="step2" role="tabpanel" aria-labelledby="step2-heading">
+          <div class="method-step">
+            <div class="method-header">
+              <h2 class="method-title" id="step2-heading">How would you like to add your portfolio?</h2>
+              <p class="method-subtitle">Choose the option that works best for you</p>
+            </div>
+            <div class="method-cards" role="radiogroup" aria-labelledby="step2-heading">
+              <div class="method-card" onclick="selectMethod('manual')" id="methodManual" role="radio" aria-checked="false" tabindex="0" onkeydown="handleMethodKeydown(event, 'manual')">
+                <div class="method-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </div>
+                <h3 class="method-card-title">Add holdings manually</h3>
+                <p class="method-card-desc">Search for GCC stocks and enter your positions one by one. Great for small portfolios or precise entry.</p>
+                <div class="method-features" aria-label="Supported exchanges">
+                  <span class="method-feature">Tadawul</span>
+                  <span class="method-feature">ADX</span>
+                  <span class="method-feature">DFM</span>
+                  <span class="method-feature">QSE</span>
+                  <span class="method-feature">Boursa Kuwait</span>
+                </div>
+              </div>
+              <div class="method-card" onclick="selectMethod('upload')" id="methodUpload" role="radio" aria-checked="false" tabindex="0" onkeydown="handleMethodKeydown(event, 'upload')">
+                <span class="method-badge">AI-Powered</span>
+                <div class="method-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <h3 class="method-card-title">Upload statement or screenshot</h3>
+                <p class="method-card-desc">Upload your broker statement, portfolio screenshot, or CSV. Our AI extracts your holdings automatically.</p>
+                <div class="method-features" aria-label="Supported formats">
+                  <span class="method-feature">Screenshot</span>
+                  <span class="method-feature">PDF</span>
+                  <span class="method-feature">CSV/Excel</span>
+                  <span class="method-feature">Broker statement</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 3a: Manual Entry -->
+        <section class="step" id="step3a" role="tabpanel" aria-labelledby="step3a-heading">
+          <div class="manual-step">
+            <div class="manual-header">
+              <h2 class="manual-title" id="step3a-heading">Add your holdings</h2>
+              <span class="manual-count" aria-live="polite"><span id="holdingCount">0</span> holdings added</span>
+            </div>
+            <div class="search-box" role="search">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              <input type="text" class="search-input" id="stockSearch" placeholder="Search GCC stocks (e.g., Aramco, Al Rajhi, QNB...)" autocomplete="off" aria-label="Search for stocks" aria-describedby="searchHelp" aria-controls="searchResults" aria-expanded="false">
+              <span id="searchHelp" class="sr-only">Type at least 2 characters to search for stocks</span>
+              <div class="search-results" id="searchResults" role="listbox" aria-label="Stock search results"></div>
+            </div>
+            <div class="add-form" id="addForm" aria-hidden="true">
+              <div class="form-header">
+                <div class="form-stock">
+                  <div class="form-stock-logo" id="formLogo" aria-hidden="true">2222</div>
+                  <div class="form-stock-info">
+                    <h4 id="formName">Saudi Aramco</h4>
+                    <p id="formTicker">2222.SR · Tadawul</p>
+                  </div>
+                </div>
+                <button class="form-close" onclick="closeAddForm()" aria-label="Close add holding form">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label" for="sharesInput">Number of Shares <span aria-hidden="true">*</span><span class="sr-only">(required)</span></label>
+                  <input type="number" class="form-input" id="sharesInput" placeholder="e.g., 500" required aria-required="true">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="priceInput">Average Buy Price <span aria-hidden="true">*</span><span class="sr-only">(required)</span></label>
+                  <input type="number" class="form-input" id="priceInput" placeholder="e.g., 28.50" step="0.01" required aria-required="true">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="dateInput">Buy Date <span class="text-dim">(optional)</span></label>
+                  <input type="date" class="form-input" id="dateInput">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="notesInput">Notes <span class="text-dim">(optional)</span></label>
+                  <input type="text" class="form-input" id="notesInput" placeholder="e.g., Initial position">
+                </div>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeAddForm()">Cancel</button>
+                <button class="btn btn-primary" onclick="addHolding()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                  Add Holding
+                </button>
+              </div>
+            </div>
+            <div class="holdings-preview" role="region" aria-labelledby="holdings-preview-title">
+              <div class="holdings-preview-header">
+                <span class="holdings-preview-title" id="holdings-preview-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                  Your Holdings
+                </span>
+              </div>
+              <div id="holdingsTableWrapper">
+                <div class="empty-state" id="emptyState">
+                  <div class="empty-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                  </div>
+                  <p class="empty-text">Search and add your first holding to get started</p>
+                </div>
+                <table class="holdings-table" id="holdingsTable" style="display: none;" aria-label="Your portfolio holdings">
+                  <thead>
+                    <tr>
+                      <th scope="col">Holding</th>
+                      <th scope="col">Shares</th>
+                      <th scope="col">Avg Price</th>
+                      <th scope="col">Value</th>
+                      <th scope="col"><span class="sr-only">Actions</span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="holdingsBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 3b: Upload Flow -->
+        <section class="step" id="step3b" role="tabpanel" aria-labelledby="step3b-heading">
+          <div class="upload-step">
+            <div class="upload-header">
+              <h2 class="upload-title" id="step3b-heading">Upload your portfolio</h2>
+              <p class="upload-subtitle">Our AI will extract your holdings automatically</p>
+            </div>
+            <div class="upload-zone" id="uploadZone" tabindex="0" role="button" aria-label="Upload portfolio file. Drag and drop or click to browse." onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('fileInput').click();}">
+              <div class="upload-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <p class="upload-text">Drag & drop your file here</p>
+              <p class="upload-hint">or click to browse files</p>
+              <div class="upload-formats" aria-label="Supported file formats">
+                <span class="format-tag">Screenshot</span>
+                <span class="format-tag">PDF</span>
+                <span class="format-tag">CSV</span>
+                <span class="format-tag">Excel</span>
+                <span class="format-tag">Broker Statement</span>
+              </div>
+              <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Choose File</button>
+              <input type="file" class="upload-input" id="fileInput" accept=".pdf,.csv,.xlsx,.xls,.png,.jpg,.jpeg" aria-label="Choose file to upload">
+            </div>
+            <div class="processing-state" id="processingState" aria-live="polite" aria-busy="true">
+              <div class="processing-spinner" role="status" aria-label="Processing file"></div>
+              <p class="processing-text">Extracting holdings...</p>
+              <p class="processing-hint">Our AI is analyzing your document</p>
+            </div>
+            <div class="extracted-holdings" id="extractedHoldings" aria-live="polite">
+              <div class="extracted-header">
+                <div class="extracted-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  Holdings Extracted
+                  <span class="extracted-badge" id="extractedCount">5 found</span>
+                </div>
+                <p class="extracted-hint">Review and adjust if needed</p>
+              </div>
+              <div class="holdings-preview">
+                <table class="holdings-table" aria-label="Extracted holdings">
+                  <thead>
+                    <tr>
+                      <th scope="col">Holding</th>
+                      <th scope="col">Shares</th>
+                      <th scope="col">Avg Price</th>
+                      <th scope="col">Value</th>
+                      <th scope="col"><span class="sr-only">Actions</span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="extractedBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 4: Profile -->
+        <section class="step" id="step4" role="tabpanel" aria-labelledby="step4-heading">
+          <div class="profile-step">
+            <div class="profile-header">
+              <h2 class="profile-title" id="step4-heading">Quick profile setup</h2>
+              <p class="profile-subtitle">Help us personalize your experience (optional)</p>
+            </div>
+            <div class="profile-questions">
+              <fieldset class="profile-question">
+                <legend class="question-label">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                  What is your primary investment goal?
+                </legend>
+                <div class="option-buttons" data-question="goal" role="group">
+                  <button type="button" class="option-btn" data-value="growth" aria-pressed="false">Growth</button>
+                  <button type="button" class="option-btn" data-value="income" aria-pressed="false">Income</button>
+                  <button type="button" class="option-btn" data-value="balanced" aria-pressed="false">Balanced</button>
+                  <button type="button" class="option-btn" data-value="preservation" aria-pressed="false">Capital Preservation</button>
+                </div>
+              </fieldset>
+              <fieldset class="profile-question">
+                <legend class="question-label">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  What's your investment timeline?
+                </legend>
+                <div class="option-buttons" data-question="timeline" role="group">
+                  <button type="button" class="option-btn" data-value="short" aria-pressed="false">1-3 years</button>
+                  <button type="button" class="option-btn" data-value="medium" aria-pressed="false">3-7 years</button>
+                  <button type="button" class="option-btn" data-value="long" aria-pressed="false">7+ years</button>
+                </div>
+              </fieldset>
+            </div>
+            <div class="profile-actions">
+              <button class="btn btn-secondary" onclick="goToStep(5)">Skip for now</button>
+              <button class="btn btn-primary" onclick="goToStep(5)">
+                Continue
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 5: Success -->
+        <section class="step" id="step5" role="tabpanel" aria-labelledby="step5-heading">
+          <div class="success-step">
+            <div class="success-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h1 class="success-title" id="step5-heading">Your portfolio is ready!</h1>
+            <p class="success-subtitle">We've connected <span id="successCount">5</span> holdings to real-time market data and AI analysis.</p>
+            <div class="portfolio-preview" id="portfolioPreview" role="region" aria-label="Portfolio summary">
+              <div class="preview-header">
+                <span class="preview-title">Portfolio Summary</span>
+              </div>
+              <div class="preview-value" id="previewValue">SAR 847,250</div>
+              <div class="preview-metrics">
+                <div class="preview-metric">
+                  <div class="preview-metric-value up">+8.4%</div>
+                  <div class="preview-metric-label">Total Return</div>
+                </div>
+                <div class="preview-metric">
+                  <div class="preview-metric-value">5</div>
+                  <div class="preview-metric-label">Holdings</div>
+                </div>
+                <div class="preview-metric">
+                  <div class="preview-metric-value">3.2%</div>
+                  <div class="preview-metric-label">Avg Dividend</div>
+                </div>
+                <div class="preview-metric">
+                  <div class="preview-metric-value">72</div>
+                  <div class="preview-metric-label">Council Score</div>
+                </div>
+              </div>
+              <div class="preview-holdings" id="previewHoldings">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+            <div class="success-actions">
+              <button class="btn-council" onclick="runFirstCouncil()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Run my first AI Analyst Council review
+              </button>
+              <a href="dashboard.html" class="btn-dashboard" onclick="persistAndGo(event)">
+                Go to Dashboard
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="step-footer" id="stepFooter">
+        <button class="footer-back" id="footerBack" onclick="goBack()" aria-label="Go to previous step">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <button class="footer-continue" id="footerContinue" onclick="goForward()" aria-label="Continue to next step">
+          Continue
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
+      <div class="disclaimer" role="contentinfo">
+        <p>AlphaCouncil provides market data and AI-powered analysis for informational purposes only. This does not constitute investment advice. Past performance does not guarantee future results. Always conduct your own research before making investment decisions.</p>
+      </div>
+    </main>
+
+    <aside class="adviser-sidebar" id="adviserSidebar" aria-label="AI Adviser" aria-hidden="true">
+      <div class="sidebar-inner">
+        <div class="sidebar-header">
+          <div class="sidebar-header-left">
+            <div class="sidebar-logo" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="sidebar-title">
+              <h3>AI Adviser</h3>
+              <p>Online</p>
+            </div>
+          </div>
+          <button class="sidebar-close" onclick="toggleSidebar()" aria-label="Close AI Adviser">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="sidebar-content">
+          <div class="context-card">
+            <div class="context-label">Current Step</div>
+            <div class="context-value" id="sidebarContext">Getting started with your portfolio</div>
+          </div>
+          <div>
+            <div class="sidebar-section-title">Suggested Questions</div>
+            <div class="suggested-questions" id="suggestedQuestions" role="list">
+              <button class="suggested-question" onclick="askQuestion('What is AlphaCouncil?')" role="listitem">What is AlphaCouncil and how does it work?</button>
+              <button class="suggested-question" onclick="askQuestion('Is my data secure?')" role="listitem">Is my portfolio data secure?</button>
+              <button class="suggested-question" onclick="askQuestion('Which GCC exchanges are supported?')" role="listitem">Which GCC exchanges do you support?</button>
+            </div>
+          </div>
+          <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Chat messages">
+            <div class="chat-message adviser">
+              <div class="chat-avatar" aria-hidden="true">AI</div>
+              <div class="chat-bubble">Welcome! I'm here to help you set up your portfolio. Feel free to ask any questions along the way.</div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <div class="chat-input-row">
+            <label for="chatInput" class="sr-only">Type your message</label>
+            <textarea class="chat-input" id="chatInput" placeholder="Ask anything..." rows="1" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
+            <button class="chat-send" onclick="sendMessage()" aria-label="Send message">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Live region for screen reader announcements -->
+  <div class="live-region" id="liveRegion" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    // State
+    let currentStep = 1;
+    let selectedMethod = null;
+    let holdings = [];
+    let selectedStock = null;
+    let userProfile = {};
+
+    // Stock database (seeded with a small demo list; replaced by the REAL universe on load)
+    let stocksDatabase = [
+      { ticker: '2222.SR', name: 'Saudi Aramco', exchange: 'Tadawul', price: 28.70, currency: 'SAR' },
+      { ticker: '1120.SR', name: 'Al Rajhi Bank', exchange: 'Tadawul', price: 88.20, currency: 'SAR' },
+      { ticker: '2010.SR', name: 'SABIC', exchange: 'Tadawul', price: 92.50, currency: 'SAR' },
+      { ticker: '1180.SR', name: 'Al Inma Bank', exchange: 'Tadawul', price: 27.35, currency: 'SAR' },
+      { ticker: '2380.SR', name: 'ACWA Power', exchange: 'Tadawul', price: 142.00, currency: 'SAR' },
+      { ticker: '4190.SR', name: 'Jarir Marketing', exchange: 'Tadawul', price: 145.80, currency: 'SAR' },
+      { ticker: '4030.SR', name: 'Al Marai', exchange: 'Tadawul', price: 52.40, currency: 'SAR' },
+      { ticker: 'QNBK', name: 'QNB Group', exchange: 'QSE', price: 17.92, currency: 'QAR' },
+      { ticker: 'ORDS', name: 'Ooredoo', exchange: 'QSE', price: 10.35, currency: 'QAR' },
+      { ticker: 'ADNOCDIST', name: 'ADNOC Distribution', exchange: 'ADX', price: 3.85, currency: 'AED' },
+      { ticker: 'FAB', name: 'First Abu Dhabi Bank', exchange: 'ADX', price: 13.64, currency: 'AED' },
+      { ticker: 'EMAAR', name: 'Emaar Properties', exchange: 'DFM', price: 8.23, currency: 'AED' },
+      { ticker: 'DIB', name: 'Dubai Islamic Bank', exchange: 'DFM', price: 5.78, currency: 'AED' },
+      { ticker: 'NBK', name: 'National Bank of Kuwait', exchange: 'Boursa Kuwait', price: 0.98, currency: 'KWD' },
+      { ticker: 'ZAIN', name: 'Zain Group', exchange: 'Boursa Kuwait', price: 0.62, currency: 'KWD' },
+    ];
+
+    // Announce to screen readers
+    function announce(message) {
+      const liveRegion = document.getElementById('liveRegion');
+      liveRegion.textContent = message;
+      setTimeout(() => { liveRegion.textContent = ''; }, 1000);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDraftHoldings();  // restore any holdings entered before a refresh
+      updateProgress();
+      updateFooter();
+      setupSearch();
+      setupUpload();
+      setupProfileOptions();
+      loadRealUniverse();   // runs after api.js has loaded (DOMContentLoaded fires post-parse)
+    });
+
+    // Load the REAL stock universe so the search + any persisted holdings use live data.
+    async function loadRealUniverse(){
+      try {
+        const resp = await API.screening();
+        const data = (resp && resp.data) ? resp.data : (Array.isArray(resp) ? resp : []);
+        if (data.length) stocksDatabase = data.map(function(s){
+          return { ticker: s.ticker, tickerKey: s.ticker_key, name: s.name_en || s.ticker,
+                   exchange: s.exchange, price: s.last_price, currency: s.currency, sector: s.sector_en };
+        });
+      } catch (e) { /* keep the small demo list as a fallback */ }
+    }
+
+    // ── Draft persistence ──────────────────────────────────────────────────
+    // Keep holdings entered during onboarding in localStorage so a page refresh
+    // (or an accidental tab close) doesn't lose them. The draft is cleared once
+    // the holdings are saved to the real portfolio (on finish or skip).
+    const DRAFT_KEY = 'ac_onboarding_holdings';
+    function saveDraftHoldings(){
+      try { localStorage.setItem(DRAFT_KEY, JSON.stringify(holdings)); } catch (e) { /* storage unavailable */ }
+    }
+    function loadDraftHoldings(){
+      try {
+        const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || '[]');
+        if (Array.isArray(saved) && saved.length) { holdings = saved; renderHoldings(); }
+      } catch (e) { /* ignore corrupt/blocked storage */ }
+    }
+    function clearDraftHoldings(){
+      try { localStorage.removeItem(DRAFT_KEY); } catch (e) { /* storage unavailable */ }
+    }
+
+    // Persist holdings collected during onboarding to the real portfolio (once, on finish).
+    let _persisted = false;
+    async function persistHoldings(){
+      if (_persisted) return; _persisted = true;
+      for (const h of holdings){
+        if (!h.tickerKey) continue;
+        try { await API.addHolding(h.tickerKey, h.shares, h.avgPrice); } catch (e) { /* skip dupes/errors */ }
+      }
+      clearDraftHoldings();   // the draft is now saved to the real portfolio
+    }
+    async function persistAndGo(e){ if (e) e.preventDefault(); await persistHoldings(); window.location.href = 'dashboard.html'; }
+
+    // Skip the rest of onboarding entirely — keep anything already added, then go
+    // straight to the dashboard. Available from every step via the header link.
+    function skipOnboarding(){
+      Promise.resolve(persistHoldings()).finally(function(){ window.location.href = 'dashboard.html'; });
+    }
+
+    // Keyboard handler for method selection
+    function handleMethodKeydown(event, method) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        selectMethod(method);
+      } else if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        event.preventDefault();
+        const nextCard = method === 'manual' ? document.getElementById('methodUpload') : document.getElementById('methodManual');
+        nextCard.focus();
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        const prevCard = method === 'upload' ? document.getElementById('methodManual') : document.getElementById('methodUpload');
+        prevCard.focus();
+      }
+    }
+
+    // Navigation
+    function goToStep(step) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.step-dot').forEach((d, i) => {
+        d.classList.remove('active');
+        d.setAttribute('aria-selected', 'false');
+        d.setAttribute('tabindex', '-1');
+        if (i + 1 < step) d.classList.add('completed');
+        else d.classList.remove('completed');
+      });
+      let stepId = 'step' + step;
+      if (step === 3) {
+        stepId = selectedMethod === 'upload' ? 'step3b' : 'step3a';
+      }
+      document.getElementById(stepId).classList.add('active');
+      const currentDot = document.querySelector(`[data-step="${step}"]`);
+      currentDot.classList.add('active');
+      currentDot.setAttribute('aria-selected', 'true');
+      currentDot.setAttribute('tabindex', '0');
+      currentStep = step;
+      updateProgress();
+      updateFooter();
+      updateSidebarContext();
+
+      // Announce step change
+      const stepNames = ['Welcome', 'Choose method', 'Add holdings', 'Profile', 'Complete'];
+      announce(`Step ${step} of 5: ${stepNames[step - 1]}`);
+
+      // Focus management
+      setTimeout(() => {
+        const stepHeading = document.querySelector(`#${stepId} h1, #${stepId} h2`);
+        if (stepHeading) {
+          stepHeading.setAttribute('tabindex', '-1');
+          stepHeading.focus();
+        }
+      }, 100);
+    }
+
+    function goBack() {
+      if (currentStep > 1) {
+        if (currentStep === 3) {
+          goToStep(2);
+        } else {
+          goToStep(currentStep - 1);
+        }
+      }
+    }
+
+    function goForward() {
+      if (currentStep === 2 && selectedMethod) {
+        goToStep(3);
+      } else if (currentStep === 3 && holdings.length > 0) {
+        goToStep(4);
+      } else if (currentStep === 4) {
+        goToStep(5);
+      }
+    }
+
+    function updateProgress() {
+      const progressMap = { 1: 20, 2: 40, 3: 60, 4: 80, 5: 100 };
+      const progressBar = document.querySelector('.progress-bar');
+      const progressFill = document.getElementById('progressFill');
+      progressFill.style.width = progressMap[currentStep] + '%';
+      progressBar.setAttribute('aria-valuenow', progressMap[currentStep]);
+    }
+
+    function updateFooter() {
+      const footer = document.getElementById('stepFooter');
+      const backBtn = document.getElementById('footerBack');
+      const continueBtn = document.getElementById('footerContinue');
+      if (currentStep === 1 || currentStep === 5) {
+        footer.classList.add('hidden');
+      } else {
+        footer.classList.remove('hidden');
+        backBtn.style.visibility = currentStep > 1 ? 'visible' : 'hidden';
+        if (currentStep === 2) {
+          continueBtn.disabled = !selectedMethod;
+        } else if (currentStep === 3) {
+          continueBtn.disabled = holdings.length === 0;
+        } else {
+          continueBtn.disabled = false;
+        }
+      }
+    }
+
+    // Method Selection
+    function selectMethod(method) {
+      selectedMethod = method;
+      document.querySelectorAll('.method-card').forEach(c => {
+        c.classList.remove('selected');
+        c.setAttribute('aria-checked', 'false');
+      });
+      const selectedCard = document.getElementById('method' + method.charAt(0).toUpperCase() + method.slice(1));
+      selectedCard.classList.add('selected');
+      selectedCard.setAttribute('aria-checked', 'true');
+      updateFooter();
+      announce(`Selected: ${method === 'manual' ? 'Add holdings manually' : 'Upload statement'}`);
+    }
+
+    // Search
+    function setupSearch() {
+      const searchInput = document.getElementById('stockSearch');
+      const searchResults = document.getElementById('searchResults');
+      let focusedIndex = -1;
+
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (query.length < 2) {
+          searchResults.classList.remove('show');
+          searchInput.setAttribute('aria-expanded', 'false');
+          return;
+        }
+        const matches = stocksDatabase.filter(s =>
+          s.name.toLowerCase().includes(query) ||
+          s.ticker.toLowerCase().includes(query)
+        ).slice(0, 5);
+        if (matches.length > 0) {
+          searchResults.innerHTML = matches.map((s, i) => `
+            <div class="search-result" onclick="selectStock('${s.ticker}')" role="option" id="result-${i}" tabindex="0" onkeydown="handleResultKeydown(event, '${s.ticker}', ${i}, ${matches.length})">
+              <div class="result-logo" aria-hidden="true">${s.ticker.replace('.SR','').slice(0,4)}</div>
+              <div class="result-info">
+                <div class="result-name">${s.name}</div>
+                <div class="result-ticker">${s.ticker}</div>
+              </div>
+              <span class="result-exchange">${s.exchange}</span>
+            </div>
+          `).join('');
+          searchResults.classList.add('show');
+          searchInput.setAttribute('aria-expanded', 'true');
+          focusedIndex = -1;
+        } else {
+          searchResults.classList.remove('show');
+          searchInput.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      searchInput.addEventListener('keydown', (e) => {
+        const results = searchResults.querySelectorAll('.search-result');
+        if (!searchResults.classList.contains('show') || results.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          focusedIndex = Math.min(focusedIndex + 1, results.length - 1);
+          results[focusedIndex].focus();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          focusedIndex = Math.max(focusedIndex - 1, 0);
+          results[focusedIndex].focus();
+        } else if (e.key === 'Escape') {
+          searchResults.classList.remove('show');
+          searchInput.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-box')) {
+          searchResults.classList.remove('show');
+          searchInput.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    function handleResultKeydown(event, ticker, index, total) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        selectStock(ticker);
+      } else if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        if (index < total - 1) {
+          document.getElementById(`result-${index + 1}`).focus();
+        }
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (index > 0) {
+          document.getElementById(`result-${index - 1}`).focus();
+        } else {
+          document.getElementById('stockSearch').focus();
+        }
+      } else if (event.key === 'Escape') {
+        document.getElementById('searchResults').classList.remove('show');
+        document.getElementById('stockSearch').focus();
+      }
+    }
+
+    function selectStock(ticker) {
+      selectedStock = stocksDatabase.find(s => s.ticker === ticker);
+      document.getElementById('searchResults').classList.remove('show');
+      document.getElementById('stockSearch').value = '';
+      document.getElementById('stockSearch').setAttribute('aria-expanded', 'false');
+      document.getElementById('formLogo').textContent = ticker.replace('.SR','').slice(0,4);
+      document.getElementById('formName').textContent = selectedStock.name;
+      document.getElementById('formTicker').textContent = `${ticker} · ${selectedStock.exchange}`;
+      const addForm = document.getElementById('addForm');
+      addForm.classList.add('show');
+      addForm.setAttribute('aria-hidden', 'false');
+      document.getElementById('sharesInput').focus();
+      announce(`Selected ${selectedStock.name}. Enter holding details.`);
+    }
+
+    function closeAddForm() {
+      const addForm = document.getElementById('addForm');
+      addForm.classList.remove('show');
+      addForm.setAttribute('aria-hidden', 'true');
+      selectedStock = null;
+      document.getElementById('sharesInput').value = '';
+      document.getElementById('priceInput').value = '';
+      document.getElementById('dateInput').value = '';
+      document.getElementById('notesInput').value = '';
+      document.getElementById('stockSearch').focus();
+    }
+
+    function addHolding() {
+      const shares = parseFloat(document.getElementById('sharesInput').value);
+      const price = parseFloat(document.getElementById('priceInput').value);
+      if (!shares || !price || !selectedStock) {
+        showToast('Please fill in required fields', 'Enter shares and average price', 'info');
+        return;
+      }
+      // Capture the stock BEFORE closeAddForm() resets selectedStock to null —
+      // otherwise the lines below throw and updateFooter() never runs, leaving the
+      // Continue button stuck disabled even though the holding was added.
+      const stock = selectedStock;
+      const holding = {
+        ...stock,
+        shares,
+        avgPrice: price,
+        date: document.getElementById('dateInput').value,
+        notes: document.getElementById('notesInput').value,
+        value: shares * stock.price
+      };
+      holdings.push(holding);
+      renderHoldings();
+      closeAddForm();
+      updateFooter();   // enable Continue now that a holding exists — must run before any toast
+      showToast('Holding added', `${stock.name} added to portfolio`, 'success');
+      announce(`${holding.name} added to portfolio. ${holdings.length} holdings total.`);
+    }
+
+    function removeHolding(index) {
+      const removedName = holdings[index].name;
+      holdings.splice(index, 1);
+      renderHoldings();
+      updateFooter();
+      announce(`${removedName} removed from portfolio.`);
+    }
+
+    function renderHoldings() {
+      const count = document.getElementById('holdingCount');
+      const emptyState = document.getElementById('emptyState');
+      const table = document.getElementById('holdingsTable');
+      const tbody = document.getElementById('holdingsBody');
+      count.textContent = holdings.length;
+      if (holdings.length === 0) {
+        emptyState.style.display = 'block';
+        table.style.display = 'none';
+      } else {
+        emptyState.style.display = 'none';
+        table.style.display = 'table';
+        tbody.innerHTML = holdings.map((h, i) => `
+          <tr>
+            <td>
+              <div class="holding-name">
+                <div class="holding-logo" aria-hidden="true">${h.ticker.replace('.SR','').slice(0,4)}</div>
+                <div>
+                  <div class="holding-ticker">${h.ticker}</div>
+                  <div class="holding-company">${h.name}</div>
+                </div>
+              </div>
+            </td>
+            <td>${h.shares.toLocaleString()}</td>
+            <td>${h.currency} ${h.avgPrice.toFixed(2)}</td>
+            <td>${h.currency} ${h.value.toLocaleString()}</td>
+            <td>
+              <button class="holding-remove" onclick="removeHolding(${i})" aria-label="Remove ${h.name} from portfolio">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
+      saveDraftHoldings();
+    }
+
+    // Upload
+    function setupUpload() {
+      const zone = document.getElementById('uploadZone');
+      const input = document.getElementById('fileInput');
+      zone.addEventListener('click', () => input.click());
+      zone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        zone.classList.add('dragover');
+      });
+      zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+      zone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+          processFile(e.dataTransfer.files[0]);
+        }
+      });
+      input.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+          processFile(e.target.files[0]);
+        }
+      });
+    }
+
+    function processFile(file) {
+      const zone = document.getElementById('uploadZone');
+      const processing = document.getElementById('processingState');
+      const extracted = document.getElementById('extractedHoldings');
+      zone.style.display = 'none';
+      processing.classList.add('show');
+      announce('Processing file. Extracting holdings.');
+      setTimeout(() => {
+        const simulatedHoldings = [
+          { ticker: '2222.SR', name: 'Saudi Aramco', exchange: 'Tadawul', shares: 500, avgPrice: 27.80, price: 28.70, currency: 'SAR' },
+          { ticker: '1120.SR', name: 'Al Rajhi Bank', exchange: 'Tadawul', shares: 200, avgPrice: 85.50, price: 88.20, currency: 'SAR' },
+          { ticker: 'QNBK', name: 'QNB Group', exchange: 'QSE', shares: 300, avgPrice: 17.20, price: 17.92, currency: 'QAR' },
+          { ticker: 'FAB', name: 'First Abu Dhabi Bank', exchange: 'ADX', shares: 400, avgPrice: 13.10, price: 13.64, currency: 'AED' },
+          { ticker: '2380.SR', name: 'ACWA Power', exchange: 'Tadawul', shares: 100, avgPrice: 138.00, price: 142.00, currency: 'SAR' },
+        ];
+        simulatedHoldings.forEach(h => {
+          h.value = h.shares * h.price;
+          holdings.push(h);
+        });
+        saveDraftHoldings();
+        processing.classList.remove('show');
+        extracted.classList.add('show');
+        document.getElementById('extractedCount').textContent = holdings.length + ' found';
+        document.getElementById('extractedBody').innerHTML = holdings.map((h, i) => `
+          <tr>
+            <td>
+              <div class="holding-name">
+                <div class="holding-logo" aria-hidden="true">${h.ticker.replace('.SR','').slice(0,4)}</div>
+                <div>
+                  <div class="holding-ticker">${h.ticker}</div>
+                  <div class="holding-company">${h.name}</div>
+                </div>
+              </div>
+            </td>
+            <td>${h.shares.toLocaleString()}</td>
+            <td>${h.currency} ${h.avgPrice.toFixed(2)}</td>
+            <td>${h.currency} ${h.value.toLocaleString()}</td>
+            <td>
+              <button class="holding-remove" onclick="removeExtracted(${i})" aria-label="Remove ${h.name}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+        updateFooter();
+        showToast('Holdings extracted', `${holdings.length} positions identified`, 'success');
+        announce(`${holdings.length} holdings extracted from file.`);
+      }, 2500);
+    }
+
+    function removeExtracted(index) {
+      const removedName = holdings[index].name;
+      holdings.splice(index, 1);
+      document.getElementById('extractedCount').textContent = holdings.length + ' found';
+      document.getElementById('extractedBody').innerHTML = holdings.map((h, i) => `
+        <tr>
+          <td>
+            <div class="holding-name">
+              <div class="holding-logo" aria-hidden="true">${h.ticker.replace('.SR','').slice(0,4)}</div>
+              <div>
+                <div class="holding-ticker">${h.ticker}</div>
+                <div class="holding-company">${h.name}</div>
+              </div>
+            </div>
+          </td>
+          <td>${h.shares.toLocaleString()}</td>
+          <td>${h.currency} ${h.avgPrice.toFixed(2)}</td>
+          <td>${h.currency} ${h.value.toLocaleString()}</td>
+          <td>
+            <button class="holding-remove" onclick="removeExtracted(${i})" aria-label="Remove ${h.name}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+      updateFooter();
+      announce(`${removedName} removed.`);
+    }
+
+    // Profile
+    function setupProfileOptions() {
+      document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const parent = btn.closest('.option-buttons');
+          parent.querySelectorAll('.option-btn').forEach(b => {
+            b.classList.remove('selected');
+            b.setAttribute('aria-pressed', 'false');
+          });
+          btn.classList.add('selected');
+          btn.setAttribute('aria-pressed', 'true');
+          userProfile[parent.dataset.question] = btn.dataset.value;
+          announce(`Selected: ${btn.textContent}`);
+        });
+      });
+    }
+
+    // Success
+    function updateSuccessPage() {
+      document.getElementById('successCount').textContent = holdings.length;
+      const totalValue = holdings.reduce((sum, h) => {
+        let sarValue = h.value;
+        if (h.currency === 'AED') sarValue *= 1.02;
+        if (h.currency === 'QAR') sarValue *= 1.03;
+        if (h.currency === 'KWD') sarValue *= 12.2;
+        return sum + sarValue;
+      }, 0);
+      document.getElementById('previewValue').textContent = 'SAR ' + Math.round(totalValue).toLocaleString();
+      document.getElementById('previewHoldings').innerHTML = holdings.slice(0, 3).map(h => `
+        <div class="preview-holding">
+          <div class="preview-holding-logo" aria-hidden="true">${h.ticker.replace('.SR','').slice(0,4)}</div>
+          <div class="preview-holding-info">
+            <div class="preview-holding-name">${h.name}</div>
+            <div class="preview-holding-ticker">${h.ticker}</div>
+          </div>
+          <div class="preview-holding-value">
+            <div class="preview-holding-amount">${h.currency} ${h.value.toLocaleString()}</div>
+            <div class="preview-holding-pnl">+${((h.price - h.avgPrice) / h.avgPrice * 100).toFixed(1)}%</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Sidebar
+    function toggleSidebar() {
+      const sidebar = document.getElementById('adviserSidebar');
+      const toggle = document.getElementById('adviserToggle');
+      const isOpen = sidebar.classList.toggle('open');
+      toggle.classList.toggle('active');
+      document.body.classList.toggle('sidebar-open');
+
+      // Update ARIA attributes
+      toggle.setAttribute('aria-expanded', isOpen);
+      sidebar.setAttribute('aria-hidden', !isOpen);
+
+      if (isOpen) {
+        // Focus management
+        setTimeout(() => {
+          document.getElementById('chatInput').focus();
+        }, 300);
+        announce('AI Adviser opened');
+      } else {
+        announce('AI Adviser closed');
+      }
+    }
+
+    function updateSidebarContext() {
+      const contextMap = {
+        1: 'Getting started with your portfolio',
+        2: 'Choosing how to add holdings',
+        3: 'Adding your GCC holdings',
+        4: 'Setting up your profile',
+        5: 'Portfolio setup complete'
+      };
+      document.getElementById('sidebarContext').textContent = contextMap[currentStep];
+      const questionsMap = {
+        1: ['What is AlphaCouncil?', 'Is my data secure?', 'Which GCC exchanges are supported?'],
+        2: ['Which method is faster?', 'Can I do both methods?', 'What file formats are supported?'],
+        3: ['How do I find my ticker?', 'Can I add multiple lots?', 'What if my stock is not listed?'],
+        4: ['Why do you need this info?', 'Can I change this later?', 'Is this data shared?'],
+        5: ['What does the Council analyze?', 'How often is data updated?', 'Can I add more holdings?']
+      };
+      document.getElementById('suggestedQuestions').innerHTML = questionsMap[currentStep].map(q =>
+        `<button class="suggested-question" onclick="askQuestion('${q}')" role="listitem">${q}</button>`
+      ).join('');
+    }
+
+    function askQuestion(question) {
+      addChatMessage(question, 'user');
+      setTimeout(() => {
+        const responses = {
+          'What is AlphaCouncil?': 'AlphaCouncil is an AI-powered portfolio intelligence platform designed specifically for GCC stock investors. We provide real-time market data, news analysis, and a unique "AI Analyst Council" that evaluates your holdings across 12 dimensions.',
+          'Is my data secure?': 'Your portfolio data is encrypted and stored securely. We use bank-grade security protocols. Your data is never shared with third parties.',
+          'Which GCC exchanges are supported?': 'We support all major GCC exchanges including Tadawul (Saudi), ADX and DFM (UAE), QSE (Qatar), and Boursa Kuwait.',
+          'Which method is faster?': 'The AI upload method is typically faster for portfolios with 5+ holdings. Manual entry gives you more control for precise position tracking.',
+          'Can I do both methods?': 'Yes! You can upload a statement first, then add additional holdings manually. The methods complement each other.',
+          'What file formats are supported?': 'We accept screenshots (PNG, JPG), PDFs, CSV files, and Excel spreadsheets. Broker statements from major GCC brokers are automatically recognized.',
+          'How do I find my ticker?': 'Just start typing the company name or ticker symbol. Our search covers all GCC-listed stocks with their official tickers.',
+          'Can I add multiple lots?': 'Yes, after initial setup you can track multiple purchase lots per holding with different buy dates and prices.',
+          'What if my stock is not listed?': 'All officially listed GCC stocks are in our database. If you cannot find a stock, it may be recently listed or trading under a different symbol.',
+          'Why do you need this info?': 'Your investment goals and timeline help us prioritize which insights to highlight. The AI Council adjusts its analysis focus based on your profile.',
+          'Can I change this later?': 'Absolutely. You can update your profile anytime in Settings.',
+          'Is this data shared?': 'No, your profile data stays private and is only used to personalize your experience.',
+          'What does the Council analyze?': 'The AI Analyst Council evaluates stocks across 12 dimensions including Valuation, Growth, Profitability, Quality, Dividends, Ownership, Governance, ESG, Macro factors, Momentum, Technicals, and Sentiment.',
+          'How often is data updated?': 'Market prices update in real-time during trading hours. News and analysis are refreshed continuously.',
+          'Can I add more holdings?': 'Yes! Go to Portfolio from the dashboard to add more holdings anytime.'
+        };
+        const response = responses[question] || 'I understand your question. Let me help guide you through the setup process. Feel free to ask more specific questions about any step.';
+        addChatMessage(response, 'adviser');
+      }, 800);
+    }
+
+    function addChatMessage(text, type) {
+      const container = document.getElementById('chatMessages');
+      const avatar = type === 'user' ? 'You' : 'AI';
+      const html = `
+        <div class="chat-message ${type}">
+          <div class="chat-avatar" aria-hidden="true">${avatar}</div>
+          <div class="chat-bubble">${text}</div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', html);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      addChatMessage(text, 'user');
+      input.value = '';
+      setTimeout(() => {
+        addChatMessage('Thanks for your question! I\'m here to help you set up your portfolio. The data you add will be connected to real-time market information and our AI analysis engine.', 'adviser');
+      }, 1000);
+    }
+
+    // Council Modal
+    function runFirstCouncil() {
+      if (typeof AlphaCouncil !== 'undefined' && AlphaCouncil.openCouncilModal) {
+        const topHolding = holdings[0] || { ticker: '2222.SR', name: 'Saudi Aramco' };
+        AlphaCouncil.openCouncilModal({
+          ticker: topHolding.ticker,
+          name: topHolding.name,
+          price: topHolding.price,
+          change: '+1.2%',
+          score: 72
+        });
+      } else {
+        showToast('Council review initiated', 'Opening AI Analyst Council for your top holding...', 'info');
+        setTimeout(() => {
+          window.location.href = 'stock-detail.html?ticker=' + (holdings[0]?.ticker || '2222.SR');
+        }, 1500);
+      }
+    }
+
+    // Toast - uses shared AlphaCouncil toast system
+    function showToast(title, text, type = 'success') {
+      if (typeof AlphaCouncil !== 'undefined') {
+        AlphaCouncil.showToast(title, text, type);
+      }
+    }
+
+    // Adviser toggle
+    document.getElementById('adviserToggle').addEventListener('click', toggleSidebar);
+
+    // Watch for step 5
+    const observer = new MutationObserver(() => {
+      if (document.getElementById('step5').classList.contains('active')) {
+        updateSuccessPage();
+      }
+    });
+    observer.observe(document.getElementById('step5'), { attributes: true, attributeFilter: ['class'] });
+  </script>
+  <script src="js/api.js"></script>
+  <script src="adviser-core.js"></script>
+  <script>
+    if (typeof AlphaCouncil !== 'undefined') {
+      AlphaCouncil.init('onboarding');
+    }
+  </script>
+</body>
+</html>

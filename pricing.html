@@ -1,0 +1,870 @@
+<!-- REVIEWED & POLISHED: 2026-06-17 -->
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing — AlphaCouncil</title>
+  <meta name="description" content="Transparent pricing for GCC portfolio intelligence. Choose the tier that matches your analysis depth — from free exploration to full AI Analyst Council access.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #07111F;
+      --bg-base: #0B1120;
+      --bg-elevated: #101624;
+      --surface: #111A2B;
+      --surface-elevated: #141D2F;
+      --surface-glass: rgba(17, 26, 43, 0.7);
+      --fg: #F8FAFC;
+      --fg-muted: #AAB6C5;
+      --fg-dim: #6B7A8F;
+      --accent-primary: #27D3C3;
+      --accent-primary-glow: rgba(39, 211, 195, 0.2);
+      --accent-gold: #D7B76A;
+      --accent-gold-glow: rgba(215, 183, 106, 0.15);
+      --accent-violet: #8B5CF6;
+      --accent-violet-glow: rgba(139, 92, 246, 0.15);
+      --accent-emerald: #10B981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.15);
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.12);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --container: 1200px;
+      --nav-height: 72px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-sans); background: var(--bg-deep); color: var(--fg); line-height: 1.6; overflow-x: hidden; }
+
+    /* Atmosphere */
+    .atmosphere { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
+    .atmosphere-base { position: absolute; inset: 0; background: linear-gradient(180deg, var(--bg-deep) 0%, #050a16 30%, #071120 60%, var(--bg-deep) 100%); }
+    .atmosphere-noise { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); opacity: 0.025; }
+    .atmosphere-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 100% 40% at 50% 10%, rgba(39, 211, 195, 0.06) 0%, transparent 60%), radial-gradient(ellipse 80% 50% at 20% 45%, rgba(139, 92, 246, 0.04) 0%, transparent 50%), radial-gradient(ellipse 70% 40% at 85% 70%, rgba(215, 183, 106, 0.035) 0%, transparent 50%); }
+    .atmosphere-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 50%, transparent 20%, rgba(5, 10, 22, 0.5) 100%); }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .stagger-1 { transition-delay: 0ms; }
+    .stagger-2 { transition-delay: 80ms; }
+    .stagger-3 { transition-delay: 160ms; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+    /* Nav */
+    .nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-height); background: rgba(7, 17, 31, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; transition: background 0.3s ease; }
+    .nav.scrolled { background: rgba(7, 17, 31, 0.95); border-color: var(--border-strong); }
+    .nav-inner { max-width: var(--container); height: 100%; margin: 0 auto; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; text-decoration: none; font-size: 18px; font-weight: 700; color: var(--fg); letter-spacing: -0.02em; transition: color 0.2s ease; }
+    .nav-logo:hover { color: var(--accent-primary); }
+    .nav-logo img { height: 28px; width: auto; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { color: var(--fg-muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s ease; }
+    .nav-links a:hover { color: var(--fg); }
+    .nav-links a.active { color: var(--accent-primary); }
+    .nav-actions { display: flex; align-items: center; gap: 16px; }
+    .nav-signin { color: var(--fg-muted); text-decoration: none; font-size: 14px; font-weight: 500; }
+    .nav-signin:hover { color: var(--fg); }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; transition: all 0.3s var(--ease-out); }
+    .btn-primary { background: linear-gradient(135deg, var(--accent-primary), #1AB3A5); color: var(--bg-deep); box-shadow: 0 4px 20px var(--accent-primary-glow); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-primary-glow); }
+    .btn-secondary { background: var(--surface); color: var(--fg); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--surface-elevated); border-color: var(--border-strong); }
+    .btn-outline { background: transparent; color: var(--fg); border: 1px solid var(--border); }
+    .btn-outline:hover { background: var(--surface); border-color: var(--border-strong); }
+    .btn-lg { padding: 16px 32px; font-size: 15px; border-radius: 12px; }
+    .btn-full { width: 100%; }
+
+    /* Sections */
+    section { position: relative; padding: 100px 32px; }
+    .section-inner { max-width: var(--container); margin: 0 auto; }
+    .section-eyebrow { display: inline-block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-primary); margin-bottom: 16px; }
+    .section-title { font-size: clamp(32px, 4vw, 44px); font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .section-subtitle { font-size: 17px; color: var(--fg-muted); max-width: 700px; line-height: 1.7; }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-header .section-subtitle { margin: 0 auto; }
+
+    /* Hero */
+    .hero { min-height: 60vh; display: flex; align-items: center; padding-top: var(--nav-height); position: relative; overflow: hidden; }
+    .hero-bg { position: absolute; inset: 0; pointer-events: none; }
+    .hero-gradient { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(39, 211, 195, 0.08) 0%, transparent 50%), radial-gradient(ellipse 60% 80% at 80% 50%, rgba(215, 183, 106, 0.06) 0%, transparent 50%); }
+    .hero-inner { position: relative; max-width: var(--container); width: 100%; margin: 0 auto; padding: 80px 32px 60px; text-align: center; z-index: 1; }
+    .hero-content { max-width: 800px; margin: 0 auto; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--accent-gold-glow); border: 1px solid rgba(215, 183, 106, 0.3); border-radius: 100px; font-size: 13px; font-weight: 600; color: var(--accent-gold); margin-bottom: 24px; backdrop-filter: blur(8px); }
+    .hero-badge svg { width: 14px; height: 14px; }
+    .hero-title { font-size: clamp(36px, 5vw, 52px); font-weight: 700; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 24px; }
+    .hero-title .highlight { background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-subtitle { font-size: 18px; color: var(--fg-muted); line-height: 1.7; max-width: 680px; margin: 0 auto; }
+
+    /* Billing Toggle */
+    .billing-toggle { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 40px; }
+    .billing-option { font-size: 14px; font-weight: 500; color: var(--fg-dim); transition: color 0.2s; cursor: pointer; }
+    .billing-option.active { color: var(--fg); }
+    .billing-switch { width: 52px; height: 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; position: relative; cursor: pointer; transition: all 0.3s; }
+    .billing-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: var(--accent-primary); border-radius: 50%; transition: transform 0.3s var(--ease-out); }
+    .billing-switch.annual::after { transform: translateX(24px); }
+    .billing-switch.annual { border-color: var(--accent-primary); }
+    .billing-save { font-size: 12px; font-weight: 600; color: var(--accent-emerald); background: var(--accent-emerald-glow); padding: 4px 10px; border-radius: 6px; }
+
+    /* Pricing Cards */
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
+    .pricing-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; position: relative; transition: all 0.4s var(--ease-out); }
+    .pricing-card:hover { border-color: var(--border-strong); transform: translateY(-4px); }
+    .pricing-card.featured { background: linear-gradient(180deg, rgba(39, 211, 195, 0.08) 0%, var(--surface) 100%); border-color: var(--accent-primary); box-shadow: 0 0 60px var(--accent-primary-glow), inset 0 1px 0 rgba(255, 255, 255, 0.05); transform: scale(1.02); }
+    .pricing-card.featured:hover { transform: scale(1.02) translateY(-4px); }
+    .pricing-card.featured::before { content: ''; position: absolute; top: -1px; left: -1px; right: -1px; height: 5px; background: linear-gradient(90deg, var(--accent-primary), var(--accent-gold)); border-radius: 20px 20px 0 0; }
+    .pricing-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); padding: 5px 12px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-gold)); color: var(--bg-deep); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; border-radius: 8px; white-space: nowrap; }
+    .pricing-header { text-align: center; margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+    .pricing-tier { font-size: 14px; font-weight: 600; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .pricing-price { display: flex; align-items: baseline; justify-content: center; gap: 4px; margin-bottom: 8px; }
+    .pricing-currency { font-size: 24px; font-weight: 600; color: var(--fg-muted); }
+    .pricing-amount { font-size: 56px; font-weight: 700; line-height: 1; letter-spacing: -0.03em; }
+    .pricing-period { font-size: 16px; color: var(--fg-dim); }
+    .pricing-annual { font-size: 13px; color: var(--fg-dim); margin-top: 4px; }
+    .pricing-tagline { font-size: 14px; color: var(--fg-muted); line-height: 1.5; }
+    .pricing-features { display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px; }
+    .pricing-feature { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; color: var(--fg-muted); line-height: 1.5; }
+    .pricing-feature svg { width: 18px; height: 18px; color: var(--accent-primary); flex-shrink: 0; margin-top: 1px; }
+    .pricing-feature.disabled { color: var(--fg-dim); }
+    .pricing-feature.disabled svg { color: var(--fg-dim); opacity: 0.5; }
+    .pricing-cta { margin-top: auto; }
+
+    /* Feature Comparison */
+    .comparison-section { background: var(--bg-base); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .comparison-table { width: 100%; border-collapse: collapse; }
+    .comparison-table th, .comparison-table td { padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--border); }
+    .comparison-table th { font-size: 13px; font-weight: 600; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.05em; background: var(--bg-elevated); }
+    .comparison-table th:first-child { border-radius: 12px 0 0 0; }
+    .comparison-table th:last-child { border-radius: 0 12px 0 0; }
+    .comparison-table th:not(:first-child) { text-align: center; }
+    .comparison-table td { font-size: 14px; color: var(--fg-muted); }
+    .comparison-table td:not(:first-child) { text-align: center; }
+    .comparison-table tr:last-child td { border-bottom: none; }
+    .comparison-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
+    .comparison-category { font-size: 12px; font-weight: 600; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 0.1em; padding: 20px 20px 12px !important; background: transparent !important; border-bottom: none !important; }
+    .comparison-check { width: 20px; height: 20px; color: var(--accent-primary); }
+    .comparison-dash { color: var(--fg-dim); font-size: 18px; }
+    .comparison-text { font-size: 13px; color: var(--fg-muted); }
+    .comparison-highlight { color: var(--accent-primary); font-weight: 600; }
+
+    /* Value Section */
+    .value-section { text-align: center; }
+    .value-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+    .value-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; text-align: center; transition: all 0.3s; }
+    .value-card:hover { border-color: var(--accent-primary); transform: translateY(-4px); }
+    .value-icon { width: 52px; height: 52px; background: var(--accent-primary-glow); border-radius: 14px; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center; }
+    .value-icon svg { width: 26px; height: 26px; color: var(--accent-primary); }
+    .value-card:nth-child(2) .value-icon { background: var(--accent-gold-glow); }
+    .value-card:nth-child(2) .value-icon svg { color: var(--accent-gold); }
+    .value-card:nth-child(3) .value-icon { background: var(--accent-violet-glow); }
+    .value-card:nth-child(3) .value-icon svg { color: var(--accent-violet); }
+    .value-card h4 { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+    .value-card p { font-size: 14px; color: var(--fg-muted); line-height: 1.6; }
+
+    /* FAQ Section */
+    .faq-grid { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    .faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: all 0.3s; }
+    .faq-item:hover { border-color: var(--border-strong); }
+    .faq-item.open { border-color: var(--accent-primary); }
+    .faq-question { width: 100%; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; background: transparent; border: none; cursor: pointer; text-align: left; }
+    .faq-question h4 { font-size: 15px; font-weight: 600; color: var(--fg); }
+    .faq-question svg { width: 20px; height: 20px; color: var(--fg-dim); transition: transform 0.3s var(--ease-out); flex-shrink: 0; }
+    .faq-item.open .faq-question svg { transform: rotate(180deg); color: var(--accent-primary); }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s var(--ease-out); }
+    .faq-item.open .faq-answer { max-height: 300px; }
+    .faq-answer-inner { padding: 0 24px 20px; font-size: 14px; color: var(--fg-muted); line-height: 1.7; }
+
+    /* Early Access Note */
+    .early-access { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 14px; padding: 24px 32px; display: flex; align-items: center; gap: 20px; max-width: 800px; margin: 48px auto 0; }
+    .early-access-icon { width: 48px; height: 48px; background: var(--accent-gold-glow); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .early-access-icon svg { width: 24px; height: 24px; color: var(--accent-gold); }
+    .early-access-content h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .early-access-content p { font-size: 13px; color: var(--fg-dim); line-height: 1.5; }
+
+    /* CTA Section */
+    .cta-section { text-align: center; padding: 100px 32px; position: relative; overflow: hidden; }
+    .cta-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 40% at 50% 50%, rgba(39, 211, 195, 0.1) 0%, transparent 60%); pointer-events: none; }
+    .cta-content { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; }
+    .cta-title { font-size: clamp(28px, 4vw, 36px); font-weight: 700; line-height: 1.2; margin-bottom: 16px; }
+    .cta-subtitle { font-size: 16px; color: var(--fg-muted); margin-bottom: 32px; line-height: 1.7; }
+    .cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    /* Footer */
+    .footer { background: var(--bg-base); border-top: 1px solid var(--border); padding: 64px 32px 32px; }
+    .footer-inner { max-width: var(--container); margin: 0 auto; }
+    .footer-top { display: grid; grid-template-columns: 2fr repeat(3, 1fr); gap: 48px; margin-bottom: 48px; }
+    .footer-brand .nav-logo { margin-bottom: 16px; }
+    .footer-brand p { color: var(--fg-dim); font-size: 14px; line-height: 1.7; max-width: 280px; }
+    .footer-brand .footer-slogan { font-size: 12px; color: var(--fg-dim); margin-top: 8px; font-style: italic; }
+    .footer-links-col h4 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--fg-dim); margin-bottom: 16px; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a { color: var(--fg-muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent-primary); }
+    .footer-disclaimer { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 32px; }
+    .footer-disclaimer p { font-size: 12px; color: var(--fg-dim); line-height: 1.6; }
+    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-copyright { font-size: 13px; color: var(--fg-dim); }
+    .footer-legal { display: flex; gap: 24px; }
+    .footer-legal a { font-size: 13px; color: var(--fg-dim); text-decoration: none; }
+    .footer-legal a:hover { color: var(--fg-muted); }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+      .pricing-card.featured { transform: none; }
+      .pricing-card.featured:hover { transform: translateY(-4px); }
+      .comparison-table { display: block; overflow-x: auto; }
+      .value-cards { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      section { padding: 80px 24px; }
+      .pricing-grid { max-width: 100%; }
+      .early-access { flex-direction: column; text-align: center; }
+      .footer-top { grid-template-columns: 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+    }
+
+    /* Focus Indicators */
+    .btn:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+    .faq-question:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: -2px; }
+    .billing-switch:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+
+    /* Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .pricing-card { transition: none; }
+      .value-card { transition: none; }
+      .faq-answer { transition: none; }
+      .billing-switch::after { transition: none; }
+    }
+  
+    /* ---- AlphaCouncil structured footer (self-contained, consistent across pages) ---- */
+    .ac-footer { border-top: 1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.015) 100%); margin-top: 96px; }
+    .ac-footer-inner { max-width: 1200px; margin: 0 auto; padding: 72px 32px 36px; }
+    .ac-footer-top { display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr; gap: 56px; padding-bottom: 44px; border-bottom: 1px solid var(--border); }
+    .ac-footer-brand .ac-flogo { display: inline-block; font-weight: 700; font-size: 20px; letter-spacing: -0.02em; color: var(--fg); text-decoration: none; margin-bottom: 16px; }
+    .ac-footer-brand p { font-size: 14px; line-height: 1.75; color: var(--fg-muted); max-width: 320px; }
+    .ac-footer-col h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg-dim); margin-bottom: 20px; }
+    .ac-footer-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+    .ac-footer-col a { font-size: 14px; color: var(--fg-muted); text-decoration: none; transition: color 0.2s ease; }
+    .ac-footer-col a:hover { color: var(--accent-primary); }
+    .ac-footer-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 28px; gap: 16px; flex-wrap: wrap; }
+    .ac-footer-bottom .ac-copy { font-size: 13px; color: var(--fg-dim); }
+    .ac-footer-bottom .ac-legal { display: flex; gap: 28px; }
+    .ac-footer-bottom .ac-legal a { font-size: 13px; color: var(--fg-dim); text-decoration: none; transition: color 0.2s ease; }
+    .ac-footer-bottom .ac-legal a:hover { color: var(--accent-primary); }
+    @media (max-width: 880px) {
+      .ac-footer-top { grid-template-columns: 1fr 1fr; gap: 36px 32px; }
+      .ac-footer-brand { grid-column: 1 / -1; }
+      .ac-footer-inner { padding: 56px 24px 32px; }
+      .ac-footer-bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Atmosphere -->
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atmosphere-base"></div>
+    <div class="atmosphere-noise"></div>
+    <div class="atmosphere-glow"></div>
+    <div class="atmosphere-vignette"></div>
+  </div>
+
+  <!-- Navigation -->
+    <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+      </a>
+      <ul class="nav-links" style="gap:22px;">
+        <li><a href="how-it-works.html">How it works</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="pricing.html" class="active">Pricing</a></li>
+        <li><a href="methodology.html">Methodology</a></li>
+        <li><a href="markets.html">Markets</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="login.html" class="nav-signin">Sign in</a>
+        <a href="signup.html" class="btn btn-primary">Start free</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg"><div class="hero-gradient"></div></div>
+    <div class="hero-inner">
+      <div class="hero-content reveal">
+        <div class="hero-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Early Access Pricing
+        </div>
+        <h1 class="hero-title">Intelligence That <span class="highlight">Scales</span> With Your Portfolio</h1>
+        <p class="hero-subtitle">Pricing reflects the depth of analysis — from basic portfolio tracking to full AI Analyst Council synthesis, Adviser access, and comprehensive GCC market coverage.</p>
+
+        <div class="billing-toggle">
+          <span class="billing-option active" data-billing="monthly">Monthly</span>
+          <div class="billing-switch" id="billingSwitch"></div>
+          <span class="billing-option" data-billing="annual">Annual</span>
+          <span class="billing-save">Save 20%</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Cards -->
+  <section id="pricing">
+    <div class="section-inner">
+      <div class="pricing-grid">
+        <!-- Free -->
+        <div class="pricing-card reveal stagger-1">
+          <div class="pricing-header">
+            <div class="pricing-tier">Free</div>
+            <div class="pricing-price">
+              <span class="pricing-currency">$</span>
+              <span class="pricing-amount">0</span>
+            </div>
+            <div class="pricing-period">Free forever</div>
+            <p class="pricing-tagline">Test the platform with core portfolio tracking</p>
+          </div>
+          <div class="pricing-features">
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>Track up to 15 holdings</span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>Basic portfolio health overview</span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>5 Adviser questions per month</span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>Public GCC market data</span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>English + Arabic interface</span>
+            </div>
+            <div class="pricing-feature disabled">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              <span>Council reviews (paid plans)</span>
+            </div>
+            <div class="pricing-feature disabled">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              <span>12-dimension stock thesis</span>
+            </div>
+          </div>
+          <div class="pricing-cta">
+            <a href="signup.html" class="btn btn-outline btn-full">Get started free</a>
+          </div>
+        </div>
+
+        <!-- Pro (Recommended) -->
+        <div class="pricing-card featured reveal stagger-2">
+          <div class="pricing-badge">Most Popular</div>
+          <div class="pricing-header">
+            <div class="pricing-tier">Pro</div>
+            <div class="pricing-price">
+              <span class="pricing-currency">$</span>
+              <span class="pricing-amount" data-monthly="29" data-annual="23">29</span>
+              <span class="pricing-period">/month</span>
+            </div>
+            <div class="pricing-annual" data-monthly="Billed monthly" data-annual="$276/year (save $72)">Billed monthly</div>
+            <p class="pricing-tagline">Full analytical depth for serious investors</p>
+          </div>
+          <div class="pricing-features">
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>Track unlimited holdings</span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span><strong>Full 12-dimension stock thesis</strong></span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span><strong>Up to 2 Council reviews per day</strong></span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>Up to 10 Adviser questions per day</span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>Portfolio-aware news + alerts</span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>Deep GCC data (fundamentals, ownership, dividends)</span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>Technical indicators + charts</span>
+            </div>
+          </div>
+          <div class="pricing-cta">
+            <a href="signup.html" class="btn btn-primary btn-full">Get started</a>
+          </div>
+        </div>
+
+        <!-- Elite -->
+        <div class="pricing-card reveal stagger-3">
+          <div class="pricing-header">
+            <div class="pricing-tier">Elite</div>
+            <div class="pricing-price">
+              <span class="pricing-currency">$</span>
+              <span class="pricing-amount" data-monthly="89" data-annual="71">89</span>
+              <span class="pricing-period">/month</span>
+            </div>
+            <div class="pricing-annual" data-monthly="Billed monthly" data-annual="$852/year (save $216)">Billed monthly</div>
+            <p class="pricing-tagline">Maximum depth for portfolio construction</p>
+          </div>
+          <div class="pricing-features">
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>Everything in Pro, plus:</span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span><strong>Up to 6 Council reviews per day</strong></span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>Priority synthesis depth</span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>Historical Council reports archive</span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>Advanced portfolio construction tools</span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>Early access to new GCC market features</span>
+            </div>
+            <div class="pricing-feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              <span>Macro models + oil sensitivity analysis</span>
+            </div>
+          </div>
+          <div class="pricing-cta">
+            <a href="signup.html" class="btn btn-secondary btn-full">Get started</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="early-access reveal">
+        <div class="early-access-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <div class="early-access-content">
+          <h4>Early Access Pricing</h4>
+          <p>These are introductory rates for early users. Pricing may adjust as new GCC data depth, Council capabilities, and market coverage are added. Current subscribers will be notified of any changes in advance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Comparison -->
+  <section class="comparison-section">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">Compare Plans</span>
+        <h2 class="section-title">What's Included</h2>
+        <p class="section-subtitle">A detailed breakdown of analytical capabilities across each tier</p>
+      </div>
+
+      <div class="reveal">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Free</th>
+              <th>Pro</th>
+              <th>Elite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="4" class="comparison-category">Portfolio Intelligence</td></tr>
+            <tr>
+              <td>Holdings tracked</td>
+              <td class="comparison-text">Up to 15</td>
+              <td class="comparison-text comparison-highlight">Unlimited</td>
+              <td class="comparison-text comparison-highlight">Unlimited</td>
+            </tr>
+            <tr>
+              <td>Portfolio health overview</td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+            </tr>
+            <tr>
+              <td>12-dimension stock thesis</td>
+              <td class="comparison-dash">—</td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+            </tr>
+            <tr>
+              <td>Portfolio construction tools</td>
+              <td class="comparison-dash">—</td>
+              <td class="comparison-dash">—</td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+            </tr>
+
+            <tr><td colspan="4" class="comparison-category">AI Analyst Council</td></tr>
+            <tr>
+              <td>Council reviews per day</td>
+              <td class="comparison-dash">—</td>
+              <td class="comparison-text">2 per day</td>
+              <td class="comparison-text comparison-highlight">6 per day</td>
+            </tr>
+            <tr>
+              <td>Synthesis depth</td>
+              <td class="comparison-dash">—</td>
+              <td class="comparison-text">Standard</td>
+              <td class="comparison-text comparison-highlight">Priority</td>
+            </tr>
+            <tr>
+              <td>Historical Council reports</td>
+              <td class="comparison-dash">—</td>
+              <td class="comparison-text">30 days</td>
+              <td class="comparison-text comparison-highlight">Full archive</td>
+            </tr>
+
+            <tr><td colspan="4" class="comparison-category">Adviser Access</td></tr>
+            <tr>
+              <td>Adviser questions</td>
+              <td class="comparison-text">5/month</td>
+              <td class="comparison-text comparison-highlight">10 per day</td>
+              <td class="comparison-text comparison-highlight">10 per day</td>
+            </tr>
+            <tr>
+              <td>Portfolio-aware responses</td>
+              <td class="comparison-dash">—</td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+            </tr>
+
+            <tr><td colspan="4" class="comparison-category">News & Monitoring</td></tr>
+            <tr>
+              <td>Portfolio-relevant news</td>
+              <td class="comparison-dash">—</td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+            </tr>
+            <tr>
+              <td>Custom alerts</td>
+              <td class="comparison-dash">—</td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+            </tr>
+
+            <tr><td colspan="4" class="comparison-category">Data Coverage</td></tr>
+            <tr>
+              <td>GCC market coverage</td>
+              <td class="comparison-text">Public data</td>
+              <td class="comparison-text comparison-highlight">Full depth</td>
+              <td class="comparison-text comparison-highlight">Full depth</td>
+            </tr>
+            <tr>
+              <td>Fundamentals + ownership</td>
+              <td class="comparison-dash">—</td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+            </tr>
+            <tr>
+              <td>Dividend history + technicals</td>
+              <td class="comparison-dash">—</td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+            </tr>
+            <tr>
+              <td>Macro models + oil sensitivity</td>
+              <td class="comparison-dash">—</td>
+              <td class="comparison-dash">—</td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+            </tr>
+
+            <tr><td colspan="4" class="comparison-category">Language & Support</td></tr>
+            <tr>
+              <td>Arabic + English interface</td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+            </tr>
+            <tr>
+              <td>Early access to new features</td>
+              <td class="comparison-dash">—</td>
+              <td class="comparison-dash">—</td>
+              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Value Section -->
+  <section class="value-section">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">What You Get</span>
+        <h2 class="section-title">Analysis & Education, Not Advice</h2>
+        <p class="section-subtitle">AlphaCouncil provides data-driven insights and portfolio intelligence tools. We help you understand your holdings more clearly — the decisions remain yours.</p>
+      </div>
+
+      <div class="value-cards">
+        <div class="value-card reveal stagger-1">
+          <div class="value-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h4>Free to Start</h4>
+          <p>Begin on the free plan with core analysis at no cost — no credit card required. Upgrade to a paid plan whenever you’re ready.</p>
+        </div>
+        <div class="value-card reveal stagger-2">
+          <div class="value-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          </div>
+          <h4>Source-Linked Analysis</h4>
+          <p>Every data point traces back to official filings, exchange announcements, or verified data providers. Transparency built in.</p>
+        </div>
+        <div class="value-card reveal stagger-3">
+          <div class="value-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h4>GCC-Native Coverage</h4>
+          <p>Built specifically for Saudi, UAE, Qatar, Kuwait, Bahrain, and Oman markets. Not a global screener with a regional filter.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <span class="section-eyebrow">Questions</span>
+        <h2 class="section-title">Frequently Asked</h2>
+      </div>
+
+      <div class="faq-grid reveal">
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <h4>Can I upgrade or downgrade anytime?</h4>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer-inner">
+              Yes. You can switch between tiers at any time from your account settings. When upgrading, you'll get immediate access to additional features. When downgrading, your current tier continues until the end of your billing cycle, then the new tier takes effect.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <h4>What happens to my portfolio data if I cancel?</h4>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer-inner">
+              Your portfolio data remains available in read-only mode for 90 days after cancellation. You can export your holdings and historical analysis at any time. After 90 days, your data is securely deleted unless you reactivate your account.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <h4>How many Council reviews do I get on each plan?</h4>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer-inner">
+              Explorer: no Council reviews. Pro: up to 2 AI Analyst Council reviews per day. Elite: up to 6 per day, plus priority synthesis depth and full access to historical Council reports.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <h4>Is there a discount for annual billing?</h4>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer-inner">
+              Yes. Annual billing saves 20% compared to monthly. Pro is $23/month ($276/year) and Elite is $71/month ($852/year) when billed annually. You can switch to annual billing from your account settings at any time.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <h4>Do you offer institutional or family-office plans?</h4>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer-inner">
+              We're developing institutional tiers with multi-user access, shared portfolios, and API integrations. Contact us at enterprise@alphacouncil.com to discuss your requirements and join the early access list for institutional features.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <h4>How is this different from generic stock screeners?</h4>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer-inner">
+              AlphaCouncil is purpose-built for GCC markets — not a global platform with a regional filter. We process Arabic filings, track family and sovereign ownership, factor oil sensitivity into analysis, and synthesize insights through an AI Analyst Council that debates your portfolio from multiple perspectives. Generic screeners provide data; we provide structured intelligence.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-bg"></div>
+    <div class="cta-content reveal">
+      <h2 class="cta-title">Ready for Clearer Portfolio Intelligence?</h2>
+      <p class="cta-subtitle">Start on the free plan — no credit card required. Upgrade anytime for the analytical depth that matches your needs.</p>
+      <div class="cta-buttons">
+        <a href="signup.html" class="btn btn-primary btn-lg">Start free</a>
+        <a href="features.html" class="btn btn-secondary btn-lg">Explore features</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+      <footer class="ac-footer">
+    <div class="ac-footer-inner">
+      <div class="ac-footer-top">
+        <div class="ac-footer-brand">
+          <a href="index.html" class="ac-flogo">AlphaCouncil</a>
+          <p>AI-powered portfolio intelligence for GCC stock investors. Understand your portfolio before the market moves.</p>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+            <li><a href="methodology.html">Methodology</a></li>
+          </ul>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Markets</h4>
+          <ul>
+            <li><a href="markets.html#saudi">Saudi (Tadawul)</a></li>
+            <li><a href="markets.html#uae">UAE (ADX / DFM)</a></li>
+            <li><a href="markets.html#qatar">Qatar (QSE)</a></li>
+            <li><a href="markets.html#kuwait">Kuwait (Boursa)</a></li>
+          </ul>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="login.html">Sign in</a></li>
+            <li><a href="signup.html">Start free</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="ac-footer-bottom">
+        <p class="ac-copy">&copy; 2026 AlphaCouncil. All rights reserved.</p>
+        <div class="ac-legal">
+          <a href="legal.html#terms">Terms</a>
+          <a href="legal.html#privacy">Privacy</a>
+          <a href="legal.html#disclaimer">Disclaimer</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Reveal animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Nav scroll effect
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    // Billing toggle
+    const billingSwitch = document.getElementById('billingSwitch');
+    const billingOptions = document.querySelectorAll('.billing-option');
+    const priceAmounts = document.querySelectorAll('.pricing-amount[data-monthly]');
+    const priceAnnuals = document.querySelectorAll('.pricing-annual[data-monthly]');
+
+    billingSwitch.addEventListener('click', () => {
+      const isAnnual = billingSwitch.classList.toggle('annual');
+
+      billingOptions.forEach(opt => {
+        opt.classList.toggle('active',
+          (isAnnual && opt.dataset.billing === 'annual') ||
+          (!isAnnual && opt.dataset.billing === 'monthly')
+        );
+      });
+
+      priceAmounts.forEach(el => {
+        el.textContent = isAnnual ? el.dataset.annual : el.dataset.monthly;
+      });
+
+      priceAnnuals.forEach(el => {
+        el.textContent = isAnnual ? el.dataset.annual : el.dataset.monthly;
+      });
+    });
+
+    // FAQ accordion
+    document.querySelectorAll('.faq-item').forEach(item => {
+      const question = item.querySelector('.faq-question');
+      const answer = item.querySelector('.faq-answer');
+      question.addEventListener('click', () => {
+        const wasOpen = item.classList.contains('open');
+        // Close all items and reset ARIA
+        document.querySelectorAll('.faq-item').forEach(i => {
+          i.classList.remove('open');
+          i.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+          i.querySelector('.faq-answer').setAttribute('aria-hidden', 'true');
+        });
+        // Open clicked item if it wasn't already open
+        if (!wasOpen) {
+          item.classList.add('open');
+          question.setAttribute('aria-expanded', 'true');
+          answer.setAttribute('aria-hidden', 'false');
+        }
+      });
+    });
+  </script>
+  <script>/* brand logo -> dashboard when signed in (ac_csrf cookie present), else index */
+  (function(){try{if(document.cookie.indexOf('ac_csrf=')>-1){var e=document.querySelectorAll('.nav-logo,.ac-flogo');for(var i=0;i<e.length;i++)e[i].setAttribute('href','dashboard.html');}}catch(x){}})();</script>
+</body>
+</html>

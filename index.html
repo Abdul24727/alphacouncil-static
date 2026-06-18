@@ -1,0 +1,3059 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlphaCouncil — Your AI Adviser for GCC Stocks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Premium dark finance palette */
+      --bg-deep: #07111F;
+      --bg-base: #0B1020;
+      --bg-elevated: #101624;
+      --surface: #111A2B;
+      --surface-elevated: #141D2F;
+      --surface-glass: rgba(17, 26, 43, 0.7);
+
+      --fg: #F8FAFC;
+      --fg-muted: #AAB6C5;
+      --fg-dim: #6B7A8F;
+
+      --accent-primary: #27D3C3;
+      --accent-primary-glow: rgba(39, 211, 195, 0.2);
+      --accent-gold: #D7B76A;
+      --accent-gold-glow: rgba(215, 183, 106, 0.15);
+      --accent-violet: #8B5CF6;
+      --accent-violet-glow: rgba(139, 92, 246, 0.15);
+      --accent-emerald: #10B981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.15);
+
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.12);
+
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      --container: 1200px;
+      --nav-height: 72px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-deep);
+      color: var(--fg);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       SITE-WIDE ATMOSPHERIC BACKGROUND
+       A continuous premium visual world behind the landing page
+    ═══════════════════════════════════════════════════════════════ */
+    .atmosphere {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    /* Deep navy gradient base */
+    .atmosphere-base {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg,
+          var(--bg-deep) 0%,
+          #050a16 30%,
+          #071120 60%,
+          var(--bg-deep) 100%
+        );
+    }
+
+    /* Subtle noise texture for premium feel */
+    .atmosphere-noise {
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.025;
+    }
+
+    /* Ambient glow zones that shift with scroll */
+    .atmosphere-glow {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 100% 40% at 75% 15%, rgba(39, 211, 195, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 50% at 20% 45%, rgba(139, 92, 246, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse 70% 40% at 85% 70%, rgba(215, 183, 106, 0.035) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 30% at 10% 85%, rgba(39, 211, 195, 0.05) 0%, transparent 50%);
+      transform: translateY(calc(var(--scroll-y, 0) * -0.1px));
+      transition: transform 0.1s linear;
+    }
+
+    /* Subtle skyline silhouette in the distance */
+    .atmosphere-skyline {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40vh;
+      background:
+        linear-gradient(180deg, transparent 0%, rgba(7, 17, 31, 0.3) 100%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23101828' fill-opacity='0.3' d='M0,256L48,245.3C96,235,192,213,288,218.7C384,224,480,256,576,261.3C672,267,768,245,864,213.3C960,181,1056,139,1152,138.7C1248,139,1344,181,1392,202.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'/%3E%3C/svg%3E");
+      background-size: cover;
+      background-position: bottom center;
+      opacity: 0.4;
+      transform: translateY(calc(var(--scroll-y, 0) * 0.05px));
+    }
+
+    /* Data wave lines flowing across the page */
+    .atmosphere-waves {
+      position: absolute;
+      bottom: 20%;
+      left: 0;
+      right: 0;
+      height: 300px;
+      background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 100'%3E%3Cpath fill='none' stroke='rgba(39,211,195,0.08)' stroke-width='1' d='M0,50 Q360,20 720,50 T1440,50'/%3E%3Cpath fill='none' stroke='rgba(215,183,106,0.05)' stroke-width='1' d='M0,60 Q360,30 720,60 T1440,60'/%3E%3Cpath fill='none' stroke='rgba(139,92,246,0.06)' stroke-width='1' d='M0,40 Q360,70 720,40 T1440,40'/%3E%3C/svg%3E");
+      background-size: 200% 100%;
+      animation: wave-drift 30s linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes wave-drift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    /* Floating particles across the atmosphere */
+    .atmosphere-particles {
+      position: absolute;
+      inset: 0;
+    }
+
+    .atmo-particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--accent-primary);
+      border-radius: 50%;
+      opacity: 0.4;
+      animation: atmo-float 25s ease-in-out infinite;
+    }
+
+    .atmo-particle:nth-child(1) { top: 15%; left: 85%; animation-delay: 0s; }
+    .atmo-particle:nth-child(2) { top: 35%; left: 92%; animation-delay: -5s; background: var(--accent-gold); }
+    .atmo-particle:nth-child(3) { top: 55%; left: 78%; animation-delay: -10s; background: var(--accent-violet); }
+    .atmo-particle:nth-child(4) { top: 75%; left: 88%; animation-delay: -15s; }
+    .atmo-particle:nth-child(5) { top: 25%; left: 95%; animation-delay: -20s; background: var(--accent-gold); }
+    .atmo-particle:nth-child(6) { top: 65%; left: 82%; animation-delay: -8s; background: var(--accent-violet); }
+    .atmo-particle:nth-child(7) { top: 45%; left: 75%; animation-delay: -12s; }
+    .atmo-particle:nth-child(8) { top: 85%; left: 90%; animation-delay: -18s; background: var(--accent-gold); }
+
+    @keyframes atmo-float {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+      25% { transform: translate(-15px, -25px) scale(1.3); opacity: 0.6; }
+      50% { transform: translate(10px, -40px) scale(1); opacity: 0.3; }
+      75% { transform: translate(-20px, -15px) scale(0.8); opacity: 0.5; }
+    }
+
+    /* Faint floating UI fragments in the distance */
+    .atmosphere-ui-hints {
+      position: absolute;
+      right: 5%;
+      top: 30%;
+      width: 200px;
+      height: 400px;
+      opacity: 0.08;
+      transform: translateY(calc(var(--scroll-y, 0) * -0.15px));
+    }
+
+    .ui-hint {
+      position: absolute;
+      background: rgba(39, 211, 195, 0.3);
+      border: 1px solid rgba(39, 211, 195, 0.2);
+      border-radius: 8px;
+      animation: ui-drift 20s ease-in-out infinite;
+    }
+
+    .ui-hint:nth-child(1) {
+      width: 120px;
+      height: 80px;
+      top: 0;
+      right: 0;
+      animation-delay: 0s;
+    }
+
+    .ui-hint:nth-child(2) {
+      width: 100px;
+      height: 60px;
+      top: 120px;
+      right: 40px;
+      background: rgba(139, 92, 246, 0.25);
+      border-color: rgba(139, 92, 246, 0.15);
+      animation-delay: -7s;
+    }
+
+    .ui-hint:nth-child(3) {
+      width: 80px;
+      height: 50px;
+      top: 220px;
+      right: 10px;
+      background: rgba(215, 183, 106, 0.2);
+      border-color: rgba(215, 183, 106, 0.1);
+      animation-delay: -14s;
+    }
+
+    @keyframes ui-drift {
+      0%, 100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      50% { transform: translateY(-20px) rotate(2deg); opacity: 0.7; }
+    }
+
+    /* Vignette to frame content */
+    .atmosphere-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse 80% 60% at 50% 50%,
+        transparent 20%,
+        rgba(5, 10, 22, 0.5) 100%
+      );
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .atmosphere-waves, .atmo-particle, .ui-hint { animation: none !important; }
+      .atmosphere-glow, .atmosphere-skyline, .atmosphere-ui-hints { transform: none !important; }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       SCROLL REVEAL
+    ═══════════════════════════════════════════════════════════════ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .stagger-1 { transition-delay: 0ms; }
+    .stagger-2 { transition-delay: 80ms; }
+    .stagger-3 { transition-delay: 160ms; }
+    .stagger-4 { transition-delay: 240ms; }
+    .stagger-5 { transition-delay: 320ms; }
+    .stagger-6 { transition-delay: 400ms; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .ticker-track, .hero-particles, .pulse, .council-node { animation: none !important; }
+      .council-nodes { transform: none !important; }
+      .council-visual { --council-progress: 1 !important; }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       NAVIGATION
+    ═══════════════════════════════════════════════════════════════ */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      z-index: 1000;
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      transition: all 0.4s var(--ease-out);
+    }
+
+    .nav.scrolled {
+      background: rgba(11, 16, 32, 0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom-color: var(--border);
+    }
+
+    .nav-inner {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--fg);
+      letter-spacing: -0.02em;
+      transition: color 0.2s ease;
+    }
+
+    .nav-logo:hover {
+      color: var(--accent-primary);
+    }
+
+    .nav-logo img {
+      height: 28px;
+      width: auto;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--fg-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.3s var(--ease-out);
+    }
+
+    .nav-links a:hover {
+      color: var(--fg);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav-signin {
+      color: var(--fg-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.3s var(--ease-out);
+    }
+
+    .nav-signin:hover {
+      color: var(--fg);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       BUTTONS
+    ═══════════════════════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.4s var(--ease-out);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-primary) 0%, #20B8AA 100%);
+      color: var(--bg-deep);
+      box-shadow: 0 4px 24px var(--accent-primary-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px var(--accent-primary-glow), 0 0 0 1px var(--accent-primary);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--fg);
+      border: 1px solid var(--border-strong);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-elevated);
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+    }
+
+    .btn-lg {
+      padding: 16px 32px;
+      font-size: 15px;
+      border-radius: 10px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: var(--nav-height);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .hero-gradient {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(39, 211, 195, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 80% at 80% 50%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 50% at 20% 80%, rgba(215, 183, 106, 0.05) 0%, transparent 50%);
+    }
+
+    .hero-particles {
+      position: absolute;
+      inset: 0;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--accent-primary);
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: particle-float 20s ease-in-out infinite;
+    }
+
+    .particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { top: 40%; left: 25%; animation-delay: -3s; background: var(--accent-gold); }
+    .particle:nth-child(3) { top: 60%; left: 15%; animation-delay: -6s; }
+    .particle:nth-child(4) { top: 30%; left: 70%; animation-delay: -9s; background: var(--accent-violet); }
+    .particle:nth-child(5) { top: 70%; left: 80%; animation-delay: -12s; background: var(--accent-gold); }
+    .particle:nth-child(6) { top: 50%; left: 90%; animation-delay: -15s; }
+
+    @keyframes particle-float {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+      25% { transform: translate(20px, -30px) scale(1.2); opacity: 0.8; }
+      50% { transform: translate(-10px, -50px) scale(1); opacity: 0.4; }
+      75% { transform: translate(30px, -20px) scale(0.8); opacity: 0.7; }
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(39, 211, 195, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(39, 211, 195, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 60% 50% at 50% 30%, black, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 30%, black, transparent 70%);
+    }
+
+    .hero-inner {
+      position: relative;
+      max-width: var(--container);
+      width: 100%;
+      margin: 0 auto;
+      padding: 80px 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      z-index: 1;
+    }
+
+    .hero-content {
+      max-width: 560px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: var(--surface-glass);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-primary);
+      margin-bottom: 24px;
+      backdrop-filter: blur(8px);
+    }
+
+    .hero-badge .pulse {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-primary);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .hero-title {
+      font-size: clamp(40px, 5vw, 56px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+    }
+
+    .hero-title .highlight {
+      background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 17px;
+      color: var(--fg-muted);
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .hero-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--fg-dim);
+    }
+
+    .hero-meta-item svg {
+      width: 14px;
+      height: 14px;
+      color: var(--accent-primary);
+    }
+
+    .hero-meta-item.gold svg { color: var(--accent-gold); }
+    .hero-meta-item.violet svg { color: var(--accent-violet); }
+
+    /* Hero dashboard mockup */
+    .hero-visual {
+      position: relative;
+      margin-left: -40px;
+    }
+
+    .dashboard-mockup {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.1),
+        0 24px 64px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+      transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
+      transition: transform 0.6s var(--ease-out);
+    }
+
+    .dashboard-mockup:hover {
+      transform: perspective(1000px) rotateY(-2deg) rotateX(1deg);
+    }
+
+    .mockup-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mockup-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .mockup-dot:nth-child(1) { background: #FF5F57; }
+    .mockup-dot:nth-child(2) { background: #FFBD2E; }
+    .mockup-dot:nth-child(3) { background: #28CA42; }
+
+    .mockup-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 380px;
+    }
+
+    .mockup-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .mockup-stat-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .mockup-stat-label {
+      font-size: 10px;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .mockup-stat-value {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .mockup-stat-value.positive { color: var(--success); }
+    .mockup-stat-value.gold { color: var(--accent-gold); }
+
+    /* AI Analyst Council panel in mockup */
+    .mockup-council {
+      background: var(--bg-elevated);
+      border: 1px solid var(--accent-violet);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .mockup-council-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .mockup-council-badge {
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-primary));
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mockup-council-badge svg {
+      width: 14px;
+      height: 14px;
+      color: white;
+    }
+
+    .mockup-council-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-violet);
+    }
+
+    .mockup-council-responses {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .mockup-council-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--fg-muted);
+      line-height: 1.4;
+    }
+
+    .mockup-council-role {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--fg-dim);
+      background: var(--surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .mockup-council-role.risk { color: var(--warning); }
+    .mockup-council-role.income { color: var(--accent-gold); }
+    .mockup-council-role.news { color: var(--accent-primary); }
+
+    .mockup-synthesis {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--fg);
+      font-style: italic;
+    }
+
+    /* Floating adviser card */
+    .adviser-float {
+      position: absolute;
+      bottom: -20px;
+      left: -40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      width: 260px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .adviser-float-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .adviser-float-avatar {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-violet));
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .adviser-float-avatar svg {
+      width: 14px;
+      height: 14px;
+      color: white;
+    }
+
+    .adviser-float-name {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .adviser-float-status {
+      font-size: 10px;
+      color: var(--accent-primary);
+    }
+
+    .adviser-float-message {
+      font-size: 11px;
+      color: var(--fg-muted);
+      line-height: 1.5;
+      padding: 10px;
+      background: var(--bg-elevated);
+      border-radius: 6px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       STATS STRIP
+    ═══════════════════════════════════════════════════════════════ */
+    .stats-strip {
+      background: var(--bg-base);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 48px 32px;
+    }
+
+    .stats-inner {
+      max-width: var(--container);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 24px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+    }
+
+    .stat-icon svg {
+      width: 20px;
+      height: 20px;
+      color: var(--accent-primary);
+    }
+
+    .stat-icon.gold svg { color: var(--accent-gold); }
+    .stat-icon.violet svg { color: var(--accent-violet); }
+    .stat-icon.emerald svg { color: var(--accent-emerald); }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--fg-muted);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       TICKER STRIP
+    ═══════════════════════════════════════════════════════════════ */
+    .ticker-strip {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 0;
+      overflow: hidden;
+    }
+
+    .ticker-track {
+      display: flex;
+      gap: 48px;
+      animation: ticker-scroll 60s linear infinite;
+      width: max-content;
+    }
+
+    @keyframes ticker-scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--fg-muted);
+      white-space: nowrap;
+    }
+
+    .ticker-symbol {
+      font-weight: 600;
+      color: var(--fg);
+    }
+
+    .ticker-change {
+      font-weight: 600;
+      color: var(--success);
+    }
+
+    .ticker-change.negative {
+      color: var(--danger);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       PROBLEM SECTION
+    ═══════════════════════════════════════════════════════════════ */
+    .problem-section {
+      padding: 120px 32px;
+      background: var(--bg-deep);
+    }
+
+    .problem-inner {
+      max-width: var(--container);
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .section-eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-primary);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+      font-size: 17px;
+      color: var(--fg-muted);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .problem-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.4s var(--ease-out);
+    }
+
+    .problem-card:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-4px);
+    }
+
+    .problem-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--accent-primary-glow);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .problem-icon svg {
+      width: 24px;
+      height: 24px;
+      color: var(--accent-primary);
+    }
+
+    .problem-icon.warning {
+      background: rgba(245, 158, 11, 0.15);
+    }
+    .problem-icon.warning svg {
+      color: var(--warning);
+    }
+
+    .problem-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .problem-desc {
+      font-size: 14px;
+      color: var(--fg-muted);
+      line-height: 1.6;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       FEATURES SECTION — 6 cards with AI Analyst Council
+    ═══════════════════════════════════════════════════════════════ */
+    .features-section {
+      padding: 120px 32px;
+      background: var(--bg-base);
+    }
+
+    .features-inner {
+      max-width: var(--container);
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.5s var(--ease-out);
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-gold));
+      opacity: 0;
+      transition: opacity 0.4s var(--ease-out);
+    }
+
+    .feature-card:hover::before {
+      opacity: 1;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+
+    /* AI Analyst Council card — same base style as others, unique gradient only on hover */
+    .feature-card.council:hover::before {
+      background: linear-gradient(90deg, var(--accent-violet), var(--accent-primary), var(--accent-gold));
+    }
+
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, var(--accent-primary-glow) 0%, var(--accent-violet-glow) 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .feature-icon svg {
+      width: 26px;
+      height: 26px;
+      color: var(--accent-primary);
+    }
+
+    .feature-icon.gold { background: var(--accent-gold-glow); }
+    .feature-icon.gold svg { color: var(--accent-gold); }
+    .feature-icon.violet { background: linear-gradient(135deg, var(--accent-violet-glow), var(--accent-primary-glow)); }
+    .feature-icon.violet svg { color: var(--accent-violet); }
+    .feature-icon.emerald { background: var(--accent-emerald-glow); }
+    .feature-icon.emerald svg { color: var(--accent-emerald); }
+
+    .feature-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: var(--fg-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .feature-tag {
+      padding: 5px 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--fg-muted);
+    }
+
+    .feature-tag.bullish { color: var(--success); border-color: rgba(16, 185, 129, 0.3); }
+    .feature-tag.bearish { color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
+    .feature-tag.gold { color: var(--accent-gold); border-color: rgba(215, 183, 106, 0.3); }
+    .feature-tag.violet { color: var(--accent-violet); border-color: rgba(139, 92, 246, 0.3); }
+    .feature-tag.primary { color: var(--accent-primary); border-color: rgba(39, 211, 195, 0.3); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       LLM COUNCIL SHOWCASE
+    ═══════════════════════════════════════════════════════════════ */
+    .council-section {
+      padding: 120px 32px;
+      background: var(--bg-deep);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .council-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, var(--accent-violet-glow), transparent 70%);
+      pointer-events: none;
+    }
+
+    .council-inner {
+      max-width: var(--container);
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .council-showcase {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .council-visual {
+      position: relative;
+      width: 100%;
+      height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      --council-progress: 0;
+    }
+
+    /* Central portfolio card */
+    .council-center {
+      width: 140px;
+      height: 140px;
+      background: var(--surface);
+      border: 2px solid var(--accent-gold);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      box-shadow: 0 0 60px var(--accent-gold-glow);
+    }
+
+    .council-center-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-primary));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .council-center-icon svg {
+      width: 22px;
+      height: 22px;
+      color: var(--bg-deep);
+    }
+
+    .council-center-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--fg);
+    }
+
+    /* AI analyst nodes - positioned in a circle around center */
+    .council-nodes {
+      position: absolute;
+      inset: 0;
+      transform: rotate(calc(var(--council-progress, 0) * -30deg));
+      transition: transform 0.1s linear;
+    }
+
+    .council-node {
+      position: absolute;
+      width: 72px;
+      height: 72px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      animation: node-pulse 4s ease-in-out infinite;
+      transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+    }
+
+    /* Nodes spread from center - positions interpolated by --council-progress (0 to 1) */
+    /* Node 1: top center */
+    .council-node:nth-child(1) {
+      top: calc(50% - 36px + (10px - 50% + 36px) * var(--council-progress, 0));
+      left: 50%;
+      transform: translateX(-50%) rotate(calc(var(--council-progress, 0) * 30deg)) scale(calc(0.5 + 0.5 * var(--council-progress, 0)));
+      opacity: calc(0.3 + 0.7 * var(--council-progress, 0));
+      animation-delay: 0s;
+    }
+
+    /* Node 2: top right */
+    .council-node:nth-child(2) {
+      top: calc(50% - 36px + (80px - 50% + 36px) * var(--council-progress, 0));
+      right: calc(50% - 36px + (20px - 50% + 36px) * var(--council-progress, 0));
+      transform: rotate(calc(var(--council-progress, 0) * 30deg)) scale(calc(0.5 + 0.5 * var(--council-progress, 0)));
+      opacity: calc(0.3 + 0.7 * var(--council-progress, 0));
+      animation-delay: -0.7s;
+    }
+
+    /* Node 3: bottom right */
+    .council-node:nth-child(3) {
+      bottom: calc(50% - 36px + (80px - 50% + 36px) * var(--council-progress, 0));
+      right: calc(50% - 36px + (20px - 50% + 36px) * var(--council-progress, 0));
+      transform: rotate(calc(var(--council-progress, 0) * 30deg)) scale(calc(0.5 + 0.5 * var(--council-progress, 0)));
+      opacity: calc(0.3 + 0.7 * var(--council-progress, 0));
+      animation-delay: -1.4s;
+    }
+
+    /* Node 4: bottom center */
+    .council-node:nth-child(4) {
+      bottom: calc(50% - 36px + (10px - 50% + 36px) * var(--council-progress, 0));
+      left: 50%;
+      transform: translateX(-50%) rotate(calc(var(--council-progress, 0) * 30deg)) scale(calc(0.5 + 0.5 * var(--council-progress, 0)));
+      opacity: calc(0.3 + 0.7 * var(--council-progress, 0));
+      animation-delay: -2.1s;
+    }
+
+    /* Node 5: bottom left */
+    .council-node:nth-child(5) {
+      bottom: calc(50% - 36px + (80px - 50% + 36px) * var(--council-progress, 0));
+      left: calc(50% - 36px + (20px - 50% + 36px) * var(--council-progress, 0));
+      transform: rotate(calc(var(--council-progress, 0) * 30deg)) scale(calc(0.5 + 0.5 * var(--council-progress, 0)));
+      opacity: calc(0.3 + 0.7 * var(--council-progress, 0));
+      animation-delay: -2.8s;
+    }
+
+    /* Node 6: top left */
+    .council-node:nth-child(6) {
+      top: calc(50% - 36px + (80px - 50% + 36px) * var(--council-progress, 0));
+      left: calc(50% - 36px + (20px - 50% + 36px) * var(--council-progress, 0));
+      transform: rotate(calc(var(--council-progress, 0) * 30deg)) scale(calc(0.5 + 0.5 * var(--council-progress, 0)));
+      opacity: calc(0.3 + 0.7 * var(--council-progress, 0));
+      animation-delay: -3.5s;
+    }
+
+    @keyframes node-pulse {
+      0%, 100% { box-shadow: 0 0 20px transparent; border-color: var(--border); }
+      50% { box-shadow: 0 0 24px var(--accent-violet-glow); border-color: var(--accent-violet); }
+    }
+
+    .council-node-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .council-node-icon svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .council-node-icon.risk { background: rgba(245, 158, 11, 0.2); }
+    .council-node-icon.risk svg { color: var(--warning); }
+    .council-node-icon.value { background: var(--accent-emerald-glow); }
+    .council-node-icon.value svg { color: var(--accent-emerald); }
+    .council-node-icon.income { background: var(--accent-gold-glow); }
+    .council-node-icon.income svg { color: var(--accent-gold); }
+    .council-node-icon.momentum { background: var(--accent-primary-glow); }
+    .council-node-icon.momentum svg { color: var(--accent-primary); }
+    .council-node-icon.news { background: var(--accent-violet-glow); }
+    .council-node-icon.news svg { color: var(--accent-violet); }
+    .council-node-icon.quality { background: rgba(56, 189, 248, 0.15); }
+    .council-node-icon.quality svg { color: #38BDF8; }
+
+    .council-node-label {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .council-content h3 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .council-content p {
+      font-size: 16px;
+      color: var(--fg-muted);
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .council-example {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .council-example-question {
+      font-size: 14px;
+      color: var(--fg);
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .council-example-responses {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .council-response {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .council-response-role {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: var(--bg-elevated);
+      white-space: nowrap;
+    }
+
+    .council-response-role.risk { color: var(--warning); }
+    .council-response-role.income { color: var(--accent-gold); }
+    .council-response-role.news { color: var(--accent-violet); }
+    .council-response-role.value { color: var(--accent-emerald); }
+
+    .council-response-text {
+      font-size: 13px;
+      color: var(--fg-muted);
+      line-height: 1.5;
+    }
+
+    .council-synthesis {
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--fg);
+      font-style: italic;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       MARKET COVERAGE
+    ═══════════════════════════════════════════════════════════════ */
+    .markets-section {
+      padding: 120px 32px;
+      background: var(--bg-base);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .markets-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% 50%, var(--accent-gold-glow), transparent 70%);
+      pointer-events: none;
+    }
+
+    .markets-inner {
+      max-width: var(--container);
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .markets-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .market-card {
+      background: var(--surface-glass);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      transition: all 0.4s var(--ease-out);
+    }
+
+    .market-card:hover {
+      border-color: var(--accent-gold);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px var(--accent-gold-glow);
+    }
+
+    .market-flag {
+      width: 44px;
+      height: 44px;
+      background: var(--bg-elevated);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      font-size: 22px;
+    }
+
+    .market-name {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .market-exchange {
+      font-size: 12px;
+      color: var(--accent-gold);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .market-detail {
+      font-size: 11px;
+      color: var(--fg-dim);
+    }
+
+    .markets-note {
+      text-align: center;
+      font-size: 13px;
+      color: var(--fg-dim);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       LIVE INTELLIGENCE
+    ═══════════════════════════════════════════════════════════════ */
+    .intelligence-section {
+      padding: 120px 32px;
+      background: var(--bg-deep);
+    }
+
+    .intelligence-inner {
+      max-width: var(--container);
+      margin: 0 auto;
+    }
+
+    .intelligence-showcase {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .alert-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .alert-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: all 0.4s var(--ease-out);
+    }
+
+    .alert-card:hover {
+      border-color: var(--border-strong);
+      transform: translateX(8px);
+    }
+
+    .alert-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .alert-icon.dividend { background: var(--accent-gold-glow); }
+    .alert-icon.dividend svg { color: var(--accent-gold); }
+    .alert-icon.earnings { background: var(--accent-primary-glow); }
+    .alert-icon.earnings svg { color: var(--accent-primary); }
+    .alert-icon.warning { background: rgba(245, 158, 11, 0.15); }
+    .alert-icon.warning svg { color: var(--warning); }
+    .alert-icon.oil { background: var(--accent-violet-glow); }
+    .alert-icon.oil svg { color: var(--accent-violet); }
+
+    .alert-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .alert-content {
+      flex: 1;
+    }
+
+    .alert-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .alert-desc {
+      font-size: 12px;
+      color: var(--fg-muted);
+      line-height: 1.5;
+    }
+
+    .alert-time {
+      font-size: 10px;
+      color: var(--fg-dim);
+      margin-top: 6px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       HOW IT WORKS — 4 steps
+    ═══════════════════════════════════════════════════════════════ */
+    .steps-section {
+      padding: 120px 32px;
+      background: var(--bg-base);
+    }
+
+    .steps-inner {
+      max-width: var(--container);
+      margin: 0 auto;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      position: relative;
+    }
+
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 44px;
+      left: calc(12.5% + 44px);
+      right: calc(12.5% + 44px);
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-gold), var(--accent-violet), var(--accent-emerald));
+      border-radius: 1px;
+    }
+
+    .step-card {
+      text-align: center;
+      position: relative;
+    }
+
+    .step-number {
+      width: 88px;
+      height: 88px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      position: relative;
+      z-index: 1;
+      transition: all 0.4s var(--ease-out);
+    }
+
+    .step-number span {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .step-card:hover .step-number {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 40px var(--accent-primary-glow);
+    }
+
+    .step-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--fg-muted);
+      line-height: 1.5;
+      max-width: 220px;
+      margin: 0 auto;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       ADVISER DEMO
+    ═══════════════════════════════════════════════════════════════ */
+    .adviser-section {
+      padding: 120px 32px;
+      background: var(--bg-deep);
+    }
+
+    .adviser-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .chat-demo {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 24px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chat-avatar {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-violet));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-avatar svg {
+      width: 22px;
+      height: 22px;
+      color: white;
+    }
+
+    .chat-info {
+      flex: 1;
+    }
+
+    .chat-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .chat-status {
+      font-size: 11px;
+      color: var(--accent-primary);
+    }
+
+    .chat-messages {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .chat-message {
+      max-width: 85%;
+    }
+
+    .chat-message.user {
+      align-self: flex-end;
+    }
+
+    .chat-message.user .chat-bubble {
+      background: var(--accent-primary);
+      color: var(--bg-deep);
+    }
+
+    .chat-bubble {
+      padding: 14px 18px;
+      background: var(--bg-elevated);
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .chat-bubble strong {
+      color: var(--fg);
+    }
+
+    .chat-sources {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .chat-source {
+      padding: 4px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--fg-muted);
+    }
+
+    .chat-source.primary {
+      color: var(--accent-primary);
+      border-color: rgba(39, 211, 195, 0.3);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       TESTIMONIALS
+    ═══════════════════════════════════════════════════════════════ */
+    .testimonials-section {
+      padding: 120px 32px;
+      background: var(--bg-base);
+    }
+
+    .testimonials-inner {
+      max-width: var(--container);
+      margin: 0 auto;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .testimonial-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: all 0.4s var(--ease-out);
+    }
+
+    .testimonial-card:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-4px);
+    }
+
+    .testimonial-quote {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--fg-muted);
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .testimonial-quote::before {
+      content: '"';
+      position: absolute;
+      top: -16px;
+      left: 0;
+      font-size: 44px;
+      font-family: Georgia, serif;
+      color: var(--accent-gold);
+      opacity: 0.3;
+      line-height: 1;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .testimonial-avatar {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-gold));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--bg-deep);
+    }
+
+    .testimonial-name {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .testimonial-location {
+      font-size: 12px;
+      color: var(--fg-dim);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       FINAL CTA
+    ═══════════════════════════════════════════════════════════════ */
+    .final-cta {
+      padding: 160px 32px;
+      background: var(--bg-deep);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .final-cta-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 100%, var(--accent-primary-glow), transparent 70%),
+        radial-gradient(ellipse 40% 40% at 30% 80%, var(--accent-gold-glow), transparent 60%);
+      pointer-events: none;
+    }
+
+    .final-cta-inner {
+      position: relative;
+      max-width: 640px;
+      margin: 0 auto;
+      z-index: 1;
+    }
+
+    .final-cta-title {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      line-height: 1.1;
+    }
+
+    .final-cta-subtitle {
+      font-size: 16px;
+      color: var(--fg-muted);
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    .final-cta-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .credibility-note {
+      margin-top: 40px;
+      font-size: 12px;
+      color: var(--fg-dim);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════════════════════ */
+    .footer {
+      background: var(--bg-base);
+      border-top: 1px solid var(--border);
+      padding: 56px 32px 32px;
+    }
+
+    .footer-inner {
+      max-width: var(--container);
+      margin: 0 auto;
+    }
+
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 32px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--fg);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 40px;
+    }
+
+    .footer-links-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--fg-muted);
+      text-decoration: none;
+      transition: color 0.3s var(--ease-out);
+    }
+
+    .footer-links a:hover {
+      color: var(--fg);
+    }
+
+    .footer-bottom {
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .footer-disclaimer {
+      font-size: 11px;
+      color: var(--fg-dim);
+      line-height: 1.7;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .hero-content {
+        max-width: 100%;
+      }
+
+      .hero-ctas, .hero-meta {
+        justify-content: center;
+      }
+
+      .hero-visual {
+        display: none;
+      }
+
+      .stats-inner {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .problem-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .markets-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .council-showcase, .intelligence-showcase {
+        grid-template-columns: 1fr;
+      }
+
+      .council-visual {
+        height: 320px;
+        margin-bottom: 32px;
+      }
+
+      .council-node {
+        width: 60px;
+        height: 60px;
+      }
+
+      .council-node:nth-child(2),
+      .council-node:nth-child(3) {
+        right: 0;
+      }
+
+      .council-node:nth-child(5),
+      .council-node:nth-child(6) {
+        left: 0;
+      }
+
+      .council-center {
+        width: 110px;
+        height: 110px;
+      }
+
+      .steps-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px;
+      }
+
+      .steps-grid::before {
+        display: none;
+      }
+
+      .testimonials-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 48px;
+        text-align: center;
+      }
+
+      .hero-content {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .hero-ctas {
+        justify-content: center;
+      }
+
+      .hero-meta {
+        justify-content: center;
+      }
+
+      .hero-visual {
+        margin-left: 0;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      .atmosphere-ui-hints {
+        opacity: 0.04;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        min-height: auto;
+        padding-top: calc(var(--nav-height) + 40px);
+        padding-bottom: 60px;
+      }
+
+      .hero-content {
+        max-width: 100%;
+      }
+
+      .hero-meta {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .hero-visual {
+        display: none;
+      }
+
+      .atmosphere-ui-hints {
+        display: none;
+      }
+
+      .atmosphere-waves {
+        opacity: 0.4;
+      }
+
+      .stats-inner {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .markets-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-top {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .footer-links {
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .footer-links-col {
+        align-items: center;
+      }
+    }
+  
+    /* ---- AlphaCouncil structured footer (self-contained, consistent across pages) ---- */
+    .ac-footer { border-top: 1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.015) 100%); margin-top: 96px; }
+    .ac-footer-inner { max-width: 1200px; margin: 0 auto; padding: 72px 32px 36px; }
+    .ac-footer-top { display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr; gap: 56px; padding-bottom: 44px; border-bottom: 1px solid var(--border); }
+    .ac-footer-brand .ac-flogo { display: inline-block; font-weight: 700; font-size: 20px; letter-spacing: -0.02em; color: var(--fg); text-decoration: none; margin-bottom: 16px; }
+    .ac-footer-brand p { font-size: 14px; line-height: 1.75; color: var(--fg-muted); max-width: 320px; }
+    .ac-footer-col h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg-dim); margin-bottom: 20px; }
+    .ac-footer-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+    .ac-footer-col a { font-size: 14px; color: var(--fg-muted); text-decoration: none; transition: color 0.2s ease; }
+    .ac-footer-col a:hover { color: var(--accent-primary); }
+    .ac-footer-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 28px; gap: 16px; flex-wrap: wrap; }
+    .ac-footer-bottom .ac-copy { font-size: 13px; color: var(--fg-dim); }
+    .ac-footer-bottom .ac-legal { display: flex; gap: 28px; }
+    .ac-footer-bottom .ac-legal a { font-size: 13px; color: var(--fg-dim); text-decoration: none; transition: color 0.2s ease; }
+    .ac-footer-bottom .ac-legal a:hover { color: var(--accent-primary); }
+    @media (max-width: 880px) {
+      .ac-footer-top { grid-template-columns: 1fr 1fr; gap: 36px 32px; }
+      .ac-footer-brand { grid-column: 1 / -1; }
+      .ac-footer-inner { padding: 56px 24px 32px; }
+      .ac-footer-bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- ═══════════════════════════════════════════════════════════════
+       ATMOSPHERIC BACKGROUND WORLD
+       Premium ambient layer behind the entire landing page
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="atmosphere" aria-hidden="true">
+    <div class="atmosphere-base"></div>
+    <div class="atmosphere-noise"></div>
+    <div class="atmosphere-glow"></div>
+    <div class="atmosphere-waves"></div>
+    <div class="atmosphere-skyline"></div>
+    <div class="atmosphere-particles">
+      <div class="atmo-particle"></div>
+      <div class="atmo-particle"></div>
+      <div class="atmo-particle"></div>
+      <div class="atmo-particle"></div>
+      <div class="atmo-particle"></div>
+      <div class="atmo-particle"></div>
+      <div class="atmo-particle"></div>
+      <div class="atmo-particle"></div>
+    </div>
+    <div class="atmosphere-ui-hints">
+      <div class="ui-hint"></div>
+      <div class="ui-hint"></div>
+      <div class="ui-hint"></div>
+    </div>
+    <div class="atmosphere-vignette"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       NAVIGATION
+  ═══════════════════════════════════════════════════════════════ -->
+    <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+      </a>
+      <ul class="nav-links" style="gap:22px;">
+        <li><a href="how-it-works.html">How it works</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="methodology.html">Methodology</a></li>
+        <li><a href="markets.html">Markets</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="login.html" class="nav-signin">Sign in</a>
+        <a href="signup.html" class="btn btn-primary">Start free</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="hero-gradient"></div>
+      <div class="hero-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+      </div>
+      <div class="hero-grid"></div>
+    </div>
+
+    <div class="hero-inner">
+      <div class="hero-content reveal">
+        <div class="hero-badge">
+          <span class="pulse"></span>
+          Live GCC market coverage
+        </div>
+
+        <h1 class="hero-title">
+          Understand your GCC portfolio<br>
+          <span class="highlight">before the market moves.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Add your holdings and AlphaCouncil connects your portfolio to GCC news, fundamentals, dividends, risk, and AI Analyst Council reviews — in English or Arabic.
+        </p>
+
+        <div class="hero-ctas">
+          <a href="signup.html" class="btn btn-primary btn-lg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            Start free
+          </a>
+          <a href="Sample-Dashboard.html" class="btn btn-secondary btn-lg">View sample dashboard</a>
+        </div>
+
+        <div class="hero-meta">
+          <div class="hero-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+            7 GCC markets
+          </div>
+          <div class="hero-meta-item gold">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/></svg>
+            700+ equities
+          </div>
+          <div class="hero-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            EN + AR
+          </div>
+          <div class="hero-meta-item violet">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/></svg>
+            AI Analyst Council
+          </div>
+          <div class="hero-meta-item gold">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Portfolio-aware
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual reveal stagger-2">
+        <div class="dashboard-mockup">
+          <div class="mockup-header">
+            <span class="mockup-dot"></span>
+            <span class="mockup-dot"></span>
+            <span class="mockup-dot"></span>
+          </div>
+          <div class="mockup-content">
+            <div class="mockup-stats">
+              <div class="mockup-stat-card">
+                <div class="mockup-stat-label">Portfolio Value</div>
+                <div class="mockup-stat-value gold">SAR 847,250</div>
+              </div>
+              <div class="mockup-stat-card">
+                <div class="mockup-stat-label">Today's P/L</div>
+                <div class="mockup-stat-value positive">+2,340 (0.28%)</div>
+              </div>
+              <div class="mockup-stat-card">
+                <div class="mockup-stat-label">Alerts</div>
+                <div class="mockup-stat-value">3 new</div>
+              </div>
+            </div>
+
+            <div class="mockup-council">
+              <div class="mockup-council-header">
+                <div class="mockup-council-badge">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/></svg>
+                </div>
+                <span class="mockup-council-title">AI Analyst Council</span>
+              </div>
+              <div class="mockup-council-responses">
+                <div class="mockup-council-item">
+                  <span class="mockup-council-role risk">Risk</span>
+                  Exposure concentrated. Review position sizing.
+                </div>
+                <div class="mockup-council-item">
+                  <span class="mockup-council-role income">Income</span>
+                  Dividend history stable, watch payout changes.
+                </div>
+                <div class="mockup-council-item">
+                  <span class="mockup-council-role news">News</span>
+                  Rate expectations may pressure sector sentiment.
+                </div>
+              </div>
+              <div class="mockup-synthesis">
+                Data suggests monitoring concentration and rate sensitivity before adding exposure.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="adviser-float">
+          <div class="adviser-float-header">
+            <div class="adviser-float-avatar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 20 2 20"/></svg>
+            </div>
+            <div>
+              <div class="adviser-float-name">AlphaCouncil</div>
+              <div class="adviser-float-status">Saudi market update</div>
+            </div>
+          </div>
+          <div class="adviser-float-message">
+            TASI movement affected 3 holdings. Nomu watchlist unchanged. Review banking sector exposure.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STATS STRIP
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="stats-strip">
+    <div class="stats-inner">
+      <div class="stat-item reveal stagger-1">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+        </div>
+        <div class="stat-value">7</div>
+        <div class="stat-label">GCC Markets</div>
+      </div>
+      <div class="stat-item reveal stagger-2">
+        <div class="stat-icon gold">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/></svg>
+        </div>
+        <div class="stat-value">700+</div>
+        <div class="stat-label">Stocks Tracked</div>
+      </div>
+      <div class="stat-item reveal stagger-3">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="stat-value">EN + AR</div>
+        <div class="stat-label">Bilingual</div>
+      </div>
+      <div class="stat-item reveal stagger-4">
+        <div class="stat-icon violet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/></svg>
+        </div>
+        <div class="stat-value">AI</div>
+        <div class="stat-label">Analyst Council</div>
+      </div>
+      <div class="stat-item reveal stagger-5">
+        <div class="stat-icon gold">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="stat-value">11</div>
+        <div class="stat-label">Thesis Dimensions</div>
+      </div>
+      <div class="stat-item reveal stagger-6">
+        <div class="stat-icon emerald">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+        </div>
+        <div class="stat-value">24/7</div>
+        <div class="stat-label">Portfolio Monitoring</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       TICKER
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="ticker-strip">
+    <div class="ticker-track">
+      <div class="ticker-item"><span class="ticker-symbol">2222</span> Aramco <span class="ticker-change">+1.2%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">1120</span> Al Rajhi <span class="ticker-change">+0.8%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">2010</span> SABIC <span class="ticker-change negative">-0.4%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">FAB</span> First Abu Dhabi <span class="ticker-change">+0.6%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">EMAAR</span> Emaar Props <span class="ticker-change">+1.1%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">DIB</span> Dubai Islamic <span class="ticker-change">+1.4%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">QNB</span> Qatar National <span class="ticker-change negative">-0.2%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">NBK</span> National Kuwait <span class="ticker-change">+0.5%</span></div>
+      <!-- Duplicate for loop -->
+      <div class="ticker-item"><span class="ticker-symbol">2222</span> Aramco <span class="ticker-change">+1.2%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">1120</span> Al Rajhi <span class="ticker-change">+0.8%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">2010</span> SABIC <span class="ticker-change negative">-0.4%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">FAB</span> First Abu Dhabi <span class="ticker-change">+0.6%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">EMAAR</span> Emaar Props <span class="ticker-change">+1.1%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">DIB</span> Dubai Islamic <span class="ticker-change">+1.4%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">QNB</span> Qatar National <span class="ticker-change negative">-0.2%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">NBK</span> National Kuwait <span class="ticker-change">+0.5%</span></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       PROBLEM SECTION
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="problem-section">
+    <div class="problem-inner">
+      <header class="section-header reveal">
+        <p class="section-eyebrow">The Problem</p>
+        <h2 class="section-title">GCC investors don't need more data.<br>They need context.</h2>
+        <p class="section-subtitle">Traditional tools show charts and numbers. AlphaCouncil explains what matters for your portfolio.</p>
+      </header>
+
+      <div class="problem-grid">
+        <article class="problem-card reveal stagger-1">
+          <div class="problem-icon warning">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+          </div>
+          <h3 class="problem-title">News arrives before you know if it affects you</h3>
+          <p class="problem-desc">Headlines move markets, but which ones actually impact your holdings? Without portfolio context, every alert feels urgent.</p>
+        </article>
+
+        <article class="problem-card reveal stagger-2">
+          <div class="problem-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
+          </div>
+          <h3 class="problem-title">Portfolio concentration is invisible</h3>
+          <p class="problem-desc">You might be overexposed to UAE banks or Saudi energy without realizing it. Most tools don't show sector or geographic risk.</p>
+        </article>
+
+        <article class="problem-card reveal stagger-3">
+          <div class="problem-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+          </div>
+          <h3 class="problem-title">Financial ratios are meaningless alone</h3>
+          <p class="problem-desc">P/E of 15 — is that good? Without sector benchmarks and historical context, raw numbers don't guide decisions.</p>
+        </article>
+
+        <article class="problem-card reveal stagger-4">
+          <div class="problem-icon warning">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h3 class="problem-title">Arabic explanations are limited</h3>
+          <p class="problem-desc">Most GCC investors are native Arabic speakers, yet most financial tools offer English-only analysis and generic translations.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FEATURES — 6 cards including AI Analyst Council
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="features-section" id="features">
+    <div class="features-inner">
+      <header class="section-header reveal">
+        <p class="section-eyebrow">Features</p>
+        <h2 class="section-title">AlphaCouncil connects your<br>portfolio to the market.</h2>
+      </header>
+
+      <div class="features-grid">
+        <article class="feature-card reveal stagger-1">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          </div>
+          <h3 class="feature-title">Portfolio Intelligence</h3>
+          <p class="feature-desc">Add your holdings and AlphaCouncil detects exposure, concentration, dividend dependency, risk factors, and sector balance.</p>
+          <div class="feature-tags">
+            <span class="feature-tag">Concentration alerts</span>
+            <span class="feature-tag">Sector exposure</span>
+            <span class="feature-tag">Risk scoring</span>
+          </div>
+        </article>
+
+        <article class="feature-card reveal stagger-2">
+          <div class="feature-icon gold">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          <h3 class="feature-title">News That Knows Your Portfolio</h3>
+          <p class="feature-desc">Every news item is connected to the stocks you own or watch. See what matters — skip what doesn't.</p>
+          <div class="feature-tags">
+            <span class="feature-tag bullish">Bullish</span>
+            <span class="feature-tag bearish">Bearish</span>
+            <span class="feature-tag gold">Dividend</span>
+            <span class="feature-tag">Earnings</span>
+          </div>
+        </article>
+
+        <article class="feature-card council reveal stagger-3">
+          <div class="feature-icon violet">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><circle cx="12" cy="3" r="1"/><circle cx="12" cy="21" r="1"/><circle cx="3" cy="12" r="1"/><circle cx="21" cy="12" r="1"/></svg>
+          </div>
+          <h3 class="feature-title">AI Analyst Council</h3>
+          <p class="feature-desc">Multiple AI analyst members review your portfolio from different angles — risk, valuation, income, momentum, news, and your investing style — then AlphaCouncil gives you one clear synthesis of what the data suggests.</p>
+          <div class="feature-tags">
+            <span class="feature-tag violet">Multi-perspective AI</span>
+            <span class="feature-tag violet">Risk review</span>
+            <span class="feature-tag">Valuation check</span>
+            <span class="feature-tag primary">Portfolio-aware</span>
+          </div>
+        </article>
+
+        <article class="feature-card reveal stagger-4">
+          <div class="feature-icon emerald">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <h3 class="feature-title">12-Dimension Stock Thesis</h3>
+          <p class="feature-desc">Each stock is scored across business durability, quality, value, income, growth, momentum, swing setup, risk, and news impact.</p>
+          <div class="feature-tags">
+            <span class="feature-tag">Durability</span>
+            <span class="feature-tag">Valuation</span>
+            <span class="feature-tag">Momentum</span>
+            <span class="feature-tag">Risk</span>
+          </div>
+        </article>
+
+        <article class="feature-card reveal stagger-5">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h3 class="feature-title">Adviser on Every Page</h3>
+          <p class="feature-desc">Ask anything: "Why did my portfolio move today?" "Is my dividend income safe?" "Explain this stock in Arabic."</p>
+          <div class="feature-tags">
+            <span class="feature-tag">Plain English</span>
+            <span class="feature-tag">Arabic</span>
+            <span class="feature-tag primary">Source-linked</span>
+          </div>
+        </article>
+
+        <article class="feature-card reveal stagger-6">
+          <div class="feature-icon gold">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h3 class="feature-title">GCC-Native Market Data</h3>
+          <p class="feature-desc">Built around GCC market structure, local disclosures, dividends, Arabic context, regional news, and Saudi/UAE market behavior.</p>
+          <div class="feature-tags">
+            <span class="feature-tag gold">Tadawul</span>
+            <span class="feature-tag gold">ADX</span>
+            <span class="feature-tag gold">DFM</span>
+            <span class="feature-tag gold">Nomu</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LLM COUNCIL SHOWCASE
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="council-section">
+    <div class="council-bg"></div>
+    <div class="council-inner">
+      <header class="section-header reveal">
+        <p class="section-eyebrow">AI Analyst Council</p>
+        <h2 class="section-title">Meet your AI Analyst Council.</h2>
+        <p class="section-subtitle">Different questions need different perspectives. AlphaCouncil reviews your portfolio through specialized AI analyst members before giving you a clear, source-aware synthesis.</p>
+      </header>
+
+      <div class="council-showcase">
+        <div class="council-visual reveal">
+          <div class="council-nodes">
+            <div class="council-node">
+              <div class="council-node-icon risk">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <span class="council-node-label">Risk</span>
+            </div>
+            <div class="council-node">
+              <div class="council-node-icon value">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <span class="council-node-label">Value</span>
+            </div>
+            <div class="council-node">
+              <div class="council-node-icon income">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <span class="council-node-label">Income</span>
+            </div>
+            <div class="council-node">
+              <div class="council-node-icon momentum">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              </div>
+              <span class="council-node-label">Momentum</span>
+            </div>
+            <div class="council-node">
+              <div class="council-node-icon news">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1"/><path d="M21 12h-6"/><path d="M21 16h-6"/></svg>
+              </div>
+              <span class="council-node-label">News</span>
+            </div>
+            <div class="council-node">
+              <div class="council-node-icon quality">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <span class="council-node-label">Quality</span>
+            </div>
+          </div>
+          <div class="council-center">
+            <div class="council-center-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+            </div>
+            <span class="council-center-label">Your Portfolio</span>
+          </div>
+        </div>
+
+        <div class="council-content reveal stagger-2">
+          <h3>Multiple perspectives, one clear answer.</h3>
+          <p>Instead of relying on a single AI response, your AI Analyst Council cross-checks your portfolio thesis. Each analyst member reviews the data from a different angle, helping you identify risks, opportunities, and blind spots. Data-driven analysis, not financial advice.</p>
+
+          <div class="council-example">
+            <div class="council-example-question">
+              <strong>You ask:</strong> "Should I be worried about my UAE bank exposure?"
+            </div>
+            <div class="council-example-responses">
+              <div class="council-response">
+                <span class="council-response-role risk">Risk Analyst</span>
+                <span class="council-response-text">Exposure is concentrated. Review position sizing.</span>
+              </div>
+              <div class="council-response">
+                <span class="council-response-role income">Income Analyst</span>
+                <span class="council-response-text">Dividend history remains stable, but watch payout changes.</span>
+              </div>
+              <div class="council-response">
+                <span class="council-response-role news">News Analyst</span>
+                <span class="council-response-text">Recent rate expectations may pressure sector sentiment.</span>
+              </div>
+              <div class="council-response">
+                <span class="council-response-role value">Valuation Analyst</span>
+                <span class="council-response-text">Valuation is near sector average, not deeply discounted.</span>
+              </div>
+            </div>
+            <div class="council-synthesis">
+              <strong>Synthesis:</strong> Data suggests monitoring concentration and rate sensitivity before adding more exposure.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       MARKET COVERAGE
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="markets-section" id="markets">
+    <div class="markets-bg"></div>
+    <div class="markets-inner">
+      <header class="section-header reveal">
+        <p class="section-eyebrow">Coverage</p>
+        <h2 class="section-title">Built for GCC investors.</h2>
+        <p class="section-subtitle">Local market structure, dividends, Arabic context, and regional news flow — not US data adapted for the Gulf.</p>
+      </header>
+
+      <div class="markets-grid">
+        <article class="market-card reveal stagger-1">
+          <div class="market-flag">🇸🇦</div>
+          <h3 class="market-name">Saudi Arabia</h3>
+          <p class="market-exchange">Tadawul, TASI + Nomu</p>
+          <p class="market-detail">Main market and parallel market coverage</p>
+        </article>
+
+        <article class="market-card reveal stagger-2">
+          <div class="market-flag">🇦🇪</div>
+          <h3 class="market-name">UAE</h3>
+          <p class="market-exchange">ADX + DFM</p>
+          <p class="market-detail">Abu Dhabi and Dubai exchanges</p>
+        </article>
+
+        <article class="market-card reveal stagger-3">
+          <div class="market-flag">🇶🇦</div>
+          <h3 class="market-name">Qatar</h3>
+          <p class="market-exchange">QSE</p>
+          <p class="market-detail">Qatar Stock Exchange</p>
+        </article>
+
+        <article class="market-card reveal stagger-4">
+          <div class="market-flag">🇰🇼</div>
+          <h3 class="market-name">Kuwait</h3>
+          <p class="market-exchange">Boursa Kuwait</p>
+          <p class="market-detail">Premier and main markets</p>
+        </article>
+
+        <article class="market-card reveal stagger-5">
+          <div class="market-flag">🇧🇭</div>
+          <h3 class="market-name">Bahrain</h3>
+          <p class="market-exchange">Bahrain Bourse</p>
+          <p class="market-detail">BHB listed equities</p>
+        </article>
+
+        <article class="market-card reveal stagger-6">
+          <div class="market-flag">🇴🇲</div>
+          <h3 class="market-name">Oman</h3>
+          <p class="market-exchange">MSX</p>
+          <p class="market-detail">Muscat Securities Market</p>
+        </article>
+      </div>
+
+      <p class="markets-note reveal">
+        Coverage includes major GCC exchanges, main markets, parallel markets where available, listed equities, disclosures, dividends, and market news.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LIVE INTELLIGENCE
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="intelligence-section">
+    <div class="intelligence-inner">
+      <header class="section-header reveal">
+        <p class="section-eyebrow">Live Intelligence</p>
+        <h2 class="section-title">Your portfolio, always monitored.</h2>
+        <p class="section-subtitle">Real-time alerts explain what's happening and why it matters to your holdings.</p>
+      </header>
+
+      <div class="intelligence-showcase">
+        <div class="alert-cards">
+          <article class="alert-card reveal stagger-1">
+            <div class="alert-icon dividend">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="alert-content">
+              <h4 class="alert-title">Dividend update detected</h4>
+              <p class="alert-desc">Al Rajhi Bank announced Q2 dividend of SAR 0.75/share. Your position: 500 shares.</p>
+              <span class="alert-time">2 hours ago</span>
+            </div>
+          </article>
+
+          <article class="alert-card reveal stagger-2">
+            <div class="alert-icon earnings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+            </div>
+            <div class="alert-content">
+              <h4 class="alert-title">Earnings beat sector median</h4>
+              <p class="alert-desc">Emaar Properties Q2 EPS exceeded analyst estimates by 12%. Valuation remains stretched.</p>
+              <span class="alert-time">4 hours ago</span>
+            </div>
+          </article>
+
+          <article class="alert-card reveal stagger-3">
+            <div class="alert-icon warning">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="alert-content">
+              <h4 class="alert-title">Concentration warning</h4>
+              <p class="alert-desc">UAE banking sector now represents 28% of portfolio. Consider reviewing sector exposure.</p>
+              <span class="alert-time">Today</span>
+            </div>
+          </article>
+
+          <article class="alert-card reveal stagger-4">
+            <div class="alert-icon oil">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+            </div>
+            <div class="alert-content">
+              <h4 class="alert-title">Oil price movement</h4>
+              <p class="alert-desc">Brent crude rose 3.2%. Your energy exposure: 18% of portfolio. Aramco and ADNOC positions may benefit.</p>
+              <span class="alert-time">6 hours ago</span>
+            </div>
+          </article>
+        </div>
+
+        <div class="reveal stagger-2" style="padding: 20px;">
+          <p class="section-eyebrow">Always Current</p>
+          <h3 style="font-size: 28px; font-weight: 700; margin-bottom: 16px;">Intelligence that works while you don't.</h3>
+          <p style="color: var(--fg-muted); line-height: 1.7;">
+            AlphaCouncil monitors news, price movements, disclosures, and macro events — then explains what each means for your specific holdings. No more scanning headlines wondering "does this affect me?"
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       HOW IT WORKS — 4 steps
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="steps-section" id="how-it-works">
+    <div class="steps-inner">
+      <header class="section-header reveal">
+        <p class="section-eyebrow">How It Works</p>
+        <h2 class="section-title">From "what's happening?" to "what should I do?"</h2>
+        <p class="section-subtitle">Four steps to portfolio clarity.</p>
+      </header>
+
+      <div class="steps-grid">
+        <article class="step-card reveal stagger-1">
+          <div class="step-number"><span>1</span></div>
+          <h3 class="step-title">Add your portfolio</h3>
+          <p class="step-desc">Enter your holdings and goals. Set your risk profile and time horizon.</p>
+        </article>
+
+        <article class="step-card reveal stagger-2">
+          <div class="step-number"><span>2</span></div>
+          <h3 class="step-title">AlphaCouncil connects the market</h3>
+          <p class="step-desc">News, disclosures, fundamentals, dividends, valuation, and risk are mapped to your actual holdings.</p>
+        </article>
+
+        <article class="step-card reveal stagger-3">
+          <div class="step-number"><span>3</span></div>
+          <h3 class="step-title">AI Analyst Council reviews your thesis</h3>
+          <p class="step-desc">Specialized AI analyst members examine your portfolio from different angles: risk, valuation, income, momentum, news, and strategy.</p>
+        </article>
+
+        <article class="step-card reveal stagger-4">
+          <div class="step-number"><span>4</span></div>
+          <h3 class="step-title">Ask your adviser anything</h3>
+          <p class="step-desc">Get clear, portfolio-aware answers in English or Arabic. Every answer is sourced.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       ADVISER DEMO
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="adviser-section">
+    <div class="adviser-inner">
+      <header class="section-header reveal">
+        <p class="section-eyebrow">AI Adviser</p>
+        <h2 class="section-title">Ask anything about your portfolio.</h2>
+      </header>
+
+      <div class="chat-demo reveal">
+        <div class="chat-header">
+          <div class="chat-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 20 2 20"/></svg>
+          </div>
+          <div class="chat-info">
+            <div class="chat-name">AlphaCouncil Adviser</div>
+            <div class="chat-status">Online · Portfolio-aware</div>
+          </div>
+        </div>
+
+        <div class="chat-messages">
+          <div class="chat-message user">
+            <div class="chat-bubble">Why is my portfolio down today?</div>
+          </div>
+
+          <div class="chat-message">
+            <div class="chat-bubble">
+              Most of today's move comes from your <strong>banking exposure</strong>. Two holdings declined after regional rate expectations changed.
+              <br><br>
+              Your largest impact came from <strong>DIB (-1.8%)</strong> and <strong>Al Rajhi (-1.2%)</strong>. No single company-specific red flag was detected, but <strong>sector pressure increased</strong> following the latest central bank commentary.
+              <br><br>
+              Your energy holdings partially offset the decline — Aramco rose 0.4% on oil price strength.
+            </div>
+            <div class="chat-sources">
+              <span class="chat-source primary">News</span>
+              <span class="chat-source">Price movement</span>
+              <span class="chat-source">Sector comparison</span>
+              <span class="chat-source">Portfolio exposure</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       TESTIMONIALS
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="testimonials-section">
+    <div class="testimonials-inner">
+      <header class="section-header reveal">
+        <p class="section-eyebrow">Testimonials</p>
+        <h2 class="section-title">What investors are saying</h2>
+      </header>
+
+      <div class="testimonials-grid">
+        <article class="testimonial-card reveal stagger-1">
+          <blockquote class="testimonial-quote">
+            Finally, GCC market data explained in a way I can act on. The portfolio concentration alerts alone saved me from overexposure to UAE banks.
+          </blockquote>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">A</div>
+            <div>
+              <div class="testimonial-name">Ahmad</div>
+              <div class="testimonial-location">Riyadh, Saudi Arabia</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="testimonial-card reveal stagger-2">
+          <blockquote class="testimonial-quote">
+            Arabic explanations make portfolio review much easier. My family now understands why I made certain investment decisions.
+          </blockquote>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">F</div>
+            <div>
+              <div class="testimonial-name">Fatima</div>
+              <div class="testimonial-location">Abu Dhabi, UAE</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="testimonial-card reveal stagger-3">
+          <blockquote class="testimonial-quote">
+            It connected the news to my actual holdings, not just the whole market. I finally understand why my portfolio moves the way it does.
+          </blockquote>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">K</div>
+            <div>
+              <div class="testimonial-name">Khalid</div>
+              <div class="testimonial-location">Dubai, UAE</div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <p class="reveal" style="text-align: center; margin-top: 40px; font-size: 13px; color: var(--fg-dim);">
+        Methodology-driven. Source-linked. Portfolio-aware.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FINAL CTA
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="final-cta">
+    <div class="final-cta-bg"></div>
+    <div class="final-cta-inner">
+      <h2 class="final-cta-title reveal">Stop guessing what the market<br>means for your portfolio.</h2>
+      <p class="final-cta-subtitle reveal stagger-2">Add your holdings, let AlphaCouncil monitor the GCC market, and use your AI Analyst Council to understand what the data suggests.</p>
+      <div class="final-cta-buttons reveal stagger-3">
+        <a href="signup.html" class="btn btn-primary btn-lg">Start free</a>
+        <a href="Sample-Dashboard.html" class="btn btn-secondary btn-lg">View sample dashboard</a>
+      </div>
+      <p class="credibility-note reveal stagger-4">No credit card required · Set up in 90 seconds</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════════════════ -->
+      <footer class="ac-footer">
+    <div class="ac-footer-inner">
+      <div class="ac-footer-top">
+        <div class="ac-footer-brand">
+          <a href="index.html" class="ac-flogo">AlphaCouncil</a>
+          <p>AI-powered portfolio intelligence for GCC stock investors. Understand your portfolio before the market moves.</p>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+            <li><a href="methodology.html">Methodology</a></li>
+          </ul>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Markets</h4>
+          <ul>
+            <li><a href="markets.html#saudi">Saudi (Tadawul)</a></li>
+            <li><a href="markets.html#uae">UAE (ADX / DFM)</a></li>
+            <li><a href="markets.html#qatar">Qatar (QSE)</a></li>
+            <li><a href="markets.html#kuwait">Kuwait (Boursa)</a></li>
+          </ul>
+        </div>
+        <div class="ac-footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="login.html">Sign in</a></li>
+            <li><a href="signup.html">Start free</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="ac-footer-bottom">
+        <p class="ac-copy">&copy; 2026 AlphaCouncil. All rights reserved.</p>
+        <div class="ac-legal">
+          <a href="legal.html#terms">Terms</a>
+          <a href="legal.html#privacy">Privacy</a>
+          <a href="legal.html#disclaimer">Disclaimer</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll-triggered reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Nav scroll state + atmospheric parallax
+    const nav = document.getElementById('nav');
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 50);
+
+      // Update CSS variable for parallax effects
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          document.documentElement.style.setProperty('--scroll-y', window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // AI Analyst Council scroll-driven spread animation
+    const councilVisual = document.querySelector('.council-visual');
+    if (councilVisual) {
+      const councilObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const updateProgress = () => {
+              const rect = councilVisual.getBoundingClientRect();
+              const viewportHeight = window.innerHeight;
+              const elementCenter = rect.top + rect.height / 2;
+              const viewportCenter = viewportHeight / 2;
+
+              // Progress: 0 when element enters from bottom, 1 when centered or above
+              const distanceFromCenter = elementCenter - viewportCenter;
+              const maxDistance = viewportHeight * 0.6;
+              let progress = 1 - Math.max(0, Math.min(1, distanceFromCenter / maxDistance));
+
+              // Ease the progress for smoother animation
+              progress = progress * progress * (3 - 2 * progress); // smoothstep
+
+              councilVisual.style.setProperty('--council-progress', progress);
+            };
+
+            window.addEventListener('scroll', updateProgress, { passive: true });
+            updateProgress();
+          }
+        });
+      }, { threshold: 0, rootMargin: '0px 0px -20% 0px' });
+
+      councilObserver.observe(councilVisual);
+    }
+  </script>
+  <script>/* brand logo -> dashboard when signed in (ac_csrf cookie present), else index */
+  (function(){try{if(document.cookie.indexOf('ac_csrf=')>-1){var e=document.querySelectorAll('.nav-logo,.ac-flogo');for(var i=0;i<e.length;i++)e[i].setAttribute('href','dashboard.html');}}catch(x){}})();</script>
+</body>
+</html>

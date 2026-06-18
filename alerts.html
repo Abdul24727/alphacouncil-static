@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alerts — AlphaCouncil</title>
+  <meta name="description" content="Intelligent alerts from the AI Analyst Council on your holdings and portfolio.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #07111F;
+      --bg-base: #0B1120;
+      --bg-elevated: #101624;
+      --surface: #111A2B;
+      --surface-elevated: #141D2F;
+      --surface-glass: rgba(17, 26, 43, 0.95);
+      --fg: #F8FAFC;
+      --fg-muted: #AAB6C5;
+      --fg-dim: #6B7A8F;
+      --accent-primary: #27D3C3;
+      --accent-primary-glow: rgba(39, 211, 195, 0.2);
+      --accent-gold: #D7B76A;
+      --accent-gold-glow: rgba(215, 183, 106, 0.15);
+      --accent-violet: #8B5CF6;
+      --accent-violet-glow: rgba(139, 92, 246, 0.15);
+      --accent-blue: #3B82F6;
+      --accent-blue-glow: rgba(59, 130, 246, 0.15);
+      --success: #10B981;
+      --success-glow: rgba(16, 185, 129, 0.15);
+      --danger: #EF4444;
+      --danger-glow: rgba(239, 68, 68, 0.15);
+      --warning: #F59E0B;
+      --warning-glow: rgba(245, 158, 11, 0.15);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.12);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --nav-height: 56px;
+      --indices-height: 40px;
+      --sidebar-width: 400px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-sans); background: var(--bg-deep); color: var(--fg); line-height: 1.5; overflow-x: hidden; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--fg-dim); }
+
+    .atmosphere { position: fixed; inset: 0; pointer-events: none; z-index: -1; }
+    .atmosphere::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 50% at 20% 20%, rgba(239, 68, 68, 0.03) 0%, transparent 50%), radial-gradient(ellipse 60% 40% at 80% 60%, rgba(39, 211, 195, 0.03) 0%, transparent 50%); }
+
+    /* App Nav */
+    .app-nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-height); background: var(--bg-base); border-bottom: 1px solid var(--border); z-index: 100; }
+    .app-nav-inner { height: 100%; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .app-logo { font-size: 17px; font-weight: 700; color: var(--fg); text-decoration: none; display: flex; align-items: center; gap: 8px; letter-spacing: -0.02em; }
+    .app-logo:hover { color: var(--accent-primary); }
+    .app-logo img { height: 28px; width: auto; }
+    .app-nav-links { display: flex; gap: 2px; }
+    .app-nav-links a { padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--fg-muted); text-decoration: none; border-radius: 8px; transition: all 0.2s; }
+    .app-nav-links a:hover { color: var(--fg); background: var(--surface); }
+    .app-nav-links a.active { color: var(--accent-primary); background: var(--accent-primary-glow); }
+    .app-nav-right { display: flex; align-items: center; gap: 10px; }
+    .app-search { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--fg-dim); cursor: pointer; transition: all 0.2s; min-width: 200px; }
+    .app-search:hover { border-color: var(--border-strong); }
+    .app-search svg { width: 14px; height: 14px; }
+    .app-search kbd { background: var(--bg-elevated); padding: 2px 6px; border-radius: 4px; font-size: 10px; font-family: inherit; margin-left: auto; }
+    .lang-toggle { display: flex; gap: 2px; background: var(--surface); border-radius: 6px; padding: 2px; }
+    .lang-toggle button { padding: 4px 10px; font-size: 12px; font-weight: 500; background: transparent; border: none; color: var(--fg-dim); border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+    .lang-toggle button.active { background: var(--accent-primary); color: var(--bg-deep); }
+    .nav-icon-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--fg-muted); cursor: pointer; transition: all 0.2s; position: relative; }
+    .nav-icon-btn:hover { border-color: var(--border-strong); color: var(--fg); }
+    .nav-icon-btn.active { background: var(--accent-primary-glow); border-color: var(--accent-primary); color: var(--accent-primary); }
+    .nav-icon-btn svg { width: 18px; height: 18px; }
+    .nav-icon-btn .badge { position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; background: var(--danger); border: 2px solid var(--bg-base); border-radius: 50%; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; color: white; }
+    .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-primary), var(--accent-violet)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--bg-deep); cursor: pointer; border: 2px solid var(--border); transition: all 0.2s; }
+    .user-avatar:hover { border-color: var(--accent-primary); }
+
+    /* Market Indices Bar */
+    .indices-bar { position: fixed; top: var(--nav-height); left: 0; right: 0; height: var(--indices-height); background: var(--bg-elevated); border-bottom: 1px solid var(--border); z-index: 99; overflow: hidden; }
+    .indices-inner { height: 100%; padding: 0 20px; display: flex; align-items: center; gap: 28px; }
+    .index-item { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+    .index-name { color: var(--fg-dim); font-weight: 500; }
+    .index-value { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .index-change { font-weight: 600; font-variant-numeric: tabular-nums; }
+    .index-change.up { color: var(--success); }
+    .index-change.down { color: var(--danger); }
+    .indices-time { margin-left: auto; font-size: 11px; color: var(--fg-dim); display: flex; align-items: center; gap: 6px; }
+    .indices-time::before { content: ''; width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* Content-Shift Layout */
+    .app-wrapper { display: flex; min-height: 100vh; padding-top: calc(var(--nav-height) + var(--indices-height)); }
+    .app-main { flex: 1; min-width: 0; padding: 24px; padding-bottom: 48px; transition: all 0.3s var(--ease-out); }
+    .adviser-sidebar { width: 0; min-width: 0; overflow: hidden; background: var(--surface-glass); backdrop-filter: blur(20px); border-left: 1px solid transparent; display: flex; flex-direction: column; transition: all 0.3s var(--ease-out); position: sticky; top: calc(var(--nav-height) + var(--indices-height)); height: calc(100vh - var(--nav-height) - var(--indices-height)); }
+    .adviser-sidebar.open { width: var(--sidebar-width); min-width: var(--sidebar-width); border-left-color: var(--border); }
+    .sidebar-inner { width: var(--sidebar-width); min-width: var(--sidebar-width); height: 100%; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.2s ease 0s; }
+    .adviser-sidebar.open .sidebar-inner { opacity: 1; transition: opacity 0.2s ease 0.1s; }
+
+    /* Page Header */
+    .page-header { margin-bottom: 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+    .page-header-left { flex: 1; }
+    .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; display: flex; align-items: center; gap: 14px; }
+    .page-title-icon { width: 44px; height: 44px; background: linear-gradient(135deg, var(--danger), var(--warning)); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px var(--danger-glow); }
+    .page-title-icon svg { width: 24px; height: 24px; color: white; }
+    .page-subtitle { font-size: 15px; color: var(--fg-muted); max-width: 500px; line-height: 1.6; }
+
+    /* Quick Stats */
+    .quick-stats { display: flex; gap: 20px; margin-top: 16px; }
+    .quick-stat { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--fg-dim); }
+    .quick-stat strong { color: var(--fg); font-weight: 600; }
+    .quick-stat .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .quick-stat .dot.active { background: var(--success); }
+    .quick-stat .dot.new { background: var(--accent-primary); }
+    .quick-stat .dot.time { background: var(--fg-dim); }
+
+    /* Buttons */
+    .btn { padding: 12px 20px; font-size: 13px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; border: none; }
+    .btn svg { width: 16px; height: 16px; }
+    .btn-primary { background: var(--accent-primary); color: var(--bg-deep); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-primary-glow); }
+    .btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--fg); }
+    .btn-secondary:hover { border-color: var(--border-strong); background: var(--surface-elevated); }
+    .btn-sm { padding: 8px 14px; font-size: 12px; }
+
+    /* Filters Bar */
+    .filters-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    .tab-group { display: flex; gap: 2px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 3px; }
+    .tab-btn { padding: 10px 16px; font-size: 13px; font-weight: 500; background: transparent; border: none; color: var(--fg-muted); border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+    .tab-btn:hover { color: var(--fg); }
+    .tab-btn.active { background: var(--accent-primary); color: var(--bg-deep); }
+    .tab-btn .count { padding: 2px 6px; background: var(--bg-elevated); border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .tab-btn.active .count { background: rgba(0,0,0,0.2); }
+    .filter-group { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+    .filter-select { padding: 10px 14px; padding-right: 36px; font-size: 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--fg); cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7A8F' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; transition: all 0.2s; }
+    .filter-select:hover { border-color: var(--border-strong); }
+    .filter-select:focus { outline: none; border-color: var(--accent-primary); }
+    .search-filter { position: relative; }
+    .search-filter input { padding: 10px 14px 10px 38px; font-size: 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--fg); width: 160px; transition: all 0.2s; }
+    .search-filter input::placeholder { color: var(--fg-dim); }
+    .search-filter input:focus { outline: none; border-color: var(--accent-primary); width: 200px; }
+    .search-filter svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--fg-dim); pointer-events: none; }
+
+    /* Toggle Control */
+    .toggle-control { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+    .toggle-control-label { font-size: 12px; color: var(--fg-muted); }
+    .toggle-switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 22px; transition: all 0.3s; }
+    .toggle-slider::before { content: ''; position: absolute; height: 16px; width: 16px; left: 2px; bottom: 2px; background: var(--fg-dim); border-radius: 50%; transition: all 0.3s; }
+    .toggle-switch input:checked + .toggle-slider { background: var(--accent-primary-glow); border-color: var(--accent-primary); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); background: var(--accent-primary); }
+
+    /* Main Content Grid */
+    .content-grid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
+    body.sidebar-open .content-grid { grid-template-columns: 1fr; }
+
+    /* Alerts List */
+    .alerts-list { display: flex; flex-direction: column; gap: 12px; }
+
+    /* Alert Card */
+    .alert-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; transition: all 0.3s var(--ease-out); position: relative; overflow: hidden; }
+    .alert-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; border-radius: 3px 0 0 3px; }
+    .alert-card.high::before { background: var(--danger); }
+    .alert-card.medium::before { background: var(--warning); }
+    .alert-card.low::before { background: var(--accent-primary); }
+    .alert-card:hover { border-color: var(--border-strong); transform: translateX(2px); }
+    .alert-card.read { opacity: 0.7; }
+    .alert-card.read:hover { opacity: 1; }
+
+    .alert-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+    .alert-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .alert-time { font-size: 11px; color: var(--fg-dim); display: flex; align-items: center; gap: 4px; }
+    .alert-time svg { width: 12px; height: 12px; }
+    .alert-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+    .alert-badge svg { width: 12px; height: 12px; }
+    .alert-badge.risk { background: var(--danger-glow); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); }
+    .alert-badge.valuation { background: var(--accent-gold-glow); border: 1px solid rgba(215, 183, 106, 0.3); color: var(--accent-gold); }
+    .alert-badge.income { background: var(--success-glow); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--success); }
+    .alert-badge.momentum { background: var(--accent-blue-glow); border: 1px solid rgba(59, 130, 246, 0.3); color: var(--accent-blue); }
+    .alert-badge.news { background: var(--accent-primary-glow); border: 1px solid rgba(39, 211, 195, 0.3); color: var(--accent-primary); }
+    .alert-badge.macro { background: var(--accent-violet-glow); border: 1px solid rgba(139, 92, 246, 0.3); color: var(--accent-violet); }
+    .alert-badge.strategist { background: linear-gradient(135deg, var(--accent-violet-glow), var(--accent-primary-glow)); border: 1px solid rgba(139, 92, 246, 0.3); color: var(--accent-violet); }
+    .alert-severity { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .alert-severity.high { background: var(--danger-glow); color: var(--danger); }
+    .alert-severity.medium { background: var(--warning-glow); color: var(--warning); }
+    .alert-severity.low { background: var(--accent-primary-glow); color: var(--accent-primary); }
+
+    .alert-tickers { display: flex; gap: 6px; margin-bottom: 10px; }
+    .ticker-tag { padding: 4px 10px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; font-weight: 600; font-family: monospace; color: var(--fg); cursor: pointer; transition: all 0.2s; }
+    .ticker-tag:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+
+    .alert-message { font-size: 14px; color: var(--fg-muted); line-height: 1.7; margin-bottom: 16px; }
+    .alert-message strong { color: var(--fg); font-weight: 500; }
+    .alert-message .highlight { color: var(--accent-primary); font-weight: 500; }
+    .alert-message .caution { color: var(--accent-gold); font-weight: 500; }
+    .alert-message .danger { color: var(--danger); font-weight: 500; }
+
+    .alert-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .alert-action { padding: 8px 14px; font-size: 12px; font-weight: 500; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; color: var(--fg-muted); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+    .alert-action svg { width: 14px; height: 14px; }
+    .alert-action:hover { border-color: var(--accent-primary); color: var(--accent-primary); background: var(--accent-primary-glow); }
+    .alert-action.primary { background: var(--accent-primary); border-color: var(--accent-primary); color: var(--bg-deep); }
+    .alert-action.primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px var(--accent-primary-glow); }
+    .alert-action.muted { color: var(--fg-dim); }
+    .alert-action.muted:hover { color: var(--fg-muted); background: var(--surface); border-color: var(--border-strong); }
+
+    /* Rules Panel */
+    .rules-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; height: fit-content; position: sticky; top: calc(var(--nav-height) + var(--indices-height) + 24px); }
+    .rules-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+    .rules-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .rules-title svg { width: 16px; height: 16px; color: var(--accent-primary); }
+
+    .rule-item { padding: 14px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; transition: all 0.2s; }
+    .rule-item:hover { border-color: var(--border-strong); }
+    .rule-item:last-of-type { margin-bottom: 0; }
+    .rule-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .rule-status { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
+    .rule-status.paused { background: var(--fg-dim); }
+    .rule-actions { display: flex; gap: 4px; }
+    .rule-action { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 4px; color: var(--fg-dim); cursor: pointer; transition: all 0.2s; }
+    .rule-action:hover { color: var(--fg); background: var(--surface); }
+    .rule-action svg { width: 12px; height: 12px; }
+    .rule-text { font-size: 13px; color: var(--fg-muted); line-height: 1.5; }
+    .rule-text strong { color: var(--fg); font-weight: 500; }
+
+    .rules-footer { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+    .rules-footer .btn { width: 100%; justify-content: center; }
+
+    .how-alerts-work { margin-top: 20px; padding: 16px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; }
+    .how-alerts-header { font-size: 12px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .how-alerts-header svg { width: 14px; height: 14px; color: var(--fg-dim); }
+    .how-alerts-text { font-size: 12px; color: var(--fg-dim); line-height: 1.5; }
+    .how-alerts-text a { color: var(--accent-primary); text-decoration: none; }
+    .how-alerts-text a:hover { text-decoration: underline; }
+
+    /* Empty State */
+    .empty-state { text-align: center; padding: 80px 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
+    .empty-icon { width: 80px; height: 80px; margin: 0 auto 24px; background: linear-gradient(135deg, var(--success-glow), var(--accent-primary-glow)); border: 1px solid var(--border); border-radius: 20px; display: flex; align-items: center; justify-content: center; }
+    .empty-icon svg { width: 40px; height: 40px; color: var(--success); }
+    .empty-title { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+    .empty-text { font-size: 15px; color: var(--fg-muted); max-width: 400px; margin: 0 auto 28px; line-height: 1.6; }
+    .empty-state .btn { margin: 0 auto; }
+
+    /* Adviser Sidebar Content */
+    .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .sidebar-title { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+    .sidebar-title svg { width: 20px; height: 20px; color: var(--accent-primary); }
+    .sidebar-close { width: 32px; height: 32px; background: transparent; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--fg-muted); transition: all 0.2s; }
+    .sidebar-close:hover { border-color: var(--border-strong); color: var(--fg); }
+    .sidebar-close svg { width: 16px; height: 16px; }
+    .chat-messages { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+    .chat-message { display: flex; gap: 10px; max-width: 95%; }
+    .chat-message.user { flex-direction: row-reverse; margin-left: auto; }
+    .chat-avatar { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+    .chat-message.adviser .chat-avatar { background: linear-gradient(135deg, var(--accent-primary), var(--accent-gold)); color: var(--bg-deep); }
+    .chat-message.user .chat-avatar { background: var(--accent-violet); color: white; }
+    .chat-bubble { padding: 12px 16px; border-radius: 14px; font-size: 13px; line-height: 1.6; }
+    .chat-message.adviser .chat-bubble { background: var(--bg-elevated); border: 1px solid var(--border); color: var(--fg-muted); border-top-left-radius: 4px; }
+    .chat-message.adviser .chat-bubble strong { color: var(--fg); font-weight: 500; }
+    .chat-message.user .chat-bubble { background: var(--accent-primary); color: var(--bg-deep); border-top-right-radius: 4px; font-weight: 500; }
+    .chat-time { font-size: 10px; color: var(--fg-dim); margin-top: 4px; }
+    .chat-message.user .chat-time { text-align: right; }
+    .suggested-questions { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; background: var(--bg-elevated); }
+    .suggested-label { font-size: 10px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .suggested-question { padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; font-size: 12px; color: var(--fg-muted); cursor: pointer; transition: all 0.2s; text-align: left; }
+    .suggested-question:hover { border-color: var(--accent-primary); color: var(--accent-primary); background: var(--accent-primary-glow); }
+    .chat-input-area { padding: 16px; border-top: 1px solid var(--border); background: var(--bg-base); flex-shrink: 0; }
+    .chat-input-row { display: flex; gap: 10px; }
+    .chat-input { flex: 1; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; font-size: 13px; color: var(--fg); outline: none; resize: none; font-family: inherit; transition: border-color 0.2s; }
+    .chat-input::placeholder { color: var(--fg-dim); }
+    .chat-input:focus { border-color: var(--accent-primary); }
+    .chat-send { width: 44px; height: 44px; background: var(--accent-primary); border: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+    .chat-send:hover { transform: scale(1.05); }
+    .chat-send svg { width: 18px; height: 18px; color: var(--bg-deep); }
+
+    /* Footer */
+    .app-footer { background: var(--bg-base); border-top: 1px solid var(--border); padding: 24px; margin-top: 48px; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .footer-brand { display: flex; flex-direction: column; gap: 4px; }
+    .footer-logo { font-size: 15px; font-weight: 700; color: var(--fg); display: flex; align-items: center; gap: 8px; }
+    .footer-logo img { height: 24px; }
+    .footer-slogan { font-size: 11px; color: var(--fg-dim); font-style: italic; }
+    .footer-disclaimer { max-width: 600px; font-size: 10px; color: var(--fg-dim); line-height: 1.5; text-align: right; }
+
+    /* Create Rule Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; visibility: hidden; transition: all 0.3s var(--ease-out); }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal { background: var(--bg-base); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 500px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; transform: scale(0.95) translateY(20px); opacity: 0; transition: all 0.4s var(--ease-out); }
+    .modal-overlay.open .modal { transform: scale(1) translateY(0); opacity: 1; }
+    .modal-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .modal-title { font-size: 18px; font-weight: 600; }
+    .modal-close { width: 36px; height: 36px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--fg-muted); transition: all 0.2s; }
+    .modal-close:hover { border-color: var(--border-strong); color: var(--fg); }
+    .modal-close svg { width: 18px; height: 18px; }
+    .modal-body { padding: 24px; }
+    .modal-footer { padding: 20px 24px; border-top: 1px solid var(--border); background: var(--bg-elevated); display: flex; justify-content: flex-end; gap: 12px; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--fg); margin-bottom: 8px; }
+    .form-input { width: 100%; padding: 12px 16px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; font-size: 14px; color: var(--fg); outline: none; transition: all 0.2s; }
+    .form-input::placeholder { color: var(--fg-dim); }
+    .form-input:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-primary-glow); }
+    .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7A8F' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; cursor: pointer; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* Responsive */
+    @media (max-width: 1400px) {
+      .content-grid { grid-template-columns: 1fr 280px; }
+    }
+    @media (max-width: 1200px) {
+      .content-grid { grid-template-columns: 1fr; }
+      .rules-panel { display: none; }
+      :root { --sidebar-width: 360px; }
+    }
+    @media (max-width: 1024px) {
+      .adviser-sidebar { position: fixed; top: 0; right: 0; bottom: 0; height: 100vh; z-index: 150; transform: translateX(100%); }
+      .adviser-sidebar.open { transform: translateX(0); }
+      .sidebar-inner { padding-top: calc(var(--nav-height) + var(--indices-height)); }
+      .app-nav-links { display: none; }
+    }
+    @media (max-width: 768px) {
+      .app-search { min-width: auto; }
+      .app-search span { display: none; }
+      .page-header { flex-direction: column; align-items: flex-start; }
+      .quick-stats { flex-wrap: wrap; gap: 12px; }
+      .filters-bar { flex-direction: column; align-items: stretch; }
+      .tab-group { width: 100%; overflow-x: auto; justify-content: flex-start; }
+      .filter-group { margin-left: 0; width: 100%; flex-wrap: wrap; }
+      .filter-select { flex: 1; min-width: 120px; }
+      .toggle-control { flex: 1; }
+      .search-filter { width: 100%; }
+      .search-filter input { width: 100%; }
+      .search-filter input:focus { width: 100%; }
+      .alert-actions { flex-direction: column; }
+      .alert-action { width: 100%; justify-content: center; }
+      :root { --sidebar-width: 100%; }
+      .modal { max-height: 100vh; border-radius: 0; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip Link for Accessibility -->
+  <a href="#mainContent" class="ac-skip-link">Skip to main content</a>
+
+  <!-- Live Region for Screen Reader Announcements -->
+  <div id="liveRegion" class="ac-live-region" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="app-nav" role="navigation" aria-label="Main navigation">
+    <div class="app-nav-inner">
+      <a href="index.html" class="app-logo">
+        <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+      </a>
+      <div class="app-nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="portfolio.html">Watchlist</a>
+        <a href="markets.html">Markets</a>
+        <a href="news.html">News</a>
+        <a href="council-history.html">Council</a>
+        <a href="alerts.html" class="active">Alerts</a>
+      </div>
+      <div class="app-nav-right">
+        <div class="app-search" id="searchBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <span>Search alerts...</span>
+          <kbd>/</kbd>
+        </div>
+        <div class="lang-toggle">
+          <button class="active">EN</button>
+          <button>AR</button>
+        </div>
+        <button class="nav-icon-btn" id="adviserToggle" title="Toggle AI Adviser" aria-label="Toggle AI Adviser sidebar" aria-expanded="false" aria-controls="adviserSidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="nav-icon-btn active" id="notificationsBtn" aria-label="Alerts, 3 unread">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="badge" aria-hidden="true">3</span>
+        </button>
+        <button class="nav-icon-btn" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button class="user-avatar" id="userMenu" aria-label="User menu for Sami" aria-haspopup="true">SK</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Indices Bar -->
+  <div class="indices-bar" role="region" aria-label="Live market indices">
+    <div class="indices-inner">
+      <div class="index-item"><span class="index-name">TASI</span><span class="index-value">12,847.32</span><span class="index-change up">+0.82%</span></div>
+      <div class="index-item"><span class="index-name">ADX</span><span class="index-value">9,234.18</span><span class="index-change up">+0.34%</span></div>
+      <div class="index-item"><span class="index-name">DFM</span><span class="index-value">4,156.92</span><span class="index-change down">-0.21%</span></div>
+      <div class="index-item"><span class="index-name">QSE</span><span class="index-value">10,892.45</span><span class="index-change up">+0.56%</span></div>
+      <div class="index-item"><span class="index-name">Brent</span><span class="index-value">$82.34</span><span class="index-change down">-0.45%</span></div>
+      <span class="indices-time">Live · 14:32 GST</span>
+    </div>
+  </div>
+
+  <!-- App Wrapper -->
+  <div class="app-wrapper" id="appWrapper">
+    <main class="app-main" id="mainContent" role="main" aria-label="Alerts content">
+
+      <!-- Page Header -->
+      <div style="margin:0 0 20px;padding:12px 16px;background:rgba(39,211,195,0.07);border:1px solid rgba(39,211,195,0.3);border-radius:10px;color:var(--fg-muted);font-size:13px;line-height:1.5;">
+        <strong style="color:#27D3C3;">Live</strong> — these alerts are generated from <strong>your actual holdings</strong> (notable price moves, technical signals and impactful news) and refresh automatically. Email/push delivery isn’t enabled yet, so for now they appear here and in the bell.
+      </div>
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">
+            <div class="page-title-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </div>
+            Alerts
+          </h1>
+          <p class="page-subtitle">Intelligent alerts from the AI Analyst Council on your holdings and portfolio.</p>
+          <div class="quick-stats">
+            <div class="quick-stat"><span class="dot active"></span><strong>12</strong> active</div>
+            <div class="quick-stat"><span class="dot new"></span><strong>3</strong> new today</div>
+            <div class="quick-stat"><span class="dot time"></span> Last updated: <strong>just now</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters Bar -->
+      <div class="filters-bar">
+        <div class="tab-group">
+          <button class="tab-btn active" data-filter="all">All Alerts <span class="count">12</span></button>
+          <button class="tab-btn" data-filter="high">High Priority <span class="count">3</span></button>
+          <button class="tab-btn" data-filter="unread">Unread <span class="count">5</span></button>
+        </div>
+        <div class="filter-group">
+          <select class="filter-select" id="analystFilter">
+            <option value="all">All Analysts</option>
+            <option value="risk">Risk Analyst</option>
+            <option value="valuation">Valuation Analyst</option>
+            <option value="income">Income Analyst</option>
+            <option value="momentum">Momentum Analyst</option>
+            <option value="news">News Analyst</option>
+            <option value="macro">Macro Analyst</option>
+            <option value="strategist">Chief Strategist</option>
+          </select>
+          <div class="search-filter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" placeholder="Search ticker..." id="tickerSearch">
+          </div>
+          <div class="toggle-control">
+            <span class="toggle-control-label">My holdings only</span>
+            <label class="toggle-switch">
+              <input type="checkbox" checked id="holdingsOnly">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="content-grid">
+
+        <!-- Alerts List -->
+        <div class="alerts-list" id="alertsList">
+
+          <!-- Alert 1 - High Priority Risk -->
+          <div class="alert-card high" data-alert-id="1">
+            <div class="alert-header">
+              <div class="alert-meta">
+                <span class="alert-time">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  2 hours ago
+                </span>
+                <span class="alert-badge risk">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  Risk Analyst
+                </span>
+                <span class="alert-severity high">High</span>
+              </div>
+            </div>
+            <div class="alert-tickers">
+              <span class="ticker-tag" onclick="viewStock('1120')">1120</span>
+              <span class="ticker-tag" onclick="viewStock('1010')">1010</span>
+              <span class="ticker-tag" onclick="viewStock('FAB')">FAB</span>
+            </div>
+            <p class="alert-message">
+              Data suggests <strong>reviewing portfolio concentration</strong> in banking sector (32.2%). This exceeds typical diversification guidelines. <span class="highlight">Stronger peer opportunity exists in UAE names</span> such as FAB, which shows lower correlation to your existing Saudi banking positions.
+            </p>
+            <div class="alert-actions">
+              <button class="alert-action primary" onclick="viewInCouncil('1')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                View in Council
+              </button>
+              <button class="alert-action" onclick="askAdviserAbout('concentration risk')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Ask Adviser
+              </button>
+              <button class="alert-action muted" onclick="markAsRead('1')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Mark as read
+              </button>
+              <button class="alert-action muted" onclick="createRule('concentration')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                Create rule
+              </button>
+            </div>
+          </div>
+
+          <!-- Alert 2 - High Priority Macro -->
+          <div class="alert-card high" data-alert-id="2">
+            <div class="alert-header">
+              <div class="alert-meta">
+                <span class="alert-time">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  4 hours ago
+                </span>
+                <span class="alert-badge macro">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                  Macro Analyst
+                </span>
+                <span class="alert-severity high">High</span>
+              </div>
+            </div>
+            <div class="alert-tickers">
+              <span class="ticker-tag" onclick="viewStock('2222')">2222</span>
+            </div>
+            <p class="alert-message">
+              <span class="caution">Oil price declined 4.2% this week</span>, which may impact Aramco (2222) dividend expectations. Current yield remains attractive at 5.2%, but <strong>data suggests monitoring</strong> for further commodity volatility given your 10.6% portfolio weight in this position.
+            </p>
+            <div class="alert-actions">
+              <button class="alert-action primary" onclick="viewInCouncil('2')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                View in Council
+              </button>
+              <button class="alert-action" onclick="askAdviserAbout('oil price impact')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Ask Adviser
+              </button>
+              <button class="alert-action muted" onclick="snoozeAlert('2')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Snooze
+              </button>
+              <button class="alert-action muted" onclick="dismissAlert('2')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                Dismiss
+              </button>
+            </div>
+          </div>
+
+          <!-- Alert 3 - Medium Priority Valuation -->
+          <div class="alert-card medium" data-alert-id="3">
+            <div class="alert-header">
+              <div class="alert-meta">
+                <span class="alert-time">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  6 hours ago
+                </span>
+                <span class="alert-badge valuation">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  Valuation Analyst
+                </span>
+                <span class="alert-severity medium">Medium</span>
+              </div>
+            </div>
+            <div class="alert-tickers">
+              <span class="ticker-tag" onclick="viewStock('1120')">1120</span>
+            </div>
+            <p class="alert-message">
+              Al Rajhi Bank (1120) is now trading at <span class="caution">18.2x forward P/E</span>, above its 5-year average of 15.8x. While fundamentals remain strong, <strong>consider reviewing position sizing</strong> given elevated valuation multiples relative to regional peers.
+            </p>
+            <div class="alert-actions">
+              <button class="alert-action primary" onclick="viewInCouncil('3')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                View in Council
+              </button>
+              <button class="alert-action" onclick="askAdviserAbout('valuation')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Ask Adviser
+              </button>
+              <button class="alert-action muted" onclick="markAsRead('3')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Mark as read
+              </button>
+            </div>
+          </div>
+
+          <!-- Alert 4 - Medium Priority Momentum -->
+          <div class="alert-card medium" data-alert-id="4">
+            <div class="alert-header">
+              <div class="alert-meta">
+                <span class="alert-time">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Yesterday
+                </span>
+                <span class="alert-badge momentum">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                  Momentum Analyst
+                </span>
+                <span class="alert-severity medium">Medium</span>
+              </div>
+            </div>
+            <div class="alert-tickers">
+              <span class="ticker-tag" onclick="viewStock('7010')">7010</span>
+            </div>
+            <p class="alert-message">
+              stc (7010) showing <span class="highlight">strong relative momentum</span>, breaking above 50-day moving average with increased volume. Your current position is underweight at 5.6% — <strong>data suggests reviewing</strong> allocation given positive technical signals.
+            </p>
+            <div class="alert-actions">
+              <button class="alert-action primary" onclick="viewInCouncil('4')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                View in Council
+              </button>
+              <button class="alert-action" onclick="askAdviserAbout('momentum signals')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Ask Adviser
+              </button>
+              <button class="alert-action muted" onclick="markAsRead('4')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Mark as read
+              </button>
+            </div>
+          </div>
+
+          <!-- Alert 5 - Low Priority News -->
+          <div class="alert-card low read" data-alert-id="5">
+            <div class="alert-header">
+              <div class="alert-meta">
+                <span class="alert-time">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  2 days ago
+                </span>
+                <span class="alert-badge news">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1"/><path d="M18 14h-8M18 10h-8M18 6h-8"/></svg>
+                  News Analyst
+                </span>
+                <span class="alert-severity low">Low</span>
+              </div>
+            </div>
+            <div class="alert-tickers">
+              <span class="ticker-tag" onclick="viewStock('QNBK')">QNBK</span>
+            </div>
+            <p class="alert-message">
+              QNB Group announced Q2 results exceeding analyst expectations. Net profit grew 8.2% YoY. <span class="highlight">Positive sentiment</span> around regional expansion plans. Your position remains well-sized at 9.6% of portfolio.
+            </p>
+            <div class="alert-actions">
+              <button class="alert-action" onclick="viewInCouncil('5')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                View in Council
+              </button>
+              <button class="alert-action muted" onclick="dismissAlert('5')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                Dismiss
+              </button>
+            </div>
+          </div>
+
+          <!-- Alert 6 - Low Priority Income -->
+          <div class="alert-card low read" data-alert-id="6">
+            <div class="alert-header">
+              <div class="alert-meta">
+                <span class="alert-time">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  3 days ago
+                </span>
+                <span class="alert-badge income">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  Income Analyst
+                </span>
+                <span class="alert-severity low">Low</span>
+              </div>
+            </div>
+            <div class="alert-tickers">
+              <span class="ticker-tag" onclick="viewStock('EMAAR')">EMAAR</span>
+            </div>
+            <p class="alert-message">
+              Emaar Properties (EMAAR) dividend yield now at 4.1% following recent price consolidation. <span class="highlight">Income stream remains sustainable</span> with 42% payout ratio. Consider for income-focused allocation review.
+            </p>
+            <div class="alert-actions">
+              <button class="alert-action" onclick="viewInCouncil('6')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                View in Council
+              </button>
+              <button class="alert-action muted" onclick="dismissAlert('6')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                Dismiss
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Rules Panel -->
+        <div class="rules-panel">
+          <div class="rules-header">
+            <div class="rules-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              Alert Rules
+            </div>
+            <button class="btn btn-sm btn-secondary" onclick="openCreateRuleModal()">+ New</button>
+          </div>
+
+          <div class="rule-item">
+            <div class="rule-header">
+              <span class="rule-status"></span>
+              <div class="rule-actions">
+                <button class="rule-action" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+                <button class="rule-action" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+              </div>
+            </div>
+            <p class="rule-text">Alert when any holding <strong>drops &gt;8%</strong> in a week</p>
+          </div>
+
+          <div class="rule-item">
+            <div class="rule-header">
+              <span class="rule-status"></span>
+              <div class="rule-actions">
+                <button class="rule-action" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+                <button class="rule-action" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+              </div>
+            </div>
+            <p class="rule-text">Alert when sector concentration <strong>exceeds 30%</strong></p>
+          </div>
+
+          <div class="rule-item">
+            <div class="rule-header">
+              <span class="rule-status paused"></span>
+              <div class="rule-actions">
+                <button class="rule-action" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+                <button class="rule-action" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+              </div>
+            </div>
+            <p class="rule-text">Alert on dividend announcements for <strong>2222, 1120</strong></p>
+          </div>
+
+          <div class="rules-footer">
+            <button class="btn btn-primary" onclick="openCreateRuleModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Create New Rule
+            </button>
+          </div>
+
+          <div class="how-alerts-work">
+            <div class="how-alerts-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              How Alerts Work
+            </div>
+            <p class="how-alerts-text">
+              Alerts are generated by the AI Analyst Council based on real-time market data, your holdings, and your investment preferences. <a href="methodology.html">Learn more about our methodology</a>.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <div class="footer-logo">
+              <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+            </div>
+            <div class="footer-slogan">Understand your portfolio before the market moves.</div>
+          </div>
+          <p class="footer-disclaimer">AlphaCouncil provides market data and AI-powered analysis for informational purposes only. This does not constitute investment advice. Past performance does not guarantee future results. Always conduct your own research before making investment decisions.</p>
+        </div>
+      </footer>
+
+    </main>
+
+    <!-- Adviser Sidebar -->
+    <aside class="adviser-sidebar" id="adviserSidebar">
+      <div class="sidebar-inner">
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            AI Adviser
+          </div>
+          <button class="sidebar-close" id="closeSidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-message adviser">
+            <div class="chat-avatar">AI</div>
+            <div>
+              <div class="chat-bubble">
+                I can help you understand your alerts and take appropriate action. You have <strong>3 high-priority alerts</strong> that warrant attention. Would you like me to explain any specific alert in detail?
+              </div>
+              <div class="chat-time">Just now</div>
+            </div>
+          </div>
+        </div>
+        <div class="suggested-questions">
+          <div class="suggested-label">Suggested Questions</div>
+          <button class="suggested-question" onclick="askQuestion('Explain the concentration risk alert')">Explain the concentration risk alert</button>
+          <button class="suggested-question" onclick="askQuestion('What should I do about the oil price warning?')">What should I do about the oil price warning?</button>
+          <button class="suggested-question" onclick="askQuestion('Why is Al Rajhi valuation flagged?')">Why is Al Rajhi valuation flagged?</button>
+        </div>
+        <div class="chat-input-area">
+          <div class="chat-input-row">
+            <textarea class="chat-input" id="chatInput" placeholder="Ask about your alerts..." rows="1"></textarea>
+            <button class="chat-send" id="chatSend">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Create Rule Modal -->
+  <div class="modal-overlay" id="createRuleModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Create Alert Rule</h3>
+        <button class="modal-close" onclick="closeCreateRuleModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Alert Type</label>
+          <select class="form-input form-select">
+            <option value="price">Price Change</option>
+            <option value="concentration">Sector Concentration</option>
+            <option value="dividend">Dividend Announcement</option>
+            <option value="news">News Event</option>
+            <option value="thesis">Thesis Score Change</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apply to</label>
+          <select class="form-input form-select">
+            <option value="all">All Holdings</option>
+            <option value="specific">Specific Tickers</option>
+            <option value="sector">Specific Sector</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Condition</label>
+            <select class="form-input form-select">
+              <option value="gt">Greater than</option>
+              <option value="lt">Less than</option>
+              <option value="eq">Equals</option>
+              <option value="change">Changes by</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Value</label>
+            <input type="text" class="form-input" placeholder="e.g., 8%">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Timeframe</label>
+          <select class="form-input form-select">
+            <option value="day">Daily</option>
+            <option value="week">Weekly</option>
+            <option value="month">Monthly</option>
+            <option value="realtime">Real-time</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeCreateRuleModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveRule()">Create Rule</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State Template (hidden by default) -->
+  <template id="emptyStateTemplate">
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 class="empty-title">All Clear</h2>
+      <p class="empty-text">You have no active alerts. The AI Analyst Council is monitoring your portfolio and will notify you of significant developments.</p>
+      <button class="btn btn-primary" onclick="runCouncilReview()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Run Fresh Council Review
+      </button>
+    </div>
+  </template>
+
+  <script src="js/api.js"></script>
+  <script src="adviser-core.js"></script>
+  <script>
+    // Initialize AlphaCouncil
+    if (typeof AlphaCouncil !== 'undefined') {
+      AlphaCouncil.init('alerts');
+    }
+
+    // ── REAL per-user alerts (replaces the static demo cards above) ──────────
+    (function () {
+      var listEl = document.getElementById('alertsList');
+      if (!listEl) return;
+      var loaded = [], oldestId = null, exhausted = false;
+
+      function badgeColor(kind) {
+        return ({ growth: '#10B981', risk: '#EF4444', technical: '#8B5CF6', macro: '#27D3C3', value: '#F59E0B' })[kind] || '#27D3C3';
+      }
+      function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
+      function timeAgo(iso) { var t = Date.parse(iso); if (isNaN(t)) return ''; var s = Math.max(0, Math.floor((Date.now() - t) / 1000)); if (s < 60) return 'just now'; var m = Math.floor(s / 60); if (m < 60) return m + 'm ago'; var h = Math.floor(m / 60); if (h < 24) return h + 'h ago'; var d = Math.floor(h / 24); if (d < 30) return d + 'd ago'; return Math.floor(d / 30) + 'mo ago'; }
+
+      function cardHtml(a) {
+        var sev = a.severity === 'warn' ? 'high' : 'medium';
+        var color = badgeColor(a.kind);
+        var href = a.url || ('stock-detail.html?ticker=' + encodeURIComponent(a.ticker_key || ''));
+        return '<div class="alert-card ' + sev + (a.read ? ' read' : '') + '" data-alert-id="' + a.id + '">'
+          + '<div class="alert-header"><div class="alert-meta">'
+          + '<span class="alert-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + esc(timeAgo(a.created_at)) + '</span>'
+          + '<span class="alert-badge" style="background:' + color + '22;color:' + color + ';border:1px solid ' + color + '55;">' + esc(a.source || 'Alert') + '</span>'
+          + (a.read ? '' : '<span class="alert-severity" style="background:rgba(39,211,195,0.15);color:#27D3C3;">New</span>')
+          + '</div></div>'
+          + (a.ticker ? '<div class="alert-tickers"><span class="ticker-tag" onclick="viewStock(\'' + esc(a.ticker_key || a.ticker) + '\')">' + esc(a.ticker) + '</span></div>' : '')
+          + '<p class="alert-message"><strong>' + esc(a.title || '') + '</strong>' + (a.body ? '<br>' + esc(a.body) : '') + '</p>'
+          + '<div class="alert-actions">'
+          + '<a class="alert-action primary" href="' + esc(href) + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View</a>'
+          + '</div></div>';
+      }
+
+      function render() {
+        if (!loaded.length) {
+          listEl.innerHTML = '<div style="padding:48px 24px;text-align:center;color:var(--fg-dim);font-size:14px;">No alerts yet. As notable moves, technical signals and news hit your holdings, they’ll show up here.</div>';
+          return;
+        }
+        listEl.innerHTML = loaded.map(cardHtml).join('')
+          + (exhausted ? '' : '<div style="text-align:center;padding:16px;"><button class="btn btn-secondary" id="alertsLoadMore">Load more</button></div>');
+        var lm = document.getElementById('alertsLoadMore');
+        if (lm) lm.addEventListener('click', function () { loadPage(); });
+        var active = document.querySelector('.tab-btn.active');
+        if (active && typeof filterAlerts === 'function') filterAlerts(active.dataset.filter);
+      }
+
+      function updateStats(unread) {
+        var qs = document.querySelectorAll('.quick-stat strong');
+        if (qs[0]) qs[0].textContent = loaded.length;
+        if (qs[1]) qs[1].textContent = unread;
+        var counts = document.querySelectorAll('.tab-btn .count');
+        if (counts[0]) counts[0].textContent = loaded.length;
+        if (counts[1]) counts[1].textContent = loaded.filter(function (a) { return a.severity === 'warn'; }).length;
+        if (counts[2]) counts[2].textContent = unread;
+      }
+
+      function loadPage() {
+        if (exhausted || !window.API || !API.alerts) return Promise.resolve();
+        return API.alerts(20, oldestId).then(function (r) {
+          var batch = (r && r.alerts) ? r.alerts : [];
+          loaded = loaded.concat(batch);
+          if (batch.length) oldestId = batch[batch.length - 1].id;
+          if (batch.length < 20) exhausted = true;
+          render();
+          updateStats(r && typeof r.unread === 'number' ? r.unread : 0);
+        });
+      }
+
+      function start() {
+        if (!window.API || !API.alerts) {
+          listEl.innerHTML = '<div style="padding:48px 24px;text-align:center;color:var(--fg-dim);font-size:14px;">Please <a href="login.html" style="color:var(--accent-primary);">sign in</a> to see your alerts.</div>';
+          return;
+        }
+        listEl.innerHTML = '<div style="padding:48px 24px;text-align:center;color:var(--fg-dim);">Loading your alerts…</div>';
+        loadPage().then(function () {
+          // visiting the page = seen → mark read (also clears the bell badge), then refresh the UI state
+          if (API.markAlertsRead) {
+            API.markAlertsRead().then(function () {
+              loaded.forEach(function (a) { a.read = true; });
+              render(); updateStats(0);
+            }).catch(function () {});
+          }
+        }).catch(function () {
+          listEl.innerHTML = '<div style="padding:48px 24px;text-align:center;color:var(--fg-dim);">Couldn’t load your alerts. Please try again.</div>';
+        });
+      }
+
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+      else start();
+    })();
+
+    // Tab filtering
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterAlerts(btn.dataset.filter);
+      });
+    });
+
+    function filterAlerts(filter) {
+      const cards = document.querySelectorAll('.alert-card');
+      cards.forEach(card => {
+        if (filter === 'all') {
+          card.style.display = '';
+        } else if (filter === 'high') {
+          card.style.display = card.classList.contains('high') ? '' : 'none';
+        } else if (filter === 'unread') {
+          card.style.display = !card.classList.contains('read') ? '' : 'none';
+        }
+      });
+    }
+
+    // Sidebar toggle
+    const adviserToggle = document.getElementById('adviserToggle');
+    const adviserSidebar = document.getElementById('adviserSidebar');
+    const closeSidebar = document.getElementById('closeSidebar');
+
+    if (adviserToggle) {
+      adviserToggle.addEventListener('click', () => {
+        adviserSidebar.classList.toggle('open');
+        adviserToggle.classList.toggle('active');
+        document.body.classList.toggle('sidebar-open');
+      });
+    }
+
+    if (closeSidebar) {
+      closeSidebar.addEventListener('click', () => {
+        adviserSidebar.classList.remove('open');
+        adviserToggle.classList.remove('active');
+        document.body.classList.remove('sidebar-open');
+      });
+    }
+
+    // Alert actions - integrated with AlphaCouncil
+    const alertData = {
+      '1': { tickers: ['1120', '1010', 'FAB'], topic: 'Banking Sector Concentration', context: 'concentration risk' },
+      '2': { tickers: ['2222'], topic: 'Oil Price Impact on Aramco', context: 'oil price impact' },
+      '3': { tickers: ['1120'], topic: 'Al Rajhi Valuation Premium', context: 'valuation' },
+      '4': { tickers: ['7010'], topic: 'stc Technical Momentum', context: 'momentum signals' }
+    };
+
+    function viewInCouncil(alertId) {
+      const alert = alertData[alertId];
+      if (alert && alert.tickers.length === 1 && typeof AlphaCouncil !== 'undefined') {
+        const ticker = alert.tickers[0];
+        AlphaCouncil.openCouncilModal({ ticker, name: alert.topic });
+      } else if (typeof AlphaCouncil !== 'undefined') {
+        AlphaCouncil.openCouncilModal();
+      } else {
+        showToast('Opening Council', 'Loading relevant Council review...', 'info');
+      }
+    }
+
+    function askAdviserAbout(topic) {
+      const responses = {
+        'concentration risk': 'The concentration risk alert was triggered because your banking sector holdings (Al Rajhi, SNB, FAB) now represent 32.2% of your portfolio. Best practices suggest keeping any single sector below 25-30% to manage correlated risk. Consider reviewing allocation to achieve better diversification.',
+        'oil price impact': 'The oil price decline of 4.2% this week directly impacts Aramco (2222) as crude is their primary revenue driver. While the dividend remains well-covered, continued commodity weakness could pressure payout expectations. Your 10.6% weight means this is a material portfolio consideration.',
+        'valuation': 'Al Rajhi Bank is trading at 18.2x forward P/E compared to its 5-year average of 15.8x and regional peer average of 14.5x. The premium reflects strong fundamentals, but elevated multiples increase sensitivity to any earnings disappointment.',
+        'momentum signals': 'stc (7010) has broken above its 50-day moving average with volume 40% above average. This technical pattern often precedes continued upward movement. Your current 5.6% allocation may be underweight relative to the positive signals.'
+      };
+
+      if (typeof AlphaCouncil !== 'undefined') {
+        AlphaCouncil.openSidebar();
+        setTimeout(() => {
+          AlphaCouncil.addChatMessage(`Tell me more about the ${topic} alert`, true);
+          setTimeout(() => {
+            const response = responses[topic] || 'I can provide more details about this alert. The AI Council monitors multiple factors including price movements, fundamentals, and market sentiment to generate these insights.';
+            AlphaCouncil.addChatMessage(response);
+          }, 600);
+        }, 300);
+      } else {
+        adviserSidebar.classList.add('open');
+        adviserToggle.classList.add('active');
+        document.body.classList.add('sidebar-open');
+
+        const chatMessages = document.getElementById('chatMessages');
+        const userMsg = document.createElement('div');
+        userMsg.className = 'chat-message user';
+        userMsg.innerHTML = `
+          <div class="chat-avatar">SK</div>
+          <div>
+            <div class="chat-bubble">Tell me more about the ${topic} alert</div>
+            <div class="chat-time">Just now</div>
+          </div>
+        `;
+        chatMessages.appendChild(userMsg);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        setTimeout(() => {
+          const response = responses[topic] || 'I can provide more details about this alert. The AI Council monitors multiple factors including price movements, fundamentals, and market sentiment to generate these insights.';
+          const adviserMsg = document.createElement('div');
+          adviserMsg.className = 'chat-message adviser';
+          adviserMsg.innerHTML = `
+            <div class="chat-avatar">AI</div>
+            <div>
+              <div class="chat-bubble">${response}</div>
+              <div class="chat-time">Just now</div>
+            </div>
+          `;
+          chatMessages.appendChild(adviserMsg);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 800);
+      }
+    }
+
+    function markAsRead(alertId) {
+      const card = document.querySelector(`[data-alert-id="${alertId}"]`);
+      if (card) {
+        card.classList.add('read');
+        showToast('Alert Updated', 'Marked as read', 'success');
+        updateAlertCounts();
+      }
+    }
+
+    function snoozeAlert(alertId) {
+      showToast('Alert Snoozed', 'You will be reminded in 24 hours', 'info');
+    }
+
+    function dismissAlert(alertId) {
+      const card = document.querySelector(`[data-alert-id="${alertId}"]`);
+      if (card) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(-20px)';
+        setTimeout(() => {
+          card.remove();
+          updateAlertCounts();
+          showToast('Alert Dismissed', 'This alert has been removed', 'success');
+        }, 300);
+      }
+    }
+
+    function createRule(type) {
+      openCreateRuleModal();
+    }
+
+    function viewStock(ticker) {
+      window.location.href = `stock-detail.html?ticker=${ticker}`;
+    }
+
+    function updateAlertCounts() {
+      const total = document.querySelectorAll('.alert-card').length;
+      const high = document.querySelectorAll('.alert-card.high').length;
+      const unread = document.querySelectorAll('.alert-card:not(.read)').length;
+
+      document.querySelector('[data-filter="all"] .count').textContent = total;
+      document.querySelector('[data-filter="high"] .count').textContent = high;
+      document.querySelector('[data-filter="unread"] .count').textContent = unread;
+
+      document.querySelector('.quick-stat strong').textContent = total;
+    }
+
+    // Modal functions
+    function openCreateRuleModal() {
+      document.getElementById('createRuleModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCreateRuleModal() {
+      document.getElementById('createRuleModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function saveRule() {
+      closeCreateRuleModal();
+      showToast('Rule Created', 'Your alert rule is now active', 'success');
+    }
+
+    document.getElementById('createRuleModal').addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-overlay')) {
+        closeCreateRuleModal();
+      }
+    });
+
+    // Chat functionality
+    function askQuestion(question) {
+      const chatInput = document.getElementById('chatInput');
+      chatInput.value = question;
+      document.getElementById('chatSend').click();
+    }
+
+    const chatSend = document.getElementById('chatSend');
+    const chatInput = document.getElementById('chatInput');
+
+    if (chatSend && chatInput) {
+      chatSend.addEventListener('click', () => {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        const chatMessages = document.getElementById('chatMessages');
+
+        const userMsg = document.createElement('div');
+        userMsg.className = 'chat-message user';
+        userMsg.innerHTML = `
+          <div class="chat-avatar">SK</div>
+          <div>
+            <div class="chat-bubble">${message}</div>
+            <div class="chat-time">Just now</div>
+          </div>
+        `;
+        chatMessages.appendChild(userMsg);
+        chatInput.value = '';
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        setTimeout(() => {
+          let response = 'I can help you understand any of your active alerts. The most urgent is the concentration risk in banking - your 32.2% allocation exceeds typical guidelines. Would you like specific recommendations for rebalancing?';
+
+          if (message.toLowerCase().includes('concentration')) {
+            response = 'Your banking concentration of 32.2% is triggered by holdings in Al Rajhi (1120), SNB (1010), and FAB. The Risk Analyst recommends considering UAE diversification through names like ADCB or Emirates NBD, which have lower correlation to your Saudi positions.';
+          } else if (message.toLowerCase().includes('oil') || message.toLowerCase().includes('aramco')) {
+            response = 'The oil price alert reflects Brent crude declining 4.2% this week. While Aramco\'s dividend is well-covered, sustained weakness below $75/bbl could pressure distributions. Your 10.6% weight is within normal ranges for a GCC-focused portfolio.';
+          } else if (message.toLowerCase().includes('rajhi') || message.toLowerCase().includes('valuation')) {
+            response = 'Al Rajhi\'s P/E of 18.2x reflects market confidence in its Islamic banking franchise. However, this premium means any earnings miss could trigger multiple compression. Consider whether this valuation aligns with your risk tolerance.';
+          }
+
+          const adviserMsg = document.createElement('div');
+          adviserMsg.className = 'chat-message adviser';
+          adviserMsg.innerHTML = `
+            <div class="chat-avatar">AI</div>
+            <div>
+              <div class="chat-bubble">${response}</div>
+              <div class="chat-time">Just now</div>
+            </div>
+          `;
+          chatMessages.appendChild(adviserMsg);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 800);
+      });
+
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          chatSend.click();
+        }
+      });
+    }
+
+    // Toast notification
+    function showToast(title, text, type = 'success') {
+      if (typeof AlphaCouncil !== 'undefined' && AlphaCouncil.showToast) {
+        AlphaCouncil.showToast(title, text, type);
+      } else {
+        console.log(`Toast: ${title} - ${text}`);
+      }
+    }
+
+    // Keyboard shortcut for search
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+        const activeEl = document.activeElement;
+        if (activeEl.tagName !== 'INPUT' && activeEl.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          document.getElementById('tickerSearch').focus();
+        }
+      }
+      if (e.key === 'Escape') {
+        closeCreateRuleModal();
+      }
+    });
+
+    // Filter by analyst
+    document.getElementById('analystFilter').addEventListener('change', (e) => {
+      const analyst = e.target.value;
+      const cards = document.querySelectorAll('.alert-card');
+      cards.forEach(card => {
+        if (analyst === 'all') {
+          card.style.display = '';
+        } else {
+          const badge = card.querySelector(`.alert-badge.${analyst}`);
+          card.style.display = badge ? '' : 'none';
+        }
+      });
+    });
+
+    // Ticker search
+    document.getElementById('tickerSearch').addEventListener('input', (e) => {
+      const search = e.target.value.toLowerCase();
+      const cards = document.querySelectorAll('.alert-card');
+      cards.forEach(card => {
+        if (!search) {
+          card.style.display = '';
+        } else {
+          const tickers = card.querySelectorAll('.ticker-tag');
+          const match = Array.from(tickers).some(t => t.textContent.toLowerCase().includes(search));
+          card.style.display = match ? '' : 'none';
+        }
+      });
+    });
+
+    function runCouncilReview() {
+      if (typeof AlphaCouncil !== 'undefined' && AlphaCouncil.openCouncilModal) {
+        AlphaCouncil.openCouncilModal({ type: 'portfolio' });
+      } else {
+        showToast('Council Review', 'Opening AI Analyst Council...', 'info');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1006 @@
+<!-- FINAL CLEANUP: Core JS consolidation + shared toast system | 2026-06-17 -->
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News — AlphaCouncil</title>
+  <meta name="description" content="Portfolio-aware news and market intelligence for GCC investors.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Shared AlphaCouncil Design System -->
+  <link rel="stylesheet" href="css/alphacouncil.css">
+  <!-- Page-specific News Styles -->
+  <style>
+
+    /* Page Header */
+    .page-header { margin-bottom: 24px; }
+    .page-header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
+    .page-header p { font-size: 14px; color: var(--fg-muted); }
+
+    /* Tabs */
+    .page-tabs { display: flex; gap: 4px; margin-bottom: 24px; padding: 4px; background: var(--surface); border-radius: 10px; width: fit-content; }
+    .page-tab { padding: 10px 20px; font-size: 13px; font-weight: 500; color: var(--fg-muted); background: transparent; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .page-tab:hover { color: var(--fg); }
+    .page-tab.active { background: var(--accent-primary); color: var(--bg-deep); }
+
+    /* Main Layout */
+    .news-layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
+    body.sidebar-open .news-layout { grid-template-columns: 1fr; }
+
+    /* Featured Story */
+    .featured-story { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 32px; display: grid; grid-template-columns: 1.2fr 1fr; transition: all 0.3s; }
+    .featured-story:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+    .featured-image { position: relative; min-height: 320px; background: linear-gradient(135deg, var(--bg-elevated), var(--surface-elevated)); overflow: hidden; }
+    .featured-image img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+    .featured-image-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(39, 211, 195, 0.1), rgba(139, 92, 246, 0.1)); }
+    .featured-image-placeholder svg { width: 80px; height: 80px; color: var(--fg-dim); opacity: 0.3; }
+    .featured-content { padding: 28px; display: flex; flex-direction: column; }
+    .featured-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .news-tag { padding: 5px 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 5px; }
+    .news-tag.ownership { background: var(--accent-violet-glow); color: var(--accent-violet); }
+    .news-tag.earnings { background: var(--success-glow); color: var(--success); }
+    .news-tag.governance { background: var(--accent-gold-glow); color: var(--accent-gold); }
+    .news-tag.projects { background: var(--accent-blue-glow); color: var(--accent-blue); }
+    .news-tag.markets { background: var(--accent-primary-glow); color: var(--accent-primary); }
+    .news-tag.dividends { background: var(--success-glow); color: var(--success); }
+    .news-date { font-size: 12px; color: var(--fg-dim); }
+    .featured-headline { font-size: 22px; font-weight: 700; line-height: 1.35; margin-bottom: 14px; letter-spacing: -0.01em; }
+    .featured-summary { font-size: 14px; color: var(--fg-muted); line-height: 1.7; margin-bottom: 20px; flex: 1; }
+    .featured-tickers { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .ticker-badge { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; font-weight: 600; color: var(--fg-muted); transition: all 0.2s; }
+    .ticker-badge:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+    .ticker-badge.in-portfolio { border-color: var(--accent-primary); background: var(--accent-primary-glow); color: var(--accent-primary); }
+    .ticker-badge.in-portfolio::before { content: ''; width: 5px; height: 5px; background: var(--accent-primary); border-radius: 50%; }
+    .featured-actions { display: flex; gap: 12px; }
+    .btn { padding: 12px 20px; font-size: 13px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+    .btn svg { width: 16px; height: 16px; }
+    .btn-primary { background: var(--accent-primary); border: none; color: var(--bg-deep); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--accent-primary-glow); }
+    .btn-secondary { background: var(--surface-elevated); border: 1px solid var(--border); color: var(--fg); }
+    .btn-secondary:hover { border-color: var(--border-strong); }
+
+    /* News Sections */
+    .news-section { margin-bottom: 32px; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .section-title { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .section-title svg { width: 18px; height: 18px; color: var(--accent-primary); }
+    .section-link { font-size: 12px; color: var(--fg-dim); text-decoration: none; transition: color 0.2s; }
+    .section-link:hover { color: var(--accent-primary); }
+
+    /* News Grid */
+    .news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    /* News Card */
+    .news-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: all 0.3s; display: flex; flex-direction: column; position: relative; }
+    .news-card:hover { border-color: var(--border-strong); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+    .news-card-image { height: 140px; background: linear-gradient(135deg, var(--bg-elevated), var(--surface-elevated)); overflow: hidden; position: relative; }
+    .news-card-image img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transition: all 0.3s; }
+    .news-card:hover .news-card-image img { opacity: 1; transform: scale(1.02); }
+    .news-card-image-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .news-card-image-placeholder svg { width: 40px; height: 40px; color: var(--fg-dim); opacity: 0.2; }
+    .news-card-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+    .news-card-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .news-card-headline { font-size: 14px; font-weight: 600; line-height: 1.45; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .news-card-summary { font-size: 12px; color: var(--fg-dim); line-height: 1.6; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+    .news-card-tickers { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    .news-card-tickers .ticker-badge { padding: 3px 8px; font-size: 10px; }
+    .news-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); margin-top: auto; }
+    .ask-adviser-btn { padding: 8px 12px; font-size: 11px; font-weight: 600; background: var(--accent-primary-glow); border: 1px solid var(--accent-primary); color: var(--accent-primary); border-radius: 6px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+    .ask-adviser-btn:hover { background: var(--accent-primary); color: var(--bg-deep); }
+    .ask-adviser-btn svg { width: 12px; height: 12px; }
+    .read-more { font-size: 11px; color: var(--fg-dim); text-decoration: none; transition: color 0.2s; }
+    .read-more:hover { color: var(--accent-primary); }
+
+    /* Relevant to Holdings Badge */
+    .holdings-relevance-badge { position: absolute; top: 12px; right: 12px; padding: 5px 10px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-gold)); border-radius: 6px; font-size: 9px; font-weight: 700; color: var(--bg-deep); text-transform: uppercase; letter-spacing: 0.03em; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(39, 211, 195, 0.3); z-index: 2; }
+    .holdings-relevance-badge svg { width: 10px; height: 10px; }
+    .news-card.relevant-to-holdings { border-color: var(--accent-primary); }
+    .news-card.relevant-to-holdings::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--accent-primary-glow), transparent); pointer-events: none; z-index: 0; }
+
+    /* Enhanced hover states */
+    .ticker-badge { cursor: pointer; transition: all 0.2s; }
+    .ticker-badge:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(39, 211, 195, 0.2); }
+    .ask-adviser-btn { position: relative; overflow: hidden; }
+    .ask-adviser-btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transform: translateX(-100%); transition: transform 0.6s; }
+    .ask-adviser-btn:hover::after { transform: translateX(100%); }
+
+    /* Top Stories Sidebar */
+    .top-stories { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; position: sticky; top: calc(var(--nav-height) + var(--indices-height) + 24px); }
+    .top-stories-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .top-stories-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .top-stories-title svg { width: 16px; height: 16px; color: var(--accent-gold); }
+    .top-story-item { padding: 14px 0; border-bottom: 1px solid var(--border); cursor: pointer; transition: all 0.2s; }
+    .top-story-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .top-story-item:hover { padding-left: 8px; }
+    .top-story-item:hover .top-story-headline { color: var(--accent-primary); }
+    .top-story-date { font-size: 11px; color: var(--fg-dim); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .top-story-date .news-tag { padding: 2px 6px; font-size: 9px; }
+    .top-story-headline { font-size: 13px; font-weight: 500; line-height: 1.5; color: var(--fg-muted); transition: color 0.2s; }
+    .summarize-btn { width: 100%; margin-top: 16px; padding: 14px; background: linear-gradient(135deg, var(--accent-violet-glow), var(--accent-primary-glow)); border: 1px solid var(--accent-violet); border-radius: 10px; font-size: 12px; font-weight: 600; color: var(--fg); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .summarize-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--accent-violet-glow); }
+    .summarize-btn svg { width: 16px; height: 16px; color: var(--accent-violet); }
+
+    /* News Page Context (extends shared sidebar-context) */
+    .context-story { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* News-specific Responsive Overrides */
+    @media (max-width: 1400px) {
+      .news-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 1200px) {
+      .news-layout { grid-template-columns: 1fr; }
+      .top-stories { position: static; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .top-stories-header { grid-column: 1 / -1; }
+      .summarize-btn { grid-column: 1 / -1; }
+      .featured-story { grid-template-columns: 1fr; }
+      .featured-image { min-height: 240px; }
+    }
+    @media (max-width: 1024px) {
+      .news-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .news-grid { grid-template-columns: 1fr; }
+      .top-stories { grid-template-columns: 1fr; }
+      .featured-story { grid-template-columns: 1fr; }
+      .featured-image { min-height: 200px; }
+      .featured-content { padding: 20px; }
+      .featured-headline { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip Link for Accessibility -->
+  <a href="#mainContent" class="ac-skip-link">Skip to main content</a>
+
+  <!-- Live Region for Screen Reader Announcements -->
+  <div id="liveRegion" class="ac-live-region" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <!-- App Navigation -->
+  <nav class="app-nav" role="navigation" aria-label="Main navigation">
+    <div class="app-nav-inner">
+      <a href="index.html" class="app-logo">
+        <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+      </a>
+      <div class="app-nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="portfolio.html">Watchlist</a>
+        <a href="markets.html">Markets</a>
+        <a href="news.html" class="active">News</a>
+        <a href="council-history.html">Council</a>
+        <a href="alerts.html">Alerts</a>
+      </div>
+      <div class="app-nav-right">
+        <div class="app-search" id="searchBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <span>Search news...</span>
+          <kbd>/</kbd>
+        </div>
+        <div class="lang-toggle">
+          <button class="active">EN</button>
+          <button>AR</button>
+        </div>
+        <button class="nav-icon-btn" id="adviserToggle" title="Toggle AI Adviser" aria-label="Toggle AI Adviser sidebar" aria-expanded="false" aria-controls="adviserSidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="nav-icon-btn" id="notificationsBtn" aria-label="Notifications, 5 unread">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="badge" aria-hidden="true">5</span>
+        </button>
+        <button class="nav-icon-btn" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button class="user-avatar" id="userMenu" aria-label="User menu for Sami" aria-haspopup="true">SK</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Market Indices Bar -->
+  <div class="indices-bar" role="region" aria-label="Live market indices">
+    <div class="indices-inner">
+      <div class="index-item">
+        <span class="index-name">TASI</span>
+        <span class="index-value">12,847.32</span>
+        <span class="index-change up">+0.82%</span>
+      </div>
+      <div class="index-item">
+        <span class="index-name">ADX</span>
+        <span class="index-value">9,234.18</span>
+        <span class="index-change up">+0.34%</span>
+      </div>
+      <div class="index-item">
+        <span class="index-name">DFM</span>
+        <span class="index-value">4,156.92</span>
+        <span class="index-change down">-0.21%</span>
+      </div>
+      <div class="index-item">
+        <span class="index-name">QSE</span>
+        <span class="index-value">10,892.45</span>
+        <span class="index-change up">+0.56%</span>
+      </div>
+      <div class="index-item">
+        <span class="index-name">Boursa Kuwait</span>
+        <span class="index-value">7,234.67</span>
+        <span class="index-change up">+0.18%</span>
+      </div>
+      <div class="index-item">
+        <span class="index-name">Brent</span>
+        <span class="index-value">$82.34</span>
+        <span class="index-change down">-0.45%</span>
+      </div>
+      <span class="indices-time">Live · 14:32 GST</span>
+    </div>
+  </div>
+
+  <!-- App Wrapper -->
+  <div class="app-wrapper" id="appWrapper">
+    <!-- Main Content -->
+    <main class="app-main" id="mainContent" role="main" aria-label="News content">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1>News</h1>
+        <p>What moved markets — and why it matters to you.</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="page-tabs">
+        <button class="page-tab active" data-tab="all">All</button>
+        <button class="page-tab" data-tab="watchlist">For Your Holdings</button>
+      </div>
+
+      <!-- Featured Story -->
+      <article class="featured-story" data-story-id="featured-1">
+        <div class="featured-image">
+          <div class="featured-image-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          </div>
+        </div>
+        <div class="featured-content">
+          <div class="featured-meta">
+            <span class="news-tag ownership">OWNERSHIP</span>
+            <span class="news-date">June 16, 2026 · 09:45 GST</span>
+          </div>
+          <h2 class="featured-headline">PIF Increases Stake in Saudi Aramco to 8.2%, Signaling Long-Term Strategic Commitment</h2>
+          <p class="featured-summary">Saudi Arabia's Public Investment Fund has acquired an additional 0.5% stake in Saudi Aramco, bringing its total ownership to 8.2%. Analysts suggest this move reinforces the Kingdom's commitment to energy sector leadership while supporting Vision 2030 diversification goals. The transaction was executed at market prices with no premium.</p>
+          <div class="featured-tickers">
+            <span class="ticker-badge in-portfolio">2222.SR</span>
+            <span class="ticker-badge">PIF</span>
+          </div>
+          <div class="featured-actions">
+            <button class="btn btn-primary" onclick="askAdviser('featured-1')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Ask Adviser
+            </button>
+            <button class="btn btn-secondary">Read Full Story</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Main Layout -->
+      <div class="news-layout">
+        <!-- Left Column - News Sections -->
+        <div class="news-main">
+          <!-- Deals & Ownership -->
+          <section class="news-section">
+            <div class="section-header">
+              <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Deals & Ownership
+              </h2>
+              <a href="#" class="section-link">View all</a>
+            </div>
+            <div class="news-grid">
+              <!-- Card 1 - Relevant to Holdings -->
+              <article class="news-card relevant-to-holdings" data-story-id="deals-1">
+                <div class="news-card-image">
+                  <div class="holdings-relevance-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    In Your Portfolio
+                  </div>
+                  <div class="news-card-image-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  </div>
+                </div>
+                <div class="news-card-body">
+                  <div class="news-card-meta">
+                    <span class="news-tag ownership">OWNERSHIP</span>
+                    <span class="news-date">14:22 GST</span>
+                  </div>
+                  <h3 class="news-card-headline">QIA Acquires Additional 2% Stake in QNB Group Through Secondary Market</h3>
+                  <p class="news-card-summary">Qatar Investment Authority increases its position in the region's largest bank, reflecting confidence in GCC banking fundamentals.</p>
+                  <div class="news-card-tickers">
+                    <span class="ticker-badge in-portfolio">QNBK.QA</span>
+                  </div>
+                  <div class="news-card-footer">
+                    <button class="ask-adviser-btn" onclick="askAdviser('deals-1')">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                      Ask Adviser
+                    </button>
+                    <a href="#" class="read-more">Read more</a>
+                  </div>
+                </div>
+              </article>
+
+              <!-- Card 2 -->
+              <article class="news-card" data-story-id="deals-2">
+                <div class="news-card-image">
+                  <div class="news-card-image-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  </div>
+                </div>
+                <div class="news-card-body">
+                  <div class="news-card-meta">
+                    <span class="news-tag ownership">OWNERSHIP</span>
+                    <span class="news-date">11:30 GST</span>
+                  </div>
+                  <h3 class="news-card-headline">Mubadala Completes Acquisition of 15% Stake in ADNOC Logistics</h3>
+                  <p class="news-card-summary">The deal values ADNOC Logistics at $8.2 billion, marking a significant expansion in UAE logistics infrastructure.</p>
+                  <div class="news-card-tickers">
+                    <span class="ticker-badge">ADNOCLS.AD</span>
+                    <span class="ticker-badge">Mubadala</span>
+                  </div>
+                  <div class="news-card-footer">
+                    <button class="ask-adviser-btn" onclick="askAdviser('deals-2')">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                      Ask Adviser
+                    </button>
+                    <a href="#" class="read-more">Read more</a>
+                  </div>
+                </div>
+              </article>
+
+              <!-- Card 3 - Relevant to Holdings -->
+              <article class="news-card relevant-to-holdings" data-story-id="deals-3">
+                <div class="news-card-image">
+                  <div class="holdings-relevance-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    In Your Portfolio
+                  </div>
+                  <div class="news-card-image-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  </div>
+                </div>
+                <div class="news-card-body">
+                  <div class="news-card-meta">
+                    <span class="news-tag ownership">OWNERSHIP</span>
+                    <span class="news-date">09:15 GST</span>
+                  </div>
+                  <h3 class="news-card-headline">Al Rajhi Bank CEO Increases Personal Stake by SAR 50M</h3>
+                  <p class="news-card-summary">Insider purchase signals management confidence in the bank's growth trajectory and upcoming quarterly results.</p>
+                  <div class="news-card-tickers">
+                    <span class="ticker-badge in-portfolio">1120.SR</span>
+                  </div>
+                  <div class="news-card-footer">
+                    <button class="ask-adviser-btn" onclick="askAdviser('deals-3')">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                      Ask Adviser
+                    </button>
+                    <a href="#" class="read-more">Read more</a>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- Earnings & Capital -->
+          <section class="news-section">
+            <div class="section-header">
+              <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Earnings & Capital
+              </h2>
+              <a href="#" class="section-link">View all</a>
+            </div>
+            <div class="news-grid">
+              <!-- Card 1 - Relevant to Holdings -->
+              <article class="news-card relevant-to-holdings" data-story-id="earnings-1">
+                <div class="news-card-image">
+                  <div class="holdings-relevance-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    In Your Portfolio
+                  </div>
+                  <div class="news-card-image-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  </div>
+                </div>
+                <div class="news-card-body">
+                  <div class="news-card-meta">
+                    <span class="news-tag earnings">EARNINGS</span>
+                    <span class="news-date">13:45 GST</span>
+                  </div>
+                  <h3 class="news-card-headline">stc Reports Q2 Net Profit of SAR 3.2B, Exceeds Consensus by 8%</h3>
+                  <p class="news-card-summary">Strong enterprise and 5G revenue growth drive outperformance. Management raises full-year guidance citing digital services momentum.</p>
+                  <div class="news-card-tickers">
+                    <span class="ticker-badge in-portfolio">7010.SR</span>
+                  </div>
+                  <div class="news-card-footer">
+                    <button class="ask-adviser-btn" onclick="askAdviser('earnings-1')">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                      Ask Adviser
+                    </button>
+                    <a href="#" class="read-more">Read more</a>
+                  </div>
+                </div>
+              </article>
+
+              <!-- Card 2 -->
+              <article class="news-card" data-story-id="earnings-2">
+                <div class="news-card-image">
+                  <div class="news-card-image-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  </div>
+                </div>
+                <div class="news-card-body">
+                  <div class="news-card-meta">
+                    <span class="news-tag dividends">DIVIDENDS</span>
+                    <span class="news-date">12:00 GST</span>
+                  </div>
+                  <h3 class="news-card-headline">FAB Announces Special Dividend of AED 0.35 Per Share</h3>
+                  <p class="news-card-summary">First Abu Dhabi Bank declares special dividend following record H1 profits, bringing total 2026 payout to AED 1.12 per share.</p>
+                  <div class="news-card-tickers">
+                    <span class="ticker-badge in-portfolio">FAB.AD</span>
+                  </div>
+                  <div class="news-card-footer">
+                    <button class="ask-adviser-btn" onclick="askAdviser('earnings-2')">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                      Ask Adviser
+                    </button>
+                    <a href="#" class="read-more">Read more</a>
+                  </div>
+                </div>
+              </article>
+
+              <!-- Card 3 -->
+              <article class="news-card" data-story-id="earnings-3">
+                <div class="news-card-image">
+                  <div class="news-card-image-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  </div>
+                </div>
+                <div class="news-card-body">
+                  <div class="news-card-meta">
+                    <span class="news-tag earnings">EARNINGS</span>
+                    <span class="news-date">10:30 GST</span>
+                  </div>
+                  <h3 class="news-card-headline">SABIC Q2 Profits Fall 12% on Lower Petrochemical Margins</h3>
+                  <p class="news-card-summary">Global oversupply pressures continue to weigh on specialty chemicals segment. Management expects normalization in H2 2026.</p>
+                  <div class="news-card-tickers">
+                    <span class="ticker-badge in-portfolio">2010.SR</span>
+                  </div>
+                  <div class="news-card-footer">
+                    <button class="ask-adviser-btn" onclick="askAdviser('earnings-3')">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                      Ask Adviser
+                    </button>
+                    <a href="#" class="read-more">Read more</a>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- Companies & Projects -->
+          <section class="news-section">
+            <div class="section-header">
+              <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Companies & Projects
+              </h2>
+              <a href="#" class="section-link">View all</a>
+            </div>
+            <div class="news-grid">
+              <!-- Card 1 -->
+              <article class="news-card" data-story-id="projects-1">
+                <div class="news-card-image">
+                  <div class="news-card-image-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  </div>
+                </div>
+                <div class="news-card-body">
+                  <div class="news-card-meta">
+                    <span class="news-tag projects">PROJECTS</span>
+                    <span class="news-date">15:10 GST</span>
+                  </div>
+                  <h3 class="news-card-headline">Emaar Properties Wins AED 4.5B Contract for Dubai Creek Tower Development</h3>
+                  <p class="news-card-summary">The iconic project marks Emaar's largest single contract in five years, with construction expected to complete by 2029.</p>
+                  <div class="news-card-tickers">
+                    <span class="ticker-badge in-portfolio">EMAAR.DU</span>
+                  </div>
+                  <div class="news-card-footer">
+                    <button class="ask-adviser-btn" onclick="askAdviser('projects-1')">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                      Ask Adviser
+                    </button>
+                    <a href="#" class="read-more">Read more</a>
+                  </div>
+                </div>
+              </article>
+
+              <!-- Card 2 -->
+              <article class="news-card" data-story-id="projects-2">
+                <div class="news-card-image">
+                  <div class="news-card-image-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  </div>
+                </div>
+                <div class="news-card-body">
+                  <div class="news-card-meta">
+                    <span class="news-tag governance">GOVERNANCE</span>
+                    <span class="news-date">14:00 GST</span>
+                  </div>
+                  <h3 class="news-card-headline">Saudi Aramco Appoints New Chief Strategy Officer From McKinsey</h3>
+                  <p class="news-card-summary">Leadership change signals accelerated focus on downstream expansion and energy transition initiatives under Vision 2030.</p>
+                  <div class="news-card-tickers">
+                    <span class="ticker-badge in-portfolio">2222.SR</span>
+                  </div>
+                  <div class="news-card-footer">
+                    <button class="ask-adviser-btn" onclick="askAdviser('projects-2')">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                      Ask Adviser
+                    </button>
+                    <a href="#" class="read-more">Read more</a>
+                  </div>
+                </div>
+              </article>
+
+              <!-- Card 3 -->
+              <article class="news-card" data-story-id="projects-3">
+                <div class="news-card-image">
+                  <div class="news-card-image-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  </div>
+                </div>
+                <div class="news-card-body">
+                  <div class="news-card-meta">
+                    <span class="news-tag markets">EXPANSION</span>
+                    <span class="news-date">11:45 GST</span>
+                  </div>
+                  <h3 class="news-card-headline">QNB Group Opens New Regional Hub in Riyadh Financial District</h3>
+                  <p class="news-card-summary">The expansion strengthens QNB's cross-border presence as Saudi Arabia emerges as key growth market for GCC banks.</p>
+                  <div class="news-card-tickers">
+                    <span class="ticker-badge in-portfolio">QNBK.QA</span>
+                  </div>
+                  <div class="news-card-footer">
+                    <button class="ask-adviser-btn" onclick="askAdviser('projects-3')">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                      Ask Adviser
+                    </button>
+                    <a href="#" class="read-more">Read more</a>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right Column - Top Stories -->
+        <aside class="top-stories">
+          <div class="top-stories-header">
+            <h3 class="top-stories-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              Top Stories
+            </h3>
+          </div>
+
+          <div class="top-story-item" onclick="askAdviser('top-1')">
+            <div class="top-story-date">
+              <span class="news-tag markets">MARKETS</span>
+              15:30 GST
+            </div>
+            <p class="top-story-headline">TASI Reaches 3-Month High as Foreign Inflows Accelerate to $420M Weekly</p>
+          </div>
+
+          <div class="top-story-item" onclick="askAdviser('top-2')">
+            <div class="top-story-date">
+              <span class="news-tag earnings">EARNINGS</span>
+              14:15 GST
+            </div>
+            <p class="top-story-headline">UAE Banks Report Record H1 Profits Amid Strong Loan Growth</p>
+          </div>
+
+          <div class="top-story-item" onclick="askAdviser('top-3')">
+            <div class="top-story-date">
+              <span class="news-tag ownership">OWNERSHIP</span>
+              12:45 GST
+            </div>
+            <p class="top-story-headline">MSCI Announces GCC Weightage Increase in EM Index Effective September</p>
+          </div>
+
+          <div class="top-story-item" onclick="askAdviser('top-4')">
+            <div class="top-story-date">
+              <span class="news-tag projects">PROJECTS</span>
+              10:00 GST
+            </div>
+            <p class="top-story-headline">Saudi Arabia Launches $100B Green Hydrogen Initiative</p>
+          </div>
+
+          <div class="top-story-item" onclick="askAdviser('top-5')">
+            <div class="top-story-date">
+              <span class="news-tag governance">GOVERNANCE</span>
+              09:30 GST
+            </div>
+            <p class="top-story-headline">CMA Issues New ESG Disclosure Requirements for Listed Companies</p>
+          </div>
+
+          <button class="summarize-btn" onclick="summarizeNews()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Summarize today's news for my holdings
+          </button>
+        </aside>
+      </div>
+    </main>
+
+    <!-- Adviser Sidebar -->
+    <aside class="adviser-sidebar" id="adviserSidebar" role="complementary" aria-label="AI Adviser" aria-hidden="true">
+      <div class="sidebar-inner">
+        <div class="sidebar-header">
+          <div class="sidebar-header-left">
+            <div class="sidebar-logo" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="sidebar-title">
+              <h3>AlphaCouncil Adviser</h3>
+              <p aria-live="polite">Ready to help</p>
+            </div>
+          </div>
+          <div class="sidebar-header-right">
+            <button class="sidebar-btn" id="closeSidebar" aria-label="Close sidebar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-context" id="newsContext" style="display: none;">
+          <div class="context-label">Discussing</div>
+          <p class="context-story" id="contextStory"></p>
+          <button class="context-clear" onclick="clearContext()">Clear context</button>
+        </div>
+
+        <div class="sidebar-content">
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">Suggested Questions</div>
+            <div class="suggested-questions">
+              <button class="suggested-question" data-question="What news today affects my holdings?">What news today affects my holdings?</button>
+              <button class="suggested-question" data-question="How does the PIF stake increase impact Aramco's thesis?">How does the PIF stake increase impact Aramco's thesis?</button>
+              <button class="suggested-question" data-question="What are analysts saying about GCC banks?">What are analysts saying about GCC banks?</button>
+              <button class="suggested-question" data-question="Summarize today's earnings reports">Summarize today's earnings reports</button>
+            </div>
+          </div>
+
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-message adviser">
+              <div class="chat-avatar">AC</div>
+              <div>
+                <div class="chat-bubble">
+                  <strong>Welcome to news analysis.</strong><br><br>
+                  I can help you understand how today's news may affect your portfolio. Click "Ask Adviser" on any story, or ask me directly about market developments.<br><br>
+                  <em>Data analysis only — not financial advice.</em>
+                </div>
+                <div class="chat-time">Just now</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <div class="chat-input-row">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Ask about news or your holdings...">
+            <button class="chat-send" id="chatSend">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+          AlphaCouncil
+        </div>
+        <p class="footer-slogan">Your AI adviser for TADAWUL, ADX and DFM.</p>
+      </div>
+      <p class="footer-disclaimer">AlphaCouncil provides data analysis and portfolio intelligence tools. All content is for informational purposes only and does not constitute financial advice, investment recommendations, or an offer to buy or sell securities. Past performance is not indicative of future results. Always conduct your own research and consult with qualified financial advisors before making investment decisions.</p>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <div class="toast-icon success">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="toast-content">
+      <div class="toast-title" id="toastTitle">Success</div>
+      <div class="toast-text" id="toastText">Action completed</div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="adviser-core.js"></script>
+  <script>
+    // ---- REAL NEWS from the live AI pipeline (/api/news/latest, /for-holdings) ----
+    let newsById = {};
+    function escN(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+    function newsImg(it){ return it && it.gen_image ? ('/api/news/image/' + encodeURIComponent(it.gen_image)) : null; }
+    function fmtNewsDate(d){ return d ? String(d).slice(0,10) : ''; }
+    function tickerBadge(it){ return it.ticker_key ? '<span class="ticker-badge">'+escN(it.ticker_key.split('_')[0])+'</span>' : ''; }
+
+    function renderFeatured(it){
+      const art = document.querySelector('.featured-story'); if(!art || !it) return;
+      newsById[it.id] = it; art.setAttribute('data-story-id', it.id);
+      const img = newsImg(it), imgWrap = art.querySelector('.featured-image');
+      if(imgWrap && img) imgWrap.innerHTML = '<img src="'+img+'" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.remove()">';
+      const tag = art.querySelector('.news-tag'); if(tag) tag.textContent = (it.category||'news').toUpperCase();
+      const dt = art.querySelector('.news-date'); if(dt) dt.textContent = fmtNewsDate(it.date);
+      const hl = art.querySelector('.featured-headline'); if(hl) hl.textContent = it.headline_en || it.title || '';
+      const sm = art.querySelector('.featured-summary'); if(sm) sm.textContent = it.ai_summary_en || it.snippet || '';
+      const tk = art.querySelector('.featured-tickers'); if(tk) tk.innerHTML = tickerBadge(it);
+      const actions = art.querySelector('.featured-actions');
+      if(actions){
+        actions.innerHTML = '<button class="btn btn-primary" data-act="ask"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Ask Adviser</button>'
+          + (it.url ? '<a class="btn btn-secondary" href="'+escN(it.url)+'" target="_blank" rel="noopener">Read Full Story ↗</a>' : '');
+        const ab = actions.querySelector('[data-act=ask]'); if(ab) ab.addEventListener('click', function(){ askNews(it.id); });
+      }
+    }
+
+    function cardHtml(it){
+      newsById[it.id] = it;
+      const img = newsImg(it);
+      return '<article class="news-card" data-id="'+escN(it.id)+'">'
+        +'<div class="news-card-image">'+(img?'<img src="'+img+'" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">':'')+'</div>'
+        +'<div class="news-card-body">'
+          +'<div class="news-card-meta"><span class="news-tag">'+escN((it.category||'news').toUpperCase())+'</span><span class="news-date">'+fmtNewsDate(it.date)+'</span></div>'
+          +'<h3 class="news-card-headline">'+escN(it.headline_en||it.title||'')+'</h3>'
+          +'<p class="news-card-summary">'+escN(it.ai_summary_en||it.snippet||'')+'</p>'
+          +(it.ticker_key?'<div class="news-card-tickers">'+tickerBadge(it)+'</div>':'')
+          +'<div class="news-card-footer"><button class="btn-text" data-act="ask">Ask Adviser</button>'+(it.url?'<a class="btn-text" href="'+escN(it.url)+'" target="_blank" rel="noopener">Read ↗</a>':'')+'</div>'
+        +'</div></article>';
+    }
+
+    function renderMain(items){
+      const main = document.querySelector('.news-main'); if(!main) return;
+      if(!items.length){ main.innerHTML = '<div style="padding:48px;text-align:center;color:var(--fg-dim);">No news available right now.</div>'; return; }
+      main.innerHTML = '<section class="news-section"><div class="section-header"><h2 class="section-title">Latest</h2></div><div class="news-grid">'
+        + items.map(cardHtml).join('') + '</div></section>';
+      main.querySelectorAll('[data-act=ask]').forEach(function(b){ b.addEventListener('click', function(){ const c=b.closest('[data-id]'); if(c) askNews(c.getAttribute('data-id')); }); });
+    }
+
+    async function loadNews(tab){
+      const main = document.querySelector('.news-main');
+      if(main) main.innerHTML = '<div style="padding:48px;text-align:center;color:var(--fg-dim);">Loading news…</div>';
+      let items;
+      try { items = await (tab==='watchlist' ? API.holdingsNews(18) : API.latestNews(18)); }
+      catch(e){
+        if(main){
+          if(e && e.status===401) main.innerHTML = '<div style="padding:48px;text-align:center;color:var(--fg-dim);">Sign in to see news filtered to your holdings.</div>';
+          else main.innerHTML = '<div style="padding:48px;text-align:center;color:var(--fg-dim);">Could not load news. '+escN(e && e.message || '')+'</div>';
+        }
+        return;
+      }
+      items = Array.isArray(items) ? items : [];
+      if(items.length){ renderFeatured(items[0]); renderMain(items.slice(1)); }
+      else renderMain([]);
+    }
+
+    function askNews(id){
+      const it = newsById[id]; if(!it) return;
+      AlphaCouncil.openSidebar();
+      AlphaCouncil.askQuestion('What does this mean for me: ' + (it.headline_en || it.title || ''));
+    }
+    window.askAdviser = function(id){ askNews(id); };
+
+    // Initialize AlphaCouncil for News page + load real news
+    document.addEventListener('DOMContentLoaded', () => {
+      AlphaCouncil.init('news');
+      document.querySelectorAll('.page-tab').forEach(function(t){
+        t.addEventListener('click', function(){
+          document.querySelectorAll('.page-tab').forEach(function(x){ x.classList.remove('active'); });
+          t.classList.add('active');
+          loadNews(t.getAttribute('data-tab'));
+        });
+      });
+      loadNews('all');
+    });
+
+    // News story data for context
+    const newsStories = {
+      'featured-1': {
+        headline: 'PIF Increases Stake in Saudi Aramco to 8.2%',
+        summary: 'Saudi Arabia\'s Public Investment Fund has acquired an additional 0.5% stake in Saudi Aramco, bringing its total ownership to 8.2%.',
+        tickers: ['2222.SR']
+      },
+      'deals-1': {
+        headline: 'QIA Acquires Additional 2% Stake in QNB Group',
+        summary: 'Qatar Investment Authority increases its position in the region\'s largest bank.',
+        tickers: ['QNBK.QA']
+      },
+      'deals-2': {
+        headline: 'Mubadala Completes Acquisition of 15% Stake in ADNOC Logistics',
+        summary: 'The deal values ADNOC Logistics at $8.2 billion.',
+        tickers: ['ADNOCLS.AD']
+      },
+      'deals-3': {
+        headline: 'Al Rajhi Bank CEO Increases Personal Stake by SAR 50M',
+        summary: 'Insider purchase signals management confidence.',
+        tickers: ['1120.SR']
+      },
+      'earnings-1': {
+        headline: 'stc Reports Q2 Net Profit of SAR 3.2B, Exceeds Consensus',
+        summary: 'Strong enterprise and 5G revenue growth drive outperformance.',
+        tickers: ['7010.SR']
+      },
+      'earnings-2': {
+        headline: 'FAB Announces Special Dividend of AED 0.35 Per Share',
+        summary: 'First Abu Dhabi Bank declares special dividend following record H1 profits.',
+        tickers: ['FAB.AD']
+      },
+      'earnings-3': {
+        headline: 'SABIC Q2 Profits Fall 12% on Lower Petrochemical Margins',
+        summary: 'Global oversupply pressures continue to weigh on specialty chemicals.',
+        tickers: ['2010.SR']
+      },
+      'projects-1': {
+        headline: 'Emaar Properties Wins AED 4.5B Contract',
+        summary: 'The iconic Dubai Creek Tower project marks Emaar\'s largest single contract.',
+        tickers: ['EMAAR.DU']
+      },
+      'projects-2': {
+        headline: 'Saudi Aramco Appoints New Chief Strategy Officer',
+        summary: 'Leadership change signals accelerated focus on energy transition.',
+        tickers: ['2222.SR']
+      },
+      'projects-3': {
+        headline: 'QNB Group Opens New Regional Hub in Riyadh',
+        summary: 'The expansion strengthens QNB\'s cross-border presence.',
+        tickers: ['QNBK.QA']
+      },
+      'top-1': {
+        headline: 'TASI Reaches 3-Month High as Foreign Inflows Accelerate',
+        summary: 'Foreign inflows hit $420M weekly.',
+        tickers: []
+      },
+      'top-2': {
+        headline: 'UAE Banks Report Record H1 Profits',
+        summary: 'Strong loan growth drives performance.',
+        tickers: ['FAB.AD']
+      },
+      'top-3': {
+        headline: 'MSCI Announces GCC Weightage Increase',
+        summary: 'Changes effective September in EM Index.',
+        tickers: []
+      },
+      'top-4': {
+        headline: 'Saudi Arabia Launches $100B Green Hydrogen Initiative',
+        summary: 'Major energy transition investment announced.',
+        tickers: ['2222.SR']
+      },
+      'top-5': {
+        headline: 'CMA Issues New ESG Disclosure Requirements',
+        summary: 'New requirements for listed companies.',
+        tickers: []
+      }
+    };
+
+    // Legacy function mappings
+    function showToast(title, text, type) { AlphaCouncil.showToast(title, text, type); }
+    function toggleSidebar() { AlphaCouncil.toggleSidebar(); }
+    function addChatMessage(text, isUser) { AlphaCouncil.addChatMessage(text, isUser); }
+
+    // Elements
+    const newsContext = document.getElementById('newsContext');
+    const contextStory = document.getElementById('contextStory');
+    let currentStoryContext = null;
+
+    // Check if ticker is in user holdings
+    const userHoldings = ['2222.SR', '1120.SR', '7010.SR', 'QNBK.QA', 'FAB.AD', '2010.SR', 'EMAAR.DU'];
+    function isInPortfolio(ticker) {
+      return userHoldings.some(h => h.includes(ticker.replace('.SR','').replace('.AD','').replace('.DU','').replace('.QA','')));
+    }
+
+    // Ask Adviser about a story - now uses AlphaCouncil
+    function askAdviser(storyId) {
+      const story = newsStories[storyId];
+      if (!story) return;
+      AlphaCouncil.askAboutNews(storyId, story.headline, story.tickers);
+
+      // Also update local context display
+      if (newsContext && contextStory) {
+        currentStoryContext = story;
+        contextStory.textContent = story.headline;
+        newsContext.style.display = 'block';
+      }
+    }
+
+    // Clear context
+    function clearContext() {
+      currentStoryContext = null;
+      if (newsContext) newsContext.style.display = 'none';
+      AlphaCouncil.clearNewsContext();
+    }
+
+    // Summarize news for holdings
+    function summarizeNews() {
+      AlphaCouncil.openSidebar();
+      setTimeout(() => {
+        AlphaCouncil.addChatMessage('Summarize today\'s news for my holdings', true);
+        setTimeout(() => {
+          AlphaCouncil.addChatMessage(`<strong>Today's News Summary for Your Holdings</strong><br><br>
+            <strong>Positive developments:</strong><br>
+            • <strong>Aramco (2222):</strong> PIF stake increase signals long-term confidence<br>
+            • <strong>Al Rajhi (1120):</strong> CEO insider buying suggests management optimism<br>
+            • <strong>stc (7010):</strong> Q2 earnings beat consensus by 8%<br>
+            • <strong>QNB (QNBK):</strong> New Riyadh hub expands regional presence<br><br>
+            <strong>Watchpoints:</strong><br>
+            • <strong>SABIC (2010):</strong> Q2 profits down 12% on margin pressure<br>
+            • <strong>FAB:</strong> Special dividend announced (positive for income)<br><br>
+            <strong>Net sentiment:</strong> Constructive. Banking and energy sectors leading.`);
+        }, 800);
+      }, 300);
+    }
+
+    // Add hover effects to all interactive cards
+    document.querySelectorAll('.news-card, .top-story-item').forEach(card => {
+      card.style.cursor = 'pointer';
+    });
+
+    // Wire up ticker badges to navigate to stock detail
+    document.querySelectorAll('.ticker-badge').forEach(badge => {
+      badge.style.cursor = 'pointer';
+      badge.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const ticker = badge.textContent.trim().split('.')[0];
+        if (ticker && ticker !== 'PIF' && ticker !== 'Mubadala') {
+          window.location.href = `stock-detail.html?ticker=${ticker}`;
+        }
+      });
+    });
+
+    // Tab switching
+    document.querySelectorAll('.page-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        if (tab.dataset.tab === 'watchlist') {
+          showToast('Filtered', 'Showing news for your holdings only', 'info');
+        } else {
+          showToast('All News', 'Showing all GCC market news', 'info');
+        }
+      });
+    });
+
+    // Language toggle
+    document.querySelectorAll('.lang-toggle button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        showToast('Language', `Switched to ${btn.textContent}`, 'info');
+      });
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        AlphaCouncil.closeCouncilModal();
+      }
+      if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        AlphaCouncil.openSidebar();
+      }
+    });
+
+    // Top story items are clickable
+    document.querySelectorAll('.top-story-item').forEach((item, index) => {
+      item.style.cursor = 'pointer';
+    });
+  </script>
+</body>
+</html>
