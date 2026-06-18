@@ -1119,6 +1119,14 @@
         html += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin:16px 20px;">' + scen('Bull', sc.bull, 'var(--success)') + scen('Base', sc.base, 'var(--accent-gold)') + scen('Bear', sc.bear, 'var(--danger)') + '</div>';
       }
       body.innerHTML = html;
+      // D7: real thesis cards → real adviser (askAboutDimension), replacing the dead canned map.
+      body.querySelectorAll('.dimension-card').forEach(function (card) {
+        const nm = card.querySelector('.dimension-name'); if (!nm) return;
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', function () {
+          if (window.AlphaCouncil && AlphaCouncil.askAboutDimension) AlphaCouncil.askAboutDimension(nm.textContent.trim(), currentStock.name, currentStock.ticker);
+        });
+      });
     }
 
     // Legacy function mappings
@@ -1203,36 +1211,6 @@
       }
     });
 
-    // Make thesis dimension cards interactive
-    const dimensionExplanations = {
-      'Valuation': `<strong>Valuation Analysis for ${currentStock.name}</strong><br><br>Current P/E of 14.2x is near the historical average for integrated energy names. EV/EBITDA of 8.4x appears reasonable relative to global peers like Exxon (9.1x) and Shell (7.8x).<br><br><strong>Key metrics:</strong><br>• P/B Ratio: 2.1x<br>• vs Sector Avg: -5%<br><br>Data suggests valuation is fair, neither stretched nor compelling.`,
-      'Growth': `<strong>Growth Analysis for ${currentStock.name}</strong><br><br>Revenue growth of 4.2% YoY reflects stable upstream production and expanding downstream capacity.<br><br><strong>Key drivers:</strong><br>• Downstream expansion in Asia<br>• Blue hydrogen investments<br>• Chemicals integration<br><br>Data suggests medium-term growth trajectory is constructive.`,
-      'Profitability': `<strong>Profitability Analysis for ${currentStock.name}</strong><br><br>Net margin of 28.4% leads global integrated peers significantly. ROE of 32.1% reflects operational excellence.<br><br><strong>Key metrics:</strong><br>• Net Margin: 28.4%<br>• ROE: 32.1%<br>• ROA: 14.8%<br>• vs Sector Avg: +18%<br><br>This is a core strength of the investment thesis.`,
-      'Quality': `<strong>Quality Analysis for ${currentStock.name}</strong><br><br>As the world's lowest cost oil producer, Aramco maintains significant competitive advantages.<br><br><strong>Key factors:</strong><br>• Lifting cost: ~$3/barrel<br>• Reserve replacement: >100%<br>• Reserve life: 50+ years<br><br>Data suggests quality metrics support long-term position.`,
-      'Dividends': `<strong>Dividend Analysis for ${currentStock.name}</strong><br><br>The 5.2% dividend yield with 68% payout ratio provides stable income for investors.<br><br><strong>Key metrics:</strong><br>• Quarterly distribution<br>• Payout ratio: 68%<br>• Dividend growth: Stable<br><br>Income dimension is a key strength for portfolio positioning.`,
-      'Ownership': `<strong>Ownership Analysis for ${currentStock.name}</strong><br><br>PIF maintains a 98% stake, ensuring strategic alignment with Saudi Vision 2030.<br><br><strong>Key observations:</strong><br>• PIF recently increased stake to 8.2%<br>• Government alignment is strong<br>• Float remains limited (1.8%)<br><br>Ownership quality is among the highest in the GCC.`,
-      'Governance': `<strong>Governance Analysis for ${currentStock.name}</strong><br><br>Board composition has become increasingly international since the 2019 IPO.<br><br><strong>Key factors:</strong><br>• Independent directors: 4<br>• Audit committee: International standard<br>• Disclosure quality: Improved significantly<br><br>Governance trajectory is positive.`,
-      'ESG': `<strong>ESG Analysis for ${currentStock.name}</strong><br><br>Carbon intensity targets have been set, with hydrogen and renewables investments progressing.<br><br><strong>Key initiatives:</strong><br>• Net-zero by 2050 commitment<br>• Blue hydrogen projects<br>• Solar/wind investments<br><br>ESG is improving but remains a watchpoint for long-term investors.`,
-      'Macro': `<strong>Macro Analysis for ${currentStock.name}</strong><br><br>Oil at $82 supports healthy margins. Global demand remains resilient despite energy transition narrative.<br><br><strong>Key factors:</strong><br>• OPEC+ production discipline<br>• China demand recovery<br>• Refining margins stable<br><br>Macro environment is supportive for near-term.`,
-      'Momentum': `<strong>Momentum Analysis for ${currentStock.name}</strong><br><br>20-day momentum is positive at +2.1%. Price is above both 50-day and 200-day moving averages.<br><br><strong>Key signals:</strong><br>• Above 50-day MA: Yes<br>• Above 200-day MA: Yes<br>• Trend: Upward<br><br>Technical momentum supports the position.`,
-      'Technicals': `<strong>Technical Analysis for ${currentStock.name}</strong><br><br>RSI at 54 suggests neutral momentum. Key support at SAR 27.50, resistance near SAR 30.00.<br><br><strong>Key levels:</strong><br>• Support: SAR 27.50<br>• Resistance: SAR 30.00<br>• RSI: 54 (Neutral)<br><br>Data suggests watching for breakout above resistance.`,
-      'Sentiment & News': `<strong>Sentiment Analysis for ${currentStock.name}</strong><br><br>Net positive analyst sentiment following PIF stake increase. Oil supply headlines remain the primary driver of short-term moves.<br><br><strong>Recent catalysts:</strong><br>• PIF stake increase (+)<br>• Q2 earnings in line<br>• CSO appointment<br><br>Sentiment is constructive but news-dependent.`
-    };
-
-    document.querySelectorAll('.dimension-card').forEach(card => {
-      card.style.cursor = 'pointer';
-      card.addEventListener('click', () => {
-        const dimensionName = card.querySelector('.dimension-name').textContent;
-        const explanation = dimensionExplanations[dimensionName];
-        if (explanation) {
-          AlphaCouncil.openSidebar();
-          setTimeout(() => {
-            AlphaCouncil.addChatMessage(`Explain the ${dimensionName} dimension for ${currentStock.name}`, true);
-            setTimeout(() => AlphaCouncil.addChatMessage(explanation), 600);
-          }, 300);
-        }
-      });
-    });
   </script>
 </body>
 </html>

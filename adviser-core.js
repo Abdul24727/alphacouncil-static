@@ -704,6 +704,8 @@ const AlphaCouncil = (function() {
     if (ticker) {
       const input = modal.querySelector('#alertTicker');
       if (input) input.value = ticker;
+      const lbl = modal.querySelector('#alertTickerLabel');
+      if (lbl) lbl.textContent = String(ticker).split('_')[0];
     }
 
     modal.classList.add('open');
@@ -725,32 +727,26 @@ const AlphaCouncil = (function() {
             <div class="modal-icon" style="background: var(--accent-primary-glow);">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-primary);"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             </div>
-            <div><h2>Set Price Alert</h2><p>Get notified when conditions are met</p></div>
+            <div><h2>Alerts &amp; Monitoring</h2><p>How AlphaCouncil keeps you informed</p></div>
           </div>
           <button class="modal-close" onclick="AlphaCouncil.closeAlertModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </button>
         </div>
         <div class="modal-body">
-          <div class="form-group">
-            <label class="form-label">Stock</label>
-            <input type="text" class="form-input" id="alertTicker" placeholder="e.g., 2222, ARAMCO">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Alert Type</label>
-            <select class="form-input" id="alertType">
-              <option value="above">Price goes above</option>
-              <option value="below">Price goes below</option>
-              <option value="change">Price changes by %</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Target Value</label>
-            <input type="number" class="form-input" id="alertValue" placeholder="Enter target price or %">
-          </div>
-          <div class="modal-actions" style="display: flex; gap: 12px; margin-top: 24px;">
-            <button class="btn btn-secondary" style="flex: 1;" onclick="AlphaCouncil.closeAlertModal()">Cancel</button>
-            <button class="btn btn-primary" style="flex: 1;" onclick="AlphaCouncil.createAlert()">Create Alert</button>
+          <input type="hidden" id="alertTicker">
+          <p style="color: var(--fg-muted); font-size: 13px; line-height: 1.6; margin: 0 0 14px;">
+            AlphaCouncil automatically monitors your <strong>holdings</strong> and <strong>watchlist</strong> for
+            significant price moves, technical signals and breaking news. These alerts arrive in your
+            <strong>🔔 notifications</strong> — no manual setup required.
+          </p>
+          <p style="color: var(--fg-dim); font-size: 12px; line-height: 1.6; margin: 0 0 20px;">
+            Custom one-off price triggers aren’t available yet. To start monitoring
+            <strong id="alertTickerLabel">this stock</strong>, add it to your watchlist.
+          </p>
+          <div class="modal-actions" style="display: flex; gap: 12px;">
+            <button class="btn btn-secondary" style="flex: 1;" onclick="AlphaCouncil.closeAlertModal()">Close</button>
+            <button class="btn btn-primary" style="flex: 1;" onclick="AlphaCouncil.createAlert()">Add to Watchlist</button>
           </div>
         </div>
       </div>
@@ -763,16 +759,19 @@ const AlphaCouncil = (function() {
     return modal;
   }
 
-  function createAlert() {
-    const ticker = document.getElementById('alertTicker')?.value;
-    const type = document.getElementById('alertType')?.value;
-    const value = document.getElementById('alertValue')?.value;
-
-    if (ticker && value) {
+  // Honest: there is no custom-alert backend. AlphaCouncil auto-generates alerts from the user's
+  // holdings + watchlist, so "setting an alert" adds this stock to the (monitored) watchlist.
+  async function createAlert() {
+    const ticker = (document.getElementById('alertTicker')?.value || '').trim();
+    if (!ticker) { closeAlertModal(); return; }
+    if (!window.API || !API.addToWatchlist) { closeAlertModal(); return; }
+    try {
+      await API.addToWatchlist(ticker);
       closeAlertModal();
-      showToast('Alert Created', `You'll be notified when ${ticker} ${type === 'above' ? 'rises above' : type === 'below' ? 'falls below' : 'changes by'} ${value}`, 'success');
-    } else {
-      showToast('Missing Fields', 'Please fill in all fields', 'warning');
+      showToast('Now monitoring ' + String(ticker).split('_')[0], 'Added to your watchlist — alerts appear in your 🔔 notifications.', 'success');
+    } catch (e) {
+      if (e && e.status === 401) { closeAlertModal(); showToast('Sign in required', 'Log in to monitor stocks and receive alerts.', 'info'); return; }
+      showToast('Couldn’t add to watchlist', (e && e.message) || 'Please try again.', 'error');
     }
   }
 

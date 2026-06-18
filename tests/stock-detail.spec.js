@@ -204,4 +204,42 @@ test.describe('D1 — stock-detail price chart (was a permanent placeholder)', (
     expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
     await context.close();
   });
+
+  test('D7 — Set Alert is honest (no fake "Alert Created") + dimension explanations real/absent', async ({ browser }) => {
+    const context = await browser.newContext();
+    await apiLogin(context, QA_EMAIL, QA_PASSWORD);
+    const page = await context.newPage();
+    const diag = attachDiagnostics(page);
+    await page.goto('/stock-detail.html?ticker=2222_TADAWUL', { waitUntil: 'domcontentloaded' });
+
+    // ---- Dead canned dimension map gone; thesis is on-demand (CTA), no fabricated scores ----
+    await expect(page.locator('#thesisBody'), 'thesis is on-demand').toContainText('Generate AI Thesis', { timeout: 12000 });
+    const content = await page.content();
+    expect(content, 'dead canned dimension map removed').not.toContain('dimensionExplanations');
+    expect(content, 'real dimension wiring present').toContain('askAboutDimension');
+    // the static fabricated dimension cards (e.g. "P/E of 14.2x") are gone from the live thesis card
+    await expect(page.locator('.thesis-card'), 'no fabricated dimension scores shown').not.toContainText('14.2x');
+
+    // ---- Set Alert: honest modal (no fake price-alert form / "Create Alert") ----
+    await page.locator('button.action-btn', { hasText: 'Set Alert' }).click();
+    const modal = page.locator('#alertModal');
+    await expect(modal).toBeVisible();
+    await expect(modal, 'honest monitoring copy').toContainText('automatically monitors');
+    await expect(modal, 'no fake custom-alert form').not.toContainText('Alert Type');
+    await expect(modal.locator('.btn-primary'), 'real watchlist action').toContainText('Add to Watchlist');
+
+    // ---- "Add to Watchlist" → real POST /api/watchlist (stubbed; no fake "Alert Created") ----
+    let added = false;
+    await page.route('**/api/watchlist**', (route) => {
+      if (route.request().method() === 'POST') { added = true; route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }); }
+      else route.continue();
+    });
+    await modal.locator('.btn-primary', { hasText: 'Add to Watchlist' }).click();
+    await expect.poll(() => added, { timeout: 6000 }).toBeTruthy();
+    await expect(page.locator('body'), 'no fabricated "Alert Created"').not.toContainText('Alert Created');
+
+    await shot(page, 'd7-alert-dimensions');
+    expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
+    await context.close();
+  });
 });
