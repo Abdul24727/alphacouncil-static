@@ -1551,6 +1551,20 @@ const AlphaCouncil = (function() {
       const groups = (tape && tape.groups && tape.groups.length) ? tape.groups : null;
       _tickerItems = groups ? _buildItemsFromTape(groups) : INDICES_FALLBACK.map(_indexItemEl);
       _buildTicker();
+      // Honest freshness label, kept OUTSIDE the wiped marquee track. The index
+      // values come from a periodic fetch, not a live tick — never label it "Live".
+      let t = bar.querySelector('.indices-time');
+      if (!t || (inner && inner.contains(t))) {
+        t = document.createElement('span');
+        t.className = 'indices-time';
+        bar.appendChild(t);
+      }
+      let label = 'Market data';
+      if (tape && tape.as_of) {
+        const d = new Date(tape.as_of);
+        if (!isNaN(d.getTime())) label = 'As of ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+      t.textContent = label;
     }
     if (window.API && API.tickerTape) {
       API.tickerTape().then(apply).catch(function () { apply(null); });  // "—" until the real feed returns
