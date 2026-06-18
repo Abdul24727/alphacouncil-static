@@ -506,27 +506,22 @@
           <!-- Price Chart -->
           <div class="card chart-card">
             <div class="chart-header">
-              <div class="chart-tabs">
-                <button class="chart-tab">1D</button>
-                <button class="chart-tab">1W</button>
-                <button class="chart-tab active">1M</button>
-                <button class="chart-tab">3M</button>
-                <button class="chart-tab">6M</button>
-                <button class="chart-tab">1Y</button>
-                <button class="chart-tab">5Y</button>
-                <button class="chart-tab">Max</button>
+              <div class="chart-tabs" id="chartTabs">
+                <button class="chart-tab" data-tf="1M">1M</button>
+                <button class="chart-tab" data-tf="3M">3M</button>
+                <button class="chart-tab" data-tf="6M">6M</button>
+                <button class="chart-tab active" data-tf="1Y">1Y</button>
+                <button class="chart-tab" data-tf="5Y">5Y</button>
+                <button class="chart-tab" data-tf="Max">Max</button>
               </div>
-              <div class="chart-overlays">
-                <button class="overlay-btn active">SMA</button>
-                <button class="overlay-btn">EMA</button>
-                <button class="overlay-btn">Volume</button>
+              <div class="chart-overlays" id="chartOverlays">
+                <button class="overlay-btn active" data-ov="sma">SMA</button>
+                <button class="overlay-btn" data-ov="ema">EMA</button>
+                <button class="overlay-btn" data-ov="volume">Volume</button>
               </div>
             </div>
-            <div class="chart-body">
-              <div class="chart-placeholder">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-                Interactive chart loads here
-              </div>
+            <div class="chart-body" style="display:block;height:auto;min-height:360px;padding:10px 14px;">
+              <div id="chartHost" style="width:100%;"><div class="chart-placeholder">Loading chart…</div></div>
             </div>
           </div>
 
@@ -795,6 +790,69 @@
       loadRealStock();
     });
 
+    // ---- D1: REAL price chart (SVG) from /api/ticker/{key}/price-history ----
+    const _chart = { tf: '1Y', tk: null, bars: null, ov: { sma: true, ema: false, volume: false } };
+    const _TF = { '1M': ['daily', 22], '3M': ['daily', 66], '6M': ['daily', 132], '1Y': ['daily', 252], '5Y': ['weekly', 260], 'Max': ['monthly', 0] };
+    function _smaArr(a, p) { const o = []; for (let i = 0; i < a.length; i++) { if (i < p - 1) { o.push(null); continue; } let s = 0; for (let j = 0; j < p; j++) s += a[i - j]; o.push(s / p); } return o; }
+    function _emaArr(a, p) { const o = []; const k = 2 / (p + 1); let prev = null; for (let i = 0; i < a.length; i++) { prev = prev == null ? a[i] : a[i] * k + prev * (1 - k); o.push(prev); } return o; }
+    function buildChartSVG(bars, ov) {
+      const W = 760, H = 340, padL = 10, padR = 58, padT = 14, padB = 26;
+      const volH = ov.volume ? 46 : 0, top = padT, bot = H - padB - volH, ph = bot - top, pw = W - padL - padR;
+      const closes = bars.map(b => b.close).filter(v => v != null && isFinite(v));
+      if (!closes.length) return '<div class="chart-placeholder" style="height:340px;">No price history available.</div>';
+      let lo = Math.min.apply(null, closes), hi = Math.max.apply(null, closes); if (lo === hi) { lo -= 1; hi += 1; }
+      const pdg = (hi - lo) * 0.08; lo -= pdg; hi += pdg;
+      const n = bars.length, X = i => padL + (n === 1 ? pw / 2 : (i / (n - 1)) * pw), Y = v => top + (1 - (v - lo) / (hi - lo)) * ph;
+      const up = bars[n - 1].close >= bars[0].close, col = up ? 'var(--success,#10B981)' : 'var(--danger,#EF4444)', cl = bars.map(b => b.close);
+      const pts = bars.map((b, i) => X(i).toFixed(1) + ',' + Y(b.close).toFixed(1)).join(' ');
+      const area = 'M' + X(0).toFixed(1) + ',' + bot + ' L' + bars.map((b, i) => X(i).toFixed(1) + ',' + Y(b.close).toFixed(1)).join(' L') + ' L' + X(n - 1).toFixed(1) + ',' + bot + ' Z';
+      let grid = '', lab = '';
+      for (let k = 0; k <= 3; k++) { const v = lo + (hi - lo) * k / 3, yy = Y(v); grid += '<line x1="' + padL + '" y1="' + yy.toFixed(1) + '" x2="' + (padL + pw) + '" y2="' + yy.toFixed(1) + '" stroke="var(--border,rgba(255,255,255,0.08))"/>'; lab += '<text x="' + (padL + pw + 6) + '" y="' + (yy + 3).toFixed(1) + '" font-size="10" fill="var(--fg-dim,#6B7A8F)">' + v.toFixed(2) + '</text>'; }
+      function poly(vals, c) { let p = ''; for (let i = 0; i < vals.length; i++) { if (vals[i] == null) continue; p += (p ? ' ' : '') + X(i).toFixed(1) + ',' + Y(vals[i]).toFixed(1); } return '<polyline points="' + p + '" fill="none" stroke="' + c + '" stroke-width="1.4"/>'; }
+      let ovl = '';
+      if (ov.sma) { const p = Math.min(50, Math.max(5, Math.floor(n / 4))); ovl += poly(_smaArr(cl, p), 'var(--accent-gold,#D7B76A)'); }
+      if (ov.ema) { const p = Math.min(26, Math.max(5, Math.floor(n / 6))); ovl += poly(_emaArr(cl, p), 'var(--accent-violet,#8B5CF6)'); }
+      let vol = '';
+      if (ov.volume) { const vs = bars.map(b => b.volume || 0), vmax = Math.max.apply(null, vs) || 1, vt = bot + 8, vb = volH - 8, bw = Math.max(1, pw / n * 0.7); for (let i = 0; i < n; i++) { const vh = (vs[i] / vmax) * vb; vol += '<rect x="' + (X(i) - bw / 2).toFixed(1) + '" y="' + (vt + vb - vh).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(0, vh).toFixed(1) + '" fill="var(--border-strong,rgba(255,255,255,0.14))"/>'; } }
+      const dts = '<text x="' + padL + '" y="' + (H - 8) + '" font-size="10" fill="var(--fg-dim,#6B7A8F)">' + _esc(bars[0].date) + '</text><text x="' + (padL + pw) + '" y="' + (H - 8) + '" font-size="10" fill="var(--fg-dim,#6B7A8F)" text-anchor="end">' + _esc(bars[n - 1].date) + '</text>';
+      return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block" role="img" aria-label="Price chart">'
+        + '<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + (up ? 'rgba(16,185,129,0.22)' : 'rgba(239,68,68,0.20)') + '"/><stop offset="1" stop-color="rgba(0,0,0,0)"/></linearGradient></defs>'
+        + grid + '<path d="' + area + '" fill="url(#cg)"/><polyline points="' + pts + '" fill="none" stroke="' + col + '" stroke-width="1.8"/>' + ovl + vol + lab + dts + '</svg>';
+    }
+    async function loadChart() {
+      const host = document.getElementById('chartHost'); if (!host || !_chart.tk) return;
+      const tf = _TF[_chart.tf] || ['daily', 252];
+      host.innerHTML = '<div class="chart-placeholder" style="height:340px;">Loading chart…</div>';
+      try {
+        const d = await API.get('/api/ticker/' + encodeURIComponent(_chart.tk) + '/price-history?timeframe=' + tf[0] + (tf[1] ? ('&limit=' + tf[1]) : ''));
+        _chart.bars = (d && d.bars) || [];
+        host.innerHTML = _chart.bars.length ? buildChartSVG(_chart.bars, _chart.ov) : '<div class="chart-placeholder" style="height:340px;">No price history available for this stock.</div>';
+      } catch (e) { host.innerHTML = '<div class="chart-placeholder" style="height:340px;">Couldn’t load the price chart.</div>'; }
+    }
+    let _chartWired = false;
+    function initPriceChart(tk) {
+      _chart.tk = tk;
+      if (!_chartWired) {
+        _chartWired = true;   // attach per-button listeners exactly once
+        document.querySelectorAll('#chartTabs .chart-tab').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            _chart.tf = btn.dataset.tf;
+            document.querySelectorAll('#chartTabs .chart-tab').forEach((x) => x.classList.toggle('active', x === btn));
+            loadChart();
+          });
+        });
+        document.querySelectorAll('#chartOverlays .overlay-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const k = btn.dataset.ov;
+            _chart.ov[k] = !_chart.ov[k];
+            btn.classList.toggle('active', _chart.ov[k]);
+            if (_chart.bars && _chart.bars.length) document.getElementById('chartHost').innerHTML = buildChartSVG(_chart.bars, _chart.ov);
+          });
+        });
+      }
+      loadChart();
+    }
+
     // REAL stock header from /api/ticker/{key}: name, exchange, live price.
     // (Thesis radar / fundamentals / news on this page are wired in a follow-up step.)
     async function loadRealStock() {
@@ -817,6 +875,8 @@
       document.title = currentStock.name + ' — AlphaCouncil';
       const bc = document.querySelector('.breadcrumb-current'); if (bc) bc.textContent = currentStock.name + ' (' + currentStock.ticker + ')';
       const cs = document.querySelector('.context-stock'); if (cs) cs.textContent = currentStock.ticker + ' · ' + currentStock.name;
+
+      initPriceChart(currentStock.tickerKey);   // D1: render the real price chart
 
       // ---- REAL fundamentals into the gauge detail rows (no fabricated figures) ----
       function setGaugeRow(label, value){
