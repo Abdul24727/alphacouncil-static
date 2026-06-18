@@ -1370,6 +1370,26 @@ const AlphaCouncil = (function() {
       .catch(function () { setAlertBadge(0); });
   }
 
+  // Real avatar initials from the signed-in user (no display name yet → derive from
+  // email local-part). Never a hardcoded "SK".
+  function initialsFromUser(u) {
+    u = u || {};
+    let src = String(u.name || u.username || u.full_name || '').trim();
+    if (!src) src = String(u.email || '').split('@')[0];
+    if (!src) return '';
+    const parts = src.split(/[\s._-]+/).filter(Boolean);
+    const ini = parts.length >= 2 ? (parts[0][0] + parts[1][0]) : src.slice(0, 2);
+    return ini.toUpperCase();
+  }
+  // Set the top-bar avatar to the real user's initials + an honest aria-label.
+  function setNavIdentity(u) {
+    const menu = document.getElementById('userMenu');
+    if (!menu) return;
+    const ini = initialsFromUser(u);
+    menu.textContent = ini;
+    menu.setAttribute('aria-label', u && u.email ? ('User menu for ' + u.email) : 'User menu');
+  }
+
   function renderNavAlerts(list) {
     const box = document.getElementById('acAlertsList');
     if (!box) return;
@@ -1789,6 +1809,7 @@ const AlphaCouncil = (function() {
       API.loadUser().then(function (u) {
         state.user = u;
         wireBrandLogo(!!u);   // definitive: real auth state
+        setNavIdentity(u);    // real avatar initials, never "SK"
         if (typeof window.onUserReady === 'function') window.onUserReady(u);
       });
       loadPortfolio().then(function () {
