@@ -102,25 +102,10 @@
     /* "Coming soon" badge — Apple button only. Subtle gold-tinted pill (matches signup.html). */
     .soon-badge { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.4; white-space: nowrap; color: var(--accent-gold); background: rgba(215, 183, 106, 0.12); border: 1px solid rgba(215, 183, 106, 0.28); padding: 2px 7px; border-radius: 100px; }
 
-    /* 2FA Step */
+    /* Auth step transitions */
     .auth-step { display: none; animation: fadeIn 0.3s ease; }
     .auth-step.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    .twofa-header { text-align: center; margin-bottom: 32px; }
-    .twofa-icon { width: 64px; height: 64px; margin: 0 auto 20px; background: var(--accent-violet-glow); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 16px; display: flex; align-items: center; justify-content: center; }
-    .twofa-icon svg { width: 28px; height: 28px; color: var(--accent-violet); }
-    .twofa-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-    .twofa-subtitle { font-size: 14px; color: var(--fg-muted); }
-
-    .code-inputs { display: flex; justify-content: center; gap: 10px; margin-bottom: 24px; }
-    .code-input { width: 52px; height: 64px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; font-family: var(--font-mono); font-size: 24px; font-weight: 500; text-align: center; color: var(--fg); transition: all 0.2s; }
-    .code-input:focus { outline: none; border-color: var(--accent-violet); box-shadow: 0 0 0 3px var(--accent-violet-glow); }
-    .code-input.filled { border-color: var(--accent-violet); background: var(--surface-elevated); }
-
-    .backup-link { display: block; text-align: center; font-size: 13px; color: var(--fg-dim); margin-top: 20px; }
-    .backup-link a { color: var(--accent-primary); text-decoration: none; }
-    .backup-link a:hover { text-decoration: underline; }
 
     .back-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--fg-dim); background: none; border: none; cursor: pointer; margin-bottom: 20px; transition: color 0.2s; }
     .back-btn:hover { color: var(--accent-primary); }
@@ -145,7 +130,6 @@
 
     @media (max-width: 480px) {
       .auth-card { padding: 32px 24px; margin: 0 16px; }
-      .code-input { width: 44px; height: 56px; font-size: 20px; }
       .social-buttons { flex-direction: column; }
     }
   </style>
@@ -215,48 +199,14 @@
         </div>
       </div>
 
-      <!-- Step 2: 2FA -->
-      <div class="auth-step" id="step-2fa">
-        <button type="button" class="back-btn" onclick="showStep('credentials')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Back
-        </button>
-
-        <div class="twofa-header">
-          <div class="twofa-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </div>
-          <h2 class="twofa-title">Two-factor authentication</h2>
-          <p class="twofa-subtitle">Enter the 6-digit code from your authenticator app</p>
-        </div>
-
-        <form id="twofaForm">
-          <div class="code-inputs">
-            <input type="text" class="code-input" maxlength="1" data-index="0" inputmode="numeric" pattern="[0-9]">
-            <input type="text" class="code-input" maxlength="1" data-index="1" inputmode="numeric" pattern="[0-9]">
-            <input type="text" class="code-input" maxlength="1" data-index="2" inputmode="numeric" pattern="[0-9]">
-            <input type="text" class="code-input" maxlength="1" data-index="3" inputmode="numeric" pattern="[0-9]">
-            <input type="text" class="code-input" maxlength="1" data-index="4" inputmode="numeric" pattern="[0-9]">
-            <input type="text" class="code-input" maxlength="1" data-index="5" inputmode="numeric" pattern="[0-9]">
-          </div>
-
-          <button type="submit" class="btn-primary" id="verifyBtn">
-            <span>Verify &amp; sign in</span>
-          </button>
-        </form>
-
-        <p class="backup-link">
-          Lost your device? <a href="#" onclick="useBackupCode(); return false;">Use a backup code instead</a>
-        </p>
-      </div>
     </div>
   </main>
 
   <footer class="auth-footer">
     <a href="index.html">Home</a>
-    <a href="#">Privacy Policy</a>
-    <a href="#">Terms of Service</a>
-    <a href="#">Help</a>
+    <a href="legal.html#privacy">Privacy Policy</a>
+    <a href="legal.html#terms">Terms of Service</a>
+    <a href="contact.html">Help</a>
   </footer>
 
   <!-- Toast -->
@@ -272,11 +222,6 @@
 
   <script src="js/api.js"></script>
   <script>
-    // 2FA is not yet implemented on the backend, so this stays false and the
-    // login goes straight through. INTEGRATION NOTE: wire /auth/2fa/* here when
-    // the backend gains TOTP support.
-    const has2FA = false;
-
     function showStep(step) {
       document.querySelectorAll('.auth-step').forEach(s => s.classList.remove('active'));
       document.getElementById('step-' + step).classList.add('active');
@@ -307,86 +252,9 @@
       }
     });
 
-    // 2FA code inputs
-    const codeInputs = document.querySelectorAll('.code-input');
-    codeInputs.forEach((input, index) => {
-      input.addEventListener('input', (e) => {
-        const value = e.target.value.replace(/[^0-9]/g, '');
-        e.target.value = value;
-
-        if (value && index < codeInputs.length - 1) {
-          codeInputs[index + 1].focus();
-        }
-
-        e.target.classList.toggle('filled', value.length > 0);
-
-        // Auto-submit when all filled
-        const code = Array.from(codeInputs).map(i => i.value).join('');
-        if (code.length === 6) {
-          document.getElementById('twofaForm').dispatchEvent(new Event('submit'));
-        }
-      });
-
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && !e.target.value && index > 0) {
-          codeInputs[index - 1].focus();
-        }
-      });
-
-      input.addEventListener('paste', (e) => {
-        e.preventDefault();
-        const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '').slice(0, 6);
-        paste.split('').forEach((char, i) => {
-          if (codeInputs[i]) {
-            codeInputs[i].value = char;
-            codeInputs[i].classList.add('filled');
-          }
-        });
-        if (paste.length === 6) {
-          document.getElementById('twofaForm').dispatchEvent(new Event('submit'));
-        }
-      });
-    });
-
-    // 2FA form
-    document.getElementById('twofaForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const code = Array.from(codeInputs).map(i => i.value).join('');
-
-      if (code.length !== 6) return;
-
-      const btn = document.getElementById('verifyBtn');
-      btn.innerHTML = '<div class="spinner"></div>';
-      btn.disabled = true;
-
-      setTimeout(() => {
-        // Accept any 6-digit code or 123456 for demo
-        if (/^\d{6}$/.test(code)) {
-          showToast('success', 'Verified', 'Redirecting to your dashboard...');
-          setTimeout(() => {
-            window.location.href = 'dashboard.html';
-          }, 1500);
-        } else {
-          showToast('error', 'Invalid code', 'Please check and try again.');
-          btn.innerHTML = '<span>Verify &amp; sign in</span>';
-          btn.disabled = false;
-          codeInputs.forEach(i => { i.value = ''; i.classList.remove('filled'); });
-          codeInputs[0].focus();
-        }
-      }, 1000);
-    });
-
-    function useBackupCode() {
-      const code = prompt('Enter your backup code:');
-      if (code && code.length >= 8) {
-        showToast('success', 'Backup code accepted', 'Redirecting to your dashboard...');
-        setTimeout(() => {
-          window.location.href = 'dashboard.html';
-        }, 1500);
-      } else if (code) {
-        showToast('error', 'Invalid backup code', 'Please check and try again.');
-      }
-    }
+    // 2FA UI removed — it was unreachable dead code (has2FA was always false) that
+    // accepted ANY 6-digit code / any 8+-char "backup code" client-side, securing
+    // nothing. Real TOTP 2FA is tracked under settings security (Phase L).
 
     // ── Social login ──────────────────────────────────────────────────────
     // Google → real OAuth: redirect to /auth/google (callback /auth/google/callback).
