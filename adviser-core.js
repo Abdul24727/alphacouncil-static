@@ -327,7 +327,7 @@ const AlphaCouncil = (function() {
     message.className = `chat-message ${isUser ? 'user' : 'adviser'}`;
     const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     message.innerHTML = `
-      <div class="chat-avatar">${isUser ? 'SK' : 'AC'}</div>
+      <div class="chat-avatar">${isUser ? (initialsFromUser(state.user) || 'You') : 'AC'}</div>
       <div>
         <div class="chat-bubble">${text}</div>
         <div class="chat-time">${time}</div>
@@ -399,147 +399,6 @@ const AlphaCouncil = (function() {
     return el;
   }
   function removeTypingIndicator(el) { if (el && el.parentNode) el.parentNode.removeChild(el); }
-
-  function generateResponse(text) {
-    const lowerText = text.toLowerCase();
-
-    // Stock-specific responses
-    if (state.currentStock) {
-      const stock = state.currentStock;
-      if (lowerText.includes('thesis') || lowerText.includes('score')) {
-        return `<strong>${stock.name} Thesis Analysis (${stock.thesis}/10)</strong><br><br>
-          The score reflects the company's position across our 12-dimension framework.<br><br>
-          <strong>Key strengths:</strong> Profitability, ownership structure, dividend stability<br>
-          <strong>Areas to monitor:</strong> Valuation relative to peers, sector concentration<br><br>
-          Data suggests maintaining current allocation with periodic review.`;
-      }
-      if (lowerText.includes('compare') || lowerText.includes('peer')) {
-        return `<strong>${stock.ticker} vs GCC Peers</strong><br><br>
-          Compared to sector peers, ${stock.name} shows:<br>
-          • Thesis score: ${stock.thesis}/10 (sector avg: 7.2)<br>
-          • Valuation: Near sector median<br>
-          • Dividend yield: Competitive<br><br>
-          Data suggests reviewing UAE alternatives for diversification.`;
-      }
-      if (lowerText.includes('trim') || lowerText.includes('reduce') || lowerText.includes('portfolio')) {
-        const currentWeight = stock.weight;
-        const newWeight = (currentWeight * 0.9).toFixed(1);
-        return `<strong>Portfolio Impact Analysis</strong><br><br>
-          Trimming 10% of ${stock.ticker} would:<br>
-          • Reduce position weight from ${currentWeight}% to ${newWeight}%<br>
-          • Decrease sector concentration<br>
-          • Free approximately SAR ${Math.round(stock.shares * 0.1 * stock.currentPrice).toLocaleString()}<br><br>
-          Data suggests this aligns with concentration targets.`;
-      }
-      if (lowerText.includes('risk')) {
-        return `<strong>Key Risks for ${stock.name}</strong><br><br>
-          <strong>Company-specific:</strong><br>
-          • Sector concentration in your portfolio<br>
-          • Valuation relative to historical average<br><br>
-          <strong>Market/Macro:</strong><br>
-          • GCC economic cycle sensitivity<br>
-          • Currency and oil price correlation<br><br>
-          Data suggests monitoring but no immediate action required.`;
-      }
-    }
-
-    // News-specific responses
-    if (state.currentNewsContext) {
-      if (lowerText.includes('affect') || lowerText.includes('impact') || lowerText.includes('portfolio')) {
-        return `<strong>Portfolio Impact Analysis</strong><br><br>
-          Based on "${state.currentNewsContext.headline}":<br><br>
-          <strong>Affected holdings:</strong> ${state.currentNewsContext.tickers?.join(', ') || 'Multiple positions'}<br>
-          <strong>Sentiment:</strong> Net positive for energy, neutral for banking<br><br>
-          Data suggests reviewing positions in affected sectors.`;
-      }
-    }
-
-    // Portfolio-wide responses
-    if (lowerText.includes('weak') && lowerText.includes('thesis')) {
-      const weakest = state.holdings.reduce((min, h) => h.thesis < min.thesis ? h : min);
-      return `<strong>Weakest Thesis Score</strong><br><br>
-        Your lowest-scoring position is <strong>${weakest.name} (${weakest.ticker})</strong> at ${weakest.thesis}/10.<br><br>
-        <strong>Key concerns:</strong><br>
-        • Margin pressure from market conditions<br>
-        • Below-peer earnings momentum<br><br>
-        Data suggests reviewing this position relative to your overall objectives.`;
-    }
-
-    if (lowerText.includes('banking') || lowerText.includes('concentration')) {
-      return `<strong>Banking Concentration Analysis</strong><br><br>
-        Your banking exposure is currently <strong>32.2%</strong> of portfolio.<br><br>
-        <strong>To reduce concentration:</strong><br>
-        1. Trim Al Rajhi (14.2%) or QNB (9.6%)<br>
-        2. Add non-bank sectors (telecom, utilities)<br>
-        3. Increase UAE/Qatar geographic exposure<br><br>
-        Data suggests targeting 25% sector maximum.`;
-    }
-
-    if (lowerText.includes('health') || lowerText.includes('summarize') || lowerText.includes('overview')) {
-      return `<strong>Portfolio Health Summary</strong><br><br>
-        <strong>Overall Assessment:</strong> Good with watchpoints<br><br>
-        • <strong>Total Value:</strong> SAR 847,250 (+2.4% MTD)<br>
-        • <strong>Weighted Thesis:</strong> 7.4/10<br>
-        • <strong>Top Performer:</strong> Al Rajhi (+8.7%)<br>
-        • <strong>Watchpoint:</strong> SABIC (thesis 5.8/10)<br><br>
-        Data suggests reviewing banking concentration (32.2%).`;
-    }
-
-    if (lowerText.includes('news') && lowerText.includes('today')) {
-      return `<strong>Today's News Summary</strong><br><br>
-        <strong>Holdings mentioned:</strong><br>
-        • Aramco: PIF stake increase (+)<br>
-        • Al Rajhi: CEO insider buying (+)<br>
-        • stc: Q2 earnings beat (+)<br>
-        • SABIC: Margin pressure (-)<br><br>
-        Net sentiment is positive. Banking sector leading.`;
-    }
-
-    if (lowerText.includes('council') || lowerText.includes('recommend')) {
-      return `<strong>Council Recommendation Summary</strong><br><br>
-        The AI Analyst Council suggests:<br><br>
-        1. <strong>Review banking concentration</strong> (32.2% exceeds 25% target)<br>
-        2. <strong>Monitor SABIC position</strong> (weakest thesis at 5.8)<br>
-        3. <strong>Consider UAE exposure</strong> (currently underweight)<br>
-        4. <strong>Maintain Aramco core</strong> (stable dividend, strategic)<br><br>
-        Run full Council review for detailed analysis.`;
-    }
-
-    // Lot-level P&L responses
-    if (lowerText.includes('lot') && (lowerText.includes('aramco') || lowerText.includes('2222'))) {
-      return `<strong>Aramco Lot-Level Analysis</strong><br><br>
-        <strong>Position: 5,470 shares</strong><br><br>
-        <strong>Lot 1:</strong> 3,500 shares @ SAR 24.80 (Jan 2025)<br>
-        → Unrealized P&L: +SAR 12,950 (+14.9%)<br><br>
-        <strong>Lot 2:</strong> 2,000 shares @ SAR 26.50 (Mar 2025)<br>
-        → Unrealized P&L: +SAR 4,000 (+7.5%)<br><br>
-        <strong>Lot 3:</strong> 470 shares @ SAR 27.40 (Jun 2026)<br>
-        → Unrealized P&L: +SAR 517 (+4.0%)<br><br>
-        <strong>Total Unrealized:</strong> +SAR 17,467 (+12.3%)<br>
-        <strong>Realized (from May sale):</strong> +SAR 2,150`;
-    }
-
-    if (lowerText.includes('lot') && (lowerText.includes('rajhi') || lowerText.includes('1120'))) {
-      return `<strong>Al Rajhi Lot-Level Analysis</strong><br><br>
-        <strong>Position: 1,412 shares</strong><br><br>
-        <strong>Lot 1:</strong> 1,200 shares @ SAR 76.50 (Feb 2025)<br>
-        → Unrealized P&L: +SAR 10,440 (+11.4%)<br><br>
-        <strong>Lot 2:</strong> 212 shares @ SAR 82.30 (Apr 2025)<br>
-        → Unrealized P&L: +SAR 614 (+3.5%)<br><br>
-        <strong>Total Unrealized:</strong> +SAR 11,054 (+9.2%)<br>
-        <strong>Blended Avg Cost:</strong> SAR 78.40`;
-    }
-
-    // Default response
-    return `I can help you analyze your portfolio, individual stocks, or market news.<br><br>
-      <strong>Try asking about:</strong><br>
-      • Portfolio health or concentration<br>
-      • Specific stock thesis scores<br>
-      • Peer comparisons<br>
-      • Position sizing impact<br>
-      • News implications<br><br>
-      What would you like to explore?`;
-  }
 
   // ============================================
   // COUNCIL MODAL
@@ -786,18 +645,8 @@ const AlphaCouncil = (function() {
   function askAboutReview() {
     closeCouncilModal();
     openSidebar();
-    setTimeout(() => {
-      addChatMessage('I just reviewed the AI Analyst Council analysis. Can you explain the key recommendations?', true);
-      setTimeout(() => {
-        addChatMessage(`<strong>Council Review Summary</strong><br><br>
-          The Council identified 4 key areas:<br><br>
-          1. <strong>Banking concentration (32.2%)</strong> — Consider trimming to reach 25% target<br>
-          2. <strong>UAE/Qatar opportunity</strong> — Relative value exists vs Saudi peers<br>
-          3. <strong>Yield enhancement</strong> — Portfolio trails GCC dividend index<br>
-          4. <strong>Oil monitoring</strong> — Energy exposure appropriate but volatile<br><br>
-          Would you like to explore any of these in detail?`);
-      }, 800);
-    }, 400);
+    // Route to the REAL adviser (portfolio-aware) instead of a canned summary.
+    askQuestion('Summarize the key recommendations from my latest AI Analyst Council review and what I should consider doing next.');
   }
 
   // ============================================
@@ -934,65 +783,9 @@ const AlphaCouncil = (function() {
     state.currentNewsContext = { id: newsId, headline, tickers };
     openSidebar();
     updateSidebarContext();
-
-    setTimeout(() => {
-      addChatMessage(`Tell me about: "${headline}"`, true);
-      setTimeout(() => {
-        let response = '';
-        const tickerStr = tickers.length ? tickers.join(', ') : 'general market';
-        const lowerHeadline = headline.toLowerCase();
-
-        // Context-specific responses based on news type
-        if (lowerHeadline.includes('pif') || lowerHeadline.includes('stake')) {
-          response = `<strong>Ownership Analysis</strong><br><br>
-            <strong>"${headline}"</strong><br><br>
-            This ownership change affects: <strong>${tickerStr}</strong><br><br>
-            <strong>Key observations:</strong><br>
-            • Institutional buying often signals long-term confidence<br>
-            • No premium paid indicates market-rate transaction<br>
-            • Aligns with strategic initiatives<br><br>
-            <strong>Portfolio impact:</strong> Your position in this holding may benefit from improved ownership quality. Data suggests monitoring for follow-on activity.`;
-        } else if (lowerHeadline.includes('earnings') || lowerHeadline.includes('profit') || lowerHeadline.includes('reports')) {
-          response = `<strong>Earnings Analysis</strong><br><br>
-            <strong>"${headline}"</strong><br><br>
-            This earnings report relates to: <strong>${tickerStr}</strong><br><br>
-            <strong>Key takeaways:</strong><br>
-            • Results appear to exceed/meet consensus expectations<br>
-            • Management commentary on outlook is key<br>
-            • Dividend implications may follow<br><br>
-            <strong>Portfolio impact:</strong> Data suggests reviewing your thesis dimensions for this holding based on updated fundamentals.`;
-        } else if (lowerHeadline.includes('dividend')) {
-          response = `<strong>Dividend Analysis</strong><br><br>
-            <strong>"${headline}"</strong><br><br>
-            This dividend news relates to: <strong>${tickerStr}</strong><br><br>
-            <strong>Key observations:</strong><br>
-            • Dividend announcements reflect cash flow confidence<br>
-            • Yield calculations may need updating<br>
-            • Income dimension of thesis affected<br><br>
-            <strong>Portfolio impact:</strong> This supports the income dimension of your portfolio thesis.`;
-        } else if (lowerHeadline.includes('contract') || lowerHeadline.includes('project') || lowerHeadline.includes('wins')) {
-          response = `<strong>Business Development Analysis</strong><br><br>
-            <strong>"${headline}"</strong><br><br>
-            This development relates to: <strong>${tickerStr}</strong><br><br>
-            <strong>Key implications:</strong><br>
-            • New contracts may impact forward earnings estimates<br>
-            • Execution risk should be monitored<br>
-            • Growth trajectory may be revised upward<br><br>
-            <strong>Portfolio impact:</strong> Data suggests this is constructive for your position in this sector.`;
-        } else {
-          response = `<strong>News Analysis</strong><br><br>
-            <strong>"${headline}"</strong><br><br>
-            This development relates to: <strong>${tickerStr}</strong><br><br>
-            <strong>Key implications:</strong><br>
-            • May affect near-term sentiment<br>
-            • Consider reviewing related positions<br>
-            • Data suggests monitoring for follow-on developments<br><br>
-            Would you like me to analyze the specific impact on your portfolio?`;
-        }
-
-        addChatMessage(response);
-      }, 800);
-    }, 300);
+    // Route to the REAL adviser (/api/adviser/ask) — no canned templates.
+    const subject = (tickers && tickers.length) ? tickers.join(', ') : 'my holdings';
+    askQuestion('What does this news mean for ' + subject + '? "' + headline + '"');
   }
 
   // ============================================
@@ -1876,28 +1669,9 @@ const AlphaCouncil = (function() {
   // DIMENSION EXPLANATIONS (for Stock Detail page)
   // ============================================
   function askAboutDimension(dimensionName, stockName, stockTicker) {
-    const explanations = {
-      'Valuation': `<strong>Valuation Analysis for ${stockName}</strong><br><br>Current P/E ratio is near the historical average for the sector. EV/EBITDA appears reasonable relative to global peers.<br><br><strong>Key metrics:</strong><br>• P/B Ratio: Sector-aligned<br>• vs Sector Avg: Within range<br><br>Data suggests valuation is fair — neither stretched nor compelling.`,
-      'Growth': `<strong>Growth Analysis for ${stockName}</strong><br><br>Revenue growth reflects stable operations with expanding capacity.<br><br><strong>Key drivers:</strong><br>• Core business expansion<br>• New market initiatives<br>• Product/service diversification<br><br>Data suggests medium-term growth trajectory is constructive.`,
-      'Profitability': `<strong>Profitability Analysis for ${stockName}</strong><br><br>Strong margins relative to peer group. ROE reflects operational discipline.<br><br><strong>Key metrics:</strong><br>• Net margin: Above sector<br>• ROE: Strong<br>• Efficiency: Improving<br><br>This is a core strength of the investment thesis.`,
-      'Quality': `<strong>Quality Analysis for ${stockName}</strong><br><br>Business quality indicators suggest competitive advantages in the market.<br><br><strong>Key factors:</strong><br>• Market position: Strong<br>• Competitive moat: Identifiable<br>• Operating history: Consistent<br><br>Data suggests quality metrics support position.`,
-      'Dividends': `<strong>Dividend Analysis for ${stockName}</strong><br><br>The dividend yield with reasonable payout ratio provides stable income.<br><br><strong>Key metrics:</strong><br>• Distribution frequency: Regular<br>• Payout sustainability: Solid<br>• Yield: Competitive<br><br>Income dimension supports portfolio positioning.`,
-      'Ownership': `<strong>Ownership Analysis for ${stockName}</strong><br><br>Institutional and strategic ownership provides alignment.<br><br><strong>Key observations:</strong><br>• Major shareholders: Stable<br>• Insider activity: Monitored<br>• Float characteristics: Normal<br><br>Ownership structure is supportive.`,
-      'Governance': `<strong>Governance Analysis for ${stockName}</strong><br><br>Board composition and oversight practices meet standards.<br><br><strong>Key factors:</strong><br>• Board independence: Adequate<br>• Disclosure quality: Good<br>• Shareholder rights: Protected<br><br>Governance is satisfactory.`,
-      'ESG': `<strong>ESG Analysis for ${stockName}</strong><br><br>Environmental, social, and governance factors are being addressed.<br><br><strong>Key initiatives:</strong><br>• Environmental targets: In progress<br>• Social responsibility: Active programs<br>• Governance: Standard practices<br><br>ESG is an evolving area to monitor.`,
-      'Macro': `<strong>Macro Analysis for ${stockName}</strong><br><br>Macroeconomic environment impacts this position.<br><br><strong>Key factors:</strong><br>• Economic cycle: Current phase<br>• Interest rates: Impact assessed<br>• Currency: Exposure noted<br><br>Macro environment considerations are incorporated.`,
-      'Momentum': `<strong>Momentum Analysis for ${stockName}</strong><br><br>Price momentum indicators show recent trend direction.<br><br><strong>Key signals:</strong><br>• Moving average position: Assessed<br>• Trend direction: Monitored<br>• Volume: Analyzed<br><br>Momentum factors are incorporated in the thesis.`,
-      'Technicals': `<strong>Technical Analysis for ${stockName}</strong><br><br>Technical indicators provide context for entry/exit timing.<br><br><strong>Key levels:</strong><br>• Support/Resistance: Identified<br>• RSI: Monitored<br>• Pattern: Assessed<br><br>Technical context informs position management.`,
-      'Sentiment & News': `<strong>Sentiment Analysis for ${stockName}</strong><br><br>News flow and analyst sentiment are incorporated.<br><br><strong>Recent drivers:</strong><br>• News sentiment: Net assessed<br>• Analyst coverage: Active<br>• Event calendar: Monitored<br><br>Sentiment provides context for short-term moves.`
-    };
-
     openSidebar();
-    setTimeout(() => {
-      addChatMessage(`Explain the ${dimensionName} dimension for ${stockName}`, true);
-      setTimeout(() => {
-        addChatMessage(explanations[dimensionName] || explanations['Valuation']);
-      }, 600);
-    }, 300);
+    // Route to the REAL adviser — explanations come from live fundamentals, not a map.
+    askQuestion('Explain the ' + dimensionName + ' dimension of the investment thesis for ' + stockName + ' (' + stockTicker + ') using its real fundamentals.');
   }
 
   // ============================================
