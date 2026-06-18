@@ -445,61 +445,33 @@
         <div class="left-column">
           <!-- Key Facts Gauges -->
           <div class="gauges-grid">
-            <div class="gauge-card" onclick="toggleGauge(this)">
+            <div class="gauge-card" data-group="valuation" onclick="toggleGauge(this)">
               <div class="gauge-label">Valuation</div>
-              <div class="gauge-visual">
-                <div class="gauge-ring medium" style="--score: 68"><div class="gauge-inner">6.8</div></div>
-              </div>
-              <div class="gauge-rating medium">Fair Value</div>
+              <div class="gauge-visual"><div class="gauge-ring" style="--score: 0"><div class="gauge-inner">—</div></div></div>
+              <div class="gauge-rating">—</div>
               <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>More details</div>
-              <div class="gauge-details">
-                <div class="gauge-detail-row"><span>P/E Ratio</span><span>14.2x</span></div>
-                <div class="gauge-detail-row"><span>P/B Ratio</span><span>2.1x</span></div>
-                <div class="gauge-detail-row"><span>EV/EBITDA</span><span>8.4x</span></div>
-                <div class="gauge-detail-row"><span>vs Sector Avg</span><span style="color: var(--accent-gold)">-5%</span></div>
-              </div>
+              <div class="gauge-details"><div class="gauge-detail-row"><span>Loading…</span><span></span></div></div>
             </div>
-            <div class="gauge-card" onclick="toggleGauge(this)">
+            <div class="gauge-card" data-group="profitability" onclick="toggleGauge(this)">
               <div class="gauge-label">Profitability</div>
-              <div class="gauge-visual">
-                <div class="gauge-ring" style="--score: 89"><div class="gauge-inner">8.9</div></div>
-              </div>
-              <div class="gauge-rating high">Strong</div>
+              <div class="gauge-visual"><div class="gauge-ring" style="--score: 0"><div class="gauge-inner">—</div></div></div>
+              <div class="gauge-rating">—</div>
               <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>More details</div>
-              <div class="gauge-details">
-                <div class="gauge-detail-row"><span>Net Margin</span><span>28.4%</span></div>
-                <div class="gauge-detail-row"><span>ROE</span><span>32.1%</span></div>
-                <div class="gauge-detail-row"><span>ROA</span><span>14.8%</span></div>
-                <div class="gauge-detail-row"><span>vs Sector Avg</span><span style="color: var(--success)">+18%</span></div>
-              </div>
+              <div class="gauge-details"><div class="gauge-detail-row"><span>Loading…</span><span></span></div></div>
             </div>
-            <div class="gauge-card" onclick="toggleGauge(this)">
+            <div class="gauge-card" data-group="health" onclick="toggleGauge(this)">
               <div class="gauge-label">Financial Health</div>
-              <div class="gauge-visual">
-                <div class="gauge-ring" style="--score: 82"><div class="gauge-inner">8.2</div></div>
-              </div>
-              <div class="gauge-rating high">Strong</div>
+              <div class="gauge-visual"><div class="gauge-ring" style="--score: 0"><div class="gauge-inner">—</div></div></div>
+              <div class="gauge-rating">—</div>
               <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>More details</div>
-              <div class="gauge-details">
-                <div class="gauge-detail-row"><span>Debt/Equity</span><span>0.24</span></div>
-                <div class="gauge-detail-row"><span>Current Ratio</span><span>1.8</span></div>
-                <div class="gauge-detail-row"><span>Interest Coverage</span><span>42x</span></div>
-                <div class="gauge-detail-row"><span>vs Sector Avg</span><span style="color: var(--success)">+12%</span></div>
-              </div>
+              <div class="gauge-details"><div class="gauge-detail-row"><span>Loading…</span><span></span></div></div>
             </div>
-            <div class="gauge-card" onclick="toggleGauge(this)">
+            <div class="gauge-card" data-group="income" onclick="toggleGauge(this)">
               <div class="gauge-label">Income & Growth</div>
-              <div class="gauge-visual">
-                <div class="gauge-ring" style="--score: 76"><div class="gauge-inner">7.6</div></div>
-              </div>
-              <div class="gauge-rating high">Good</div>
+              <div class="gauge-visual"><div class="gauge-ring" style="--score: 0"><div class="gauge-inner">—</div></div></div>
+              <div class="gauge-rating">—</div>
               <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>More details</div>
-              <div class="gauge-details">
-                <div class="gauge-detail-row"><span>Dividend Yield</span><span>5.2%</span></div>
-                <div class="gauge-detail-row"><span>Payout Ratio</span><span>68%</span></div>
-                <div class="gauge-detail-row"><span>Rev Growth (YoY)</span><span>+4.2%</span></div>
-                <div class="gauge-detail-row"><span>EPS Growth</span><span>+6.1%</span></div>
-              </div>
+              <div class="gauge-details"><div class="gauge-detail-row"><span>Loading…</span><span></span></div></div>
             </div>
           </div>
 
@@ -623,18 +595,9 @@
           </div>
 
           <!-- Expandable Sections -->
-          <div class="expand-section" onclick="toggleExpand(this)">
-            <div class="expand-header">
-              <span class="expand-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Ownership & Foreign Flow</span>
-              <span class="expand-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
-            </div>
-            <div class="expand-body">
-              <div class="ownership-item"><div class="ownership-label"><span>Saudi Government (PIF)</span><span>98.2%</span></div><div class="ownership-bar"><div class="ownership-bar-fill" style="width: 98.2%"></div></div></div>
-              <div class="ownership-item"><div class="ownership-label"><span>Foreign Institutions</span><span>0.9%</span></div><div class="ownership-bar"><div class="ownership-bar-fill" style="width: 9%; background: var(--accent-blue)"></div></div></div>
-              <div class="ownership-item"><div class="ownership-label"><span>Retail Investors</span><span>0.6%</span></div><div class="ownership-bar"><div class="ownership-bar-fill" style="width: 6%; background: var(--accent-gold)"></div></div></div>
-              <div class="ownership-item"><div class="ownership-label"><span>Local Institutions</span><span>0.3%</span></div><div class="ownership-bar"><div class="ownership-bar-fill" style="width: 3%; background: var(--accent-violet)"></div></div></div>
-            </div>
-          </div>
+          <!-- D4: the hardcoded "Ownership & Foreign Flow" panel was removed — no real
+               shareholder-breakdown source exists (no /ownership or /holders endpoint), and
+               the old bars were fabricated + mis-scaled. Re-add when a real feed is wired. -->
 
           <div class="expand-section" onclick="toggleExpand(this)">
             <div class="expand-header">
@@ -659,13 +622,8 @@
             <div class="expand-body">
               <table class="data-table">
                 <thead><tr><th>Indicator</th><th>Value</th><th>Signal</th></tr></thead>
-                <tbody>
-                  <tr><td>RSI (14)</td><td>54.2</td><td style="color: var(--accent-gold)">Neutral</td></tr>
-                  <tr><td>MACD</td><td>0.12</td><td style="color: var(--success)">Bullish</td></tr>
-                  <tr><td>SMA 50</td><td>SAR 28.20</td><td style="color: var(--success)">Above</td></tr>
-                  <tr><td>SMA 200</td><td>SAR 27.85</td><td style="color: var(--success)">Above</td></tr>
-                  <tr><td>Support</td><td>SAR 27.50</td><td>-</td></tr>
-                  <tr><td>Resistance</td><td>SAR 30.00</td><td>-</td></tr>
+                <tbody id="technicalBody">
+                  <tr><td colspan="3" style="text-align:center;color:var(--fg-dim);padding:12px;">Loading…</td></tr>
                 </tbody>
               </table>
             </div>
@@ -906,6 +864,62 @@
       });
     }
 
+    // D4: real Technical Analysis table from the summary's embedded `tech` object.
+    // Every row is a real backend indicator (RSI, MACD, SMAs, 52-week extremes) or absent.
+    function renderTechnicals(tech, cur) {
+      const tb = document.getElementById('technicalBody'); if (!tb) return;
+      cur = cur || 'SAR';
+      const n = (v) => (v == null || !isFinite(Number(v))) ? null : Number(v);
+      const price = (v) => cur + ' ' + Number(v).toFixed(2);
+      const rows = [];
+      if (n(tech.rsi_14) != null) { const r = n(tech.rsi_14); rows.push(['RSI (14)', r.toFixed(1), r >= 70 ? ['Overbought', 'danger'] : (r <= 30 ? ['Oversold', 'success'] : ['Neutral', 'accent-gold'])]); }
+      if (n(tech.macd_line) != null) rows.push(['MACD', n(tech.macd_line).toFixed(2), tech.macd_bull ? ['Bullish', 'success'] : ['Bearish', 'danger']]);
+      if (n(tech.sma_50) != null) rows.push(['SMA 50', price(tech.sma_50), tech.above_50d ? ['Above', 'success'] : ['Below', 'danger']]);
+      if (n(tech.sma_200) != null) rows.push(['SMA 200', price(tech.sma_200), tech.above_200d ? ['Above', 'success'] : ['Below', 'danger']]);
+      const lc = n(tech.last_close) != null ? n(tech.last_close) : n(currentStock.price);
+      if (lc != null && n(tech.dist_to_52w_high) != null) { const dh = n(tech.dist_to_52w_high); rows.push(['52-Week High', price(lc / (1 + dh / 100)), [dh.toFixed(1) + '%', 'fg-muted']]); }
+      if (lc != null && n(tech.dist_from_52w_low) != null) { const dl = n(tech.dist_from_52w_low); rows.push(['52-Week Low', price(lc / (1 + dl / 100)), ['+' + dl.toFixed(1) + '%', 'success']]); }
+      if (!rows.length) { tb.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--fg-dim);padding:12px;">Technical indicators aren’t available for this stock yet.</td></tr>'; return; }
+      tb.innerHTML = rows.map((r) => '<tr><td>' + _esc(r[0]) + '</td><td>' + _esc(r[1]) + '</td><td style="color:var(--' + r[2][1] + ')">' + _esc(r[2][0]) + '</td></tr>').join('');
+    }
+
+    // D4: real Key-Facts gauges from /api/ticker/{key}/fundamentals.
+    // Ring score = mean of each metric's real sector-percentile; detail rows show real values (or "—").
+    function loadFundamentalGauges(tk) {
+      API.get('/api/ticker/' + encodeURIComponent(tk) + '/fundamentals').then(renderGauges).catch(function () { renderGauges(null); });
+    }
+    function renderGauges(fund) {
+      const ROWS = { valuation: ['pe', 'pb', 'ev_ebitda', 'ps'], profitability: ['net_margin', 'roe', 'roa', 'gross_margin'], health: ['debt_equity', 'current_ratio', 'interest_coverage', 'fcf_yield'], income: ['div_yield', 'payout', 'rev_cagr', 'eps_cagr'] };
+      const LABEL = { pe: 'P/E Ratio', pb: 'P/B Ratio', ev_ebitda: 'EV/EBITDA', ps: 'P/S Ratio', roe: 'ROE', roa: 'ROA', roic: 'ROIC', net_margin: 'Net Margin', gross_margin: 'Gross Margin', debt_equity: 'Debt/Equity', current_ratio: 'Current Ratio', interest_coverage: 'Interest Coverage', fcf_yield: 'FCF Yield', div_yield: 'Dividend Yield', payout: 'Payout Ratio', rev_cagr: 'Rev Growth', eps_cagr: 'EPS Growth' };
+      const fmtVal = (m) => {
+        if (!m || m.value == null || !isFinite(Number(m.value))) return '—';
+        const v = Number(m.value), u = m.unit;
+        if (u === 'x') return v.toFixed(1) + 'x';
+        if (u === '%') return v.toFixed(1) + '%';
+        return v.toFixed(2);
+      };
+      document.querySelectorAll('.gauge-card[data-group]').forEach((card) => {
+        const g = card.dataset.group;
+        const grp = fund && fund[g];
+        const metrics = (grp && grp.metrics) || [];
+        const byKey = {}; metrics.forEach((m) => { byKey[m.key] = m; });
+        const ring = card.querySelector('.gauge-ring'), inner = card.querySelector('.gauge-inner'), rating = card.querySelector('.gauge-rating');
+        const scs = metrics.map((m) => m.score).filter((x) => x != null && isFinite(x));
+        if (scs.length) {
+          const avg = scs.reduce((a, b) => a + b, 0) / scs.length;   // 0–100, real sector percentile
+          if (ring) { ring.className = 'gauge-ring' + (avg >= 67 ? '' : (avg >= 40 ? ' medium' : ' low')); ring.style.setProperty('--score', Math.round(avg)); }
+          if (inner) inner.textContent = (avg / 10).toFixed(1);
+          if (rating) { rating.textContent = avg >= 67 ? 'Strong' : (avg >= 40 ? 'Moderate' : 'Weak'); rating.className = 'gauge-rating ' + (avg >= 67 ? 'high' : (avg >= 40 ? 'medium' : 'low')); }
+        } else {
+          if (ring) { ring.className = 'gauge-ring'; ring.style.setProperty('--score', 0); }
+          if (inner) inner.textContent = '—';
+          if (rating) { rating.textContent = '—'; rating.className = 'gauge-rating'; }
+        }
+        const host = card.querySelector('.gauge-details');
+        if (host) host.innerHTML = (ROWS[g] || []).map((k) => '<div class="gauge-detail-row"><span>' + _esc(LABEL[k] || k) + '</span><span>' + _esc(fmtVal(byKey[k])) + '</span></div>').join('');
+      });
+    }
+
     // REAL stock header from /api/ticker/{key}: name, exchange, live price.
     // (Thesis radar / fundamentals / news on this page are wired in a follow-up step.)
     async function loadRealStock() {
@@ -933,29 +947,9 @@
       loadTickerNews(currentStock.tickerKey);   // D2: real recent news
       loadCorporate(currentStock.tickerKey, currentStock.currency);  // D3: real dividends + corporate actions
 
-      // ---- REAL fundamentals into the gauge detail rows (no fabricated figures) ----
-      function setGaugeRow(label, value){
-        const rows = document.querySelectorAll('.gauge-detail-row');
-        for (const r of rows){
-          const spans = r.querySelectorAll('span');
-          if (spans.length >= 2 && spans[0].textContent.trim().toLowerCase().indexOf(label.toLowerCase()) === 0){ spans[1].textContent = value; return; }
-        }
-      }
-      const num = (v, suffix) => (v == null ? '—' : (Number(v).toFixed(suffix === 'x' ? 1 : 1) + (suffix === 'x' ? 'x' : suffix)));
-      setGaugeRow('P/E', d.pe == null ? '—' : Number(d.pe).toFixed(1) + 'x');
-      setGaugeRow('P/B', d.pb == null ? '—' : Number(d.pb).toFixed(1) + 'x');
-      setGaugeRow('Net Margin', '—');               // not provided by the summary API
-      setGaugeRow('ROE', d.roe_pct == null ? '—' : Number(d.roe_pct).toFixed(1) + '%');
-      setGaugeRow('Dividend Yield', d.dividend_yield_pct == null ? '—' : Number(d.dividend_yield_pct).toFixed(1) + '%');
-      // RSI technicals table row (label in first <td>, value in second, signal in third)
-      document.querySelectorAll('tr').forEach(function(tr){
-        const tds = tr.querySelectorAll('td');
-        if (tds.length >= 2 && /RSI/i.test(tds[0].textContent) && d.rsi_14 != null){
-          const v = Number(d.rsi_14);
-          tds[1].textContent = v.toFixed(1);
-          if (tds[2]) tds[2].textContent = v >= 70 ? 'Overbought' : (v <= 30 ? 'Oversold' : 'Neutral');
-        }
-      });
+      // ---- D4: REAL Key-Facts gauges (/api/ticker/{key}/fundamentals) + technicals (embedded d.tech) ----
+      renderTechnicals(d.tech || {}, currentStock.currency);
+      loadFundamentalGauges(currentStock.tickerKey);
 
       AlphaCouncil.setStockContext(currentStock);
       loadThesis();

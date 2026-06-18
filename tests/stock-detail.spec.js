@@ -84,4 +84,43 @@ test.describe('D1 — stock-detail price chart (was a permanent placeholder)', (
     expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
     await context.close();
   });
+
+  test('D4 — Key-Facts gauges, technicals & ownership are real (no hardcoded metrics)', async ({ browser }) => {
+    const context = await browser.newContext();
+    await apiLogin(context, QA_EMAIL, QA_PASSWORD);
+    const page = await context.newPage();
+    const diag = attachDiagnostics(page);
+    await page.goto('/stock-detail.html?ticker=2222_TADAWUL', { waitUntil: 'domcontentloaded' });
+
+    // ---- Gauges: real /fundamentals (no invented "vs Sector Avg" / hardcoded 14.2x / 6.8) ----
+    const valDetails = page.locator('.gauge-card[data-group="valuation"] .gauge-details');
+    await expect(valDetails).not.toContainText('Loading', { timeout: 12000 });
+    const gaugesHTML = await page.locator('.gauges-grid').innerHTML();
+    expect(gaugesHTML, 'no invented "vs Sector Avg" row').not.toContain('vs Sector Avg');
+    expect(gaugesHTML, 'no hardcoded 14.2x P/E').not.toContain('14.2x');
+    expect(gaugesHTML, 'no hardcoded 28.4% net margin').not.toContain('28.4%');
+    await expect(valDetails, 'real P/E row present').toContainText('P/E Ratio');
+    // valuation ring shows a real 0–10 composite (mean sector-percentile)
+    const inner = (await page.locator('.gauge-card[data-group="valuation"] .gauge-inner').textContent() || '').trim();
+    expect(Number(inner), 'real gauge composite 0–10').toBeGreaterThanOrEqual(0);
+    expect(Number(inner), 'real gauge composite 0–10').toBeLessThanOrEqual(10);
+
+    // ---- Technical table: real d.tech (no fake Support/Resistance/54.2) ----
+    const tech = page.locator('#technicalBody');
+    await expect(tech).not.toContainText('Loading', { timeout: 12000 });
+    const techHTML = await tech.innerHTML();
+    expect(techHTML, 'fake Support row gone').not.toContain('Support');
+    expect(techHTML, 'fake Resistance row gone').not.toContain('Resistance');
+    expect(techHTML, 'fake RSI 54.2 gone').not.toContain('54.2');
+    await expect(tech, 'real RSI row').toContainText('RSI (14)');
+    await expect(tech, 'real SMA 200 row').toContainText('SMA 200');
+    await expect(tech, 'real 52-week extreme row').toContainText('52-Week');
+
+    // ---- Ownership: fabricated mis-scaled bars removed (no real source) ----
+    await expect(page.locator('body'), 'fake PIF ownership bar gone').not.toContainText('Saudi Government (PIF)');
+
+    await shot(page, 'd4-gauges-tech');
+    expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
+    await context.close();
+  });
 });
