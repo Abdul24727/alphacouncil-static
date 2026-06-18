@@ -498,36 +498,30 @@
           </div>
 
           <!-- Analyst Forecast -->
-          <div class="forecast-section">
+          <!-- Analyst Forecast — D6: populated by loadForecast() from /api/ticker/{key}/insights; hidden until real data loads -->
+          <div class="forecast-section" id="forecastSection" style="display:none">
             <div class="forecast-grid">
               <div class="forecast-card">
                 <div class="forecast-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Price Target</div>
                 <div class="price-target-visual">
                   <div class="target-bar">
-                    <div class="target-range" style="left: 10%; width: 80%;"></div>
-                    <div class="target-current" style="left: 42%;"></div>
-                    <div class="target-avg" style="left: 68%;"></div>
+                    <div class="target-range" style="left: 0%; width: 100%;"></div>
+                    <div class="target-current" style="left: 50%; display:none;"></div>
+                    <div class="target-avg" style="left: 50%;"></div>
                   </div>
-                  <div class="target-labels"><span>SAR 24.00</span><span>Current: 28.90</span><span>SAR 38.00</span></div>
+                  <div class="target-labels"><span>—</span><span></span><span>—</span></div>
                 </div>
                 <div class="target-stats">
-                  <div class="target-stat"><label>Low</label><div class="value low">SAR 24.00</div></div>
-                  <div class="target-stat"><label>Average</label><div class="value avg">SAR 32.50</div></div>
-                  <div class="target-stat"><label>High</label><div class="value high">SAR 38.00</div></div>
+                  <div class="target-stat"><label>Low</label><div class="value low">—</div></div>
+                  <div class="target-stat"><label>Average</label><div class="value avg">—</div></div>
+                  <div class="target-stat"><label>High</label><div class="value high">—</div></div>
                 </div>
-                <div class="analyst-count">Based on 18 analyst ratings · Updated Jun 12, 2026</div>
+                <div class="analyst-count">—</div>
               </div>
               <div class="forecast-card">
-                <div class="forecast-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Earnings Trend</div>
-                <div class="earnings-bars">
-                  <div class="earnings-quarter"><div class="earnings-bar-group"><div class="earnings-bar estimate" style="height: 50px;"></div><div class="earnings-bar actual" style="height: 55px;"></div></div><div class="earnings-label">Q1'25</div></div>
-                  <div class="earnings-quarter"><div class="earnings-bar-group"><div class="earnings-bar estimate" style="height: 48px;"></div><div class="earnings-bar actual" style="height: 52px;"></div></div><div class="earnings-label">Q2'25</div></div>
-                  <div class="earnings-quarter"><div class="earnings-bar-group"><div class="earnings-bar estimate" style="height: 52px;"></div><div class="earnings-bar actual" style="height: 58px;"></div></div><div class="earnings-label">Q3'25</div></div>
-                  <div class="earnings-quarter"><div class="earnings-bar-group"><div class="earnings-bar estimate" style="height: 54px;"></div><div class="earnings-bar actual" style="height: 60px;"></div></div><div class="earnings-label">Q4'25</div></div>
-                  <div class="earnings-quarter"><div class="earnings-bar-group"><div class="earnings-bar estimate" style="height: 56px;"></div><div class="earnings-bar actual" style="height: 62px;"></div></div><div class="earnings-label">Q1'26</div></div>
-                  <div class="earnings-quarter"><div class="earnings-bar-group"><div class="earnings-bar estimate" style="height: 58px;"></div><div class="earnings-bar actual miss" style="height: 54px;"></div></div><div class="earnings-label">Q2'26</div></div>
-                </div>
-                <div class="earnings-legend"><span class="est">Estimate</span><span class="act">Actual</span></div>
+                <div class="forecast-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Earnings Trend (EPS)</div>
+                <div class="earnings-bars"><div style="color:var(--fg-dim);font-size:12px;padding:12px;">Loading…</div></div>
+                <div class="earnings-legend"><span class="act">Actual EPS</span><span class="est">Estimate</span></div>
               </div>
             </div>
           </div>
@@ -974,6 +968,51 @@
     // re-render the position whenever real holdings load or change (add / sale)
     window.onPortfolioReady = function () { renderPosition(); };
 
+    // D6: real Analyst Forecast (price target + earnings trend) from /api/ticker/{key}/insights.
+    // Section stays hidden unless there are real analyst targets or EPS estimates.
+    function loadForecast(tk, cur, current) {
+      const sec = document.getElementById('forecastSection'); if (!sec) return;
+      cur = cur || 'SAR';
+      const num = function (x) { return (x == null || !isFinite(Number(x))) ? null : Number(x); };
+      const money = function (v) { return cur + ' ' + Number(v).toFixed(2); };
+      API.get('/api/ticker/' + encodeURIComponent(tk) + '/insights').then(function (ins) {
+        const a = (ins && ins.analysts) || {};
+        const est = (ins && ins.estimates) || {};
+        const cards = sec.querySelectorAll('.forecast-card');
+        const ptCard = cards[0], epsCard = cards[1];
+        // ---- Price Target (low / avg / high vs current) ----
+        const lo = num(a.target_low), av = num(a.target_avg), hi = num(a.target_high);
+        const hasTargets = lo != null && av != null && hi != null && hi > lo;
+        if (ptCard && hasTargets) {
+          ptCard.style.display = '';
+          const cur0 = num(current);
+          const pct = function (v) { return Math.max(0, Math.min(100, ((v - lo) / (hi - lo)) * 100)); };
+          const avgM = ptCard.querySelector('.target-avg'); if (avgM) avgM.style.left = pct(av) + '%';
+          const curM = ptCard.querySelector('.target-current'); if (curM) { if (cur0 != null) { curM.style.display = ''; curM.style.left = pct(cur0) + '%'; } else curM.style.display = 'none'; }
+          const labs = ptCard.querySelectorAll('.target-labels span');
+          if (labs.length >= 3) { labs[0].textContent = money(lo); labs[1].textContent = cur0 != null ? ('Current: ' + cur0.toFixed(2)) : ''; labs[2].textContent = money(hi); }
+          const stats = ptCard.querySelectorAll('.target-stat .value');
+          if (stats.length >= 3) { stats[0].textContent = money(lo); stats[1].textContent = money(av); stats[2].textContent = money(hi); }
+          const cnt = ptCard.querySelector('.analyst-count');
+          if (cnt) { const n = a.target_count != null ? a.target_count : a.analyst_count; cnt.textContent = 'Based on ' + (n != null ? n : '—') + ' analyst price targets' + (a.consensus ? (' · Consensus: ' + a.consensus) : '') + (ins.updated_at ? (' · Updated ' + String(ins.updated_at).slice(0, 10)) : ''); }
+        } else if (ptCard) { ptCard.style.display = 'none'; }
+        // ---- Earnings Trend: real EPS by year (actual solid, estimate faded) ----
+        const eps = (est && Array.isArray(est.eps)) ? est.eps.filter(function (e) { return e && num(e.value) != null; }) : [];
+        const barsHost = epsCard ? epsCard.querySelector('.earnings-bars') : null;
+        const hasEps = eps.length > 0;
+        if (barsHost && hasEps) {
+          if (epsCard) epsCard.style.display = '';
+          const mx = Math.max.apply(null, eps.map(function (e) { return Math.abs(Number(e.value)); })) || 1;
+          barsHost.innerHTML = eps.map(function (e) {
+            const h = Math.max(6, Math.round((Math.abs(Number(e.value)) / mx) * 64));
+            const isEst = !!e.estimate, lbl = String(e.year) + (isEst ? 'E' : '');
+            return '<div class="earnings-quarter"><div class="earnings-bar-group"><div class="earnings-bar ' + (isEst ? 'estimate' : 'actual') + '" style="height:' + h + 'px;" title="' + _esc(lbl + ': ' + Number(e.value).toFixed(2)) + '"></div></div><div class="earnings-label">' + _esc(lbl) + '</div></div>';
+          }).join('');
+        } else if (epsCard) { epsCard.style.display = 'none'; }
+        sec.style.display = (hasTargets || hasEps) ? '' : 'none';
+      }).catch(function () { sec.style.display = 'none'; });
+    }
+
     // REAL stock header from /api/ticker/{key}: name, exchange, live price.
     // (Thesis radar / fundamentals / news on this page are wired in a follow-up step.)
     async function loadRealStock() {
@@ -1000,6 +1039,7 @@
       initPriceChart(currentStock.tickerKey);   // D1: render the real price chart
       loadTickerNews(currentStock.tickerKey);   // D2: real recent news
       loadCorporate(currentStock.tickerKey, currentStock.currency);  // D3: real dividends + corporate actions
+      loadForecast(currentStock.tickerKey, currentStock.currency, currentStock.price);  // D6: real analyst forecast
 
       // ---- D4: REAL Key-Facts gauges (/api/ticker/{key}/fundamentals) + technicals (embedded d.tech) ----
       renderTechnicals(d.tech || {}, currentStock.currency);

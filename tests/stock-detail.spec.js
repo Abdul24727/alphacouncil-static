@@ -173,4 +173,35 @@ test.describe('D1 — stock-detail price chart (was a permanent placeholder)', (
     expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
     await context.close();
   });
+
+  test("D6 — Analyst Forecast is real (price targets + EPS by year, not the 18-analyst / Q1'25 fakes)", async ({ browser }) => {
+    const context = await browser.newContext();
+    await apiLogin(context, QA_EMAIL, QA_PASSWORD);
+    const page = await context.newPage();
+    const diag = attachDiagnostics(page);
+    await page.goto('/stock-detail.html?ticker=2222_TADAWUL', { waitUntil: 'domcontentloaded' });
+
+    const sec = page.locator('#forecastSection');
+    await expect(sec, 'forecast shown (2222 has analyst data)').toBeVisible({ timeout: 12000 });
+
+    // ---- Price Target: real low/avg/high + real analyst count (not the 18 / SAR 32.50 fakes) ----
+    const secHTML = await sec.innerHTML();
+    expect(secHTML, 'no fake SAR 32.50 average').not.toContain('32.50');
+    expect(secHTML, 'no fake 18-analyst count').not.toContain('18 analyst');
+    const avg = (await sec.locator('.target-stat .value.avg').textContent() || '').trim();
+    expect(avg, 'real average target in SAR').toMatch(/^SAR \d/);
+    await expect(sec.locator('.analyst-count'), 'real analyst-target caption').toContainText('analyst price targets');
+
+    // ---- Earnings Trend: real EPS by YEAR (not the hardcoded Q1'25 quarters) ----
+    const bars = sec.locator('.earnings-bars');
+    await expect(bars).not.toContainText('Loading', { timeout: 12000 });
+    const barsHTML = await bars.innerHTML();
+    expect(barsHTML, "no hardcoded Q1'25 quarter").not.toContain("Q1'25");
+    expect(barsHTML, 'real 4-digit year labels').toMatch(/20\d\d/);
+    expect(await bars.locator('.earnings-bar').count(), 'real EPS bars render').toBeGreaterThan(2);
+
+    await shot(page, 'd6-forecast');
+    expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
+    await context.close();
+  });
 });
