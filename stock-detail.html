@@ -679,27 +679,8 @@
         <aside class="right-column">
           <div class="card">
             <div class="card-header"><h3 class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/></svg>Recent News</h3></div>
-            <div class="card-body" style="padding: 12px;">
-              <div class="news-card" onclick="askAboutNews('aramco-pif')">
-                <div class="news-meta"><span class="news-tag ownership">Ownership</span><span class="news-time">2h ago</span></div>
-                <p class="news-headline">PIF Increases Stake in Saudi Aramco to 8.2%, Signaling Strategic Commitment</p>
-                <div class="news-actions"><button class="ask-btn">Ask Adviser</button></div>
-              </div>
-              <div class="news-card" onclick="askAboutNews('aramco-cso')">
-                <div class="news-meta"><span class="news-tag governance">Governance</span><span class="news-time">Yesterday</span></div>
-                <p class="news-headline">Aramco Appoints New Chief Strategy Officer From McKinsey</p>
-                <div class="news-actions"><button class="ask-btn">Ask Adviser</button></div>
-              </div>
-              <div class="news-card" onclick="askAboutNews('aramco-hydrogen')">
-                <div class="news-meta"><span class="news-tag projects">Projects</span><span class="news-time">2 days ago</span></div>
-                <p class="news-headline">Aramco Expands Blue Hydrogen Production Capacity by 40%</p>
-                <div class="news-actions"><button class="ask-btn">Ask Adviser</button></div>
-              </div>
-              <div class="news-card" onclick="askAboutNews('aramco-q2')">
-                <div class="news-meta"><span class="news-tag earnings">Earnings</span><span class="news-time">1 week ago</span></div>
-                <p class="news-headline">Aramco Q2 Profit Rises 4% on Higher Production Volumes</p>
-                <div class="news-actions"><button class="ask-btn">Ask Adviser</button></div>
-              </div>
+            <div class="card-body" id="tickerNewsBody" style="padding: 12px;">
+              <div class="news-empty" style="padding:12px;color:var(--fg-dim);font-size:13px;">Loading…</div>
             </div>
           </div>
         </aside>
@@ -853,6 +834,29 @@
       loadChart();
     }
 
+    // ---- D2: REAL recent news from /api/ticker/{key}/news ----
+    function loadTickerNews(tk) {
+      const host = document.getElementById('tickerNewsBody'); if (!host) return;
+      API.get('/api/ticker/' + encodeURIComponent(tk) + '/news?limit=6&section=news').then((res) => {
+        const items = Array.isArray(res) ? res : (res && res.items) || [];
+        if (!items.length) { host.innerHTML = '<div class="news-empty" style="padding:12px;color:var(--fg-dim);font-size:13px;">No recent news for this stock yet.</div>'; return; }
+        host.innerHTML = items.slice(0, 6).map((it) => {
+          const cat = it.category || it.section || 'News';
+          const url = it.url || '';
+          const title = it.title || '';
+          const read = url ? '<a class="ask-btn" href="' + _esc(url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read</a>' : '';
+          return '<div class="news-card" data-nid="' + _esc(String(it.id)) + '" data-ntitle="' + _esc(title) + '">'
+            + '<div class="news-meta"><span class="news-tag">' + _esc(cat) + '</span><span class="news-time">' + _esc(it.date || '') + '</span></div>'
+            + '<p class="news-headline">' + _esc(title) + '</p>'
+            + '<div class="news-actions">' + read + '<button class="ask-btn" data-ask="1">Ask Adviser</button></div></div>';
+        }).join('');
+        host.querySelectorAll('.news-card').forEach((card) => {
+          // whole card → real adviser (the Read link stops propagation so it opens the article)
+          card.addEventListener('click', () => { if (window.AlphaCouncil && AlphaCouncil.askAboutNews) AlphaCouncil.askAboutNews(card.dataset.nid, card.dataset.ntitle, [tk]); });
+        });
+      }).catch(() => { host.innerHTML = '<div class="news-empty" style="padding:12px;color:var(--fg-dim);font-size:13px;">Couldn’t load news right now.</div>'; });
+    }
+
     // REAL stock header from /api/ticker/{key}: name, exchange, live price.
     // (Thesis radar / fundamentals / news on this page are wired in a follow-up step.)
     async function loadRealStock() {
@@ -877,6 +881,7 @@
       const cs = document.querySelector('.context-stock'); if (cs) cs.textContent = currentStock.ticker + ' · ' + currentStock.name;
 
       initPriceChart(currentStock.tickerKey);   // D1: render the real price chart
+      loadTickerNews(currentStock.tickerKey);   // D2: real recent news
 
       // ---- REAL fundamentals into the gauge detail rows (no fabricated figures) ----
       function setGaugeRow(label, value){

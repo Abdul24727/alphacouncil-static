@@ -39,4 +39,27 @@ test.describe('D1 — stock-detail price chart (was a permanent placeholder)', (
     expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
     await context.close();
   });
+
+  test('D2 — recent news is real (not the hardcoded "PIF stake" cards); card → real adviser', async ({ browser }) => {
+    const context = await browser.newContext();
+    await apiLogin(context, QA_EMAIL, QA_PASSWORD);
+    const page = await context.newPage();
+    let asked = false;
+    await page.route('**/api/adviser/ask', (route) => { asked = true; route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ answer: 'STUB-NEWS-ADVISER', disclaimer: 'x' }) }); });
+    await page.goto('/stock-detail.html?ticker=2222_TADAWUL', { waitUntil: 'domcontentloaded' });
+    // wait for the news fetch to resolve (Loading… → real cards or an honest empty state)
+    await expect(page.locator('#tickerNewsBody')).not.toContainText('Loading', { timeout: 12000 });
+    const html = await page.locator('#tickerNewsBody').innerHTML();
+    expect(html, 'no hardcoded PIF card').not.toContain('PIF Increases Stake in Saudi Aramco to 8.2%');
+    expect(html, 'no hardcoded McKinsey card').not.toContain('From McKinsey');
+    const cards = await page.locator('#tickerNewsBody .news-card').count();
+    expect(cards, 'Aramco should surface real news').toBeGreaterThan(0);
+    // clicking a real news card routes to the real /api/adviser/ask
+    await Promise.all([
+      page.waitForRequest('**/api/adviser/ask', { timeout: 6000 }),
+      page.locator('#tickerNewsBody .news-card').first().click(),
+    ]);
+    expect(asked, 'news card asked the real adviser').toBeTruthy();
+    await context.close();
+  });
 });
