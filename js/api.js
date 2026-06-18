@@ -78,6 +78,7 @@
     me: function () { return API.get('/api/auth/me'); },
     logout: function () { return API.post('/api/auth/logout', {}); },
     forgotPassword: function (email) { return API.post('/api/auth/forgot-password', { email: email }); },
+    resetPassword: function (token, newPassword) { return API.post('/api/auth/reset-password', { token: token, new_password: newPassword }); },
 
     // ---- Portfolio ----
     portfolio: function () { return API.get('/api/portfolio/holdings'); },

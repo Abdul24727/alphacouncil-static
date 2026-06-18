@@ -25,9 +25,14 @@ function attachDiagnostics(page) {
 // network requests. `extraAllow` is an array of RegExp to tolerate specific requests
 // (e.g. a deliberately-unauthenticated probe in a signed-out test).
 function assertClean(diag, expect, extraAllow = []) {
-  const fails = diag.failedRequests.filter((f) => !extraAllow.some((re) => re.test(f)));
+  const allow = (s) => extraAllow.some((re) => re.test(s));
+  const fails = diag.failedRequests.filter((f) => !allow(f));
+  // A deliberately-tested HTTP error (e.g. an invalid-token 400) makes Chromium log
+  // "Failed to load resource: … 4xx" to the console — benign when the request itself
+  // is in extraAllow, so filter those console lines the same way.
+  const cerrs = diag.consoleErrors.filter((c) => !allow(c));
   expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
-  expect(diag.consoleErrors, 'console errors:\n' + diag.consoleErrors.join('\n')).toEqual([]);
+  expect(cerrs, 'console errors:\n' + cerrs.join('\n')).toEqual([]);
   expect(fails, 'failed network requests:\n' + fails.join('\n')).toEqual([]);
 }
 
