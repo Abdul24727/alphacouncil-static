@@ -482,56 +482,47 @@
       <!-- Greeting -->
       <div class="greeting">
         <div class="greeting-text">
-          <h1>Good morning, Sami</h1>
+          <h1 id="greetingHeading">Welcome</h1>
           <p>Here's what matters for your portfolio today.</p>
         </div>
         <div class="greeting-time">
-          <strong>Monday, June 16, 2026</strong><br>
-          Last sync: 2 min ago
+          <strong id="greetingDate"></strong>
         </div>
       </div>
 
-      <!-- Portfolio Metrics -->
+      <!-- Portfolio Metrics — E1: values filled by onPortfolioReady from real holdings; neutral "—" until then (never a hardcoded total) -->
       <div class="metrics-row">
         <div class="metric-card">
           <div class="metric-label">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             Total Portfolio Value
           </div>
-          <div class="metric-value">SAR 847,250</div>
-          <div class="metric-change up">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
-            +2.4% this month
-          </div>
+          <div class="metric-value">—</div>
+          <div class="metric-change" style="display:none;"></div>
         </div>
         <div class="metric-card">
           <div class="metric-label">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
             Unrealized P&L
           </div>
-          <div class="metric-value" style="color: var(--success);">+SAR 38,912</div>
-          <div class="metric-change up">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
-            +4.8% overall
-          </div>
+          <div class="metric-value">—</div>
+          <div class="metric-change" style="display:none;"></div>
         </div>
         <div class="metric-card">
           <div class="metric-label">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
             Portfolio Yield (TTM)
           </div>
-          <div class="metric-value">3.2%</div>
-          <div class="metric-change" style="color: var(--fg-dim);">
-            SAR 27,112 in dividends
-          </div>
+          <div class="metric-value">—</div>
+          <div class="metric-change" style="display:none;"></div>
         </div>
         <div class="metric-card">
           <div class="metric-label">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Overall Risk Score
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
+            Today's Change
           </div>
-          <div class="metric-value">64</div>
-          <div class="metric-badge">Moderate</div>
+          <div class="metric-value">—</div>
+          <div class="metric-change" style="display:none;"></div>
         </div>
       </div>
 
@@ -584,11 +575,10 @@
                   <th>Weight</th>
                   <th>Value</th>
                   <th>P&L</th>
-                  <th style="text-align: right;">Thesis Score</th>
                 </tr>
               </thead>
               <tbody>
-                <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--fg-dim);">Loading…</td></tr>
+                <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--fg-dim);">Loading…</td></tr>
               </tbody>
             </table>
           </div>
@@ -620,7 +610,7 @@
             </div>
             <div class="card-body">
               <p class="council-synthesis">
-                <strong>Strategic Synthesis:</strong> Data suggests reviewing portfolio concentration in the banking sector (32.2% weight). While recent performance appears strong, valuation metrics indicate some names may be stretched relative to historical averages. Consider whether Materials exposure (7.2%) aligns with your target allocation given current commodity pricing dynamics.
+                Convene a live multi-model <strong>AI Analyst Council</strong> on your portfolio — several models debate concentration, valuation and risk across your real holdings, then a chairman synthesises a balanced view.
               </p>
               <div class="council-perspectives">
                 <div class="council-perspective">
@@ -670,19 +660,19 @@
             <div class="card-body">
               <div class="quick-stats">
                 <div class="quick-stat">
-                  <div class="quick-stat-value">7</div>
+                  <div class="quick-stat-value">—</div>
                   <div class="quick-stat-label">Holdings</div>
                 </div>
                 <div class="quick-stat">
-                  <div class="quick-stat-value">4</div>
+                  <div class="quick-stat-value">—</div>
                   <div class="quick-stat-label">Sectors</div>
                 </div>
                 <div class="quick-stat">
-                  <div class="quick-stat-value" style="color: var(--success);">5</div>
+                  <div class="quick-stat-value" style="color: var(--success);">—</div>
                   <div class="quick-stat-label">Gainers</div>
                 </div>
                 <div class="quick-stat">
-                  <div class="quick-stat-value" style="color: var(--danger);">2</div>
+                  <div class="quick-stat-value" style="color: var(--danger);">—</div>
                   <div class="quick-stat-label">Losers</div>
                 </div>
               </div>
@@ -740,11 +730,6 @@
           </div>
         </div>
 
-        <div class="sidebar-tabs">
-          <button class="sidebar-tab active" data-tab="page">Current page</button>
-          <button class="sidebar-tab" data-tab="portfolio">Your portfolio</button>
-        </div>
-
         <div class="sidebar-content">
           <div class="sidebar-section">
             <div class="sidebar-section-title">Suggested questions</div>
@@ -782,7 +767,7 @@
             <div class="chat-message adviser">
               <div class="chat-avatar">AC</div>
               <div>
-                <div class="chat-bubble">Good morning, Sami. I can see your dashboard and portfolio. Your holdings show a <strong>+4.8% overall gain</strong> with particular strength in banking names. How can I assist you today?</div>
+                <div class="chat-bubble">I'm your AlphaCouncil adviser. Ask me about your holdings, a specific stock, or your portfolio's concentration and risk — I'll answer from your real data.</div>
                 <div class="chat-time">Just now</div>
               </div>
             </div>
@@ -827,7 +812,7 @@
         const tbody = document.querySelector('#holdingsTable tbody');
         if(!tbody) return;
         if(!holdings || !holdings.length){
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--fg-dim);">No holdings yet — add one to get started.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--fg-dim);">No holdings yet — add one to get started.</td></tr>';
           return;
         }
         tbody.innerHTML = holdings.map(function(h){
@@ -838,25 +823,53 @@
             +'<td><div class="holding-name"><div class="holding-logo">'+escH(initials(nm, h.ticker))+'</div><div><div class="holding-ticker">'+escH(nm)+'</div><div class="holding-company">'+escH(h.ticker)+'</div></div></div></td>'
             +'<td>'+(h.weight!=null?h.weight.toFixed(1)+'%':'—')+'</td>'
             +'<td class="holding-value">'+formatCurrency(h.value, h.currency)+'</td>'
-            +'<td class="holding-pnl '+(up?'up':'down')+'">'+formatPercent(h.pnlPct)+'</td>'
-            +'<td style="text-align:right;"><span class="thesis-score">—</span></td></tr>';
+            +'<td class="holding-pnl '+(up?'up':'down')+'">'+formatPercent(h.pnlPct)+'</td></tr>';
         }).join('');
       }
+      // E4: real greeting (time-of-day + real date) + real signed-in name via onUserReady.
+      (function initGreeting(){
+        const now = new Date();
+        const hr = now.getHours();
+        const greet = hr < 12 ? 'Good morning' : (hr < 18 ? 'Good afternoon' : 'Good evening');
+        const dEl = document.getElementById('greetingDate');
+        if (dEl) dEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const setName = function (u) {
+          const nm = (u && (u.first_name || String(u.name || '').trim().split(' ')[0])) || '';
+          const hEl = document.getElementById('greetingHeading');
+          if (hEl) hEl.textContent = nm ? (greet + ', ' + nm) : greet;
+        };
+        window.onUserReady = setName;
+        if (window.AlphaCouncil && AlphaCouncil.getUser && AlphaCouncil.getUser()) setName(AlphaCouncil.getUser());
+        else { const hEl = document.getElementById('greetingHeading'); if (hEl) hEl.textContent = greet; }
+      })();
+
+      // E1/E2: real portfolio metrics + snapshot quick-stats from live holdings ("—" when none).
       window.onPortfolioReady = function(holdings){
+        holdings = holdings || [];
+        const hasH = holdings.length > 0;
         const totalValue = holdings.reduce(function(s,h){ return s+(h.valueSar||0); },0);
         const totalCost  = holdings.reduce(function(s,h){ return s+(h.costSar||0); },0);
         const pnl = totalValue-totalCost, pnlPct = totalCost>0?(pnl/totalCost)*100:0;
         const wYield = totalValue>0 ? holdings.reduce(function(s,h){ return s+((h.valueSar||0)*(h.divYield||0)); },0)/totalValue : 0;
+        const dayChg = totalValue>0 ? holdings.reduce(function(s,h){ return s+((h.valueSar||0)*(h.dayChange||0)); },0)/totalValue : null;
         const mv = document.querySelectorAll('.metrics-row .metric-value');
-        if(mv[0]){ mv[0].textContent = formatCurrency(totalValue,'SAR'); const c=mv[0].parentElement.querySelector('.metric-change'); if(c) c.style.display='none'; }
-        if(mv[1]){ mv[1].textContent = (pnl>=0?'+':'')+formatCurrency(pnl,'SAR'); mv[1].style.color = pnl>=0?'var(--success)':'var(--danger)'; const c=mv[1].parentElement.querySelector('.metric-change'); if(c){ c.className='metric-change '+(pnl>=0?'up':'down'); c.innerHTML = formatPercent(pnlPct)+' overall'; } }
-        if(mv[2]){ mv[2].textContent = wYield>0?wYield.toFixed(1)+'%':'—'; const c=mv[2].parentElement.querySelector('.metric-change'); if(c) c.style.display='none'; }
-        if(mv[3]){ mv[3].textContent='—'; const b=mv[3].parentElement.querySelector('.metric-badge'); if(b) b.style.display='none'; }
+        if(mv[0]) mv[0].textContent = hasH ? formatCurrency(totalValue,'SAR') : '—';
+        if(mv[1]){ mv[1].textContent = hasH ? ((pnl>=0?'+':'')+formatCurrency(pnl,'SAR')) : '—'; mv[1].style.color = hasH ? (pnl>=0?'var(--success)':'var(--danger)') : ''; const c=mv[1].parentElement.querySelector('.metric-change'); if(c){ if(hasH){ c.style.display=''; c.className='metric-change '+(pnl>=0?'up':'down'); c.textContent=formatPercent(pnlPct)+' overall'; } else c.style.display='none'; } }
+        if(mv[2]) mv[2].textContent = (hasH && wYield>0) ? wYield.toFixed(1)+'%' : '—';
+        if(mv[3]){ const ok = hasH && dayChg!=null && isFinite(dayChg); mv[3].textContent = ok ? formatPercent(dayChg) : '—'; mv[3].style.color = ok ? (dayChg>=0?'var(--success)':'var(--danger)') : ''; }
+        const qs = document.querySelectorAll('.quick-stats .quick-stat-value');
+        if(qs.length>=4){
+          const sectors = new Set(holdings.map(function(h){ return h.sector||h.exchange||''; }).filter(Boolean));
+          qs[0].textContent = hasH ? String(holdings.length) : '—';
+          qs[1].textContent = hasH ? String(sectors.size) : '—';
+          qs[2].textContent = hasH ? String(holdings.filter(function(h){ return (h.pnlPct||0) > 0; }).length) : '—';
+          qs[3].textContent = hasH ? String(holdings.filter(function(h){ return (h.pnlPct||0) < 0; }).length) : '—';
+        }
         renderHoldings(holdings);
       };
       // Render immediately if holdings already loaded before this handler was set.
       if (AlphaCouncil.getHoldings && AlphaCouncil.getHoldings().length) window.onPortfolioReady(AlphaCouncil.getHoldings());
-      else { const _ht = document.querySelector('#holdingsTable tbody'); if (_ht) _ht.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--fg-dim);">Loading…</td></tr>'; }
+      else { const _ht = document.querySelector('#holdingsTable tbody'); if (_ht) _ht.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--fg-dim);">Loading…</td></tr>'; }
 
       // ---- REAL DATA: Top Gainers / Losers (live /api/movers) + Watchlist (/api/watchlist) ----
       function initials(name, fallback){
@@ -970,19 +983,8 @@
         });
       }
 
-      // Tab switching with ARIA
-      $$('.sidebar-tab').forEach((tab, idx) => {
-        tab.setAttribute('role', 'tab');
-        tab.setAttribute('aria-selected', tab.classList.contains('active'));
-        tab.addEventListener('click', () => {
-          $$('.sidebar-tab').forEach(t => {
-            t.classList.remove('active');
-            t.setAttribute('aria-selected', 'false');
-          });
-          tab.classList.add('active');
-          tab.setAttribute('aria-selected', 'true');
-        });
-      });
+      // (E4: removed the cosmetic "Current page / Your portfolio" sidebar tabs + their
+      //  dead ARIA-tab handler — they were no-ops; the suggested questions drive the adviser.)
 
       // Quick actions
       $$('.quick-action').forEach(btn => {
