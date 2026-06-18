@@ -1682,37 +1682,8 @@
                 Intelligent Alerts
               </div>
             </div>
-            <div class="card-body">
-              <div class="alert-item">
-                <div class="alert-icon risk">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                </div>
-                <div class="alert-content">
-                  <div class="alert-source">Risk Analyst</div>
-                  <div class="alert-text">Banking concentration exceeds 30% threshold. Data suggests reviewing sector weights.</div>
-                </div>
-                <span class="alert-time">2h ago</span>
-              </div>
-              <div class="alert-item">
-                <div class="alert-icon value">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                </div>
-                <div class="alert-content">
-                  <div class="alert-source">Value Analyst</div>
-                  <div class="alert-text">SABIC trading below intrinsic value estimate but momentum weak. Monitor for entry timing.</div>
-                </div>
-                <span class="alert-time">5h ago</span>
-              </div>
-              <div class="alert-item">
-                <div class="alert-icon macro">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>
-                </div>
-                <div class="alert-content">
-                  <div class="alert-source">Macro Analyst</div>
-                  <div class="alert-text">Brent crude below $83 may impact Aramco dividend outlook. Portfolio oil exposure: 18.4%.</div>
-                </div>
-                <span class="alert-time">1d ago</span>
-              </div>
+            <div class="card-body" id="alertsCardBody">
+              <div class="alert-empty" style="padding:18px;color:var(--fg-dim);font-size:13px;">Loading…</div>
             </div>
           </div>
 
@@ -1725,40 +1696,8 @@
               </div>
             </div>
             <div class="card-body">
-              <div class="news-grid">
-                <div class="news-item">
-                  <div class="news-thumb">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>
-                  </div>
-                  <div class="news-content">
-                    <div class="news-source">Reuters</div>
-                    <div class="news-title">Saudi Aramco Q2 profits decline amid lower oil prices</div>
-                    <div class="news-meta">2h ago · 2222.SR</div>
-                  </div>
-                  <button class="news-ask">Ask Adviser</button>
-                </div>
-                <div class="news-item">
-                  <div class="news-thumb">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>
-                  </div>
-                  <div class="news-content">
-                    <div class="news-source">Bloomberg</div>
-                    <div class="news-title">Al Rajhi Bank reports strong digital growth in retail banking</div>
-                    <div class="news-meta">5h ago · 1120.SR</div>
-                  </div>
-                  <button class="news-ask">Ask Adviser</button>
-                </div>
-                <div class="news-item">
-                  <div class="news-thumb">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>
-                  </div>
-                  <div class="news-content">
-                    <div class="news-source">Gulf News</div>
-                    <div class="news-title">SABIC faces margin pressure from petrochemical downturn</div>
-                    <div class="news-meta">1d ago · 2010.SR</div>
-                  </div>
-                  <button class="news-ask">Ask Adviser</button>
-                </div>
+              <div class="news-grid" id="holdingsNewsGrid">
+                <div style="padding:14px;color:var(--fg-dim);font-size:13px;">Loading…</div>
               </div>
             </div>
           </div>
@@ -2143,6 +2082,60 @@
       const _add=document.getElementById('addHoldingBtn');
       if(_add) _add.addEventListener('click', function(){ AlphaCouncil.openAddHoldingModal(); });
       if (AlphaCouncil.getHoldings && AlphaCouncil.getHoldings().length) window.onPortfolioReady(AlphaCouncil.getHoldings());
+
+      // ---- F2: real Intelligent Alerts (/api/alerts) + News for Holdings (/api/news/for-holdings) ----
+      (function loadPortfolioAlertsAndNews(){
+        function timeAgo(iso){ const t=Date.parse(iso); if(isNaN(t)) return ''; let s=Math.max(0,Math.floor((Date.now()-t)/1000)); if(s<60) return 'just now'; const m=Math.floor(s/60); if(m<60) return m+'m ago'; const h=Math.floor(m/60); if(h<24) return h+'h ago'; const d=Math.floor(h/24); if(d<30) return d+'d ago'; return Math.floor(d/30)+'mo ago'; }
+        const ALERT_ICONS = {
+          growth:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+          risk:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+          technical:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>',
+          value:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+          macro:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+          _default:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>'
+        };
+        function alertHTML(a){
+          const kind=a.kind||'technical', icon=ALERT_ICONS[kind]||ALERT_ICONS._default;
+          const href=a.url||(a.ticker_key?('stock-detail.html?ticker='+encodeURIComponent(a.ticker_key)):'');
+          const src=a.source||(kind.charAt(0).toUpperCase()+kind.slice(1)), text=a.title||a.body||'';
+          const nav=href?(' role="button" tabindex="0" style="cursor:pointer;" data-href="'+escP(href)+'" onclick="window.location.href=this.dataset.href"'):'';
+          return '<div class="alert-item"'+nav+'><div class="alert-icon '+escP(kind)+'">'+icon+'</div>'
+            +'<div class="alert-content"><div class="alert-source">'+escP(src)+'</div><div class="alert-text">'+escP(text)+'</div></div>'
+            +'<span class="alert-time">'+escP(timeAgo(a.created_at))+'</span></div>';
+        }
+        (async function(){
+          const body=document.getElementById('alertsCardBody'); if(!body) return;
+          try{
+            const r=await API.alerts(6); const items=(r&&r.alerts)?r.alerts:[];
+            body.innerHTML = items.length ? items.slice(0,6).map(alertHTML).join('')
+              : '<div class="alert-empty" style="padding:18px;color:var(--fg-dim);font-size:13px;line-height:1.5;">No alerts yet. As notable moves, technical signals and news hit your holdings, they’ll appear here.</div>';
+          }catch(e){
+            body.innerHTML = '<div class="alert-empty" style="padding:18px;color:var(--fg-dim);font-size:13px;">'+(e&&e.status===401?'Sign in to see your alerts.':'Couldn’t load your alerts.')+'</div>';
+          }
+        })();
+        (async function(){
+          const grid=document.getElementById('holdingsNewsGrid'); if(!grid) return;
+          const THUMB='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>';
+          try{
+            const r=await API.holdingsNews(6); const items=Array.isArray(r)?r:((r&&r.items)||[]);
+            if(!items.length){ grid.innerHTML='<div style="padding:14px;color:var(--fg-dim);font-size:13px;">No recent news for your holdings yet.</div>'; return; }
+            grid.innerHTML = items.slice(0,6).map(function(it){
+              const title=it.headline_en||it.title||'', src=it.category||it.sector||'News', code=String(it.ticker_key||'').split('_')[0];
+              return '<div class="news-item" data-nid="'+escP(String(it.id))+'" data-ntitle="'+escP(title)+'" data-tk="'+escP(it.ticker_key||'')+'">'
+                +'<div class="news-thumb">'+THUMB+'</div>'
+                +'<div class="news-content"><div class="news-source">'+escP(src)+'</div>'
+                +'<div class="news-title">'+escP(title)+'</div>'
+                +'<div class="news-meta">'+escP(timeAgo(it.date)||it.date||'')+(code?(' · '+escP(code)):'')+'</div></div>'
+                +'<button class="news-ask" data-ask="1">Ask Adviser</button></div>';
+            }).join('');
+            grid.querySelectorAll('.news-item').forEach(function(card){
+              card.addEventListener('click', function(){ if(window.AlphaCouncil&&AlphaCouncil.askAboutNews) AlphaCouncil.askAboutNews(card.dataset.nid, card.dataset.ntitle, card.dataset.tk?[card.dataset.tk]:[]); });
+            });
+          }catch(e){
+            grid.innerHTML = '<div style="padding:14px;color:var(--fg-dim);font-size:13px;">'+(e&&e.status===401?'Sign in to see news for your holdings.':'Couldn’t load news right now.')+'</div>';
+          }
+        })();
+      })();
 
       // ---- Watchlist (real, per-user) ----
       window.reloadWatchlist = async function(){

@@ -38,4 +38,29 @@ test.describe('F1 — portfolio allocation charts (real, SAR-weighted)', () => {
     expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
     await context.close();
   });
+
+  test('F2 — alerts + holdings-news panels render real data (not Brent/SABIC/Aramco-Q2 fakes)', async ({ browser }) => {
+    const context = await browser.newContext();
+    await apiLogin(context, QA_EMAIL, QA_PASSWORD);
+    const page = await context.newPage();
+    const diag = attachDiagnostics(page);
+    await page.goto('/portfolio.html', { waitUntil: 'domcontentloaded' });
+
+    const alerts = page.locator('#alertsCardBody');
+    await expect(alerts).not.toContainText('Loading', { timeout: 12000 });
+    const alertsHTML = await alerts.innerHTML();
+    expect(alertsHTML, 'no fake banking-concentration alert').not.toContain('Banking concentration exceeds 30%');
+    expect(alertsHTML, 'no fake Brent alert').not.toContain('Brent crude below $83');
+    expect(alertsHTML, 'no fake SABIC alert').not.toContain('SABIC trading below intrinsic');
+
+    const news = page.locator('#holdingsNewsGrid');
+    await expect(news).not.toContainText('Loading', { timeout: 12000 });
+    const newsHTML = await news.innerHTML();
+    expect(newsHTML, 'no fake Aramco-Q2 headline').not.toContain('Saudi Aramco Q2 profits decline amid lower oil prices');
+    expect(newsHTML, 'no fake Al Rajhi headline').not.toContain('Al Rajhi Bank reports strong digital growth');
+
+    await shot(page, 'f2-alerts-news');
+    expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
+    await context.close();
+  });
 });
