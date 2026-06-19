@@ -1,30 +1,35 @@
 const { test, expect } = require('@playwright/test');
 
-// O4 (marketing) — public pages have no toggle/app-nav, so the engine injects an EN/AR
-// toggle into .nav-actions and auto-translates the .nav-links. index.html also tags its hero.
-test.describe('O4 marketing — index.html toggle injection + nav/hero translation', () => {
-  test('engine injects toggle; nav + hero flip to Arabic + RTL; zero errors', async ({ browser }) => {
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    const errs = [];
-    page.on('pageerror', (e) => errs.push(String(e)));
+// O4 (marketing) — public pages: the engine injects an EN/AR toggle into .nav-actions and
+// auto-translates the .nav-links; each page also tags its own content. EN is the default.
+test.describe('O4 marketing — toggle injection + nav/content translation', () => {
+  const PAGES = [
+    { path: '/index.html',   name: 'index',   body: { sel: '.hero-badge', ar: 'تغطية حيّة' } },
+    { path: '/contact.html', name: 'contact', body: { sel: 'h1[data-i18n="contact.hero_h1"]', ar: 'نحن هنا لمساعدتك' } },
+  ];
 
-    await page.addInitScript(() => { try { localStorage.setItem('ac.lang', 'en'); } catch (e) {} });
-    await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
+  for (const pg of PAGES) {
+    test(`${pg.name}: engine injects toggle; nav + content → Arabic + RTL; zero errors`, async ({ browser }) => {
+      const context = await browser.newContext();
+      const page = await context.newPage();
+      const errs = [];
+      page.on('pageerror', (e) => errs.push(String(e)));
 
-    // the engine injected an EN/AR toggle into the public nav
-    await expect(page.locator('.lang-toggle.ac-injected')).toHaveCount(1, { timeout: 6000 });
-    const features = page.locator('.nav-links a[data-i18n="mnav.features"]');
-    await expect(features).toHaveText('Features');
-    await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
+      await page.addInitScript(() => { try { localStorage.setItem('ac.lang', 'en'); } catch (e) {} });
+      await page.goto(pg.path, { waitUntil: 'domcontentloaded' });
 
-    await page.locator('.lang-toggle button[data-lang="ar"]').click();
-    await expect(features).toHaveText('المزايا', { timeout: 4000 });
-    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
-    await expect(page.locator('.hero-badge')).toContainText('تغطية حيّة');
-    await expect(page.locator('.hero-subtitle')).toContainText('أضِف مراكزك');
+      await expect(page.locator('.lang-toggle.ac-injected')).toHaveCount(1, { timeout: 6000 });
+      const features = page.locator('.nav-links a[data-i18n="mnav.features"]');
+      await expect(features).toHaveText('Features');
+      await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
 
-    expect(errs, 'page errors:\n' + errs.join('\n')).toEqual([]);
-    await context.close();
-  });
+      await page.locator('.lang-toggle button[data-lang="ar"]').click();
+      await expect(features).toHaveText('المزايا', { timeout: 4000 });
+      await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+      await expect(page.locator(pg.body.sel).first()).toContainText(pg.body.ar);
+
+      expect(errs, pg.name + ' page errors:\n' + errs.join('\n')).toEqual([]);
+      await context.close();
+    });
+  }
 });

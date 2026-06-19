@@ -620,5 +620,53 @@
   </script>
   <script>/* brand logo -> dashboard when signed in (ac_csrf cookie present), else index */
   (function(){try{if(document.cookie.indexOf('ac_csrf=')>-1){var e=document.querySelectorAll('.nav-logo,.ac-flogo');for(var i=0;i<e.length;i++)e[i].setAttribute('href','dashboard.html');}}catch(x){}})();</script>
+  <script src="js/i18n.js"></script>
+  <script>
+  // O4 (marketing): contact.html — engine handles nav+toggle; this tags the page content.
+  AC_I18N.add({
+    'contact.hero_h1':      { en: "We're here to help", ar: 'نحن هنا لمساعدتك' },
+    'contact.hero_sub':     { en: "Questions about coverage, the methodology, your account, or a partnership? Send us a note and we'll get back to you.", ar: 'أسئلة حول التغطية أو المنهجية أو حسابك أو شراكة؟ أرسل لنا رسالة وسنعود إليك.' },
+    'contact.send_msg':     { en: 'Send us a message', ar: 'أرسل لنا رسالة' },
+    'contact.sub':          { en: 'We read everything. Most enquiries get a reply within 1–2 business days.', ar: 'نقرأ كل رسالة. تحصل معظم الاستفسارات على ردّ خلال يوم إلى يومَي عمل.' },
+    'contact.l_name':       { en: 'Name', ar: 'الاسم' },
+    'contact.l_email':      { en: 'Email', ar: 'البريد الإلكتروني' },
+    'contact.l_subject':    { en: 'Subject', ar: 'الموضوع' },
+    'contact.l_message':    { en: 'Message', ar: 'الرسالة' },
+    'contact.ph_name':      { en: 'Your name', ar: 'اسمك' },
+    'contact.ph_subject':   { en: "What's this about?", ar: 'بخصوص ماذا؟' },
+    'contact.ph_message':   { en: 'How can we help?', ar: 'كيف يمكننا المساعدة؟' },
+    'contact.send_btn':     { en: 'Send message', ar: 'إرسال الرسالة' },
+    'contact.form_note':    { en: "We'll only use your details to respond to this enquiry.", ar: 'سنستخدم بياناتك للردّ على هذا الاستفسار فقط.' },
+    'contact.ch_whatsapp':  { en: 'WhatsApp', ar: 'واتساب' },
+    'contact.ch_telegram':  { en: 'Telegram', ar: 'تيليجرام' },
+    'contact.regional':     { en: 'Regional presence', ar: 'حضور إقليمي' },
+    'contact.regional_text':{ en: 'AlphaCouncil is a GCC-focused company serving investors across Saudi Arabia, the UAE, Qatar, Kuwait, Oman and Bahrain. We operate remotely across the region; the channels above reach the team directly.', ar: 'AlphaCouncil شركة متخصّصة في الخليج تخدم المستثمرين في السعودية والإمارات وقطر والكويت وعُمان والبحرين. نعمل عن بُعد عبر المنطقة، وتصل القنوات أعلاه إلى الفريق مباشرة.' },
+    'contact.faq_h':        { en: 'Looking for answers first?', ar: 'تبحث عن إجابات أولًا؟' },
+    'contact.faq_text':     { en: 'A lot of the "how does this work?" questions are already answered. See how the analysis is produced, or read the full scoring methodology.', ar: 'الكثير من أسئلة «كيف يعمل هذا؟» مُجاب عنها بالفعل. اطّلع على كيفية إنتاج التحليل، أو اقرأ منهجية التقييم الكاملة.' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
+    // prose by selector (robust against HTML entities)
+    var h1 = document.querySelector('h1'); setKey(h1, 'contact.hero_h1');
+    if (h1) { var p1 = h1.nextElementSibling; if (p1 && p1.tagName === 'P') setKey(p1, 'contact.hero_sub'); }
+    setKey(document.querySelector('.contact-card h2'), 'contact.send_msg');
+    setKey(document.querySelector('.contact-card .sub'), 'contact.sub');
+    setKey(document.querySelector('.info-card h4'), 'contact.regional');
+    setKey(document.querySelector('.info-card p'), 'contact.regional_text');
+    setKey(document.querySelector('.faq-teaser h3'), 'contact.faq_h');
+    setKey(document.querySelector('.faq-teaser p'), 'contact.faq_text');
+    // form
+    [['cf-name', 'contact.l_name'], ['cf-email', 'contact.l_email'], ['cf-subject', 'contact.l_subject'], ['cf-message', 'contact.l_message']].forEach(function (p) { setKey(document.querySelector('label[for="' + p[0] + '"]'), p[1]); });
+    [['cf-name', 'contact.ph_name'], ['cf-subject', 'contact.ph_subject'], ['cf-message', 'contact.ph_message']].forEach(function (p) { var el = document.getElementById(p[0]); if (el) el.setAttribute('data-i18n-attr', 'placeholder:' + p[1]); });
+    setKey(document.querySelector('#contactForm button[type=submit]'), 'contact.send_btn');
+    setKey(document.querySelector('.form-note'), 'contact.form_note');
+    // channels + faq buttons by text
+    var MAP = { 'WhatsApp': 'contact.ch_whatsapp', 'Telegram': 'contact.ch_telegram', 'How it works': 'mnav.how_it_works', 'Methodology': 'mnav.methodology' };
+    Array.prototype.forEach.call(document.querySelectorAll('.lbl, .faq-teaser .btn'), function (el) { var k = MAP[firstText(el)]; if (k) setKey(el, k); });
+    Array.prototype.forEach.call(document.querySelectorAll('.lbl'), function (el) { if (firstText(el) === 'Email') setKey(el, 'contact.l_email'); });
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
 </body>
 </html>
