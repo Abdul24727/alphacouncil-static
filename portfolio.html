@@ -1086,7 +1086,7 @@
                 Holdings Overview
               </div>
               <div class="card-actions">
-                <span class="card-action">Export CSV</span>
+                <span class="card-action" role="button" tabindex="0" onclick="exportHoldingsCsv()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();exportHoldingsCsv();}">Export CSV</span>
               </div>
             </div>
             <div style="overflow-x: auto;">
@@ -1606,27 +1606,8 @@
               </div>
             </div>
             <div class="card-body">
-              <p class="commentary-text">
-                <strong>Concentration risk detected:</strong> Banking sector allocation at 32.2% significantly exceeds typical diversification guidelines of 25% per sector. While recent performance appears strong across banking names, valuation metrics suggest some positions may be stretched relative to historical averages.
-                <br><br>
-                <strong>Materials position review:</strong> SABIC (thesis score 5.8/10) shows weakening momentum with margin compression signals. Data suggests reviewing alignment with portfolio objectives given current commodity pricing dynamics.
-                <br><br>
-                <strong>Dividend income:</strong> Portfolio yield of 3.2% TTM remains healthy, supported by consistent payers in banking and energy sectors.
-              </p>
-              <div class="commentary-tags">
-                <span class="commentary-tag danger">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
-                  Banking: 32.2%
-                </span>
-                <span class="commentary-tag warning">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-                  Low thesis: SABIC
-                </span>
-                <span class="commentary-tag success">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-                  Yield: 3.2% TTM
-                </span>
-              </div>
+              <p class="commentary-text">Get a live, model-written read on your portfolio — concentration, valuation, dividend income and the main risks — grounded in your <strong>real holdings</strong>.</p>
+              <button class="btn btn-secondary" style="margin-top:14px;" onclick="if(window.AlphaCouncil){AlphaCouncil.openSidebar&&AlphaCouncil.openSidebar();AlphaCouncil.askQuestion&&AlphaCouncil.askQuestion('Give me a commentary on my portfolio — concentration, valuation, dividend income and the main risks.');}">Ask the AI Adviser</button>
             </div>
           </div>
         </div>
@@ -1642,9 +1623,7 @@
               </div>
             </div>
             <div class="card-body">
-              <p class="council-synthesis">
-                <strong>Strategic synthesis:</strong> Data suggests reviewing portfolio concentration in the banking sector (32.2% weight). While recent performance appears strong, valuation metrics indicate some names may be stretched relative to stronger peer opportunities. Materials exposure (7.2%) may warrant attention given commodity pricing dynamics.
-              </p>
+              <p class="council-synthesis">Convene a live multi-model AI Analyst Council on your portfolio — several models debate concentration, valuation and risk across your real holdings, then a chairman synthesises a balanced view.</p>
               <div class="council-perspectives">
                 <div class="council-perspective">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
@@ -1797,7 +1776,7 @@
             <div class="chat-message adviser">
               <div class="chat-avatar">AC</div>
               <div>
-                <div class="chat-bubble">I can see your portfolio page. You have <strong>7 holdings</strong> across 4 sectors with total value of <strong>SAR 847,250</strong>. Your banking concentration is at 32.2%. How can I assist you today?</div>
+                <div class="chat-bubble">I'm your AlphaCouncil adviser. Ask me about your holdings, concentration, valuation or a specific stock — I'll answer from your real portfolio data.</div>
                 <div class="chat-time">Just now</div>
               </div>
             </div>
@@ -2316,9 +2295,30 @@
       return false;
     }
 
+    // F4: real CSV export of the user's live holdings.
+    function exportHoldingsCsv() {
+      const hs = (window.AlphaCouncil && AlphaCouncil.getHoldings && AlphaCouncil.getHoldings()) || [];
+      if (!hs.length) { if (window.AlphaCouncil && AlphaCouncil.showToast) AlphaCouncil.showToast('No holdings', 'Add holdings before exporting.', 'info'); return; }
+      const esc = function (v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; };
+      const head = ['Ticker', 'Name', 'Shares', 'Avg Cost', 'Currency', 'Market Value', 'P&L', 'P&L %'];
+      const rows = hs.map(function (h) { return [h.ticker, h.name, h.shares, h.avgCost, h.currency, h.value, h.pnl, (h.pnlPct != null ? Number(h.pnlPct).toFixed(2) : '')].map(esc).join(','); });
+      const nl = String.fromCharCode(10);
+      const csv = head.map(esc).join(',') + nl + rows.join(nl);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'alphacouncil-holdings.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
+
+    // F4: route the portfolio sidebar chat to the REAL adviser. The canned command branches below
+    // are now unreachable (left for the deferred dead-code purge — they never render or run).
     function processChat() {
       const text = chatInput.value.trim();
       if (!text) return;
+      chatInput.value = '';
+      if (window.AlphaCouncil) { if (AlphaCouncil.openSidebar) AlphaCouncil.openSidebar(); if (AlphaCouncil.askQuestion) AlphaCouncil.askQuestion(text); }
+      return;
 
       const lowerText = text.toLowerCase();
 

@@ -63,4 +63,43 @@ test.describe('F1 — portfolio allocation charts (real, SAR-weighted)', () => {
     expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
     await context.close();
   });
+
+  test('F4 — commentary/council/chat real (no 32.2% fakes); Export CSV + chat work', async ({ browser }) => {
+    const context = await browser.newContext();
+    await apiLogin(context, QA_EMAIL, QA_PASSWORD);
+    const page = await context.newPage();
+    const diag = attachDiagnostics(page);
+    await page.goto('/portfolio.html', { waitUntil: 'domcontentloaded' });
+
+    // wait for real holdings to load (allocation renders from them)
+    await expect(page.locator('#sectorAllocItems')).not.toContainText('Loading', { timeout: 12000 });
+
+    // commentary + council synthesis no longer show fabricated 32.2% / SABIC
+    await expect(page.locator('.commentary-text'), 'commentary de-faked').not.toContainText('32.2%');
+    await expect(page.locator('.commentary-text')).not.toContainText('SABIC');
+    await expect(page.locator('.council-synthesis'), 'council synthesis de-faked').not.toContainText('32.2%');
+    await expect(page.locator('.council-synthesis')).toContainText('Convene');
+    const bodyHtml = await page.locator('body').innerHTML();
+    expect(bodyHtml, 'no fake "SAR 847,250" chat intro').not.toContain('total value of <strong>SAR 847,250</strong>');
+
+    // Export CSV downloads the user's real holdings
+    const [download] = await Promise.all([
+      page.waitForEvent('download', { timeout: 8000 }),
+      page.locator('.card-action', { hasText: 'Export CSV' }).click(),
+    ]);
+    expect(download.suggestedFilename(), 'CSV download').toContain('holdings');
+
+    // the sidebar chat routes to the REAL adviser (no canned responses)
+    let asked = false;
+    await page.route('**/api/adviser/ask', (route) => { asked = true; route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ answer: 'STUB', disclaimer: 'x' }) }); });
+    await page.evaluate(() => { if (window.AlphaCouncil && AlphaCouncil.openSidebar) AlphaCouncil.openSidebar(); });
+    await expect(page.locator('#chatSend')).toBeVisible({ timeout: 6000 });
+    await page.locator('#chatInput').fill('How concentrated is my portfolio?');
+    await page.locator('#chatSend').click();
+    await expect.poll(() => asked, { timeout: 6000 }).toBeTruthy();
+
+    await shot(page, 'f4-portfolio');
+    expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
+    await context.close();
+  });
 });
