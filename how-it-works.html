@@ -2822,5 +2822,66 @@
   </script>
   <script>/* brand logo -> dashboard when signed in (ac_csrf cookie present), else index */
   (function(){try{if(document.cookie.indexOf('ac_csrf=')>-1){var e=document.querySelectorAll('.nav-logo,.ac-flogo');for(var i=0;i<e.length;i++)e[i].setAttribute('href','dashboard.html');}}catch(x){}})();</script>
+  <script src="js/i18n.js"></script>
+  <script>
+  // O4 (marketing): how-it-works.html — engine handles nav+toggle; this tags the content.
+  AC_I18N.add({
+    'hiw.hero_t1':   { en: 'How AlphaCouncil turns', ar: 'كيف يحوّل AlphaCouncil' },
+    'hiw.hero_t2':   { en: 'market noise into portfolio clarity.', ar: 'ضجيج السوق إلى وضوح في المحفظة.' },
+    'hiw.hero_sub':  { en: 'Add your portfolio manually or upload a statement. AlphaCouncil connects your holdings to GCC market data, news, fundamentals, technicals, dividends, risk, and AI analysis — then explains what matters in English or Arabic.', ar: 'أضِف محفظتك يدويًا أو ارفع كشف حساب. يربط AlphaCouncil مراكزك ببيانات أسواق الخليج والأخبار والأساسيات والمؤشرات الفنية والتوزيعات والمخاطر والتحليل الذكي — ثم يشرح ما يهمّ بالعربية أو الإنجليزية.' },
+    'hiw.eye_journey':{ en: 'The Journey', ar: 'الرحلة' },
+    'hiw.t_journey': { en: 'Five steps from portfolio upload to clear decisions.', ar: 'خمس خطوات من رفع المحفظة إلى قرارات واضحة.' },
+    'hiw.s_journey': { en: 'A straightforward path from adding your holdings to understanding what the market data suggests about your portfolio.', ar: 'مسار مباشر من إضافة مراكزك إلى فهم ما تشير إليه بيانات السوق بشأن محفظتك.' },
+    'hiw.step1_h':   { en: 'Add your portfolio', ar: 'أضِف محفظتك' },
+    'hiw.step1_t':   { en: 'Search for each ticker and add your buy price, order date, and number of shares — or upload a PDF, screenshot, broker statement, or portfolio document and let AlphaCouncil extract the holdings with AI.', ar: 'ابحث عن كل رمز وأضِف سعر الشراء وتاريخ الأمر وعدد الأسهم — أو ارفع ملف PDF أو لقطة شاشة أو كشف وسيط أو مستند محفظة ودع AlphaCouncil يستخرج المراكز بالذكاء الاصطناعي.' },
+    'hiw.step2_h':   { en: 'Set your investor profile', ar: 'حدّد ملفك الاستثماري' },
+    'hiw.step2_t':   { en: 'AlphaCouncil uses your goals, risk tolerance, time horizon, and trading style to make analysis more relevant to your specific situation.', ar: 'يستخدم AlphaCouncil أهدافك وتحمّلك للمخاطر وأفقك الزمني وأسلوب تداولك لجعل التحليل أكثر ملاءمة لوضعك الخاص.' },
+    'hiw.step3_h':   { en: 'AlphaCouncil connects the market', ar: 'يربط AlphaCouncil السوق' },
+    'hiw.step3_t':   { en: 'Your holdings are mapped to GCC market data, company fundamentals, technical indicators, dividends, disclosures, ownership changes, sector movements, macro factors, and relevant news.', ar: 'تُربط مراكزك ببيانات أسواق الخليج وأساسيات الشركات والمؤشرات الفنية والتوزيعات والإفصاحات وتغيّرات الملكية وتحرّكات القطاعات والعوامل الكلّية والأخبار ذات الصلة.' },
+    'hiw.step4_h':   { en: 'AI Analyst Council reviews your thesis', ar: 'يراجع مجلس المحلّلين الذكي أطروحتك' },
+    'hiw.step4_t':   { en: 'Multiple specialized AI analyst members examine your portfolio from different angles — risk, valuation, income, momentum, news impact, and macro conditions — before producing a structured synthesis.', ar: 'يفحص عدّة محلّلين ذكيين متخصّصين محفظتك من زوايا مختلفة — المخاطر والتقييم والدخل والزخم وأثر الأخبار والظروف الكلّية — قبل إنتاج خلاصة منظَّمة.' },
+    'hiw.step5_h':   { en: 'Ask, monitor, and adjust', ar: 'اسأل وراقب وعدّل' },
+    'hiw.step5_t':   { en: 'Use the AlphaCouncil Adviser to ask questions, summarize news, explain portfolio movement, set alerts, understand risk, review stock theses, and get explanations in English or Arabic.', ar: 'استخدم مستشار AlphaCouncil لطرح الأسئلة وتلخيص الأخبار وشرح حركة المحفظة وضبط التنبيهات وفهم المخاطر ومراجعة أطروحات الأسهم والحصول على شروحات بالعربية أو الإنجليزية.' },
+    'hiw.eye_start': { en: 'Getting Started', ar: 'البداية' },
+    'hiw.t_start':   { en: 'Start with the portfolio you already have.', ar: 'ابدأ بالمحفظة التي تملكها بالفعل.' },
+    'hiw.s_start':   { en: 'Two simple ways to add your holdings. Choose whichever works best for you.', ar: 'طريقتان بسيطتان لإضافة مراكزك. اختر ما يناسبك.' },
+    'hiw.manual_h':  { en: 'Manual Entry', ar: 'إدخال يدوي' },
+    'hiw.manual_t':  { en: 'Search by ticker or company name, then add your position details one by one.', ar: 'ابحث بالرمز أو اسم الشركة، ثم أضِف تفاصيل مركزك واحدًا تلو الآخر.' },
+    'hiw.upload_h':  { en: 'AI-Assisted Upload', ar: 'رفع بمساعدة الذكاء الاصطناعي' },
+    'hiw.upload_t':  { en: 'Upload a screenshot, PDF, or broker statement. AlphaCouncil extracts the holdings automatically.', ar: 'ارفع لقطة شاشة أو ملف PDF أو كشف وسيط، ويستخرج AlphaCouncil المراكز تلقائيًا.' },
+    'hiw.eye_analyze':{ en: 'What We Analyze', ar: 'ما الذي نحلّله' },
+    'hiw.t_analyze': { en: 'The heavy lifting happens in the background.', ar: 'العمل الشاق يحدث في الخلفية.' },
+    'hiw.s_analyze': { en: "AlphaCouncil gathers and connects multiple layers of market intelligence so you don't have to manually follow every stock, disclosure, chart, and macro event.", ar: 'يجمع AlphaCouncil ويربط طبقات متعدّدة من ذكاء السوق حتى لا تضطر إلى متابعة كل سهم وإفصاح ورسم بياني وحدث كلّي يدويًا.' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
+    var heads = document.querySelectorAll('h1, h2, h3, .section-title');
+    function tagPair(text, key, nextKey) {
+      for (var i = 0; i < heads.length; i++) {
+        if (firstText(heads[i]) === text) {
+          setKey(heads[i], key);
+          if (nextKey) { var n = heads[i].nextElementSibling; if (n && n.tagName === 'P') setKey(n, nextKey); }
+          return;
+        }
+      }
+    }
+    tagPair('How AlphaCouncil turns', 'hiw.hero_t1', 'hiw.hero_sub');
+    setKey(document.querySelector('.hero-title .highlight'), 'hiw.hero_t2');
+    tagPair('Five steps from portfolio upload to clear decisions.', 'hiw.t_journey', 'hiw.s_journey');
+    tagPair('Add your portfolio', 'hiw.step1_h', 'hiw.step1_t');
+    tagPair('Set your investor profile', 'hiw.step2_h', 'hiw.step2_t');
+    tagPair('AlphaCouncil connects the market', 'hiw.step3_h', 'hiw.step3_t');
+    tagPair('AI Analyst Council reviews your thesis', 'hiw.step4_h', 'hiw.step4_t');
+    tagPair('Ask, monitor, and adjust', 'hiw.step5_h', 'hiw.step5_t');
+    tagPair('Start with the portfolio you already have.', 'hiw.t_start', 'hiw.s_start');
+    tagPair('Manual Entry', 'hiw.manual_h', 'hiw.manual_t');
+    tagPair('AI-Assisted Upload', 'hiw.upload_h', 'hiw.upload_t');
+    tagPair('The heavy lifting happens in the background.', 'hiw.t_analyze', 'hiw.s_analyze');
+    var EYE = { 'The Journey': 'hiw.eye_journey', 'Getting Started': 'hiw.eye_start', 'What We Analyze': 'hiw.eye_analyze' };
+    Array.prototype.forEach.call(document.querySelectorAll('.section-eyebrow'), function (el) { var k = EYE[firstText(el)]; if (k) setKey(el, k); });
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
 </body>
 </html>

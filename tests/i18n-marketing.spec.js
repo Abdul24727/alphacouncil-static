@@ -7,6 +7,7 @@ test.describe('O4 marketing — toggle injection + nav/content translation', () 
     { path: '/index.html',   name: 'index',   body: { sel: '.hero-badge', ar: 'تغطية حيّة' } },
     { path: '/contact.html', name: 'contact', body: { sel: 'h1[data-i18n="contact.hero_h1"]', ar: 'نحن هنا لمساعدتك' } },
     { path: '/about.html',   name: 'about',   body: { sel: 'h1[data-i18n="about.hero_h1"]', ar: 'نفهم أسواق الخليج' } },
+    { path: '/how-it-works.html', name: 'how-it-works', body: { sel: '[data-i18n="hiw.hero_t1"]', ar: 'كيف يحوّل' } },
   ];
 
   for (const pg of PAGES) {
