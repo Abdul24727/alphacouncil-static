@@ -818,5 +818,70 @@
   </script>
   <script>/* brand logo -> dashboard when signed in (ac_csrf cookie present), else index */
   (function(){try{if(document.cookie.indexOf('ac_csrf=')>-1){var e=document.querySelectorAll('.nav-logo,.ac-flogo');for(var i=0;i<e.length;i++)e[i].setAttribute('href','dashboard.html');}}catch(x){}})();</script>
+  <script src="js/i18n.js"></script>
+  <script>
+  // O4 (marketing): features.html — engine handles nav+toggle; this tags the marketing copy
+  // (hero + section headings + feature headlines/leads). Demo mockups are illustrative, left as-is.
+  AC_I18N.add({
+    'ft.hero_t1':    { en: 'Powerful features for clearer', ar: 'مزايا قوية من أجل' },
+    'ft.hero_t2':    { en: 'GCC portfolio decisions.', ar: 'قرارات أوضح للمحافظ الخليجية.' },
+    'ft.hero_sub':   { en: 'AlphaCouncil combines portfolio intelligence, GCC market data, news, fundamentals, technicals, dividends, alerts, and AI analysis into one clear workspace — in English or Arabic.', ar: 'يجمع AlphaCouncil ذكاء المحفظة وبيانات أسواق الخليج والأخبار والأساسيات والمؤشرات الفنية والتوزيعات والتنبيهات والتحليل الذكي في مساحة عمل واحدة واضحة — بالعربية أو الإنجليزية.' },
+    'ft.eye_overview':{ en: 'Overview', ar: 'نظرة عامة' },
+    'ft.t_overview': { en: 'One workspace for portfolio intelligence.', ar: 'مساحة عمل واحدة لذكاء المحفظة.' },
+    'ft.s_overview': { en: 'AlphaCouncil connects the data investors normally check separately — holdings, news, charts, fundamentals, dividends, risk, and market context — into one portfolio-aware view.', ar: 'يربط AlphaCouncil البيانات التي يتابعها المستثمرون عادةً بشكل منفصل — المراكز والأخبار والرسوم والأساسيات والتوزيعات والمخاطر وسياق السوق — في عرض واحد مدرك للمحفظة.' },
+    'ft.eye_pi':     { en: 'Portfolio Intelligence', ar: 'ذكاء المحفظة' },
+    'ft.h_pi':       { en: 'Understand what your portfolio is really exposed to.', ar: 'افهم لِمَ تتعرّض محفظتك فعلًا.' },
+    'ft.lead_pi':    { en: 'AlphaCouncil analyzes your holdings as a connected portfolio, not as isolated stocks. See the full picture of allocation, concentration, risk, and performance.', ar: 'يحلّل AlphaCouncil مراكزك كمحفظة مترابطة، لا كأسهم منعزلة. شاهد الصورة الكاملة للتوزيع والتركّز والمخاطر والأداء.' },
+    'ft.eye_council':{ en: 'AI Analyst Council', ar: 'مجلس المحلّلين الذكي' },
+    'ft.t_council':  { en: 'Institutional-grade portfolio review, automated.', ar: 'مراجعة محفظة بمستوى مؤسّسي، مؤتمتة.' },
+    'ft.s_council':  { en: 'The AI Analyst Council examines your portfolio across fundamentals, valuation, technicals, macro conditions, sector outlook, ownership flows, news impact, and peer comparisons — then delivers a unified strategic synthesis across all GCC markets.', ar: 'يفحص مجلس المحلّلين الذكي محفظتك عبر الأساسيات والتقييم والمؤشرات الفنية والظروف الكلّية وآفاق القطاعات وتدفّقات الملكية وأثر الأخبار ومقارنات الأقران — ثم يقدّم خلاصة استراتيجية موحّدة عبر كل أسواق الخليج.' },
+    'ft.eye_adviser':{ en: 'AlphaCouncil Adviser', ar: 'مستشار AlphaCouncil' },
+    'ft.h_adviser':  { en: 'An AI adviser on every page.', ar: 'مستشار ذكي في كل صفحة.' },
+    'ft.lead_adviser':{ en: 'Ask questions wherever you are. The Adviser understands the page, the stock, the news, the portfolio, and your holdings. It responds in English or Arabic.', ar: 'اطرح الأسئلة أينما كنت. يفهم المستشار الصفحة والسهم والأخبار والمحفظة ومراكزك، ويردّ بالعربية أو الإنجليزية.' },
+    'ft.eye_news':   { en: 'Portfolio-aware News', ar: 'أخبار مدركة للمحفظة' },
+    'ft.h_news':     { en: 'News that knows what you own.', ar: 'أخبار تعرف ما تملك.' },
+    'ft.lead_news':  { en: 'AlphaCouncil connects news to the stocks in your portfolio and explains why it matters. Impact classification, AI summaries, and source links included.', ar: 'يربط AlphaCouncil الأخبار بأسهم محفظتك ويشرح لماذا تهمّ. مع تصنيف الأثر وملخّصات ذكية وروابط المصادر.' },
+    'ft.eye_thesis': { en: 'Stock Thesis', ar: 'أطروحة السهم' },
+    'ft.h_thesis':   { en: 'Every stock gets a structured thesis.', ar: 'كل سهم يحصل على أطروحة منظَّمة.' },
+    'ft.lead_thesis':{ en: 'AlphaCouncil reviews stocks across 12 dimensions so you can understand the full picture, not just the price chart.', ar: 'يراجع AlphaCouncil الأسهم عبر ١٢ بُعدًا لتفهم الصورة الكاملة، لا الرسم البياني للسعر فقط.' },
+    'ft.eye_coverage':{ en: 'GCC Coverage', ar: 'تغطية الخليج' },
+    'ft.t_coverage': { en: 'Built around GCC markets, not adapted from US tools.', ar: 'مبنيّ حول أسواق الخليج، لا مُكيَّف من أدوات أمريكية.' },
+    'ft.s_coverage': { en: 'AlphaCouncil is designed for the structure, behavior, disclosures, dividends, and regional context of GCC markets.', ar: 'صُمّم AlphaCouncil لبنية أسواق الخليج وسلوكها وإفصاحاتها وتوزيعاتها وسياقها الإقليمي.' },
+    'ft.eye_engine': { en: 'Analysis Engine', ar: 'محرّك التحليل' },
+    'ft.t_engine':   { en: 'The analysis stack behind every answer.', ar: 'منظومة التحليل خلف كل إجابة.' },
+    'ft.s_engine':   { en: 'AlphaCouncil combines multiple layers of information before explaining what the data suggests.', ar: 'يجمع AlphaCouncil طبقات متعدّدة من المعلومات قبل أن يشرح ما تشير إليه البيانات.' },
+    'ft.eye_bilingual':{ en: 'Bilingual', ar: 'ثنائي اللغة' },
+    'ft.t_bilingual':{ en: 'Understand the market in English or Arabic.', ar: 'افهم السوق بالعربية أو الإنجليزية.' },
+    'ft.s_bilingual':{ en: "AlphaCouncil explains stocks, news, portfolio movement, and risk in the language you're most comfortable with.", ar: 'يشرح AlphaCouncil الأسهم والأخبار وحركة المحفظة والمخاطر باللغة التي تريحك أكثر.' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
+    var heads = document.querySelectorAll('h1, h2, h3, .section-title');
+    function tagPair(text, key, nextKey) {
+      for (var i = 0; i < heads.length; i++) {
+        if (firstText(heads[i]) === text) {
+          setKey(heads[i], key);
+          if (nextKey) { var n = heads[i].nextElementSibling; if (n && n.tagName === 'P') setKey(n, nextKey); }
+          return;
+        }
+      }
+    }
+    tagPair('Powerful features for clearer', 'ft.hero_t1', 'ft.hero_sub');
+    setKey(document.querySelector('.hero-title .highlight'), 'ft.hero_t2');
+    tagPair('One workspace for portfolio intelligence.', 'ft.t_overview', 'ft.s_overview');
+    tagPair('Understand what your portfolio is really exposed to.', 'ft.h_pi', 'ft.lead_pi');
+    tagPair('Institutional-grade portfolio review, automated.', 'ft.t_council', 'ft.s_council');
+    tagPair('An AI adviser on every page.', 'ft.h_adviser', 'ft.lead_adviser');
+    tagPair('News that knows what you own.', 'ft.h_news', 'ft.lead_news');
+    tagPair('Every stock gets a structured thesis.', 'ft.h_thesis', 'ft.lead_thesis');
+    tagPair('Built around GCC markets, not adapted from US tools.', 'ft.t_coverage', 'ft.s_coverage');
+    tagPair('The analysis stack behind every answer.', 'ft.t_engine', 'ft.s_engine');
+    tagPair('Understand the market in English or Arabic.', 'ft.t_bilingual', 'ft.s_bilingual');
+    var EYE = { 'Overview': 'ft.eye_overview', 'Portfolio Intelligence': 'ft.eye_pi', 'AI Analyst Council': 'ft.eye_council', 'AlphaCouncil Adviser': 'ft.eye_adviser', 'Portfolio-aware News': 'ft.eye_news', 'Stock Thesis': 'ft.eye_thesis', 'GCC Coverage': 'ft.eye_coverage', 'Analysis Engine': 'ft.eye_engine', 'Bilingual': 'ft.eye_bilingual' };
+    Array.prototype.forEach.call(document.querySelectorAll('.section-eyebrow'), function (el) { var k = EYE[firstText(el)]; if (k) setKey(el, k); });
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
 </body>
 </html>
