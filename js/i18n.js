@@ -57,9 +57,29 @@
     return entry[l] != null ? entry[l] : entry.en;
   }
 
+  // Set translated text while preserving child elements (e.g. an icon <svg>): when the
+  // node has exactly one non-empty text node alongside elements, replace only that text
+  // node; with no children just set textContent; with text fragments around children,
+  // flatten to textContent (safest).
+  function _setText(node, v) {
+    var hasEl = false, textNodes = [], i, c;
+    for (i = 0; i < node.childNodes.length; i++) {
+      c = node.childNodes[i];
+      if (c.nodeType === 1) hasEl = true;
+      else if (c.nodeType === 3 && c.nodeValue.replace(/\s/g, '')) textNodes.push(c);
+    }
+    if (!hasEl || textNodes.length === 0) { node.textContent = v; return; }
+    if (textNodes.length === 1) {
+      var tn = textNodes[0];
+      tn.nodeValue = (tn.nodeValue.match(/^\s*/) || [''])[0] + v + (tn.nodeValue.match(/\s*$/) || [''])[0];
+      return;
+    }
+    node.textContent = v;
+  }
+
   function _applyNode(node) {
     var key = node.getAttribute('data-i18n');
-    if (key) { var v = t(key); if (v != null) node.textContent = v; }
+    if (key) { var v = t(key); if (v != null) _setText(node, v); }
     var attrSpec = node.getAttribute('data-i18n-attr');
     if (attrSpec) {
       attrSpec.split(',').forEach(function (pair) {

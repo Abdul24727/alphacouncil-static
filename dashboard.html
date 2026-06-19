@@ -802,6 +802,71 @@
   <script src="js/i18n.js"></script>
   <script src="adviser-core.js"></script>
   <script>
+  // O4: dashboard body strings (EN source of truth + AR). Shared chrome (nav/toggle) is
+  // handled by the engine; registered before DOMContentLoaded so the first apply translates.
+  AC_I18N.add({
+    'dash.greeting_sub':       { en: "Here's what matters for your portfolio today.", ar: 'إليك ما يهم محفظتك اليوم.' },
+    'dash.m_value':            { en: 'Total Portfolio Value', ar: 'إجمالي قيمة المحفظة' },
+    'dash.m_pnl':              { en: 'Unrealized P&L', ar: 'الربح/الخسارة غير المحققة' },
+    'dash.m_yield':            { en: 'Portfolio Yield (TTM)', ar: 'عائد المحفظة (آخر ١٢ شهرًا)' },
+    'dash.m_today':            { en: "Today's Change", ar: 'تغيّر اليوم' },
+    'dash.top_gainers':        { en: 'Top Gainers', ar: 'الأكثر ارتفاعًا' },
+    'dash.top_losers':         { en: 'Top Losers', ar: 'الأكثر انخفاضًا' },
+    'dash.holdings_overview':  { en: 'Holdings Overview', ar: 'نظرة عامة على المراكز' },
+    'dash.intelligent_alerts': { en: 'Intelligent Alerts', ar: 'تنبيهات ذكية' },
+    'dash.council':            { en: 'AI Analyst Council', ar: 'مجلس المحلّلين الذكي' },
+    'dash.snapshot':           { en: 'Portfolio Snapshot', ar: 'لمحة عن المحفظة' },
+    'dash.th_holding':         { en: 'Holding', ar: 'المركز' },
+    'dash.th_weight':          { en: 'Weight', ar: 'الوزن' },
+    'dash.th_value':           { en: 'Value', ar: 'القيمة' },
+    'dash.th_pnl':             { en: 'P&L', ar: 'الربح/الخسارة' },
+    'dash.persp_growth':       { en: 'Growth', ar: 'النمو' },
+    'dash.persp_value':        { en: 'Value', ar: 'القيمة' },
+    'dash.persp_income':       { en: 'Income', ar: 'الدخل' },
+    'dash.persp_risk':         { en: 'Risk', ar: 'المخاطر' },
+    'dash.persp_macro':        { en: 'Macro', ar: 'الاقتصاد الكلي' },
+    'dash.persp_technical':    { en: 'Technical', ar: 'التحليل الفني' },
+    'dash.persp_contrarian':   { en: 'Contrarian', ar: 'معاكس للاتجاه' },
+    'dash.council_synthesis':  { en: 'Convene a live multi-model AI Analyst Council on your portfolio — several models debate concentration, valuation and risk across your real holdings, then a chairman synthesises a balanced view.', ar: 'استدعِ مجلس محلّلين ذكيًا متعدّد النماذج على محفظتك — تتناقش عدّة نماذج حول التركّز والتقييم والمخاطر عبر مراكزك الحقيقية، ثم يضع الرئيس خلاصة متوازنة.' },
+    'dash.council_btn':        { en: 'Run full AI Analyst Council review', ar: 'تشغيل مراجعة مجلس المحلّلين الكاملة' },
+    'dash.stat_holdings':      { en: 'Holdings', ar: 'المراكز' },
+    'dash.stat_sectors':       { en: 'Sectors', ar: 'القطاعات' },
+    'dash.stat_gainers':       { en: 'Gainers', ar: 'المرتفعة' },
+    'dash.stat_losers':        { en: 'Losers', ar: 'المنخفضة' },
+    'dash.manage_portfolio':   { en: 'Manage portfolio', ar: 'إدارة المحفظة' },
+    'common.view_all':         { en: 'View all', ar: 'عرض الكل' },
+    'dash.footer_slogan':      { en: 'Understand your portfolio before the market moves.', ar: 'افهم محفظتك قبل أن يتحرّك السوق.' },
+    'dash.footer_disclaimer':  { en: 'AlphaCouncil provides data-driven market analysis and educational insights. It does not provide licensed financial advice, execute trades, manage money, or guarantee returns. Always verify information before making investment decisions.', ar: 'يقدّم AlphaCouncil تحليلًا للسوق قائمًا على البيانات ورؤى تعليمية. وهو لا يقدّم استشارات مالية مرخّصة، ولا ينفّذ صفقات، ولا يدير أموالًا، ولا يضمن عوائد. تحقّق دائمًا من المعلومات قبل اتخاذ قرارات استثمارية.' },
+    'dash.adviser':            { en: 'Adviser', ar: 'المستشار' },
+    'dash.online':             { en: 'Online', ar: 'متصل' }
+  });
+
+  // Tag dashboard body elements programmatically (the engine preserves their icons).
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function tagAll(sel, keys) { var els = document.querySelectorAll(sel); for (var i = 0; i < els.length && i < keys.length; i++) setKey(els[i], keys[i]); }
+    tagAll('.metric-label', ['dash.m_value', 'dash.m_pnl', 'dash.m_yield', 'dash.m_today']);
+    tagAll('#holdingsTable thead th', ['dash.th_holding', 'dash.th_weight', 'dash.th_value', 'dash.th_pnl']);
+    tagAll('.council-perspective', ['dash.persp_growth', 'dash.persp_value', 'dash.persp_income', 'dash.persp_risk', 'dash.persp_macro', 'dash.persp_technical', 'dash.persp_contrarian']);
+    tagAll('.quick-stat-label', ['dash.stat_holdings', 'dash.stat_sectors', 'dash.stat_gainers', 'dash.stat_losers']);
+    var titleMap = { 'Top Gainers': 'dash.top_gainers', 'Top Losers': 'dash.top_losers', 'Holdings Overview': 'dash.holdings_overview', 'Intelligent Alerts': 'dash.intelligent_alerts', 'AI Analyst Council': 'dash.council', 'Portfolio Snapshot': 'dash.snapshot', 'Watchlist': 'nav.watchlist' };
+    Array.prototype.forEach.call(document.querySelectorAll('.card-title'), function (el) { var k = titleMap[(el.textContent || '').trim()]; if (k) setKey(el, k); });
+    setKey(document.querySelector('.council-synthesis'), 'dash.council_synthesis');
+    setKey(document.querySelector('.council-btn'), 'dash.council_btn');
+    setKey(document.querySelector('.greeting-text p'), 'dash.greeting_sub');
+    setKey(document.querySelector('.footer-slogan'), 'dash.footer_slogan');
+    setKey(document.querySelector('.footer-disclaimer'), 'dash.footer_disclaimer');
+    setKey(document.querySelector('.sidebar-title h3'), 'dash.adviser');
+    setKey(document.querySelector('.sidebar-title p'), 'dash.online');
+    Array.prototype.forEach.call(document.querySelectorAll('.card-action'), function (el) {
+      var t = (el.textContent || '').trim();
+      if (t === 'View all') setKey(el, 'common.view_all');
+      else if (t === 'Manage portfolio') setKey(el, 'dash.manage_portfolio');
+    });
+    if (window.AC_I18N) AC_I18N.apply(); // translate the freshly-tagged body to the current language
+  })();
+  </script>
+  <script>
     // Dashboard-specific initialization
     document.addEventListener('DOMContentLoaded', () => {
       AlphaCouncil.init('dashboard');

@@ -37,6 +37,12 @@ test.describe('O1/O2 — i18n engine + EN/AR toggle (dashboard, detailed)', () =
     await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
     await expect(page.locator('.app-nav-links a[data-i18n="nav.portfolio"]')).toHaveText('المحفظة');
 
+    // O4: body content translates too — and the label's icon <svg> is preserved (not wiped)
+    await expect(page.locator('.metric-label[data-i18n="dash.m_value"]')).toContainText('إجمالي قيمة المحفظة');
+    expect(await page.locator('.metric-label[data-i18n="dash.m_value"] svg').count(), 'metric icon preserved').toBeGreaterThan(0);
+    await expect(page.locator('.card-title[data-i18n="dash.council"]')).toContainText('مجلس المحلّلين');
+    await expect(page.locator('.quick-stat-label[data-i18n="dash.stat_holdings"]')).toHaveText('المراكز');
+
     await expect.poll(() => langPut, { timeout: 4000 }).toBeTruthy();
     expect(langPut.preferred_language).toBe('ar');
     expect(await page.evaluate(() => localStorage.getItem('ac.lang'))).toBe('ar');
