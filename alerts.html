@@ -878,6 +878,44 @@
   <script src="js/i18n.js"></script>
   <script src="adviser-core.js"></script>
   <script>
+  // O4: alerts persistent chrome (the alert feed + rules are real/dynamic).
+  AC_I18N.add({
+    'alerts.title':           { en: 'Alerts', ar: 'التنبيهات' },
+    'alerts.subtitle':        { en: 'Intelligent alerts from the AI Analyst Council on your holdings and portfolio.', ar: 'تنبيهات ذكية من مجلس المحلّلين الذكي حول مراكزك ومحفظتك.' },
+    'alerts.tab_all':         { en: 'All Alerts', ar: 'كل التنبيهات' },
+    'alerts.tab_high':        { en: 'High Priority', ar: 'أولوية عالية' },
+    'alerts.tab_unread':      { en: 'Unread', ar: 'غير المقروءة' },
+    'alerts.search':          { en: 'Search ticker...', ar: 'ابحث عن رمز...' },
+    'alerts.rules_title':     { en: 'Alert Rules', ar: 'قواعد التنبيه' },
+    'alerts.new':             { en: '+ New', ar: '+ جديد' },
+    'alerts.create_rule':     { en: 'Create New Rule', ar: 'إنشاء قاعدة جديدة' },
+    'alerts.adviser':         { en: 'AI Adviser', ar: 'المستشار الذكي' },
+    'alerts.suggested':       { en: 'Suggested Questions', ar: 'أسئلة مقترحة' },
+    'alerts.q1':              { en: 'Explain the concentration risk alert', ar: 'اشرح تنبيه مخاطر التركّز' },
+    'alerts.q2':              { en: 'What should I do about the oil price warning?', ar: 'ماذا أفعل بشأن تحذير سعر النفط؟' },
+    'alerts.q3':              { en: 'Why is Al Rajhi valuation flagged?', ar: 'لماذا وُضعت علامة على تقييم الراجحي؟' },
+    'alerts.chat_placeholder':{ en: 'Ask about your alerts...', ar: 'اسأل عن تنبيهاتك...' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
+    var MAP = {
+      'Alerts': 'alerts.title', 'Intelligent alerts from the AI Analyst Council on your holdings and portfolio.': 'alerts.subtitle',
+      'All Alerts': 'alerts.tab_all', 'High Priority': 'alerts.tab_high', 'Unread': 'alerts.tab_unread',
+      'Alert Rules': 'alerts.rules_title', '+ New': 'alerts.new', 'Create New Rule': 'alerts.create_rule',
+      'AI Adviser': 'alerts.adviser', 'Suggested Questions': 'alerts.suggested',
+      'Explain the concentration risk alert': 'alerts.q1', 'What should I do about the oil price warning?': 'alerts.q2',
+      'Why is Al Rajhi valuation flagged?': 'alerts.q3'
+    };
+    Array.prototype.forEach.call(document.querySelectorAll('.page-title, .page-subtitle, .tab-btn, .rules-title, .rules-header button, .rules-footer button, .sidebar-title, .suggested-label, .suggested-question'), function (el) {
+      var k = MAP[firstText(el)]; if (k) setKey(el, k);
+    });
+    var ts = document.getElementById('tickerSearch'); if (ts) ts.setAttribute('data-i18n-attr', 'placeholder:alerts.search');
+    var ci = document.getElementById('chatInput'); if (ci) ci.setAttribute('data-i18n-attr', 'placeholder:alerts.chat_placeholder');
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
+  <script>
     // Initialize AlphaCouncil
     if (typeof AlphaCouncil !== 'undefined') {
       AlphaCouncil.init('alerts');
