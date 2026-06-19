@@ -84,6 +84,9 @@
     },
     me: function () { return API.get('/api/auth/me'); },
     logout: function () { return API.post('/api/auth/logout', {}); },
+    updateProfile: function (fields) { return API.put('/api/account/profile', fields); },
+    changePassword: function (current, next) { return API.post('/api/account/change-password', { current_password: current, new_password: next }); },
+    deleteAccount: function () { return API.del('/api/account'); },
     forgotPassword: function (email) { return API.post('/api/auth/forgot-password', { email: email }); },
     resetPassword: function (token, newPassword) { return API.post('/api/auth/reset-password', { token: token, new_password: newPassword }); },
 

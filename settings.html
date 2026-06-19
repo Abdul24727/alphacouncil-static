@@ -1070,11 +1070,7 @@
                 <div class="avatar-upload">
                   <div class="avatar-preview">SK</div>
                   <div class="avatar-actions">
-                    <button class="btn btn-secondary btn-sm">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                      Upload Photo
-                    </button>
-                    <button class="btn btn-secondary btn-sm">Remove</button>
+                    <p class="form-hint" style="margin:0;">Profile photos are coming soon — your initials are shown for now.</p>
                   </div>
                 </div>
               </div>
@@ -1115,8 +1111,7 @@
                 </div>
               </div>
               <div style="display: flex; gap: 12px; margin-top: 8px;">
-                <button class="btn btn-primary">Save Changes</button>
-                <button class="btn btn-secondary">Cancel</button>
+                <button class="btn btn-primary" id="saveProfileBtn">Save Changes</button>
               </div>
             </div>
           </section>
@@ -1304,7 +1299,7 @@
                 <div class="plan-header">
                   <div>
                     <div class="plan-name">Analyst Plan</div>
-                    <div class="plan-price"><strong>$49</strong> / month</div>
+                    <div class="plan-price"><strong>—</strong></div>
                   </div>
                   <div class="plan-badge">Current Plan</div>
                 </div>
@@ -1336,63 +1331,16 @@
                 </div>
                 <div class="plan-actions">
                   <button class="btn btn-primary">Upgrade to Council</button>
-                  <button class="btn btn-secondary">Manage Subscription</button>
                 </div>
               </div>
 
-              <!-- Payment Method -->
+              <!-- Payment & invoices: honest placeholder until paid billing launches (no fake card). -->
               <div class="form-group" style="margin-top: 24px;">
-                <label class="form-label">Payment Method</label>
-                <div class="payment-card">
-                  <div class="payment-icon">VISA</div>
-                  <div class="payment-details">
-                    <div class="payment-number">•••• •••• •••• 4242</div>
-                    <div class="payment-expiry">Expires 12/2027</div>
-                  </div>
-                  <button class="btn btn-secondary btn-sm">Update</button>
-                </div>
+                <label class="form-label">Payment &amp; invoices</label>
+                <p class="form-hint">There's nothing to bill yet. When paid plans launch, your payment method and invoices will appear here — we don't display a saved card or charges you haven't made.</p>
               </div>
 
-              <!-- Billing History -->
-              <div class="form-group" style="margin-top: 24px;">
-                <label class="form-label">Billing History</label>
-                <div class="table-responsive">
-                  <table class="billing-table">
-                    <thead>
-                      <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>Jun 1, 2026</td>
-                        <td>Analyst Plan - Monthly</td>
-                        <td>$49.00</td>
-                        <td><span class="billing-status paid">Paid</span></td>
-                        <td><a href="#" style="color: var(--accent-primary); text-decoration: none; font-size: 12px;">Receipt</a></td>
-                      </tr>
-                      <tr>
-                        <td>May 1, 2026</td>
-                        <td>Analyst Plan - Monthly</td>
-                        <td>$49.00</td>
-                        <td><span class="billing-status paid">Paid</span></td>
-                        <td><a href="#" style="color: var(--accent-primary); text-decoration: none; font-size: 12px;">Receipt</a></td>
-                      </tr>
-                      <tr>
-                        <td>Apr 1, 2026</td>
-                        <td>Analyst Plan - Monthly</td>
-                        <td>$49.00</td>
-                        <td><span class="billing-status paid">Paid</span></td>
-                        <td><a href="#" style="color: var(--accent-primary); text-decoration: none; font-size: 12px;">Receipt</a></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+              <!-- Billing history removed: no real charges to show. -->
             </div>
           </section>
 
@@ -1483,12 +1431,14 @@
             </div>
             <div class="section-body">
               <div class="form-group">
-                <label class="form-label">Password</label>
-                <div style="display: flex; gap: 12px; align-items: center;">
-                  <input type="password" class="form-input" value="••••••••••••" disabled style="max-width: 300px;" aria-label="Current password (masked)">
-                  <button class="btn btn-secondary btn-sm">Change Password</button>
+                <label class="form-label">Change Password</label>
+                <div style="display:flex;flex-direction:column;gap:10px;max-width:360px;">
+                  <input type="password" id="currentPassword" class="form-input" placeholder="Current password" autocomplete="current-password">
+                  <input type="password" id="newPassword" class="form-input" placeholder="New password (min 8 characters)" autocomplete="new-password">
+                  <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm new password" autocomplete="new-password">
+                  <button class="btn btn-primary btn-sm" id="changePasswordBtn" style="align-self:flex-start;">Update Password</button>
                 </div>
-                <p class="form-hint">Last changed 45 days ago</p>
+                <p class="form-hint">Use at least 8 characters. You'll stay signed in on this device.</p>
               </div>
 
               <!-- Two-Factor Authentication Section -->
@@ -1628,40 +1578,9 @@
               </div>
 
               <div class="form-group" style="margin-top: 24px;">
-                <label class="form-label">Active Sessions</label>
-                <div class="session-item">
-                  <div class="session-icon current">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                  </div>
-                  <div class="session-info">
-                    <div class="session-device">MacBook Pro · Chrome <span class="session-current-badge">Current</span></div>
-                    <div class="session-details">Riyadh, Saudi Arabia · Active now</div>
-                  </div>
-                </div>
-                <div class="session-item">
-                  <div class="session-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-                  </div>
-                  <div class="session-info">
-                    <div class="session-device">iPhone 15 Pro · Safari</div>
-                    <div class="session-details">Riyadh, Saudi Arabia · 2 hours ago</div>
-                  </div>
-                  <button class="btn btn-secondary btn-sm">Revoke</button>
-                </div>
-                <div class="session-item">
-                  <div class="session-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                  </div>
-                  <div class="session-info">
-                    <div class="session-device">Windows PC · Edge</div>
-                    <div class="session-details">Dubai, UAE · 3 days ago</div>
-                  </div>
-                  <button class="btn btn-secondary btn-sm">Revoke</button>
-                </div>
-              </div>
-
-              <div style="margin-top: 24px;">
-                <button class="btn btn-secondary">Sign Out All Other Sessions</button>
+                <label class="form-label">Sessions</label>
+                <p class="form-hint" style="margin-bottom:12px;">You're signed in on this device. Per-device session history and remote sign-out are coming soon — we don't list sessions we can't actually track.</p>
+                <button class="btn btn-secondary btn-sm" id="signOutBtn">Sign out</button>
               </div>
             </div>
           </section>
@@ -1689,8 +1608,7 @@
                   <p class="export-card-desc">Download your current portfolio holdings with all transaction history and cost basis data.</p>
                   <div class="export-formats">
                     <button class="format-btn" onclick="exportData('portfolio', 'csv')">CSV</button>
-                    <button class="format-btn" onclick="exportData('portfolio', 'pdf')">PDF</button>
-                    <button class="format-btn" onclick="exportData('portfolio', 'xlsx')">Excel</button>
+                    <button class="format-btn" onclick="exportData('portfolio', 'json')">JSON</button>
                   </div>
                 </div>
                 <div class="export-card">
@@ -1702,7 +1620,6 @@
                   </div>
                   <p class="export-card-desc">Download all your past AI Analyst Council reviews and reports in a comprehensive format.</p>
                   <div class="export-formats">
-                    <button class="format-btn" onclick="exportData('council', 'pdf')">PDF Bundle</button>
                     <button class="format-btn" onclick="exportData('council', 'json')">JSON</button>
                   </div>
                 </div>
@@ -1927,27 +1844,134 @@
       });
     }
 
-    // Export functions
-    function exportData(type, format) {
-      showToast('Export Started', `Preparing ${type} export as ${format.toUpperCase()}...`, 'info');
-      setTimeout(() => {
-        showToast('Export Complete', `Your ${type} data has been downloaded.`, 'success');
-      }, 1500);
+    // ── L1: real exports / real delete / profile save / change-password / honest 2FA ──
+    function _download(filename, text, mime){
+      var blob = new Blob([text], { type: mime || 'text/plain' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
     }
-
-    function requestDataExport() {
-      if (confirm('We will email you a complete export of all your data within 24 hours. Continue?')) {
-        showToast('Request Submitted', 'You will receive an email with your data export link.', 'success');
-      }
-    }
-
-    function deleteAccount() {
-      if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-        if (confirm('This will permanently delete all your data, portfolio, and Council history. Type "DELETE" to confirm.')) {
-          showToast('Account Deletion', 'Please check your email to confirm account deletion.', 'warning');
+    async function exportData(type, format) {
+      try {
+        if (type === 'portfolio') {
+          var p = await API.portfolio();
+          var holds = (p && (p.holdings || p)) || [];
+          if (format === 'csv') {
+            var rows = [['ticker_key','shares','avg_cost','currency']];
+            holds.forEach(function(h){ rows.push([h.ticker_key||h.ticker||'', h.shares||0, h.avg_cost!=null?h.avg_cost:'', h.currency||'']); });
+            _download('alphacouncil-portfolio.csv', rows.map(function(r){ return r.join(','); }).join('\n'), 'text/csv');
+          } else {
+            _download('alphacouncil-portfolio.json', JSON.stringify(holds, null, 2), 'application/json');
+          }
+        } else if (type === 'council') {
+          var h = await API.councilHistory(100);
+          _download('alphacouncil-council-history.json', JSON.stringify((h && h.history) || h || [], null, 2), 'application/json');
         }
+        if (typeof showToast === 'function') showToast('Export ready', 'Your ' + type + ' data was downloaded.', 'success');
+      } catch (e) {
+        if (typeof showToast === 'function') showToast('Export failed', (e && e.message) || 'Please try again.', 'error');
       }
     }
+    async function requestDataExport() {
+      try {
+        var me = await API.me().catch(function(){ return null; });
+        var p = await API.portfolio().catch(function(){ return null; });
+        var wl = await API.watchlist().catch(function(){ return null; });
+        var rp = await API.riskProfile().catch(function(){ return null; });
+        var bundle = { exported_at: new Date().toISOString(), account: me, portfolio: (p && (p.holdings||p)) || [], watchlist: wl, risk_profile: rp };
+        _download('alphacouncil-my-data.json', JSON.stringify(bundle, null, 2), 'application/json');
+        if (typeof showToast === 'function') showToast('Data exported', 'Your complete data export was downloaded.', 'success');
+      } catch (e) {
+        if (typeof showToast === 'function') showToast('Export failed', (e && e.message) || 'Please try again.', 'error');
+      }
+    }
+    async function deleteAccount() {
+      if (!confirm('Delete your account? This permanently removes your profile, portfolio, watchlist and Council history. This cannot be undone.')) return;
+      var typed = prompt('To confirm, type DELETE:');
+      if ((typed || '').trim().toUpperCase() !== 'DELETE') { if (typeof showToast==='function') showToast('Cancelled','Your account was not deleted.','info'); return; }
+      try {
+        await API.deleteAccount();
+        try { localStorage.removeItem('ac.auth.token'); } catch(e){}
+        try { await API.logout(); } catch(e){}
+        alert('Your account has been deleted.');
+        window.location.href = 'index.html';
+      } catch (e) {
+        if (typeof showToast === 'function') showToast('Could not delete account', (e && e.message) || 'Please try again.', 'error');
+      }
+    }
+
+    // Load real profile fields + wire profile save / change-password / honest 2FA / sign-out.
+    (function(){
+      ['firstName','lastName'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+      var tfa = document.getElementById('twofaSection');
+      if(tfa) tfa.innerHTML = '<div class="twofa-header"><div class="twofa-title">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+        + 'Two-Factor Authentication</div><span class="twofa-badge disabled">Coming soon</span></div>'
+        + '<p style="font-size:13px;color:var(--fg-dim);line-height:1.6;margin:12px 0 0;">TOTP authenticator support is on the way. We won’t show a two-factor toggle until it actually protects your account.</p>';
+
+      // Notifications: the delivery toggles don't persist yet — say so honestly (the in-app bell is already live).
+      var notifBody = document.querySelector('#notifications .section-body');
+      if(notifBody && !document.getElementById('notifNote')){
+        var n = document.createElement('p'); n.id='notifNote'; n.className='form-hint';
+        n.style.cssText='margin:0 0 16px;padding:12px;border:1px solid var(--border,#2a2f3a);border-radius:8px;';
+        n.textContent='These delivery preferences aren’t saved yet — email/push controls are coming soon. Your in-app alerts (the bell) are already live.';
+        notifBody.insertBefore(n, notifBody.firstChild);
+      }
+
+      async function loadProfile(){
+        var u = null;
+        try { u = await API.me(); } catch(e){ return; }
+        if(!u) return;
+        var fn=document.getElementById('firstName'); if(fn) fn.value = u.first_name || '';
+        var ln=document.getElementById('lastName'); if(ln) ln.value = u.last_name || '';
+        var lang=document.getElementById('language'); if(lang && u.preferred_language) lang.value = u.preferred_language;
+        var mkt=document.getElementById('defaultMarket'); if(mkt && u.market){ try { mkt.value = u.market; } catch(e){} }
+      }
+      loadProfile();
+
+      var saveBtn = document.getElementById('saveProfileBtn');
+      if(saveBtn) saveBtn.addEventListener('click', async function(){
+        var fields = {
+          first_name: (document.getElementById('firstName')||{}).value || '',
+          last_name: (document.getElementById('lastName')||{}).value || '',
+          market: (document.getElementById('defaultMarket')||{}).value || '',
+          preferred_language: (document.getElementById('language')||{}).value || 'en'
+        };
+        var orig = saveBtn.textContent; saveBtn.disabled=true; saveBtn.textContent='Saving…';
+        try {
+          await API.updateProfile(fields);
+          if(typeof showToast==='function') showToast('Saved','Your profile was updated.','success');
+        } catch(e){
+          if(typeof showToast==='function') showToast(e&&e.status===401?'Sign in required':'Save failed', (e&&e.message)||'Please try again.','error');
+        } finally { saveBtn.disabled=false; saveBtn.textContent=orig; }
+      });
+
+      var cpBtn = document.getElementById('changePasswordBtn');
+      if(cpBtn) cpBtn.addEventListener('click', async function(){
+        var cur=(document.getElementById('currentPassword')||{}).value||'';
+        var nw=(document.getElementById('newPassword')||{}).value||'';
+        var cf=(document.getElementById('confirmPassword')||{}).value||'';
+        if(!cur || !nw){ if(typeof showToast==='function') showToast('Missing fields','Enter your current and new password.','warning'); return; }
+        if(nw.length<8){ if(typeof showToast==='function') showToast('Too short','New password must be at least 8 characters.','warning'); return; }
+        if(nw!==cf){ if(typeof showToast==='function') showToast('Mismatch','New password and confirmation don’t match.','warning'); return; }
+        var orig=cpBtn.textContent; cpBtn.disabled=true; cpBtn.textContent='Updating…';
+        try {
+          await API.changePassword(cur, nw);
+          ['currentPassword','newPassword','confirmPassword'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+          if(typeof showToast==='function') showToast('Password updated','Your password was changed.','success');
+        } catch(e){
+          if(typeof showToast==='function') showToast('Could not change password', (e&&e.message)||'Check your current password and try again.','error');
+        } finally { cpBtn.disabled=false; cpBtn.textContent=orig; }
+      });
+
+      var soBtn = document.getElementById('signOutBtn');
+      if(soBtn) soBtn.addEventListener('click', async function(){
+        if(!confirm('Sign out of AlphaCouncil?')) return;
+        try { await API.logout(); } catch(e){}
+        try { localStorage.removeItem('ac.auth.token'); } catch(e){}
+        window.location.href = 'login.html';
+      });
+    })();
 
     // Chat functionality
     function askQuestion(question) {
@@ -2086,6 +2110,7 @@
 
     function updateTwofaUI(isEnabled) {
       const badge = document.getElementById('twofaBadge');
+      if (!badge) return;  // L1: #twofaSection is replaced with an honest "coming soon" note; nothing to update.
       const disabledState = document.getElementById('twofaDisabled');
       const enabledState = document.getElementById('twofaEnabled');
       const setupState = document.getElementById('twofaSetup');
