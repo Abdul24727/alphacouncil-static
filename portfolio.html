@@ -2478,60 +2478,167 @@
       modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
     });
 
-    document.getElementById('confirmAddBtn').addEventListener('click', () => {
-      const stockInput = document.getElementById('stockSearch').value;
-      const sharesInput = parseInt(document.getElementById('sharesInput').value);
-      const costInput = parseFloat(document.getElementById('costInput').value);
-
-      if (!stockInput || !sharesInput) {
-        showToast('Missing fields', 'Please select a stock and enter shares', 'warning');
-        return;
+    // ── F3: REAL Add-Holding (autocomplete → API.addHolding) + REAL statement import ──
+    // Replaces the old confirm handler that invented a price (Math.random) and wrote a
+    // DOM-only mock that persisted nothing. Now: resolve a real ticker_key from the live
+    // /api/screening universe, then AlphaCouncil.addHolding (POST + reload from the DB).
+    (function () {
+      var universe = [];        // {ticker_key, ticker, name_en, exchange, currency}
+      var resolvedKey = null;   // ticker_key chosen from the dropdown / exact match
+      var searchEl = document.getElementById('stockSearch');
+      var resultsEl = null;
+      function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+      function loadUniverse() {
+        if (universe.length) return Promise.resolve(universe);
+        return API.screening(1000).then(function (d) {
+          universe = ((d && d.data) || []).map(function (r) {
+            return { ticker_key: r.ticker_key, ticker: r.ticker, name_en: r.name_en || r.ticker, exchange: r.exchange, currency: r.currency };
+          });
+          return universe;
+        }).catch(function () { return []; });
+      }
+      function ensureResults() {
+        if (resultsEl) return resultsEl;
+        resultsEl = document.createElement('div');
+        resultsEl.id = 'stockSearchResults';
+        resultsEl.style.cssText = 'background:var(--bg-elev,#1a1d24);border:1px solid var(--border,#2a2f3a);border-radius:8px;margin-top:6px;max-height:240px;overflow:auto;display:none';
+        searchEl.parentElement.insertBefore(resultsEl, searchEl.nextSibling);
+        return resultsEl;
+      }
+      function render(matches) {
+        var el = ensureResults();
+        if (!matches.length) { el.style.display = 'none'; return; }
+        el.innerHTML = matches.map(function (m) {
+          return '<div class="ssr-item" data-key="' + esc(m.ticker_key) + '" style="padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--border,#2a2f3a)">'
+            + '<span style="font-weight:600">' + esc(m.name_en) + '</span>'
+            + '<span style="color:var(--fg-dim,#8a93a3);font-size:12px">' + esc(m.ticker) + ' · ' + esc(m.exchange) + '</span></div>';
+        }).join('');
+        el.style.display = 'block';
+        Array.prototype.forEach.call(el.querySelectorAll('.ssr-item'), function (it) {
+          it.addEventListener('click', function () {
+            var m = universe.filter(function (u) { return u.ticker_key === it.getAttribute('data-key'); })[0];
+            if (!m) return;
+            resolvedKey = m.ticker_key;
+            searchEl.value = m.name_en + ' (' + m.ticker + ')';
+            el.style.display = 'none';
+          });
+        });
+      }
+      function doSearch() {
+        resolvedKey = null;
+        var q = (searchEl.value || '').trim().toLowerCase();
+        if (!q) { if (resultsEl) resultsEl.style.display = 'none'; return; }
+        loadUniverse().then(function (list) {
+          var exact = list.filter(function (u) { return (u.ticker && u.ticker.toLowerCase() === q) || (u.ticker_key && u.ticker_key.toLowerCase() === q); })[0];
+          if (exact) resolvedKey = exact.ticker_key;
+          render(list.filter(function (u) {
+            return (u.name_en && u.name_en.toLowerCase().indexOf(q) >= 0) || (u.ticker && u.ticker.toLowerCase().indexOf(q) >= 0) || (u.ticker_key && u.ticker_key.toLowerCase().indexOf(q) >= 0);
+          }).slice(0, 8));
+        });
+      }
+      if (searchEl) {
+        searchEl.addEventListener('input', doSearch);
+        searchEl.addEventListener('focus', function () { loadUniverse(); });
+        document.addEventListener('click', function (e) { if (resultsEl && !searchEl.parentElement.contains(e.target)) resultsEl.style.display = 'none'; });
       }
 
-      // Extract ticker and name from search input (format: "Name (TICKER)")
-      const match = stockInput.match(/(.+?)\s*\(([^)]+)\)/);
-      const name = match ? match[1].trim() : stockInput;
-      const ticker = match ? match[2] : stockInput.toUpperCase().replace(/\s/g, '');
-
-      // Check if already exists
-      if (holdingsData[ticker]) {
-        showToast('Already owned', `${name} is already in your portfolio. Use Adjust Position instead.`, 'warning');
-        return;
+      var confirmBtn = document.getElementById('confirmAddBtn');
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', function () {
+          var shares = parseFloat(document.getElementById('sharesInput').value);
+          var cost = parseFloat(document.getElementById('costInput').value);
+          var key = resolvedKey;
+          if (!key) {
+            var typed = (searchEl.value || '').trim().toLowerCase();
+            var hit = universe.filter(function (u) {
+              return (u.ticker_key && u.ticker_key.toLowerCase() === typed) || (u.ticker && u.ticker.toLowerCase() === typed)
+                || (u.name_en && u.name_en.toLowerCase() === typed) || ((searchEl.value || '').indexOf('(' + u.ticker + ')') >= 0);
+            })[0];
+            if (hit) key = hit.ticker_key;
+          }
+          if (!key) { showToast('Pick a stock', 'Search and select a stock from the list so we add the right ticker.', 'warning'); return; }
+          if (!shares || shares <= 0) { showToast('Missing shares', 'Enter the number of shares you hold.', 'warning'); return; }
+          if (!cost || cost <= 0) { showToast('Missing cost', "Enter your average cost per share (in the stock's native currency).", 'warning'); return; }
+          confirmBtn.disabled = true;
+          API.addHolding(key, Number(shares), Number(cost)).then(function () {
+            showToast('Holding added', String(key).split('_')[0] + ' was added to your portfolio', 'success');
+            document.getElementById('addHoldingModal').classList.remove('open');
+            searchEl.value = ''; document.getElementById('sharesInput').value = ''; document.getElementById('costInput').value = ''; resolvedKey = null;
+            if (resultsEl) resultsEl.style.display = 'none';
+            return AlphaCouncil.loadPortfolio();
+          }).then(function () { if (typeof window.onPortfolioReady === 'function') window.onPortfolioReady(AlphaCouncil.getHoldings()); })
+            .catch(function (e) { showToast('Could not add holding', (e && e.message) || 'Please try again.', 'error'); })
+            .then(function () { confirmBtn.disabled = false; });
+        });
       }
 
-      // Create new holding data
-      const avgCost = costInput || 100;
-      const currentPrice = avgCost * (1 + (Math.random() * 0.1 - 0.05));
-      const totalValue = sharesInput * currentPrice;
+      // ── REAL statement import: uploadZone → import-extract → review → import-confirm ──
+      var zone = document.getElementById('uploadZone');
+      if (zone) {
+        var heading = zone.querySelector('h4');
+        var fileIn = document.createElement('input');
+        fileIn.type = 'file'; fileIn.id = 'portfolioImportFile'; fileIn.accept = 'image/png,image/jpeg,application/pdf'; fileIn.style.display = 'none';
+        document.body.appendChild(fileIn);
+        zone.addEventListener('click', function () { fileIn.click(); });
+        zone.addEventListener('dragover', function (e) { e.preventDefault(); zone.classList.add('dragover'); });
+        zone.addEventListener('dragleave', function () { zone.classList.remove('dragover'); });
+        zone.addEventListener('drop', function (e) { e.preventDefault(); zone.classList.remove('dragover'); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+        fileIn.addEventListener('change', function () { if (fileIn.files[0]) handleFile(fileIn.files[0]); });
 
-      holdingsData[ticker] = {
-        ticker: ticker,
-        name: name,
-        shares: sharesInput,
-        avgCost: avgCost,
-        currentPrice: currentPrice,
-        weight: 2.5,
-        thesis: 7.0
-      };
-
-      // Add row to table
-      addHoldingRow({
-        ticker: ticker,
-        name: name,
-        logo: ticker.substring(0, 3),
-        sector: 'GCC Equity',
-        weight: 2.5,
-        value: `SAR ${Math.round(totalValue).toLocaleString()}`
-      });
-
-      showToast('Holding added', `${name} added to portfolio`, 'success');
-      document.getElementById('addHoldingModal').classList.remove('open');
-
-      // Clear form
-      document.getElementById('stockSearch').value = '';
-      document.getElementById('sharesInput').value = '';
-      document.getElementById('costInput').value = '';
-    });
+        function handleFile(file) {
+          if (file.size > 10 * 1024 * 1024) { showToast('File too large', 'Please upload a file under 10MB.', 'warning'); return; }
+          var body = zone.parentElement;
+          var oldRev = body.querySelector('#importReview'); if (oldRev) oldRev.remove();
+          if (heading) heading.textContent = 'Reading "' + file.name + '"…';
+          var reader = new FileReader();
+          reader.onload = function () {
+            var b64 = String(reader.result).split(',')[1] || '';
+            API.importExtract(file.type || 'application/octet-stream', b64, file.name).then(function (res) {
+              renderReview((res && res.rows) || []);
+            }).catch(function (e) {
+              if (heading) heading.textContent = 'Drop file here or click to upload';
+              showToast('Could not read statement', (e && e.message) || 'Please try a clearer screenshot or PDF.', 'error');
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+        function renderReview(rows) {
+          if (heading) heading.textContent = 'Drop file here or click to upload';
+          var matched = rows.filter(function (r) { return r.matched_ticker_key; });
+          var body = zone.parentElement;
+          var old = body.querySelector('#importReview'); if (old) old.remove();
+          var box = document.createElement('div'); box.id = 'importReview'; box.style.cssText = 'margin-top:16px';
+          if (!matched.length) {
+            box.innerHTML = '<div class="form-hint" style="text-align:center">We couldn\'t match any holdings on that statement to GCC tickers we cover. Nothing was imported.</div>';
+            body.appendChild(box); return;
+          }
+          box.innerHTML = '<div style="font-weight:600;margin-bottom:8px">Review ' + matched.length + ' matched holding' + (matched.length > 1 ? 's' : '') + '</div>'
+            + matched.map(function (r, i) {
+              return '<label style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--border,#2a2f3a);border-radius:8px;margin-bottom:6px">'
+                + '<input type="checkbox" class="imp-row" data-i="' + i + '" checked>'
+                + '<span style="flex:1">' + esc(r.matched_name || r.raw_name || r.matched_ticker_key) + '</span>'
+                + '<span style="color:var(--fg-dim,#8a93a3);font-size:12px">' + (r.shares || 0) + ' sh · ' + (r.avg_cost != null ? r.avg_cost : '—') + ' ' + esc(r.currency || '') + '</span></label>';
+            }).join('')
+            + '<button class="btn btn-primary" id="confirmImportBtn" style="width:100%;margin-top:8px">Import selected</button>';
+          body.appendChild(box);
+          box.querySelector('#confirmImportBtn').addEventListener('click', function () {
+            var picks = [];
+            Array.prototype.forEach.call(box.querySelectorAll('.imp-row'), function (cb) {
+              if (cb.checked) { var r = matched[parseInt(cb.getAttribute('data-i'), 10)]; picks.push({ ticker_key: r.matched_ticker_key, shares: Number(r.shares) || 0, avg_cost: Number(r.avg_cost) || 0, currency: r.currency || undefined }); }
+            });
+            if (!picks.length) { showToast('Nothing selected', 'Tick at least one holding to import.', 'warning'); return; }
+            var btn = box.querySelector('#confirmImportBtn'); btn.disabled = true; btn.textContent = 'Importing…';
+            API.importConfirm(picks).then(function () {
+              showToast('Holdings imported', picks.length + ' position' + (picks.length > 1 ? 's' : '') + ' added to your portfolio', 'success');
+              document.getElementById('importModal').classList.remove('open');
+              box.remove();
+              return AlphaCouncil.loadPortfolio();
+            }).then(function () { if (typeof window.onPortfolioReady === 'function') window.onPortfolioReady(AlphaCouncil.getHoldings()); })
+              .catch(function (e) { btn.disabled = false; btn.textContent = 'Import selected'; showToast('Import failed', (e && e.message) || 'Please try again.', 'error'); });
+          });
+        }
+      }
+    })();
 
     // Expand/Collapse Transaction History
     function toggleExpand(ticker) {
