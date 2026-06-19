@@ -1126,5 +1126,125 @@
     if (window.AC_I18N) AC_I18N.apply();
   })();
   </script>
+  <script>
+  // O4 (#4): the rest of methodology — timing/sentiment dimensions, understanding-scores,
+  // the AI Analyst Council, news classification, sources, limitations, "what we are not", final note.
+  AC_I18N.add({
+    'mth.d_momentum':   { en: 'Momentum', ar: 'الزخم' },
+    'mth.d_momentum_t': { en: 'Recent trend strength and earnings surprises — price and earnings momentum over the near term.', ar: 'قوة الاتجاه الأخير ومفاجآت الأرباح — زخم السعر والأرباح على المدى القريب.' },
+    'mth.d_technicals': { en: 'Technicals', ar: 'المؤشرات الفنية' },
+    'mth.d_technicals_t':{ en: 'Chart patterns and technical indicators — support/resistance, moving averages, RSI and related signals.', ar: 'أنماط الرسوم والمؤشرات الفنية — الدعم/المقاومة والمتوسطات المتحركة ومؤشر القوة النسبية والإشارات ذات الصلة.' },
+    'mth.live_sentiment':{ en: 'Live Sentiment', ar: 'المعنويات الحيّة' },
+    'mth.live_sentiment_d':{ en: '1 dimension capturing market sentiment, news flow and analyst views', ar: 'بُعد واحد يلتقط معنويات السوق وتدفّق الأخبار وآراء المحلّلين' },
+    'mth.d_sentiment':  { en: 'Sentiment & News', ar: 'المعنويات والأخبار' },
+    'mth.d_sentiment_t':{ en: 'The current market narrative — media tone, news flow and analyst revisions shaping how the stock is perceived.', ar: 'السردية الحالية للسوق — نبرة الإعلام وتدفّق الأخبار ومراجعات المحلّلين التي تشكّل كيفية النظر إلى السهم.' },
+    'mth.eye_scores':   { en: 'Understanding Scores', ar: 'فهم التقييمات' },
+    'mth.t_scores':     { en: 'Scores Are Relative, Not Absolute', ar: 'التقييمات نسبية لا مطلقة' },
+    'mth.s_scores':     { en: 'Every dimension score is computed relative to GCC sector peers and each stock\'s own historical range. A "high" value score means the stock appears cheaper than its typical valuation — not that it\'s universally cheap.', ar: 'يُحسب كل تقييم بُعدي نسبةً إلى أقران القطاع في الخليج والنطاق التاريخي لكل سهم. فدرجة تقييم «مرتفعة» تعني أن السهم يبدو أرخص من تقييمه المعتاد — لا أنه رخيص بإطلاق.' },
+    'mth.peer_relative':{ en: 'Peer-Relative', ar: 'نسبةً إلى الأقران' },
+    'mth.peer_relative_t':{ en: 'Scores compare against GCC sector peers, not global benchmarks that may not reflect regional realities.', ar: 'تُقارَن التقييمات بأقران القطاع في الخليج، لا بمعايير عالمية قد لا تعكس الواقع الإقليمي.' },
+    'mth.hist_grounded':{ en: 'Historically-Grounded', ar: 'مستندة إلى التاريخ' },
+    'mth.hist_grounded_t':{ en: "Current scores are contextualized against each stock's own historical distributions to identify meaningful deviations.", ar: 'تُوضع التقييمات الحالية في سياق التوزيعات التاريخية لكل سهم لتحديد الانحرافات ذات المعنى.' },
+    'mth.one_input':    { en: 'One Input, Not The Decision', ar: 'مُدخَل واحد، لا القرار' },
+    'mth.one_input_t':  { en: 'Scores inform analysis but do not constitute recommendations. No single score equals a buy or sell signal.', ar: 'تُثري التقييمات التحليل لكنها لا تشكّل توصيات. ولا يعادل أي تقييم منفرد إشارة شراء أو بيع.' },
+    'mth.example_score':{ en: 'Example Score Breakdown', ar: 'مثال على تفصيل التقييم' },
+    'mth.example_score_t':{ en: 'How dimensions combine into a holistic view', ar: 'كيف تتكامل الأبعاد في رؤية شاملة' },
+    'mth.eye_council2': { en: 'Multi-Perspective Analysis', ar: 'تحليل متعدّد المنظورات' },
+    'mth.t_council2':   { en: 'The AI Analyst Council', ar: 'مجلس المحلّلين الذكي' },
+    'mth.s_council2':   { en: 'Several specialized AI models analyze your portfolio independently, then a chairman model synthesizes their views into one balanced read. Conflicting signals are surfaced, not hidden — because real analysis involves tradeoffs.', ar: 'تحلّل عدّة نماذج ذكاء متخصّصة محفظتك بشكل مستقل، ثم يجمع نموذج رئيس وجهات نظرها في قراءة متوازنة واحدة. وتُبرَز الإشارات المتعارضة بدل إخفائها — لأن التحليل الحقيقي ينطوي على مفاضلات.' },
+    'mth.a_risk':       { en: 'Risk Analyst', ar: 'محلّل المخاطر' },
+    'mth.a_risk_t':     { en: 'Identifies concentration risks, volatility patterns, and potential red flags across holdings.', ar: 'يحدّد مخاطر التركّز وأنماط التقلّب والإشارات التحذيرية المحتملة عبر المراكز.' },
+    'mth.a_valuation':  { en: 'Valuation Analyst', ar: 'محلّل التقييم' },
+    'mth.a_valuation_t':{ en: 'Compares current valuations to historical ranges and identifies potential mispricings.', ar: 'يقارن التقييمات الحالية بالنطاقات التاريخية ويحدّد أخطاء التسعير المحتملة.' },
+    'mth.a_income':     { en: 'Income Analyst', ar: 'محلّل الدخل' },
+    'mth.a_income_t':   { en: 'Tracks dividend sustainability, yield changes, and income generation potential.', ar: 'يتتبّع استدامة التوزيعات وتغيّرات العائد وإمكانات توليد الدخل.' },
+    'mth.a_momentum':   { en: 'Momentum Analyst', ar: 'محلّل الزخم' },
+    'mth.a_momentum_t': { en: 'Analyzes price trends, relative strength, and technical positioning signals.', ar: 'يحلّل اتجاهات السعر والقوة النسبية وإشارات الموقع الفني.' },
+    'mth.a_news':       { en: 'News Analyst', ar: 'محلّل الأخبار' },
+    'mth.a_news_t':     { en: 'Monitors news flow for material developments affecting your specific holdings.', ar: 'يراقب تدفّق الأخبار بحثًا عن تطوّرات جوهرية تؤثّر على مراكزك المحدّدة.' },
+    'mth.a_macro':      { en: 'Macro Analyst', ar: 'محلّل الاقتصاد الكلّي' },
+    'mth.a_macro_t':    { en: 'Links oil, currency, and regional economic indicators to portfolio exposures.', ar: 'يربط مؤشرات النفط والعملة والاقتصاد الإقليمي بتعرّضات المحفظة.' },
+    'mth.a_strategist': { en: 'Portfolio Strategist', ar: 'استراتيجي المحفظة' },
+    'mth.a_strategist_t':{ en: 'Synthesizes all perspectives into coherent portfolio-level observations and identifies the highest-priority considerations.', ar: 'يجمع كل المنظورات في ملاحظات متماسكة على مستوى المحفظة ويحدّد الاعتبارات الأعلى أولوية.' },
+    'mth.synthesis':    { en: 'Structured Synthesis', ar: 'خلاصة منظَّمة' },
+    'mth.synthesis_t':  { en: 'How the Council delivers analysis', ar: 'كيف يقدّم المجلس التحليل' },
+    'mth.eye_newsclass':{ en: 'News Classification', ar: 'تصنيف الأخبار' },
+    'mth.t_newsclass':  { en: 'How News Impact Is Scored', ar: 'كيف يُقيَّم أثر الأخبار' },
+    'mth.s_newsclass':  { en: 'Not all news matters equally to your portfolio. Our news engine classifies each story by its relevance to your actual holdings — distinguishing between direct impacts on stocks you own and indirect sector or macro effects.', ar: 'ليست كل الأخبار بالأهمية نفسها لمحفظتك. يصنّف محرّك الأخبار لدينا كل خبر حسب صلته بمراكزك الفعلية — مميّزًا بين التأثيرات المباشرة على الأسهم التي تملكها والتأثيرات القطاعية أو الكلّية غير المباشرة.' },
+    'mth.direct':       { en: 'Direct vs. Indirect', ar: 'مباشر مقابل غير مباشر' },
+    'mth.direct_t':     { en: 'Stories about your specific holdings are prioritized over general sector or market news.', ar: 'تُمنح أخبار مراكزك المحدّدة الأولوية على الأخبار القطاعية أو السوقية العامة.' },
+    'mth.sentiment_an': { en: 'Sentiment Analysis', ar: 'تحليل المعنويات' },
+    'mth.sentiment_an_t':{ en: 'Each story is classified as constructive, cautionary, or neutral based on content analysis.', ar: 'يُصنَّف كل خبر إيجابيًّا أو تحذيريًّا أو محايدًا بناءً على تحليل المحتوى.' },
+    'mth.source_cred':  { en: 'Source Credibility', ar: 'مصداقية المصدر' },
+    'mth.source_cred_t':{ en: 'Official exchange announcements and regulatory filings are weighted higher than general news sources.', ar: 'تُمنح إعلانات البورصة الرسمية والإفصاحات التنظيمية وزنًا أعلى من مصادر الأخبار العامة.' },
+    'mth.eye_integrity':{ en: 'Data Integrity', ar: 'نزاهة البيانات' },
+    'mth.t_sources':    { en: 'Source-Linked Analysis', ar: 'تحليل موصول بالمصادر' },
+    'mth.s_sources':    { en: "Every data point and insight can be traced back to its origin. We don't aggregate black boxes — we curate verifiable information with clear provenance.", ar: 'يمكن تتبّع كل نقطة بيانات ورؤية إلى أصلها. لا نجمّع صناديق سوداء — بل ننسّق معلومات قابلة للتحقّق بمصدر واضح.' },
+    'mth.traceable':    { en: 'Traceable Sources', ar: 'مصادر قابلة للتتبّع' },
+    'mth.traceable_t':  { en: 'Click through to original filings, exchange announcements, and data provider records. Every claim links to evidence.', ar: 'انقر للوصول إلى الإفصاحات الأصلية وإعلانات البورصة وسجلات مزوّدي البيانات. كل ادّعاء موصول بدليل.' },
+    'mth.confidence':   { en: 'Confidence Indicators', ar: 'مؤشّرات الثقة' },
+    'mth.confidence_t': { en: 'Analysis includes confidence levels based on data completeness, recency, and source reliability.', ar: 'يتضمّن التحليل مستويات ثقة بناءً على اكتمال البيانات وحداثتها وموثوقية المصدر.' },
+    'mth.freshness':    { en: 'Data Freshness', ar: 'حداثة البيانات' },
+    'mth.freshness_t':  { en: 'Timestamps show when data was last updated, with alerts for stale information that may require review.', ar: 'تُظهر الطوابع الزمنية وقت آخر تحديث للبيانات، مع تنبيهات للمعلومات القديمة التي قد تتطلّب مراجعة.' },
+    'mth.eye_important':{ en: 'Important Considerations', ar: 'اعتبارات مهمّة' },
+    'mth.t_limits':     { en: 'Limitations & Boundaries', ar: 'الحدود والقيود' },
+    'mth.s_limits':     { en: 'Transparency means acknowledging what we cannot do as clearly as what we can. Understanding these limitations is essential to using AlphaCouncil effectively.', ar: 'الشفافية تعني الإقرار بما لا نستطيع فعله بوضوح يضاهي وضوح ما نستطيعه. وفهم هذه القيود ضروري لاستخدام AlphaCouncil بفعالية.' },
+    'mth.data_lags':    { en: 'Data Lags', ar: 'تأخّر البيانات' },
+    'mth.data_lags_t':  { en: 'Financial statements are available after reporting periods close. Price data may have 15-minute delays. News processing takes time. Real-time decisions require real-time data sources.', ar: 'تتوفّر القوائم المالية بعد إغلاق فترات الإبلاغ. وقد تتأخّر بيانات الأسعار 15 دقيقة. وتستغرق معالجة الأخبار وقتًا. والقرارات الفورية تتطلّب مصادر بيانات فورية.' },
+    'mth.model_unc':    { en: 'Model Uncertainty', ar: 'عدم يقين النماذج' },
+    'mth.model_unc_t':  { en: 'All scoring models involve assumptions and statistical uncertainty. Historical patterns may not predict future performance. Edge cases exist that models may not handle well.', ar: 'تنطوي كل نماذج التقييم على افتراضات وعدم يقين إحصائي. وقد لا تتنبّأ الأنماط التاريخية بالأداء المستقبلي. وتوجد حالات حدّية قد لا تتعامل معها النماذج جيّدًا.' },
+    'mth.coverage_limits':{ en: 'Coverage Limits', ar: 'حدود التغطية' },
+    'mth.coverage_limits_t':{ en: 'We cover GCC-listed equities comprehensively, but some smaller or newly-listed instruments may have limited historical data or reduced analytical depth.', ar: 'نغطّي الأسهم المدرجة في الخليج بشمولية، لكن بعض الأدوات الأصغر أو حديثة الإدراج قد يكون لها بيانات تاريخية محدودة أو عمق تحليلي أقل.' },
+    'mth.no_exec':      { en: 'No Execution', ar: 'لا تنفيذ' },
+    'mth.no_exec_t':    { en: 'AlphaCouncil does not execute trades, connect to brokerages, or manage money. Analysis is purely informational — all trading decisions and execution remain with you.', ar: 'لا ينفّذ AlphaCouncil صفقات ولا يتّصل بالوسطاء ولا يدير أموالًا. التحليل إعلامي بحت — وتبقى كل قرارات التداول وتنفيذها لك.' },
+    'mth.not_title':    { en: 'What AlphaCouncil Is Not', ar: 'ما ليس عليه AlphaCouncil' },
+    'mth.not1':         { en: 'Not licensed financial advice', ar: 'ليس استشارة مالية مرخّصة' },
+    'mth.not2':         { en: 'Not a trading platform or broker', ar: 'ليس منصّة تداول أو وسيطًا' },
+    'mth.not3':         { en: 'Not an asset manager or fund', ar: 'ليس مدير أصول أو صندوقًا' },
+    'mth.not4':         { en: 'Not a guarantee of investment returns', ar: 'ليس ضمانًا لعوائد استثمارية' },
+    'mth.not5':         { en: 'Not a substitute for professional advice', ar: 'ليس بديلًا عن المشورة المهنية' },
+    'mth.not6':         { en: 'Not a prediction of future performance', ar: 'ليس تنبّؤًا بالأداء المستقبلي' },
+    'mth.final_h':      { en: 'Built for Informed Decision-Making', ar: 'مبنيّ من أجل قرارات مدروسة' },
+    'mth.final_t':      { en: 'AlphaCouncil exists to help GCC investors understand their portfolios more clearly. We provide the data, the analysis framework, and the multi-perspective synthesis. The decisions — and their outcomes — remain entirely yours.', ar: 'وُجد AlphaCouncil لمساعدة مستثمري الخليج على فهم محافظهم بوضوح أكبر. نوفّر البيانات وإطار التحليل والخلاصة متعدّدة المنظورات. أمّا القرارات — ونتائجها — فتبقى لك بالكامل.' },
+    'mth.explore':      { en: 'Explore Features', ar: 'استكشف المزايا' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
+    var heads = document.querySelectorAll('h2, h3, h4, .section-title');
+    function tagPair(text, key, nextKey) {
+      for (var i = 0; i < heads.length; i++) {
+        if (firstText(heads[i]) === text) { setKey(heads[i], key); if (nextKey) { var n = heads[i].nextElementSibling; if (n && n.tagName === 'P') setKey(n, nextKey); } return; }
+      }
+    }
+    [['Momentum', 'mth.d_momentum', 'mth.d_momentum_t'], ['Technicals', 'mth.d_technicals', 'mth.d_technicals_t'],
+     ['Live Sentiment', 'mth.live_sentiment', 'mth.live_sentiment_d'], ['Sentiment & News', 'mth.d_sentiment', 'mth.d_sentiment_t'],
+     ['Scores Are Relative, Not Absolute', 'mth.t_scores', 'mth.s_scores'],
+     ['Peer-Relative', 'mth.peer_relative', 'mth.peer_relative_t'], ['Historically-Grounded', 'mth.hist_grounded', 'mth.hist_grounded_t'],
+     ['One Input, Not The Decision', 'mth.one_input', 'mth.one_input_t'], ['Example Score Breakdown', 'mth.example_score', 'mth.example_score_t'],
+     ['The AI Analyst Council', 'mth.t_council2', 'mth.s_council2'],
+     ['Risk Analyst', 'mth.a_risk', 'mth.a_risk_t'], ['Valuation Analyst', 'mth.a_valuation', 'mth.a_valuation_t'],
+     ['Income Analyst', 'mth.a_income', 'mth.a_income_t'], ['Momentum Analyst', 'mth.a_momentum', 'mth.a_momentum_t'],
+     ['News Analyst', 'mth.a_news', 'mth.a_news_t'], ['Macro Analyst', 'mth.a_macro', 'mth.a_macro_t'],
+     ['Portfolio Strategist', 'mth.a_strategist', 'mth.a_strategist_t'], ['Structured Synthesis', 'mth.synthesis', 'mth.synthesis_t'],
+     ['How News Impact Is Scored', 'mth.t_newsclass', 'mth.s_newsclass'],
+     ['Direct vs. Indirect', 'mth.direct', 'mth.direct_t'], ['Sentiment Analysis', 'mth.sentiment_an', 'mth.sentiment_an_t'],
+     ['Source Credibility', 'mth.source_cred', 'mth.source_cred_t'],
+     ['Source-Linked Analysis', 'mth.t_sources', 'mth.s_sources'],
+     ['Traceable Sources', 'mth.traceable', 'mth.traceable_t'], ['Confidence Indicators', 'mth.confidence', 'mth.confidence_t'],
+     ['Data Freshness', 'mth.freshness', 'mth.freshness_t'],
+     ['Limitations & Boundaries', 'mth.t_limits', 'mth.s_limits'],
+     ['Data Lags', 'mth.data_lags', 'mth.data_lags_t'], ['Model Uncertainty', 'mth.model_unc', 'mth.model_unc_t'],
+     ['Coverage Limits', 'mth.coverage_limits', 'mth.coverage_limits_t'], ['No Execution', 'mth.no_exec', 'mth.no_exec_t'],
+     ['What AlphaCouncil Is Not', 'mth.not_title'], ['Built for Informed Decision-Making', 'mth.final_h', 'mth.final_t']
+    ].forEach(function (d) { tagPair(d[0], d[1], d[2]); });
+    var EYE = { 'Understanding Scores': 'mth.eye_scores', 'Multi-Perspective Analysis': 'mth.eye_council2', 'News Classification': 'mth.eye_newsclass', 'Data Integrity': 'mth.eye_integrity', 'Important Considerations': 'mth.eye_important' };
+    Array.prototype.forEach.call(document.querySelectorAll('.section-eyebrow'), function (el) { var k = EYE[firstText(el)]; if (k) setKey(el, k); });
+    var NOT = { 'Not licensed financial advice': 'mth.not1', 'Not a trading platform or broker': 'mth.not2', 'Not an asset manager or fund': 'mth.not3', 'Not a guarantee of investment returns': 'mth.not4', 'Not a substitute for professional advice': 'mth.not5', 'Not a prediction of future performance': 'mth.not6' };
+    Array.prototype.forEach.call(document.querySelectorAll('.not-item'), function (el) { var k = NOT[firstText(el)]; if (k) setKey(el, k); });
+    Array.prototype.forEach.call(document.querySelectorAll('.final-note a, a.btn'), function (el) { if (firstText(el) === 'Explore Features') setKey(el, 'mth.explore'); });
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
 </body>
 </html>

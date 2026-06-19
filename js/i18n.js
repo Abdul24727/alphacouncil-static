@@ -57,7 +57,11 @@
     'a11y.notifications':  { en: 'Notifications',     ar: 'الإشعارات' }
   };
 
+  // Seed from the saved choice at module load so any early apply() (e.g. a page's inline
+  // tagging script that runs before bootstrap) uses the user's language instead of clobbering
+  // localStorage back to 'en'. Empty/invalid → 'en' default (first-time visitors unaffected).
   var current = 'en';
+  try { var _saved = localStorage.getItem(STORAGE_KEY); if (_saved === 'ar' || _saved === 'en') current = _saved; } catch (e) {}
 
   function t(key, lang) {
     var l = lang || current;

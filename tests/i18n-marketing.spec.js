@@ -14,6 +14,42 @@ test.describe('O4 marketing — toggle injection + nav/content translation', () 
     { path: '/methodology.html', name: 'methodology', body: { sel: '.hero-title[data-i18n="mth.hero"]', ar: 'كيف نُنتج التحليل' } },
   ];
 
+  // Regression: a returning Arabic visitor (logged-out) must keep Arabic across a reload AND
+  // across navigation to another page. Previously the inline per-page tagging scripts called
+  // apply() with the default 'en' before bootstrap read localStorage, clobbering the saved
+  // choice back to English on every load. Seeding `current` from localStorage at module load
+  // fixed it. A first-time visitor (no stored choice) must still default to English.
+  test('language choice persists across reload and navigation (logged-out)', async ({ browser }) => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    const errs = [];
+    page.on('pageerror', (e) => errs.push(String(e)));
+
+    await page.goto('/methodology.html', { waitUntil: 'domcontentloaded' });
+    await page.locator('.lang-toggle button[data-lang="ar"]').click();
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+
+    // reload — must stay Arabic, and localStorage must not have been clobbered
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl', { timeout: 5000 });
+    expect(await page.evaluate(() => localStorage.getItem('ac.lang'))).toBe('ar');
+
+    // navigate to a different marketing page — must still be Arabic
+    await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl', { timeout: 5000 });
+
+    expect(errs, 'page errors:\n' + errs.join('\n')).toEqual([]);
+    await context.close();
+  });
+
+  test('first-time visitor (no stored choice) defaults to English', async ({ browser }) => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.goto('/methodology.html', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
+    await context.close();
+  });
+
   for (const pg of PAGES) {
     test(`${pg.name}: engine injects toggle; nav + content → Arabic + RTL; zero errors`, async ({ browser }) => {
       const context = await browser.newContext();

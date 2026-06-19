@@ -83,12 +83,9 @@ key. (Each page's Arabic lives in its own `AC_I18N.add({…})` block at the bott
 | features.html | ✅ live (a26724a) | hero, 9 section headers, 4 feature headlines + leads (demo mockups left as illustrative) |
 | pricing.html | ✅ live (cc77cb1) | hero, billing toggle, 3 section headers, 6 FAQ questions (plan matrix is numeric) |
 | markets.html | ✅ live (51dcc68) | hero, 4 stat labels, 2 sections, 6 country names, per-card stat labels |
-| methodology.html | ✅ live (6b41853) | hero, framework intro, **9 fundamental scoring dimensions** + descriptions |
+| methodology.html | ✅ live (fully translated) | hero, framework, **all 12 scoring dimensions** (9 fundamental + Momentum/Technicals/Sentiment), Understanding-Scores section + 3 cards, **AI Analyst Council** + all 7 analyst roles, News Classification, Source-Linked Analysis, **Limitations & Boundaries** + "What AlphaCouncil Is Not", final note |
 
-**Two honest gaps to confirm:**
-- **methodology.html** — the *timing/sentiment* dimensions (Technicals, Momentum, …) and the
-  lower "sources / update frequency / limitations" prose are **not yet** translated (the core
-  framework + 9 fundamental dimensions are). Tell me if you want those done too.
+**One honest gap to confirm:**
 - **legal.html** — **intentionally left English.** It's template Terms/Privacy/Disclaimer
   already pending legal counsel; an unreviewed machine-translated Arabic *legal agreement* is a
   liability. Translate the lawyer-finalised version with a **certified** translator, not here.
