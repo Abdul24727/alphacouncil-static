@@ -2141,6 +2141,50 @@
   <script src="js/i18n.js"></script>
   <script src="adviser-core.js"></script>
   <script>
+  // O4: scenarios chrome (the scenario eval routes to the real adviser; results are dynamic).
+  AC_I18N.add({
+    'sc.title':           { en: 'Portfolio Scenarios', ar: 'سيناريوهات المحفظة' },
+    'sc.subtitle':        { en: 'Simulate changes and see the impact before executing any trades', ar: 'حاكِ التغييرات وشاهد الأثر قبل تنفيذ أي صفقات' },
+    'sc.builder_title':   { en: 'Define Scenario: Reduce Banking Concentration', ar: 'حدّد السيناريو: تقليل تركّز البنوك' },
+    'sc.mode_natural':    { en: 'Natural Language', ar: 'لغة طبيعية' },
+    'sc.mode_structured': { en: 'Structured Trades', ar: 'صفقات منظّمة' },
+    'sc.analyze':         { en: 'Analyze', ar: 'تحليل' },
+    'sc.sug1':            { en: 'Reduce sector concentration', ar: 'تقليل التركّز القطاعي' },
+    'sc.sug2':            { en: 'Increase dividend yield', ar: 'زيادة عائد التوزيعات' },
+    'sc.sug3':            { en: 'Lower portfolio risk', ar: 'خفض مخاطر المحفظة' },
+    'sc.sug4':            { en: 'Geographic diversification', ar: 'تنويع جغرافي' },
+    'sc.sug5':            { en: 'Add growth exposure', ar: 'إضافة تعرّض للنمو' },
+    'sc.sell':            { en: 'Sell', ar: 'بيع' },
+    'sc.buy':             { en: 'Buy', ar: 'شراء' },
+    'sc.adviser':         { en: 'Adviser', ar: 'المستشار' },
+    'sc.online':          { en: 'Online', ar: 'متصل' },
+    'sc.ph_scenario':     { en: 'Describe your scenario in plain English...', ar: 'صف السيناريو بلغة بسيطة...' },
+    'sc.ph_chat':         { en: 'Ask about scenarios or impacts...', ar: 'اسأل عن السيناريوهات أو الآثار...' },
+    'sc.ph_name':         { en: 'e.g., Q3 Rebalancing Strategy', ar: 'مثال: استراتيجية إعادة التوازن للربع الثالث' },
+    'sc.ph_desc':         { en: 'Describe what you want to simulate...', ar: 'صف ما تريد محاكاته...' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
+    var MAP = {
+      'Portfolio Scenarios': 'sc.title', 'Define Scenario: Reduce Banking Concentration': 'sc.builder_title',
+      'Natural Language': 'sc.mode_natural', 'Structured Trades': 'sc.mode_structured', 'Analyze': 'sc.analyze',
+      'Reduce sector concentration': 'sc.sug1', 'Increase dividend yield': 'sc.sug2', 'Lower portfolio risk': 'sc.sug3',
+      'Geographic diversification': 'sc.sug4', 'Add growth exposure': 'sc.sug5', 'Sell': 'sc.sell', 'Buy': 'sc.buy',
+      'Adviser': 'sc.adviser', 'Online': 'sc.online'
+    };
+    Array.prototype.forEach.call(document.querySelectorAll('h1, .builder-title, .mode-btn, .nl-input-actions button, .nl-suggestion, .trade-action option, .sidebar-title h3, .sidebar-title p'), function (el) {
+      var k = MAP[firstText(el)]; if (k) setKey(el, k);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('p'), function (el) { if ((el.textContent || '').trim() === 'Simulate changes and see the impact before executing any trades') setKey(el, 'sc.subtitle'); });
+    var si = document.getElementById('scenarioInput'); if (si) si.setAttribute('data-i18n-attr', 'placeholder:sc.ph_scenario');
+    var ci = document.getElementById('chatInput'); if (ci) ci.setAttribute('data-i18n-attr', 'placeholder:sc.ph_chat');
+    var sn = document.getElementById('scenarioName'); if (sn) sn.setAttribute('data-i18n-attr', 'placeholder:sc.ph_name');
+    var sd = document.getElementById('scenarioDesc'); if (sd) sd.setAttribute('data-i18n-attr', 'placeholder:sc.ph_desc');
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
+  <script>
     // Initialize AlphaCouncil
     document.addEventListener('DOMContentLoaded', () => {
       if (typeof AlphaCouncil !== 'undefined') {
