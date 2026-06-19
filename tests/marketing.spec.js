@@ -54,3 +54,53 @@ test.describe('M2 — index testimonials + ticker strip', () => {
     await expect(page.locator('.ticker-strip')).toBeHidden({ timeout: 6000 });
   });
 });
+
+// M3 — markets.html real coverage: per-market counts + sectors live from /api/screening;
+// invented counts/market-caps gone; "real-time" OHLCV claim corrected to end-of-day.
+test.describe('M3 — markets.html real coverage', () => {
+  test('per-market counts + sectors are live from /api/screening; no invented figures', async ({ page }) => {
+    const errs = [];
+    page.on('pageerror', (e) => errs.push(String(e)));
+    await page.route('**/api/screening**', (route) => route.fulfill({
+      status: 200, contentType: 'application/json',
+      body: JSON.stringify({ meta: {}, data: [
+        { exchange: 'TADAWUL', sector_en: 'Banks' },
+        { exchange: 'TADAWUL', sector_en: 'Energy' },
+        { exchange: 'TADAWUL', sector_en: 'Banks' },
+        { exchange: 'ADX', sector_en: 'Real Estate' },
+        { exchange: 'DFM', sector_en: 'Real Estate' },
+        { exchange: 'DFM', sector_en: 'Utilities' },
+      ] }),
+    }));
+    await page.goto('/markets.html', { waitUntil: 'domcontentloaded' });
+
+    const saudi = page.locator('#saudi .market-stat-value');
+    await expect(saudi.nth(0)).toHaveText('3', { timeout: 6000 });   // 3 TADAWUL rows
+    await expect(saudi.nth(1)).toHaveText('2');                       // {Banks, Energy}
+    const uae = page.locator('#uae .market-stat-value');
+    await expect(uae.nth(0)).toHaveText('3');                        // ADX(1) + DFM(2)
+    await expect(uae.nth(1)).toHaveText('2');                        // {Real Estate, Utilities} deduped across ADX+DFM
+
+    const html = await page.content();
+    expect(html, 'invented Saudi count "280+" gone').not.toContain('280+');
+    expect(html, 'invented Saudi cap "$2.8T" gone').not.toContain('$2.8T');
+    expect(html, '"Market Cap" label replaced by "Sectors"').not.toContain('Market Cap');
+    expect(html, 'OHLCV no longer claims real-time').not.toContain('Real-time and 15+');
+    expect(html, 'OHLCV corrected to end-of-day').toContain('End-of-day and 15+');
+    expect(errs, 'no page errors:\n' + errs.join('\n')).toEqual([]);
+  });
+
+  test('cards show "—" (no fake) when the screening API fails', async ({ page }) => {
+    await page.route('**/api/screening**', (route) => route.fulfill({ status: 500, contentType: 'application/json', body: '{}' }));
+    await page.goto('/markets.html', { waitUntil: 'domcontentloaded' });
+    const saudi = page.locator('#saudi .market-stat-value');
+    await expect(saudi.nth(0)).toHaveText('—', { timeout: 6000 });
+    await expect(saudi.nth(1)).toHaveText('—');
+  });
+
+  test('live page renders real numeric counts (not the old "NNN+")', async ({ page }) => {
+    await page.goto('/markets.html', { waitUntil: 'domcontentloaded' });
+    const saudi = page.locator('#saudi .market-stat-value').first();
+    await expect(saudi).toHaveText(/^\d+$/, { timeout: 8000 });   // a real integer, not "280+" / "$2.8T"
+  });
+});

@@ -492,7 +492,7 @@
             </div>
             <div class="market-stat">
               <div class="market-stat-value">$2.8T</div>
-              <div class="market-stat-label">Market Cap</div>
+              <div class="market-stat-label">Sectors</div>
             </div>
           </div>
           <div class="market-strengths">
@@ -528,7 +528,7 @@
             </div>
             <div class="market-stat">
               <div class="market-stat-value">$850B</div>
-              <div class="market-stat-label">Market Cap</div>
+              <div class="market-stat-label">Sectors</div>
             </div>
           </div>
           <div class="market-strengths">
@@ -563,7 +563,7 @@
             </div>
             <div class="market-stat">
               <div class="market-stat-value">$170B</div>
-              <div class="market-stat-label">Market Cap</div>
+              <div class="market-stat-label">Sectors</div>
             </div>
           </div>
           <div class="market-strengths">
@@ -598,7 +598,7 @@
             </div>
             <div class="market-stat">
               <div class="market-stat-value">$140B</div>
-              <div class="market-stat-label">Market Cap</div>
+              <div class="market-stat-label">Sectors</div>
             </div>
           </div>
           <div class="market-strengths">
@@ -616,7 +616,7 @@
         </div>
 
         <!-- Bahrain -->
-        <div class="market-card reveal stagger-5">
+        <div class="market-card reveal stagger-5" id="bahrain">
           <div class="market-header">
             <div class="market-flag">🇧🇭</div>
             <div class="market-info">
@@ -633,7 +633,7 @@
             </div>
             <div class="market-stat">
               <div class="market-stat-value">$28B</div>
-              <div class="market-stat-label">Market Cap</div>
+              <div class="market-stat-label">Sectors</div>
             </div>
           </div>
           <div class="market-strengths">
@@ -651,7 +651,7 @@
         </div>
 
         <!-- Oman -->
-        <div class="market-card reveal stagger-6">
+        <div class="market-card reveal stagger-6" id="oman">
           <div class="market-header">
             <div class="market-flag">🇴🇲</div>
             <div class="market-info">
@@ -668,7 +668,7 @@
             </div>
             <div class="market-stat">
               <div class="market-stat-value">$22B</div>
-              <div class="market-stat-label">Market Cap</div>
+              <div class="market-stat-label">Sectors</div>
             </div>
           </div>
           <div class="market-strengths">
@@ -703,7 +703,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>
           </div>
           <h4>Price Data</h4>
-          <p>Real-time and 15+ years historical OHLCV across all exchanges with corporate action adjustments.</p>
+          <p>End-of-day and 15+ years historical OHLCV across all exchanges with corporate action adjustments.</p>
         </div>
         <div class="depth-card reveal stagger-2">
           <div class="depth-icon">
@@ -953,6 +953,40 @@
       nav.classList.toggle('scrolled', window.scrollY > 20);
     });
   </script>
+  <script>
+  // M3: live per-market coverage from /api/screening — real covered counts + distinct
+  // sectors. Blanks the placeholder figures first so no invented number is ever shown
+  // if the API is unreachable (no fake fallback).
+  (function(){
+    var MAP = [
+      { id: 'saudi',   ex: ['TADAWUL'] },
+      { id: 'uae',     ex: ['ADX', 'DFM'] },
+      { id: 'qatar',   ex: ['QSE'] },
+      { id: 'kuwait',  ex: ['KSE'] },
+      { id: 'bahrain', ex: ['BSE'] },
+      { id: 'oman',    ex: ['MSM'] }
+    ];
+    function vals(id){ var c = document.getElementById(id); return c ? c.querySelectorAll('.market-stat-value') : []; }
+    MAP.forEach(function(m){ var v = vals(m.id); if(v[0]) v[0].textContent = '—'; if(v[1]) v[1].textContent = '—'; });
+    fetch('/api/screening?limit=1000').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
+      var rows = (d && d.data) || [];
+      var cnt = {}, secs = {};
+      rows.forEach(function(r){
+        var ex = r.exchange; if(!ex) return;
+        cnt[ex] = (cnt[ex] || 0) + 1;
+        if(r.sector_en){ (secs[ex] = secs[ex] || {})[r.sector_en] = 1; }
+      });
+      MAP.forEach(function(m){
+        var n = 0, sset = {};
+        m.ex.forEach(function(e){ n += (cnt[e] || 0); Object.keys(secs[e] || {}).forEach(function(s){ sset[s] = 1; }); });
+        var v = vals(m.id), ns = Object.keys(sset).length;
+        if(v[0]) v[0].textContent = n ? String(n) : '—';
+        if(v[1]) v[1].textContent = ns ? String(ns) : '—';
+      });
+    }).catch(function(){ /* leave the em-dashes; never show invented figures */ });
+  })();
+  </script>
+
   <script>/* brand logo -> dashboard when signed in (ac_csrf cookie present), else index */
   (function(){try{if(document.cookie.indexOf('ac_csrf=')>-1){var e=document.querySelectorAll('.nav-logo,.ac-flogo');for(var i=0;i<e.length;i++)e[i].setAttribute('href','dashboard.html');}}catch(x){}})();</script>
 </body>
