@@ -104,3 +104,15 @@ test.describe('M3 — markets.html real coverage', () => {
     await expect(saudi).toHaveText(/^\d+$/, { timeout: 8000 });   // a real integer, not "280+" / "$2.8T"
   });
 });
+
+// M5 — legal.html is a non-engineering gap (pending counsel); assert the honest
+// disclaimer + not-licensed-adviser language + the counsel-review flag are present.
+test.describe('M5 — legal disclaimer present (tracked non-eng gap)', () => {
+  test('disclaimer, not-licensed-adviser, and counsel-review flag are all present', async ({ page }) => {
+    await page.goto('/legal.html', { waitUntil: 'domcontentloaded' });
+    const html = await page.content();
+    expect(html, 'disclaimer section present').toContain('id="disclaimer"');
+    expect(html, 'honest "not a licensed financial adviser" statement').toContain('not a licensed financial adviser');
+    expect(html, 'counsel-review flag present').toContain('pending final review by qualified legal counsel');
+  });
+});
