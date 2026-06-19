@@ -1074,5 +1074,57 @@
   </script>
   <script>/* brand logo -> dashboard when signed in (ac_csrf cookie present), else index */
   (function(){try{if(document.cookie.indexOf('ac_csrf=')>-1){var e=document.querySelectorAll('.nav-logo,.ac-flogo');for(var i=0;i<e.length;i++)e[i].setAttribute('href','dashboard.html');}}catch(x){}})();</script>
+  <script src="js/i18n.js"></script>
+  <script>
+  // O4 (marketing): methodology.html — engine handles nav+toggle; this tags the hero, the
+  // framework intro, and the 9 fundamental scoring dimensions (the core reference).
+  AC_I18N.add({
+    'mth.hero':       { en: 'How We Generate Analysis', ar: 'كيف نُنتج التحليل' },
+    'mth.hero_sub':   { en: 'AlphaCouncil provides data-driven market analysis and educational insights for GCC investors. This page explains our methodology — how we score stocks, synthesize perspectives, and present information. Transparency builds trust.', ar: 'يقدّم AlphaCouncil تحليلًا للسوق قائمًا على البيانات ورؤى تعليمية لمستثمري الخليج. تشرح هذه الصفحة منهجيتنا — كيف نقيّم الأسهم ونجمع وجهات النظر ونعرض المعلومات. الشفافية تبني الثقة.' },
+    'mth.eye_framework':{ en: 'Stock Thesis Framework', ar: 'إطار أطروحة السهم' },
+    'mth.t_framework':{ en: 'The 12-Dimension Analysis', ar: 'التحليل ذو الـ١٢ بُعدًا' },
+    'mth.s_framework':{ en: 'Every stock is distilled into 12 calibrated scores (1–10, higher = better). The dimensions are grouped by time horizon — separating "is this a good company?" from "is this a good moment?" — with a sentiment layer reading the current narrative.', ar: 'يُختزل كل سهم في ١٢ تقييمًا مُعايَرًا (١–١٠، الأعلى أفضل). تُجمَّع الأبعاد حسب الأفق الزمني — فاصلةً بين «هل هذه شركة جيدة؟» و«هل هذا توقيت جيد؟» — مع طبقة معنويات تقرأ السردية الحالية.' },
+    'mth.lt_view':    { en: '6-Month to 5-Year View', ar: 'أفق من ٦ أشهر إلى ٥ سنوات' },
+    'mth.lt_desc':    { en: '9 dimensions assessing long-term company quality and fundamental merit', ar: '٩ أبعاد تقيّم جودة الشركة على المدى الطويل والجدارة الأساسية' },
+    'mth.d_valuation':{ en: 'Valuation', ar: 'التقييم' },
+    'mth.d_valuation_t':{ en: "How reasonably priced the stock is — P/E, P/B, EV/EBITDA and other multiples versus peers and the stock's own history.", ar: 'مدى معقولية سعر السهم — مكرّر الربحية ومكرّر القيمة الدفترية وEV/EBITDA ومضاعفات أخرى مقابل الأقران وتاريخ السهم نفسه.' },
+    'mth.d_growth':   { en: 'Growth', ar: 'النمو' },
+    'mth.d_growth_t': { en: 'Top-line and bottom-line growth potential — the trajectory of revenue and earnings and how durable it is.', ar: 'إمكانات نمو الإيرادات وصافي الأرباح — مسار الإيرادات والأرباح ومدى استدامته.' },
+    'mth.d_profit':   { en: 'Profitability', ar: 'الربحية' },
+    'mth.d_profit_t': { en: 'How efficiently and consistently the company turns revenue into profit — margins, ROE, ROA and earnings quality.', ar: 'مدى كفاءة الشركة واتساقها في تحويل الإيرادات إلى ربح — الهوامش والعائد على حقوق الملكية والعائد على الأصول وجودة الأرباح.' },
+    'mth.d_quality':  { en: 'Quality', ar: 'الجودة' },
+    'mth.d_quality_t':{ en: 'Strength of the business model and balance sheet — competitive moat, durability and financial resilience.', ar: 'قوة نموذج العمل والميزانية — الخندق التنافسي والمتانة والمرونة المالية.' },
+    'mth.d_dividends':{ en: 'Dividends', ar: 'التوزيعات' },
+    'mth.d_dividends_t':{ en: 'Dividend reliability and income generation — yield, track record and the sustainability of the payout.', ar: 'موثوقية التوزيعات وتوليد الدخل — العائد والسجل واستدامة التوزيع.' },
+    'mth.d_ownership':{ en: 'Ownership', ar: 'الملكية' },
+    'mth.d_ownership_t':{ en: 'Alignment and stability of the major shareholders — institutional, insider and strategic holders.', ar: 'توافق واستقرار كبار المساهمين — المؤسّسات والداخليون والمالكون الاستراتيجيون.' },
+    'mth.d_governance':{ en: 'Governance', ar: 'الحوكمة' },
+    'mth.d_governance_t':{ en: 'Corporate-governance standards and shareholder protection — board quality, transparency and alignment.', ar: 'معايير حوكمة الشركات وحماية المساهمين — جودة المجلس والشفافية والتوافق.' },
+    'mth.d_esg':      { en: 'ESG', ar: 'البيئة والمجتمع والحوكمة' },
+    'mth.d_esg_t':    { en: 'Sustainability and responsible business practices across environmental, social and governance factors.', ar: 'الاستدامة وممارسات الأعمال المسؤولة عبر العوامل البيئية والاجتماعية والحوكمية.' },
+    'mth.d_macro':    { en: 'Macro', ar: 'الاقتصاد الكلّي' },
+    'mth.d_macro_t':  { en: 'Sensitivity to external shocks — exposure to interest rates, oil prices, geopolitics and regional liquidity.', ar: 'الحساسية للصدمات الخارجية — التعرّض لأسعار الفائدة والنفط والجيوسياسة والسيولة الإقليمية.' },
+    'mth.st_view':    { en: 'Days to 3-Month View', ar: 'أفق من أيام إلى ٣ أشهر' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
+    var heads = document.querySelectorAll('h2, h3, .section-title');
+    function tagPair(text, key, nextKey) {
+      for (var i = 0; i < heads.length; i++) {
+        if (firstText(heads[i]) === text) { setKey(heads[i], key); if (nextKey) { var n = heads[i].nextElementSibling; if (n && n.tagName === 'P') setKey(n, nextKey); } return; }
+      }
+    }
+    setKey(document.querySelector('.hero-title'), 'mth.hero');
+    setKey(document.querySelector('.hero-subtitle'), 'mth.hero_sub');
+    tagPair('The 12-Dimension Analysis', 'mth.t_framework', 'mth.s_framework');
+    tagPair('6-Month to 5-Year View', 'mth.lt_view', 'mth.lt_desc');
+    tagPair('Days to 3-Month View', 'mth.st_view');
+    [['Valuation', 'mth.d_valuation', 'mth.d_valuation_t'], ['Growth', 'mth.d_growth', 'mth.d_growth_t'], ['Profitability', 'mth.d_profit', 'mth.d_profit_t'], ['Quality', 'mth.d_quality', 'mth.d_quality_t'], ['Dividends', 'mth.d_dividends', 'mth.d_dividends_t'], ['Ownership', 'mth.d_ownership', 'mth.d_ownership_t'], ['Governance', 'mth.d_governance', 'mth.d_governance_t'], ['ESG', 'mth.d_esg', 'mth.d_esg_t'], ['Macro', 'mth.d_macro', 'mth.d_macro_t']].forEach(function (d) { tagPair(d[0], d[1], d[2]); });
+    var EYE = { 'Stock Thesis Framework': 'mth.eye_framework' };
+    Array.prototype.forEach.call(document.querySelectorAll('.section-eyebrow'), function (el) { var k = EYE[firstText(el)]; if (k) setKey(el, k); });
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
 </body>
 </html>
