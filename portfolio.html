@@ -1977,6 +1977,60 @@
   <script src="js/i18n.js"></script>
   <script src="adviser-core.js"></script>
   <script>
+  // O4: portfolio body strings (EN source + AR) + programmatic tagging.
+  AC_I18N.add({
+    'port.subtitle':         { en: 'Manage holdings, track performance, and run deep analysis', ar: 'أدِر المراكز، وتتبّع الأداء، وشغّل تحليلًا معمّقًا' },
+    'port.m_value':          { en: 'Total Portfolio Value', ar: 'إجمالي قيمة المحفظة' },
+    'port.m_cost':           { en: 'Total Cost', ar: 'إجمالي التكلفة' },
+    'port.m_pnl':            { en: 'Unrealized P&L', ar: 'الربح/الخسارة غير المحققة' },
+    'port.m_yield':          { en: 'Portfolio Yield (TTM)', ar: 'عائد المحفظة (آخر ١٢ شهرًا)' },
+    'port.m_holdings':       { en: 'Holdings', ar: 'المراكز' },
+    'port.m_risk':           { en: 'Risk Score', ar: 'درجة المخاطر' },
+    'port.th_holding':       { en: 'Holding', ar: 'المركز' },
+    'port.th_weight':        { en: 'Weight', ar: 'الوزن' },
+    'port.th_value':         { en: 'Value', ar: 'القيمة' },
+    'port.th_pnl':           { en: 'P&L', ar: 'الربح/الخسارة' },
+    'port.th_thesis':        { en: 'Thesis Score', ar: 'درجة الأطروحة' },
+    'port.th_stock':         { en: 'Stock', ar: 'السهم' },
+    'port.th_price':         { en: 'Price', ar: 'السعر' },
+    'port.th_day':           { en: 'Day', ar: 'اليوم' },
+    'port.holdings_overview':{ en: 'Holdings Overview', ar: 'نظرة عامة على المراكز' },
+    'port.commentary':       { en: 'Portfolio Commentary', ar: 'تعليق على المحفظة' },
+    'port.council':          { en: 'AI Analyst Council', ar: 'مجلس المحلّلين الذكي' },
+    'port.alerts':           { en: 'Intelligent Alerts', ar: 'تنبيهات ذكية' },
+    'port.news':             { en: 'News for Your Holdings', ar: 'أخبار مراكزك' },
+    'port.sector_alloc':     { en: 'Sector Allocation', ar: 'التوزيع القطاعي' },
+    'port.country_alloc':    { en: 'Country Allocation', ar: 'التوزيع الجغرافي' },
+    'port.export_csv':       { en: 'Export CSV', ar: 'تصدير CSV' },
+    'port.add_holding':      { en: 'Add Holding', ar: 'إضافة مركز' },
+    'port.import_holdings':  { en: 'Import Holdings', ar: 'استيراد المراكز' },
+    'port.council_review':   { en: 'AI Analyst Council Review', ar: 'مراجعة مجلس المحلّلين الذكي' },
+    'port.adjust_position':  { en: 'Adjust Position', ar: 'تعديل المركز' }
+  });
+  (function () {
+    var MAP = {
+      'Total Portfolio Value': 'port.m_value', 'Total Cost': 'port.m_cost', 'Unrealized P&L': 'port.m_pnl',
+      'Portfolio Yield (TTM)': 'port.m_yield', 'Holdings': 'port.m_holdings', 'Risk Score': 'port.m_risk',
+      'Holding': 'port.th_holding', 'Weight': 'port.th_weight', 'Value': 'port.th_value', 'P&L': 'port.th_pnl',
+      'Thesis Score': 'port.th_thesis', 'Stock': 'port.th_stock', 'Price': 'port.th_price', 'Day': 'port.th_day',
+      'Holdings Overview': 'port.holdings_overview', 'Portfolio Commentary': 'port.commentary',
+      'AI Analyst Council': 'port.council', 'Intelligent Alerts': 'port.alerts', 'News for Your Holdings': 'port.news',
+      'Sector Allocation': 'port.sector_alloc', 'Country Allocation': 'port.country_alloc',
+      'Export CSV': 'port.export_csv', 'Add Holding': 'port.add_holding', 'Import Holdings': 'port.import_holdings',
+      'AI Analyst Council Review': 'port.council_review', 'Adjust Position': 'port.adjust_position',
+      'Watchlist': 'nav.watchlist', 'View all': 'common.view_all'
+    };
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    Array.prototype.forEach.call(document.querySelectorAll('.metric-label, .card-title, .allocation-title, th, .modal-title h2, .card-action'), function (el) {
+      var k = MAP[(el.textContent || '').trim()]; if (k) setKey(el, k);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.page-header p, .portfolio-subtitle, p'), function (el) {
+      if ((el.textContent || '').trim() === 'Manage holdings, track performance, and run deep analysis') setKey(el, 'port.subtitle');
+    });
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
+  <script>
     // Initialize AlphaCouncil for portfolio page
     document.addEventListener('DOMContentLoaded', () => {
       AlphaCouncil.init('portfolio');

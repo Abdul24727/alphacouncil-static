@@ -64,7 +64,7 @@ test.describe('O4 — i18n shared chrome rolled out across app pages', () => {
   test.skip(!QA_EMAIL || !QA_PASSWORD, 'QA creds not set in .env.test');
 
   const PAGES = [
-    { path: '/portfolio.html',        name: 'portfolio' },
+    { path: '/portfolio.html',        name: 'portfolio', body: { sel: '.card-title[data-i18n="port.holdings_overview"]', ar: 'نظرة عامة على المراكز' } },
     { path: '/news.html',             name: 'news' },
     { path: '/settings.html',         name: 'settings' },
     { path: '/alerts.html',           name: 'alerts' },
@@ -90,6 +90,7 @@ test.describe('O4 — i18n shared chrome rolled out across app pages', () => {
       await page.locator('.lang-toggle button[data-lang="ar"]').click();
       await expect(dash).toHaveText('لوحة التحكم', { timeout: 4000 });
       await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+      if (pg.body) await expect(page.locator(pg.body.sel).first()).toContainText(pg.body.ar);
       await shot(page, `o4-${pg.name}-ar`);
 
       expect(diag.pageErrors, pg.name + ' page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
