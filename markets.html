@@ -989,5 +989,54 @@
 
   <script>/* brand logo -> dashboard when signed in (ac_csrf cookie present), else index */
   (function(){try{if(document.cookie.indexOf('ac_csrf=')>-1){var e=document.querySelectorAll('.nav-logo,.ac-flogo');for(var i=0;i<e.length;i++)e[i].setAttribute('href','dashboard.html');}}catch(x){}})();</script>
+  <script src="js/i18n.js"></script>
+  <script>
+  // O4 (marketing): markets.html — engine handles nav+toggle; this tags hero + sections +
+  // country names + per-card stat labels. (Per-market counts/sectors are live from /api/screening.)
+  AC_I18N.add({
+    'mk.hero':        { en: 'Built for the Gulf Markets. Not Adapted. Native.', ar: 'مبنيّ لأسواق الخليج. ليس مُكيَّفًا. أصيل.' },
+    'mk.hero_sub':    { en: "AlphaCouncil isn't a global platform with a regional filter. It's purpose-built around the structure, disclosures, dynamics, and realities of GCC capital markets — oil sensitivity, family business governance, dividend culture, Arabic filings, and the regulatory nuances that shape real portfolio decisions.", ar: 'AlphaCouncil ليس منصّة عالمية بمرشّح إقليمي. إنه مبنيّ خصّيصًا حول بنية أسواق رأس المال الخليجية وإفصاحاتها وديناميكياتها وواقعها — حساسية النفط وحوكمة الشركات العائلية وثقافة التوزيعات والإفصاحات بالعربية والدقائق التنظيمية التي تشكّل قرارات المحفظة الحقيقية.' },
+    'mk.stat_markets':{ en: 'GCC Markets', ar: 'أسواق خليجية' },
+    'mk.stat_stocks': { en: 'Stocks Covered', ar: 'أسهم مغطّاة' },
+    'mk.stat_years':  { en: 'Years Historical Data', ar: 'سنوات بيانات تاريخية' },
+    'mk.stat_bilingual':{ en: 'Bilingual Coverage', ar: 'تغطية ثنائية اللغة' },
+    'mk.eye_why':     { en: 'Why GCC-Native Matters', ar: 'لماذا يهمّ أن يكون خليجيًّا أصيلًا' },
+    'mk.h_why':       { en: 'Generic global platforms miss what drives returns in the Gulf.', ar: 'تُغفل المنصّات العالمية العامة ما يحرّك العوائد في الخليج.' },
+    'mk.s_why':       { en: "GCC markets operate on different fundamentals. Oil price movements trigger sector rotations that don't exist elsewhere. Family-controlled conglomerates require ownership analysis that standard screeners ignore. Dividend yields often exceed 6%, making income tracking essential. And critical filings arrive in Arabic first — sometimes only in Arabic.", ar: 'تعمل أسواق الخليج وفق أساسيات مختلفة. تُطلق تحرّكات أسعار النفط دورات قطاعية لا وجود لها في أماكن أخرى. وتتطلّب التكتّلات العائلية تحليل ملكية تتجاهله أدوات الفرز القياسية. وكثيرًا ما تتجاوز عوائد التوزيعات 6%، ما يجعل تتبّع الدخل ضروريًّا. كما تصل الإفصاحات المهمّة بالعربية أولًا — وأحيانًا بالعربية فقط.' },
+    'mk.eye_coverage':{ en: 'Complete GCC Coverage', ar: 'تغطية خليجية كاملة' },
+    'mk.t_coverage':  { en: 'Six Markets. One Unified View.', ar: 'ستة أسواق. عرض واحد موحّد.' },
+    'mk.s_coverage':  { en: 'Deep, institutional-grade coverage across every GCC exchange — each with its own market structure, regulatory framework, and investment characteristics.', ar: 'تغطية عميقة بمستوى مؤسّسي عبر كل بورصة خليجية — لكلٍّ بنية سوقها وإطارها التنظيمي وخصائصها الاستثمارية.' },
+    'mk.c_saudi':     { en: 'Saudi Arabia', ar: 'السعودية' },
+    'mk.c_uae':       { en: 'United Arab Emirates', ar: 'الإمارات العربية المتحدة' },
+    'mk.c_qatar':     { en: 'Qatar', ar: 'قطر' },
+    'mk.c_kuwait':    { en: 'Kuwait', ar: 'الكويت' },
+    'mk.c_bahrain':   { en: 'Bahrain', ar: 'البحرين' },
+    'mk.c_oman':      { en: 'Oman', ar: 'عُمان' },
+    'mk.instruments': { en: 'Instruments', ar: 'الأدوات' },
+    'mk.sectors':     { en: 'Sectors', ar: 'القطاعات' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
+    var heads = document.querySelectorAll('h2, h3, .section-title');
+    function tagPair(text, key, nextKey) {
+      for (var i = 0; i < heads.length; i++) {
+        if (firstText(heads[i]) === text) { setKey(heads[i], key); if (nextKey) { var n = heads[i].nextElementSibling; if (n && n.tagName === 'P') setKey(n, nextKey); } return; }
+      }
+    }
+    setKey(document.querySelector('.hero-title'), 'mk.hero');
+    setKey(document.querySelector('.hero-subtitle'), 'mk.hero_sub');
+    tagPair('Generic global platforms miss what drives returns in the Gulf.', 'mk.h_why', 'mk.s_why');
+    tagPair('Six Markets. One Unified View.', 'mk.t_coverage', 'mk.s_coverage');
+    var MAP = {
+      'GCC Markets': 'mk.stat_markets', 'Stocks Covered': 'mk.stat_stocks', 'Years Historical Data': 'mk.stat_years', 'Bilingual Coverage': 'mk.stat_bilingual',
+      'Why GCC-Native Matters': 'mk.eye_why', 'Complete GCC Coverage': 'mk.eye_coverage',
+      'Saudi Arabia': 'mk.c_saudi', 'United Arab Emirates': 'mk.c_uae', 'Qatar': 'mk.c_qatar', 'Kuwait': 'mk.c_kuwait', 'Bahrain': 'mk.c_bahrain', 'Oman': 'mk.c_oman',
+      'Instruments': 'mk.instruments', 'Sectors': 'mk.sectors'
+    };
+    Array.prototype.forEach.call(document.querySelectorAll('.section-eyebrow, .hero-stat-label, .market-info h3, .market-stat-label'), function (el) { var k = MAP[firstText(el)]; if (k) setKey(el, k); });
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
 </body>
 </html>
