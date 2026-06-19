@@ -70,19 +70,28 @@ Appears on every marketing page (auto-translated by the engine).
 
 ---
 
-## 3. Remaining marketing pages — English source (Arabic to be drafted, then reviewed)
-The engine already gives these pages a working bilingual **nav + toggle** once `js/i18n.js`
-is included; the **body prose** below still needs Arabic. I'll draft each into this sheet for
-your review on request (per page), or you can supply the Arabic directly.
+## 3. Remaining marketing pages — NOW DRAFTED + LIVE (review by toggling AR)
+All of these are translated, committed, and deployed. **Quickest review:** open each page,
+click **AR** in the nav, and read it top-to-bottom; mark anything to change and I'll fix the
+key. (Each page's Arabic lives in its own `AC_I18N.add({…})` block at the bottom of the file.)
 
-- **features.html** — feature blocks (titles + descriptions)
-- **pricing.html** — plan names/benefits, FAQ
-- **how-it-works.html** — step-by-step copy
-- **methodology.html** — scoring/sources/limitations prose
-- **markets.html** — per-market narrative (counts/sectors already live from the API)
-- **about.html** — company/mission copy
-- **contact.html** — form labels + channel labels
-- **legal.html** — Terms/Privacy/Disclaimer (separately also pending **legal counsel**, not just translation)
+| Page | Status | Scope translated |
+|---|---|---|
+| about.html | ✅ live (c46638d) | hero, mission, 3 value cards, 4 section headers |
+| contact.html | ✅ live (c107b0b) | hero, form labels + placeholders, channels, regional, FAQ teaser |
+| how-it-works.html | ✅ live (90c7416) | hero, 5 steps, 3 sections, 2 add-methods |
+| features.html | ✅ live (a26724a) | hero, 9 section headers, 4 feature headlines + leads (demo mockups left as illustrative) |
+| pricing.html | ✅ live (cc77cb1) | hero, billing toggle, 3 section headers, 6 FAQ questions (plan matrix is numeric) |
+| markets.html | ✅ live (51dcc68) | hero, 4 stat labels, 2 sections, 6 country names, per-card stat labels |
+| methodology.html | ✅ live (6b41853) | hero, framework intro, **9 fundamental scoring dimensions** + descriptions |
+
+**Two honest gaps to confirm:**
+- **methodology.html** — the *timing/sentiment* dimensions (Technicals, Momentum, …) and the
+  lower "sources / update frequency / limitations" prose are **not yet** translated (the core
+  framework + 9 fundamental dimensions are). Tell me if you want those done too.
+- **legal.html** — **intentionally left English.** It's template Terms/Privacy/Disclaimer
+  already pending legal counsel; an unreviewed machine-translated Arabic *legal agreement* is a
+  liability. Translate the lawyer-finalised version with a **certified** translator, not here.
 
 ---
 
