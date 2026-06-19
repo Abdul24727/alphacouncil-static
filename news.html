@@ -585,44 +585,8 @@
             </h3>
           </div>
 
-          <div class="top-story-item" onclick="askAdviser('top-1')">
-            <div class="top-story-date">
-              <span class="news-tag markets">MARKETS</span>
-              15:30 GST
-            </div>
-            <p class="top-story-headline">TASI Reaches 3-Month High as Foreign Inflows Accelerate to $420M Weekly</p>
-          </div>
-
-          <div class="top-story-item" onclick="askAdviser('top-2')">
-            <div class="top-story-date">
-              <span class="news-tag earnings">EARNINGS</span>
-              14:15 GST
-            </div>
-            <p class="top-story-headline">UAE Banks Report Record H1 Profits Amid Strong Loan Growth</p>
-          </div>
-
-          <div class="top-story-item" onclick="askAdviser('top-3')">
-            <div class="top-story-date">
-              <span class="news-tag ownership">OWNERSHIP</span>
-              12:45 GST
-            </div>
-            <p class="top-story-headline">MSCI Announces GCC Weightage Increase in EM Index Effective September</p>
-          </div>
-
-          <div class="top-story-item" onclick="askAdviser('top-4')">
-            <div class="top-story-date">
-              <span class="news-tag projects">PROJECTS</span>
-              10:00 GST
-            </div>
-            <p class="top-story-headline">Saudi Arabia Launches $100B Green Hydrogen Initiative</p>
-          </div>
-
-          <div class="top-story-item" onclick="askAdviser('top-5')">
-            <div class="top-story-date">
-              <span class="news-tag governance">GOVERNANCE</span>
-              09:30 GST
-            </div>
-            <p class="top-story-headline">CMA Issues New ESG Disclosure Requirements for Listed Companies</p>
+          <div class="top-stories-list" id="topStoriesList">
+            <div style="padding:14px;color:var(--fg-dim);font-size:12px;">Loading…</div>
           </div>
 
           <button class="summarize-btn" onclick="summarizeNews()">
@@ -789,6 +753,26 @@
       else renderMain([]);
     }
 
+    // H1: real Top Stories sidebar from /api/news/latest (replaces the 5 hardcoded headlines).
+    async function loadTopStories(){
+      const host = document.getElementById('topStoriesList'); if(!host) return;
+      try{
+        let items = await API.latestNews(6);
+        items = Array.isArray(items) ? items : [];
+        if(!items.length){ host.innerHTML = '<div style="padding:14px;color:var(--fg-dim);font-size:12px;">No stories yet.</div>'; return; }
+        host.innerHTML = items.slice(0,5).map(function(it){
+          const title = it.headline_en || it.title || '';
+          const cat = String(it.category || it.section || 'NEWS').toUpperCase();
+          return '<div class="top-story-item" data-nid="'+escN(String(it.id))+'" data-ntitle="'+escN(title)+'" data-tk="'+escN(it.ticker_key||'')+'" style="cursor:pointer;">'
+            + '<div class="top-story-date"><span class="news-tag markets">'+escN(cat)+'</span> '+escN(it.date||'')+'</div>'
+            + '<p class="top-story-headline">'+escN(title)+'</p></div>';
+        }).join('');
+        host.querySelectorAll('.top-story-item').forEach(function(el){
+          el.addEventListener('click', function(){ if(window.AlphaCouncil&&AlphaCouncil.askAboutNews) AlphaCouncil.askAboutNews(el.dataset.nid, el.dataset.ntitle, el.dataset.tk?[el.dataset.tk]:[]); });
+        });
+      }catch(e){ host.innerHTML = '<div style="padding:14px;color:var(--fg-dim);font-size:12px;">Couldn’t load top stories.</div>'; }
+    }
+
     function askNews(id){
       const it = newsById[id]; if(!it) return;
       AlphaCouncil.openSidebar();
@@ -807,6 +791,7 @@
         });
       });
       loadNews('all');
+      loadTopStories();
     });
 
     // News story data for context
@@ -925,24 +910,12 @@
       AlphaCouncil.clearNewsContext();
     }
 
-    // Summarize news for holdings
+    // H1: route "Summarize" to the REAL adviser (no canned summary).
     function summarizeNews() {
-      AlphaCouncil.openSidebar();
-      setTimeout(() => {
-        AlphaCouncil.addChatMessage('Summarize today\'s news for my holdings', true);
-        setTimeout(() => {
-          AlphaCouncil.addChatMessage(`<strong>Today's News Summary for Your Holdings</strong><br><br>
-            <strong>Positive developments:</strong><br>
-            • <strong>Aramco (2222):</strong> PIF stake increase signals long-term confidence<br>
-            • <strong>Al Rajhi (1120):</strong> CEO insider buying suggests management optimism<br>
-            • <strong>stc (7010):</strong> Q2 earnings beat consensus by 8%<br>
-            • <strong>QNB (QNBK):</strong> New Riyadh hub expands regional presence<br><br>
-            <strong>Watchpoints:</strong><br>
-            • <strong>SABIC (2010):</strong> Q2 profits down 12% on margin pressure<br>
-            • <strong>FAB:</strong> Special dividend announced (positive for income)<br><br>
-            <strong>Net sentiment:</strong> Constructive. Banking and energy sectors leading.`);
-        }, 800);
-      }, 300);
+      if (window.AlphaCouncil) {
+        if (AlphaCouncil.openSidebar) AlphaCouncil.openSidebar();
+        if (AlphaCouncil.askQuestion) AlphaCouncil.askQuestion('Summarize today’s most important GCC market news for my holdings — the key positives, the watchpoints, and the overall read.');
+      }
     }
 
     // Add hover effects to all interactive cards
@@ -950,31 +923,16 @@
       card.style.cursor = 'pointer';
     });
 
-    // Wire up ticker badges to navigate to stock detail
-    document.querySelectorAll('.ticker-badge').forEach(badge => {
-      badge.style.cursor = 'pointer';
-      badge.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const ticker = badge.textContent.trim().split('.')[0];
-        if (ticker && ticker !== 'PIF' && ticker !== 'Mubadala') {
-          window.location.href = `stock-detail.html?ticker=${ticker}`;
-        }
-      });
+    // H1: delegate ticker-badge clicks so badges on REAL (dynamically rendered) cards navigate too.
+    document.addEventListener('click', (e) => {
+      const badge = e.target.closest && e.target.closest('.ticker-badge');
+      if (!badge) return;
+      e.stopPropagation();
+      const ticker = (badge.dataset && badge.dataset.ticker) || badge.textContent.trim().split('.')[0];
+      if (ticker && ticker !== 'PIF' && ticker !== 'Mubadala') window.location.href = 'stock-detail.html?ticker=' + encodeURIComponent(ticker);
     });
 
-    // Tab switching
-    document.querySelectorAll('.page-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-
-        if (tab.dataset.tab === 'watchlist') {
-          showToast('Filtered', 'Showing news for your holdings only', 'info');
-        } else {
-          showToast('All News', 'Showing all GCC market news', 'info');
-        }
-      });
-    });
+    // H1: legacy toast-only tab handler removed — the real one (loadNews per tab) is wired in DOMContentLoaded.
 
     // Language toggle
     document.querySelectorAll('.lang-toggle button').forEach(btn => {
