@@ -523,12 +523,43 @@
     (function(){
       var f = document.getElementById('contactForm');
       if(!f) return;
+      var btn = f.querySelector('button[type=submit]');
+      var ok = document.getElementById('cf-ok');
       f.addEventListener('submit', function(e){
         e.preventDefault();
-        var ok = document.getElementById('cf-ok');
-        ok.innerHTML = 'Thanks for reaching out &mdash; we&rsquo;ll be in touch. <br>(This form isn&rsquo;t fully wired to our systems yet, so for anything urgent please email <strong>hello@alphacouncil.tech</strong>.)';
+        var name = (document.getElementById('cf-name').value || '').trim();
+        var email = (document.getElementById('cf-email').value || '').trim();
+        var subject = (document.getElementById('cf-subject').value || '').trim();
+        var message = (document.getElementById('cf-message').value || '').trim();
         ok.style.display = 'block';
-        f.querySelector('button[type=submit]').textContent = 'Message noted';
+        if(!name || !email || email.indexOf('@') < 0 || !message){
+          ok.style.color = '#e5484d';
+          ok.innerHTML = 'Please add your name, a valid email, and a message.';
+          return;
+        }
+        var orig = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
+        ok.style.color = '';
+        ok.innerHTML = '';
+        fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name, email: email, subject: subject, message: message })
+        }).then(function(r){
+          if(!r.ok) return r.json().then(function(j){ throw new Error((j && j.detail) || ('HTTP ' + r.status)); }, function(){ throw new Error('HTTP ' + r.status); });
+          return r.json();
+        }).then(function(){
+          f.reset();
+          ok.style.color = '';
+          ok.innerHTML = 'Thanks for reaching out &mdash; your message is in. We&rsquo;ll reply within 1&ndash;2 business days.';
+          btn.textContent = 'Message sent';
+        }).catch(function(){
+          ok.style.color = '#e5484d';
+          ok.innerHTML = 'Sorry, that didn&rsquo;t send. Please email <strong>hello@alphacouncil.tech</strong> directly and we&rsquo;ll get right back to you.';
+          btn.disabled = false;
+          btn.textContent = orig;
+        });
       });
     })();
   </script>
