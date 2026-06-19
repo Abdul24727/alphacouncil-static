@@ -37,6 +37,15 @@
     'nav.compare':         { en: 'Compare',          ar: 'المقارنة' },
     'nav.council':         { en: 'Council',          ar: 'المجلس' },
     'nav.scenarios':       { en: 'Scenarios',        ar: 'السيناريوهات' },
+    'mnav.how_it_works':   { en: 'How it works',     ar: 'كيف يعمل' },
+    'mnav.features':       { en: 'Features',         ar: 'المزايا' },
+    'mnav.pricing':        { en: 'Pricing',          ar: 'الأسعار' },
+    'mnav.methodology':    { en: 'Methodology',      ar: 'المنهجية' },
+    'mnav.markets':        { en: 'Markets',          ar: 'الأسواق' },
+    'mnav.about':          { en: 'About',            ar: 'من نحن' },
+    'mnav.contact':        { en: 'Contact',          ar: 'تواصل معنا' },
+    'mnav.sign_in':        { en: 'Sign in',          ar: 'تسجيل الدخول' },
+    'mnav.start_free':     { en: 'Start free',       ar: 'ابدأ مجانًا' },
     'action.add_holding':  { en: 'Add Holding',      ar: 'إضافة مركز' },
     'action.sign_out':     { en: 'Sign out',         ar: 'تسجيل الخروج' },
     'action.save':         { en: 'Save',             ar: 'حفظ' },
@@ -119,12 +128,30 @@
   // ── Auto-bootstrap: tag the shared nav by text, wire the toggle, resolve language ──
   function autoTagNav() {
     var rev = {};
-    for (var k in DICT) { if (k.indexOf('nav.') === 0) rev[DICT[k].en.toLowerCase()] = k; }
-    forEach(document.querySelectorAll('.app-nav-links a'), function (a) {
+    for (var k in DICT) { if (k.indexOf('nav.') === 0 || k.indexOf('mnav.') === 0) rev[DICT[k].en.toLowerCase()] = k; }
+    forEach(document.querySelectorAll('.app-nav-links a, .nav-links a, .nav-signin, .nav-actions .btn'), function (a) {
       if (a.getAttribute('data-i18n')) return;
       var key = rev[(a.textContent || '').trim().toLowerCase()];
       if (key) a.setAttribute('data-i18n', key);
     });
+  }
+
+  // Marketing pages have no .lang-toggle — inject a small one into .nav-actions so the
+  // toggle works there too (app pages already have one, so this is a no-op for them).
+  function ensureToggle() {
+    if (document.querySelector('.lang-toggle')) return;
+    var host = document.querySelector('.nav-actions');
+    if (!host) return;
+    if (!document.getElementById('ac-toggle-style')) {
+      var s = document.createElement('style'); s.id = 'ac-toggle-style';
+      s.textContent = '.lang-toggle.ac-injected{display:inline-flex;gap:2px;border:1px solid var(--border,#2a3340);border-radius:8px;padding:2px;align-items:center;}'
+        + '.lang-toggle.ac-injected button{padding:3px 9px;font-size:11px;font-weight:600;border:none;background:transparent;color:var(--fg-dim,#8b93a3);border-radius:6px;cursor:pointer;line-height:1.4;}'
+        + '.lang-toggle.ac-injected button.active{background:var(--accent-primary,#3b82f6);color:#fff;}';
+      (document.head || document.documentElement).appendChild(s);
+    }
+    var box = document.createElement('div'); box.className = 'lang-toggle ac-injected';
+    box.innerHTML = '<button data-lang="en" class="active">EN</button><button data-lang="ar">AR</button>';
+    host.insertBefore(box, host.firstChild);
   }
 
   function syncToggles(lang) {
@@ -165,6 +192,7 @@
 
   function bootstrap() {
     _injectRtl();
+    ensureToggle();
     autoTagNav();
     autoWireToggle();
     var saved = null; try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}

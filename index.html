@@ -3017,5 +3017,64 @@
   </script>
   <script>/* brand logo -> dashboard when signed in (ac_csrf cookie present), else index */
   (function(){try{if(document.cookie.indexOf('ac_csrf=')>-1){var e=document.querySelectorAll('.nav-logo,.ac-flogo');for(var i=0;i<e.length;i++)e[i].setAttribute('href','dashboard.html');}}catch(x){}})();</script>
+  <script src="js/i18n.js"></script>
+  <script>
+  // O4 (marketing): the engine auto-injects the EN/AR toggle + auto-translates the nav.
+  // This adds the landing's hero + section headings (deep section prose is a content pass).
+  AC_I18N.add({
+    'idx.hero_badge':   { en: 'Live GCC market coverage', ar: 'تغطية حيّة لأسواق الخليج' },
+    'idx.hero_t1':      { en: 'Understand your GCC portfolio', ar: 'افهم محفظتك الخليجية' },
+    'idx.hero_t2':      { en: 'before the market moves.', ar: 'قبل أن يتحرّك السوق.' },
+    'idx.hero_sub':     { en: 'Add your holdings and AlphaCouncil connects your portfolio to GCC news, fundamentals, dividends, risk, and AI Analyst Council reviews — in English or Arabic.', ar: 'أضِف مراكزك ويربط AlphaCouncil محفظتك بأخبار الخليج والأساسيات والتوزيعات والمخاطر ومراجعات مجلس المحلّلين الذكي — بالعربية أو الإنجليزية.' },
+    'idx.view_sample':  { en: 'View sample dashboard', ar: 'عرض لوحة تجريبية' },
+    'idx.eye_problem':  { en: 'The Problem', ar: 'المشكلة' },
+    'idx.t_problem':    { en: "GCC investors don't need more data.They need context.", ar: 'لا يحتاج مستثمرو الخليج إلى مزيد من البيانات، بل إلى السياق.' },
+    'idx.s_problem':    { en: 'Traditional tools show charts and numbers. AlphaCouncil explains what matters for your portfolio.', ar: 'تعرض الأدوات التقليدية الرسوم والأرقام. أمّا AlphaCouncil فيشرح ما يهمّ محفظتك.' },
+    'idx.eye_features': { en: 'Features', ar: 'المزايا' },
+    'idx.t_features':   { en: 'AlphaCouncil connects yourportfolio to the market.', ar: 'يربط AlphaCouncil محفظتك بالسوق.' },
+    'idx.eye_council':  { en: 'AI Analyst Council', ar: 'مجلس المحلّلين الذكي' },
+    'idx.t_council':    { en: 'Meet your AI Analyst Council.', ar: 'تعرّف على مجلس محلّليك الذكي.' },
+    'idx.s_council':    { en: 'Different questions need different perspectives. AlphaCouncil reviews your portfolio through specialized AI analyst members before giving you a clear, source-aware synthesis.', ar: 'تحتاج الأسئلة المختلفة إلى وجهات نظر مختلفة. يراجع AlphaCouncil محفظتك عبر محلّلين ذكيين متخصّصين قبل أن يقدّم لك خلاصة واضحة مدعومة بالمصادر.' },
+    'idx.eye_coverage': { en: 'Coverage', ar: 'التغطية' },
+    'idx.t_coverage':   { en: 'Built for GCC investors.', ar: 'مصمَّم لمستثمري الخليج.' },
+    'idx.s_coverage':   { en: 'Local market structure, dividends, Arabic context, and regional news flow — not US data adapted for the Gulf.', ar: 'بنية السوق المحلّية والتوزيعات والسياق العربي وتدفّق الأخبار الإقليمية — لا بيانات أمريكية مُكيَّفة للخليج.' },
+    'idx.eye_live':     { en: 'Live Intelligence', ar: 'ذكاء حيّ' },
+    'idx.t_live':       { en: 'Your portfolio, always monitored.', ar: 'محفظتك تحت المراقبة دائمًا.' },
+    'idx.s_live':       { en: "Real-time alerts explain what's happening and why it matters to your holdings.", ar: 'تشرح التنبيهات ما يحدث ولماذا يهمّ مراكزك.' },
+    'idx.eye_current':  { en: 'Always Current', ar: 'محدَّث دائمًا' },
+    'idx.t_current':    { en: "Intelligence that works while you don't.", ar: 'ذكاء يعمل بينما ترتاح.' },
+    'idx.eye_how':      { en: 'How It Works', ar: 'كيف يعمل' },
+    'idx.t_how':        { en: 'From "what\'s happening?" to "what should I do?"', ar: 'من «ماذا يحدث؟» إلى «ماذا أفعل؟»' },
+    'idx.s_how':        { en: 'Four steps to portfolio clarity.', ar: 'أربع خطوات نحو وضوح المحفظة.' },
+    'idx.eye_adviser':  { en: 'AI Adviser', ar: 'المستشار الذكي' },
+    'idx.t_adviser':    { en: 'Ask anything about your portfolio.', ar: 'اسأل أي شيء عن محفظتك.' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
+    var MAP = {
+      'Live GCC market coverage': 'idx.hero_badge',
+      'Add your holdings and AlphaCouncil connects your portfolio to GCC news, fundamentals, dividends, risk, and AI Analyst Council reviews — in English or Arabic.': 'idx.hero_sub',
+      'View sample dashboard': 'idx.view_sample', 'Start free': 'mnav.start_free',
+      'The Problem': 'idx.eye_problem', "GCC investors don't need more data.": 'idx.t_problem', 'Traditional tools show charts and numbers. AlphaCouncil explains what matters for your portfolio.': 'idx.s_problem',
+      'Features': 'idx.eye_features', 'AlphaCouncil connects your': 'idx.t_features', 'AI Analyst Council': 'idx.eye_council', 'Meet your AI Analyst Council.': 'idx.t_council',
+      'Different questions need different perspectives. AlphaCouncil reviews your portfolio through specialized AI analyst members before giving you a clear, source-aware synthesis.': 'idx.s_council',
+      'Coverage': 'idx.eye_coverage', 'Built for GCC investors.': 'idx.t_coverage',
+      'Local market structure, dividends, Arabic context, and regional news flow — not US data adapted for the Gulf.': 'idx.s_coverage',
+      'Live Intelligence': 'idx.eye_live', 'Your portfolio, always monitored.': 'idx.t_live',
+      "Real-time alerts explain what's happening and why it matters to your holdings.": 'idx.s_live',
+      'Always Current': 'idx.eye_current', "Intelligence that works while you don't.": 'idx.t_current',
+      'How It Works': 'idx.eye_how', 'Four steps to portfolio clarity.': 'idx.s_how',
+      'AI Adviser': 'idx.eye_adviser', 'Ask anything about your portfolio.': 'idx.t_adviser'
+    };
+    forEach2('.hero-badge, .hero-subtitle, .section-eyebrow, .section-title, .section-subtitle, .hero-ctas a, h3', function (el) {
+      var k = MAP[firstText(el)]; if (k) setKey(el, k);
+    });
+    setKey(document.querySelector('.hero-title'), 'idx.hero_t1');
+    setKey(document.querySelector('.hero-title .highlight'), 'idx.hero_t2');
+    function forEach2(sel, fn) { Array.prototype.forEach.call(document.querySelectorAll(sel), fn); }
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
 </body>
 </html>
