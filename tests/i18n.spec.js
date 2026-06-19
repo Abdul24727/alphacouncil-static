@@ -68,7 +68,7 @@ test.describe('O4 — i18n shared chrome rolled out across app pages', () => {
     { path: '/news.html',             name: 'news', body: { sel: '.page-tab[data-i18n="news.tab_all"]', ar: 'الكل' } },
     { path: '/settings.html',         name: 'settings' },
     { path: '/alerts.html',           name: 'alerts', body: { sel: '.rules-title[data-i18n="alerts.rules_title"]', ar: 'قواعد التنبيه' } },
-    { path: '/council-history.html',  name: 'council-history' },
+    { path: '/council-history.html',  name: 'council-history', body: { sel: '.page-title[data-i18n="ch.title"]', ar: 'سجل المجلس' } },
     { path: '/scenarios.html',        name: 'scenarios' },
   ];
 

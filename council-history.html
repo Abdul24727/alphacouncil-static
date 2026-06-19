@@ -1200,6 +1200,54 @@
   <script src="js/i18n.js"></script>
   <script src="adviser-core.js"></script>
   <script>
+  // O4: council-history chrome (the history list + stat values are real/dynamic).
+  AC_I18N.add({
+    'ch.title':            { en: 'Council History', ar: 'سجل المجلس' },
+    'ch.subtitle':         { en: "Review past analyses and track how your portfolio's intelligence has evolved over time.", ar: 'راجع التحليلات السابقة وتتبّع كيف تطوّر ذكاء محفظتك بمرور الوقت.' },
+    'ch.stat_saved':       { en: 'Reviews Saved', ar: 'المراجعات المحفوظة' },
+    'ch.stat_last':        { en: 'Last Review', ar: 'آخر مراجعة' },
+    'ch.stat_portfolio':   { en: 'Portfolio Reviews', ar: 'مراجعات المحفظة' },
+    'ch.stat_stock':       { en: 'Stock Reviews', ar: 'مراجعات الأسهم' },
+    'ch.tab_all':          { en: 'All Reviews', ar: 'كل المراجعات' },
+    'ch.tab_portfolio':    { en: 'Portfolio-wide', ar: 'على مستوى المحفظة' },
+    'ch.tab_stock':        { en: 'Stock-level', ar: 'على مستوى السهم' },
+    'ch.f_all':            { en: 'All time', ar: 'كل الأوقات' },
+    'ch.f_7d':             { en: 'Last 7 days', ar: 'آخر ٧ أيام' },
+    'ch.f_30d':            { en: 'Last 30 days', ar: 'آخر ٣٠ يومًا' },
+    'ch.f_90d':            { en: 'Last 90 days', ar: 'آخر ٩٠ يومًا' },
+    'ch.s_newest':         { en: 'Newest first', ar: 'الأحدث أولًا' },
+    'ch.s_oldest':         { en: 'Oldest first', ar: 'الأقدم أولًا' },
+    'ch.s_conviction':     { en: 'Highest conviction', ar: 'الأعلى قناعة' },
+    'ch.s_signals':        { en: 'Most signals', ar: 'الأكثر إشارات' },
+    'ch.trends':           { en: 'Trends Across Reviews', ar: 'اتجاهات عبر المراجعات' },
+    'ch.adviser':          { en: 'AI Adviser', ar: 'المستشار الذكي' },
+    'ch.search':           { en: 'Search ticker...', ar: 'ابحث عن رمز...' },
+    'ch.chat_placeholder': { en: 'Ask about your review history...', ar: 'اسأل عن سجل مراجعاتك...' },
+    'ch.empty_title':      { en: 'No Council Reviews Yet', ar: 'لا توجد مراجعات مجلس بعد' },
+    'ch.empty_text':       { en: 'Run your first AI Analyst Council review to get comprehensive portfolio intelligence. The Council analyzes your holdings across 12 dimensions with 7 specialized perspectives.', ar: 'شغّل أول مراجعة لمجلس المحلّلين الذكي للحصول على ذكاء شامل للمحفظة. يحلّل المجلس مراكزك عبر ١٢ بُعدًا مع ٧ وجهات نظر متخصّصة.' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
+    var MAP = {
+      'Council History': 'ch.title', "Review past analyses and track how your portfolio's intelligence has evolved over time.": 'ch.subtitle',
+      'Reviews Saved': 'ch.stat_saved', 'Last Review': 'ch.stat_last', 'Portfolio Reviews': 'ch.stat_portfolio', 'Stock Reviews': 'ch.stat_stock',
+      'All Reviews': 'ch.tab_all', 'Portfolio-wide': 'ch.tab_portfolio', 'Stock-level': 'ch.tab_stock',
+      'All time': 'ch.f_all', 'Last 7 days': 'ch.f_7d', 'Last 30 days': 'ch.f_30d', 'Last 90 days': 'ch.f_90d',
+      'Newest first': 'ch.s_newest', 'Oldest first': 'ch.s_oldest', 'Highest conviction': 'ch.s_conviction', 'Most signals': 'ch.s_signals',
+      'Trends Across Reviews': 'ch.trends', 'AI Adviser': 'ch.adviser',
+      'No Council Reviews Yet': 'ch.empty_title'
+    };
+    Array.prototype.forEach.call(document.querySelectorAll('.page-title, .page-subtitle, .stat-label, .tab-btn, .filter-select option, .sidebar-title, .empty-title, h3'), function (el) {
+      var k = MAP[firstText(el)]; if (k) setKey(el, k);
+    });
+    var et = document.querySelector('.empty-text'); if (et && firstText(et).indexOf('Run your first AI Analyst Council') === 0) setKey(et, 'ch.empty_text');
+    var ts = document.getElementById('tickerSearch'); if (ts) ts.setAttribute('data-i18n-attr', 'placeholder:ch.search');
+    var ci = document.getElementById('chatInput'); if (ci) ci.setAttribute('data-i18n-attr', 'placeholder:ch.chat_placeholder');
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
+  <script>
     // Initialize AlphaCouncil
     if (typeof AlphaCouncil !== 'undefined') {
       AlphaCouncil.init('council-history');
