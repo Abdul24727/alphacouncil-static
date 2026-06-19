@@ -92,6 +92,11 @@
     addHolding: function (ticker, shares, avgCost, notes) {
       return API.post('/api/portfolio/holdings', { ticker: ticker, shares: shares, avg_cost: avgCost, notes: notes || undefined });
     },
+    // Vision-extract holdings from an uploaded statement image/PDF (writes nothing; returns rows matched to real ticker_keys).
+    importExtract: function (contentType, dataBase64, filename) {
+      return API.post('/api/portfolio/import-extract', { content_type: contentType, data_base64: dataBase64, filename: filename });
+    },
+    importConfirm: function (holdings) { return API.post('/api/portfolio/import-confirm', { holdings: holdings }); },
     deleteHolding: function (tickerKey) { return API.del('/api/portfolio/holdings/' + encodeURIComponent(tickerKey)); },
 
     // ---- Watchlist (per-user; star a stock to track it) ----

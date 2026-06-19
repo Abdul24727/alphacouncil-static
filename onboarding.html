@@ -2578,54 +2578,85 @@
       });
     }
 
+    // G1 (CRITICAL fix): REAL statement import. The file is base64-encoded and sent to
+    // /api/portfolio/import-extract (vision model → rows matched to real ticker_keys).
+    // Only ticker-MATCHED rows become holdings (with their real ticker_key) — nothing is
+    // fabricated, and unmatched rows are skipped (they'd be dropped by persistHoldings anyway).
+    // persistHoldings() then writes them to the real portfolio on finish.
+    function renderExtractedTable() {
+      document.getElementById('extractedCount').textContent = holdings.length + ' found';
+      document.getElementById('extractedBody').innerHTML = holdings.map((h, i) => `
+        <tr>
+          <td>
+            <div class="holding-name">
+              <div class="holding-logo" aria-hidden="true">${String(h.ticker || '').replace('.SR','').slice(0,4)}</div>
+              <div>
+                <div class="holding-ticker">${h.ticker || ''}</div>
+                <div class="holding-company">${h.name || ''}</div>
+              </div>
+            </div>
+          </td>
+          <td>${Number(h.shares || 0).toLocaleString()}</td>
+          <td>${h.currency || ''} ${Number(h.avgPrice || 0).toFixed(2)}</td>
+          <td>${h.currency || ''} ${Number(h.value || 0).toLocaleString()}</td>
+          <td>
+            <button class="holding-remove" onclick="removeExtracted(${i})" aria-label="Remove ${h.name || ''}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+      updateFooter();
+    }
+
     function processFile(file) {
       const zone = document.getElementById('uploadZone');
       const processing = document.getElementById('processingState');
       const extracted = document.getElementById('extractedHoldings');
+      if (!window.API || !API.importExtract) { showToast('Sign in required', 'Please sign in to import a statement.', 'error'); return; }
       zone.style.display = 'none';
       processing.classList.add('show');
       announce('Processing file. Extracting holdings.');
-      setTimeout(() => {
-        const simulatedHoldings = [
-          { ticker: '2222.SR', name: 'Saudi Aramco', exchange: 'Tadawul', shares: 500, avgPrice: 27.80, price: 28.70, currency: 'SAR' },
-          { ticker: '1120.SR', name: 'Al Rajhi Bank', exchange: 'Tadawul', shares: 200, avgPrice: 85.50, price: 88.20, currency: 'SAR' },
-          { ticker: 'QNBK', name: 'QNB Group', exchange: 'QSE', shares: 300, avgPrice: 17.20, price: 17.92, currency: 'QAR' },
-          { ticker: 'FAB', name: 'First Abu Dhabi Bank', exchange: 'ADX', shares: 400, avgPrice: 13.10, price: 13.64, currency: 'AED' },
-          { ticker: '2380.SR', name: 'ACWA Power', exchange: 'Tadawul', shares: 100, avgPrice: 138.00, price: 142.00, currency: 'SAR' },
-        ];
-        simulatedHoldings.forEach(h => {
-          h.value = h.shares * h.price;
-          holdings.push(h);
+      const reader = new FileReader();
+      reader.onerror = function () { processing.classList.remove('show'); zone.style.display = ''; showToast('Couldn’t read the file', 'Please try again.', 'error'); };
+      reader.onload = function () {
+        const url = String(reader.result || '');
+        const b64 = url.indexOf(',') >= 0 ? url.slice(url.indexOf(',') + 1) : url;
+        API.importExtract(file.type || 'application/octet-stream', b64, file.name || 'portfolio').then(function (res) {
+          const rows = (res && res.rows) || [];
+          holdings.length = 0;
+          rows.forEach(function (r) {
+            if (!r.matched_ticker_key) return;   // never fabricate: unmatched rows are skipped
+            const shares = r.shares != null ? Number(r.shares) : 0;
+            const avg = r.avg_cost != null ? Number(r.avg_cost) : 0;
+            holdings.push({
+              tickerKey: r.matched_ticker_key,
+              ticker: r.matched_code || r.raw_code || String(r.matched_ticker_key).split('_')[0],
+              name: r.matched_name || r.raw_name || '',
+              shares: shares, avgPrice: avg, currency: r.currency || '',
+              value: shares * avg, needsReview: !!r.needs_review
+            });
+          });
+          saveDraftHoldings();
+          processing.classList.remove('show');
+          extracted.classList.add('show');
+          const skipped = rows.length - holdings.length;
+          if (!holdings.length) {
+            document.getElementById('extractedCount').textContent = '0 found';
+            document.getElementById('extractedBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--fg-dim,#6B7A8F);">We couldn’t match any holdings to a covered GCC ticker. You can add positions manually instead.</td></tr>';
+            updateFooter();
+          } else {
+            renderExtractedTable();
+          }
+          showToast('Holdings extracted', holdings.length + ' position' + (holdings.length === 1 ? '' : 's') + ' matched' + (skipped > 0 ? (' · ' + skipped + ' unmatched skipped') : ''), 'success');
+          announce(holdings.length + ' holdings extracted from file.');
+        }).catch(function (e) {
+          processing.classList.remove('show'); zone.style.display = '';
+          const msg = (e && e.status === 401) ? 'Please sign in to import a statement.' : ((e && e.message) || 'Try a clearer screenshot or a different file.');
+          showToast('Couldn’t read the file', msg, 'error');
         });
-        saveDraftHoldings();
-        processing.classList.remove('show');
-        extracted.classList.add('show');
-        document.getElementById('extractedCount').textContent = holdings.length + ' found';
-        document.getElementById('extractedBody').innerHTML = holdings.map((h, i) => `
-          <tr>
-            <td>
-              <div class="holding-name">
-                <div class="holding-logo" aria-hidden="true">${h.ticker.replace('.SR','').slice(0,4)}</div>
-                <div>
-                  <div class="holding-ticker">${h.ticker}</div>
-                  <div class="holding-company">${h.name}</div>
-                </div>
-              </div>
-            </td>
-            <td>${h.shares.toLocaleString()}</td>
-            <td>${h.currency} ${h.avgPrice.toFixed(2)}</td>
-            <td>${h.currency} ${h.value.toLocaleString()}</td>
-            <td>
-              <button class="holding-remove" onclick="removeExtracted(${i})" aria-label="Remove ${h.name}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
-              </button>
-            </td>
-          </tr>
-        `).join('');
-        updateFooter();
-        showToast('Holdings extracted', `${holdings.length} positions identified`, 'success');
-        announce(`${holdings.length} holdings extracted from file.`);
-      }, 2500);
+      };
+      reader.readAsDataURL(file);
     }
 
     function removeExtracted(index) {
