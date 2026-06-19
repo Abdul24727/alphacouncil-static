@@ -802,28 +802,6 @@
   <script src="js/i18n.js"></script>
   <script src="adviser-core.js"></script>
   <script>
-  // O2: wire the existing EN/AR toggle to the i18n runtime + honor the user's saved preference.
-  (function(){
-    var box = document.getElementById('langToggle');
-    function syncActive(lang){
-      if(!box) return;
-      Array.prototype.forEach.call(box.querySelectorAll('button'), function(b){
-        b.classList.toggle('active', b.getAttribute('data-lang') === lang);
-      });
-    }
-    if(box) box.addEventListener('click', function(e){
-      var b = e.target.closest('button[data-lang]'); if(!b) return;
-      AC_I18N.set(b.getAttribute('data-lang'));
-    });
-    window.addEventListener('ac:langchange', function(e){ syncActive(e.detail && e.detail.lang); });
-    syncActive(AC_I18N.lang);
-    var saved; try { saved = localStorage.getItem('ac.lang'); } catch(e){}
-    if(!saved && window.API && API.me){
-      API.me().then(function(u){ if(u && u.preferred_language){ AC_I18N.init(u.preferred_language); syncActive(AC_I18N.lang); } }).catch(function(){});
-    }
-  })();
-  </script>
-  <script>
     // Dashboard-specific initialization
     document.addEventListener('DOMContentLoaded', () => {
       AlphaCouncil.init('dashboard');

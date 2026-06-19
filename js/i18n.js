@@ -1,25 +1,30 @@
 /**
- * AlphaCouncil i18n runtime (Phase O1).
+ * AlphaCouncil i18n runtime (Phase O1/O4).
  *
- * Translates any element that carries:
- *   data-i18n="key"                        -> sets textContent
- *   data-i18n-attr="placeholder:key,..."   -> sets the named attribute(s) (placeholder/title/aria-label/…)
+ * Self-bootstrapping: on load it auto-tags the shared nav (.app-nav-links a) by its
+ * English text, auto-wires any .lang-toggle (EN/AR) buttons, sets <html lang>+dir
+ * ('ar' ⇒ rtl), and honors the signed-in user's preferred_language. So a page only has
+ * to include this script — no per-page wiring. Pages add their own strings with
+ * data-i18n / data-i18n-attr and AC_I18N.add({...}).
  *
- * Language resolution order: saved localStorage('ac.lang') → the signed-in user's
- * preferred_language (passed to AC_I18N.init) → 'en'. apply() swaps all tagged nodes,
- * sets <html lang> + dir ('ar' ⇒ rtl), persists the choice (localStorage + best-effort
- * PUT /api/account/profile when signed in), and dispatches 'ac:langchange' so pages can
- * re-render dynamic content in the new language.
+ * Translates:
+ *   data-i18n="key"                      -> textContent
+ *   data-i18n-attr="placeholder:key,..." -> the named attribute(s)
  *
- * Opt-in: pages include this script and tag strings. Untagged pages are unaffected, so
- * this is safe to add site-wide before every page is fully tagged.
+ * Language: saved localStorage('ac.lang') → user's preferred_language → 'en'.
+ * User-initiated switches persist to localStorage AND best-effort PUT /api/account/profile.
+ * Fires 'ac:langchange' so pages can re-render dynamic content.
+ *
+ * Additive + opt-in: untagged pages are unaffected; EN (dir=ltr) is the default, so
+ * nothing changes for a user who hasn't chosen Arabic.
  */
 (function (global) {
   'use strict';
   var STORAGE_KEY = 'ac.lang';
 
+  function forEach(list, fn) { Array.prototype.forEach.call(list, fn); }
+
   // Shared chrome dictionary. EN is the source of truth; AR is the human translation.
-  // Per-page strings are merged in via AC_I18N.add({ ... }) from each page.
   var DICT = {
     'nav.dashboard':       { en: 'Dashboard',        ar: 'لوحة التحكم' },
     'nav.portfolio':       { en: 'Portfolio',        ar: 'المحفظة' },
@@ -31,6 +36,7 @@
     'nav.settings':        { en: 'Settings',         ar: 'الإعدادات' },
     'nav.compare':         { en: 'Compare',          ar: 'المقارنة' },
     'nav.council':         { en: 'Council',          ar: 'المجلس' },
+    'nav.scenarios':       { en: 'Scenarios',        ar: 'السيناريوهات' },
     'action.add_holding':  { en: 'Add Holding',      ar: 'إضافة مركز' },
     'action.sign_out':     { en: 'Sign out',         ar: 'تسجيل الخروج' },
     'action.save':         { en: 'Save',             ar: 'حفظ' },
@@ -39,9 +45,7 @@
     'common.loading':      { en: 'Loading…',         ar: 'جارٍ التحميل…' },
     'common.search':       { en: 'Search',           ar: 'بحث' },
     'a11y.toggle_adviser': { en: 'Toggle AI Adviser', ar: 'إظهار/إخفاء المستشار الذكي' },
-    'a11y.notifications':  { en: 'Notifications',     ar: 'الإشعارات' },
-    // The language toggle shows the language you'd switch TO.
-    'lang.switch':         { en: 'العربية',          ar: 'English' }
+    'a11y.notifications':  { en: 'Notifications',     ar: 'الإشعارات' }
   };
 
   var current = 'en';
@@ -55,29 +59,23 @@
 
   function _applyNode(node) {
     var key = node.getAttribute('data-i18n');
-    if (key) {
-      var v = t(key);
-      if (v != null) node.textContent = v;
-    }
+    if (key) { var v = t(key); if (v != null) node.textContent = v; }
     var attrSpec = node.getAttribute('data-i18n-attr');
     if (attrSpec) {
       attrSpec.split(',').forEach(function (pair) {
         var bits = pair.split(':');
-        if (bits.length === 2) {
-          var av = t(bits[1].trim());
-          if (av != null) node.setAttribute(bits[0].trim(), av);
-        }
+        if (bits.length === 2) { var av = t(bits[1].trim()); if (av != null) node.setAttribute(bits[0].trim(), av); }
       });
     }
   }
 
   function apply(lang) {
     if (lang) current = (lang === 'ar' ? 'ar' : 'en');
-    var nodes = document.querySelectorAll('[data-i18n],[data-i18n-attr]');
-    Array.prototype.forEach.call(nodes, _applyNode);
+    forEach(document.querySelectorAll('[data-i18n],[data-i18n-attr]'), _applyNode);
     var html = document.documentElement;
     html.setAttribute('lang', current);
     html.setAttribute('dir', current === 'ar' ? 'rtl' : 'ltr');
+    syncToggles(current);
     try { localStorage.setItem(STORAGE_KEY, current); } catch (e) {}
     try { global.dispatchEvent(new CustomEvent('ac:langchange', { detail: { lang: current } })); } catch (e) {}
   }
@@ -92,25 +90,69 @@
 
   function toggle() { set(current === 'ar' ? 'en' : 'ar'); }
 
-  // Initialise from saved choice, falling back to the user's stored preference, then EN.
   function init(userLang) {
-    var saved = null;
-    try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+    var saved = null; try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
     var lang = saved || (userLang === 'ar' ? 'ar' : (userLang === 'en' ? 'en' : null)) || 'en';
     apply(lang); // init never re-persists to the server
   }
 
+  // ── Auto-bootstrap: tag the shared nav by text, wire the toggle, resolve language ──
+  function autoTagNav() {
+    var rev = {};
+    for (var k in DICT) { if (k.indexOf('nav.') === 0) rev[DICT[k].en.toLowerCase()] = k; }
+    forEach(document.querySelectorAll('.app-nav-links a'), function (a) {
+      if (a.getAttribute('data-i18n')) return;
+      var key = rev[(a.textContent || '').trim().toLowerCase()];
+      if (key) a.setAttribute('data-i18n', key);
+    });
+  }
+
+  function syncToggles(lang) {
+    forEach(document.querySelectorAll('.lang-toggle button[data-lang]'), function (b) {
+      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+    });
+  }
+
+  function autoWireToggle() {
+    forEach(document.querySelectorAll('.lang-toggle'), function (box) {
+      if (box.__acWired) return; box.__acWired = true;
+      forEach(box.querySelectorAll('button'), function (b) {
+        if (!b.getAttribute('data-lang')) {
+          var x = (b.textContent || '').trim().toLowerCase();
+          if (x === 'en' || x === 'english') b.setAttribute('data-lang', 'en');
+          else if (x === 'ar' || x === 'العربية' || x === 'عربي') b.setAttribute('data-lang', 'ar');
+        }
+      });
+      box.addEventListener('click', function (e) {
+        var b = e.target.closest('button[data-lang]'); if (b) set(b.getAttribute('data-lang'));
+      });
+    });
+  }
+
+  function bootstrap() {
+    autoTagNav();
+    autoWireToggle();
+    var saved = null; try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+    if (saved) {
+      apply(saved);
+    } else {
+      apply('en'); // default until the server answers
+      if (global.API && API.me) {
+        API.me().then(function (u) { if (u && u.preferred_language) apply(u.preferred_language); }).catch(function () {});
+      }
+    }
+  }
+
   global.AC_I18N = {
-    t: t, apply: apply, set: set, toggle: toggle, init: init,
+    t: t, apply: apply, set: set, toggle: toggle, init: init, retag: autoTagNav,
     get lang() { return current; },
     dict: DICT,
     add: function (extra) { for (var k in extra) if (Object.prototype.hasOwnProperty.call(extra, k)) DICT[k] = extra[k]; }
   };
 
-  // Auto-init from localStorage on load; pages refine via AC_I18N.init(user.preferred_language) after /auth/me.
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { init(); });
+    document.addEventListener('DOMContentLoaded', bootstrap);
   } else {
-    init();
+    bootstrap();
   }
 })(window);
