@@ -438,26 +438,12 @@
           <button class="tab-btn" data-filter="unread">Unread <span class="count">5</span></button>
         </div>
         <div class="filter-group">
-          <select class="filter-select" id="analystFilter">
-            <option value="all">All Analysts</option>
-            <option value="risk">Risk Analyst</option>
-            <option value="valuation">Valuation Analyst</option>
-            <option value="income">Income Analyst</option>
-            <option value="momentum">Momentum Analyst</option>
-            <option value="news">News Analyst</option>
-            <option value="macro">Macro Analyst</option>
-            <option value="strategist">Chief Strategist</option>
-          </select>
+          <!-- I1: removed the analyst-type <select> (it filtered by a CSS class the real cards
+               never have → hid everything) and the no-op "My holdings only" toggle (alerts are
+               already per-holding). Real filters: All/High/Unread tabs + ticker search. -->
           <div class="search-filter">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
             <input type="text" placeholder="Search ticker..." id="tickerSearch">
-          </div>
-          <div class="toggle-control">
-            <span class="toggle-control-label">My holdings only</span>
-            <label class="toggle-switch">
-              <input type="checkbox" checked id="holdingsOnly">
-              <span class="toggle-slider"></span>
-            </label>
           </div>
         </div>
       </div>
@@ -1145,9 +1131,9 @@
     }
 
     // Modal functions
+    // I1: no alert-rules backend yet — be honest instead of opening a mock create-rule modal.
     function openCreateRuleModal() {
-      document.getElementById('createRuleModal').classList.add('open');
-      document.body.style.overflow = 'hidden';
+      showToast('Coming soon', 'Custom alert rules aren’t available yet — AlphaCouncil already auto-generates alerts from your holdings.', 'info');
     }
 
     function closeCreateRuleModal() {
@@ -1157,8 +1143,21 @@
 
     function saveRule() {
       closeCreateRuleModal();
-      showToast('Rule Created', 'Your alert rule is now active', 'success');
+      showToast('Coming soon', 'Custom alert rules aren’t available yet.', 'info');
     }
+
+    // I1: strip the hardcoded mock "active rules" (no backend) and show an honest note instead.
+    (function honestRules(){
+      document.querySelectorAll('.rules-panel .rule-item, .rules-panel .rules-footer').forEach(function(el){ el.remove(); });
+      var hdr = document.querySelector('.rules-panel .rules-header');
+      if (hdr && !document.getElementById('rulesComingSoon')) {
+        var note = document.createElement('div');
+        note.id = 'rulesComingSoon';
+        note.style.cssText = 'padding:16px;color:var(--fg-muted);font-size:13px;line-height:1.6;';
+        note.innerHTML = '<strong style="color:var(--fg);">Custom alert rules are coming soon.</strong><br>AlphaCouncil already auto-generates alerts from your holdings — big moves, technical signals and news appear on the left and in your notifications automatically.';
+        hdr.parentNode.insertBefore(note, hdr.nextSibling);
+      }
+    })();
 
     document.getElementById('createRuleModal').addEventListener('click', (e) => {
       if (e.target.classList.contains('modal-overlay')) {
@@ -1180,45 +1179,9 @@
       chatSend.addEventListener('click', () => {
         const message = chatInput.value.trim();
         if (!message) return;
-
-        const chatMessages = document.getElementById('chatMessages');
-
-        const userMsg = document.createElement('div');
-        userMsg.className = 'chat-message user';
-        userMsg.innerHTML = `
-          <div class="chat-avatar">SK</div>
-          <div>
-            <div class="chat-bubble">${message}</div>
-            <div class="chat-time">Just now</div>
-          </div>
-        `;
-        chatMessages.appendChild(userMsg);
         chatInput.value = '';
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        setTimeout(() => {
-          let response = 'I can help you understand any of your active alerts. The most urgent is the concentration risk in banking - your 32.2% allocation exceeds typical guidelines. Would you like specific recommendations for rebalancing?';
-
-          if (message.toLowerCase().includes('concentration')) {
-            response = 'Your banking concentration of 32.2% is triggered by holdings in Al Rajhi (1120), SNB (1010), and FAB. The Risk Analyst recommends considering UAE diversification through names like ADCB or Emirates NBD, which have lower correlation to your Saudi positions.';
-          } else if (message.toLowerCase().includes('oil') || message.toLowerCase().includes('aramco')) {
-            response = 'The oil price alert reflects Brent crude declining 4.2% this week. While Aramco\'s dividend is well-covered, sustained weakness below $75/bbl could pressure distributions. Your 10.6% weight is within normal ranges for a GCC-focused portfolio.';
-          } else if (message.toLowerCase().includes('rajhi') || message.toLowerCase().includes('valuation')) {
-            response = 'Al Rajhi\'s P/E of 18.2x reflects market confidence in its Islamic banking franchise. However, this premium means any earnings miss could trigger multiple compression. Consider whether this valuation aligns with your risk tolerance.';
-          }
-
-          const adviserMsg = document.createElement('div');
-          adviserMsg.className = 'chat-message adviser';
-          adviserMsg.innerHTML = `
-            <div class="chat-avatar">AI</div>
-            <div>
-              <div class="chat-bubble">${response}</div>
-              <div class="chat-time">Just now</div>
-            </div>
-          `;
-          chatMessages.appendChild(adviserMsg);
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-        }, 800);
+        // I1: route the alerts chat to the REAL adviser (no canned 32.2%-concentration responses).
+        if (window.AlphaCouncil && AlphaCouncil.askQuestion) { if (AlphaCouncil.openSidebar) AlphaCouncil.openSidebar(); AlphaCouncil.askQuestion(message); }
       });
 
       chatInput.addEventListener('keydown', (e) => {
@@ -1252,19 +1215,7 @@
       }
     });
 
-    // Filter by analyst
-    document.getElementById('analystFilter').addEventListener('change', (e) => {
-      const analyst = e.target.value;
-      const cards = document.querySelectorAll('.alert-card');
-      cards.forEach(card => {
-        if (analyst === 'all') {
-          card.style.display = '';
-        } else {
-          const badge = card.querySelector(`.alert-badge.${analyst}`);
-          card.style.display = badge ? '' : 'none';
-        }
-      });
-    });
+    // I1: analyst-type filter removed (it matched a class the real cards never have, hiding all).
 
     // Ticker search
     document.getElementById('tickerSearch').addEventListener('input', (e) => {
