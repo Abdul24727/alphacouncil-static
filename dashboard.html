@@ -406,13 +406,13 @@
           <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
         </a>
       <div class="app-nav-links">
-        <a href="dashboard.html" class="active">Dashboard</a>
-        <a href="portfolio.html">Portfolio</a>
-        <a href="portfolio.html">Watchlist</a>
-        <a href="markets.html">Markets</a>
-        <a href="news.html">News</a>
-        <a href="council-history.html">Council</a>
-        <a href="alerts.html">Alerts</a>
+        <a href="dashboard.html" class="active" data-i18n="nav.dashboard">Dashboard</a>
+        <a href="portfolio.html" data-i18n="nav.portfolio">Portfolio</a>
+        <a href="portfolio.html" data-i18n="nav.watchlist">Watchlist</a>
+        <a href="markets.html" data-i18n="nav.markets">Markets</a>
+        <a href="news.html" data-i18n="nav.news">News</a>
+        <a href="council-history.html" data-i18n="nav.council">Council</a>
+        <a href="alerts.html" data-i18n="nav.alerts">Alerts</a>
       </div>
       <div class="app-nav-right">
         <div class="app-search" id="searchBtn">
@@ -420,9 +420,9 @@
           <span>Search stocks...</span>
           <kbd>/</kbd>
         </div>
-        <div class="lang-toggle">
-          <button class="active">EN</button>
-          <button>AR</button>
+        <div class="lang-toggle" id="langToggle">
+          <button data-lang="en" class="active">EN</button>
+          <button data-lang="ar">AR</button>
         </div>
         <button class="nav-icon-btn" id="adviserToggle" title="Toggle AI Adviser" aria-label="Toggle AI Adviser sidebar" aria-expanded="false" aria-controls="adviserSidebar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -799,7 +799,30 @@
 
   <!-- AlphaCouncil Core -->
   <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="adviser-core.js"></script>
+  <script>
+  // O2: wire the existing EN/AR toggle to the i18n runtime + honor the user's saved preference.
+  (function(){
+    var box = document.getElementById('langToggle');
+    function syncActive(lang){
+      if(!box) return;
+      Array.prototype.forEach.call(box.querySelectorAll('button'), function(b){
+        b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+      });
+    }
+    if(box) box.addEventListener('click', function(e){
+      var b = e.target.closest('button[data-lang]'); if(!b) return;
+      AC_I18N.set(b.getAttribute('data-lang'));
+    });
+    window.addEventListener('ac:langchange', function(e){ syncActive(e.detail && e.detail.lang); });
+    syncActive(AC_I18N.lang);
+    var saved; try { saved = localStorage.getItem('ac.lang'); } catch(e){}
+    if(!saved && window.API && API.me){
+      API.me().then(function(u){ if(u && u.preferred_language){ AC_I18N.init(u.preferred_language); syncActive(AC_I18N.lang); } }).catch(function(){});
+    }
+  })();
+  </script>
   <script>
     // Dashboard-specific initialization
     document.addEventListener('DOMContentLoaded', () => {
