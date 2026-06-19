@@ -1371,7 +1371,7 @@
 
       <!-- Page Header -->
       <div style="margin:0 0 20px;padding:12px 16px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;color:var(--fg-muted);font-size:13px;line-height:1.5;">
-        <strong style="color:#f59e0b;">Preview</strong> — the scenario planner shows an illustrative example. It isn’t yet connected to live portfolio analysis, so figures shown here are not based on your real holdings.
+        <strong style="color:#f59e0b;">Preview</strong> — describe a scenario and <strong>Analyze</strong> sends it to the AI Adviser for a live read against your real holdings. Quantitative before/after projections aren’t computed yet, so no estimated figures are shown.
       </div>
       <div class="page-header">
         <div class="page-header-left">
@@ -2184,21 +2184,17 @@
     });
 
     // Analyze Scenario
+    // K1: route the described scenario to the REAL adviser (qualitative read; no fabricated numbers).
     function analyzeScenario() {
-      const input = document.getElementById('scenarioInput').value;
-      if (!input.trim()) {
+      const input = ((document.getElementById('scenarioInput') || {}).value || '').trim();
+      if (!input) {
         AlphaCouncil.showToast('Input Required', 'Please describe your scenario first', 'warning');
         return;
       }
-
-      const comparisonSection = document.getElementById('comparisonSection');
-      AlphaCouncil.showLoading(comparisonSection, 'Analyzing scenario impact...');
-
-      setTimeout(() => {
-        AlphaCouncil.hideLoading(comparisonSection);
-        AlphaCouncil.showToast('Analysis Complete', 'Scenario impact calculated successfully', 'success');
-        AlphaCouncil.announceToScreenReader('Scenario analysis complete. Results are now displayed.');
-      }, 1500);
+      if (window.AlphaCouncil) {
+        if (AlphaCouncil.openSidebar) AlphaCouncil.openSidebar();
+        if (AlphaCouncil.askQuestion) AlphaCouncil.askQuestion('Analyse this portfolio scenario against my real holdings — the impact on concentration, risk and income, and the main trade-offs. Scenario: ' + input);
+      }
     }
 
     // NL Suggestions
@@ -2282,20 +2278,18 @@
     }
 
     function createScenario() {
-      const name = document.getElementById('scenarioName').value;
-      const desc = document.getElementById('scenarioDesc').value;
-
-      if (!name.trim()) {
+      const name = ((document.getElementById('scenarioName') || {}).value || '').trim();
+      const desc = ((document.getElementById('scenarioDesc') || {}).value || '').trim();
+      if (!name) {
         AlphaCouncil.showToast('Name Required', 'Please enter a scenario name', 'warning');
         return;
       }
-
       closeNewScenarioModal();
-      AlphaCouncil.showToast('Scenario Created', `"${name}" has been created`, 'success');
-
-      // Reset form
+      // K1: no scenario store yet — load the description into the analyser for a real AI read (no fake "created").
+      const inp = document.getElementById('scenarioInput'); if (inp) inp.value = (desc || name);
       document.getElementById('scenarioName').value = '';
       document.getElementById('scenarioDesc').value = '';
+      analyzeScenario();
     }
 
     // New Scenario Button
@@ -2315,23 +2309,32 @@
       }
     });
 
-    // Duplicate Scenario
+    // K1: no scenario store yet — the cards are example templates, so don't claim persistence.
     function duplicateScenario(id) {
-      AlphaCouncil.showToast('Scenario Duplicated', 'A copy has been created', 'success');
+      AlphaCouncil.showToast('Not saved yet', 'Saved scenarios aren’t available yet — describe a scenario and Analyze for a live AI read.', 'info');
+    }
+    function deleteScenario(id) {
+      const card = document.querySelector(`.scenario-card[data-id="${id}"]`);
+      if (card) { card.style.opacity = '0'; card.style.transform = 'translateX(-20px)'; setTimeout(() => card.remove(), 300); }
     }
 
-    // Delete Scenario
-    function deleteScenario(id) {
-      if (confirm('Are you sure you want to delete this scenario?')) {
-        const card = document.querySelector(`.scenario-card[data-id="${id}"]`);
-        if (card) {
-          card.style.opacity = '0';
-          card.style.transform = 'translateX(-20px)';
-          setTimeout(() => card.remove(), 300);
-          AlphaCouncil.showToast('Scenario Deleted', 'The scenario has been removed', 'info');
-        }
-      }
-    }
+    // K1: this planner has no live scenario-eval backend yet, so strip every fabricated "result"
+    // number — saved-card impacts + the Before/After comparison + thesis comparison — leaving an
+    // honest input → real AI-analysis tool (the adviser's read appears in the sidebar).
+    (function honestScenarioPreview(){
+      document.querySelectorAll('.scenario-meta').forEach(function(el){ el.remove(); });
+      document.querySelectorAll('.thesis-comparison').forEach(function(el){ el.remove(); });
+      document.querySelectorAll('.trade-input').forEach(function(i){ i.value = ''; });
+      document.querySelectorAll('.scenario-card').forEach(function(card){
+        const desc = card.querySelector('.scenario-description');
+        if (desc) card.addEventListener('click', function(){ const inp = document.getElementById('scenarioInput'); if (inp) { inp.value = desc.textContent.trim(); inp.focus(); } });
+      });
+      const cmp = document.getElementById('comparisonSection');
+      if (cmp) cmp.innerHTML = '<div style="padding:30px 22px;text-align:center;color:var(--fg-muted);font-size:13px;line-height:1.7;max-width:560px;margin:0 auto;">'
+        + '<strong style="color:var(--fg);">Describe a scenario and click Analyze.</strong><br>'
+        + 'The AI Adviser assesses it against your <strong>real holdings</strong> — concentration, risk and income trade-offs — in the sidebar. '
+        + 'Quantitative before/after projections aren’t computed yet, so no estimated figures are shown here.</div>';
+    })();
 
     // Adviser Toggle
     document.getElementById('adviserToggle').addEventListener('click', () => {
