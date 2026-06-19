@@ -695,6 +695,43 @@
   <script src="js/i18n.js"></script>
   <script src="adviser-core.js"></script>
   <script>
+  // O4: stock-detail static section headers (prices, scores, news, fundamentals are real/dynamic).
+  AC_I18N.add({
+    'sd.signal':            { en: 'AlphaCouncil Signal', ar: 'إشارة AlphaCouncil' },
+    'sd.thesis':            { en: '12-Dimension Thesis Analysis', ar: 'تحليل الأطروحة ذو ١٢ بُعدًا' },
+    'sd.view_methodology':  { en: 'View methodology', ar: 'عرض المنهجية' },
+    'sd.council_snapshot':  { en: 'AI Analyst Council Snapshot', ar: 'لمحة مجلس المحلّلين الذكي' },
+    'sd.recent_news':       { en: 'Recent News', ar: 'أخبار حديثة' },
+    'sd.adviser':           { en: 'AlphaCouncil Adviser', ar: 'مستشار AlphaCouncil' },
+    'sd.ready':             { en: 'Ready to help', ar: 'جاهز للمساعدة' },
+    'sd.chat_placeholder':  { en: 'Ask about this stock...', ar: 'اسأل عن هذا السهم...' },
+    'sd.fundamentals':      { en: 'Fundamentals', ar: 'الأساسيات' },
+    'sd.technicals':        { en: 'Technicals', ar: 'المؤشرات الفنية' },
+    'sd.key_facts':         { en: 'Key Facts', ar: 'حقائق رئيسية' },
+    'sd.analyst_forecast':  { en: 'Analyst Forecast', ar: 'توقّعات المحلّلين' },
+    'sd.performance':       { en: 'Performance & Seasonality', ar: 'الأداء والموسمية' },
+    'sd.dividends':         { en: 'Dividends', ar: 'التوزيعات' },
+    'sd.major_holders':     { en: 'Major Holders', ar: 'كبار المالكين' },
+    'sd.corporate_actions': { en: 'Corporate Actions', ar: 'إجراءات الشركة' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
+    var MAP = {
+      'AlphaCouncil Signal': 'sd.signal', '12-Dimension Thesis Analysis': 'sd.thesis', 'View methodology': 'sd.view_methodology',
+      'AI Analyst Council Snapshot': 'sd.council_snapshot', 'Recent News': 'sd.recent_news', 'AlphaCouncil Adviser': 'sd.adviser',
+      'Ready to help': 'sd.ready', 'Fundamentals': 'sd.fundamentals', 'Technicals': 'sd.technicals', 'Key Facts': 'sd.key_facts',
+      'Analyst Forecast': 'sd.analyst_forecast', 'Performance & Seasonality': 'sd.performance', 'Dividends': 'sd.dividends',
+      'Major Holders': 'sd.major_holders', 'Corporate Actions': 'sd.corporate_actions'
+    };
+    Array.prototype.forEach.call(document.querySelectorAll('.card-title, .section-title, .card-action, .sidebar-title h3, .sidebar-title p, h2, h3'), function (el) {
+      var k = MAP[firstText(el)]; if (k) setKey(el, k);
+    });
+    var ci = document.getElementById('chatInput'); if (ci) ci.setAttribute('data-i18n-attr', 'placeholder:sd.chat_placeholder');
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
+  <script>
     // Stock data lookup (would come from API in production)
     const stocksDatabase = {
       '2222': { ticker: '2222', name: 'Saudi Aramco', shares: 5470, avgCost: 25.40, currentPrice: 28.50, weight: 18.4, thesis: 8.4 },
