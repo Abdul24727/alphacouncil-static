@@ -49,4 +49,35 @@ test.describe('G1 — onboarding statement upload (was silent data loss)', () =>
     expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
     await context.close();
   });
+
+  test('G2 — real success tiles + multi-currency FX; profile persists to risk-profile', async ({ browser }) => {
+    const context = await browser.newContext();
+    await apiLogin(context, QA_EMAIL, QA_PASSWORD);
+    const page = await context.newPage();
+    const diag = attachDiagnostics(page);
+    await page.goto('/onboarding.html', { waitUntil: 'domcontentloaded' });
+
+    // fabricated success tiles removed; real ones + real FX pegs present
+    const content = await page.content();
+    expect(content, 'no fake +8.4% return tile').not.toContain('+8.4%');
+    expect(content, 'no fake Avg Dividend tile').not.toContain('Avg Dividend');
+    expect(content, 'real Markets tile').toContain('previewMarkets');
+    expect(content, 'real multi-currency FX pegs (incl. OMR/BHD)').toContain('OMR');
+
+    // profile persists → real PUT /api/adviser/risk-profile
+    let saved = false;
+    await page.route('**/api/adviser/risk-profile', (route) => {
+      if (route.request().method() === 'PUT') { saved = true; route.fulfill({ status: 200, contentType: 'application/json', body: '{"risk_style":"balanced"}' }); }
+      else route.continue();
+    });
+    await page.evaluate(() => { if (typeof goToStep === 'function') goToStep(4); });
+    await page.locator('.option-buttons[data-question="goal"] .option-btn[data-value="balanced"]').click();
+    await page.locator('.option-buttons[data-question="timeline"] .option-btn[data-value="long"]').click();
+    await page.locator('.profile-actions .btn-primary', { hasText: 'Continue' }).click();
+    await expect.poll(() => saved, { timeout: 6000 }).toBeTruthy();
+
+    await shot(page, 'g2-onboarding');
+    expect(diag.pageErrors, 'uncaught page errors:\n' + diag.pageErrors.join('\n')).toEqual([]);
+    await context.close();
+  });
 });

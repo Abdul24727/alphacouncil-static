@@ -2037,7 +2037,7 @@
             </div>
             <div class="profile-actions">
               <button class="btn btn-secondary" onclick="goToStep(5)">Skip for now</button>
-              <button class="btn btn-primary" onclick="goToStep(5)">
+              <button class="btn btn-primary" onclick="saveProfileAndContinue()">
                 Continue
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </button>
@@ -2060,20 +2060,12 @@
               <div class="preview-value" id="previewValue">SAR 847,250</div>
               <div class="preview-metrics">
                 <div class="preview-metric">
-                  <div class="preview-metric-value up">+8.4%</div>
-                  <div class="preview-metric-label">Total Return</div>
-                </div>
-                <div class="preview-metric">
-                  <div class="preview-metric-value">5</div>
+                  <div class="preview-metric-value" id="previewHoldingsCount">—</div>
                   <div class="preview-metric-label">Holdings</div>
                 </div>
                 <div class="preview-metric">
-                  <div class="preview-metric-value">3.2%</div>
-                  <div class="preview-metric-label">Avg Dividend</div>
-                </div>
-                <div class="preview-metric">
-                  <div class="preview-metric-value">72</div>
-                  <div class="preview-metric-label">Council Score</div>
+                  <div class="preview-metric-value" id="previewMarkets">—</div>
+                  <div class="preview-metric-label">Markets</div>
                 </div>
               </div>
               <div class="preview-holdings" id="previewHoldings">
@@ -2705,17 +2697,27 @@
       });
     }
 
+    // G2: persist the onboarding risk profile (real PUT /api/adviser/risk-profile), then continue.
+    function saveProfileAndContinue() {
+      const styleMap = { growth: 'aggressive', balanced: 'balanced', income: 'conservative', preservation: 'conservative' };
+      const risk_style = styleMap[userProfile.goal] || null;
+      const hedge = userProfile.timeline === 'short' ? 'active' : (userProfile.timeline === 'long' ? 'passive' : null);
+      if (risk_style && window.API && API.saveRiskProfile) {
+        API.saveRiskProfile({ risk_style: risk_style, max_position_pct: null, hedge_appetite: hedge }).catch(function () { /* non-fatal */ });
+      }
+      goToStep(5);
+    }
+
     // Success
     function updateSuccessPage() {
       document.getElementById('successCount').textContent = holdings.length;
-      const totalValue = holdings.reduce((sum, h) => {
-        let sarValue = h.value;
-        if (h.currency === 'AED') sarValue *= 1.02;
-        if (h.currency === 'QAR') sarValue *= 1.03;
-        if (h.currency === 'KWD') sarValue *= 12.2;
-        return sum + sarValue;
-      }, 0);
+      // G2: use the same GCC pegs the backend uses (B4 SAR_PER) — handles all 6 currencies incl. OMR/BHD.
+      const SAR_PER = { SAR: 1, AED: 1.0211, QAR: 1.0302, KWD: 12.22, OMR: 9.7530, BHD: 9.9734 };
+      const totalValue = holdings.reduce((sum, h) => sum + ((h.value || 0) * (SAR_PER[h.currency] || 1)), 0);
       document.getElementById('previewValue').textContent = 'SAR ' + Math.round(totalValue).toLocaleString();
+      // G2: real success tiles (no fabricated return/dividend/council-score).
+      const hc = document.getElementById('previewHoldingsCount'); if (hc) hc.textContent = String(holdings.length);
+      const mk = document.getElementById('previewMarkets'); if (mk) mk.textContent = String(new Set(holdings.map(h => h.currency || h.exchange).filter(Boolean)).size);
       document.getElementById('previewHoldings').innerHTML = holdings.slice(0, 3).map(h => `
         <div class="preview-holding">
           <div class="preview-holding-logo" aria-hidden="true">${h.ticker.replace('.SR','').slice(0,4)}</div>
