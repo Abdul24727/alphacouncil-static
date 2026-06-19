@@ -935,14 +935,7 @@
 
     // H1: legacy toast-only tab handler removed — the real one (loadNews per tab) is wired in DOMContentLoaded.
 
-    // Language toggle
-    document.querySelectorAll('.lang-toggle button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        showToast('Language', `Switched to ${btn.textContent}`, 'info');
-      });
-    });
+    // Language toggle is handled by js/i18n.js (AC_I18N); the old toast-only handler was removed.
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
@@ -959,6 +952,49 @@
     document.querySelectorAll('.top-story-item').forEach((item, index) => {
       item.style.cursor = 'pointer';
     });
+  </script>
+  <script>
+  // O4: news persistent chrome (the live feed itself is backend-localized real news).
+  AC_I18N.add({
+    'news.title':            { en: 'News', ar: 'الأخبار' },
+    'news.subtitle':         { en: 'What moved markets — and why it matters to you.', ar: 'ما الذي حرّك الأسواق — ولماذا يهمّك.' },
+    'news.tab_all':          { en: 'All', ar: 'الكل' },
+    'news.tab_holdings':     { en: 'For Your Holdings', ar: 'لمراكزك' },
+    'news.top_stories':      { en: 'Top Stories', ar: 'أبرز الأخبار' },
+    'news.summarize':        { en: "Summarize today's news for my holdings", ar: 'لخّص أخبار اليوم المتعلّقة بمراكزي' },
+    'news.adviser_title':    { en: 'AlphaCouncil Adviser', ar: 'مستشار AlphaCouncil' },
+    'news.ready':            { en: 'Ready to help', ar: 'جاهز للمساعدة' },
+    'news.suggested':        { en: 'Suggested Questions', ar: 'أسئلة مقترحة' },
+    'news.discussing':       { en: 'Discussing', ar: 'نقاش حول' },
+    'news.clear_context':    { en: 'Clear context', ar: 'مسح السياق' },
+    'news.q1':               { en: 'What news today affects my holdings?', ar: 'ما أخبار اليوم التي تؤثّر على مراكزي؟' },
+    'news.q2':               { en: "How does the PIF stake increase impact Aramco's thesis?", ar: 'كيف يؤثّر رفع حصة صندوق الاستثمارات العامة في أرامكو على أطروحتها؟' },
+    'news.q3':               { en: 'What are analysts saying about GCC banks?', ar: 'ماذا يقول المحلّلون عن البنوك الخليجية؟' },
+    'news.q4':               { en: "Summarize today's earnings reports", ar: 'لخّص تقارير أرباح اليوم' },
+    'news.chat_placeholder': { en: 'Ask about news or your holdings...', ar: 'اسأل عن الأخبار أو مراكزك...' },
+    'news.footer_slogan':    { en: 'Your AI adviser for TADAWUL, ADX and DFM.', ar: 'مستشارك الذكي لأسواق تداول وأبوظبي ودبي.' },
+    'news.footer_disclaimer':{ en: 'AlphaCouncil provides data analysis and portfolio intelligence tools. All content is for informational purposes only and does not constitute financial advice, investment recommendations, or an offer to buy or sell securities. Past performance is not indicative of future results. Always conduct your own research and consult with qualified financial advisors before making investment decisions.', ar: 'يوفّر AlphaCouncil أدوات تحليل بيانات وذكاء للمحافظ. جميع المحتوى لأغراض إعلامية فقط ولا يشكّل استشارة مالية أو توصية استثمارية أو عرضًا لشراء أو بيع أوراق مالية. الأداء السابق لا يدلّ على النتائج المستقبلية. تحقّق دائمًا بنفسك واستشر مستشارين ماليين مؤهّلين قبل اتخاذ قرارات استثمارية.' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    var MAP = {
+      'All': 'news.tab_all', 'For Your Holdings': 'news.tab_holdings', 'Top Stories': 'news.top_stories',
+      "Summarize today's news for my holdings": 'news.summarize', 'AlphaCouncil Adviser': 'news.adviser_title',
+      'Ready to help': 'news.ready', 'Suggested Questions': 'news.suggested', 'Discussing': 'news.discussing',
+      'Clear context': 'news.clear_context', 'What news today affects my holdings?': 'news.q1',
+      "How does the PIF stake increase impact Aramco's thesis?": 'news.q2',
+      'What are analysts saying about GCC banks?': 'news.q3', "Summarize today's earnings reports": 'news.q4'
+    };
+    Array.prototype.forEach.call(document.querySelectorAll('.page-tab, .top-stories-title, .summarize-btn, .sidebar-title h3, .sidebar-title p, .sidebar-section-title, .suggested-question, .context-label, .context-clear'), function (el) {
+      var k = MAP[(el.textContent || '').trim()]; if (k) setKey(el, k);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('h1'), function (el) { if ((el.textContent || '').trim() === 'News') setKey(el, 'news.title'); });
+    Array.prototype.forEach.call(document.querySelectorAll('p'), function (el) { if ((el.textContent || '').trim() === 'What moved markets — and why it matters to you.') setKey(el, 'news.subtitle'); });
+    var ci = document.getElementById('chatInput'); if (ci && !ci.getAttribute('data-i18n-attr')) ci.setAttribute('data-i18n-attr', 'placeholder:news.chat_placeholder');
+    setKey(document.querySelector('.footer-slogan'), 'news.footer_slogan');
+    setKey(document.querySelector('.footer-disclaimer'), 'news.footer_disclaimer');
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
   </script>
 </body>
 </html>
