@@ -126,6 +126,8 @@
       return API.get('/api/alerts' + (q.length ? ('?' + q.join('&')) : ''));
     },
     alertsUnread: function () { return API.get('/api/alerts/unread-count'); },
+    // J1: the signed-in user's past AI Analyst Council convenings (most recent first).
+    councilHistory: function (limit) { return API.get('/api/adviser/council/history?limit=' + (limit || 20)); },
     markAlertsRead: function (ids) { return API.post('/api/alerts/mark-read', (ids && ids.length) ? { ids: ids } : {}); },
 
     // ---- Adviser & Council ----

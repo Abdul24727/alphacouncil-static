@@ -1231,9 +1231,70 @@
       });
     }
 
-    // Detail Modal
+    // J1: real Council history from /api/adviser/council/history (replaces the hardcoded cards/stats).
+    window.__councilHistory = {};
+    (function loadCouncilHistory(){
+      const listEl = document.getElementById('historyList');
+      if (!listEl || !window.API || !API.councilHistory) return;
+      const esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+      const timeAgo = function (iso) { const t = Date.parse(iso); if (isNaN(t)) return ''; let s = Math.max(0, Math.floor((Date.now() - t) / 1000)); if (s < 60) return 'just now'; const m = Math.floor(s / 60); if (m < 60) return m + 'm ago'; const h = Math.floor(m / 60); if (h < 24) return h + 'h ago'; const d = Math.floor(h / 24); if (d < 30) return d + 'd ago'; return Math.floor(d / 30) + 'mo ago'; };
+      const fmtDate = function (iso) { const dt = new Date(iso); return isNaN(dt) ? (iso || '') : dt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); };
+      const IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>';
+      const setStats = function (items) {
+        const sv = document.querySelectorAll('.stat-value');
+        if (sv[0]) sv[0].textContent = String(items.length);
+        if (sv[1]) sv[1].textContent = items.length ? timeAgo(items[0].created_at) : '—';
+        if (sv[2]) sv[2].textContent = String(new Set([].concat.apply([], items.map(function (it) { return it.tickers_detected || []; }))).size);
+        if (sv[3]) sv[3].textContent = items.length ? String(Math.max.apply(null, items.map(function (it) { return it.analyst_count || 0; }))) : '—';
+      };
+      API.councilHistory(50).then(function (res) {
+        const items = (res && res.history) || [];
+        setStats(items);
+        if (!items.length) {
+          listEl.innerHTML = '<div class="empty-state"><h3 style="margin-bottom:10px;">No council reviews yet</h3><p class="empty-text" style="margin-bottom:18px;color:var(--fg-muted);">Run your first AI Analyst Council review to build your history. The Council debates your holdings across multiple model perspectives, then a chairman synthesises a balanced view.</p><button class="btn btn-primary" onclick="runNewReview()">Run a Council Review</button></div>';
+          return;
+        }
+        items.forEach(function (it) { window.__councilHistory[String(it.id)] = it; });
+        listEl.innerHTML = items.map(function (it) {
+          const isTicker = !!it.ticker, subj = isTicker ? esc(String(it.ticker).split('_')[0]) : 'Portfolio-wide', badge = isTicker ? 'ticker' : 'portfolio';
+          return '<div class="history-card" onclick="openDetailModal(\'' + esc(String(it.id)) + '\')">'
+            + '<div class="history-card-header"><div class="history-card-left">'
+            + '<div class="history-icon ' + badge + '">' + IC + '</div>'
+            + '<div class="history-meta"><div class="history-date">' + esc(fmtDate(it.created_at)) + ' · ' + esc(timeAgo(it.created_at)) + '</div>'
+            + '<div class="history-badges"><span class="history-badge ' + badge + '">' + subj + '</span></div>'
+            + '<p class="history-summary">' + esc(it.question || '') + '</p></div></div></div>'
+            + '<div class="history-card-footer"><div class="history-signals"><strong>' + (it.analyst_count || 0) + '</strong> analyst perspectives</div>'
+            + '<div class="history-actions">'
+            + '<button class="action-btn" onclick="event.stopPropagation(); exportReview(\'' + esc(String(it.id)) + '\')">Export</button>'
+            + '<button class="action-btn primary" onclick="event.stopPropagation(); openDetailModal(\'' + esc(String(it.id)) + '\')">View</button>'
+            + '</div></div></div>';
+        }).join('');
+      }).catch(function (e) {
+        listEl.innerHTML = '<div class="empty-state"><p class="empty-text" style="color:var(--fg-muted);">' + (e && e.status === 401 ? 'Please <a href="login.html" style="color:var(--accent-primary);">sign in</a> to see your council history.' : 'Couldn’t load your council history.') + '</p></div>';
+      });
+    })();
+
+    // Detail Modal — renders the clicked review's REAL synthesis + analyst perspectives.
     function openDetailModal(reviewId) {
-      document.getElementById('detailModal').classList.add('open');
+      const modal = document.getElementById('detailModal');
+      const it = (window.__councilHistory || {})[String(reviewId)];
+      if (it) {
+        const esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+        const t = modal.querySelector('.detail-title'); if (t) t.innerHTML = esc(it.ticker ? (String(it.ticker).split('_')[0] + ' Review') : 'Portfolio-wide Review') + (it.ticker ? '' : ' <span class="history-badge portfolio">Portfolio</span>');
+        const sub = modal.querySelector('.detail-subtitle'); if (sub) { const dt = new Date(it.created_at); sub.textContent = (isNaN(dt) ? '' : dt.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })) + (it.analyst_count ? (' · ' + it.analyst_count + ' analyst perspectives') : ''); }
+        const body = modal.querySelector('.detail-body');
+        if (body) {
+          const analysts = it.analysts || [];
+          body.innerHTML =
+            '<div class="synthesis-section"><div class="synthesis-card"><div class="synthesis-header"><div class="synthesis-label">Strategic Synthesis (Chairman' + (it.chairman_model ? ' · ' + esc(it.chairman_model) : '') + ')</div></div>'
+            + '<p class="synthesis-text" style="white-space:pre-wrap;">' + esc(it.answer || '') + '</p></div></div>'
+            + '<div class="perspectives-section"><div class="section-header"><div class="section-title">AI Analyst Council (' + analysts.length + ' perspective' + (analysts.length === 1 ? '' : 's') + ')</div></div>'
+            + '<div class="perspectives-grid">'
+            + (analysts.length ? analysts.map(function (a) { return '<div class="perspective-card"><div class="perspective-header"><div class="perspective-name">' + esc(a.model || 'Analyst') + '</div></div><div class="perspective-observations" style="white-space:pre-wrap;">' + esc(a.response || '') + '</div></div>'; }).join('') : '<p style="color:var(--fg-dim);padding:12px;">No individual analyst breakdown was stored for this review.</p>')
+            + '</div></div>';
+        }
+      }
+      modal.classList.add('open');
       document.body.style.overflow = 'hidden';
     }
 
@@ -1286,32 +1347,49 @@
       }
     }
 
+    // J1: real text export of a stored review.
     function exportReview(reviewId) {
-      showToast('Export Started', 'Generating PDF report...', 'info');
-      setTimeout(() => {
-        showToast('Export Complete', 'PDF downloaded successfully', 'success');
-      }, 1500);
+      const it = (window.__councilHistory || {})[String(reviewId)];
+      if (!it) { showToast('Not available', 'Open a review first.', 'info'); return; }
+      const nl = String.fromCharCode(10);
+      const lines = ['AlphaCouncil — Council Review', 'Date: ' + (it.created_at || ''), 'Subject: ' + (it.ticker || 'Portfolio-wide'), '', 'Question:', it.question || '', '', 'Chairman synthesis:', it.answer || '', ''];
+      (it.analysts || []).forEach(function (a) { lines.push('--- ' + (a.model || 'Analyst') + ' ---', a.response || '', ''); });
+      const blob = new Blob([lines.join(nl)], { type: 'text/plain;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'council-review-' + reviewId + '.txt';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      showToast('Exported', 'Review downloaded as text.', 'success');
     }
 
     function exportAllReports() {
-      showToast('Export Started', 'Generating all reports...', 'info');
-      setTimeout(() => {
-        showToast('Export Complete', '12 reports downloaded', 'success');
-      }, 2000);
+      const map = window.__councilHistory || {};
+      const all = Object.keys(map).map(function (k) { return map[k]; });
+      if (!all.length) { showToast('Nothing to export', 'You have no council reviews yet.', 'info'); return; }
+      const nl = String.fromCharCode(10);
+      const out = [];
+      all.forEach(function (it) { out.push('==============================', (it.ticker || 'Portfolio-wide') + ' · ' + (it.created_at || ''), 'Q: ' + (it.question || ''), '', it.answer || '', ''); });
+      const blob = new Blob([out.join(nl)], { type: 'text/plain;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'council-reviews.txt';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      showToast('Exported', all.length + ' review' + (all.length === 1 ? '' : 's') + ' downloaded.', 'success');
     }
 
     function compareReview(reviewId) {
-      showToast('Compare', 'Loading comparison view...', 'info');
+      showToast('Coming soon', 'Side-by-side review comparison isn’t available yet.', 'info');
     }
 
     function compareWithLatest() {
       closeDetailModal();
-      showToast('Compare', 'Loading comparison with latest review...', 'info');
+      showToast('Coming soon', 'Side-by-side review comparison isn’t available yet.', 'info');
     }
 
     function askAdviser(question) {
       closeDetailModal();
-
+      // J1: route to the REAL adviser (no canned "June 14th review" response). Branches below are dead.
+      if (window.AlphaCouncil) { if (AlphaCouncil.openSidebar) AlphaCouncil.openSidebar(); if (AlphaCouncil.askQuestion) AlphaCouncil.askQuestion(question); return; }
       if (typeof AlphaCouncil !== 'undefined') {
         AlphaCouncil.openSidebar();
         setTimeout(() => {
