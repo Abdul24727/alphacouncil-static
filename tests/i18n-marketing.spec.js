@@ -9,6 +9,7 @@ test.describe('O4 marketing — toggle injection + nav/content translation', () 
     { path: '/about.html',   name: 'about',   body: { sel: 'h1[data-i18n="about.hero_h1"]', ar: 'نفهم أسواق الخليج' } },
     { path: '/how-it-works.html', name: 'how-it-works', body: { sel: '[data-i18n="hiw.hero_t1"]', ar: 'كيف يحوّل' } },
     { path: '/features.html', name: 'features', body: { sel: '[data-i18n="ft.hero_t1"]', ar: 'مزايا قوية' } },
+    { path: '/pricing.html', name: 'pricing', body: { sel: '.hero-title[data-i18n="pr.hero"]', ar: 'ذكاء يتوسّع' } },
   ];
 
   for (const pg of PAGES) {

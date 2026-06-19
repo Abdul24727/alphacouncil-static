@@ -866,5 +866,54 @@
   </script>
   <script>/* brand logo -> dashboard when signed in (ac_csrf cookie present), else index */
   (function(){try{if(document.cookie.indexOf('ac_csrf=')>-1){var e=document.querySelectorAll('.nav-logo,.ac-flogo');for(var i=0;i<e.length;i++)e[i].setAttribute('href','dashboard.html');}}catch(x){}})();</script>
+  <script src="js/i18n.js"></script>
+  <script>
+  // O4 (marketing): pricing.html — engine handles nav+toggle; this tags hero + sections + FAQ.
+  // Plan tier names (Free/Pro/Elite), prices and the comparison matrix are structural/numeric.
+  AC_I18N.add({
+    'pr.hero':        { en: 'Intelligence That Scales With Your Portfolio', ar: 'ذكاء يتوسّع مع محفظتك' },
+    'pr.hero_sub':    { en: 'Pricing reflects the depth of analysis — from basic portfolio tracking to full AI Analyst Council synthesis, Adviser access, and comprehensive GCC market coverage.', ar: 'يعكس السعر عمق التحليل — من تتبّع المحفظة الأساسي إلى خلاصة مجلس المحلّلين الذكي الكاملة والوصول إلى المستشار وتغطية شاملة لأسواق الخليج.' },
+    'pr.billing_monthly':{ en: 'Monthly', ar: 'شهري' },
+    'pr.billing_annual': { en: 'Annual', ar: 'سنوي' },
+    'pr.eye_compare': { en: 'Compare Plans', ar: 'قارن الخطط' },
+    'pr.t_compare':   { en: "What's Included", ar: 'ما المتضمَّن' },
+    'pr.s_compare':   { en: 'A detailed breakdown of analytical capabilities across each tier', ar: 'تفصيل دقيق للقدرات التحليلية عبر كل فئة' },
+    'pr.eye_get':     { en: 'What You Get', ar: 'ما تحصل عليه' },
+    'pr.t_get':       { en: 'Analysis & Education, Not Advice', ar: 'تحليل وتثقيف، لا نصيحة' },
+    'pr.s_get':       { en: 'AlphaCouncil provides data-driven insights and portfolio intelligence tools. We help you understand your holdings more clearly — the decisions remain yours.', ar: 'يقدّم AlphaCouncil رؤى قائمة على البيانات وأدوات ذكاء للمحفظة. نساعدك على فهم مراكزك بوضوح أكبر — والقرارات تبقى لك.' },
+    'pr.eye_questions':{ en: 'Questions', ar: 'أسئلة' },
+    'pr.t_questions': { en: 'Frequently Asked', ar: 'الأسئلة الشائعة' },
+    'pr.faq1': { en: 'Can I upgrade or downgrade anytime?', ar: 'هل يمكنني الترقية أو التخفيض في أي وقت؟' },
+    'pr.faq2': { en: 'What happens to my portfolio data if I cancel?', ar: 'ماذا يحدث لبيانات محفظتي إذا ألغيت الاشتراك؟' },
+    'pr.faq3': { en: 'How many Council reviews do I get on each plan?', ar: 'كم عدد مراجعات المجلس في كل خطة؟' },
+    'pr.faq4': { en: 'Is there a discount for annual billing?', ar: 'هل هناك خصم للفوترة السنوية؟' },
+    'pr.faq5': { en: 'Do you offer institutional or family-office plans?', ar: 'هل تقدّمون خططًا للمؤسّسات أو المكاتب العائلية؟' },
+    'pr.faq6': { en: 'How is this different from generic stock screeners?', ar: 'كيف يختلف هذا عن أدوات فرز الأسهم العامة؟' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
+    var heads = document.querySelectorAll('h2, .section-title');
+    function tagPair(text, key, nextKey) {
+      for (var i = 0; i < heads.length; i++) {
+        if (firstText(heads[i]) === text) { setKey(heads[i], key); if (nextKey) { var n = heads[i].nextElementSibling; if (n && n.tagName === 'P') setKey(n, nextKey); } return; }
+      }
+    }
+    setKey(document.querySelector('.hero-title'), 'pr.hero');
+    setKey(document.querySelector('.hero-subtitle'), 'pr.hero_sub');
+    tagPair("What's Included", 'pr.t_compare', 'pr.s_compare');
+    tagPair('Analysis & Education, Not Advice', 'pr.t_get', 'pr.s_get');
+    tagPair('Frequently Asked', 'pr.t_questions');
+    var MAP = {
+      'Compare Plans': 'pr.eye_compare', 'What You Get': 'pr.eye_get', 'Questions': 'pr.eye_questions',
+      'Monthly': 'pr.billing_monthly', 'Annual': 'pr.billing_annual',
+      'Can I upgrade or downgrade anytime?': 'pr.faq1', 'What happens to my portfolio data if I cancel?': 'pr.faq2',
+      'How many Council reviews do I get on each plan?': 'pr.faq3', 'Is there a discount for annual billing?': 'pr.faq4',
+      'Do you offer institutional or family-office plans?': 'pr.faq5', 'How is this different from generic stock screeners?': 'pr.faq6'
+    };
+    Array.prototype.forEach.call(document.querySelectorAll('.section-eyebrow, .billing-option, .faq-question h4'), function (el) { var k = MAP[firstText(el)]; if (k) setKey(el, k); });
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
 </body>
 </html>
