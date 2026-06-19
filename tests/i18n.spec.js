@@ -66,7 +66,7 @@ test.describe('O4 — i18n shared chrome rolled out across app pages', () => {
   const PAGES = [
     { path: '/portfolio.html',        name: 'portfolio', body: { sel: '.card-title[data-i18n="port.holdings_overview"]', ar: 'نظرة عامة على المراكز' } },
     { path: '/news.html',             name: 'news', body: { sel: '.page-tab[data-i18n="news.tab_all"]', ar: 'الكل' } },
-    { path: '/settings.html',         name: 'settings' },
+    { path: '/settings.html',         name: 'settings', body: { sel: '.section-title-group h2[data-i18n="set.profile"]', ar: 'الملف الشخصي' } },
     { path: '/alerts.html',           name: 'alerts', body: { sel: '.rules-title[data-i18n="alerts.rules_title"]', ar: 'قواعد التنبيه' } },
     { path: '/council-history.html',  name: 'council-history', body: { sel: '.page-title[data-i18n="ch.title"]', ar: 'سجل المجلس' } },
     { path: '/scenarios.html',        name: 'scenarios', body: { sel: 'h1[data-i18n="sc.title"]', ar: 'سيناريوهات المحفظة' } },

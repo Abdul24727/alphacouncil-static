@@ -1703,6 +1703,58 @@
   <script src="js/i18n.js"></script>
   <script src="adviser-core.js"></script>
   <script>
+  // O4: settings nav + section titles + key form labels/buttons.
+  AC_I18N.add({
+    'set.profile':      { en: 'Profile', ar: 'الملف الشخصي' },
+    'set.preferences':  { en: 'Investment Preferences', ar: 'تفضيلات الاستثمار' },
+    'set.notifications':{ en: 'Notifications', ar: 'الإشعارات' },
+    'set.billing':      { en: 'Billing & Plan', ar: 'الفوترة والخطة' },
+    'set.methodology':  { en: 'Methodology & Data', ar: 'المنهجية والبيانات' },
+    'set.security':     { en: 'Security', ar: 'الأمان' },
+    'set.export':       { en: 'Data & Export', ar: 'البيانات والتصدير' },
+    'set.profile_sub':  { en: 'Manage your personal information and preferences', ar: 'إدارة معلوماتك الشخصية وتفضيلاتك' },
+    'set.prefs_sub':    { en: 'These preferences help tailor Council reviews to your investment style', ar: 'تساعد هذه التفضيلات على تخصيص مراجعات المجلس وفق أسلوبك الاستثماري' },
+    'set.photo':        { en: 'Profile Photo', ar: 'صورة الملف الشخصي' },
+    'set.first_name':   { en: 'First Name', ar: 'الاسم الأول' },
+    'set.last_name':    { en: 'Last Name', ar: 'اسم العائلة' },
+    'set.email':        { en: 'Email Address', ar: 'البريد الإلكتروني' },
+    'set.market':       { en: 'Default Market', ar: 'السوق الافتراضي' },
+    'set.language':     { en: 'Language', ar: 'اللغة' },
+    'set.goal':         { en: 'Primary Investment Goal', ar: 'هدف الاستثمار الأساسي' },
+    'set.horizon':      { en: 'Investment Time Horizon', ar: 'أفق الاستثمار الزمني' },
+    'set.change_pw':    { en: 'Change Password', ar: 'تغيير كلمة المرور' },
+    'set.twofa':        { en: 'Two-Factor Authentication', ar: 'المصادقة الثنائية' },
+    'set.sessions':     { en: 'Sessions', ar: 'الجلسات' },
+    'set.payment':      { en: 'Payment & invoices', ar: 'المدفوعات والفواتير' },
+    'set.save':         { en: 'Save Changes', ar: 'حفظ التغييرات' },
+    'set.save_prefs':   { en: 'Save Preferences', ar: 'حفظ التفضيلات' },
+    'set.update_pw':    { en: 'Update Password', ar: 'تحديث كلمة المرور' },
+    'set.sign_out':     { en: 'Sign out', ar: 'تسجيل الخروج' },
+    'set.upgrade':      { en: 'Upgrade to Council', ar: 'الترقية إلى المجلس' },
+    'set.email_hint':   { en: 'This email is used for account notifications and recovery.', ar: 'يُستخدم هذا البريد لإشعارات الحساب واستعادته.' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
+    var MAP = {
+      'Profile': 'set.profile', 'Investment Preferences': 'set.preferences', 'Notifications': 'set.notifications',
+      'Billing & Plan': 'set.billing', 'Methodology & Data': 'set.methodology', 'Security': 'set.security', 'Data & Export': 'set.export',
+      'Manage your personal information and preferences': 'set.profile_sub',
+      'These preferences help tailor Council reviews to your investment style': 'set.prefs_sub',
+      'Profile Photo': 'set.photo', 'First Name': 'set.first_name', 'Last Name': 'set.last_name', 'Email Address': 'set.email',
+      'Default Market': 'set.market', 'Language': 'set.language', 'Primary Investment Goal': 'set.goal',
+      'Investment Time Horizon': 'set.horizon', 'Change Password': 'set.change_pw', 'Two-Factor Authentication': 'set.twofa',
+      'Sessions': 'set.sessions', 'Payment & invoices': 'set.payment', 'Save Changes': 'set.save', 'Save Preferences': 'set.save_prefs',
+      'Update Password': 'set.update_pw', 'Sign out': 'set.sign_out', 'Upgrade to Council': 'set.upgrade',
+      'This email is used for account notifications and recovery.': 'set.email_hint'
+    };
+    Array.prototype.forEach.call(document.querySelectorAll('.settings-nav-item, .section-title-group h2, .section-title-group p, .form-label, .form-hint, .twofa-title, .btn'), function (el) {
+      var k = MAP[firstText(el)]; if (k) setKey(el, k);
+    });
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
+  <script>
     // Initialize AlphaCouncil
     if (typeof AlphaCouncil !== 'undefined') {
       AlphaCouncil.init('settings');
