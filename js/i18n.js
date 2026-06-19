@@ -149,7 +149,22 @@
     });
   }
 
+  // O3: inject the RTL layout overrides once (dormant in LTR, active under [dir="rtl"]).
+  // The right-anchored adviser drawer must mirror to the left; most flex/grid + text-align
+  // mirror automatically from <html dir="rtl">.
+  function _injectRtl() {
+    if (document.getElementById('ac-i18n-rtl')) return;
+    var css = '[dir="rtl"] .adviser-sidebar{right:auto !important;left:0 !important;}'
+      + '[dir="rtl"] .adviser-sidebar:not(.open){transform:translateX(-100%) !important;}'
+      + '[dir="rtl"] .toast{left:50% !important;right:auto !important;}';
+    var st = document.createElement('style');
+    st.id = 'ac-i18n-rtl';
+    st.textContent = css;
+    (document.head || document.documentElement).appendChild(st);
+  }
+
   function bootstrap() {
+    _injectRtl();
     autoTagNav();
     autoWireToggle();
     var saved = null; try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}

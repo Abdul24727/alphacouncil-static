@@ -806,6 +806,9 @@
   // handled by the engine; registered before DOMContentLoaded so the first apply translates.
   AC_I18N.add({
     'dash.greeting_sub':       { en: "Here's what matters for your portfolio today.", ar: 'إليك ما يهم محفظتك اليوم.' },
+    'dash.greet_morning':      { en: 'Good morning', ar: 'صباح الخير' },
+    'dash.greet_afternoon':    { en: 'Good afternoon', ar: 'طاب يومك' },
+    'dash.greet_evening':      { en: 'Good evening', ar: 'مساء الخير' },
     'dash.m_value':            { en: 'Total Portfolio Value', ar: 'إجمالي قيمة المحفظة' },
     'dash.m_pnl':              { en: 'Unrealized P&L', ar: 'الربح/الخسارة غير المحققة' },
     'dash.m_yield':            { en: 'Portfolio Yield (TTM)', ar: 'عائد المحفظة (آخر ١٢ شهرًا)' },
@@ -894,19 +897,22 @@
       }
       // E4: real greeting (time-of-day + real date) + real signed-in name via onUserReady.
       (function initGreeting(){
-        const now = new Date();
-        const hr = now.getHours();
-        const greet = hr < 12 ? 'Good morning' : (hr < 18 ? 'Good afternoon' : 'Good evening');
-        const dEl = document.getElementById('greetingDate');
-        if (dEl) dEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        const setName = function (u) {
+        function render(){
+          const now = new Date();
+          const hr = now.getHours();
+          const lang = (window.AC_I18N && AC_I18N.lang) || 'en';
+          const key = hr < 12 ? 'dash.greet_morning' : (hr < 18 ? 'dash.greet_afternoon' : 'dash.greet_evening');
+          const greet = (window.AC_I18N && AC_I18N.t(key)) || (hr < 12 ? 'Good morning' : (hr < 18 ? 'Good afternoon' : 'Good evening'));
+          const dEl = document.getElementById('greetingDate');
+          if (dEl) dEl.textContent = now.toLocaleDateString(lang === 'ar' ? 'ar' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+          const u = (window.AlphaCouncil && AlphaCouncil.getUser && AlphaCouncil.getUser()) || window.__acUser || null;
           const nm = (u && (u.first_name || String(u.name || '').trim().split(' ')[0])) || '';
           const hEl = document.getElementById('greetingHeading');
-          if (hEl) hEl.textContent = nm ? (greet + ', ' + nm) : greet;
-        };
-        window.onUserReady = setName;
-        if (window.AlphaCouncil && AlphaCouncil.getUser && AlphaCouncil.getUser()) setName(AlphaCouncil.getUser());
-        else { const hEl = document.getElementById('greetingHeading'); if (hEl) hEl.textContent = greet; }
+          if (hEl) hEl.textContent = nm ? (greet + (lang === 'ar' ? '، ' : ', ') + nm) : greet;
+        }
+        window.onUserReady = function (u) { window.__acUser = u; render(); };
+        render();
+        window.addEventListener('ac:langchange', render);
       })();
 
       // E1/E2: real portfolio metrics + snapshot quick-stats from live holdings ("—" when none).
