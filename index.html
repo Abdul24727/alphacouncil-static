@@ -2385,26 +2385,31 @@
        TICKER
   ═══════════════════════════════════════════════════════════════ -->
   <div class="ticker-strip">
-    <div class="ticker-track">
-      <div class="ticker-item"><span class="ticker-symbol">2222</span> Aramco <span class="ticker-change">+1.2%</span></div>
-      <div class="ticker-item"><span class="ticker-symbol">1120</span> Al Rajhi <span class="ticker-change">+0.8%</span></div>
-      <div class="ticker-item"><span class="ticker-symbol">2010</span> SABIC <span class="ticker-change negative">-0.4%</span></div>
-      <div class="ticker-item"><span class="ticker-symbol">FAB</span> First Abu Dhabi <span class="ticker-change">+0.6%</span></div>
-      <div class="ticker-item"><span class="ticker-symbol">EMAAR</span> Emaar Props <span class="ticker-change">+1.1%</span></div>
-      <div class="ticker-item"><span class="ticker-symbol">DIB</span> Dubai Islamic <span class="ticker-change">+1.4%</span></div>
-      <div class="ticker-item"><span class="ticker-symbol">QNB</span> Qatar National <span class="ticker-change negative">-0.2%</span></div>
-      <div class="ticker-item"><span class="ticker-symbol">NBK</span> National Kuwait <span class="ticker-change">+0.5%</span></div>
-      <!-- Duplicate for loop -->
-      <div class="ticker-item"><span class="ticker-symbol">2222</span> Aramco <span class="ticker-change">+1.2%</span></div>
-      <div class="ticker-item"><span class="ticker-symbol">1120</span> Al Rajhi <span class="ticker-change">+0.8%</span></div>
-      <div class="ticker-item"><span class="ticker-symbol">2010</span> SABIC <span class="ticker-change negative">-0.4%</span></div>
-      <div class="ticker-item"><span class="ticker-symbol">FAB</span> First Abu Dhabi <span class="ticker-change">+0.6%</span></div>
-      <div class="ticker-item"><span class="ticker-symbol">EMAAR</span> Emaar Props <span class="ticker-change">+1.1%</span></div>
-      <div class="ticker-item"><span class="ticker-symbol">DIB</span> Dubai Islamic <span class="ticker-change">+1.4%</span></div>
-      <div class="ticker-item"><span class="ticker-symbol">QNB</span> Qatar National <span class="ticker-change negative">-0.2%</span></div>
-      <div class="ticker-item"><span class="ticker-symbol">NBK</span> National Kuwait <span class="ticker-change">+0.5%</span></div>
-    </div>
+    <div class="ticker-track" id="tickerTrack"></div>
   </div>
+  <script>
+  (function(){
+    var strip = document.querySelector('.ticker-strip');
+    var track = document.getElementById('tickerTrack');
+    if(!strip || !track) return;
+    function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+    fetch('/api/ticker-tape').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
+      var items = [];
+      (d.groups || []).forEach(function(g){
+        (g.stocks || []).forEach(function(s){
+          if(s.t == null || s.c == null) return;
+          var neg = s.c < 0 ? ' negative' : '';
+          var chg = (s.c >= 0 ? '+' : '') + Number(s.c).toFixed(2) + '%';
+          var price = s.p != null ? Number(s.p).toFixed(2) : '';
+          items.push('<div class="ticker-item"><span class="ticker-symbol">' + esc(s.t) + '</span> ' + price + ' <span class="ticker-change' + neg + '">' + chg + '</span></div>');
+        });
+      });
+      items = items.slice(0, 20);
+      if(!items.length){ strip.style.display = 'none'; return; }
+      track.innerHTML = items.join('') + items.join(''); // duplicate so the marquee loops seamlessly
+    }).catch(function(){ strip.style.display = 'none'; });
+  })();
+  </script>
 
   <!-- ═══════════════════════════════════════════════════════════════
        PROBLEM SECTION
@@ -2863,55 +2868,12 @@
   <!-- ═══════════════════════════════════════════════════════════════
        TESTIMONIALS
   ═══════════════════════════════════════════════════════════════ -->
+  <!-- M2: fabricated investor testimonials removed — pre-launch, no real customer
+       quotes to show. Constitution: no fabricated social proof. The honest
+       methodology tagline is kept. -->
   <section class="testimonials-section">
     <div class="testimonials-inner">
-      <header class="section-header reveal">
-        <p class="section-eyebrow">Testimonials</p>
-        <h2 class="section-title">What investors are saying</h2>
-      </header>
-
-      <div class="testimonials-grid">
-        <article class="testimonial-card reveal stagger-1">
-          <blockquote class="testimonial-quote">
-            Finally, GCC market data explained in a way I can act on. The portfolio concentration alerts alone saved me from overexposure to UAE banks.
-          </blockquote>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar">A</div>
-            <div>
-              <div class="testimonial-name">Ahmad</div>
-              <div class="testimonial-location">Riyadh, Saudi Arabia</div>
-            </div>
-          </div>
-        </article>
-
-        <article class="testimonial-card reveal stagger-2">
-          <blockquote class="testimonial-quote">
-            Arabic explanations make portfolio review much easier. My family now understands why I made certain investment decisions.
-          </blockquote>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar">F</div>
-            <div>
-              <div class="testimonial-name">Fatima</div>
-              <div class="testimonial-location">Abu Dhabi, UAE</div>
-            </div>
-          </div>
-        </article>
-
-        <article class="testimonial-card reveal stagger-3">
-          <blockquote class="testimonial-quote">
-            It connected the news to my actual holdings, not just the whole market. I finally understand why my portfolio moves the way it does.
-          </blockquote>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar">K</div>
-            <div>
-              <div class="testimonial-name">Khalid</div>
-              <div class="testimonial-location">Dubai, UAE</div>
-            </div>
-          </div>
-        </article>
-      </div>
-
-      <p class="reveal" style="text-align: center; margin-top: 40px; font-size: 13px; color: var(--fg-dim);">
+      <p class="reveal" style="text-align: center; font-size: 13px; color: var(--fg-dim);">
         Methodology-driven. Source-linked. Portfolio-aware.
       </p>
     </div>
