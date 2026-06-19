@@ -622,5 +622,58 @@
   </script>
   <script>/* brand logo -> dashboard when signed in (ac_csrf cookie present), else index */
   (function(){try{if(document.cookie.indexOf('ac_csrf=')>-1){var e=document.querySelectorAll('.nav-logo,.ac-flogo');for(var i=0;i<e.length;i++)e[i].setAttribute('href','dashboard.html');}}catch(x){}})();</script>
+  <script src="js/i18n.js"></script>
+  <script>
+  // O4 (marketing): about.html — engine handles nav+toggle; this tags the page content.
+  AC_I18N.add({
+    'about.hero_h1':    { en: 'Understanding GCC markets, one portfolio at a time', ar: 'نفهم أسواق الخليج، محفظةً تلو الأخرى' },
+    'about.hero_sub':   { en: 'AlphaCouncil turns the noise of Gulf equity markets into clear, structured, defensible intelligence — so serious investors can decide with confidence, not guesswork.', ar: 'يحوّل AlphaCouncil ضجيج أسواق الأسهم الخليجية إلى ذكاء واضح ومنظَّم وقابل للدفاع عنه — ليقرّر المستثمرون الجادّون بثقة لا بالتخمين.' },
+    'about.mission_h':  { en: 'Our Mission', ar: 'مهمّتنا' },
+    'about.mission_text':{ en: "To give every GCC investor the analytical depth of an institutional research desk — grounded in real data, explained in plain language, and honest about what it does and doesn't know. We don't tell you what to buy. We help you understand what you own.", ar: 'أن نمنح كل مستثمر خليجي عمق التحليل الذي يقدّمه مكتب أبحاث مؤسّسي — قائمًا على بيانات حقيقية، ومشروحًا بلغة بسيطة، وصادقًا بشأن ما يعرفه وما لا يعرفه. لا نخبرك بما تشتري، بل نساعدك على فهم ما تملك.' },
+    'about.eye_why':    { en: 'Why we exist', ar: 'لماذا وُجدنا' },
+    'about.t_why':      { en: 'Built for the Gulf, not adapted to it', ar: 'مبنيّ للخليج، لا مُكيَّف له' },
+    'about.s_why':      { en: "Global tools treat the GCC as an afterthought. We started from the region's realities — its sectors, disclosure norms, and dividend culture — and built up.", ar: 'تعامل الأدوات العالمية الخليج كأمر ثانوي. أمّا نحن فبدأنا من واقع المنطقة — قطاعاتها وأعراف الإفصاح فيها وثقافة التوزيعات — وبنينا انطلاقًا منه.' },
+    'about.card1_h':    { en: 'GCC-native', ar: 'خليجيّ المنشأ' },
+    'about.card1_t':    { en: 'Coverage across Saudi (Tadawul), UAE (ADX / DFM), Qatar, Kuwait, Oman and Bahrain — calibrated to regional sector dynamics, oil-cycle sensitivity, and the income focus that defines Gulf portfolios.', ar: 'تغطية تشمل السعودية (تداول) والإمارات (أبوظبي/دبي) وقطر والكويت وعُمان والبحرين — مُعايَرة وفق ديناميكيات القطاعات الإقليمية وحساسية دورة النفط وتركيز الدخل الذي يميّز المحافظ الخليجية.' },
+    'about.card2_h':    { en: 'AI-powered', ar: 'مدعوم بالذكاء الاصطناعي' },
+    'about.card2_t':    { en: 'A multi-model AI Analyst Council and a 12-dimension scoring engine read the same fundamentals, peers and news a professional would — then surface the tensions instead of hiding them.', ar: 'يقرأ مجلس محلّلين ذكي متعدّد النماذج ومحرّك تقييم من ١٢ بُعدًا الأساسيات والأقران والأخبار نفسها التي يقرؤها المحترف — ثم يُبرز التناقضات بدل إخفائها.' },
+    'about.card3_h':    { en: 'For serious investors', ar: 'للمستثمرين الجادّين' },
+    'about.card3_t':    { en: 'No hype, no signals-for-clicks. Structured analysis you can interrogate, sourced to the data behind it, designed for people who hold real positions and want to understand them.', ar: 'بلا مبالغة ولا إشارات للنقرات. تحليل منظَّم يمكنك مساءلته، موثَّق بالبيانات التي يقوم عليها، مصمَّم لمن يملكون مراكز حقيقية ويريدون فهمها.' },
+    'about.eye_framework':{ en: 'The framework', ar: 'الإطار' },
+    'about.t_framework':{ en: 'The 12-Dimension Thesis', ar: 'الأطروحة ذات الـ١٢ بُعدًا' },
+    'about.s_framework':{ en: "Every stock is distilled into twelve calibrated scores (1–10) across quality, timing and sentiment — one structured input into the Council's synthesis, never a standalone buy/sell signal.", ar: 'يُختزل كل سهم في اثني عشر تقييمًا مُعايَرًا (١–١٠) عبر الجودة والتوقيت والمعنويات — مُدخَل منظَّم واحد في خلاصة المجلس، وليس إشارة شراء/بيع قائمة بذاتها.' },
+    'about.eye_philosophy':{ en: 'Our philosophy', ar: 'فلسفتنا' },
+    'about.t_philosophy':{ en: "Principles we don't bend", ar: 'مبادئ لا نحيد عنها' },
+    'about.eye_founding':{ en: 'Founding principles', ar: 'مبادئ التأسيس' },
+    'about.t_who':      { en: 'Who we are', ar: 'من نحن' },
+    'about.s_who':      { en: 'AlphaCouncil is built by a small, founder-led team obsessed with one thing: making Gulf-market analysis genuinely useful and genuinely honest. Detailed team profiles are on the way.', ar: 'يبني AlphaCouncil فريقٌ صغير يقوده مؤسّسوه، مهووس بأمر واحد: جعل تحليل السوق الخليجي مفيدًا حقًّا وصادقًا حقًّا. ملفّات الفريق التفصيلية في الطريق.' }
+  });
+  (function () {
+    function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
+    function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
+    var heads = document.querySelectorAll('h1, h2, h3, .section-title');
+    function tagPair(text, key, nextKey) {
+      for (var i = 0; i < heads.length; i++) {
+        if (firstText(heads[i]) === text) {
+          setKey(heads[i], key);
+          if (nextKey) { var n = heads[i].nextElementSibling; if (n && n.tagName === 'P') setKey(n, nextKey); }
+          return;
+        }
+      }
+    }
+    tagPair('Understanding GCC markets, one portfolio at a time', 'about.hero_h1', 'about.hero_sub');
+    tagPair('Our Mission', 'about.mission_h', 'about.mission_text');
+    tagPair('Built for the Gulf, not adapted to it', 'about.t_why', 'about.s_why');
+    tagPair('GCC-native', 'about.card1_h', 'about.card1_t');
+    tagPair('AI-powered', 'about.card2_h', 'about.card2_t');
+    tagPair('For serious investors', 'about.card3_h', 'about.card3_t');
+    tagPair('The 12-Dimension Thesis', 'about.t_framework', 'about.s_framework');
+    tagPair("Principles we don't bend", 'about.t_philosophy');
+    tagPair('Who we are', 'about.t_who', 'about.s_who');
+    var EYE = { 'Why we exist': 'about.eye_why', 'The framework': 'about.eye_framework', 'Our philosophy': 'about.eye_philosophy', 'Founding principles': 'about.eye_founding' };
+    Array.prototype.forEach.call(document.querySelectorAll('.section-eyebrow'), function (el) { var k = EYE[firstText(el)]; if (k) setKey(el, k); });
+    if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
 </body>
 </html>
