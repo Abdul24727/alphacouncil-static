@@ -69,7 +69,53 @@ _Started 2026-06-20. Status: in progress._
 
 ---
 
+## ROUND 1 — fixes applied, deployed & verified
+- **Frontend commits:** `32d6b47` (main fixes), `f89227e` (follow-up). Deployed to VPS `/opt/alphacouncil/static-v2` (backup in `static-v2/_qa_backup_round1/`).
+- **Backend:** `frontend_api.py` fundamentals fix deployed by scp (backup `frontend_api.py.qa_bak_round1`) + `systemctl restart alphacouncil-backend` (import-checked first; `{"status":"ok","tickers":716}`). NOTE: the backend repo has 8 unpushed commits + unrelated uncommitted changes from prior sessions — I deployed ONLY the single fundamentals function (diff-verified it was the sole delta vs live) and did **not** touch that backlog → see NEEDS FOUNDER REVIEW.
+- **Regression tests (live):** `tests/round1-fixes.spec.js` 7/7 green; `tests/thesis-auth.spec.js` green. Raw:
+
+```
+==BEGIN round1-fixes==
+  ok 1 R1-01 stock-detail: real header, no fabricated change/freshness/thesis (6.7s)
+  ok 2 R1-01b stock-detail: invalid ticker shows honest not-found, no Aramco fabrication (4.7s)
+  ok 3 R1-02 Sample-Dashboard fabrication removed + no CTA references (576ms)
+  ok 4 R1-03 fundamentals: briefs-known ticker without stocks row → 200 honest-empty (not 404) (209ms)
+  ok 5 R1-04 portfolio: no fabricated 32.2% council / stale toast / 847,250 (authed) (5.9s)
+  ok 6 R1-06 dead links resolved (277ms)
+  ok 7 R1-07 settings: no Saeed/Al-Khalidi identity defaults (95ms)
+  7 passed (19.6s)
+==END round1-fixes==
+```
+- **Live spot-checks:** stock-detail served HTML 0 fabricated literals; ABRAAJ_BSE `/fundamentals` → 200 (real P/E 70.13 from scraped ratios); 2222 → 200; ZZZZ → 404; portfolio served HTML 0 of {847,250, councilSynthesis, Action completed}; index 0 "View sample dashboard".
+
+Status per finding: R1-01 ✅ · R1-02 ✅ · R1-03 ✅ · R1-04 ✅ (shown-to-user parts; residual dead `#adjustModal`/`holdingsData`/canned-`processChat`-tail are unreachable — flagged) · R1-05 ✅ (toast removed) · R1-06 ✅ · R1-07 ✅ · R1-08 ✅ (test reconciled).
+
+### New minor finding (R1-09) — anon viewing a PUBLIC stock-detail page fires authed calls → 401 console noise
+- stock-detail is meant to be anon-viewable, but it calls watchlist/position/holdings endpoints that 401 for logged-out visitors → 3 console errors. Authed users are clean. Fix = skip the authed calls when not signed in. Folded into the anon-handling item below.
+
+---
+
+# ROUND 2
+
+_Started 2026-06-20. Focus: mobile/responsive, AR↔RTL rendering, per-page console health, and control coverage (the existing 73-test suite already exercises most controls + real-data/honest-empty behavior per page)._
+
+## Findings
+- **Mobile/responsive (390×844, all 15 key pages):** zero horizontal overflow (overflow=0px everywhere), zero console errors, zero failed requests, zero page errors. No responsive defects found. Evidence: `test-results/_audit_round2_mobile.json` + `test-results/screens/r2-mobile-*.png`.
+- **AR↔RTL (Arabic preference preset):** marketing pages (index/pricing/markets/methodology…) and app pages render `dir=rtl lang=ar` with Arabic content and zero console errors. Evidence: `test-results/_audit_round2_ar.json` + `r2-ar-*.png`.
+- **Existing suite** already covers, per page, that controls work + real data renders + honest empty states (alerts filters/rules/chat, scenarios analyze, onboarding import, council-history empty, dashboard/portfolio/stock-detail, auth flows, marketing numbers, currency pegs, i18n). No new blocker/major found in Round 2.
+
+### R2-01 — auth + onboarding pages are English-only — **MINOR → NEEDS FOUNDER REVIEW**
+- login.html / signup.html / forgot-password.html / reset-password.html **and onboarding.html** include no `js/i18n.js`, no `.lang-toggle`, no `data-i18n`. A visitor who set Arabic elsewhere lands on these in English/LTR. Not a broken control (no toggle to fail) and no incorrect AR labels — an i18n *scope* gap, like the intentionally-deferred legal.html. The language toggle lives in the main app, and the signup→onboarding flow is pre-toggle, so EN-only is internally consistent. Listed under review.
+
+**Round 2 result: clean — no new blocker/major items.**
+
+---
+
 ## NEEDS FOUNDER REVIEW (ambiguous / cosmetic / out-of-scope)
+- **Auth-page i18n (R2-01):** login/signup/forgot-password/reset-password are English-only (no language toggle). Decide whether auth pages should be bilingual (then they need AR form strings) or stay EN like legal.html.
+- **Backend repo backlog:** `C:\projects\alphacouncil` is 8 commits ahead of origin/main with uncommitted edits (router.py, http_cookies.py, main.py, thesis/prompts.py, ticker_names.py) from prior sessions. I avoided deploying these (deployed only the one fundamentals function). They need review + a clean push/deploy or revert.
+- **Portfolio dead code (deferred purge):** `#adjustModal` + `holdingsData` mock + `openAdjustModal/confirmAdjust` + the canned `processChat` tail (after its `return`) are unreachable (not shown, not wired) but still in the file. Safe to delete in a dedicated cleanup.
+- **Anon on user/app pages:** anon can load dashboard/portfolio/alerts/etc. (honest-empty states) and even public stock-detail, but authed-data fetches fire → 401 console/network noise (R1-09). Cleanest fix = gate user-specific pages (redirect to login) + skip authed calls on public pages for anon. Behavior change — your call.
 - **Sample dashboard:** removed the fabricated one + its CTAs. If a public demo is wanted, rebuild as a clearly-labeled "illustrative" preview (no interactive fake AI). Product/marketing decision.
 - **Auth-gating user-specific pages:** anon can load dashboard/portfolio/alerts/etc. and sees honest-empty states, but the authed-data fetches fire and 401 → console/network noise for anon. Cleanest fix is to redirect anon to login (behavior change) — your call.
 - **Marketing hero mockup `SAR 847,250`** on index.html/features.html (`.mockup-stat-value`): an illustrative product screenshot, not presented as a user's live data. Keep as illustrative, relabel, or replace with a real example — your call.
