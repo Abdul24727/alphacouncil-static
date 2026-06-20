@@ -107,6 +107,20 @@ test('R3-M9 onboarding success P&L is guarded (no +NaN%)', async ({ request }) =
   expect(html).not.toMatch(/\+\$\{\(\(h\.price - h\.avgPrice\)/); // old unguarded expr gone
 });
 
+// R3-V1 — council-history stats row neutralized (no fabricated 12/7/5/"2 days ago" persisting on anon/error).
+test('R3-V1 council-history stats row honest (no fabricated counts)', async ({ request }) => {
+  const html = await get(request, 'council-history.html');
+  expect(html).not.toContain('2 days ago');
+  expect(html).not.toMatch(/stat-value">(12|7|5)<\/div>/);
+});
+
+// R3-V2 — alerts AI Adviser greeting has no fabricated "3 high-priority alerts" count.
+test('R3-V2 alerts adviser greeting has no fabricated count', async ({ request }) => {
+  const html = await get(request, 'alerts.html');
+  expect(html).not.toContain('3 high-priority alerts');
+  expect(html).not.toMatch(/You have <strong>\d+ high-priority/);
+});
+
 // R3-M10 — alerts header/tab counts neutralized (no fabricated static counts).
 test('R3-M10 alerts fabricated header/tab counts removed', async ({ request }) => {
   const html = await get(request, 'alerts.html');
