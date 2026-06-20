@@ -5,7 +5,11 @@ const BASE = process.env.BASE_URL || 'https://alphacouncil.tech';
 const EMAIL = process.env.QA_EMAIL, PASSWORD = process.env.QA_PASSWORD;
 
 // R1-01 — stock-detail no longer ships fabricated header/thesis on every page.
-test('R1-01 stock-detail: real header, no fabricated change/freshness/thesis', async ({ page }) => {
+// Tested signed-in (the primary case) so the page's authed calls don't 401.
+test('R1-01 stock-detail: real header, no fabricated change/freshness/thesis', async ({ browser }) => {
+  const ctx = await browser.newContext();
+  await apiLogin(ctx, EMAIL, PASSWORD);
+  const page = await ctx.newPage();
   const diag = attachDiagnostics(page);
   await page.goto('/stock-detail.html?ticker=EMAAR_DFM', { waitUntil: 'networkidle' });
   await page.waitForTimeout(2500);
@@ -18,26 +22,34 @@ test('R1-01 stock-detail: real header, no fabricated change/freshness/thesis', a
   const h1 = await page.evaluate(() => (document.querySelector('h1') || {}).innerText || '');
   expect(h1).toMatch(/EMAAR/i);              // real name resolved
   assertClean(diag, expect);                  // zero console errors / failed requests
+  await ctx.close();
 });
 
 // R1-01b — invalid ticker → honest "Stock not found", not a fabricated Aramco fallback.
+// Scope the fabrication check to the main content (the ticker-tape legitimately lists
+// real movers like Saudi Aramco).
 test('R1-01b stock-detail: invalid ticker shows honest not-found, no Aramco fabrication', async ({ page }) => {
   await page.goto('/stock-detail.html?ticker=ZZZZ_TADAWUL', { waitUntil: 'networkidle' });
   await page.waitForTimeout(2500);
-  const body = await page.evaluate(() => document.body.innerText);
-  expect(body).toContain('Stock not found');
-  expect(body).not.toContain('Saudi Aramco');
-  expect(body).not.toContain('7.8/10');
+  const main = await page.evaluate(() => (document.getElementById('mainContent') || document.body).innerText);
+  expect(main).toContain('Stock not found');
+  expect(main).not.toContain('Saudi Aramco');
+  expect(main).not.toContain('7.8/10');
 });
 
-// R1-02 — the fabricated Sample-Dashboard is gone and no CTA links to it.
-test('R1-02 Sample-Dashboard removed + no CTA references', async ({ request }) => {
+// R1-02 — the fabricated Sample-Dashboard is gone (the file was deleted; the SPA
+// try_files fallback now serves index.html, so the fabricated dashboard markup is
+// absent) and no CTA links to it.
+test('R1-02 Sample-Dashboard fabrication removed + no CTA references', async ({ request }) => {
   const r = await request.get(`${BASE}/Sample-Dashboard.html`);
-  expect(r.status(), 'Sample-Dashboard.html must not serve a 200 fabricated page').not.toBe(200);
+  const dash = await r.text();
+  for (const marker of ['Good morning, Sami', 'Hello, Sami', '32.2% weight', 'Strategic Synthesis']) {
+    expect(dash, `fabricated dashboard markup still served: ${marker}`).not.toContain(marker);
+  }
   for (const p of ['index.html', 'features.html', 'how-it-works.html', 'markets.html']) {
     const html = await (await request.get(`${BASE}/${p}`)).text();
     expect(html, `${p} still links the sample dashboard`).not.toContain('Sample-Dashboard.html');
-    expect(html).not.toContain('View sample dashboard');
+    expect(html, `${p} still has a sample-dashboard CTA`).not.toContain('View sample dashboard');
   }
 });
 
