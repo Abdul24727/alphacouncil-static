@@ -30,7 +30,7 @@ test.describe('K1 — scenarios.html (honest input → real AI, no fabricated nu
     // Analyze → real /api/adviser/ask (stubbed), not the old fake "calculated successfully" toast
     let asked = false;
     await page.route('**/api/adviser/ask', (route) => { asked = true; route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ answer: 'STUB', disclaimer: 'x' }) }); });
-    await page.locator('button.btn-primary', { hasText: 'Analyze' }).click();
+    await page.locator('button[onclick="analyzeScenario()"]').click();   // NL-mode Analyze (distinct from the new "Analyze trades")
     await expect.poll(() => asked, { timeout: 6000 }).toBeTruthy();
 
     await shot(page, 'k1-scenarios');
