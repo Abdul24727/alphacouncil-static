@@ -1029,48 +1029,42 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             Total Portfolio Value
           </div>
-          <div class="metric-value">SAR 847,250</div>
-          <div class="metric-sub up">+2.4% this month</div>
+          <div class="metric-value">—</div>
         </div>
         <div class="metric-card">
           <div class="metric-label">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
             Total Cost
           </div>
-          <div class="metric-value">SAR 808,338</div>
-          <div class="metric-sub">Avg hold: 14 months</div>
+          <div class="metric-value">—</div>
         </div>
         <div class="metric-card">
           <div class="metric-label">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
             Unrealized P&L
           </div>
-          <div class="metric-value" style="color: var(--success);">+SAR 38,912</div>
-          <div class="metric-sub up">+4.8% overall</div>
+          <div class="metric-value">—</div>
         </div>
         <div class="metric-card">
           <div class="metric-label">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
             Portfolio Yield (TTM)
           </div>
-          <div class="metric-value">3.2%</div>
-          <div class="metric-sub">SAR 27,112 dividends</div>
+          <div class="metric-value">—</div>
         </div>
         <div class="metric-card">
           <div class="metric-label">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
             Holdings
           </div>
-          <div class="metric-value">7</div>
-          <div class="metric-sub">Across 4 sectors</div>
+          <div class="metric-value">—</div>
         </div>
         <div class="metric-card">
           <div class="metric-label">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Risk Score
+            Today's Change
           </div>
-          <div class="metric-value">64</div>
-          <div class="metric-badge">Moderate</div>
+          <div class="metric-value">—</div>
         </div>
       </div>
 
@@ -1101,465 +1095,7 @@
                     <th style="width: 100px;"></th>
                   </tr>
                 </thead>
-                <tbody id="holdingsBody">
-                  <tr data-ticker="2222" class="holding-row">
-                    <td>
-                      <div class="holding-name-wrapper">
-                        <button class="expand-toggle" onclick="toggleExpand('2222')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                        </button>
-                        <div class="holding-logo">2222</div>
-                        <div>
-                          <div class="holding-ticker">Saudi Aramco</div>
-                          <div class="holding-company">2222.SR · Energy</div>
-                          <div class="row-meta">Council reviewed: 2 days ago</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="weight-cell">
-                      18.4%
-                      <div class="weight-bar"><div class="weight-bar-fill" style="width: 92%;"></div></div>
-                    </td>
-                    <td>SAR 155,894</td>
-                    <td class="pnl-cell">
-                      <div class="pnl-amount up">+12.3%</div>
-                      <div class="pnl-pct">+SAR 17,065</div>
-                    </td>
-                    <td class="thesis-cell"><span class="thesis-score high">8.4/10<span class="score-bar"><span class="score-bar-fill" style="width: 84%;"></span></span></span></td>
-                    <td>
-                      <div class="row-actions">
-                        <button class="row-action" title="View Details" onclick="viewHolding('2222')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-                        <button class="row-action" title="Ask Adviser" onclick="askAboutHolding('2222', 'Saudi Aramco')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
-                        <button class="row-action" title="Run Council" onclick="runCouncilForHolding('2222', 'Saudi Aramco')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
-                        <button class="row-action" title="Set Alert" onclick="setAlertForHolding('2222')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
-                        <button class="row-action" title="Adjust Position" onclick="openAdjustModal('2222')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-                        <button class="row-action danger" title="Remove" onclick="removeHolding('2222', 'Saudi Aramco')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr class="tx-history-row" data-ticker-history="2222">
-                    <td colspan="6">
-                      <div class="tx-history-panel">
-                        <div class="tx-history-header">
-                          <span class="tx-history-title">Transaction History</span>
-                          <div class="tx-history-actions">
-                            <button class="tx-btn tx-btn-primary" onclick="openAddLotModal('2222')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Add Lot</button>
-                            <button class="tx-btn tx-btn-secondary" onclick="openSellModal('2222')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Partial Sale</button>
-                          </div>
-                        </div>
-                        <table class="tx-table">
-                          <thead>
-                            <tr><th>Date</th><th>Type</th><th>Shares</th><th>Price</th><th>Realized P&L</th><th>Remaining</th><th>Notes</th></tr>
-                          </thead>
-                          <tbody>
-                            <tr><td>Jan 15, 2025</td><td><span class="tx-type buy">Buy</span></td><td>3,500</td><td>SAR 24.80</td><td>—</td><td>3,500</td><td class="tx-note">Initial position</td></tr>
-                            <tr><td>Mar 22, 2025</td><td><span class="tx-type buy">Buy</span></td><td>2,000</td><td>SAR 26.50</td><td>—</td><td>5,500</td><td class="tx-note">Added on dip</td></tr>
-                            <tr><td>May 10, 2025</td><td><span class="tx-type sell">Sell</span></td><td>500</td><td>SAR 29.10</td><td class="tx-realized profit">+SAR 2,150</td><td>5,000</td><td class="tx-note">Trimmed 9% per rebalance</td></tr>
-                            <tr><td>Jun 05, 2026</td><td><span class="tx-type buy">Buy</span></td><td>470</td><td>SAR 27.40</td><td>—</td><td>5,470</td><td class="tx-note">Added before earnings</td></tr>
-                          </tbody>
-                        </table>
-                        <div class="tx-summary">
-                          <div class="tx-summary-left">
-                            <div class="tx-summary-item">
-                              <span class="tx-summary-label">Current Position</span>
-                              <span class="tx-summary-value">5,470 shares</span>
-                            </div>
-                            <div class="tx-summary-item">
-                              <span class="tx-summary-label">Blended Avg Cost</span>
-                              <span class="tx-summary-value">SAR 25.40</span>
-                            </div>
-                            <div class="tx-summary-item">
-                              <span class="tx-summary-label">Unrealized P&L</span>
-                              <span class="tx-summary-value up">+SAR 17,065 (+12.3%)</span>
-                            </div>
-                            <div class="tx-summary-item">
-                              <span class="tx-summary-label">Total Realized</span>
-                              <span class="tx-summary-value up">+SAR 2,150</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr data-ticker="1120" class="holding-row">
-                    <td>
-                      <div class="holding-name-wrapper">
-                        <button class="expand-toggle" onclick="toggleExpand('1120')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                        </button>
-                        <div class="holding-logo">1120</div>
-                        <div>
-                          <div class="holding-ticker">Al Rajhi Bank</div>
-                          <div class="holding-company">1120.SR · Banking</div>
-                          <div class="row-meta">Council reviewed: 3 days ago</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="weight-cell">
-                      14.2%
-                      <div class="weight-bar"><div class="weight-bar-fill" style="width: 71%;"></div></div>
-                    </td>
-                    <td>SAR 120,310</td>
-                    <td class="pnl-cell">
-                      <div class="pnl-amount up">+8.7%</div>
-                      <div class="pnl-pct">+SAR 9,635</div>
-                    </td>
-                    <td class="thesis-cell"><span class="thesis-score high">8.1/10<span class="score-bar"><span class="score-bar-fill" style="width: 81%;"></span></span></span></td>
-                    <td>
-                      <div class="row-actions">
-                        <button class="row-action" title="View Details" onclick="viewHolding('1120')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-                        <button class="row-action" title="Ask Adviser" onclick="askAboutHolding('1120', 'Al Rajhi Bank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
-                        <button class="row-action" title="Run Council" onclick="runCouncilForHolding('1120', 'Al Rajhi Bank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
-                        <button class="row-action" title="Set Alert" onclick="setAlertForHolding('1120')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
-                        <button class="row-action" title="Adjust Position" onclick="openAdjustModal('1120')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-                        <button class="row-action danger" title="Remove" onclick="removeHolding('1120', 'Al Rajhi Bank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr class="tx-history-row" data-ticker-history="1120">
-                    <td colspan="6">
-                      <div class="tx-history-panel">
-                        <div class="tx-history-header">
-                          <span class="tx-history-title">Transaction History</span>
-                          <div class="tx-history-actions">
-                            <button class="tx-btn tx-btn-primary" onclick="openAddLotModal('1120')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Add Lot</button>
-                            <button class="tx-btn tx-btn-secondary" onclick="openSellModal('1120')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Partial Sale</button>
-                          </div>
-                        </div>
-                        <table class="tx-table">
-                          <thead>
-                            <tr><th>Date</th><th>Type</th><th>Shares</th><th>Price</th><th>Realized P&L</th><th>Remaining</th><th>Notes</th></tr>
-                          </thead>
-                          <tbody>
-                            <tr><td>Feb 08, 2025</td><td><span class="tx-type buy">Buy</span></td><td>1,200</td><td>SAR 76.50</td><td>—</td><td>1,200</td><td class="tx-note">Initial position</td></tr>
-                            <tr><td>Apr 15, 2025</td><td><span class="tx-type buy">Buy</span></td><td>212</td><td>SAR 82.30</td><td>—</td><td>1,412</td><td class="tx-note">Added on strength</td></tr>
-                          </tbody>
-                        </table>
-                        <div class="tx-summary">
-                          <div class="tx-summary-left">
-                            <div class="tx-summary-item">
-                              <span class="tx-summary-label">Current Position</span>
-                              <span class="tx-summary-value">1,412 shares</span>
-                            </div>
-                            <div class="tx-summary-item">
-                              <span class="tx-summary-label">Blended Avg Cost</span>
-                              <span class="tx-summary-value">SAR 78.40</span>
-                            </div>
-                            <div class="tx-summary-item">
-                              <span class="tx-summary-label">Unrealized P&L</span>
-                              <span class="tx-summary-value up">+SAR 9,635 (+8.7%)</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr data-ticker="7010" class="holding-row">
-                    <td>
-                      <div class="holding-name-wrapper">
-                        <button class="expand-toggle" onclick="toggleExpand('7010')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                        </button>
-                        <div class="holding-logo">STC</div>
-                        <div>
-                          <div class="holding-ticker">stc</div>
-                          <div class="holding-company">7010.SR · Telecom</div>
-                          <div class="row-meta">Council reviewed: 5 days ago</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="weight-cell">
-                      11.8%
-                      <div class="weight-bar"><div class="weight-bar-fill" style="width: 59%;"></div></div>
-                    </td>
-                    <td>SAR 99,975</td>
-                    <td class="pnl-cell">
-                      <div class="pnl-amount up">+5.2%</div>
-                      <div class="pnl-pct">+SAR 4,951</div>
-                    </td>
-                    <td class="thesis-cell"><span class="thesis-score medium">7.2/10<span class="score-bar"><span class="score-bar-fill" style="width: 72%;"></span></span></span></td>
-                    <td>
-                      <div class="row-actions">
-                        <button class="row-action" title="View Details" onclick="viewHolding('7010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-                        <button class="row-action" title="Ask Adviser" onclick="askAboutHolding('7010', 'stc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
-                        <button class="row-action" title="Run Council" onclick="runCouncilForHolding('7010', 'stc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
-                        <button class="row-action" title="Set Alert" onclick="setAlertForHolding('7010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
-                        <button class="row-action" title="Adjust Position" onclick="openAdjustModal('7010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-                        <button class="row-action danger" title="Remove" onclick="removeHolding('7010', 'stc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr class="tx-history-row" data-ticker-history="7010">
-                    <td colspan="6">
-                      <div class="tx-history-panel">
-                        <div class="tx-history-header">
-                          <span class="tx-history-title">Transaction History</span>
-                          <div class="tx-history-actions">
-                            <button class="tx-btn tx-btn-primary" onclick="openAddLotModal('7010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Add Lot</button>
-                            <button class="tx-btn tx-btn-secondary" onclick="openSellModal('7010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Partial Sale</button>
-                          </div>
-                        </div>
-                        <table class="tx-table">
-                          <thead><tr><th>Date</th><th>Type</th><th>Shares</th><th>Price</th><th>Realized P&L</th><th>Remaining</th><th>Notes</th></tr></thead>
-                          <tbody>
-                            <tr><td>Dec 10, 2024</td><td><span class="tx-type buy">Buy</span></td><td>2,375</td><td>SAR 40.00</td><td>—</td><td>2,375</td><td class="tx-note">Dividend play</td></tr>
-                          </tbody>
-                        </table>
-                        <div class="tx-summary">
-                          <div class="tx-summary-left">
-                            <div class="tx-summary-item"><span class="tx-summary-label">Current Position</span><span class="tx-summary-value">2,375 shares</span></div>
-                            <div class="tx-summary-item"><span class="tx-summary-label">Blended Avg Cost</span><span class="tx-summary-value">SAR 40.00</span></div>
-                            <div class="tx-summary-item"><span class="tx-summary-label">Unrealized P&L</span><span class="tx-summary-value up">+SAR 4,951 (+5.2%)</span></div>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr data-ticker="QNBK" class="holding-row">
-                    <td>
-                      <div class="holding-name-wrapper">
-                        <button class="expand-toggle" onclick="toggleExpand('QNBK')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                        </button>
-                        <div class="holding-logo">QNB</div>
-                        <div>
-                          <div class="holding-ticker">QNB Group</div>
-                          <div class="holding-company">QNBK.QA · Banking</div>
-                          <div class="row-meta">Council reviewed: 1 day ago</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="weight-cell">
-                      9.6%
-                      <div class="weight-bar"><div class="weight-bar-fill" style="width: 48%;"></div></div>
-                    </td>
-                    <td>SAR 81,336</td>
-                    <td class="pnl-cell">
-                      <div class="pnl-amount up">+6.8%</div>
-                      <div class="pnl-pct">+SAR 5,178</div>
-                    </td>
-                    <td class="thesis-cell"><span class="thesis-score high">7.9/10<span class="score-bar"><span class="score-bar-fill" style="width: 79%;"></span></span></span></td>
-                    <td>
-                      <div class="row-actions">
-                        <button class="row-action" title="View Details" onclick="viewHolding('QNBK')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-                        <button class="row-action" title="Ask Adviser" onclick="askAboutHolding('QNBK', 'QNB Group')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
-                        <button class="row-action" title="Run Council" onclick="runCouncilForHolding('QNBK', 'QNB Group')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
-                        <button class="row-action" title="Set Alert" onclick="setAlertForHolding('QNBK')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
-                        <button class="row-action" title="Adjust Position" onclick="openAdjustModal('QNBK')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-                        <button class="row-action danger" title="Remove" onclick="removeHolding('QNBK', 'QNB Group')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr class="tx-history-row" data-ticker-history="QNBK">
-                    <td colspan="6">
-                      <div class="tx-history-panel">
-                        <div class="tx-history-header">
-                          <span class="tx-history-title">Transaction History</span>
-                          <div class="tx-history-actions">
-                            <button class="tx-btn tx-btn-primary" onclick="openAddLotModal('QNBK')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Add Lot</button>
-                            <button class="tx-btn tx-btn-secondary" onclick="openSellModal('QNBK')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Partial Sale</button>
-                          </div>
-                        </div>
-                        <table class="tx-table">
-                          <thead><tr><th>Date</th><th>Type</th><th>Shares</th><th>Price</th><th>Realized P&L</th><th>Remaining</th><th>Notes</th></tr></thead>
-                          <tbody>
-                            <tr><td>Nov 20, 2024</td><td><span class="tx-type buy">Buy</span></td><td>4,345</td><td>QAR 17.50</td><td>—</td><td>4,345</td><td class="tx-note">Regional diversification</td></tr>
-                          </tbody>
-                        </table>
-                        <div class="tx-summary">
-                          <div class="tx-summary-left">
-                            <div class="tx-summary-item"><span class="tx-summary-label">Current Position</span><span class="tx-summary-value">4,345 shares</span></div>
-                            <div class="tx-summary-item"><span class="tx-summary-label">Blended Avg Cost</span><span class="tx-summary-value">QAR 17.50</span></div>
-                            <div class="tx-summary-item"><span class="tx-summary-label">Unrealized P&L</span><span class="tx-summary-value up">+SAR 5,178 (+6.8%)</span></div>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr data-ticker="FAB" class="holding-row">
-                    <td>
-                      <div class="holding-name-wrapper">
-                        <button class="expand-toggle" onclick="toggleExpand('FAB')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                        </button>
-                        <div class="holding-logo">FAB</div>
-                        <div>
-                          <div class="holding-ticker">First Abu Dhabi Bank</div>
-                          <div class="holding-company">FAB.AD · Banking</div>
-                          <div class="row-meta">Council reviewed: 4 days ago</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="weight-cell">
-                      8.4%
-                      <div class="weight-bar"><div class="weight-bar-fill" style="width: 42%;"></div></div>
-                    </td>
-                    <td>SAR 71,169</td>
-                    <td class="pnl-cell">
-                      <div class="pnl-amount up">+3.9%</div>
-                      <div class="pnl-pct">+SAR 2,673</div>
-                    </td>
-                    <td class="thesis-cell"><span class="thesis-score medium">7.4/10<span class="score-bar"><span class="score-bar-fill" style="width: 74%;"></span></span></span></td>
-                    <td>
-                      <div class="row-actions">
-                        <button class="row-action" title="View Details" onclick="viewHolding('FAB')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-                        <button class="row-action" title="Ask Adviser" onclick="askAboutHolding('FAB', 'First Abu Dhabi Bank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
-                        <button class="row-action" title="Run Council" onclick="runCouncilForHolding('FAB', 'First Abu Dhabi Bank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
-                        <button class="row-action" title="Set Alert" onclick="setAlertForHolding('FAB')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
-                        <button class="row-action" title="Adjust Position" onclick="openAdjustModal('FAB')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-                        <button class="row-action danger" title="Remove" onclick="removeHolding('FAB', 'First Abu Dhabi Bank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr class="tx-history-row" data-ticker-history="FAB">
-                    <td colspan="6">
-                      <div class="tx-history-panel">
-                        <div class="tx-history-header">
-                          <span class="tx-history-title">Transaction History</span>
-                          <div class="tx-history-actions">
-                            <button class="tx-btn tx-btn-primary" onclick="openAddLotModal('FAB')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Add Lot</button>
-                            <button class="tx-btn tx-btn-secondary" onclick="openSellModal('FAB')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Partial Sale</button>
-                          </div>
-                        </div>
-                        <table class="tx-table">
-                          <thead><tr><th>Date</th><th>Type</th><th>Shares</th><th>Price</th><th>Realized P&L</th><th>Remaining</th><th>Notes</th></tr></thead>
-                          <tbody>
-                            <tr><td>Jan 05, 2025</td><td><span class="tx-type buy">Buy</span></td><td>4,792</td><td>AED 14.30</td><td>—</td><td>4,792</td><td class="tx-note">UAE exposure</td></tr>
-                          </tbody>
-                        </table>
-                        <div class="tx-summary">
-                          <div class="tx-summary-left">
-                            <div class="tx-summary-item"><span class="tx-summary-label">Current Position</span><span class="tx-summary-value">4,792 shares</span></div>
-                            <div class="tx-summary-item"><span class="tx-summary-label">Blended Avg Cost</span><span class="tx-summary-value">AED 14.30</span></div>
-                            <div class="tx-summary-item"><span class="tx-summary-label">Unrealized P&L</span><span class="tx-summary-value up">+SAR 2,673 (+3.9%)</span></div>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr data-ticker="2010" class="holding-row">
-                    <td>
-                      <div class="holding-name-wrapper">
-                        <button class="expand-toggle" onclick="toggleExpand('2010')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                        </button>
-                        <div class="holding-logo">SAB</div>
-                        <div>
-                          <div class="holding-ticker">SABIC</div>
-                          <div class="holding-company">2010.SR · Materials</div>
-                          <div class="row-meta">Council reviewed: 1 day ago · Flagged</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="weight-cell">
-                      7.2%
-                      <div class="weight-bar"><div class="weight-bar-fill" style="width: 36%;"></div></div>
-                    </td>
-                    <td>SAR 61,002</td>
-                    <td class="pnl-cell">
-                      <div class="pnl-amount down">-4.1%</div>
-                      <div class="pnl-pct">-SAR 2,610</div>
-                    </td>
-                    <td class="thesis-cell"><span class="thesis-score low">5.8/10<span class="score-bar"><span class="score-bar-fill" style="width: 58%;"></span></span></span></td>
-                    <td>
-                      <div class="row-actions">
-                        <button class="row-action" title="View Details" onclick="viewHolding('2010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-                        <button class="row-action" title="Ask Adviser" onclick="askAboutHolding('2010', 'SABIC')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
-                        <button class="row-action" title="Run Council" onclick="runCouncilForHolding('2010', 'SABIC')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
-                        <button class="row-action" title="Set Alert" onclick="setAlertForHolding('2010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
-                        <button class="row-action" title="Adjust Position" onclick="openAdjustModal('2010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-                        <button class="row-action danger" title="Remove" onclick="removeHolding('2010', 'SABIC')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr class="tx-history-row" data-ticker-history="2010">
-                    <td colspan="6">
-                      <div class="tx-history-panel">
-                        <div class="tx-history-header">
-                          <span class="tx-history-title">Transaction History</span>
-                          <div class="tx-history-actions">
-                            <button class="tx-btn tx-btn-primary" onclick="openAddLotModal('2010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Add Lot</button>
-                            <button class="tx-btn tx-btn-secondary" onclick="openSellModal('2010')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Partial Sale</button>
-                          </div>
-                        </div>
-                        <table class="tx-table">
-                          <thead><tr><th>Date</th><th>Type</th><th>Shares</th><th>Price</th><th>Realized P&L</th><th>Remaining</th><th>Notes</th></tr></thead>
-                          <tbody>
-                            <tr><td>Oct 18, 2024</td><td><span class="tx-type buy">Buy</span></td><td>698</td><td>SAR 91.15</td><td>—</td><td>698</td><td class="tx-note">Materials exposure</td></tr>
-                          </tbody>
-                        </table>
-                        <div class="tx-summary">
-                          <div class="tx-summary-left">
-                            <div class="tx-summary-item"><span class="tx-summary-label">Current Position</span><span class="tx-summary-value">698 shares</span></div>
-                            <div class="tx-summary-item"><span class="tx-summary-label">Blended Avg Cost</span><span class="tx-summary-value">SAR 91.15</span></div>
-                            <div class="tx-summary-item"><span class="tx-summary-label">Unrealized P&L</span><span class="tx-summary-value down">-SAR 2,610 (-4.1%)</span></div>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr data-ticker="EMAAR" class="holding-row">
-                    <td>
-                      <div class="holding-name-wrapper">
-                        <button class="expand-toggle" onclick="toggleExpand('EMAAR')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                        </button>
-                        <div class="holding-logo">EMA</div>
-                        <div>
-                          <div class="holding-ticker">Emaar Properties</div>
-                          <div class="holding-company">EMAAR.DU · Real Estate</div>
-                          <div class="row-meta">Council reviewed: 6 days ago</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="weight-cell">
-                      6.1%
-                      <div class="weight-bar"><div class="weight-bar-fill" style="width: 30%;"></div></div>
-                    </td>
-                    <td>SAR 51,682</td>
-                    <td class="pnl-cell">
-                      <div class="pnl-amount down">-2.3%</div>
-                      <div class="pnl-pct">-SAR 1,214</div>
-                    </td>
-                    <td class="thesis-cell"><span class="thesis-score medium">6.5/10<span class="score-bar"><span class="score-bar-fill" style="width: 65%;"></span></span></span></td>
-                    <td>
-                      <div class="row-actions">
-                        <button class="row-action" title="View Details" onclick="viewHolding('EMAAR')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-                        <button class="row-action" title="Ask Adviser" onclick="askAboutHolding('EMAAR', 'Emaar Properties')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
-                        <button class="row-action" title="Run Council" onclick="runCouncilForHolding('EMAAR', 'Emaar Properties')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
-                        <button class="row-action" title="Set Alert" onclick="setAlertForHolding('EMAAR')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
-                        <button class="row-action" title="Adjust Position" onclick="openAdjustModal('EMAAR')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-                        <button class="row-action danger" title="Remove" onclick="removeHolding('EMAAR', 'Emaar Properties')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr class="tx-history-row" data-ticker-history="EMAAR">
-                    <td colspan="6">
-                      <div class="tx-history-panel">
-                        <div class="tx-history-header">
-                          <span class="tx-history-title">Transaction History</span>
-                          <div class="tx-history-actions">
-                            <button class="tx-btn tx-btn-primary" onclick="openAddLotModal('EMAAR')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Add Lot</button>
-                            <button class="tx-btn tx-btn-secondary" onclick="openSellModal('EMAAR')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Partial Sale</button>
-                          </div>
-                        </div>
-                        <table class="tx-table">
-                          <thead><tr><th>Date</th><th>Type</th><th>Shares</th><th>Price</th><th>Realized P&L</th><th>Remaining</th><th>Notes</th></tr></thead>
-                          <tbody>
-                            <tr><td>Sep 12, 2024</td><td><span class="tx-type buy">Buy</span></td><td>5,774</td><td>AED 9.16</td><td>—</td><td>5,774</td><td class="tx-note">Real estate exposure</td></tr>
-                          </tbody>
-                        </table>
-                        <div class="tx-summary">
-                          <div class="tx-summary-left">
-                            <div class="tx-summary-item"><span class="tx-summary-label">Current Position</span><span class="tx-summary-value">5,774 shares</span></div>
-                            <div class="tx-summary-item"><span class="tx-summary-label">Blended Avg Cost</span><span class="tx-summary-value">AED 9.16</span></div>
-                            <div class="tx-summary-item"><span class="tx-summary-label">Unrealized P&L</span><span class="tx-summary-value down">-SAR 1,214 (-2.3%)</span></div>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
+                <tbody id="holdingsBody"><tr><td colspan="6" style="text-align:center;padding:40px;color:var(--fg-dim);">Loading your holdings…</td></tr></tbody>
               </table>
             </div>
           </div>
@@ -1795,16 +1331,7 @@
     </aside>
   </div>
 
-  <!-- Toast -->
-  <div class="toast" id="toast">
-    <div class="toast-icon success">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-    </div>
-    <div class="toast-content">
-      <div class="toast-title">Action completed</div>
-      <div class="toast-text">Your request has been processed.</div>
-    </div>
-  </div>
+  <!-- Toasts are rendered globally by adviser-core (.global-toast); the orphaned static toast was removed. -->
 
   <!-- Add Holding Modal -->
   <div class="modal-overlay" id="addHoldingModal">
@@ -1877,47 +1404,7 @@
     </div>
   </div>
 
-  <!-- Council Modal -->
-  <div class="modal-overlay" id="councilModal">
-    <div class="modal" style="max-width: 800px;">
-      <div class="modal-header">
-        <div class="modal-title">
-          <div class="modal-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
-          </div>
-          <div>
-            <h2>AI Analyst Council Review</h2>
-            <p>Full 12-dimension portfolio assessment</p>
-          </div>
-        </div>
-        <button class="modal-close" id="closeCouncilModal">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="modal-section">
-          <div class="modal-section-title">Council Synthesis</div>
-          <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px;">
-            <p style="font-size: 14px; color: var(--fg-muted); line-height: 1.8;">
-              Based on 7-perspective deliberation, <strong style="color: var(--fg);">data suggests your portfolio maintains constructive positioning</strong> with notable banking sector quality. However, concentration risk at 32.2% warrants monitoring.
-              <br><br>
-              <strong style="color: var(--fg);">Materials exposure</strong> (SABIC at 7.2%) shows weakening thesis signals with score of 5.8/10. Consider reviewing alignment with risk tolerance given commodity pricing dynamics.
-              <br><br>
-              <strong style="color: var(--fg);">Geographic allocation</strong> appears balanced across Saudi (51.6%), UAE (14.5%), and Qatar (9.6%), though Saudi dominance may warrant review for regional diversification.
-            </p>
-          </div>
-        </div>
-        <div class="modal-section">
-          <div class="modal-section-title">Council Verdict</div>
-          <div style="background: linear-gradient(135deg, var(--accent-violet-glow), var(--accent-primary-glow)); border: 1px solid var(--accent-violet); border-radius: 14px; padding: 24px; text-align: center;">
-            <div style="font-size: 11px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px;">Portfolio Assessment</div>
-            <div style="font-size: 18px; font-weight: 700; color: var(--fg); margin-bottom: 10px;">Constructive with Concentration Concerns</div>
-            <p style="font-size: 14px; color: var(--fg-muted); line-height: 1.6;">Data suggests maintaining core positions while reviewing Materials exposure and considering banking sector rebalancing to manage concentration risk.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Council review is convened live by adviser-core openCouncilModal (real /api/adviser/council/ask). The orphaned static modal with fabricated synthesis (32.2% / SABIC 5.8 / 51.6%) was removed. -->
 
   <!-- Adjust Position Modal -->
   <div class="modal-overlay" id="adjustModal">
@@ -2079,7 +1566,11 @@
         if(mv[2]){ mv[2].textContent=(pnl>=0?'+':'')+formatCurrency(pnl,'SAR'); mv[2].style.color=pnl>=0?'var(--success)':'var(--danger)'; }
         if(mv[3]){ mv[3].textContent=wY>0?wY.toFixed(1)+'%':'—'; const sub=mv[3].parentElement.querySelector('.metric-sub'); if(sub) sub.style.display='none'; }
         if(mv[4]) mv[4].textContent=String(holdings.length);
-        if(mv[5]) mv[5].textContent='—';
+        if(mv[5]){
+          var dch=tv>0?holdings.reduce(function(s,h){return s+((h.valueSar||0)*(h.dayChange||0));},0)/tv:null;
+          if(dch!=null && isFinite(dch) && holdings.length){ mv[5].textContent=(dch>=0?'+':'')+dch.toFixed(2)+'%'; mv[5].style.color=dch>=0?'var(--success)':'var(--danger)'; }
+          else mv[5].textContent='—';
+        }
         renderAllocations(holdings);   // F1: real sector + country allocation
         const tbody=document.getElementById('holdingsBody');
         if(!tbody) return;
@@ -2526,7 +2017,6 @@
 
     document.getElementById('closeAddModal').addEventListener('click', () => document.getElementById('addHoldingModal').classList.remove('open'));
     document.getElementById('closeImportModal').addEventListener('click', () => document.getElementById('importModal').classList.remove('open'));
-    document.getElementById('closeCouncilModal').addEventListener('click', () => document.getElementById('councilModal').classList.remove('open'));
     document.getElementById('cancelAddBtn').addEventListener('click', () => document.getElementById('addHoldingModal').classList.remove('open'));
 
     document.querySelectorAll('.modal-overlay').forEach(modal => {
