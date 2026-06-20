@@ -40,24 +40,24 @@ _Started 2026-06-20. Status: in progress._
 - **Repro:** `GET https://alphacouncil.tech/Sample-Dashboard.html` → 200. Fully fabricated ("Good morning, Sami", SAR 847,250, 32.2% banking, **canned interactive AI chat** returning fake analysis). Linked from 7 "View sample dashboard" CTAs on index/features/how-it-works/markets.
 - **Fix:** removed the 7 CTAs and deleted the file. (Whether to build an *honest* labeled sample → NEEDS FOUNDER REVIEW.)
 
-### R1-03 — stock-detail fundamentals 404 → console error for screening-listed tickers — **MAJOR** — pending
+### R1-03 — stock-detail fundamentals 404 → console error for screening-listed tickers — **MAJOR** — ✅ FIXED
 - **Repro:** `/stock-detail.html?ticker=ABRAAJ_BSE` (in `/api/screening`, summary 200) → `GET /api/ticker/ABRAAJ_BSE/fundamentals` **404** → console error + failed request (DoD violation). POLTRY_BSE (also no fundamentals) returns honest **200-with-nulls** — backend is inconsistent. Page renders honest "—" visually; only the 404 is the defect.
 - **Planned fix:** backend `/fundamentals` returns 200 honest-empty for a valid ticker lacking a fundamentals row (consistent with POLTRY).
 
-### R1-04 — portfolio.html ships orphaned fabricated markup — **MAJOR** — pending
+### R1-04 — portfolio.html ships orphaned fabricated markup — **MAJOR** — ✅ FIXED
 - Orphaned `#councilModal` (hardcoded "32.2% banking / SABIC 7.2% / Saudi 51.6% / 5.8/10") + `#adjustModal` + `holdingsData` mock (Aramco 5470 @ 25.40 …) + dead `openAdjustModal/confirmAdjust` + 7 static fabricated `<tr>` holding rows + per-row tx-history. **Not shown** to users (real `onPortfolioReady` overwrites `#holdingsBody`; `openCouncilModal` builds a separate `councilModalOverlay` with a real `/api/adviser/council/ask`; modal-overlay is `opacity:0`) — but fabricated financial content is shipped in the page (rule 2) and flashes pre-hydration.
 - **Planned fix:** remove the orphaned modals/mock/handlers; neutralize static metric literals + holding rows.
 
-### R1-05 — stale "Action completed" toast visible by default on portfolio — pending (investigating)
+### R1-05 — stale "Action completed" toast visible by default on portfolio — **MAJOR** — ✅ FIXED
 - Full-page screenshot (authed + anon) shows a large "Action completed / Your request has been processed" toast rendered at page bottom with no action taken.
 
-### R1-06 — dead `href="#"` links — **MAJOR** — pending
+### R1-06 — dead `href="#"` links — **MAJOR** — ✅ FIXED
 - forgot-password.html (3 visible), onboarding.html (1), stock-detail.html (1). (news.html's 12 static `#` links are replaced by the real feed render — not user-reachable.)
 
-### R1-07 — settings.html ships fake identity defaults — **MINOR** — pending
+### R1-07 — settings.html ships fake identity defaults — **MINOR** — ✅ FIXED
 - `<input id="firstName" value="Saeed">` / `<input id="lastName" value="Al-Khalidi">`. `loadProfile()` clears+fills from `/auth/me`, but the fake names ship in markup and flash before the async fetch (and the B1 nav check only scanned "SK"/"Sami").
 
-### R1-08 — thesis-auth regression test is brittle — pending (reconcile)
+### R1-08 — thesis-auth regression test is brittle — ✅ FIXED (reconciled)
 - Test asserts anon `POST /api/thesis/2222 {}` is 200/404 (public cached read). Backend keys the cache on `(model, as_of_date)`; `as_of_date` rolls forward nightly so pre-generated theses go stale → cache miss → anon **401** (by design). The UI handles 401 honestly ("Please log in to generate an AI thesis"); no page-load fetch. So the failure is a brittle assumption, not a user defect.
 - **Planned:** reconcile the test to assert the real security invariant; flag the product nuance (logged-out visitors effectively never see a pre-generated thesis) for founder review.
 
