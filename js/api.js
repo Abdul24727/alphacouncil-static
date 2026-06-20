@@ -140,7 +140,7 @@
     riskProfile: function () { return API.get('/api/adviser/risk-profile'); },
     saveRiskProfile: function (p) { return API.put('/api/adviser/risk-profile', p); },
 
-    // ---- Thesis (11-dimension score matrix) ----
+    // ---- Thesis (12-dimension score matrix) ----
     thesis: function (key) { return API.post('/api/thesis/' + encodeURIComponent(key), {}); },
   };
 

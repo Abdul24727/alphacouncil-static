@@ -423,8 +423,8 @@
           </h1>
           <p class="page-subtitle">Intelligent alerts from the AI Analyst Council on your holdings and portfolio.</p>
           <div class="quick-stats">
-            <div class="quick-stat"><span class="dot active"></span><strong>12</strong> active</div>
-            <div class="quick-stat"><span class="dot new"></span><strong>3</strong> new today</div>
+            <div class="quick-stat"><span class="dot active"></span><strong>—</strong> active</div>
+            <div class="quick-stat"><span class="dot new"></span><strong>—</strong> new today</div>
             <div class="quick-stat"><span class="dot time"></span> Last updated: <strong>just now</strong></div>
           </div>
         </div>
@@ -433,9 +433,9 @@
       <!-- Filters Bar -->
       <div class="filters-bar">
         <div class="tab-group">
-          <button class="tab-btn active" data-filter="all">All Alerts <span class="count">12</span></button>
-          <button class="tab-btn" data-filter="high">High Priority <span class="count">3</span></button>
-          <button class="tab-btn" data-filter="unread">Unread <span class="count">5</span></button>
+          <button class="tab-btn active" data-filter="all">All Alerts <span class="count">—</span></button>
+          <button class="tab-btn" data-filter="high">High Priority <span class="count">—</span></button>
+          <button class="tab-btn" data-filter="unread">Unread <span class="count">—</span></button>
         </div>
         <div class="filter-group">
           <!-- I1: removed the analyst-type <select> (it filtered by a CSS class the real cards
@@ -953,6 +953,7 @@
       function render() {
         if (!loaded.length) {
           listEl.innerHTML = '<div style="padding:48px 24px;text-align:center;color:var(--fg-dim);font-size:14px;">No alerts yet. As notable moves, technical signals and news hit your holdings, they’ll show up here.</div>';
+          resetStats();
           return;
         }
         listEl.innerHTML = loaded.map(cardHtml).join('')
@@ -971,6 +972,15 @@
         if (counts[0]) counts[0].textContent = loaded.length;
         if (counts[1]) counts[1].textContent = loaded.filter(function (a) { return a.severity === 'warn'; }).length;
         if (counts[2]) counts[2].textContent = unread;
+      }
+
+      // Honest reset so no fabricated counts linger on anon/error states.
+      function resetStats() {
+        var qs = document.querySelectorAll('.quick-stat strong');
+        if (qs[0]) qs[0].textContent = '—';
+        if (qs[1]) qs[1].textContent = '—';
+        var counts = document.querySelectorAll('.tab-btn .count');
+        for (var i = 0; i < counts.length; i++) counts[i].textContent = '—';
       }
 
       function loadPage() {
@@ -999,8 +1009,13 @@
               render(); updateStats(0);
             }).catch(function () {});
           }
-        }).catch(function () {
-          listEl.innerHTML = '<div style="padding:48px 24px;text-align:center;color:var(--fg-dim);">Couldn’t load your alerts. Please try again.</div>';
+        }).catch(function (err) {
+          resetStats();
+          if (err && err.status === 401) {
+            listEl.innerHTML = '<div style="padding:48px 24px;text-align:center;color:var(--fg-dim);font-size:14px;"><a href="login.html" style="color:var(--accent-primary);">Sign in</a> to see your alerts.</div>';
+          } else {
+            listEl.innerHTML = '<div style="padding:48px 24px;text-align:center;color:var(--fg-dim);">Couldn’t load your alerts. Please try again.</div>';
+          }
         });
       }
 

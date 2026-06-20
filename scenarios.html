@@ -127,10 +127,6 @@
       background: var(--accent-violet-glow);
     }
 
-    .scenario-card.comparing {
-      border-color: var(--accent-primary);
-      background: var(--accent-primary-glow);
-    }
 
     /* Scenario card focus indicator */
     .scenario-card:focus-visible {
@@ -1379,10 +1375,6 @@
           <p>Simulate changes and see the impact before executing any trades</p>
         </div>
         <div class="page-actions">
-          <button class="multi-compare-toggle" id="multiCompareToggle">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            Compare Multiple
-          </button>
           <button class="btn btn-primary" id="newScenarioBtn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
             New Scenario
@@ -1588,6 +1580,12 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
                   Add Trade
                 </button>
+                <div class="nl-input-actions">
+                  <button class="btn btn-primary" onclick="analyzeStructuredTrades()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Analyze trades
+                  </button>
+                </div>
               </div>
             </div>
           </section>
@@ -2242,6 +2240,35 @@
       }
     }
 
+    // M5: Structured Trades -> build a real scenario string from the trade rows and route to the REAL adviser.
+    function analyzeStructuredTrades() {
+      const rows = Array.from(document.querySelectorAll('#tradeList .trade-row'));
+      const legs = [];
+      rows.forEach(row => {
+        const actionEl = row.querySelector('.trade-action');
+        const stockEl = row.querySelector('.trade-stock-select');
+        const inputs = row.querySelectorAll('.trade-input');
+        const action = actionEl ? (actionEl.value || '').trim() : '';
+        const stock = stockEl ? (stockEl.value || '').trim() : '';
+        const amount = inputs[0] ? (inputs[0].value || '').trim() : '';
+        const pct = inputs[1] ? (inputs[1].value || '').trim() : '';
+        // Skip empty/unselected rows: a row needs an action, a selected stock, and at least one of amount/%.
+        if (!action || !stock || (!amount && !pct)) return;
+        const verb = action.charAt(0).toUpperCase() + action.slice(1);
+        const qty = amount && pct ? (amount + ' (' + pct + ')') : (amount || pct);
+        legs.push(verb + ' ' + qty + ' of ' + stock);
+      });
+      if (!legs.length) {
+        AlphaCouncil.showToast('No Trades', 'Add at least one trade with a stock and an amount or %', 'warning');
+        return;
+      }
+      const scenario = legs.join('; ');
+      if (window.AlphaCouncil) {
+        if (AlphaCouncil.openSidebar) AlphaCouncil.openSidebar();
+        if (AlphaCouncil.askQuestion) AlphaCouncil.askQuestion('Analyse this portfolio scenario against my real holdings — the impact on concentration, risk and income, and the main trade-offs. Scenario: ' + scenario);
+      }
+    }
+
     // NL Suggestions
     document.querySelectorAll('.nl-suggestion').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -2303,14 +2330,6 @@
         context: 'Analyze this portfolio scenario and provide perspectives from each AI Analyst.'
       });
     }
-
-    // Multi-Compare Toggle
-    document.getElementById('multiCompareToggle').addEventListener('click', function() {
-      this.classList.toggle('active');
-      if (this.classList.contains('active')) {
-        AlphaCouncil.showToast('Compare Mode', 'Click scenarios to add them to comparison', 'info');
-      }
-    });
 
     // Modal Functions
     function openNewScenarioModal() {

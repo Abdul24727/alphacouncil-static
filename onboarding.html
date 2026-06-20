@@ -1403,8 +1403,10 @@
 
     .preview-holding-pnl {
       font-size: 11px;
-      color: var(--success);
+      color: var(--fg-dim);
     }
+    .preview-holding-pnl.pnl-up { color: var(--success); }
+    .preview-holding-pnl.pnl-down { color: var(--danger); }
 
     /* Success Actions */
     .success-actions {
@@ -2718,7 +2720,14 @@
       // G2: real success tiles (no fabricated return/dividend/council-score).
       const hc = document.getElementById('previewHoldingsCount'); if (hc) hc.textContent = String(holdings.length);
       const mk = document.getElementById('previewMarkets'); if (mk) mk.textContent = String(new Set(holdings.map(h => h.currency || h.exchange).filter(Boolean)).size);
-      document.getElementById('previewHoldings').innerHTML = holdings.slice(0, 3).map(h => `
+      document.getElementById('previewHoldings').innerHTML = holdings.slice(0, 3).map(h => {
+        // M9: only show a P&L when we have a real current price AND a valid avg cost — uploaded
+        // statements have no `price` field, so render a neutral "—" instead of "+NaN%".
+        const hasPnl = Number.isFinite(h.price) && Number.isFinite(h.avgPrice) && h.avgPrice !== 0;
+        const pnl = hasPnl ? ((h.price - h.avgPrice) / h.avgPrice * 100) : null;
+        const pnlClass = hasPnl ? (pnl >= 0 ? ' pnl-up' : ' pnl-down') : '';
+        const pnlText = hasPnl ? ((pnl >= 0 ? '+' : '') + pnl.toFixed(1) + '%') : '—';
+        return `
         <div class="preview-holding">
           <div class="preview-holding-logo" aria-hidden="true">${h.ticker.replace('.SR','').slice(0,4)}</div>
           <div class="preview-holding-info">
@@ -2727,10 +2736,11 @@
           </div>
           <div class="preview-holding-value">
             <div class="preview-holding-amount">${h.currency} ${h.value.toLocaleString()}</div>
-            <div class="preview-holding-pnl">+${((h.price - h.avgPrice) / h.avgPrice * 100).toFixed(1)}%</div>
+            <div class="preview-holding-pnl${pnlClass}">${pnlText}</div>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
 
     // Sidebar

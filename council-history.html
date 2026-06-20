@@ -559,8 +559,7 @@
           <select class="filter-select" id="sortFilter">
             <option value="newest">Newest first</option>
             <option value="oldest">Oldest first</option>
-            <option value="conviction">Highest conviction</option>
-            <option value="signals">Most signals</option>
+            <option value="perspectives">Most analyst perspectives</option>
           </select>
           <div class="search-filter">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -573,224 +572,7 @@
       <div class="content-grid">
         <!-- History List -->
         <div class="history-list" id="historyList">
-
-          <!-- Review Card 1 - Portfolio-wide -->
-          <div class="history-card" onclick="openDetailModal('review1')">
-            <div class="history-card-header">
-              <div class="history-card-left">
-                <div class="history-icon portfolio">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-                </div>
-                <div class="history-meta">
-                  <div class="history-date">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    June 14, 2026 · 10:23 AM GST
-                  </div>
-                  <div class="history-badges">
-                    <span class="history-badge portfolio">Portfolio-wide</span>
-                  </div>
-                  <p class="history-summary">
-                    Data suggests <strong>reviewing banking concentration</strong> (32% of portfolio). <span class="highlight">Stronger peer opportunity exists in UAE names</span>. Consider rebalancing toward diversified industrial exposure.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="history-card-footer">
-              <div class="history-signals">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                <strong>4</strong> perspectives flagged concentration risk
-              </div>
-              <div class="history-actions">
-                <button class="action-btn" onclick="event.stopPropagation(); compareReview('review1')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                  Compare
-                </button>
-                <button class="action-btn" onclick="event.stopPropagation(); exportReview('review1')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                  PDF
-                </button>
-                <button class="action-btn primary" onclick="event.stopPropagation(); openDetailModal('review1')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  View
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Review Card 2 - Stock-level -->
-          <div class="history-card" onclick="openDetailModal('review2')">
-            <div class="history-card-header">
-              <div class="history-card-left">
-                <div class="history-icon stock">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                </div>
-                <div class="history-meta">
-                  <div class="history-date">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    June 12, 2026 · 3:45 PM GST
-                  </div>
-                  <div class="history-badges">
-                    <span class="history-badge stock">Stock Review</span>
-                    <span class="history-badge ticker">2222</span>
-                  </div>
-                  <p class="history-summary">
-                    <strong>Saudi Aramco (2222)</strong> maintains strong thesis score of <span class="highlight">7.8/10</span>. Dividend yield remains attractive at 5.2%. <span class="caution">Oil price sensitivity elevated</span> given recent volatility.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="history-card-footer">
-              <div class="history-signals">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                <strong>2</strong> perspectives noted macro sensitivity
-              </div>
-              <div class="history-actions">
-                <button class="action-btn" onclick="event.stopPropagation(); compareReview('review2')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                  Compare
-                </button>
-                <button class="action-btn" onclick="event.stopPropagation(); exportReview('review2')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                  PDF
-                </button>
-                <button class="action-btn primary" onclick="event.stopPropagation(); openDetailModal('review2')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  View
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Review Card 3 - Portfolio-wide -->
-          <div class="history-card" onclick="openDetailModal('review3')">
-            <div class="history-card-header">
-              <div class="history-card-left">
-                <div class="history-icon portfolio">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-                </div>
-                <div class="history-meta">
-                  <div class="history-date">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    June 8, 2026 · 9:15 AM GST
-                  </div>
-                  <div class="history-badges">
-                    <span class="history-badge portfolio">Portfolio-wide</span>
-                  </div>
-                  <p class="history-summary">
-                    Overall portfolio thesis score improved to <span class="highlight">7.4/10</span>. <strong>Telecom allocation appears underweight</strong> relative to sector momentum. UAE banking names showing relative strength.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="history-card-footer">
-              <div class="history-signals">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                <strong>3</strong> perspectives identified opportunity
-              </div>
-              <div class="history-actions">
-                <button class="action-btn" onclick="event.stopPropagation(); compareReview('review3')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                  Compare
-                </button>
-                <button class="action-btn" onclick="event.stopPropagation(); exportReview('review3')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                  PDF
-                </button>
-                <button class="action-btn primary" onclick="event.stopPropagation(); openDetailModal('review3')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  View
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Review Card 4 - Stock-level -->
-          <div class="history-card" onclick="openDetailModal('review4')">
-            <div class="history-card-header">
-              <div class="history-card-left">
-                <div class="history-icon stock">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                </div>
-                <div class="history-meta">
-                  <div class="history-date">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    June 5, 2026 · 2:30 PM GST
-                  </div>
-                  <div class="history-badges">
-                    <span class="history-badge stock">Stock Review</span>
-                    <span class="history-badge ticker">1120</span>
-                  </div>
-                  <p class="history-summary">
-                    <strong>Al Rajhi Bank (1120)</strong> thesis score at <span class="highlight">8.1/10</span>. Strong fundamentals with <span class="caution">elevated valuation multiples</span>. Islamic banking leadership position intact.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="history-card-footer">
-              <div class="history-signals">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                <strong>1</strong> perspective noted valuation concern
-              </div>
-              <div class="history-actions">
-                <button class="action-btn" onclick="event.stopPropagation(); compareReview('review4')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                  Compare
-                </button>
-                <button class="action-btn" onclick="event.stopPropagation(); exportReview('review4')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                  PDF
-                </button>
-                <button class="action-btn primary" onclick="event.stopPropagation(); openDetailModal('review4')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  View
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Review Card 5 - Portfolio-wide -->
-          <div class="history-card" onclick="openDetailModal('review5')">
-            <div class="history-card-header">
-              <div class="history-card-left">
-                <div class="history-icon portfolio">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-                </div>
-                <div class="history-meta">
-                  <div class="history-date">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    June 1, 2026 · 11:00 AM GST
-                  </div>
-                  <div class="history-badges">
-                    <span class="history-badge portfolio">Portfolio-wide</span>
-                  </div>
-                  <p class="history-summary">
-                    <span class="caution">Sector concentration risk identified</span> in financials (38%). Data suggests reviewing diversification strategy. <span class="highlight">Energy names showing relative strength</span> amid oil price recovery.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="history-card-footer">
-              <div class="history-signals">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                <strong>5</strong> perspectives flagged concentration
-              </div>
-              <div class="history-actions">
-                <button class="action-btn" onclick="event.stopPropagation(); compareReview('review5')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                  Compare
-                </button>
-                <button class="action-btn" onclick="event.stopPropagation(); exportReview('review5')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                  PDF
-                </button>
-                <button class="action-btn primary" onclick="event.stopPropagation(); openDetailModal('review5')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  View
-                </button>
-              </div>
-            </div>
-          </div>
-
+          <div class="history-card" style="text-align:center;color:var(--fg-dim);padding:32px;">Loading your Council review history…</div>
         </div>
 
         <!-- Insights Panel -->
@@ -801,23 +583,7 @@
           </div>
 
           <div class="insight-item">
-            <div class="insight-label">Recurring Theme</div>
-            <p class="insight-text"><span class="caution">Concentration risk</span> has been flagged in <strong>4 of your last 6 reviews</strong>. Consider reviewing sector allocation.</p>
-          </div>
-
-          <div class="insight-item">
-            <div class="insight-label">Thesis Trend</div>
-            <p class="insight-text">Average portfolio thesis score has <span class="highlight">improved 0.3 points</span> over the past month from 7.1 to 7.4.</p>
-          </div>
-
-          <div class="insight-item">
-            <div class="insight-label">Top Performer</div>
-            <p class="insight-text"><strong>Al Rajhi Bank (1120)</strong> consistently scores highest across reviews with an average thesis of <span class="highlight">8.1/10</span>.</p>
-          </div>
-
-          <div class="insight-item">
-            <div class="insight-label">Attention Needed</div>
-            <p class="insight-text"><strong>SABIC (2010)</strong> thesis has declined <span class="caution">0.5 points</span> over the past 3 reviews. Consider reviewing position.</p>
+            <p class="insight-text">Trends across your Council reviews will appear here once you've run a few.</p>
           </div>
 
           <div class="insights-actions">
@@ -904,7 +670,7 @@
             </div>
             <div class="detail-subtitle">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              June 14, 2026 · 10:23 AM GST · 7 holdings analyzed
+              
             </div>
           </div>
         </div>
@@ -914,246 +680,7 @@
       </div>
 
       <div class="detail-body">
-        <!-- Strategic Synthesis -->
-        <div class="synthesis-section">
-          <div class="synthesis-card">
-            <div class="synthesis-header">
-              <div class="synthesis-label">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                Strategic Synthesis
-              </div>
-              <div class="synthesis-timestamp">Generated June 14, 2026 at 10:23 AM</div>
-            </div>
-            <p class="synthesis-text">
-              Your portfolio demonstrates <strong>solid fundamentals</strong> with an overall thesis score of <span class="highlight">7.4/10</span>. However, the Council has identified <span class="caution">significant concentration in the banking sector</span> at 32% of total allocation. This exceeds typical diversification guidelines and introduces correlated risk during financial sector downturns.
-              <br><br>
-              Data suggests <span class="highlight">reviewing exposure to UAE banking names</span> such as First Abu Dhabi Bank (FAB), which shows stronger relative momentum and lower correlation to your existing Saudi banking positions. Additionally, <span class="caution">telecom allocation appears underweight</span> relative to sector momentum — consider reviewing stc (7010) position sizing.
-            </p>
-          </div>
-        </div>
-
-        <!-- 7 Council Perspectives -->
-        <div class="perspectives-section">
-          <div class="section-header">
-            <div class="section-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              AI Analyst Council (7 Perspectives)
-            </div>
-          </div>
-          <div class="perspectives-grid">
-            <!-- Risk Analyst -->
-            <div class="perspective-card risk">
-              <div class="perspective-header">
-                <div class="perspective-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                </div>
-                <div class="perspective-name">Risk Analyst</div>
-              </div>
-              <ul class="perspective-observations">
-                <li>Banking sector concentration at 32% poses correlated downside risk</li>
-                <li>Geographic concentration in Saudi Arabia (68%)</li>
-                <li>Portfolio beta of 1.12 above market average</li>
-              </ul>
-              <div class="perspective-signal">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                <div><span class="signal-label">Key Signal</span>Review sector allocation to reduce concentration risk</div>
-              </div>
-            </div>
-
-            <!-- Valuation Analyst -->
-            <div class="perspective-card valuation">
-              <div class="perspective-header">
-                <div class="perspective-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                </div>
-                <div class="perspective-name">Valuation Analyst</div>
-              </div>
-              <ul class="perspective-observations">
-                <li>Portfolio trades at 14.2x weighted P/E vs 15.8x sector average</li>
-                <li>Al Rajhi (1120) premium valuation justified by growth</li>
-                <li>SABIC (2010) discount reflects cyclical headwinds</li>
-              </ul>
-              <div class="perspective-signal">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                <div><span class="signal-label">Key Signal</span>Aggregate valuation reasonable relative to quality</div>
-              </div>
-            </div>
-
-            <!-- Income Analyst -->
-            <div class="perspective-card income">
-              <div class="perspective-header">
-                <div class="perspective-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                </div>
-                <div class="perspective-name">Income Analyst</div>
-              </div>
-              <ul class="perspective-observations">
-                <li>Portfolio yield of 3.2% above TASI average of 2.8%</li>
-                <li>Aramco (2222) provides 42% of total dividend income</li>
-                <li>Dividend growth sustainable based on payout ratios</li>
-              </ul>
-              <div class="perspective-signal">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                <div><span class="signal-label">Key Signal</span>Income stream diversified and sustainable</div>
-              </div>
-            </div>
-
-            <!-- Momentum Analyst -->
-            <div class="perspective-card momentum">
-              <div class="perspective-header">
-                <div class="perspective-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-                </div>
-                <div class="perspective-name">Momentum Analyst</div>
-              </div>
-              <ul class="perspective-observations">
-                <li>5 of 7 holdings above 50-day moving average</li>
-                <li>stc (7010) showing strongest relative momentum</li>
-                <li>SABIC (2010) in technical downtrend, consider review</li>
-              </ul>
-              <div class="perspective-signal">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                <div><span class="signal-label">Key Signal</span>Overall momentum positive, one laggard identified</div>
-              </div>
-            </div>
-
-            <!-- News Analyst -->
-            <div class="perspective-card news">
-              <div class="perspective-header">
-                <div class="perspective-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1"/><path d="M17 14h-6"/><path d="M17 10h-6"/><path d="M17 6h-6"/></svg>
-                </div>
-                <div class="perspective-name">News Analyst</div>
-              </div>
-              <ul class="perspective-observations">
-                <li>Vision 2030 updates positive for diversified industrials</li>
-                <li>Banking sector regulatory changes neutral impact</li>
-                <li>Oil price stability supporting energy names</li>
-              </ul>
-              <div class="perspective-signal">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                <div><span class="signal-label">Key Signal</span>News flow generally supportive, no major concerns</div>
-              </div>
-            </div>
-
-            <!-- Macro Analyst -->
-            <div class="perspective-card macro">
-              <div class="perspective-header">
-                <div class="perspective-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                </div>
-                <div class="perspective-name">Macro Analyst</div>
-              </div>
-              <ul class="perspective-observations">
-                <li>GCC growth outlook remains positive at 3.2% GDP</li>
-                <li>Interest rate environment supportive for banks</li>
-                <li>USD peg provides currency stability</li>
-              </ul>
-              <div class="perspective-signal">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                <div><span class="signal-label">Key Signal</span>Macro backdrop favorable for portfolio positioning</div>
-              </div>
-            </div>
-
-            <!-- Chief Strategist (spans full width) -->
-            <div class="perspective-card strategist">
-              <div class="perspective-header" style="margin-bottom: 0;">
-                <div class="perspective-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                </div>
-                <div class="perspective-name">Chief Strategist</div>
-              </div>
-              <ul class="perspective-observations">
-                <li>Portfolio quality solid with 7.4/10 aggregate thesis</li>
-                <li>Primary concern: sector concentration warrants attention</li>
-                <li>Consider trimming banking to add UAE diversification</li>
-                <li>Telecom underweight relative to momentum signals</li>
-              </ul>
-              <div class="perspective-signal">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                <div><span class="signal-label">Key Recommendation</span>Review banking concentration; consider UAE names and telecom rebalancing for improved risk-adjusted positioning</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 12-Dimension Thesis Snapshot -->
-        <div class="thesis-section">
-          <div class="thesis-card">
-            <div class="thesis-header">
-              <div class="thesis-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                12-Dimension Thesis Snapshot
-              </div>
-              <div class="thesis-overall">
-                <div class="thesis-score-label">Overall Score</div>
-                <div class="thesis-score-badge">7.4</div>
-              </div>
-            </div>
-            <div class="thesis-dimensions">
-              <div class="dimension-item">
-                <div class="dimension-name">Valuation</div>
-                <div class="dimension-score high">7.8</div>
-                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 78%;"></div></div>
-              </div>
-              <div class="dimension-item">
-                <div class="dimension-name">Quality</div>
-                <div class="dimension-score high">8.2</div>
-                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 82%;"></div></div>
-              </div>
-              <div class="dimension-item">
-                <div class="dimension-name">Momentum</div>
-                <div class="dimension-score medium">6.9</div>
-                <div class="dimension-bar"><div class="dimension-bar-fill medium" style="width: 69%;"></div></div>
-              </div>
-              <div class="dimension-item">
-                <div class="dimension-name">Growth</div>
-                <div class="dimension-score high">7.4</div>
-                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 74%;"></div></div>
-              </div>
-              <div class="dimension-item">
-                <div class="dimension-name">Dividend</div>
-                <div class="dimension-score high">8.1</div>
-                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 81%;"></div></div>
-              </div>
-              <div class="dimension-item">
-                <div class="dimension-name">Risk</div>
-                <div class="dimension-score medium">6.2</div>
-                <div class="dimension-bar"><div class="dimension-bar-fill medium" style="width: 62%;"></div></div>
-              </div>
-              <div class="dimension-item">
-                <div class="dimension-name">Liquidity</div>
-                <div class="dimension-score high">8.5</div>
-                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 85%;"></div></div>
-              </div>
-              <div class="dimension-item">
-                <div class="dimension-name">Sentiment</div>
-                <div class="dimension-score high">7.3</div>
-                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 73%;"></div></div>
-              </div>
-              <div class="dimension-item">
-                <div class="dimension-name">Volatility</div>
-                <div class="dimension-score medium">6.8</div>
-                <div class="dimension-bar"><div class="dimension-bar-fill medium" style="width: 68%;"></div></div>
-              </div>
-              <div class="dimension-item">
-                <div class="dimension-name">Governance</div>
-                <div class="dimension-score high">8.4</div>
-                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 84%;"></div></div>
-              </div>
-              <div class="dimension-item">
-                <div class="dimension-name">Sector</div>
-                <div class="dimension-score medium">6.5</div>
-                <div class="dimension-bar"><div class="dimension-bar-fill medium" style="width: 65%;"></div></div>
-              </div>
-              <div class="dimension-item">
-                <div class="dimension-name">Macro</div>
-                <div class="dimension-score high">7.6</div>
-                <div class="dimension-bar"><div class="dimension-bar-fill high" style="width: 76%;"></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div style="padding:32px;color:var(--fg-dim);text-align:center;">Loading review…</div>
       </div>
 
       <div class="detail-footer">
@@ -1217,8 +744,7 @@
     'ch.f_90d':            { en: 'Last 90 days', ar: 'آخر ٩٠ يومًا' },
     'ch.s_newest':         { en: 'Newest first', ar: 'الأحدث أولًا' },
     'ch.s_oldest':         { en: 'Oldest first', ar: 'الأقدم أولًا' },
-    'ch.s_conviction':     { en: 'Highest conviction', ar: 'الأعلى قناعة' },
-    'ch.s_signals':        { en: 'Most signals', ar: 'الأكثر إشارات' },
+    'ch.s_perspectives':   { en: 'Most analyst perspectives', ar: 'الأكثر وجهات نظر تحليلية' },
     'ch.trends':           { en: 'Trends Across Reviews', ar: 'اتجاهات عبر المراجعات' },
     'ch.adviser':          { en: 'AI Adviser', ar: 'المستشار الذكي' },
     'ch.search':           { en: 'Search ticker...', ar: 'ابحث عن رمز...' },
@@ -1234,7 +760,7 @@
       'Reviews Saved': 'ch.stat_saved', 'Last Review': 'ch.stat_last', 'Portfolio Reviews': 'ch.stat_portfolio', 'Stock Reviews': 'ch.stat_stock',
       'All Reviews': 'ch.tab_all', 'Portfolio-wide': 'ch.tab_portfolio', 'Stock-level': 'ch.tab_stock',
       'All time': 'ch.f_all', 'Last 7 days': 'ch.f_7d', 'Last 30 days': 'ch.f_30d', 'Last 90 days': 'ch.f_90d',
-      'Newest first': 'ch.s_newest', 'Oldest first': 'ch.s_oldest', 'Highest conviction': 'ch.s_conviction', 'Most signals': 'ch.s_signals',
+      'Newest first': 'ch.s_newest', 'Oldest first': 'ch.s_oldest', 'Most analyst perspectives': 'ch.s_perspectives',
       'Trends Across Reviews': 'ch.trends', 'AI Adviser': 'ch.adviser',
       'No Council Reviews Yet': 'ch.empty_title'
     };
@@ -1306,7 +832,7 @@
         items.forEach(function (it) { window.__councilHistory[String(it.id)] = it; });
         listEl.innerHTML = items.map(function (it) {
           const isTicker = !!it.ticker, subj = isTicker ? esc(String(it.ticker).split('_')[0]) : 'Portfolio-wide', badge = isTicker ? 'ticker' : 'portfolio';
-          return '<div class="history-card" onclick="openDetailModal(\'' + esc(String(it.id)) + '\')">'
+          return '<div class="history-card" data-created="' + esc(String(it.created_at || '')) + '" data-analysts="' + (it.analyst_count || 0) + '" onclick="openDetailModal(\'' + esc(String(it.id)) + '\')">'
             + '<div class="history-card-header"><div class="history-card-left">'
             + '<div class="history-icon ' + badge + '">' + IC + '</div>'
             + '<div class="history-meta"><div class="history-date">' + esc(fmtDate(it.created_at)) + ' · ' + esc(timeAgo(it.created_at)) + '</div>'
@@ -1437,121 +963,16 @@
 
     function askAdviser(question) {
       closeDetailModal();
-      // J1: route to the REAL adviser (no canned "June 14th review" response). Branches below are dead.
-      if (window.AlphaCouncil) { if (AlphaCouncil.openSidebar) AlphaCouncil.openSidebar(); if (AlphaCouncil.askQuestion) AlphaCouncil.askQuestion(question); return; }
-      if (typeof AlphaCouncil !== 'undefined') {
-        AlphaCouncil.openSidebar();
-        setTimeout(() => {
-          AlphaCouncil.addChatMessage(question, true);
-          setTimeout(() => {
-            AlphaCouncil.addChatMessage('Based on your June 14th review, <strong>concentration risk</strong> was the primary concern. Your banking sector allocation at 32% exceeds the typical 20-25% guideline for a diversified portfolio. Data suggests reviewing positions in Al Rajhi (1120) and considering allocation to UAE names like FAB for geographic diversification.');
-          }, 600);
-        }, 300);
-      } else {
-        adviserSidebar.classList.add('open');
-        adviserToggle.classList.add('active');
-        document.body.classList.add('sidebar-open');
-
-        const chatMessages = document.getElementById('chatMessages');
-        const userMsg = document.createElement('div');
-        userMsg.className = 'chat-message user';
-        userMsg.innerHTML = `
-          <div class="chat-avatar">SK</div>
-          <div>
-            <div class="chat-bubble">${question}</div>
-            <div class="chat-time">Just now</div>
-          </div>
-        `;
-        chatMessages.appendChild(userMsg);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        setTimeout(() => {
-          const adviserMsg = document.createElement('div');
-          adviserMsg.className = 'chat-message adviser';
-          adviserMsg.innerHTML = `
-            <div class="chat-avatar">AI</div>
-            <div>
-              <div class="chat-bubble">
-                Based on your June 14th review, <strong>concentration risk</strong> was the primary concern. Your banking sector allocation at 32% exceeds the typical 20-25% guideline for a diversified portfolio. Data suggests reviewing positions in Al Rajhi (1120) and considering allocation to UAE names like FAB for geographic diversification.
-              </div>
-              <div class="chat-time">Just now</div>
-            </div>
-          `;
-          chatMessages.appendChild(adviserMsg);
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-        }, 1000);
+      // Route to the REAL adviser (adviser-core.js). No canned responses.
+      if (window.AlphaCouncil) {
+        if (AlphaCouncil.openSidebar) AlphaCouncil.openSidebar();
+        if (AlphaCouncil.askQuestion) AlphaCouncil.askQuestion(question);
       }
     }
 
-    function askQuestion(question) {
-      const chatInput = document.getElementById('chatInput');
-      chatInput.value = question;
-      document.getElementById('chatSend').click();
-    }
-
-    // Chat functionality
-    const chatSend = document.getElementById('chatSend');
-    const chatInput = document.getElementById('chatInput');
-
-    if (chatSend && chatInput) {
-      chatSend.addEventListener('click', () => {
-        const message = chatInput.value.trim();
-        if (!message) return;
-
-        const chatMessages = document.getElementById('chatMessages');
-
-        // Add user message
-        const userMsg = document.createElement('div');
-        userMsg.className = 'chat-message user';
-        userMsg.innerHTML = `
-          <div class="chat-avatar">SK</div>
-          <div>
-            <div class="chat-bubble">${message}</div>
-            <div class="chat-time">Just now</div>
-          </div>
-        `;
-        chatMessages.appendChild(userMsg);
-        chatInput.value = '';
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        // Simulate response
-        setTimeout(() => {
-          const responses = {
-            'concentration': 'Concentration risk appears in your reviews because your banking sector allocation has consistently exceeded 30%. The Council recommends keeping any single sector below 25% for optimal diversification.',
-            'compare': 'Comparing your last two portfolio reviews: Your thesis score improved from 7.1 to 7.4, driven by stronger momentum in telecom holdings. However, concentration risk persists in banking.',
-            'improved': 'Your top improvers over the last 3 reviews are: stc (7010) +0.6 points, FAB +0.4 points, and QNB +0.3 points. All showing stronger momentum and improved sentiment scores.'
-          };
-
-          let response = 'I can help you understand patterns in your Council reviews. The most common themes I see are concentration risk in banking and opportunities in UAE diversification. Would you like me to elaborate on either topic?';
-
-          for (const [key, value] of Object.entries(responses)) {
-            if (message.toLowerCase().includes(key)) {
-              response = value;
-              break;
-            }
-          }
-
-          const adviserMsg = document.createElement('div');
-          adviserMsg.className = 'chat-message adviser';
-          adviserMsg.innerHTML = `
-            <div class="chat-avatar">AI</div>
-            <div>
-              <div class="chat-bubble">${response}</div>
-              <div class="chat-time">Just now</div>
-            </div>
-          `;
-          chatMessages.appendChild(adviserMsg);
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-        }, 800);
-      });
-
-      chatInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          chatSend.click();
-        }
-      });
-    }
+    // B2: Inline chat handlers removed. adviser-core.js (init('council-history'))
+    // binds the REAL processChat to #chatSend/#chatInput and exposes window.askQuestion,
+    // which the suggested-question buttons (onclick="askQuestion(...)") now call.
 
     // Toast notification
     function showToast(title, text, type = 'success') {
@@ -1578,23 +999,44 @@
     document.getElementById('sortFilter').addEventListener('change', applyFilters);
     document.getElementById('tickerSearch').addEventListener('input', applyFilters);
 
+    // M4: real ticker search + date filter + sort. Cards carry data-created (ISO) and
+    // data-analysts (count) from loadCouncilHistory(); reads them to filter/reorder the DOM.
     function applyFilters() {
-      // Placeholder for filter logic
       const dateFilter = document.getElementById('dateFilter').value;
       const sortFilter = document.getElementById('sortFilter').value;
       const tickerSearch = document.getElementById('tickerSearch').value.toLowerCase();
 
-      const cards = document.querySelectorAll('.history-card');
-      cards.forEach(card => {
+      const listEl = document.getElementById('historyList');
+      if (!listEl) return;
+      const cards = Array.prototype.slice.call(listEl.querySelectorAll('.history-card'));
+      const dayMs = 86400000;
+      const cutoffDays = { '7d': 7, '30d': 30, '90d': 90 }[dateFilter] || 0;
+      const cutoff = cutoffDays ? (Date.now() - cutoffDays * dayMs) : 0;
+      const cardTime = function (card) { const t = Date.parse(card.getAttribute('data-created') || ''); return isNaN(t) ? null : t; };
+
+      // Filter (ticker search + date window). Date filter skips cards with no parseable date.
+      cards.forEach(function (card) {
         const tickerBadge = card.querySelector('.history-badge.ticker');
         const ticker = tickerBadge ? tickerBadge.textContent.toLowerCase() : '';
-
-        if (tickerSearch && !ticker.includes(tickerSearch)) {
-          card.style.display = 'none';
-        } else {
-          card.style.display = '';
-        }
+        let visible = true;
+        if (tickerSearch && !ticker.includes(tickerSearch)) visible = false;
+        if (visible && cutoff) { const t = cardTime(card); if (t !== null && t < cutoff) visible = false; }
+        card.style.display = visible ? '' : 'none';
       });
+
+      // Sort the visible cards and reorder the DOM.
+      const visibleCards = cards.filter(function (c) { return c.style.display !== 'none'; });
+      visibleCards.sort(function (a, b) {
+        if (sortFilter === 'perspectives') {
+          return (parseInt(b.getAttribute('data-analysts'), 10) || 0) - (parseInt(a.getAttribute('data-analysts'), 10) || 0);
+        }
+        const ta = cardTime(a), tb = cardTime(b);
+        if (ta === null && tb === null) return 0;
+        if (ta === null) return 1;
+        if (tb === null) return -1;
+        return sortFilter === 'oldest' ? (ta - tb) : (tb - ta);
+      });
+      visibleCards.forEach(function (c) { listEl.appendChild(c); });
     }
   </script>
 </body>

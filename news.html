@@ -251,31 +251,10 @@
         <button class="page-tab" data-tab="watchlist">For Your Holdings</button>
       </div>
 
-      <!-- Featured Story -->
-      <article class="featured-story" data-story-id="featured-1">
-        <div class="featured-image">
-          <div class="featured-image-placeholder">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          </div>
-        </div>
-        <div class="featured-content">
-          <div class="featured-meta">
-            <span class="news-tag ownership">OWNERSHIP</span>
-            <span class="news-date">June 16, 2026 · 09:45 GST</span>
-          </div>
-          <h2 class="featured-headline">PIF Increases Stake in Saudi Aramco to 8.2%, Signaling Long-Term Strategic Commitment</h2>
-          <p class="featured-summary">Saudi Arabia's Public Investment Fund has acquired an additional 0.5% stake in Saudi Aramco, bringing its total ownership to 8.2%. Analysts suggest this move reinforces the Kingdom's commitment to energy sector leadership while supporting Vision 2030 diversification goals. The transaction was executed at market prices with no premium.</p>
-          <div class="featured-tickers">
-            <span class="ticker-badge in-portfolio">2222.SR</span>
-            <span class="ticker-badge">PIF</span>
-          </div>
-          <div class="featured-actions">
-            <button class="btn btn-primary" onclick="askAdviser('featured-1')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              Ask Adviser
-            </button>
-            <button class="btn btn-secondary">Read Full Story</button>
-          </div>
+      <!-- Featured Story (populated by renderFeatured / featuredLoading / featuredEmpty) -->
+      <article class="featured-story" data-story-id="">
+        <div class="featured-content" style="grid-column:1 / -1;">
+          <p class="featured-summary" style="color:var(--fg-dim);">Loading featured story…</p>
         </div>
       </article>
 
@@ -697,8 +676,25 @@
     function fmtNewsDate(d){ return d ? String(d).slice(0,10) : ''; }
     function tickerBadge(it){ return it.ticker_key ? '<span class="ticker-badge">'+escN(it.ticker_key.split('_')[0])+'</span>' : ''; }
 
+    function featuredLoading(){
+      const art = document.querySelector('.featured-story'); if(!art) return;
+      art.setAttribute('data-story-id','');
+      art.innerHTML = '<div class="featured-content" style="grid-column:1 / -1;"><p class="featured-summary" style="color:var(--fg-dim);">Loading featured story…</p></div>';
+    }
+    function featuredEmpty(){
+      const art = document.querySelector('.featured-story'); if(!art) return;
+      art.setAttribute('data-story-id','');
+      art.innerHTML = '<div class="featured-content" style="grid-column:1 / -1;"><p class="featured-summary" style="color:var(--fg-dim);">No featured story available.</p></div>';
+    }
+
     function renderFeatured(it){
-      const art = document.querySelector('.featured-story'); if(!art || !it) return;
+      const art = document.querySelector('.featured-story'); if(!art) return;
+      if(!it){ featuredEmpty(); return; }
+      // Restore the full featured layout before populating (it may hold a loading/empty placeholder).
+      art.innerHTML = '<div class="featured-image"><div class="featured-image-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div></div>'
+        + '<div class="featured-content"><div class="featured-meta"><span class="news-tag"></span><span class="news-date"></span></div>'
+        + '<h2 class="featured-headline"></h2><p class="featured-summary"></p>'
+        + '<div class="featured-tickers"></div><div class="featured-actions"></div></div>';
       newsById[it.id] = it; art.setAttribute('data-story-id', it.id);
       const img = newsImg(it), imgWrap = art.querySelector('.featured-image');
       if(imgWrap && img) imgWrap.innerHTML = '<img src="'+img+'" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.remove()">';
@@ -740,9 +736,11 @@
     async function loadNews(tab){
       const main = document.querySelector('.news-main');
       if(main) main.innerHTML = '<div style="padding:48px;text-align:center;color:var(--fg-dim);">Loading news…</div>';
+      featuredLoading();
       let items;
       try { items = await (tab==='watchlist' ? API.holdingsNews(18) : API.latestNews(18)); }
       catch(e){
+        featuredEmpty();
         if(main){
           if(e && e.status===401) main.innerHTML = '<div style="padding:48px;text-align:center;color:var(--fg-dim);">Sign in to see news filtered to your holdings.</div>';
           else main.innerHTML = '<div style="padding:48px;text-align:center;color:var(--fg-dim);">Could not load news. '+escN(e && e.message || '')+'</div>';
@@ -751,7 +749,7 @@
       }
       items = Array.isArray(items) ? items : [];
       if(items.length){ renderFeatured(items[0]); renderMain(items.slice(1)); }
-      else renderMain([]);
+      else { featuredEmpty(); renderMain([]); }
     }
 
     // H1: real Top Stories sidebar from /api/news/latest (replaces the 5 hardcoded headlines).

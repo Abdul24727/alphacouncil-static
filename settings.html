@@ -1068,7 +1068,7 @@
               <div class="form-group">
                 <label class="form-label">Profile Photo</label>
                 <div class="avatar-upload">
-                  <div class="avatar-preview">SK</div>
+                  <div class="avatar-preview"></div>
                   <div class="avatar-actions">
                     <p class="form-hint" style="margin:0;">Profile photos are coming soon — your initials are shown for now.</p>
                   </div>
@@ -1086,7 +1086,7 @@
               </div>
               <div class="form-group">
                 <label class="form-label" for="email">Email Address</label>
-                <input type="email" id="email" class="form-input" value="saeed.khalidi@example.com" placeholder="Enter email">
+                <input type="email" id="email" class="form-input" value="" placeholder="Enter email">
                 <p class="form-hint">This email is used for account notifications and recovery.</p>
               </div>
               <div class="form-row">
@@ -1366,7 +1366,7 @@
                   </div>
                   <p class="methodology-card-text">Learn how we score stocks across 12 dimensions including valuation, momentum, quality, growth, dividend, risk, and more.</p>
                 </div>
-                <div class="methodology-card" tabindex="0" role="button">
+                <div class="methodology-card" tabindex="0" role="button" onclick="window.open('methodology.html', '_blank')">
                   <div class="methodology-card-header">
                     <div class="methodology-card-icon" style="background: var(--accent-violet-glow);">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-violet);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -1375,7 +1375,7 @@
                   </div>
                   <p class="methodology-card-text">Understand how each AI analyst perspective (Risk, Valuation, Income, Momentum, News, Macro, Strategist) contributes to reviews.</p>
                 </div>
-                <div class="methodology-card" tabindex="0" role="button">
+                <div class="methodology-card" tabindex="0" role="button" onclick="window.open('methodology.html', '_blank')">
                   <div class="methodology-card-header">
                     <div class="methodology-card-icon" style="background: var(--success-glow);">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--success);"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
@@ -1384,7 +1384,7 @@
                   </div>
                   <p class="methodology-card-text">We aggregate data from official GCC exchange feeds, regulatory filings, and news sources. Data refreshes every 15 minutes during market hours.</p>
                 </div>
-                <div class="methodology-card" tabindex="0" role="button">
+                <div class="methodology-card" tabindex="0" role="button" onclick="window.open('methodology.html', '_blank')">
                   <div class="methodology-card-header">
                     <div class="methodology-card-icon" style="background: var(--accent-gold-glow);">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-gold);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -1411,7 +1411,7 @@
                   </div>
                   <div>
                     <div style="font-size: 12px; color: var(--fg-dim); margin-bottom: 4px;">News & Sentiment</div>
-                    <div style="font-size: 14px; font-weight: 500; color: var(--success);">Real-time</div>
+                    <div style="font-size: 14px; font-weight: 500;">Updated through the day</div>
                   </div>
                 </div>
               </div>
@@ -1770,6 +1770,15 @@
       if(!u) return;
       const em = document.getElementById('email');
       if(em && u.email){ em.value = u.email; em.setAttribute('readonly','readonly'); em.style.opacity='0.85'; em.title='Email changes aren’t available yet'; }
+      // Real user initials for the avatar (no fabricated 'SK').
+      const av = document.querySelector('.avatar-preview');
+      if(av){
+        const fn = (u.first_name||'').trim(), ln = (u.last_name||'').trim();
+        let initials = '';
+        if(fn || ln){ initials = ((fn[0]||'') + (ln[0]||'')).toUpperCase(); }
+        else if(u.email){ const local = String(u.email).split('@')[0].replace(/[^a-zA-Z]/g,''); initials = local.slice(0,2).toUpperCase(); }
+        av.textContent = initials || '—';
+      }
       const plan = (u.plan || 'free').toLowerCase();
       const label = plan.charAt(0).toUpperCase() + plan.slice(1);
       const nameEl = document.querySelector('.plan-name'); if(nameEl) nameEl.textContent = label + ' Plan';
@@ -1977,6 +1986,14 @@
         if(!u) return;
         var fn=document.getElementById('firstName'); if(fn) fn.value = u.first_name || '';
         var ln=document.getElementById('lastName'); if(ln) ln.value = u.last_name || '';
+        // Real user initials for the avatar (fallback path; no fabricated 'SK').
+        var av=document.querySelector('.avatar-preview');
+        if(av){
+          var f=(u.first_name||'').trim(), l=(u.last_name||'').trim(), ini='';
+          if(f||l){ ini=((f[0]||'')+(l[0]||'')).toUpperCase(); }
+          else if(u.email){ ini=String(u.email).split('@')[0].replace(/[^a-zA-Z]/g,'').slice(0,2).toUpperCase(); }
+          av.textContent = ini || '—';
+        }
         var lang=document.getElementById('language'); if(lang && u.preferred_language) lang.value = u.preferred_language;
         var mkt=document.getElementById('defaultMarket'); if(mkt && u.market){ try { mkt.value = u.market; } catch(e){} }
       }
@@ -2026,75 +2043,21 @@
       });
     })();
 
-    // Chat functionality
-    function askQuestion(question) {
-      const chatInput = document.getElementById('chatInput');
-      chatInput.value = question;
-      document.getElementById('chatSend').click();
-    }
+    // Chat functionality is handled by adviser-core (AlphaCouncil.init('settings')):
+    // it binds the REAL processChat to #chatSend / #chatInput and exposes
+    // window.askQuestion, which the suggested-question chips above call inline.
+    // No local chat handler here — that would emit canned/fake replies.
 
-    const chatSend = document.getElementById('chatSend');
-    const chatInput = document.getElementById('chatInput');
-
-    if (chatSend && chatInput) {
-      chatSend.addEventListener('click', () => {
-        const message = chatInput.value.trim();
-        if (!message) return;
-
-        const chatMessages = document.getElementById('chatMessages');
-
-        // Add user message
-        const userMsg = document.createElement('div');
-        userMsg.className = 'chat-message user';
-        userMsg.innerHTML = `
-          <div class="chat-avatar">SK</div>
-          <div>
-            <div class="chat-bubble">${message}</div>
-            <div class="chat-time">Just now</div>
-          </div>
-        `;
-        chatMessages.appendChild(userMsg);
-        chatInput.value = '';
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        // Simulate response
-        setTimeout(() => {
-          const responses = {
-            'preferences': 'Your investment preferences help the AI Council tailor its analysis. For example, if you select "Income" as your goal, the Income Analyst perspective will be emphasized, and dividend-related insights will be prioritized in your reviews.',
-            'risk': 'Risk tolerance settings affect how the Risk Analyst perspective evaluates your portfolio. Conservative settings will flag higher volatility positions more aggressively, while Aggressive settings will focus more on opportunity cost of not being in higher-risk/reward positions.',
-            'data': 'AlphaCouncil stores your portfolio holdings, transaction history, Council review history, and preferences. All data is encrypted and stored securely. You can export or delete your data at any time from the Data & Export section.'
-          };
-
-          let response = 'Your settings help personalize your AlphaCouncil experience. Investment preferences affect how Council reviews are tailored, while notification settings control how you stay informed. Is there a specific setting you would like me to explain?';
-
-          for (const [key, value] of Object.entries(responses)) {
-            if (message.toLowerCase().includes(key)) {
-              response = value;
-              break;
-            }
-          }
-
-          const adviserMsg = document.createElement('div');
-          adviserMsg.className = 'chat-message adviser';
-          adviserMsg.innerHTML = `
-            <div class="chat-avatar">AI</div>
-            <div>
-              <div class="chat-bubble">${response}</div>
-              <div class="chat-time">Just now</div>
-            </div>
-          `;
-          chatMessages.appendChild(adviserMsg);
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-        }, 800);
-      });
-
-      chatInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
+    // Methodology cards: each has onclick to open methodology.html; add keyboard
+    // activation (Enter/Space) for the role="button" cards via a delegated handler.
+    document.querySelectorAll('.methodology-card[role="button"]').forEach(function(card){
+      card.addEventListener('keydown', function(e){
+        if(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){
           e.preventDefault();
-          chatSend.click();
+          window.open('methodology.html', '_blank');
         }
       });
-    }
+    });
 
     // Toast notification
     function showToast(title, text, type = 'success') {

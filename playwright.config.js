@@ -4,6 +4,10 @@ require('dotenv').config({ path: '.env.test' }); // QA creds + BASE_URL (gitigno
 
 module.exports = defineConfig({
   testDir: './tests',
+  // The _audit_* specs are slow read-only AUDIT INSTRUMENTS (screenshot every page,
+  // mobile + RTL sweeps), not pass/fail regressions — exclude them from the default
+  // run for a fast, deterministic suite. Run explicitly: `npx playwright test _audit_round1`.
+  testIgnore: ['**/_audit_round1.spec.js', '**/_audit_round2.spec.js'],
   fullyParallel: false,   // tests share one QA account's holdings/watchlist state
   workers: 1,             // → run serially for deterministic live-site state
   timeout: 60_000,
