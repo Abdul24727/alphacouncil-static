@@ -111,7 +111,34 @@ _Started 2026-06-20. Focus: mobile/responsive, AR↔RTL rendering, per-page cons
 
 ---
 
+# ROUND 3 — exhaustive adversarial audit (multi-agent) + fixes
+
+_Started 2026-06-20. A 12-page adversarial audit (independent agents: source-trace + live-API + locale + honest-empty, then per-finding verification) surfaced **12 confirmed blocker/major defects the instrument-based Rounds 1-2 missed** — mostly **interaction bugs** (chat double-wiring, dead filters/toggles/cards, error/empty paths) and **fabrications outside the earlier fake-literal scan**. Marketing-static, dashboard, portfolio, stock-detail re-confirmed CLEAN._
+
+## Findings (all FIXED unless noted) — commit `f92b3a8`, deployed, `tests/round3-fixes.spec.js` 11/11 green
+- **R3-B1 (BLOCKER) council-history "Trends Across Reviews"** — hardcoded fabricated per-user analytics ("4 of your last 6 reviews", "7.1→7.4", "Al Rajhi 8.1/10", "SABIC declined 0.5"), never overwritten, shown to every user incl. zero-review/anon. → honest empty-state. ✅
+- **R3-B2 (BLOCKER) council-history AI chat** — double-wired (adviser-core real + inline canned), emitted fabricated "stc +0.6 / FAB +0.4 / QNB +0.3" + duplicate "SK" bubble. → removed inline canned handler; real adviser only. ✅
+- **R3-B3 (BLOCKER) settings AI chat** — same double-wire emitting canned "All data is encrypted…" + duplicate "SK". → removed inline canned handler. ✅
+- **R3-M1 (major) index thesis-dimension/markets contradiction** — "11 Thesis Dimensions" + "7 GCC Markets" vs 12/6 everywhere. → 12 / 6 (+ js/api.js comment). ✅
+- **R3-M2 (major) reset-password "[object Object]"** on invalid/expired token (err.detail was the body object). → err.message honest text. ✅
+- **R3-M3 (major) news fabricated PIF/Aramco featured story** — flashed every load + persisted on empty/error (renderFeatured only ran on success). → honest loading/empty on all paths; real story on success. ✅
+- **R3-M4 (major) council-history dead Date/Sort selects** — read but never applied. → real date-range + sort (newest/oldest, analyst-perspectives via data-created/data-analysts); removed unbacked "Highest conviction" option. ✅
+- **R3-M5 (major) scenarios Structured-Trades dead-end** — no consumer. → "Analyze trades" builds an NL scenario and routes to the real adviser. ✅
+- **R3-M6 (major) scenarios "Compare Multiple" placebo** (toggle + toast, no logic). → removed. ✅
+- **R3-M7 (major) settings fake "SK" profile avatar** — hardcoded identity. → real initials from /auth/me (neutral if none). ✅
+- **R3-M8 (major) settings 3 dead "Methodology & Data" cards** (role=button, no handler). → all 4 open methodology.html + keyboard-activatable. ✅
+- **R3-M9 (major) onboarding "+NaN%" P&L** for uploaded holdings (no price) + force-green. → guarded "—" + sign-based color. ✅
+- **R3-M10 (major) alerts fabricated header/tab counts** ("12 active / 3 new today / 12·3·5") persisted on anon/error. → neutralized + reset on empty/catch; 401→honest sign-in copy. ✅
+- **Also neutralized (flash-risk fabrication):** council-history static demo review cards + the detail-modal static template ("June 14 / 7-perspective / Al-Rajhi/SABIC/stc"); settings email default `saeed.khalidi@example.com`. ✅
+
+**Round 3 result: 3 blockers + 10 majors fixed, deployed, regression-tested. No remaining open blocker/major.**
+
+---
+
 ## NEEDS FOUNDER REVIEW (ambiguous / cosmetic / out-of-scope)
+- **R3-m2 methodology example scale:** the "Example Score Breakdown" uses a 0-100 scale while the framework text says dimensions are "1-10". Labeled "Example" (illustrative) — cosmetic copy inconsistency; pick one scale.
+- **R3-m4 scenarios "Run Council on This Scenario":** runs a REAL council but on the portfolio-wide prompt (openCouncilModal ignores the scenario text) — under-delivers on the label. Decide: pass scenario context to the council, or relabel.
+- **Dead-code purge (not shown):** news.html orphaned `newsStories['featured-1']` JS object (PIF text, unreferenced); scenarios orphan `.multi-compare-toggle` CSS. Harmless; clean when convenient.
 - **Auth-page i18n (R2-01):** login/signup/forgot-password/reset-password are English-only (no language toggle). Decide whether auth pages should be bilingual (then they need AR form strings) or stay EN like legal.html.
 - **Backend repo backlog:** `C:\projects\alphacouncil` is 8 commits ahead of origin/main with uncommitted edits (router.py, http_cookies.py, main.py, thesis/prompts.py, ticker_names.py) from prior sessions. I avoided deploying these (deployed only the one fundamentals function). They need review + a clean push/deploy or revert.
 - **Portfolio dead code (deferred purge):** `#adjustModal` + `holdingsData` mock + `openAdjustModal/confirmAdjust` + the canned `processChat` tail (after its `return`) are unreachable (not shown, not wired) but still in the file. Safe to delete in a dedicated cleanup.
