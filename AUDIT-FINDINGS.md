@@ -131,7 +131,16 @@ _Started 2026-06-20. A 12-page adversarial audit (independent agents: source-tra
 - **R3-M10 (major) alerts fabricated header/tab counts** ("12 active / 3 new today / 12·3·5") persisted on anon/error. → neutralized + reset on empty/catch; 401→honest sign-in copy. ✅
 - **Also neutralized (flash-risk fabrication):** council-history static demo review cards + the detail-modal static template ("June 14 / 7-perspective / Al-Rajhi/SABIC/stc"); settings email default `saeed.khalidi@example.com`. ✅
 
-**Round 3 result: 3 blockers + 10 majors fixed, deployed, regression-tested. No remaining open blocker/major.**
+**Round 3 result: 3 blockers + 10 majors fixed, deployed, regression-tested.**
+
+## Round 3 re-verification (adversarial, 11 pages) — found 2 more of the same class, now FIXED
+A full adversarial re-verification confirmed all 11 pages' fixes held + functionality intact, and surfaced 2 more "fabricated count not reset on the anon/error path" defects (the class behind R3-M10), now fixed:
+- **R3-V1 (major) council-history stats row** — "12 / 2 days ago / 7 / 5" persisted on anon/401 (setStats only runs on success). → 4 literals neutralized to "—" (setStats fills on success; anon/error stays honest "—"). ✅
+- **R3-V2 (major) alerts AI-adviser greeting** — static "You have **3** high-priority alerts" contradicted the neutralized counts. → generic honest greeting, no count. ✅
+- Commit `544d0ba`; regression `tests/round3-fixes.spec.js` now 13/13 green. A targeted re-verification of both fixed pages returned **CLEAN**; a comprehensive count-class sweep across all pages found no remaining unhandled instance (other numeric literals are accepted marketing facts/mockups or JS-overwritten + already tested).
+- _Non-blocking note:_ council-history suggested-question buttons are double-bound (inline onclick + JS listener); harmless (2nd call no-ops on the cleared input).
+
+**FINAL: zero open blocker/major across Rounds 1-3 + re-verification. Remaining items are all under NEEDS FOUNDER REVIEW.**
 
 ---
 
