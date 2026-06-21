@@ -532,14 +532,15 @@
         var subject = (document.getElementById('cf-subject').value || '').trim();
         var message = (document.getElementById('cf-message').value || '').trim();
         ok.style.display = 'block';
+        var T = function(k, en){ var v = window.AC_I18N && AC_I18N.t(k); return v != null ? v : en; };
         if(!name || !email || email.indexOf('@') < 0 || !message){
           ok.style.color = '#e5484d';
-          ok.innerHTML = 'Please add your name, a valid email, and a message.';
+          ok.innerHTML = T('ct.msg_validate', 'Please add your name, a valid email, and a message.');
           return;
         }
         var orig = btn.textContent;
         btn.disabled = true;
-        btn.textContent = 'Sending…';
+        btn.textContent = T('ct.msg_sending', 'Sending…');
         ok.style.color = '';
         ok.innerHTML = '';
         fetch('/api/contact', {
@@ -552,11 +553,11 @@
         }).then(function(){
           f.reset();
           ok.style.color = '';
-          ok.innerHTML = 'Thanks for reaching out &mdash; your message is in. We&rsquo;ll reply within 1&ndash;2 business days.';
-          btn.textContent = 'Message sent';
+          ok.innerHTML = T('ct.msg_success', 'Thanks for reaching out &mdash; your message is in. We&rsquo;ll reply within 1&ndash;2 business days.');
+          btn.textContent = T('ct.msg_sent_btn', 'Message sent');
         }).catch(function(){
           ok.style.color = '#e5484d';
-          ok.innerHTML = 'Sorry, that didn&rsquo;t send. Please email <strong>hello@alphacouncil.tech</strong> directly and we&rsquo;ll get right back to you.';
+          ok.innerHTML = T('ct.msg_error', 'Sorry, that didn&rsquo;t send. Please email <strong>hello@alphacouncil.tech</strong> directly and we&rsquo;ll get right back to you.');
           btn.disabled = false;
           btn.textContent = orig;
         });
@@ -642,7 +643,24 @@
     'contact.regional':     { en: 'Regional presence', ar: 'حضور إقليمي' },
     'contact.regional_text':{ en: 'AlphaCouncil is a GCC-focused company serving investors across Saudi Arabia, the UAE, Qatar, Kuwait, Oman and Bahrain. We operate remotely across the region; the channels above reach the team directly.', ar: 'AlphaCouncil شركة متخصّصة في الخليج تخدم المستثمرين في السعودية والإمارات وقطر والكويت وعُمان والبحرين. نعمل عن بُعد عبر المنطقة، وتصل القنوات أعلاه إلى الفريق مباشرة.' },
     'contact.faq_h':        { en: 'Looking for answers first?', ar: 'تبحث عن إجابات أولًا؟' },
-    'contact.faq_text':     { en: 'A lot of the "how does this work?" questions are already answered. See how the analysis is produced, or read the full scoring methodology.', ar: 'الكثير من أسئلة «كيف يعمل هذا؟» مُجاب عنها بالفعل. اطّلع على كيفية إنتاج التحليل، أو اقرأ منهجية التقييم الكاملة.' }
+    'contact.faq_text':     { en: 'A lot of the "how does this work?" questions are already answered. See how the analysis is produced, or read the full scoring methodology.', ar: 'الكثير من أسئلة «كيف يعمل هذا؟» مُجاب عنها بالفعل. اطّلع على كيفية إنتاج التحليل، أو اقرأ منهجية التقييم الكاملة.' },
+    'ct.placeholder_note':  { en: 'Contact details shown are placeholders during launch and will be finalised shortly.', ar: 'بيانات التواصل المعروضة مؤقتة أثناء الإطلاق وسيتم اعتمادها قريبًا.' },
+    'ct.foot_tagline':      { en: 'AI-powered portfolio intelligence for GCC stock investors. Understand your portfolio before the market moves.', ar: 'ذكاء محفظة مدعوم بالذكاء الاصطناعي لمستثمري أسهم الخليج. افهم محفظتك قبل أن يتحرّك السوق.' },
+    'ct.foot_product':      { en: 'Product', ar: 'المنتج' },
+    'ct.foot_company':      { en: 'Company', ar: 'الشركة' },
+    'ct.foot_mkt_saudi':    { en: 'Saudi (Tadawul)', ar: 'السعودية (تداول)' },
+    'ct.foot_mkt_uae':      { en: 'UAE (ADX / DFM)', ar: 'الإمارات (ADX / DFM)' },
+    'ct.foot_mkt_qatar':    { en: 'Qatar (QSE)', ar: 'قطر (QSE)' },
+    'ct.foot_mkt_kuwait':   { en: 'Kuwait (Boursa)', ar: 'الكويت (بورصة)' },
+    'ct.foot_copyright':    { en: '© 2026 AlphaCouncil. All rights reserved.', ar: '© ٢٠٢٦ AlphaCouncil. جميع الحقوق محفوظة.' },
+    'ct.foot_terms':        { en: 'Terms', ar: 'الشروط' },
+    'ct.foot_privacy':      { en: 'Privacy', ar: 'الخصوصية' },
+    'ct.foot_disclaimer':   { en: 'Disclaimer', ar: 'إخلاء المسؤولية' },
+    'ct.msg_validate':      { en: 'Please add your name, a valid email, and a message.', ar: 'يرجى إضافة اسمك وبريد إلكتروني صحيح ورسالة.' },
+    'ct.msg_sending':       { en: 'Sending…', ar: 'جارٍ الإرسال…' },
+    'ct.msg_success':       { en: "Thanks for reaching out — your message is in. We'll reply within 1–2 business days.", ar: 'شكرًا لتواصلك — وصلتنا رسالتك. سنردّ خلال يوم إلى يومَي عمل.' },
+    'ct.msg_sent_btn':      { en: 'Message sent', ar: 'تم إرسال الرسالة' },
+    'ct.msg_error':         { en: "Sorry, that didn't send. Please email <strong>hello@alphacouncil.tech</strong> directly and we'll get right back to you.", ar: 'عذرًا، لم يتم الإرسال. يرجى مراسلتنا مباشرة على <strong>hello@alphacouncil.tech</strong> وسنعود إليك فورًا.' }
   });
   (function () {
     function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
@@ -665,6 +683,21 @@
     var MAP = { 'WhatsApp': 'contact.ch_whatsapp', 'Telegram': 'contact.ch_telegram', 'How it works': 'mnav.how_it_works', 'Methodology': 'mnav.methodology' };
     Array.prototype.forEach.call(document.querySelectorAll('.lbl, .faq-teaser .btn'), function (el) { var k = MAP[firstText(el)]; if (k) setKey(el, k); });
     Array.prototype.forEach.call(document.querySelectorAll('.lbl'), function (el) { if (firstText(el) === 'Email') setKey(el, 'contact.l_email'); });
+    // hero badge ("Contact") + launch placeholder note
+    setKey(document.querySelector('.pg-hero .hero-badge'), 'mnav.contact');
+    Array.prototype.forEach.call(document.querySelectorAll('.contact-section p'), function (el) { if (firstText(el).indexOf('Contact details shown are placeholders') === 0) setKey(el, 'ct.placeholder_note'); });
+    // footer: brand tagline, column headings, link rows, copyright + legal
+    setKey(document.querySelector('.ac-footer-brand p'), 'ct.foot_tagline');
+    var FMAP = {
+      'Product': 'ct.foot_product', 'Markets': 'mnav.markets', 'Company': 'ct.foot_company',
+      'How it works': 'mnav.how_it_works', 'Features': 'mnav.features', 'Pricing': 'mnav.pricing', 'Methodology': 'mnav.methodology',
+      'Saudi (Tadawul)': 'ct.foot_mkt_saudi', 'UAE (ADX / DFM)': 'ct.foot_mkt_uae', 'Qatar (QSE)': 'ct.foot_mkt_qatar', 'Kuwait (Boursa)': 'ct.foot_mkt_kuwait',
+      'Sign in': 'mnav.sign_in', 'Start free': 'mnav.start_free', 'About': 'mnav.about', 'Contact': 'mnav.contact'
+    };
+    Array.prototype.forEach.call(document.querySelectorAll('.ac-footer-col h4, .ac-footer-col a'), function (el) { var k = FMAP[firstText(el)]; if (k) setKey(el, k); });
+    setKey(document.querySelector('.ac-footer-bottom .ac-copy'), 'ct.foot_copyright');
+    var LMAP = { 'Terms': 'ct.foot_terms', 'Privacy': 'ct.foot_privacy', 'Disclaimer': 'ct.foot_disclaimer' };
+    Array.prototype.forEach.call(document.querySelectorAll('.ac-footer-bottom .ac-legal a'), function (el) { var k = LMAP[firstText(el)]; if (k) setKey(el, k); });
     if (window.AC_I18N) AC_I18N.apply();
   })();
   </script>
