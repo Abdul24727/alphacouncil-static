@@ -1375,7 +1375,7 @@
           <p>Simulate changes and see the impact before executing any trades</p>
         </div>
         <div class="page-actions">
-          <button class="btn btn-primary" id="newScenarioBtn">
+          <button class="btn btn-primary" id="newScenarioBtn" data-i18n="sc.new_scenario">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
             New Scenario
           </button>
@@ -1390,7 +1390,7 @@
           <div class="panel-header">
             <div class="panel-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-              Saved Scenarios
+              <span data-i18n="sc.panel_saved">Saved Scenarios</span>
             </div>
             <span class="panel-badge">4</span>
           </div>
@@ -1483,7 +1483,7 @@
             </div>
 
             <!-- Create New -->
-            <button class="create-scenario-btn" onclick="openNewScenarioModal()">
+            <button class="create-scenario-btn" onclick="openNewScenarioModal()" data-i18n="sc.create_new">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
               Create New Scenario
             </button>
@@ -1529,59 +1529,59 @@
                 <div class="trade-list" id="tradeList">
                   <div class="trade-row">
                     <select class="trade-action sell">
-                      <option value="sell">Sell</option>
-                      <option value="buy">Buy</option>
+                      <option value="sell" data-i18n="sc.sell">Sell</option>
+                      <option value="buy" data-i18n="sc.buy">Buy</option>
                     </select>
                     <select class="trade-stock-select">
-                      <option value="1120">Al Rajhi Bank (1120.SR)</option>
-                      <option value="1010">Riyad Bank (1010.SR)</option>
-                      <option value="SNB">Saudi National Bank (SNB.SR)</option>
+                      <option value="1120" data-code="1120.SR">Al Rajhi Bank (1120.SR)</option>
+                      <option value="1010" data-code="1010.SR">Riyad Bank (1010.SR)</option>
+                      <option value="SNB" data-code="SNB.SR">Saudi National Bank (SNB.SR)</option>
                     </select>
-                    <input type="text" class="trade-input" placeholder="Amount" value="SAR 18,000">
-                    <input type="text" class="trade-input" placeholder="%" value="15%">
+                    <input type="text" class="trade-input" placeholder="Amount" data-i18n-attr="placeholder:sc.ph_amount" value="SAR 18,000">
+                    <input type="text" class="trade-input" placeholder="%" data-i18n-attr="placeholder:sc.ph_pct" value="15%">
                     <button class="trade-remove">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
                     </button>
                   </div>
                   <div class="trade-row">
                     <select class="trade-action buy">
-                      <option value="buy" selected>Buy</option>
-                      <option value="sell">Sell</option>
+                      <option value="buy" selected data-i18n="sc.buy">Buy</option>
+                      <option value="sell" data-i18n="sc.sell">Sell</option>
                     </select>
                     <select class="trade-stock-select">
-                      <option value="FAB" selected>First Abu Dhabi Bank (FAB.AD)</option>
-                      <option value="QNBK">QNB Group (QNBK.QA)</option>
-                      <option value="EMAAR">Emaar Properties (EMAAR.DU)</option>
+                      <option value="FAB" selected data-code="FAB.AD">First Abu Dhabi Bank (FAB.AD)</option>
+                      <option value="QNBK" data-code="QNBK.QA">QNB Group (QNBK.QA)</option>
+                      <option value="EMAAR" data-code="EMAAR.DU">Emaar Properties (EMAAR.DU)</option>
                     </select>
-                    <input type="text" class="trade-input" placeholder="Amount" value="SAR 10,000">
-                    <input type="text" class="trade-input" placeholder="%" value="">
+                    <input type="text" class="trade-input" placeholder="Amount" data-i18n-attr="placeholder:sc.ph_amount" value="SAR 10,000">
+                    <input type="text" class="trade-input" placeholder="%" data-i18n-attr="placeholder:sc.ph_pct" value="">
                     <button class="trade-remove">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
                     </button>
                   </div>
                   <div class="trade-row">
                     <select class="trade-action buy">
-                      <option value="buy" selected>Buy</option>
-                      <option value="sell">Sell</option>
+                      <option value="buy" selected data-i18n="sc.buy">Buy</option>
+                      <option value="sell" data-i18n="sc.sell">Sell</option>
                     </select>
                     <select class="trade-stock-select">
-                      <option value="QNBK" selected>QNB Group (QNBK.QA)</option>
-                      <option value="FAB">First Abu Dhabi Bank (FAB.AD)</option>
-                      <option value="EMAAR">Emaar Properties (EMAAR.DU)</option>
+                      <option value="QNBK" selected data-code="QNBK.QA">QNB Group (QNBK.QA)</option>
+                      <option value="FAB" data-code="FAB.AD">First Abu Dhabi Bank (FAB.AD)</option>
+                      <option value="EMAAR" data-code="EMAAR.DU">Emaar Properties (EMAAR.DU)</option>
                     </select>
-                    <input type="text" class="trade-input" placeholder="Amount" value="SAR 8,000">
-                    <input type="text" class="trade-input" placeholder="%" value="">
+                    <input type="text" class="trade-input" placeholder="Amount" data-i18n-attr="placeholder:sc.ph_amount" value="SAR 8,000">
+                    <input type="text" class="trade-input" placeholder="%" data-i18n-attr="placeholder:sc.ph_pct" value="">
                     <button class="trade-remove">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
                     </button>
                   </div>
                 </div>
-                <button class="add-trade-btn" onclick="addTrade()">
+                <button class="add-trade-btn" onclick="addTrade()" data-i18n="sc.add_trade">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
                   Add Trade
                 </button>
                 <div class="nl-input-actions">
-                  <button class="btn btn-primary" onclick="analyzeStructuredTrades()">
+                  <button class="btn btn-primary" onclick="analyzeStructuredTrades()" data-i18n="sc.analyze_trades">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                     Analyze trades
                   </button>
@@ -1595,11 +1595,11 @@
             <div class="comparison-header">
               <div class="comparison-title">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
-                Before / After Comparison
+                <span data-i18n="sc.comparison_title">Before / After Comparison</span>
               </div>
               <div class="comparison-legend">
-                <span class="legend-item"><span class="legend-dot current"></span> Current Portfolio</span>
-                <span class="legend-item"><span class="legend-dot scenario"></span> After Scenario</span>
+                <span class="legend-item"><span class="legend-dot current"></span> <span data-i18n="sc.legend_current">Current Portfolio</span></span>
+                <span class="legend-item"><span class="legend-dot scenario"></span> <span data-i18n="sc.legend_scenario">After Scenario</span></span>
               </div>
             </div>
 
@@ -1608,15 +1608,15 @@
               <div class="metric-compare-card">
                 <div class="metric-compare-label">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                  Portfolio Value
+                  <span data-i18n="sc.metric_portfolio_value">Portfolio Value</span>
                 </div>
                 <div class="metric-compare-values">
                   <div class="metric-value-block">
-                    <div class="metric-value-label">Current</div>
+                    <div class="metric-value-label" data-i18n="sc.label_current">Current</div>
                     <div class="metric-value-current">SAR 847,250</div>
                   </div>
                   <div class="metric-value-block">
-                    <div class="metric-value-label">Scenario</div>
+                    <div class="metric-value-label" data-i18n="sc.label_scenario">Scenario</div>
                     <div class="metric-value-scenario">SAR 847,250</div>
                   </div>
                 </div>
@@ -1629,15 +1629,15 @@
               <div class="metric-compare-card">
                 <div class="metric-compare-label">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                  Expected Yield
+                  <span data-i18n="sc.metric_expected_yield">Expected Yield</span>
                 </div>
                 <div class="metric-compare-values">
                   <div class="metric-value-block">
-                    <div class="metric-value-label">Current</div>
+                    <div class="metric-value-label" data-i18n="sc.label_current">Current</div>
                     <div class="metric-value-current">3.2%</div>
                   </div>
                   <div class="metric-value-block">
-                    <div class="metric-value-label">Scenario</div>
+                    <div class="metric-value-label" data-i18n="sc.label_scenario">Scenario</div>
                     <div class="metric-value-scenario">3.6%</div>
                   </div>
                 </div>
@@ -1650,15 +1650,15 @@
               <div class="metric-compare-card">
                 <div class="metric-compare-label">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  Risk Score
+                  <span data-i18n="sc.metric_risk_score">Risk Score</span>
                 </div>
                 <div class="metric-compare-values">
                   <div class="metric-value-block">
-                    <div class="metric-value-label">Current</div>
+                    <div class="metric-value-label" data-i18n="sc.label_current">Current</div>
                     <div class="metric-value-current">64</div>
                   </div>
                   <div class="metric-value-block">
-                    <div class="metric-value-label">Scenario</div>
+                    <div class="metric-value-label" data-i18n="sc.label_scenario">Scenario</div>
                     <div class="metric-value-scenario">58</div>
                   </div>
                 </div>
@@ -1671,15 +1671,15 @@
               <div class="metric-compare-card">
                 <div class="metric-compare-label">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                  Diversification
+                  <span data-i18n="sc.metric_diversification">Diversification</span>
                 </div>
                 <div class="metric-compare-values">
                   <div class="metric-value-block">
-                    <div class="metric-value-label">Current</div>
+                    <div class="metric-value-label" data-i18n="sc.label_current">Current</div>
                     <div class="metric-value-current">68%</div>
                   </div>
                   <div class="metric-value-block">
-                    <div class="metric-value-label">Scenario</div>
+                    <div class="metric-value-label" data-i18n="sc.label_scenario">Scenario</div>
                     <div class="metric-value-scenario">76%</div>
                   </div>
                 </div>
@@ -1695,7 +1695,7 @@
               <div class="thesis-comparison-header">
                 <div class="thesis-comparison-title">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                  12-Dimension Thesis Score
+                  <span data-i18n="sc.thesis_title">12-Dimension Thesis Score</span>
                 </div>
                 <div class="thesis-score-summary">
                   <span class="thesis-score-badge">7.4 → 7.8</span>
@@ -1706,17 +1706,17 @@
               <div class="thesis-dimensions-grid">
                 <div class="dimension-compare-card">
                   <div class="dimension-compare-header">
-                    <span class="dimension-compare-name">Valuation</span>
+                    <span class="dimension-compare-name" data-i18n="sc.dim_valuation">Valuation</span>
                     <span class="dimension-compare-delta up">+0.3</span>
                   </div>
                   <div class="dimension-compare-bars">
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Current</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_current">Current</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill current" style="width: 72%;"></div></div>
                       <span class="dimension-bar-value current">7.2</span>
                     </div>
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Scenario</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_scenario">Scenario</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill scenario" style="width: 75%;"></div></div>
                       <span class="dimension-bar-value scenario">7.5</span>
                     </div>
@@ -1725,17 +1725,17 @@
 
                 <div class="dimension-compare-card">
                   <div class="dimension-compare-header">
-                    <span class="dimension-compare-name">Quality</span>
+                    <span class="dimension-compare-name" data-i18n="sc.dim_quality">Quality</span>
                     <span class="dimension-compare-delta up">+0.4</span>
                   </div>
                   <div class="dimension-compare-bars">
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Current</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_current">Current</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill current" style="width: 76%;"></div></div>
                       <span class="dimension-bar-value current">7.6</span>
                     </div>
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Scenario</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_scenario">Scenario</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill scenario" style="width: 80%;"></div></div>
                       <span class="dimension-bar-value scenario">8.0</span>
                     </div>
@@ -1744,17 +1744,17 @@
 
                 <div class="dimension-compare-card">
                   <div class="dimension-compare-header">
-                    <span class="dimension-compare-name">Growth</span>
+                    <span class="dimension-compare-name" data-i18n="sc.dim_growth">Growth</span>
                     <span class="dimension-compare-delta neutral">0.0</span>
                   </div>
                   <div class="dimension-compare-bars">
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Current</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_current">Current</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill current" style="width: 68%;"></div></div>
                       <span class="dimension-bar-value current">6.8</span>
                     </div>
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Scenario</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_scenario">Scenario</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill scenario" style="width: 68%;"></div></div>
                       <span class="dimension-bar-value scenario">6.8</span>
                     </div>
@@ -1763,17 +1763,17 @@
 
                 <div class="dimension-compare-card">
                   <div class="dimension-compare-header">
-                    <span class="dimension-compare-name">Income</span>
+                    <span class="dimension-compare-name" data-i18n="sc.dim_income">Income</span>
                     <span class="dimension-compare-delta up">+0.8</span>
                   </div>
                   <div class="dimension-compare-bars">
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Current</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_current">Current</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill current" style="width: 74%;"></div></div>
                       <span class="dimension-bar-value current">7.4</span>
                     </div>
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Scenario</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_scenario">Scenario</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill scenario" style="width: 82%;"></div></div>
                       <span class="dimension-bar-value scenario">8.2</span>
                     </div>
@@ -1782,17 +1782,17 @@
 
                 <div class="dimension-compare-card">
                   <div class="dimension-compare-header">
-                    <span class="dimension-compare-name">Momentum</span>
+                    <span class="dimension-compare-name" data-i18n="sc.dim_momentum">Momentum</span>
                     <span class="dimension-compare-delta down">-0.2</span>
                   </div>
                   <div class="dimension-compare-bars">
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Current</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_current">Current</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill current" style="width: 78%;"></div></div>
                       <span class="dimension-bar-value current">7.8</span>
                     </div>
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Scenario</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_scenario">Scenario</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill scenario" style="width: 76%;"></div></div>
                       <span class="dimension-bar-value scenario">7.6</span>
                     </div>
@@ -1801,17 +1801,17 @@
 
                 <div class="dimension-compare-card">
                   <div class="dimension-compare-header">
-                    <span class="dimension-compare-name">Stability</span>
+                    <span class="dimension-compare-name" data-i18n="sc.dim_stability">Stability</span>
                     <span class="dimension-compare-delta up">+0.5</span>
                   </div>
                   <div class="dimension-compare-bars">
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Current</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_current">Current</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill current" style="width: 70%;"></div></div>
                       <span class="dimension-bar-value current">7.0</span>
                     </div>
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Scenario</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_scenario">Scenario</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill scenario" style="width: 75%;"></div></div>
                       <span class="dimension-bar-value scenario">7.5</span>
                     </div>
@@ -1820,17 +1820,17 @@
 
                 <div class="dimension-compare-card">
                   <div class="dimension-compare-header">
-                    <span class="dimension-compare-name">Governance</span>
+                    <span class="dimension-compare-name" data-i18n="sc.dim_governance">Governance</span>
                     <span class="dimension-compare-delta up">+0.3</span>
                   </div>
                   <div class="dimension-compare-bars">
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Current</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_current">Current</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill current" style="width: 82%;"></div></div>
                       <span class="dimension-bar-value current">8.2</span>
                     </div>
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Scenario</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_scenario">Scenario</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill scenario" style="width: 85%;"></div></div>
                       <span class="dimension-bar-value scenario">8.5</span>
                     </div>
@@ -1839,17 +1839,17 @@
 
                 <div class="dimension-compare-card">
                   <div class="dimension-compare-header">
-                    <span class="dimension-compare-name">Liquidity</span>
+                    <span class="dimension-compare-name" data-i18n="sc.dim_liquidity">Liquidity</span>
                     <span class="dimension-compare-delta neutral">0.0</span>
                   </div>
                   <div class="dimension-compare-bars">
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Current</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_current">Current</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill current" style="width: 86%;"></div></div>
                       <span class="dimension-bar-value current">8.6</span>
                     </div>
                     <div class="dimension-bar-row">
-                      <span class="dimension-bar-label">Scenario</span>
+                      <span class="dimension-bar-label" data-i18n="sc.label_scenario">Scenario</span>
                       <div class="dimension-bar-track"><div class="dimension-bar-fill scenario" style="width: 86%;"></div></div>
                       <span class="dimension-bar-value scenario">8.6</span>
                     </div>
@@ -1863,7 +1863,7 @@
               <div class="thesis-comparison-header" style="margin-bottom: 20px;">
                 <div class="thesis-comparison-title">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-                  Concentration Analysis
+                  <span data-i18n="sc.concentration_title">Concentration Analysis</span>
                 </div>
               </div>
 
@@ -1871,11 +1871,11 @@
                 <div class="concentration-column">
                   <div class="concentration-column-title">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                    Sector Allocation
+                    <span data-i18n="sc.sector_allocation">Sector Allocation</span>
                   </div>
                   <div class="concentration-bars">
                     <div class="concentration-bar-item">
-                      <span class="concentration-bar-name">Banking</span>
+                      <span class="concentration-bar-name" data-i18n="sc.sector_banking">Banking</span>
                       <div class="concentration-bar-track">
                         <div class="concentration-bar-fill current" style="width: 32.2%;"></div>
                         <div class="concentration-bar-fill scenario" style="width: 27%;">27%</div>
@@ -1883,7 +1883,7 @@
                       <span class="concentration-delta down">-5.2%</span>
                     </div>
                     <div class="concentration-bar-item">
-                      <span class="concentration-bar-name">Energy</span>
+                      <span class="concentration-bar-name" data-i18n="sc.sector_energy">Energy</span>
                       <div class="concentration-bar-track">
                         <div class="concentration-bar-fill current" style="width: 26%;"></div>
                         <div class="concentration-bar-fill scenario" style="width: 26%;">26%</div>
@@ -1891,7 +1891,7 @@
                       <span class="concentration-delta neutral">0%</span>
                     </div>
                     <div class="concentration-bar-item">
-                      <span class="concentration-bar-name">Telecom</span>
+                      <span class="concentration-bar-name" data-i18n="sc.sector_telecom">Telecom</span>
                       <div class="concentration-bar-track">
                         <div class="concentration-bar-fill current" style="width: 12%;"></div>
                         <div class="concentration-bar-fill scenario" style="width: 12%;">12%</div>
@@ -1899,7 +1899,7 @@
                       <span class="concentration-delta neutral">0%</span>
                     </div>
                     <div class="concentration-bar-item">
-                      <span class="concentration-bar-name">Real Estate</span>
+                      <span class="concentration-bar-name" data-i18n="sc.sector_real_estate">Real Estate</span>
                       <div class="concentration-bar-track">
                         <div class="concentration-bar-fill current" style="width: 8%;"></div>
                         <div class="concentration-bar-fill scenario" style="width: 13%;">13%</div>
@@ -1912,11 +1912,11 @@
                 <div class="concentration-column">
                   <div class="concentration-column-title">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                    Country Allocation
+                    <span data-i18n="sc.country_allocation">Country Allocation</span>
                   </div>
                   <div class="concentration-bars">
                     <div class="concentration-bar-item">
-                      <span class="concentration-bar-name">Saudi</span>
+                      <span class="concentration-bar-name" data-i18n="sc.country_saudi">Saudi</span>
                       <div class="concentration-bar-track">
                         <div class="concentration-bar-fill current" style="width: 68%;"></div>
                         <div class="concentration-bar-fill scenario" style="width: 58%;">58%</div>
@@ -1924,7 +1924,7 @@
                       <span class="concentration-delta down">-10%</span>
                     </div>
                     <div class="concentration-bar-item">
-                      <span class="concentration-bar-name">UAE</span>
+                      <span class="concentration-bar-name" data-i18n="sc.country_uae">UAE</span>
                       <div class="concentration-bar-track">
                         <div class="concentration-bar-fill current" style="width: 18%;"></div>
                         <div class="concentration-bar-fill scenario" style="width: 24%;">24%</div>
@@ -1932,7 +1932,7 @@
                       <span class="concentration-delta up">+6%</span>
                     </div>
                     <div class="concentration-bar-item">
-                      <span class="concentration-bar-name">Qatar</span>
+                      <span class="concentration-bar-name" data-i18n="sc.country_qatar">Qatar</span>
                       <div class="concentration-bar-track">
                         <div class="concentration-bar-fill current" style="width: 10%;"></div>
                         <div class="concentration-bar-fill scenario" style="width: 14%;">14%</div>
@@ -1940,7 +1940,7 @@
                       <span class="concentration-delta up">+4%</span>
                     </div>
                     <div class="concentration-bar-item">
-                      <span class="concentration-bar-name">Kuwait</span>
+                      <span class="concentration-bar-name" data-i18n="sc.country_kuwait">Kuwait</span>
                       <div class="concentration-bar-track">
                         <div class="concentration-bar-fill current" style="width: 4%;"></div>
                         <div class="concentration-bar-fill scenario" style="width: 4%;">4%</div>
@@ -1957,13 +1957,13 @@
               <div class="thesis-comparison-header" style="margin-bottom: 20px;">
                 <div class="thesis-comparison-title">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  Risk Profile Impact
+                  <span data-i18n="sc.risk_title">Risk Profile Impact</span>
                 </div>
               </div>
 
               <div class="risk-grid">
                 <div class="risk-card">
-                  <div class="risk-card-title">Volatility Risk</div>
+                  <div class="risk-card-title" data-i18n="sc.risk_volatility">Volatility Risk</div>
                   <div class="risk-gauge">
                     <div class="risk-gauge-bg"></div>
                     <div class="risk-gauge-fill current" style="clip-path: polygon(0 0, 100% 0, 100% 64%, 0 64%);"></div>
@@ -1973,12 +1973,12 @@
                       <span class="risk-gauge-delta down">-6</span>
                     </div>
                   </div>
-                  <div class="risk-card-label">Moderate</div>
-                  <div class="risk-card-sublabel">This scenario would reduce volatility</div>
+                  <div class="risk-card-label" data-i18n="sc.risk_level_moderate">Moderate</div>
+                  <div class="risk-card-sublabel" data-i18n="sc.risk_sublabel_volatility">This scenario would reduce volatility</div>
                 </div>
 
                 <div class="risk-card">
-                  <div class="risk-card-title">Concentration Risk</div>
+                  <div class="risk-card-title" data-i18n="sc.risk_concentration">Concentration Risk</div>
                   <div class="risk-gauge">
                     <div class="risk-gauge-bg"></div>
                     <div class="risk-gauge-fill current" style="clip-path: polygon(0 0, 100% 0, 100% 72%, 0 72%);"></div>
@@ -1988,12 +1988,12 @@
                       <span class="risk-gauge-delta down">-18</span>
                     </div>
                   </div>
-                  <div class="risk-card-label">Low-Moderate</div>
-                  <div class="risk-card-sublabel">Significant improvement in diversification</div>
+                  <div class="risk-card-label" data-i18n="sc.risk_level_low_moderate">Low-Moderate</div>
+                  <div class="risk-card-sublabel" data-i18n="sc.risk_sublabel_diversification">Significant improvement in diversification</div>
                 </div>
 
                 <div class="risk-card">
-                  <div class="risk-card-title">Correlation Risk</div>
+                  <div class="risk-card-title" data-i18n="sc.risk_correlation">Correlation Risk</div>
                   <div class="risk-gauge">
                     <div class="risk-gauge-bg"></div>
                     <div class="risk-gauge-fill current" style="clip-path: polygon(0 0, 100% 0, 100% 68%, 0 68%);"></div>
@@ -2003,8 +2003,8 @@
                       <span class="risk-gauge-delta down">-8</span>
                     </div>
                   </div>
-                  <div class="risk-card-label">Moderate</div>
-                  <div class="risk-card-sublabel">Lower correlation across holdings</div>
+                  <div class="risk-card-label" data-i18n="sc.risk_level_moderate">Moderate</div>
+                  <div class="risk-card-sublabel" data-i18n="sc.risk_sublabel_correlation">Lower correlation across holdings</div>
                 </div>
               </div>
             </div>
@@ -2015,11 +2015,11 @@
             <div class="council-cta-content">
               <h3>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                Run AI Analyst Council on This Scenario
+                <span data-i18n="sc.council_cta_title">Run AI Analyst Council on This Scenario</span>
               </h3>
-              <p>Get detailed perspectives from 7 AI Analysts on how this scenario would affect your portfolio thesis, risk profile, and alignment with your investment goals.</p>
+              <p data-i18n="sc.council_cta_desc">Get detailed perspectives from 7 AI Analysts on how this scenario would affect your portfolio thesis, risk profile, and alignment with your investment goals.</p>
             </div>
-            <button class="council-cta-btn" onclick="runCouncilOnScenario(1)">
+            <button class="council-cta-btn" onclick="runCouncilOnScenario(1)" data-i18n="sc.council_cta_btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               Run Council Analysis
             </button>
@@ -2102,7 +2102,7 @@
       <div class="modal-header">
         <h2 class="modal-title" id="modalTitle">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
-          New Scenario
+          <span data-i18n="sc.new_scenario">New Scenario</span>
         </h2>
         <button class="modal-close" onclick="closeNewScenarioModal()" aria-label="Close modal">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -2110,24 +2110,24 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label class="form-label" for="scenarioName">Scenario Name</label>
+          <label class="form-label" for="scenarioName" data-i18n="sc.form_scenario_name">Scenario Name</label>
           <input type="text" id="scenarioName" class="form-input" placeholder="e.g., Q3 Rebalancing Strategy">
         </div>
         <div class="form-group">
-          <label class="form-label" for="scenarioDesc">Description</label>
+          <label class="form-label" for="scenarioDesc" data-i18n="sc.form_description">Description</label>
           <textarea id="scenarioDesc" class="form-input form-textarea" placeholder="Describe what you want to simulate...&#10;e.g., 'Reduce banking exposure by 10% and add UAE real estate'"></textarea>
         </div>
         <div class="form-group">
-          <label class="form-label">Starting Point</label>
+          <label class="form-label" data-i18n="sc.form_starting_point">Starting Point</label>
           <div style="display: flex; gap: 10px;">
-            <button class="btn btn-secondary" style="flex: 1;">Current Portfolio</button>
-            <button class="btn btn-ghost" style="flex: 1;">From Saved Scenario</button>
+            <button class="btn btn-secondary" style="flex: 1;" data-i18n="sc.opt_current_portfolio">Current Portfolio</button>
+            <button class="btn btn-ghost" style="flex: 1;" data-i18n="sc.opt_from_saved">From Saved Scenario</button>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeNewScenarioModal()">Cancel</button>
-        <button class="btn btn-primary" onclick="createScenario()">
+        <button class="btn btn-secondary" onclick="closeNewScenarioModal()" data-i18n="action.cancel">Cancel</button>
+        <button class="btn btn-primary" onclick="createScenario()" data-i18n="sc.create_scenario_modal">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
           Create Scenario
         </button>
@@ -2147,19 +2147,91 @@
     'sc.mode_natural':    { en: 'Natural Language', ar: 'لغة طبيعية' },
     'sc.mode_structured': { en: 'Structured Trades', ar: 'صفقات منظّمة' },
     'sc.analyze':         { en: 'Analyze', ar: 'تحليل' },
+    'sc.analyze_trades':  { en: 'Analyze trades', ar: 'تحليل الصفقات' },
+    'sc.add_trade':       { en: 'Add Trade', ar: 'إضافة صفقة' },
     'sc.sug1':            { en: 'Reduce sector concentration', ar: 'تقليل التركّز القطاعي' },
     'sc.sug2':            { en: 'Increase dividend yield', ar: 'زيادة عائد التوزيعات' },
     'sc.sug3':            { en: 'Lower portfolio risk', ar: 'خفض مخاطر المحفظة' },
     'sc.sug4':            { en: 'Geographic diversification', ar: 'تنويع جغرافي' },
     'sc.sug5':            { en: 'Add growth exposure', ar: 'إضافة تعرّض للنمو' },
+    'sc.sug1_desc':       { en: 'Reduce banking sector exposure by 15% and redistribute across energy and telecom.', ar: 'قلّل تعرّض القطاع المصرفي بنسبة 15% وأعد توزيعه على قطاعي الطاقة والاتصالات.' },
+    'sc.sug2_desc':       { en: 'Shift 20% of growth holdings into high-yield dividend stocks like FAB and stc.', ar: 'انقل 20% من مراكز النمو إلى أسهم توزيعات مرتفعة العائد مثل بنك أبوظبي الأول و stc.' },
+    'sc.sug3_desc':       { en: 'Reduce volatile small-cap positions and increase allocation to blue-chip names.', ar: 'قلّل مراكز الشركات الصغيرة المتقلبة وزِد التخصيص للأسهم القيادية.' },
+    'sc.sug4_desc':       { en: 'Reduce Saudi concentration below 60% by adding UAE and Qatar positions.', ar: 'اخفض التركّز السعودي دون 60% بإضافة مراكز في الإمارات وقطر.' },
+    'sc.sug5_desc':       { en: 'Add 10% allocation to high-growth Saudi tech and fintech names.', ar: 'أضف تخصيصًا بنسبة 10% لأسهم التقنية والتقنية المالية السعودية عالية النمو.' },
     'sc.sell':            { en: 'Sell', ar: 'بيع' },
     'sc.buy':             { en: 'Buy', ar: 'شراء' },
+    'sc.select_stock':    { en: 'Select stock...', ar: 'اختر سهمًا...' },
+    'sc.ph_amount':       { en: 'Amount', ar: 'المبلغ' },
+    'sc.ph_pct':          { en: '%', ar: '٪' },
     'sc.adviser':         { en: 'Adviser', ar: 'المستشار' },
     'sc.online':          { en: 'Online', ar: 'متصل' },
     'sc.ph_scenario':     { en: 'Describe your scenario in plain English...', ar: 'صف السيناريو بلغة بسيطة...' },
     'sc.ph_chat':         { en: 'Ask about scenarios or impacts...', ar: 'اسأل عن السيناريوهات أو الآثار...' },
     'sc.ph_name':         { en: 'e.g., Q3 Rebalancing Strategy', ar: 'مثال: استراتيجية إعادة التوازن للربع الثالث' },
-    'sc.ph_desc':         { en: 'Describe what you want to simulate...', ar: 'صف ما تريد محاكاته...' }
+    'sc.ph_desc':         { en: 'Describe what you want to simulate...', ar: 'صف ما تريد محاكاته...' },
+    'sc.new_scenario':    { en: 'New Scenario', ar: 'سيناريو جديد' },
+    'sc.panel_saved':     { en: 'Saved Scenarios', ar: 'السيناريوهات المحفوظة' },
+    'sc.create_new':      { en: 'Create New Scenario', ar: 'إنشاء سيناريو جديد' },
+    'sc.comparison_title':{ en: 'Before / After Comparison', ar: 'مقارنة قبل وبعد' },
+    'sc.legend_current':  { en: 'Current Portfolio', ar: 'المحفظة الحالية' },
+    'sc.legend_scenario': { en: 'After Scenario', ar: 'بعد السيناريو' },
+    'sc.metric_portfolio_value': { en: 'Portfolio Value', ar: 'قيمة المحفظة' },
+    'sc.metric_expected_yield':  { en: 'Expected Yield', ar: 'العائد المتوقع' },
+    'sc.metric_risk_score':      { en: 'Risk Score', ar: 'درجة المخاطرة' },
+    'sc.metric_diversification': { en: 'Diversification', ar: 'التنويع' },
+    'sc.label_current':   { en: 'Current', ar: 'الحالي' },
+    'sc.label_scenario':  { en: 'Scenario', ar: 'السيناريو' },
+    'sc.thesis_title':    { en: '12-Dimension Thesis Score', ar: 'درجة الأطروحة عبر 12 بُعدًا' },
+    'sc.dim_valuation':   { en: 'Valuation', ar: 'التقييم' },
+    'sc.dim_quality':     { en: 'Quality', ar: 'الجودة' },
+    'sc.dim_growth':      { en: 'Growth', ar: 'النمو' },
+    'sc.dim_income':      { en: 'Income', ar: 'الدخل' },
+    'sc.dim_momentum':    { en: 'Momentum', ar: 'الزخم' },
+    'sc.dim_stability':   { en: 'Stability', ar: 'الاستقرار' },
+    'sc.dim_governance':  { en: 'Governance', ar: 'الحوكمة' },
+    'sc.dim_liquidity':   { en: 'Liquidity', ar: 'السيولة' },
+    'sc.concentration_title': { en: 'Concentration Analysis', ar: 'تحليل التركّز' },
+    'sc.sector_allocation':   { en: 'Sector Allocation', ar: 'التوزيع القطاعي' },
+    'sc.country_allocation':  { en: 'Country Allocation', ar: 'التوزيع الجغرافي' },
+    'sc.sector_banking':      { en: 'Banking', ar: 'البنوك' },
+    'sc.sector_energy':       { en: 'Energy', ar: 'الطاقة' },
+    'sc.sector_telecom':      { en: 'Telecom', ar: 'الاتصالات' },
+    'sc.sector_real_estate':  { en: 'Real Estate', ar: 'العقارات' },
+    'sc.country_saudi':       { en: 'Saudi', ar: 'السعودية' },
+    'sc.country_uae':         { en: 'UAE', ar: 'الإمارات' },
+    'sc.country_qatar':       { en: 'Qatar', ar: 'قطر' },
+    'sc.country_kuwait':      { en: 'Kuwait', ar: 'الكويت' },
+    'sc.risk_title':          { en: 'Risk Profile Impact', ar: 'أثر ملف المخاطر' },
+    'sc.risk_volatility':     { en: 'Volatility Risk', ar: 'مخاطر التقلب' },
+    'sc.risk_concentration':  { en: 'Concentration Risk', ar: 'مخاطر التركّز' },
+    'sc.risk_correlation':    { en: 'Correlation Risk', ar: 'مخاطر الارتباط' },
+    'sc.risk_level_moderate':     { en: 'Moderate', ar: 'متوسطة' },
+    'sc.risk_level_low_moderate': { en: 'Low-Moderate', ar: 'منخفضة إلى متوسطة' },
+    'sc.risk_sublabel_volatility':     { en: 'This scenario would reduce volatility', ar: 'هذا السيناريو سيقلّل التقلب' },
+    'sc.risk_sublabel_diversification':{ en: 'Significant improvement in diversification', ar: 'تحسّن كبير في التنويع' },
+    'sc.risk_sublabel_correlation':    { en: 'Lower correlation across holdings', ar: 'انخفاض الارتباط بين المراكز' },
+    'sc.council_cta_title':   { en: 'Run AI Analyst Council on This Scenario', ar: 'تشغيل مجلس المحللين الذكي على هذا السيناريو' },
+    'sc.council_cta_desc':    { en: 'Get detailed perspectives from 7 AI Analysts on how this scenario would affect your portfolio thesis, risk profile, and alignment with your investment goals.', ar: 'احصل على وجهات نظر مفصّلة من 7 محللين بالذكاء الاصطناعي حول كيفية تأثير هذا السيناريو على أطروحة محفظتك وملف مخاطرها وتوافقها مع أهدافك الاستثمارية.' },
+    'sc.council_cta_btn':     { en: 'Run Council Analysis', ar: 'تشغيل تحليل المجلس' },
+    'sc.form_scenario_name':  { en: 'Scenario Name', ar: 'اسم السيناريو' },
+    'sc.form_description':    { en: 'Description', ar: 'الوصف' },
+    'sc.form_starting_point': { en: 'Starting Point', ar: 'نقطة البداية' },
+    'sc.opt_current_portfolio': { en: 'Current Portfolio', ar: 'المحفظة الحالية' },
+    'sc.opt_from_saved':      { en: 'From Saved Scenario', ar: 'من سيناريو محفوظ' },
+    'sc.create_scenario_modal': { en: 'Create Scenario', ar: 'إنشاء السيناريو' },
+    'sc.empty_strong':        { en: 'Describe a scenario and click Analyze.', ar: 'صِف سيناريو ثم اضغط تحليل.' },
+    'sc.empty_body':          { en: 'The AI Adviser assesses it against your <strong>real holdings</strong> — concentration, risk and income trade-offs — in the sidebar. Quantitative before/after projections aren’t computed yet, so no estimated figures are shown here.', ar: 'يقيّمه المستشار الذكي مقابل <strong>مراكزك الحقيقية</strong> — مفاضلات التركّز والمخاطر والدخل — في الشريط الجانبي. لم تُحتسب بعد التوقعات الكمية قبل/بعد، لذا لا تُعرض أي أرقام تقديرية هنا.' },
+    'sc.toast_input_required':     { en: 'Input Required', ar: 'مطلوب إدخال' },
+    'sc.toast_input_required_msg': { en: 'Please describe your scenario first', ar: 'يرجى وصف السيناريو أولًا' },
+    'sc.toast_no_trades':          { en: 'No Trades', ar: 'لا توجد صفقات' },
+    'sc.toast_no_trades_msg':      { en: 'Add at least one trade with a stock and an amount or %', ar: 'أضف صفقة واحدة على الأقل تتضمن سهمًا ومبلغًا أو نسبة مئوية' },
+    'sc.toast_name_required':      { en: 'Name Required', ar: 'الاسم مطلوب' },
+    'sc.toast_name_required_msg':  { en: 'Please enter a scenario name', ar: 'يرجى إدخال اسم للسيناريو' },
+    'sc.toast_not_saved':          { en: 'Not saved yet', ar: 'لم يُحفظ بعد' },
+    'sc.toast_not_saved_msg':      { en: 'Saved scenarios aren’t available yet — describe a scenario and Analyze for a live AI read.', ar: 'السيناريوهات المحفوظة غير متاحة بعد — صِف سيناريو واضغط تحليل للحصول على قراءة حية بالذكاء الاصطناعي.' },
+    'sc.toast_scenario_loaded':    { en: 'Scenario Loaded', ar: 'تم تحميل السيناريو' },
+    'sc.toast_scenario_active':    { en: 'is now active', ar: 'أصبح نشطًا الآن' }
   });
   (function () {
     function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
@@ -2167,11 +2239,15 @@
     var MAP = {
       'Portfolio Scenarios': 'sc.title', 'Define Scenario: Reduce Banking Concentration': 'sc.builder_title',
       'Natural Language': 'sc.mode_natural', 'Structured Trades': 'sc.mode_structured', 'Analyze': 'sc.analyze',
+      'Analyze trades': 'sc.analyze_trades', 'Add Trade': 'sc.add_trade',
       'Reduce sector concentration': 'sc.sug1', 'Increase dividend yield': 'sc.sug2', 'Lower portfolio risk': 'sc.sug3',
       'Geographic diversification': 'sc.sug4', 'Add growth exposure': 'sc.sug5', 'Sell': 'sc.sell', 'Buy': 'sc.buy',
-      'Adviser': 'sc.adviser', 'Online': 'sc.online'
+      'Adviser': 'sc.adviser', 'Online': 'sc.online',
+      'New Scenario': 'sc.new_scenario', 'Saved Scenarios': 'sc.panel_saved', 'Create New Scenario': 'sc.create_new',
+      'Before / After Comparison': 'sc.comparison_title', 'Run Council Analysis': 'sc.council_cta_btn',
+      'Cancel': 'action.cancel', 'Create Scenario': 'sc.create_scenario_modal'
     };
-    Array.prototype.forEach.call(document.querySelectorAll('h1, .builder-title, .mode-btn, .nl-input-actions button, .nl-suggestion, .trade-action option, .sidebar-title h3, .sidebar-title p'), function (el) {
+    Array.prototype.forEach.call(document.querySelectorAll('h1, .builder-title, .mode-btn, .nl-input-actions button, .nl-suggestion, .trade-action option, .sidebar-title h3, .sidebar-title p, .create-scenario-btn, .council-cta-btn, .add-trade-btn, #newScenarioBtn'), function (el) {
       var k = MAP[firstText(el)]; if (k) setKey(el, k);
     });
     Array.prototype.forEach.call(document.querySelectorAll('p'), function (el) { if ((el.textContent || '').trim() === 'Simulate changes and see the impact before executing any trades') setKey(el, 'sc.subtitle'); });
@@ -2214,7 +2290,7 @@
         card.classList.add('active');
         card.setAttribute('aria-pressed', 'true');
 
-        AlphaCouncil.showToast('Scenario Loaded', `"${card.querySelector('.scenario-name').textContent}" is now active`, 'info');
+        AlphaCouncil.showToast(AC_I18N.t('sc.toast_scenario_loaded'), `"${card.querySelector('.scenario-name').textContent}" ${AC_I18N.t('sc.toast_scenario_active')}`, 'info');
       });
 
       // Keyboard support for scenario cards
@@ -2231,7 +2307,7 @@
     function analyzeScenario() {
       const input = ((document.getElementById('scenarioInput') || {}).value || '').trim();
       if (!input) {
-        AlphaCouncil.showToast('Input Required', 'Please describe your scenario first', 'warning');
+        AlphaCouncil.showToast(AC_I18N.t('sc.toast_input_required'), AC_I18N.t('sc.toast_input_required_msg'), 'warning');
         return;
       }
       if (window.AlphaCouncil) {
@@ -2259,7 +2335,7 @@
         legs.push(verb + ' ' + qty + ' of ' + stock);
       });
       if (!legs.length) {
-        AlphaCouncil.showToast('No Trades', 'Add at least one trade with a stock and an amount or %', 'warning');
+        AlphaCouncil.showToast(AC_I18N.t('sc.toast_no_trades'), AC_I18N.t('sc.toast_no_trades_msg'), 'warning');
         return;
       }
       const scenario = legs.join('; ');
@@ -2270,40 +2346,68 @@
     }
 
     // NL Suggestions
+    // Map each suggestion button to its description i18n key. The button label may already be
+    // translated (data-i18n), so resolve by data-i18n key when present, falling back to the
+    // English label via the English-text map so the pairing survives a language switch.
+    const SUG_DESC_KEY = {
+      'sc.sug1': 'sc.sug1_desc', 'sc.sug2': 'sc.sug2_desc', 'sc.sug3': 'sc.sug3_desc',
+      'sc.sug4': 'sc.sug4_desc', 'sc.sug5': 'sc.sug5_desc'
+    };
+    const SUG_DESC_KEY_BY_EN = {
+      'Reduce sector concentration': 'sc.sug1_desc',
+      'Increase dividend yield': 'sc.sug2_desc',
+      'Lower portfolio risk': 'sc.sug3_desc',
+      'Geographic diversification': 'sc.sug4_desc',
+      'Add growth exposure': 'sc.sug5_desc'
+    };
     document.querySelectorAll('.nl-suggestion').forEach(btn => {
       btn.addEventListener('click', () => {
-        const suggestions = {
-          'Reduce sector concentration': 'Reduce banking sector exposure by 15% and redistribute across energy and telecom.',
-          'Increase dividend yield': 'Shift 20% of growth holdings into high-yield dividend stocks like FAB and stc.',
-          'Lower portfolio risk': 'Reduce volatile small-cap positions and increase allocation to blue-chip names.',
-          'Geographic diversification': 'Reduce Saudi concentration below 60% by adding UAE and Qatar positions.',
-          'Add growth exposure': 'Add 10% allocation to high-growth Saudi tech and fintech names.'
-        };
-        document.getElementById('scenarioInput').value = suggestions[btn.textContent] || btn.textContent;
+        const labelKey = btn.getAttribute('data-i18n');
+        const descKey = (labelKey && SUG_DESC_KEY[labelKey]) || SUG_DESC_KEY_BY_EN[(btn.textContent || '').trim()];
+        const desc = descKey ? AC_I18N.t(descKey) : null;
+        document.getElementById('scenarioInput').value = desc || (btn.textContent || '').trim();
       });
     });
+
+    // Stock roster for the structured trade selects. Each entry carries name_en/name_ar +
+    // ticker so AC_I18N.localName() can render the language-appropriate label, with the
+    // ticker code appended in parentheses (locale-agnostic).
+    const SC_STOCKS = [
+      { value: '2222',  ticker: '2222.SR',  name_en: 'Saudi Aramco',          name_ar: 'أرامكو السعودية' },
+      { value: '1120',  ticker: '1120.SR',  name_en: 'Al Rajhi Bank',         name_ar: 'مصرف الراجحي' },
+      { value: '1010',  ticker: '1010.SR',  name_en: 'Riyad Bank',            name_ar: 'بنك الرياض' },
+      { value: 'SNB',   ticker: 'SNB.SR',   name_en: 'Saudi National Bank',   name_ar: 'البنك الأهلي السعودي' },
+      { value: 'FAB',   ticker: 'FAB.AD',   name_en: 'First Abu Dhabi Bank',  name_ar: 'بنك أبوظبي الأول' },
+      { value: 'QNBK',  ticker: 'QNBK.QA',  name_en: 'QNB Group',             name_ar: 'مجموعة QNB' },
+      { value: 'EMAAR', ticker: 'EMAAR.DU', name_en: 'Emaar Properties',      name_ar: 'إعمار العقارية' },
+      { value: '7010',  ticker: '7010.SR',  name_en: 'stc',                   name_ar: 'stc' }
+    ];
+    // Look up the localized "Name (CODE)" label for a stock by its option value or ticker code.
+    function scStockLabel(idOrCode) {
+      const row = SC_STOCKS.find(s => s.value === idOrCode || s.ticker === idOrCode);
+      if (!row) return null;
+      return AC_I18N.localName(row) + ' (' + row.ticker + ')';
+    }
 
     // Add Trade
     function addTrade() {
       const tradeList = document.getElementById('tradeList');
       const newRow = document.createElement('div');
       newRow.className = 'trade-row';
+      const opts = SC_STOCKS.map(s =>
+        '<option value="' + s.value + '" data-code="' + s.ticker + '">' + scStockLabel(s.value) + '</option>'
+      ).join('');
       newRow.innerHTML = `
         <select class="trade-action">
-          <option value="buy">Buy</option>
-          <option value="sell">Sell</option>
+          <option value="buy" data-i18n="sc.buy">${AC_I18N.t('sc.buy')}</option>
+          <option value="sell" data-i18n="sc.sell">${AC_I18N.t('sc.sell')}</option>
         </select>
         <select class="trade-stock-select">
-          <option value="">Select stock...</option>
-          <option value="2222">Saudi Aramco (2222.SR)</option>
-          <option value="1120">Al Rajhi Bank (1120.SR)</option>
-          <option value="FAB">First Abu Dhabi Bank (FAB.AD)</option>
-          <option value="QNBK">QNB Group (QNBK.QA)</option>
-          <option value="EMAAR">Emaar Properties (EMAAR.DU)</option>
-          <option value="7010">stc (7010.SR)</option>
+          <option value="" data-stock-empty="1">${AC_I18N.t('sc.select_stock')}</option>
+          ${opts}
         </select>
-        <input type="text" class="trade-input" placeholder="Amount">
-        <input type="text" class="trade-input" placeholder="%">
+        <input type="text" class="trade-input" placeholder="${AC_I18N.t('sc.ph_amount')}" data-i18n-attr="placeholder:sc.ph_amount">
+        <input type="text" class="trade-input" placeholder="${AC_I18N.t('sc.ph_pct')}" data-i18n-attr="placeholder:sc.ph_pct">
         <button class="trade-remove" onclick="this.parentElement.remove()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
@@ -2345,7 +2449,7 @@
       const name = ((document.getElementById('scenarioName') || {}).value || '').trim();
       const desc = ((document.getElementById('scenarioDesc') || {}).value || '').trim();
       if (!name) {
-        AlphaCouncil.showToast('Name Required', 'Please enter a scenario name', 'warning');
+        AlphaCouncil.showToast(AC_I18N.t('sc.toast_name_required'), AC_I18N.t('sc.toast_name_required_msg'), 'warning');
         return;
       }
       closeNewScenarioModal();
@@ -2375,11 +2479,33 @@
 
     // K1: no scenario store yet — the cards are example templates, so don't claim persistence.
     function duplicateScenario(id) {
-      AlphaCouncil.showToast('Not saved yet', 'Saved scenarios aren’t available yet — describe a scenario and Analyze for a live AI read.', 'info');
+      AlphaCouncil.showToast(AC_I18N.t('sc.toast_not_saved'), AC_I18N.t('sc.toast_not_saved_msg'), 'info');
     }
     function deleteScenario(id) {
       const card = document.querySelector(`.scenario-card[data-id="${id}"]`);
       if (card) { card.style.opacity = '0'; card.style.transform = 'translateX(-20px)'; setTimeout(() => card.remove(), 300); }
+    }
+
+    // Build the (language-aware) honest comparison empty-state HTML.
+    function renderComparisonEmpty() {
+      const cmp = document.getElementById('comparisonSection');
+      if (!cmp) return;
+      cmp.innerHTML = '<div style="padding:30px 22px;text-align:center;color:var(--fg-muted);font-size:13px;line-height:1.7;max-width:560px;margin:0 auto;">'
+        + '<strong style="color:var(--fg);">' + AC_I18N.t('sc.empty_strong') + '</strong><br>'
+        + AC_I18N.t('sc.empty_body') + '</div>';
+    }
+
+    // Re-localize the structured trade stock <select> option labels (static + dynamically
+    // added rows) so stock NAMES follow the active language. The "Select stock…" placeholder
+    // and the Buy/Sell options are handled by AC_I18N.apply() via their data-i18n attributes.
+    function relocalizeTradeSelects() {
+      document.querySelectorAll('.trade-stock-select option').forEach(function (opt) {
+        if (opt.getAttribute('data-stock-empty')) { var ev = AC_I18N.t('sc.select_stock'); if (ev != null) opt.textContent = ev; return; }
+        var code = opt.getAttribute('data-code');
+        if (!code) return;
+        var label = scStockLabel(code);
+        if (label) opt.textContent = label;
+      });
     }
 
     // K1: this planner has no live scenario-eval backend yet, so strip every fabricated "result"
@@ -2393,12 +2519,21 @@
         const desc = card.querySelector('.scenario-description');
         if (desc) card.addEventListener('click', function(){ const inp = document.getElementById('scenarioInput'); if (inp) { inp.value = desc.textContent.trim(); inp.focus(); } });
       });
-      const cmp = document.getElementById('comparisonSection');
-      if (cmp) cmp.innerHTML = '<div style="padding:30px 22px;text-align:center;color:var(--fg-muted);font-size:13px;line-height:1.7;max-width:560px;margin:0 auto;">'
-        + '<strong style="color:var(--fg);">Describe a scenario and click Analyze.</strong><br>'
-        + 'The AI Adviser assesses it against your <strong>real holdings</strong> — concentration, risk and income trade-offs — in the sidebar. '
-        + 'Quantitative before/after projections aren’t computed yet, so no estimated figures are shown here.</div>';
+      renderComparisonEmpty();
+      relocalizeTradeSelects();
     })();
+
+    // O4: re-render JS-built content when the user toggles language. Static data-i18n markup is
+    // re-applied automatically by i18n.js; here we re-run the dynamic pieces (honest empty-state
+    // message + localized trade stock names). Newly tagged dynamic nodes also get AC_I18N.apply().
+    window.addEventListener('ac:langchange', function () {
+      // NOTE: do NOT call AC_I18N.apply() here — apply() re-dispatches 'ac:langchange',
+      // which would re-enter this listener forever (stack overflow). Static data-i18n
+      // nodes are already re-applied by the apply() that fired this event; the two
+      // helpers below translate their dynamic content inline via AC_I18N.t.
+      renderComparisonEmpty();
+      relocalizeTradeSelects();
+    });
 
     // Adviser Toggle
     document.getElementById('adviserToggle').addEventListener('click', () => {

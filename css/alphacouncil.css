@@ -724,9 +724,25 @@ body.sidebar-open .main-grid {
   height: 16px;
 }
 
+/* Adviser sidebar header icon + title. These live here (shared) so EVERY page with
+   the adviser drawer constrains the icon — pages that only defined .sidebar-logo in
+   their own inline <style> (e.g. dashboard) override locally; pages without it (e.g.
+   news) previously rendered a huge unconstrained SVG. Compact + inline with the title. */
+.sidebar-header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.sidebar-logo {
+  width: 32px; height: 32px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-gold));
+  border-radius: 9px; display: flex; align-items: center; justify-content: center;
+}
+.sidebar-logo svg { width: 18px; height: 18px; color: var(--bg-deep); }
+.sidebar-title h3 { font-size: 15px; font-weight: 600; line-height: 1.2; }
+.sidebar-title p { font-size: 11px; color: var(--fg-dim); display: flex; align-items: center; gap: 4px; }
+
 /* Chat Messages */
 .chat-messages {
   flex: 1;
+  min-height: 0;        /* critical: lets the messages area scroll INSIDE the flex
+                           column instead of pushing the whole page (founder report) */
   padding: var(--space-4);
   display: flex;
   flex-direction: column;

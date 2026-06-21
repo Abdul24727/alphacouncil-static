@@ -1,0 +1,1793 @@
+{
+ "surfaces": [
+  {
+   "surface": "dashboard.html (C:\\projects\\alphacouncil-static\\dashboard.html)",
+   "rerenders_on_langchange": "partial. The greeting re-renders on ac:langchange (line 915 listener), but dynamic content like movers, watchlist, holdings table, metrics labels, and alerts do not. When user switches to Arabic mid-session, these sections remain in English.",
+   "findings": [
+    {
+     "id": "PF-1",
+     "category": "stock-name-not-localized",
+     "lines": "979",
+     "current": "const row = function(r){ return stockRowHTML({ tickerKey: r.ticker_key, name: r.name_en, code: r.ticker, changePct: r.day_change_pct, price: r.last_price, currency: r.currency }); };",
+     "symptom": "Top Gainers section shows English stock names (e.g. 'Saudi Aramco') even on Arabic page. Should show Arabic names when lang=ar.",
+     "fix": "Change to: name: (AC_I18N.lang === 'ar' ? (r.name_ar || r.name_en) : r.name_en)"
+    },
+    {
+     "id": "PF-2",
+     "category": "stock-name-not-localized",
+     "lines": "996",
+     "current": "return stockRowHTML({ tickerKey: r.ticker, name: r.name_en, code: r.ticker_short || String(r.ticker).split('_')[0], changePct: r.day_change_pct, price: r.last_price, currency: r.currency });",
+     "symptom": "Watchlist section shows English stock names instead of Arabic names when user language is Arabic.",
+     "fix": "Change to: name: (AC_I18N.lang === 'ar' ? (r.name_ar || r.name_en) : r.name_en)"
+    },
+    {
+     "id": "PF-3",
+     "category": "hardcoded-english-in-js",
+     "lines": "929",
+     "current": "c.textContent=formatPercent(pnlPct)+' overall';",
+     "symptom": "The 'overall' label in Unrealized P&L metric shows in English (e.g. '+5.2% overall') even on Arabic page. Should be localized.",
+     "fix": "Use i18n: c.textContent=formatPercent(pnlPct)+' ' + AC_I18N.t('dash.metric_overall'); Add to i18n dict at line 807: 'dash.metric_overall': { en: 'overall', ar: 'إجمالي' }"
+    },
+    {
+     "id": "PF-4",
+     "category": "hardcoded-english-in-js",
+     "lines": "884",
+     "current": "tbody.innerHTML = '<tr><td colspan=\"4\" style=\"text-align:center;padding:32px;color:var(--fg-dim);\">No holdings yet — add one to get started.</td></tr>';",
+     "symptom": "Holdings table empty state shows English text on Arabic dashboard. Founder complaint: empty state text shows English on AR page.",
+     "fix": "Use i18n: const emptyMsg = AC_I18N.t('dash.no_holdings'); tbody.innerHTML = '<tr><td colspan=\"4\" style=\"text-align:center;padding:32px;color:var(--fg-dim);\">' + escH(emptyMsg) + '</td></tr>'; Add to i18n dict: 'dash.no_holdings': { en: 'No holdings yet — add one to get started.', ar: 'لا توجد مراكز حتى الآن — أضف واحدًا للبدء.' }"
+    },
+    {
+     "id": "PF-5",
+     "category": "hardcoded-english-in-js",
+     "lines": "980-981",
+     "current": "emptyRow('No data available.')",
+     "symptom": "Top Gainers/Losers empty state shows English 'No data available.' on Arabic page.",
+     "fix": "Use i18n: emptyRow(AC_I18N.t('dash.no_data') || 'No data available.'). Add to i18n dict: 'dash.no_data': { en: 'No data available.', ar: 'لا توجد بيانات متاحة.' }"
+    },
+    {
+     "id": "PF-6",
+     "category": "hardcoded-english-in-js",
+     "lines": "983-984",
+     "current": "emptyRow('Couldn\\'t load market movers.')",
+     "symptom": "Error message shows English on Arabic page when movers API fails.",
+     "fix": "Use i18n: emptyRow(AC_I18N.t('dash.error_movers') || 'Couldn\\'t load market movers.'). Add to i18n dict: 'dash.error_movers': { en: 'Couldn\\'t load market movers.', ar: 'لم يتم تحميل أفضل الأسهم الرابحة والخاسرة.' }"
+    },
+    {
+     "id": "PF-7",
+     "category": "hardcoded-english-in-js",
+     "lines": "992",
+     "current": "fillSection('watchlistBody', '<div class=\"mover-empty\" style=\"padding:18px;color:var(--fg-dim);font-size:13px;line-height:1.5;\">Your watchlist is empty. Open any stock and tap <strong>☆ Watchlist</strong> to track it here.</div>');",
+     "symptom": "Watchlist empty state shows English text on Arabic page. Founder complaint: 'Your watchlist is empty' / 'open a stock and tap the star...' shows English on AR page.",
+     "fix": "Use i18n: const watchlistEmptyMsg = AC_I18N.t('dash.watchlist_empty'); fillSection('watchlistBody', '<div class=\"mover-empty\" style=\"padding:18px;color:var(--fg-dim);font-size:13px;line-height:1.5;\">' + escH(watchlistEmptyMsg) + '</div>'); Add to i18n dict: 'dash.watchlist_empty': { en: 'Your watchlist is empty. Open any stock and tap <strong>☆ Watchlist</strong> to track it here.', ar: 'قائمة المتابعة فارغة. افتح أي سهم واضغط على <strong>☆ المتابعة</strong> لتتبعه هنا.' }"
+    },
+    {
+     "id": "PF-8",
+     "category": "hardcoded-english-in-js",
+     "lines": "999",
+     "current": "emptyRow('Couldn\\'t load your watchlist.')",
+     "symptom": "Error message shows English on Arabic page when watchlist API fails.",
+     "fix": "Use i18n: emptyRow(AC_I18N.t('dash.error_watchlist') || 'Couldn\\'t load your watchlist.'). Add to i18n dict: 'dash.error_watchlist': { en: 'Couldn\\'t load your watchlist.', ar: 'لم يتم تحميل قائمة المتابعة.' }"
+    },
+    {
+     "id": "PF-9",
+     "category": "hardcoded-english-in-js",
+     "lines": "1005",
+     "current": "function timeAgo(iso){ const t=Date.parse(iso); if(isNaN(t)) return ''; let s=Math.max(0,Math.floor((Date.now()-t)/1000)); if(s<60) return 'just now'; const m=Math.floor(s/60); if(m<60) return m+'m ago'; const h=Math.floor(m/60); if(h<24) return h+'h ago'; const d=Math.floor(h/24); if(d<30) return d+'d ago'; return Math.floor(d/30)+'mo ago'; }",
+     "symptom": "Alert timestamps show English relative times ('just now', '5m ago', '2h ago', etc.) on Arabic page.",
+     "fix": "Parameterize timeAgo() to accept language or check AC_I18N.lang. Example: if(AC_I18N.lang === 'ar') return s<60 ? 'الآن' : m<60 ? m+'د' : ... Add to i18n dict for consistency, or hardcode Arabic strings in the same function."
+    },
+    {
+     "id": "PF-10",
+     "category": "hardcoded-english-in-js",
+     "lines": "1018",
+     "current": "const src = a.source || (kind.charAt(0).toUpperCase() + kind.slice(1));",
+     "symptom": "Alert source labels (auto-generated from kind: 'Growth', 'Risk', 'Technical', etc.) are English capitalizations even on Arabic page. Should use localized labels.",
+     "fix": "Use i18n: const srcLabels = { growth: AC_I18N.t('dash.alert_growth'), risk: AC_I18N.t('dash.alert_risk'), technical: AC_I18N.t('dash.alert_technical'), value: AC_I18N.t('dash.alert_value'), macro: AC_I18N.t('dash.alert_macro') }; const src = a.source || srcLabels[kind] || kind; Add to i18n dict: 'dash.alert_growth', 'dash.alert_risk', 'dash.alert_technical', 'dash.alert_value', 'dash.alert_macro' with EN/AR pairs."
+    },
+    {
+     "id": "PF-11",
+     "category": "hardcoded-english-in-js",
+     "lines": "1028",
+     "current": "'<span class=\"alert-badge\">New</span>'",
+     "symptom": "Unread alert badge shows 'New' in English on Arabic page.",
+     "fix": "Use i18n: + (a.read ? '' : '<span class=\"alert-badge\">' + escH(AC_I18N.t('dash.alert_new') || 'New') + '</span>'). Add to i18n dict: 'dash.alert_new': { en: 'New', ar: 'جديد' }"
+    },
+    {
+     "id": "PF-12",
+     "category": "hardcoded-english-in-js",
+     "lines": "1036",
+     "current": "body.innerHTML = '<div class=\"alert-empty\" style=\"padding:18px;color:var(--fg-dim);font-size:13px;line-height:1.5;\">No alerts yet. As notable moves, technical signals and news hit your holdings, they'll appear here.</div>';",
+     "symptom": "Alerts empty state shows English text on Arabic page.",
+     "fix": "Use i18n: const alertsEmptyMsg = AC_I18N.t('dash.no_alerts'); body.innerHTML = '<div class=\"alert-empty\" style=\"padding:18px;color:var(--fg-dim);font-size:13px;line-height:1.5;\">' + escH(alertsEmptyMsg) + '</div>'; Add to i18n dict: 'dash.no_alerts': { en: 'No alerts yet. As notable moves, technical signals and news hit your holdings, they\\'ll appear here.', ar: 'لا توجد تنبيهات حتى الآن. عندما تحدث تحركات ملحوظة وإشارات فنية وأخبار على مراكزك، ستظهر هنا.' }"
+    },
+    {
+     "id": "PF-13",
+     "category": "hardcoded-english-in-js",
+     "lines": "1041",
+     "current": "emptyRow('Sign in to see your alerts.');",
+     "symptom": "Sign-in prompt shows English on Arabic page when user is not authenticated.",
+     "fix": "Use i18n: emptyRow(AC_I18N.t('dash.signin_alerts') || 'Sign in to see your alerts.'). Add to i18n dict: 'dash.signin_alerts': { en: 'Sign in to see your alerts.', ar: 'سجّل الدخول لرؤية تنبيهاتك.' }"
+    },
+    {
+     "id": "PF-14",
+     "category": "hardcoded-english-in-js",
+     "lines": "1042",
+     "current": "emptyRow('Couldn\\'t load your alerts.');",
+     "symptom": "Error message shows English on Arabic page when alerts API fails.",
+     "fix": "Use i18n: emptyRow(AC_I18N.t('dash.error_alerts') || 'Couldn\\'t load your alerts.'). Add to i18n dict: 'dash.error_alerts': { en: 'Couldn\\'t load your alerts.', ar: 'لم يتم تحميل التنبيهات.' }"
+    },
+    {
+     "id": "PF-15",
+     "category": "hardcoded-english-in-js",
+     "lines": "1054",
+     "current": "showToast(isPinned ? 'Sidebar Pinned' : 'Sidebar Unpinned', isPinned ? 'Sidebar will stay open' : 'Sidebar can be closed', 'info');",
+     "symptom": "Toast notifications for sidebar pin/unpin show English text on Arabic page.",
+     "fix": "Use i18n: showToast(isPinned ? AC_I18N.t('dash.sidebar_pinned') : AC_I18N.t('dash.sidebar_unpinned'), isPinned ? AC_I18N.t('dash.sidebar_keep_open') : AC_I18N.t('dash.sidebar_can_close'), 'info'). Add to i18n dict: 'dash.sidebar_pinned': { en: 'Sidebar Pinned', ar: 'تم تثبيت الشريط الجانبي' }, 'dash.sidebar_unpinned': { en: 'Sidebar Unpinned', ar: 'تم فك تثبيت الشريط الجانبي' }, 'dash.sidebar_keep_open': { en: 'Sidebar will stay open', ar: 'سيبقى الشريط الجانبي مفتوحًا' }, 'dash.sidebar_can_close': { en: 'Sidebar can be closed', ar: 'يمكن إغلاق الشريط الجانبي' }"
+    },
+    {
+     "id": "PF-16",
+     "category": "no-rerender-on-langchange",
+     "lines": "975-986, 988-1002, 1030-1044",
+     "current": "Functions loadMovers(), reloadWatchlist(), loadAlerts() are called once at page load. They do not re-render when 'ac:langchange' fires.",
+     "symptom": "When user switches from EN to AR mid-session, the movers grid, watchlist, and alerts sections stay in English. Stock names remain name_en, empty states and error messages stay in English, alert source labels don't change.",
+     "fix": "Add window.addEventListener('ac:langchange', (e) => { loadMovers(); reloadWatchlist(); loadAlerts(); }); after each load function definition. This will re-render all JS-built content when language switches."
+    }
+   ]
+  },
+  {
+   "surface": "portfolio.html",
+   "rerenders_on_langchange": "no — the page does NOT re-render dynamic content when 'ac:langchange' fires. There is NO listener for the 'ac:langchange' CustomEvent in the entire script. Holdings table, allocation cards, alerts, news, watchlist, and all JS-built sections render once on DOMContentLoaded and are never refreshed when the user switches language. The static markup is auto-tagged via AC_I18N.apply() but dynamic content built in the renderAllocations(), onPortfolioReady(), and async load functions (alerts, news, watchlist) ignores language changes entirely.",
+   "findings": [
+    {
+     "id": "PF-1",
+     "category": "hardcoded-english-in-js",
+     "lines": "1016",
+     "current": "Import from screenshot/PDF",
+     "symptom": "Button text 'Import from screenshot/PDF' remains English on AR page",
+     "fix": "Add i18n key 'port.import_label' (en: 'Import from screenshot/PDF', ar: 'استيراد من لقطة شاشة/PDF') and apply via data-i18n to the button at line 1016"
+    },
+    {
+     "id": "PF-2",
+     "category": "hardcoded-english-in-js",
+     "lines": "1020",
+     "current": "Add holding",
+     "symptom": "Button text 'Add holding' remains English on AR page",
+     "fix": "Already has i18n key 'port.add_holding' in AC_I18N (line 1492); button at line 1020 needs data-i18n=\"port.add_holding\" to be tagged"
+    },
+    {
+     "id": "PF-3",
+     "category": "static-markup-untranslated",
+     "lines": "1145",
+     "current": "Get a live, model-written read on your portfolio — concentration, valuation, dividend income and the main risks — grounded in your <strong>real holdings</strong>.",
+     "symptom": "Portfolio Commentary descriptive text remains English on AR page",
+     "fix": "Create i18n key 'port.commentary_desc' (en: 'Get a live, model-written read on your portfolio — concentration, valuation, dividend income and the main risks — grounded in your real holdings.', ar: '[Arabic translation]') and wrap the <p class=\"commentary-text\"> with data-i18n=\"port.commentary_desc\""
+    },
+    {
+     "id": "PF-4",
+     "category": "hardcoded-english-in-js",
+     "lines": "1146",
+     "current": "Ask the AI Adviser",
+     "symptom": "Button text 'Ask the AI Adviser' remains English on AR page (hardcoded in onclick handler)",
+     "fix": "Create i18n key 'port.ask_adviser' (en: 'Ask the AI Adviser', ar: '[Arabic]') and add data-i18n=\"port.ask_adviser\" to the button; extract the hardcoded question text into a separate key 'port.commentary_question'"
+    },
+    {
+     "id": "PF-5",
+     "category": "static-markup-untranslated",
+     "lines": "1162",
+     "current": "Convene a live multi-model AI Analyst Council on your portfolio — several models debate concentration, valuation and risk across your real holdings, then a chairman synthesises a balanced view.",
+     "symptom": "Council description text remains English on AR page",
+     "fix": "Create i18n key 'port.council_desc' and wrap the <p class=\"council-synthesis\"> with data-i18n=\"port.council_desc\""
+    },
+    {
+     "id": "PF-6",
+     "category": "hardcoded-english-in-js",
+     "lines": "1166, 1170, 1174, 1178, 1182",
+     "current": "Growth, Value, Risk, Macro, Income (5 council perspective labels)",
+     "symptom": "All 5 council perspective category names render English on AR page",
+     "fix": "Create i18n keys 'port.council_perspective_growth', 'port.council_perspective_value', 'port.council_perspective_risk', 'port.council_perspective_macro', 'port.council_perspective_income' and add data-i18n to each <div class=\"council-perspective\"> textContent"
+    },
+    {
+     "id": "PF-7",
+     "category": "hardcoded-english-in-js",
+     "lines": "1187",
+     "current": "Run full AI Council review",
+     "symptom": "Button text 'Run full AI Council review' remains English on AR page",
+     "fix": "Create i18n key 'port.run_council' (en: 'Run full AI Council review', ar: 'تشغيل مراجعة المجلس الذكي الكاملة') and add data-i18n=\"port.run_council\" to the button"
+    },
+    {
+     "id": "PF-8",
+     "category": "hardcoded-english-in-js",
+     "lines": "1552",
+     "current": "above the 25% single-sector guideline",
+     "symptom": "Sector concentration warning text renders English on AR page (dynamically inserted at line 1549 via t.textContent = txt)",
+     "fix": "Refactor allocation flag logic to use AC_I18N.t() for the warning messages: Create keys 'port.sector_conc_warn' (en: '{sector} is {pct}% of the portfolio — above the 25% single-sector guideline.', ar: '[Arabic]') and pass them through translation"
+    },
+    {
+     "id": "PF-9",
+     "category": "hardcoded-english-in-js",
+     "lines": "1555",
+     "current": "consider geographic diversification",
+     "symptom": "Country concentration warning text renders English on AR page",
+     "fix": "Create i18n key 'port.country_conc_warn' (en: '{country} is {pct}% of the portfolio — consider geographic diversification.', ar: '[Arabic]') and use AC_I18N.t() to translate before inserting into flag"
+    },
+    {
+     "id": "PF-10",
+     "category": "hardcoded-english-in-js",
+     "lines": "1539",
+     "current": "Add holdings to see your allocation.",
+     "symptom": "Empty state message for allocations renders English on AR page",
+     "fix": "Create i18n key 'port.empty_allocation' (en: 'Add holdings to see your allocation.', ar: '[Arabic]') and use AC_I18N.t() when building the empty state HTML"
+    },
+    {
+     "id": "PF-11",
+     "category": "hardcoded-english-in-js",
+     "lines": "1577",
+     "current": "No holdings yet — click \"Add Holding\" to start.",
+     "symptom": "Empty holdings table message renders English on AR page",
+     "fix": "Create i18n key 'port.no_holdings_msg' (en: 'No holdings yet — click \"Add Holding\" to start.', ar: '[Arabic]') and use AC_I18N.t() to translate"
+    },
+    {
+     "id": "PF-12",
+     "category": "hardcoded-english-in-js",
+     "lines": "1638",
+     "current": "Sign in to see your alerts. / Couldn't load your alerts.",
+     "symptom": "Alert card error messages render English on AR page",
+     "fix": "Create i18n keys 'port.alerts_signin' and 'port.alerts_error' and use AC_I18N.t() to translate before setting innerHTML"
+    },
+    {
+     "id": "PF-13",
+     "category": "hardcoded-english-in-js",
+     "lines": "1646",
+     "current": "No recent news for your holdings yet.",
+     "symptom": "Empty news message renders English on AR page",
+     "fix": "Create i18n key 'port.news_empty' and use AC_I18N.t() to translate"
+    },
+    {
+     "id": "PF-14",
+     "category": "hardcoded-english-in-js",
+     "lines": "1660",
+     "current": "Sign in to see news for your holdings. / Couldn't load news right now.",
+     "symptom": "News card error messages render English on AR page",
+     "fix": "Create i18n keys 'port.news_signin' and 'port.news_error' and use AC_I18N.t()"
+    },
+    {
+     "id": "PF-15",
+     "category": "hardcoded-english-in-js",
+     "lines": "1670",
+     "current": "Your watchlist is empty. Open any stock and tap <strong>☆ Watchlist</strong> to track it here.",
+     "symptom": "Watchlist empty state renders English on AR page",
+     "fix": "Create i18n key 'port.watchlist_empty' and use AC_I18N.t(); note the ☆ symbol is locale-agnostic"
+    },
+    {
+     "id": "PF-16",
+     "category": "hardcoded-english-in-js",
+     "lines": "1685, 1686",
+     "current": "Sign in to use your watchlist. / Couldn't load your watchlist.",
+     "symptom": "Watchlist error messages render English on AR page",
+     "fix": "Create i18n keys 'port.watchlist_signin' and 'port.watchlist_error' and use AC_I18N.t()"
+    },
+    {
+     "id": "PF-17",
+     "category": "hardcoded-english-in-js",
+     "lines": "1674",
+     "current": "const nm=r.name_en||code;",
+     "symptom": "Watchlist stock names always render from name_en, never name_ar on Arabic page",
+     "fix": "Change line 1674 to: const nm=(AC_I18N.lang==='ar'?r.name_ar:null)||r.name_en||code; OR implement a helper function getStockName(r) that checks language and falls back gracefully"
+    },
+    {
+     "id": "PF-18",
+     "category": "stock-name-not-localized",
+     "lines": "1582",
+     "current": "escP(h.name) in holdings table render",
+     "symptom": "Holdings table stock names render h.name which comes from getHoldings() and uses name_en, never name_ar on Arabic page",
+     "fix": "Modify the holdings data structure or the onPortfolioReady() function to pass name (localized) instead of always using name_en. If name is passed from the API already, ensure it respects AC_I18N.lang at render time OR add a check: const dispName = (AC_I18N.lang==='ar'&&h.name_ar)?h.name_ar:h.name;"
+    },
+    {
+     "id": "PF-19",
+     "category": "sector-not-localized",
+     "lines": "1580, 1551",
+     "current": "h.sector in line 1580; h.sector passed to group() at line 1551",
+     "symptom": "Sector names in holdings table (line 1580: sec=h.sector) and sector allocation card (line 1551: keyFn(h)) always use h.sector (English), never h.sector_ar on Arabic page",
+     "fix": "Modify holdings data to include sector_ar; then: const dispSector = (AC_I18N.lang==='ar'&&h.sector_ar)?h.sector_ar:h.sector; and use dispSector in both line 1580 and the keyFn at line 1551"
+    },
+    {
+     "id": "PF-20",
+     "category": "hardcoded-english-in-js",
+     "lines": "1554",
+     "current": "EXCH_COUNTRY = { TADAWUL:'Saudi Arabia', DFM:'UAE', ... }",
+     "symptom": "Country/exchange names in EXCH_COUNTRY map are hardcoded English; when used in country allocation, they render English on AR page",
+     "fix": "Create i18n keys for each country (e.g., 'port.country_saudi', 'port.country_uae', 'port.country_qatar', etc.) and refactor the map to use AC_I18N.t() to look up translations: function getCountryName(exch){ const key = EXCH_TO_KEY[String(exch).toUpperCase()]; return key ? AC_I18N.t(key) : exch; }"
+    },
+    {
+     "id": "PF-21",
+     "category": "hardcoded-english-in-js",
+     "lines": "1554",
+     "current": "'Other' fallback in EXCH_COUNTRY map and line 1541 allocation grouping",
+     "symptom": "The string 'Other' (for ungrouped sectors/countries) always renders English on AR page",
+     "fix": "Create i18n key 'port.other' (en: 'Other', ar: 'أخرى') and modify line 1541 to: const k = (keyFn(h)||AC_I18N.t('port.other')); and line 1554 fallback to: return EXCH_COUNTRY[...] || AC_I18N.t('port.other');"
+    },
+    {
+     "id": "PF-22",
+     "category": "hardcoded-english-in-js",
+     "lines": "1625",
+     "current": "const src=a.source||(kind.charAt(0).toUpperCase()+kind.slice(1))",
+     "symptom": "Alert source labels (e.g., 'Growth', 'Risk', 'Technical', 'Value', 'Macro') fallback to English capitalized kind strings when a.source is empty",
+     "fix": "Create i18n keys for alert kinds and use AC_I18N.t('port.alert_kind_'+kind) as fallback: const src=a.source||(AC_I18N.t('port.alert_kind_'+kind)||kind.charAt(0).toUpperCase()+kind.slice(1))"
+    },
+    {
+     "id": "PF-23",
+     "category": "hardcoded-english-in-js",
+     "lines": "1588, 1589, 1590, 1591",
+     "current": "title=\"View details\", title=\"Ask Adviser\", title=\"Run Council\", title=\"Remove\"",
+     "symptom": "Row action button tooltips remain English on AR page",
+     "fix": "Create i18n keys 'port.action_view', 'port.action_ask', 'port.action_council', 'port.action_remove' and apply via data-i18n-attr=\"title:port.action_view\" etc. OR dynamically set title attributes via JavaScript using AC_I18N.t()"
+    },
+    {
+     "id": "PF-24",
+     "category": "hardcoded-english-in-js",
+     "lines": "2058",
+     "current": "esc(m.name_en) in stock search dropdown",
+     "symptom": "Stock autocomplete dropdown renders m.name_en (English) even when user switches to Arabic",
+     "fix": "Change line 2058 to use the localized name: const dispName = (AC_I18N.lang==='ar'&&m.name_ar)?m.name_ar:m.name_en; and use dispName instead of m.name_en"
+    },
+    {
+     "id": "PF-25",
+     "category": "hardcoded-english-in-js",
+     "lines": "2067",
+     "current": "searchEl.value = m.name_en + ' (' + m.ticker + ')'",
+     "symptom": "When user selects a stock from the dropdown, the input is filled with name_en (English), not localized",
+     "fix": "Use localized name: searchEl.value = ((AC_I18N.lang==='ar'&&m.name_ar)?m.name_ar:m.name_en) + ' (' + m.ticker + ')'"
+    },
+    {
+     "id": "PF-26",
+     "category": "hardcoded-english-in-js",
+     "lines": "2080",
+     "current": "u.name_en.toLowerCase().indexOf(q)",
+     "symptom": "Stock search filter only searches against English names (name_en), cannot find stocks by Arabic name",
+     "fix": "Expand filter to check both name_en and name_ar: return (u.ticker && u.ticker.toLowerCase().indexOf(q) >= 0) || ((AC_I18N.lang==='ar'&&u.name_ar&&u.name_ar.toLowerCase().indexOf(q)>=0) || (u.name_en && u.name_en.toLowerCase().indexOf(q) >= 0)) || ..."
+    },
+    {
+     "id": "PF-27",
+     "category": "hardcoded-english-in-js",
+     "lines": "2104-2106",
+     "current": "showToast('Pick a stock', '...'); showToast('Missing shares', '...'); showToast('Missing cost', '...')",
+     "symptom": "Form validation toasts in Add Holding modal render English on AR page",
+     "fix": "Create i18n keys 'port.toast_pick_stock', 'port.toast_missing_shares', 'port.toast_missing_cost' and use AC_I18N.t() to translate toast messages"
+    },
+    {
+     "id": "PF-28",
+     "category": "hardcoded-english-in-js",
+     "lines": "2137, 2144, 2151",
+     "current": "heading.textContent = 'Reading \"' + file.name + '\"…'; etc.",
+     "symptom": "Import modal status messages ('Reading...', 'Drop file here...') render English on AR page",
+     "fix": "Create i18n keys 'port.import_reading', 'port.import_drop', 'port.import_ready' and use AC_I18N.t() to translate these dynamic messages"
+    },
+    {
+     "id": "PF-29",
+     "category": "hardcoded-english-in-js",
+     "lines": "2157",
+     "current": "We couldn't match any holdings on that statement to GCC tickers we cover. Nothing was imported.",
+     "symptom": "Import error message renders English on AR page",
+     "fix": "Create i18n key 'port.import_no_match' and use AC_I18N.t()"
+    },
+    {
+     "id": "PF-30",
+     "category": "hardcoded-english-in-js",
+     "lines": "2160",
+     "current": "Review ' + matched.length + ' matched holding'",
+     "symptom": "Import review heading renders English on AR page",
+     "fix": "Create i18n key 'port.import_review' (en: 'Review {count} matched holding(s)', ar: '[Arabic]') and use AC_I18N.t() with parameter interpolation"
+    },
+    {
+     "id": "PF-31",
+     "category": "hardcoded-english-in-js",
+     "lines": "2104-2182",
+     "current": "All showToast() calls in add/import logic",
+     "symptom": "All toast notifications (success, error, warning) render hardcoded English strings on AR page",
+     "fix": "Audit all showToast() calls and create corresponding i18n keys (port.toast_*); use AC_I18N.t() to translate before passing to showToast()"
+    }
+   ]
+  },
+  {
+   "surface": "scenarios.html",
+   "rerenders_on_langchange": "no — no ac:langchange event listener is present anywhere on the page (checked scenarios.html and adviser-core.js). Dynamic content built via JS textContent/innerHTML does NOT re-render when language switches. Once the user clicks AR, the page's text attributes update, but JS-injected toast messages, suggestion descriptions, and static comparison labels remain in English.",
+   "findings": [
+    {
+     "id": "PF-1",
+     "category": "hardcoded-english-in-js",
+     "lines": "1520-1524",
+     "current": "<button class=\"nl-suggestion\">Reduce sector concentration</button> ... <button class=\"nl-suggestion\">Add growth exposure</button>",
+     "symptom": "Suggestion buttons show English text and remain English when language switches to Arabic; only the label text inside them renders as Arabic (via data-i18n MAP), but the description strings pulled into the textarea (lines 2276-2280) are hardcoded English only.",
+     "fix": "Add Arabic description strings to the suggestions object (line 2275). Create a parallel map: { 'Reduce sector concentration': { en: 'Reduce banking sector exposure...', ar: 'تقليل تعرّض القطاع المصرفي...' }, ... } and use AC_I18N.lang to pick the current language when populating the textarea. Alternatively, add i18n keys for each description and use AC_I18N.t()."
+    },
+    {
+     "id": "PF-2",
+     "category": "hardcoded-english-in-js",
+     "lines": "2276-2280",
+     "current": "const suggestions = { 'Reduce sector concentration': 'Reduce banking sector exposure by 15% and redistribute across energy and telecom.', ... }",
+     "symptom": "When user clicks a suggestion button (e.g., 'تقليل التركّز القطاعي' in Arabic), the textarea is filled with the English description from this hardcoded map, not an Arabic equivalent. User sees English scenario text pasted in.",
+     "fix": "Translate all 5 suggestion descriptions to Arabic and store them in a language-aware structure: suggestions = { 'Reduce sector concentration': { en: '...', ar: '...' }, ... }. In the click handler, use AC_I18N.lang to pick the correct version: document.getElementById('scenarioInput').value = suggestions[btn.textContent][AC_I18N.lang] || suggestions[btn.textContent].en;"
+    },
+    {
+     "id": "PF-3",
+     "category": "hardcoded-english-in-js",
+     "lines": "2234",
+     "current": "AlphaCouncil.showToast('Input Required', 'Please describe your scenario first', 'warning');",
+     "symptom": "Toast message title and body are hardcoded English; user switching to Arabic sees English error messages only.",
+     "fix": "Add i18n keys for toast messages: 'sc.toast.input_required' and 'sc.toast.input_required_msg'. Store in AC_I18N.add() and reference via AC_I18N.t(): AlphaCouncil.showToast(AC_I18N.t('sc.toast.input_required'), AC_I18N.t('sc.toast.input_required_msg'), 'warning');"
+    },
+    {
+     "id": "PF-4",
+     "category": "hardcoded-english-in-js",
+     "lines": "2262",
+     "current": "AlphaCouncil.showToast('No Trades', 'Add at least one trade with a stock and an amount or %', 'warning');",
+     "symptom": "Toast for structured trades validation shows English only in Arabic mode.",
+     "fix": "Add i18n keys 'sc.toast.no_trades' and 'sc.toast.no_trades_msg' to AC_I18N.add() and use AC_I18N.t() in the showToast call."
+    },
+    {
+     "id": "PF-5",
+     "category": "hardcoded-english-in-js",
+     "lines": "2348",
+     "current": "AlphaCouncil.showToast('Name Required', 'Please enter a scenario name', 'warning');",
+     "symptom": "Modal validation toast is English-only in Arabic mode.",
+     "fix": "Add i18n keys 'sc.toast.name_required' and 'sc.toast.name_required_msg', reference via AC_I18N.t()."
+    },
+    {
+     "id": "PF-6",
+     "category": "hardcoded-english-in-js",
+     "lines": "2378",
+     "current": "AlphaCouncil.showToast('Not saved yet', 'Saved scenarios aren\\'t available yet — describe a scenario and Analyze for a live AI read.', 'info');",
+     "symptom": "Info toast in duplicateScenario() is English only; Arabic user sees English message.",
+     "fix": "Add i18n keys 'sc.toast.not_saved' and 'sc.toast.not_saved_msg', use AC_I18N.t()."
+    },
+    {
+     "id": "PF-7",
+     "category": "hardcoded-english-in-js",
+     "lines": "2217",
+     "current": "AlphaCouncil.showToast('Scenario Loaded', `\"${card.querySelector('.scenario-name').textContent}\" is now active`, 'info');",
+     "symptom": "Scenario loaded confirmation toast title is English-only; only the scenario name (which may be hardcoded English example text) changes.",
+     "fix": "Add i18n key 'sc.toast.scenario_loaded' and 'sc.toast.scenario_loaded_msg'. Use AC_I18N.t('sc.toast.scenario_loaded') for the title and a template string with AC_I18N.lang for the message."
+    },
+    {
+     "id": "PF-8",
+     "category": "static-markup-untranslated",
+     "lines": "1393",
+     "current": "<div class=\"panel-title\">Saved Scenarios</div>",
+     "symptom": "Panel sidebar header 'Saved Scenarios' is hardcoded English with no data-i18n attribute. It is NOT caught by the auto-tagging MAP (line 2167-2173), so it never translates to Arabic.",
+     "fix": "Add data-i18n=\"sc.panel_saved\" to the element and add 'sc.panel_saved' key to AC_I18N.add(): { en: 'Saved Scenarios', ar: 'السيناريوهات المحفوظة' }. Update the MAP on line 2170 to include 'Saved Scenarios': 'sc.panel_saved'."
+    },
+    {
+     "id": "PF-9",
+     "category": "static-markup-untranslated",
+     "lines": "1488",
+     "current": "<button class=\"create-scenario-btn\">Create New Scenario</button>",
+     "symptom": "Button text is hardcoded English and not in the i18n MAP. Auto-tagging only covers certain selectors (.nl-suggestion is in the list), but .create-scenario-btn is missing from the querySelectorAll on line 2174.",
+     "fix": "Add 'Create New Scenario': 'sc.create_new' to AC_I18N.add() and to the MAP. Add .create-scenario-btn to the querySelectorAll selector on line 2174 so the auto-tagging catches it."
+    },
+    {
+     "id": "PF-10",
+     "category": "static-markup-untranslated",
+     "lines": "1598",
+     "current": "<div class=\"comparison-title\">Before / After Comparison</div>",
+     "symptom": "Comparison section header is hardcoded English with no i18n tagging and is not in the auto-tagging MAP. Shows English on Arabic page.",
+     "fix": "Add 'sc.comparison_title' key: { en: 'Before / After Comparison', ar: 'مقارنة قبل وبعد' }. Add to MAP and add .comparison-title to the auto-tagging selector list."
+    },
+    {
+     "id": "PF-11",
+     "category": "static-markup-untranslated",
+     "lines": "1601-1602",
+     "current": "<span class=\"legend-item\"><span class=\"legend-dot current\"></span> Current Portfolio</span> <span class=\"legend-item\"><span class=\"legend-dot scenario\"></span> After Scenario</span>",
+     "symptom": "Legend labels 'Current Portfolio' and 'After Scenario' are hardcoded English. Not caught by auto-tagging. Arabic user sees English labels.",
+     "fix": "Add i18n keys 'sc.legend_current' and 'sc.legend_scenario' to AC_I18N.add(). Add data-i18n attributes to the span elements or add these strings to the MAP and extend the auto-tagging selector to cover .legend-item."
+    },
+    {
+     "id": "PF-12",
+     "category": "static-markup-untranslated",
+     "lines": "1611, 1632, 1653, 1674",
+     "current": "Portfolio Value, Expected Yield, Risk Score, Diversification",
+     "symptom": "All 4 metric card labels are hardcoded English in .metric-compare-label elements. Not in i18n MAP or auto-tagging selector. Arabic user sees all English.",
+     "fix": "Add i18n keys: 'sc.metric_portfolio_value', 'sc.metric_expected_yield', 'sc.metric_risk_score', 'sc.metric_diversification'. Add to AC_I18N.add() and MAP. Extend auto-tagging selector to include .metric-compare-label."
+    },
+    {
+     "id": "PF-13",
+     "category": "static-markup-untranslated",
+     "lines": "1615, 1619, 1636, 1640, 1657, 1661, 1678, 1682 (and repeated throughout dimension cards)",
+     "current": "Current, Scenario",
+     "symptom": "The metric comparison labels 'Current' and 'Scenario' are repeated in .metric-value-label and .dimension-bar-label elements throughout the page (8+ times visible). All hardcoded English, not i18n-tagged.",
+     "fix": "Add i18n keys 'sc.label_current' and 'sc.label_scenario' to AC_I18N.add(). Add data-i18n attributes to all .metric-value-label and .dimension-bar-label elements, OR extend auto-tagging to catch these classes. This affects lines 1615, 1619, 1636, 1640, 1657, 1661, 1678, 1682, 1714, 1719, 1733, 1738, 1752, 1757, 1771, 1776, 1790, 1795, 1809, 1814, 1828, 1833, 1847, 1852."
+    },
+    {
+     "id": "PF-14",
+     "category": "static-markup-untranslated",
+     "lines": "1698",
+     "current": "<div class=\"thesis-comparison-title\">12-Dimension Thesis Score</div>",
+     "symptom": "Section header is hardcoded English, not in i18n MAP or auto-tagging. Arabic page shows English.",
+     "fix": "Add 'sc.thesis_title' key and add to MAP and auto-tagging selector (.thesis-comparison-title)."
+    },
+    {
+     "id": "PF-15",
+     "category": "static-markup-untranslated",
+     "lines": "1709, 1728, 1747, 1766, 1785, 1804, 1823, 1842",
+     "current": "Valuation, Quality, Growth, Income, Momentum, Stability, Governance, Liquidity",
+     "symptom": "All 8 thesis dimension names are hardcoded English in .dimension-compare-name. Not i18n-tagged. Arabic user sees all English.",
+     "fix": "Create i18n keys for each dimension: 'sc.dim_valuation', 'sc.dim_quality', ..., 'sc.dim_liquidity'. Add to AC_I18N.add() with Arabic translations. Add data-i18n attributes to each .dimension-compare-name or extend auto-tagging selector."
+    },
+    {
+     "id": "PF-16",
+     "category": "static-markup-untranslated",
+     "lines": "1866, 1874",
+     "current": "<div class=\"thesis-comparison-title\">Concentration Analysis</div> and <div class=\"concentration-column-title\">Sector Allocation</div> (and Country Allocation, line 1915)",
+     "symptom": "Concentration section headers and column titles 'Concentration Analysis', 'Sector Allocation', 'Country Allocation' are hardcoded English, not i18n-tagged.",
+     "fix": "Add i18n keys 'sc.concentration_title', 'sc.sector_allocation', 'sc.country_allocation' to AC_I18N.add() with Arabic translations. Add data-i18n attributes or extend auto-tagging to catch .thesis-comparison-title and .concentration-column-title."
+    },
+    {
+     "id": "PF-17",
+     "category": "static-markup-untranslated",
+     "lines": "1878, 1886, 1894, 1902, 1919, 1927, 1935, 1943",
+     "current": "Banking, Energy, Telecom, Real Estate (sector names) and Saudi, UAE, Qatar, Kuwait (country names)",
+     "symptom": "Sector and country allocation labels are hardcoded English in .concentration-bar-name. Not i18n-tagged. Arabic user sees English sector/country names.",
+     "fix": "Add i18n keys for each sector ('sc.sector_banking', 'sc.sector_energy', etc.) and country ('sc.country_saudi', 'sc.country_uae', etc.). Add data-i18n attributes to .concentration-bar-name elements or create a generic auto-tagging mechanism for these classes."
+    },
+    {
+     "id": "PF-18",
+     "category": "static-markup-untranslated",
+     "lines": "1960, 1966, 1981, 1996",
+     "current": "Risk Profile Impact, Volatility Risk, Concentration Risk, Correlation Risk",
+     "symptom": "Risk section title and card titles are hardcoded English. The .risk-card-title elements ('Volatility Risk', 'Concentration Risk', 'Correlation Risk') are not i18n-tagged.",
+     "fix": "Add i18n keys 'sc.risk_title', 'sc.risk_volatility', 'sc.risk_concentration', 'sc.risk_correlation' and add data-i18n attributes to these elements."
+    },
+    {
+     "id": "PF-19",
+     "category": "static-markup-untranslated",
+     "lines": "1976, 1991, 2006",
+     "current": "Moderate, Low-Moderate, Moderate (risk labels in .risk-card-label)",
+     "symptom": "Risk level labels are hardcoded English in .risk-card-label. Not i18n-tagged. Arabic user sees English.",
+     "fix": "Add i18n keys for risk levels: 'sc.risk_level_moderate', 'sc.risk_level_low_moderate', etc. Add data-i18n attributes or auto-tag these elements."
+    },
+    {
+     "id": "PF-20",
+     "category": "static-markup-untranslated",
+     "lines": "1977, 1992, 2007",
+     "current": "This scenario would reduce volatility, Significant improvement in diversification, Lower correlation across holdings",
+     "symptom": "Risk sublabels in .risk-card-sublabel are hardcoded English. Not i18n-tagged.",
+     "fix": "Add i18n keys for each sublabel: 'sc.risk_sublabel_volatility', 'sc.risk_sublabel_diversification', 'sc.risk_sublabel_correlation' and add data-i18n attributes."
+    },
+    {
+     "id": "PF-21",
+     "category": "static-markup-untranslated",
+     "lines": "2018",
+     "current": "<h3>Run AI Analyst Council on This Scenario</h3>",
+     "symptom": "CTA heading is hardcoded English in .council-cta-content h3. Not i18n-tagged.",
+     "fix": "Add i18n key 'sc.council_cta_title' and add data-i18n attribute to the h3."
+    },
+    {
+     "id": "PF-22",
+     "category": "static-markup-untranslated",
+     "lines": "2020",
+     "current": "<p>Get detailed perspectives from 7 AI Analysts on how this scenario would affect your portfolio thesis, risk profile, and alignment with your investment goals.</p>",
+     "symptom": "CTA description is hardcoded English in .council-cta-content p. Not i18n-tagged. Arabic user sees English.",
+     "fix": "Add i18n key 'sc.council_cta_desc' and add data-i18n attribute to the p element."
+    },
+    {
+     "id": "PF-23",
+     "category": "static-markup-untranslated",
+     "lines": "2024",
+     "current": "<button class=\"council-cta-btn\">Run Council Analysis</button>",
+     "symptom": "Button text is hardcoded English. Auto-tagging selector (line 2174) does NOT include .council-cta-btn, so button never translates.",
+     "fix": "Add 'sc.council_cta_btn' key to AC_I18N.add(). Add .council-cta-btn to the auto-tagging querySelectorAll selector on line 2174."
+    },
+    {
+     "id": "PF-24",
+     "category": "static-markup-untranslated",
+     "lines": "2113",
+     "current": "<label class=\"form-label\">Scenario Name</label>",
+     "symptom": "Modal form label is hardcoded English. Not i18n-tagged.",
+     "fix": "Add i18n key 'sc.form_scenario_name' and add data-i18n attribute."
+    },
+    {
+     "id": "PF-25",
+     "category": "static-markup-untranslated",
+     "lines": "2117",
+     "current": "<label class=\"form-label\">Description</label>",
+     "symptom": "Modal form label is hardcoded English. Not i18n-tagged.",
+     "fix": "Add i18n key 'sc.form_description' and add data-i18n attribute."
+    },
+    {
+     "id": "PF-26",
+     "category": "static-markup-untranslated",
+     "lines": "2121",
+     "current": "<label class=\"form-label\">Starting Point</label>",
+     "symptom": "Modal form label is hardcoded English. Not i18n-tagged.",
+     "fix": "Add i18n key 'sc.form_starting_point' and add data-i18n attribute."
+    },
+    {
+     "id": "PF-27",
+     "category": "static-markup-untranslated",
+     "lines": "2123-2124",
+     "current": "<button>Current Portfolio</button> <button>From Saved Scenario</button>",
+     "symptom": "Modal button options are hardcoded English. Not i18n-tagged. Arabic user sees English buttons.",
+     "fix": "Add i18n keys 'sc.opt_current_portfolio' and 'sc.opt_from_saved' and add data-i18n attributes to the buttons."
+    },
+    {
+     "id": "PF-28",
+     "category": "static-markup-untranslated",
+     "lines": "2129",
+     "current": "<button class=\"btn btn-secondary\" onclick=\"closeNewScenarioModal()\">Cancel</button>",
+     "symptom": "Modal Cancel button is hardcoded English. Auto-tagging does NOT catch .btn-secondary in isolation. Button remains English on Arabic page.",
+     "fix": "Add i18n key 'action.cancel' (already exists in i18n.js common keys). Add data-i18n=\"action.cancel\" to the button, or ensure button text 'Cancel' is in the auto-tagging MAP."
+    },
+    {
+     "id": "PF-29",
+     "category": "static-markup-untranslated",
+     "lines": "2132",
+     "current": "<button class=\"btn btn-primary\" onclick=\"createScenario()\">Create Scenario</button>",
+     "symptom": "Modal Create Scenario button is hardcoded English. Auto-tagging MAP does not include this button text. Button text stays English on Arabic page.",
+     "fix": "Add 'Create Scenario': 'sc.create_scenario_modal' to the MAP on line 2168-2171. Ensure the auto-tagging selector catches this button (add to line 2174's querySelectorAll list or check if .btn-primary is already covered)."
+    },
+    {
+     "id": "PF-30",
+     "category": "hardcoded-english-in-js",
+     "lines": "2397-2400",
+     "current": "if (cmp) cmp.innerHTML = '<div...><strong>Describe a scenario and click Analyze.</strong><br>The AI Adviser assesses it against your <strong>real holdings</strong> — concentration, risk and income trade-offs — in the sidebar.'",
+     "symptom": "Empty state message is hardcoded English and injected via innerHTML. When displayed, it shows English text on Arabic page. Does NOT re-render on language change since there's no ac:langchange listener.",
+     "fix": "Create an i18n-aware function that generates this message. Build the HTML with AC_I18N.t() calls for the message parts. Store the message template in AC_I18N.add() with i18n keys. Add an ac:langchange event listener to re-run this function when language changes. Example: window.addEventListener('ac:langchange', function(e) { renderComparisonEmpty(e.detail.lang); })."
+    },
+    {
+     "id": "PF-31",
+     "category": "no-rerender-on-langchange",
+     "lines": "scenarios.html (entire file, adviser-core.js checked)",
+     "current": "No window.addEventListener('ac:langchange', ...) present anywhere in scenarios.html or adviser-core.js",
+     "symptom": "When user switches language from EN to AR (or vice versa), the page's static text attributes (data-i18n) DO update via AC_I18N.apply(), BUT any content built dynamically via JS (toast messages, innerHTML injected content, JS-set textContent) DOES NOT re-render. User switches to Arabic and sees partially translated page: static labels translate, but JS-generated messages remain in the language they were first rendered in.",
+     "fix": "Add a global ac:langchange event listener to the page. Inside the listener, re-run all dynamic content generation functions: re-build the empty state message, update any toast message templates, re-populate any JS-built UI. Example at the top of the main script block: window.addEventListener('ac:langchange', function(e) { var lang = e.detail.lang; /* re-render dynamic content */ }); Call AC_I18N.apply() inside or ensure the listener re-applies all data-i18n attributes."
+    }
+   ]
+  },
+  {
+   "surface": "markets-app.html",
+   "rerenders_on_langchange": "no — There is NO listener for the 'ac:langchange' CustomEvent fired by i18n.js. When the user switches language via the EN/AR toggle, static markup updates automatically (via i18n.apply()), but all dynamic JavaScript-rendered content (screener table rows, movers, news, quick filters, dropdown options, error/loading messages, toasts) stays frozen in its original language. A full page reload is required to see the language switch in dynamic content.",
+   "findings": [
+    {
+     "id": "MKT-1",
+     "category": "stock-name-not-localized",
+     "lines": "1456, 1467-1468",
+     "current": "name = esc(isAr() ? (r.name_ar || r.name_en || r.ticker) : (r.name_en || r.ticker));",
+     "symptom": "Stock names appear in Arabic in rowHtml() function at line 1456, BUT the screener table rendering is never re-triggered on ac:langchange, so when user switches to AR, the table stays in English until page reload.",
+     "fix": "Add an ac:langchange listener that calls render() to re-paint all rows with the new language. Currently the logic is correct but never executes on language change. See MKT-10 for the global fix."
+    },
+    {
+     "id": "MKT-2",
+     "category": "sector-not-localized",
+     "lines": "1476",
+     "current": "<span class=\"sector-badge\">' + esc(r.sector_en || '—') + '</span>",
+     "symptom": "Sector badge always renders sector_en, ignoring Arabic. Should render sector_ar when lang is AR.",
+     "fix": "Change to: + esc(isAr() ? (r.sector_ar || r.sector_en) : (r.sector_en)) + ' or detect lang dynamically; also requires ac:langchange listener to re-render."
+    },
+    {
+     "id": "MKT-3",
+     "category": "hardcoded-english-in-js",
+     "lines": "1207",
+     "current": "placeholder=\"Search by ticker or company name...\"",
+     "symptom": "Search input placeholder always shows English on Arabic page.",
+     "fix": "Add data-i18n-attr=\"placeholder:search.advancedPlaceholder\" to the input element and add to i18n dict: 'search.advancedPlaceholder': { en: 'Search by ticker or company name...', ar: 'ابحث حسب الرمز أو اسم الشركة...' }"
+    },
+    {
+     "id": "MKT-4",
+     "category": "static-markup-untranslated",
+     "lines": "1211, 1221",
+     "current": "<option value=\"\">All Markets</option> and <option value=\"\">All Sectors</option>",
+     "symptom": "Both dropdown placeholders show English. On AR, user sees 'All Markets' and 'All Sectors' in English.",
+     "fix": "Wrap in data-i18n or use JS to populate with i18n strings. Add: 'filter.allMarkets': { en: 'All Markets', ar: 'جميع الأسواق' }, 'filter.allSectors': { en: 'All Sectors', ar: 'جميع القطاعات' } and dynamically set option text based on AC_I18N.lang"
+    },
+    {
+     "id": "MKT-5",
+     "category": "hardcoded-english-in-js",
+     "lines": "1241-1264",
+     "current": "Quick filter buttons with text: 'P/E < 15', 'Yield ≥ 4%', 'Large Cap', 'Oversold (RSI < 30)', 'Above 200 DMA', 'Golden Cross'",
+     "symptom": "All 6 quick filter chip labels remain English on AR page.",
+     "fix": "Wrap in data-i18n or use textContent binding. Add i18n keys: 'filter.peLessThan15': {en:'P/E < 15', ar:'مكرر ربح < 15'}, 'filter.yieldGte4': {en:'Yield ≥ 4%', ar:'عائد ≥ 4%'}, 'filter.largecap': {en:'Large Cap', ar:'كبيرة'}, 'filter.oversold': {en:'Oversold (RSI < 30)', ar:'مبالغ فيه (مؤشر < 30)'}, 'filter.above200dma': {en:'Above 200 DMA', ar:'فوق 200 يوم'}, 'filter.goldencross': {en:'Golden Cross', ar:'تقاطع ذهبي'} then update button.textContent on ac:langchange"
+    },
+    {
+     "id": "MKT-6",
+     "category": "hardcoded-english-in-js",
+     "lines": "1486",
+     "current": "(rows.length === 1 ? 'stock' : 'stocks') + ' matching filters'",
+     "symptom": "Results summary text is hardcoded English: '716 stocks matching filters'.",
+     "fix": "Add i18n keys 'results.singular': {en:'stock', ar:'سهم'}, 'results.plural': {en:'stocks', ar:'أسهم'}, 'results.matchingFilters': {en:'matching filters', ar:'مطابقة للفلاتر'} and build dynamically using AC_I18N.t()"
+    },
+    {
+     "id": "MKT-7",
+     "category": "hardcoded-english-in-js",
+     "lines": "1487, 1488, 1490",
+     "current": "'Loading…', 'No stocks match these filters.', 'Show more ('",
+     "symptom": "Empty/loading states are hardcoded English: 'Loading 716 GCC stocks…', 'No stocks match these filters.', 'Show more (42 more)'",
+     "fix": "Add i18n keys: 'state.loading': {en:'Loading…', ar:'جارٍ التحميل…'}, 'state.noResults': {en:'No stocks match these filters.', ar:'لا توجد أسهم تطابق هذه الفلاتر.'}, 'state.showMore': {en:'Show more', ar:'عرض المزيد'} and dynamically render in render() function"
+    },
+    {
+     "id": "MKT-8",
+     "category": "hardcoded-english-in-js",
+     "lines": "1463, 1621",
+     "current": "aria-label=\"' + (onW ? 'Remove from watchlist' : 'Add to watchlist') + '\"",
+     "symptom": "Watchlist button aria-labels are hardcoded English, even when user is on AR page.",
+     "fix": "Add i18n keys: 'action.addToWatchlist': {en:'Add to watchlist', ar:'أضف إلى قائمة المراقبة'}, 'action.removeFromWatchlist': {en:'Remove from watchlist', ar:'أزل من قائمة المراقبة'} and use AC_I18N.t() to build aria-label dynamically"
+    },
+    {
+     "id": "MKT-9",
+     "category": "hardcoded-english-in-js",
+     "lines": "1467",
+     "current": "'<span class=\"in-portfolio\">HELD</span>'",
+     "symptom": "'HELD' badge text is hardcoded English.",
+     "fix": "Add i18n key: 'badge.held': {en:'HELD', ar:'مُحْتَفَظ'} and dynamically build using AC_I18N.t()"
+    },
+    {
+     "id": "MKT-10",
+     "category": "no-rerender-on-langchange",
+     "lines": "1405-1609 (entire DOMContentLoaded block)",
+     "current": "No event listener for 'ac:langchange' exists anywhere in the file",
+     "symptom": "User switches language via EN/AR toggle → page header/nav/buttons update instantly (static markup via i18n.js) → but screener table, movers list, news items, error messages, all stay in English. Only way to see AR content is full page reload.",
+     "fix": "Add at end of DOMContentLoaded: window.addEventListener('ac:langchange', function(e) { render(); showMovers((document.getElementById('losersTab').classList.contains('active')) ? 'losers' : 'gainers'); loadMarketNews(); applyFilters(); }); This re-paints all dynamic content when language changes."
+    },
+    {
+     "id": "MKT-11",
+     "category": "hardcoded-english-in-js",
+     "lines": "1528, 1537, 1572, 1574, 1580, 1583, 1590, 1605",
+     "current": "'Nothing to export', 'No stocks match the current filters.', 'Exported', 'Couldn't load movers.', 'No data available.', 'No recent market news.', 'Couldn't load market news.', 'Couldn't load market data. Please try again.'",
+     "symptom": "All toast messages, error states, and empty states are hardcoded English and never translate.",
+     "fix": "Add i18n keys for all: 'toast.nothingToExport': {en:'Nothing to export', ar:'لا شيء للتصدير'}, 'toast.exported': {en:'Exported', ar:'تم التصدير'}, 'error.noResults': {en:'No stocks match the current filters.', ar:'لا توجد أسهم تطابق الفلاتر الحالية.'}, 'error.loadMovers': {en:'Couldn't load movers.', ar:'لا يمكن تحميل الأكثر تحركاً.'}, 'error.noData': {en:'No data available.', ar:'لا توجد بيانات متاحة.'}, 'error.loadNews': {en:'Couldn't load market news.', ar:'لا يمكن تحميل أخبار السوق.'}, 'error.loadMarket': {en:'Couldn't load market data. Please try again.', ar:'لا يمكن تحميل بيانات السوق. يرجى المحاولة مرة أخرى.'} and use AC_I18N.t() in all render functions"
+    },
+    {
+     "id": "MKT-12",
+     "category": "hardcoded-english-in-js",
+     "lines": "1622, 1624, 1625",
+     "current": "'Added to Watchlist', 'Removed from Watchlist', 'Sign in required', 'Log in to use your watchlist', 'Couldn't update watchlist'",
+     "symptom": "All watchlist action toasts are English only.",
+     "fix": "Add i18n keys: 'toast.addedToWatchlist': {en:'Added to Watchlist', ar:'أضيف إلى قائمة المراقبة'}, 'toast.removedFromWatchlist': {en:'Removed from Watchlist', ar:'تم إزالته من قائمة المراقبة'}, 'error.signInRequired': {en:'Sign in required', ar:'يجب تسجيل الدخول'}, 'error.signInForWatchlist': {en:'Log in to use your watchlist', ar:'سجل الدخول لاستخدام قائمة المراقبة'}, 'error.updateWatchlist': {en:'Couldn't update watchlist', ar:'فشل في تحديث قائمة المراقبة'} and use in toggleWatchlist()"
+    },
+    {
+     "id": "MKT-13",
+     "category": "hardcoded-english-in-js",
+     "lines": "1632, 1633",
+     "current": "prompt('How many shares of ' + ... + '?') and prompt(\"Average cost per share (in the stock's native currency)?\")",
+     "symptom": "Portfolio add dialogs show hardcoded English prompts on AR.",
+     "fix": "Add i18n keys: 'prompt.sharesCount': {en:'How many shares of', ar:'كم عدد الأسهم من'}, 'prompt.costPerShare': {en:'Average cost per share (in the stock\\'s native currency)?', ar:'متوسط تكلفة السهم الواحد (بعملة السهم الأصلية)؟'} and use AC_I18N.t() to build prompt text"
+    },
+    {
+     "id": "MKT-14",
+     "category": "hardcoded-english-in-js",
+     "lines": "1356-1359, 1364",
+     "current": "Suggested questions and chat placeholder: 'Which stocks in my portfolio are underperforming?', 'Show me high-yield stocks under P/E 12', 'Compare FAB vs Al Rajhi Bank', 'What are the best Saudi bank stocks?', 'Ask about any GCC stock...'",
+     "symptom": "AI Adviser sidebar has hardcoded English suggested questions and input placeholder. They never translate.",
+     "fix": "Add i18n keys: 'adviser.q1': {en:'Which stocks in my portfolio are underperforming?', ar:'أي الأسهم في محفظتي تحت الأداء؟'}, 'adviser.q2': {en:'Show me high-yield stocks under P/E 12', ar:'أظهر لي أسهم عالية العائد بمكرر ربح أقل من 12'}, 'adviser.q3': {en:'Compare FAB vs Al Rajhi Bank', ar:'قارن FAB مع بنك الراجحي'}, 'adviser.q4': {en:'What are the best Saudi bank stocks?', ar:'ما أفضل أسهم البنوك السعودية؟'}, 'adviser.placeholder': {en:'Ask about any GCC stock...', ar:'اسأل عن أي سهم خليجي...'} and populate dynamically on ac:langchange"
+    },
+    {
+     "id": "MKT-15",
+     "category": "markets-stamp-image",
+     "lines": "1023",
+     "current": "<img src=\"alpha-council-logo-transparent.png\" alt=\"AlphaCouncil\"",
+     "symptom": "Logo image element is present in the nav. If an AlphaCouncil stamp/watermark image is supposed to be removed, this is the only <img> in the file (other than SVG icons).",
+     "fix": "If the founder wants the logo image removed entirely, delete lines 1023 (the full <img> tag). The fallback onerror already provides a text-only 'AlphaCouncil' span. If the stamp is elsewhere (watermark overlay), search in CSS or other files. This image itself does not appear to be a 'stamp' — it's the header logo."
+    },
+    {
+     "id": "MKT-16",
+     "category": "ticker-name-hierarchy",
+     "lines": "414-437 (CSS), 1467-1468 (HTML)",
+     "current": ".stock-ticker { font-weight: 600; color: var(--fg); } at line 415; .stock-name { font-size: 11px; color: var(--fg-dim); } at line 432. HTML order: <div class=\"stock-ticker\">TICKER</div><div class=\"stock-name\">Name</div>",
+     "symptom": "TICKER is rendered large (inherits 13px from td), bold (600), and full color (--fg). Name is smaller (11px) and dimmed (--fg-dim). Founder wants NAME large/primary, TICKER small/secondary — OPPOSITE of current.",
+     "fix": "CSS: Swap the font weights and sizes. Set .stock-ticker to { font-weight: 400; font-size: 11px; color: var(--fg-dim); } and .stock-name to { font-weight: 600; font-size: 13px; color: var(--fg); }. Also swap the visual order in HTML at line 1467-1468: put .stock-name before .stock-ticker."
+    }
+   ]
+  },
+  {
+   "surface": "adviser-core.js",
+   "rerenders_on_langchange": "no. No listener for 'ac:langchange' event exists in adviser-core.js. When language switches to Arabic (AC_I18N.lang === 'ar'), all dynamic content built by this script (sidebar context labels, suggested questions, search results, modals, toasts, error messages, council modal UI, ticker items) remains in English because: (1) no language detection is implemented, (2) no hooks to AC_I18N.t() exist, and (3) hardcoded English text is baked into JS-built HTML. The data API provides name_ar/sector_ar, but the renderers hardcode name_en/sector_en.",
+   "findings": [
+    {
+     "id": "PF-1",
+     "category": "hardcoded-english-in-js",
+     "lines": "44",
+     "current": "name: r.name_en || r.ticker_short || String(r.ticker).split('_')[0],",
+     "symptom": "User sees English stock names in portfolio, sidebar, and suggestions even on Arabic interface",
+     "fix": "Use localization: name: AC_I18N.lang === 'ar' ? (r.name_ar || r.name_en) : (r.name_en || r.ticker_short). Create shared utility window.getLocalizedName(r)"
+    },
+    {
+     "id": "PF-2",
+     "category": "hardcoded-english-in-js",
+     "lines": "58",
+     "current": "sector: r.sector_en,",
+     "symptom": "Portfolio sector display shows English only (Banking, Materials, Energy) on Arabic page",
+     "fix": "Use: sector: AC_I18N.lang === 'ar' ? (r.sector_ar || r.sector_en) : (r.sector_en). Create shared utility window.getLocalizedSector(r)"
+    },
+    {
+     "id": "PF-3",
+     "category": "hardcoded-english-in-js",
+     "lines": "1317",
+     "current": "return { ticker: s.ticker, tickerKey: s.ticker_key || s.ticker, name: s.name_en || s.ticker, exchange: s.exchange || '' };",
+     "symptom": "Search modal shows only English stock names (Aramco, Al Rajhi) regardless of Arabic mode",
+     "fix": "Use: name: AC_I18N.lang === 'ar' ? (s.name_ar || s.name_en) : (s.name_en || s.ticker). Re-load on 'ac:langchange' event"
+    },
+    {
+     "id": "PF-4",
+     "category": "hardcoded-english-in-js",
+     "lines": "178",
+     "current": "<div class=\"context-label\">Viewing</div>",
+     "symptom": "Sidebar context label reads 'Viewing' when language is Arabic",
+     "fix": "Use: <div class=\"context-label\">${AC_I18N.t('adviser.viewing') || 'Viewing'}</div>. Key: adviser.viewing"
+    },
+    {
+     "id": "PF-5",
+     "category": "hardcoded-english-in-js",
+     "lines": "189",
+     "current": "<div class=\"context-label\">Discussing</div>",
+     "symptom": "Sidebar shows 'Discussing' label in English on Arabic page",
+     "fix": "Use: ${AC_I18N.t('adviser.discussing') || 'Discussing'}. Key: adviser.discussing"
+    },
+    {
+     "id": "PF-6",
+     "category": "hardcoded-english-in-js",
+     "lines": "191",
+     "current": "<button>Clear context</button>",
+     "symptom": "Button text 'Clear context' appears in English on Arabic interface",
+     "fix": "Use: >${AC_I18N.t('adviser.clearContext') || 'Clear context'}</button>. Key: adviser.clearContext"
+    },
+    {
+     "id": "PF-7",
+     "category": "hardcoded-english-in-js",
+     "lines": "201-290",
+     "current": "<div class=\"context-stock\">Portfolio Management</div> (repeated for all page contexts: Dashboard, News, Alerts, Council, Settings, Stock Analysis, GCC Markets)",
+     "symptom": "Context labels (Portfolio Management, Portfolio Overview, GCC Market News, Portfolio Alerts, Council Reviews, App Settings, Stock Analysis, GCC Markets) all display in English",
+     "fix": "Refactor updateSidebarContext() to use AC_I18N.t() for all context labels. Keys: adviser.contextPortfolioMgmt, adviser.contextDashboard, adviser.contextNews, adviser.contextAlerts, adviser.contextCouncil, adviser.contextSettings, adviser.contextStock, adviser.contextDefault"
+    },
+    {
+     "id": "PF-8",
+     "category": "hardcoded-english-in-js",
+     "lines": "181-297",
+     "current": "questions = ['Explain the current thesis score...', 'Compare to GCC peers', 'Help me trim 15% of Al Rajhi', 'Show lot-level P&L for Aramco', ...]",
+     "symptom": "All suggested questions in sidebar (40+ questions) appear in English only when Arabic is active",
+     "fix": "Create i18n keys for every suggested question and refactor array building to use AC_I18N.t(). Suggested keys: adviser.q_thesisScore, adviser.q_comparePeers, adviser.q_trimPosition, adviser.q_lotPnL, adviser.q_concentration, adviser.q_newsImpact, adviser.q_affectedHoldings, adviser.q_reviewPosition, adviser.q_analystSentiment, adviser.q_portfolioHealth, adviser.q_dayMovement, adviser.q_attentionNeeded, adviser.q_councilRecommend, etc."
+    },
+    {
+     "id": "PF-9",
+     "category": "hardcoded-english-in-js",
+     "lines": "396",
+     "current": "<span class=\"ac-pulse\">The Adviser is thinking…</span>",
+     "symptom": "Typing indicator shows 'The Adviser is thinking…' in English on Arabic page",
+     "fix": "Use: <span class=\"ac-pulse\">${AC_I18N.t('adviser.thinking') || 'The Adviser is thinking…'}</span>. Key: adviser.thinking"
+    },
+    {
+     "id": "PF-10",
+     "category": "hardcoded-english-in-js",
+     "lines": "413-414",
+     "current": "badge.textContent = String(tickerKey).split('_')[0] + ' Position'; else { badge.textContent = 'Portfolio-Wide'; }",
+     "symptom": "Council modal badge shows 'Position' or 'Portfolio-Wide' in English only",
+     "fix": "Use: badge.textContent = tickerKey ? (String(tickerKey).split('_')[0] + ' ' + AC_I18N.t('council.position')) : AC_I18N.t('council.portfolioWide'). Keys: council.position, council.portfolioWide"
+    },
+    {
+     "id": "PF-11",
+     "category": "hardcoded-english-in-js",
+     "lines": "441",
+     "current": "The committee is convening…",
+     "symptom": "Council loading screen shows English message on Arabic interface",
+     "fix": "Use: '<div>${AC_I18N.t('council.convening') || 'The committee is convening…'}</div>'. Key: council.convening"
+    },
+    {
+     "id": "PF-12",
+     "category": "hardcoded-english-in-js",
+     "lines": "442",
+     "current": "A panel of leading AI models is debating your question, ranking each other, then the chairman synthesises the verdict. This usually takes a minute or two.",
+     "symptom": "Council loading description remains in English",
+     "fix": "Use: ${AC_I18N.t('council.loadingDesc') || 'A panel of leading AI models...'}. Key: council.loadingDesc"
+    },
+    {
+     "id": "PF-13",
+     "category": "hardcoded-english-in-js",
+     "lines": "449",
+     "current": "const mem = function (i) { return 'Member ' + (i + 1); };",
+     "symptom": "Council analyst labels show 'Member 1', 'Member 2', etc. in English only",
+     "fix": "Use: const mem = function (i) { return AC_I18N.t('council.member') + ' ' + (i + 1); };. Key: council.member"
+    },
+    {
+     "id": "PF-14",
+     "category": "hardcoded-english-in-js",
+     "lines": "458",
+     "current": "<span>individual take</span>",
+     "symptom": "Council analyst section label 'individual take' shows in English",
+     "fix": "Use: <span>${AC_I18N.t('council.individualTake') || 'individual take'}</span>. Key: council.individualTake"
+    },
+    {
+     "id": "PF-15",
+     "category": "hardcoded-english-in-js",
+     "lines": "468",
+     "current": "<span class=\"synthesis-label\">Chairman's synthesis</span>",
+     "symptom": "Council modal header shows 'Chairman's synthesis' in English only",
+     "fix": "Use: <span class=\"synthesis-label\">${AC_I18N.t('council.chairmanSynthesis') || \"Chairman's synthesis\"}</span>. Key: council.chairmanSynthesis"
+    },
+    {
+     "id": "PF-16",
+     "category": "hardcoded-english-in-js",
+     "lines": "469",
+     "current": "Math.max(0, res.council_remaining_today) + ' left today'",
+     "symptom": "Council remaining count shows '2 left today' in English",
+     "fix": "Use: Math.max(0, res.council_remaining_today) + ' ' + AC_I18N.t('council.leftToday'). Key: council.leftToday"
+    },
+    {
+     "id": "PF-17",
+     "category": "hardcoded-english-in-js",
+     "lines": "472",
+     "current": "Show committee deliberation",
+     "symptom": "Expandable section label shows in English",
+     "fix": "Use: <summary>${AC_I18N.t('council.showDeliberation') || 'Show committee deliberation'}</summary>. Key: council.showDeliberation"
+    },
+    {
+     "id": "PF-18",
+     "category": "hardcoded-english-in-js",
+     "lines": "473",
+     "current": "Peer ranking",
+     "symptom": "Council ranking section header shows 'Peer ranking' in English",
+     "fix": "Use: <div>${AC_I18N.t('council.peerRanking') || 'Peer ranking'}</div>. Key: council.peerRanking"
+    },
+    {
+     "id": "PF-19",
+     "category": "hardcoded-english-in-js",
+     "lines": "481",
+     "current": "The Council is a Pro & Elite feature. <a href=\"pricing.html\">Upgrade</a> to convene the committee.",
+     "symptom": "Council paywall message shows in English on Arabic page",
+     "fix": "Use: msg = AC_I18N.t('council.upgradeNeeded') || 'The Council is a Pro & Elite feature...'. Key: council.upgradeNeeded"
+    },
+    {
+     "id": "PF-20",
+     "category": "hardcoded-english-in-js",
+     "lines": "482",
+     "current": "You've used today's Council convenings. They reset tomorrow.",
+     "symptom": "Rate limit message shows in English",
+     "fix": "Use: msg = AC_I18N.t('council.rateLimit') || 'You\\'ve used today\\'s Council convenings...'. Key: council.rateLimit"
+    },
+    {
+     "id": "PF-21",
+     "category": "hardcoded-english-in-js",
+     "lines": "483",
+     "current": "Please sign in to convene the Council.",
+     "symptom": "Council auth error shows in English",
+     "fix": "Use: msg = AC_I18N.t('council.signInRequired') || 'Please sign in to convene the Council.'. Key: council.signInRequired"
+    },
+    {
+     "id": "PF-22",
+     "category": "hardcoded-english-in-js",
+     "lines": "484",
+     "current": "The Council couldn't convene just now — please try again in a moment.",
+     "symptom": "Generic council error shows in English",
+     "fix": "Use: msg = AC_I18N.t('council.conveneError') || 'The Council couldn\\'t convene just now...'. Key: council.conveneError"
+    },
+    {
+     "id": "PF-23",
+     "category": "hardcoded-english-in-js",
+     "lines": "485",
+     "current": "Council unavailable",
+     "symptom": "Error title shows in English",
+     "fix": "Use: <div class=\"ac-error-title\">${AC_I18N.t('council.unavailable') || 'Council unavailable'}</div>. Key: council.unavailable"
+    },
+    {
+     "id": "PF-24",
+     "category": "hardcoded-english-in-js",
+     "lines": "365",
+     "current": "Please sign in to ask the Adviser.",
+     "symptom": "Adviser auth error shows in English",
+     "fix": "Use: AC_I18N.t('adviser.signInRequired') || 'Please sign in to ask the Adviser.'. Key: adviser.signInRequired"
+    },
+    {
+     "id": "PF-25",
+     "category": "hardcoded-english-in-js",
+     "lines": "366",
+     "current": "You've reached today's limit (10 questions/day). It resets tomorrow.",
+     "symptom": "Adviser rate limit shows in English",
+     "fix": "Use: AC_I18N.t('adviser.rateLimit') || 'You\\'ve reached today\\'s limit...'. Key: adviser.rateLimit"
+    },
+    {
+     "id": "PF-26",
+     "category": "hardcoded-english-in-js",
+     "lines": "367",
+     "current": "The Adviser is temporarily unavailable. Please try again in a moment.",
+     "symptom": "Adviser 503 error shows in English",
+     "fix": "Use: AC_I18N.t('adviser.unavailable') || 'The Adviser is temporarily unavailable...'. Key: adviser.unavailable"
+    },
+    {
+     "id": "PF-27",
+     "category": "hardcoded-english-in-js",
+     "lines": "368",
+     "current": "Couldn't reach the server. Check your connection and try again.",
+     "symptom": "Network error shows in English",
+     "fix": "Use: AC_I18N.t('adviser.networkError') || 'Couldn\\'t reach the server...'. Key: adviser.networkError"
+    },
+    {
+     "id": "PF-28",
+     "category": "hardcoded-english-in-js",
+     "lines": "369",
+     "current": "Something went wrong. Please try again.",
+     "symptom": "Generic error shows in English",
+     "fix": "Use: AC_I18N.t('adviser.genericError') || 'Something went wrong. Please try again.'. Key: adviser.genericError"
+    },
+    {
+     "id": "PF-29",
+     "category": "hardcoded-english-in-js",
+     "lines": "591",
+     "current": "AI Analyst Council Review",
+     "symptom": "Council modal title shows in English",
+     "fix": "Use: ${AC_I18N.t('council.title') || 'AI Analyst Council Review'}. Key: council.title"
+    },
+    {
+     "id": "PF-30",
+     "category": "hardcoded-english-in-js",
+     "lines": "592",
+     "current": "7 specialized perspectives • One synthesized view",
+     "symptom": "Council subtitle shows in English",
+     "fix": "Use: ${AC_I18N.t('council.subtitle') || '7 specialized perspectives • One synthesized view'}. Key: council.subtitle"
+    },
+    {
+     "id": "PF-31",
+     "category": "hardcoded-english-in-js",
+     "lines": "603",
+     "current": "Strategic Synthesis",
+     "symptom": "Council synthesis section label shows in English",
+     "fix": "Use: ${AC_I18N.t('council.strategicSynthesis') || 'Strategic Synthesis'}. Key: council.strategicSynthesis"
+    },
+    {
+     "id": "PF-32",
+     "category": "hardcoded-english-in-js",
+     "lines": "612",
+     "current": "Actionable Insights",
+     "symptom": "Council recommendations section header shows in English",
+     "fix": "Use: ${AC_I18N.t('council.actionableInsights') || 'Actionable Insights'}. Key: council.actionableInsights"
+    },
+    {
+     "id": "PF-33",
+     "category": "hardcoded-english-in-js",
+     "lines": "623",
+     "current": "Save to Reports",
+     "symptom": "Council modal footer button shows in English",
+     "fix": "Use: ${AC_I18N.t('council.saveReport') || 'Save to Reports'}. Key: council.saveReport"
+    },
+    {
+     "id": "PF-34",
+     "category": "hardcoded-english-in-js",
+     "lines": "624",
+     "current": "Ask Adviser",
+     "symptom": "Council modal button shows in English",
+     "fix": "Use: ${AC_I18N.t('council.askAdviser') || 'Ask Adviser'}. Key: council.askAdviser"
+    },
+    {
+     "id": "PF-35",
+     "category": "hardcoded-english-in-js",
+     "lines": "627",
+     "current": "Run Again",
+     "symptom": "Council modal button shows in English",
+     "fix": "Use: ${AC_I18N.t('council.runAgain') || 'Run Again'}. Key: council.runAgain"
+    },
+    {
+     "id": "PF-36",
+     "category": "hardcoded-english-in-js",
+     "lines": "628",
+     "current": "Close Review",
+     "symptom": "Council modal button shows in English",
+     "fix": "Use: ${AC_I18N.t('council.closeReview') || 'Close Review'}. Key: council.closeReview"
+    },
+    {
+     "id": "PF-37",
+     "category": "hardcoded-english-in-js",
+     "lines": "642",
+     "current": "showToast('Report Saved', 'Council review saved to your reports library', 'success');",
+     "symptom": "Toast message shows in English",
+     "fix": "Use: showToast(AC_I18N.t('council.toastTitle') || 'Report Saved', AC_I18N.t('council.toastText') || 'Council review saved...', 'success'). Keys: council.toastTitle, council.toastText"
+    },
+    {
+     "id": "PF-38",
+     "category": "hardcoded-english-in-js",
+     "lines": "674",
+     "current": "showToast('Holding added', ...",
+     "symptom": "Toast when adding holding shows in English",
+     "fix": "Use: showToast(AC_I18N.t('portfolio.holdingAdded') || 'Holding added', ...). Key: portfolio.holdingAdded"
+    },
+    {
+     "id": "PF-39",
+     "category": "hardcoded-english-in-js",
+     "lines": "678",
+     "current": "showToast('Could not add holding', ...",
+     "symptom": "Error toast shows in English",
+     "fix": "Use: showToast(AC_I18N.t('portfolio.holdingAddError') || 'Could not add holding', ...). Key: portfolio.holdingAddError"
+    },
+    {
+     "id": "PF-40",
+     "category": "hardcoded-english-in-js",
+     "lines": "687",
+     "current": "showToast('Holding removed', ...",
+     "symptom": "Toast when removing holding shows in English",
+     "fix": "Use: showToast(AC_I18N.t('portfolio.holdingRemoved') || 'Holding removed', ...). Key: portfolio.holdingRemoved"
+    },
+    {
+     "id": "PF-41",
+     "category": "hardcoded-english-in-js",
+     "lines": "692",
+     "current": "showToast('Could not remove holding', ...",
+     "symptom": "Error toast shows in English",
+     "fix": "Use: showToast(AC_I18N.t('portfolio.holdingRemoveError') || 'Could not remove holding', ...). Key: portfolio.holdingRemoveError"
+    },
+    {
+     "id": "PF-42",
+     "category": "hardcoded-english-in-js",
+     "lines": "730",
+     "current": "<h2>Alerts & Monitoring</h2><p>How AlphaCouncil keeps you informed</p>",
+     "symptom": "Alert modal title and subtitle show in English",
+     "fix": "Use: <h2>${AC_I18N.t('alerts.title') || 'Alerts & Monitoring'}</h2><p>${AC_I18N.t('alerts.subtitle') || 'How AlphaCouncil keeps you informed'}</p>. Keys: alerts.title, alerts.subtitle"
+    },
+    {
+     "id": "PF-43",
+     "category": "hardcoded-english-in-js",
+     "lines": "739-741",
+     "current": "AlphaCouncil automatically monitors your holdings and watchlist for significant price moves, technical signals and breaking news. These alerts arrive in your 🔔 notifications — no manual setup required.",
+     "symptom": "Alert modal description shows in English",
+     "fix": "Use: ${AC_I18N.t('alerts.description1') || 'AlphaCouncil automatically monitors...'}. Key: alerts.description1"
+    },
+    {
+     "id": "PF-44",
+     "category": "hardcoded-english-in-js",
+     "lines": "743-745",
+     "current": "Custom one-off price triggers aren't available yet. To start monitoring this stock, add it to your watchlist.",
+     "symptom": "Alert modal info text shows in English",
+     "fix": "Use: ${AC_I18N.t('alerts.description2') || 'Custom one-off price triggers...'}. Key: alerts.description2"
+    },
+    {
+     "id": "PF-45",
+     "category": "hardcoded-english-in-js",
+     "lines": "748",
+     "current": "<button>Close</button>",
+     "symptom": "Modal close button shows in English",
+     "fix": "Use: ${AC_I18N.t('common.close') || 'Close'}. Key: common.close"
+    },
+    {
+     "id": "PF-46",
+     "category": "hardcoded-english-in-js",
+     "lines": "749",
+     "current": "<button>Add to Watchlist</button>",
+     "symptom": "Modal action button shows in English",
+     "fix": "Use: ${AC_I18N.t('alerts.addToWatchlist') || 'Add to Watchlist'}. Key: alerts.addToWatchlist"
+    },
+    {
+     "id": "PF-47",
+     "category": "hardcoded-english-in-js",
+     "lines": "771",
+     "current": "showToast('Now monitoring', 'Added to your watchlist — alerts appear in your 🔔 notifications.', 'success');",
+     "symptom": "Watchlist toast shows in English",
+     "fix": "Use: showToast(AC_I18N.t('alerts.nowMonitoring') || 'Now monitoring', AC_I18N.t('alerts.addedToWatchlist') || 'Added to your watchlist...', 'success'). Keys: alerts.nowMonitoring, alerts.addedToWatchlist"
+    },
+    {
+     "id": "PF-48",
+     "category": "hardcoded-english-in-js",
+     "lines": "773",
+     "current": "showToast('Sign in required', 'Log in to monitor stocks and receive alerts.', 'info');",
+     "symptom": "Auth toast shows in English",
+     "fix": "Use: showToast(AC_I18N.t('common.signInRequired') || 'Sign in required', AC_I18N.t('alerts.signInNeeded') || 'Log in to monitor stocks...', 'info'). Keys: common.signInRequired, alerts.signInNeeded"
+    },
+    {
+     "id": "PF-49",
+     "category": "hardcoded-english-in-js",
+     "lines": "774",
+     "current": "showToast('Couldn't add to watchlist', ...",
+     "symptom": "Error toast shows in English",
+     "fix": "Use: showToast(AC_I18N.t('alerts.addError') || 'Couldn\\'t add to watchlist', ...). Key: alerts.addError"
+    },
+    {
+     "id": "PF-50",
+     "category": "hardcoded-english-in-js",
+     "lines": "956",
+     "current": "title = 'No Data', text = 'There is nothing to display yet.', actionText = 'Get Started'",
+     "symptom": "Empty state helper shows English defaults",
+     "fix": "Use: title = AC_I18N.t('common.noData') || 'No Data', text = AC_I18N.t('common.nothingToDisplay') || 'There is nothing to display yet.', actionText = AC_I18N.t('common.getStarted') || 'Get Started'. Keys: common.noData, common.nothingToDisplay, common.getStarted"
+    },
+    {
+     "id": "PF-51",
+     "category": "hardcoded-english-in-js",
+     "lines": "976",
+     "current": "title = 'Something went wrong', text = 'We couldn't load the data. Please try again.'",
+     "symptom": "Error state helper shows English defaults",
+     "fix": "Use: title = AC_I18N.t('common.error') || 'Something went wrong', text = AC_I18N.t('common.loadError') || 'We couldn\\'t load the data...'. Keys: common.error, common.loadError"
+    },
+    {
+     "id": "PF-52",
+     "category": "hardcoded-english-in-js",
+     "lines": "988",
+     "current": "Try Again",
+     "symptom": "Error retry button shows in English",
+     "fix": "Use: ${AC_I18N.t('common.tryAgain') || 'Try Again'}. Key: common.tryAgain"
+    },
+    {
+     "id": "PF-53",
+     "category": "hardcoded-english-in-js",
+     "lines": "1190",
+     "current": "Couldn't load alerts.",
+     "symptom": "Alerts dropdown error message shows in English",
+     "fix": "Use: AC_I18N.t('alerts.loadError') || 'Couldn\\'t load alerts.'. Key: alerts.loadError"
+    },
+    {
+     "id": "PF-54",
+     "category": "hardcoded-english-in-js",
+     "lines": "1192",
+     "current": "No alerts yet. We'll flag notable moves, signals and news on your holdings here.",
+     "symptom": "Empty alerts message shows in English",
+     "fix": "Use: AC_I18N.t('alerts.empty') || 'No alerts yet. We\\'ll flag notable moves...'. Key: alerts.empty"
+    },
+    {
+     "id": "PF-55",
+     "category": "hardcoded-english-in-js",
+     "lines": "1212",
+     "current": "<span class=\"t\">Alerts</span><a class=\"a\">View all</a>",
+     "symptom": "Alerts dropdown header and link show in English",
+     "fix": "Use: <span class=\"t\">${AC_I18N.t('nav.alerts') || 'Alerts'}</span> and <a>${AC_I18N.t('nav.viewAll') || 'View all'}</a>. Keys: nav.alerts, nav.viewAll"
+    },
+    {
+     "id": "PF-56",
+     "category": "hardcoded-english-in-js",
+     "lines": "1213",
+     "current": "<div class=\"ac-dd-empty\">Loading…</div>",
+     "symptom": "Alerts dropdown loading state shows in English",
+     "fix": "Use: <div class=\"ac-dd-empty\">${AC_I18N.t('common.loading') || 'Loading…'}</div>. Key: common.loading"
+    },
+    {
+     "id": "PF-57",
+     "category": "hardcoded-english-in-js",
+     "lines": "1259-1262",
+     "current": "Profile & Account, Settings, Log out",
+     "symptom": "User dropdown menu items show in English",
+     "fix": "Use: ${AC_I18N.t('nav.profile') || 'Profile & Account'}, ${AC_I18N.t('nav.settings') || 'Settings'}, ${AC_I18N.t('nav.logout') || 'Log out'}. Keys: nav.profile, nav.settings, nav.logout"
+    },
+    {
+     "id": "PF-58",
+     "category": "hardcoded-english-in-js",
+     "lines": "1286",
+     "current": "placeholder=\"Search GCC stocks (e.g., Aramco, Al Rajhi, QNB...)\" aria-label=\"Search stocks\"",
+     "symptom": "Search input placeholder and aria-label show in English",
+     "fix": "Use: placeholder=\"${AC_I18N.t('search.placeholder') || 'Search GCC stocks...'}\" aria-label=\"${AC_I18N.t('search.ariaLabel') || 'Search stocks'}\". Keys: search.placeholder, search.ariaLabel"
+    },
+    {
+     "id": "PF-59",
+     "category": "hardcoded-english-in-js",
+     "lines": "1289",
+     "current": "Start typing to search GCC stocks…",
+     "symptom": "Search initial message shows in English",
+     "fix": "Use: ${AC_I18N.t('search.startTyping') || 'Start typing to search GCC stocks…'}. Key: search.startTyping"
+    },
+    {
+     "id": "PF-60",
+     "category": "hardcoded-english-in-js",
+     "lines": "1339",
+     "current": "'Loading stocks…' : 'Search is unavailable right now — please try again.'",
+     "symptom": "Search loading and error messages show in English",
+     "fix": "Use: AC_I18N.t('search.loading') || 'Loading stocks…' and AC_I18N.t('search.unavailable') || 'Search is unavailable...'. Keys: search.loading, search.unavailable"
+    },
+    {
+     "id": "PF-61",
+     "category": "hardcoded-english-in-js",
+     "lines": "1341",
+     "current": "No stocks match",
+     "symptom": "Search no results message shows in English",
+     "fix": "Use: (AC_I18N.t('search.noResults') || 'No stocks match') + ' \"' + escapeHtml(query) + '\".'. Key: search.noResults"
+    },
+    {
+     "id": "PF-62",
+     "category": "hardcoded-english-in-js",
+     "lines": "1428",
+     "current": "name.textContent = String(d.market || d.name_en || d.name || '');",
+     "symptom": "Ticker tape shows market names in English (e.g., market name_en instead of name_ar)",
+     "fix": "Use: name.textContent = String(d.market || (AC_I18N.lang === 'ar' ? (d.name_ar || d.name_en) : d.name_en) || d.name || '');. Ensure API returns name_ar"
+    },
+    {
+     "id": "PF-63",
+     "category": "hardcoded-english-in-js",
+     "lines": "1564",
+     "current": "let label = 'Market data';",
+     "symptom": "Ticker time label shows 'Market data' in English",
+     "fix": "Use: let label = AC_I18N.t('ticker.marketData') || 'Market data';. Key: ticker.marketData"
+    },
+    {
+     "id": "PF-64",
+     "category": "hardcoded-english-in-js",
+     "lines": "1567",
+     "current": "d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })",
+     "symptom": "Ticker timestamp shows English date format (e.g., 'Jun 21, 2026') on Arabic page",
+     "fix": "Use: d.toLocaleDateString(AC_I18N.lang === 'ar' ? 'ar-SA' : 'en-US', ...). Also prefix with AC_I18N.t('ticker.asOf') || 'As of'. Key: ticker.asOf"
+    },
+    {
+     "id": "PF-65",
+     "category": "no-rerender-on-langchange",
+     "lines": "entire file",
+     "current": "No window.addEventListener('ac:langchange', ...) in init() or anywhere else",
+     "symptom": "When user switches language via AC_I18N event, sidebar context (labels + 40+ questions), search results, user menu, modals, toasts, error messages, council UI, and ticker labels all stay in original language",
+     "fix": "Add to init(): window.addEventListener('ac:langchange', function(e) { if(e.detail?.lang === AC_I18N.lang) { updateSidebarContext(); _searchUniverse = null; renderSearchResults(''); buildUserDropdown(); refreshAlertBadge(); _buildTicker(); } });. This re-renders all persistent UI elements that need localization when language switches"
+    }
+   ]
+  },
+  {
+   "surface": "stock-detail.html",
+   "rerenders_on_langchange": "no — There is no window 'ac:langchange' listener on this page. All JS-rendered content (stock name, sector, error messages, signal text, position labels, gauge ratings, technical indicators, forecast text, and toast messages) stays in the language it was first rendered in, even when the user switches language via the EN/AR toggle.",
+   "findings": [
+    {
+     "id": "PF-1",
+     "category": "stock-name-not-localized",
+     "lines": "1023",
+     "current": "name: d.name_en || d.name || d.company_name || (tickerParam.split('_')[0] || tickerParam),",
+     "symptom": "Stock name appears in English on Arabic page (e.g., 'Saudi Aramco' stays in English when lang='ar')",
+     "fix": "Change to: name: (AC_I18N && AC_I18N.lang === 'ar' ? d.name_ar : null) || d.name_en || d.name || d.company_name || (tickerParam.split('_')[0] || tickerParam), and store both name_en and name_ar in currentStock object for runtime switching"
+    },
+    {
+     "id": "PF-2",
+     "category": "sector-not-localized",
+     "lines": "1026",
+     "current": "sector: d.sector_en || '',",
+     "symptom": "Sector tag shows in English (e.g., 'Energy') on Arabic page; Arabic sector name available in API but ignored",
+     "fix": "Change to: sector: (AC_I18N && AC_I18N.lang === 'ar' ? d.sector_ar : null) || d.sector_en || '', and store both sector_en and sector_ar in currentStock for runtime switching"
+    },
+    {
+     "id": "PF-3",
+     "category": "hardcoded-english-in-js",
+     "lines": "403",
+     "current": "Add to Portfolio",
+     "symptom": "Button text 'Add to Portfolio' is English-only on Arabic page",
+     "fix": "Add to i18n dictionary: 'sd.add_to_portfolio': { en: 'Add to Portfolio', ar: 'إضافة إلى المحفظة' }, then replace button text with data-i18n='sd.add_to_portfolio'"
+    },
+    {
+     "id": "PF-4",
+     "category": "hardcoded-english-in-js",
+     "lines": "404",
+     "current": "Watchlist",
+     "symptom": "Button text 'Watchlist' is English-only on Arabic page",
+     "fix": "Add to i18n: 'sd.watchlist': { en: 'Watchlist', ar: 'قائمة المتابعة' }, then apply data-i18n='sd.watchlist'"
+    },
+    {
+     "id": "PF-5",
+     "category": "hardcoded-english-in-js",
+     "lines": "405",
+     "current": "Set Alert",
+     "symptom": "Button text 'Set Alert' is English-only on Arabic page",
+     "fix": "Add to i18n: 'sd.set_alert': { en: 'Set Alert', ar: 'تعيين تنبيه' }, then apply data-i18n='sd.set_alert'"
+    },
+    {
+     "id": "PF-6",
+     "category": "hardcoded-english-in-js",
+     "lines": "406",
+     "current": "Run AI Council",
+     "symptom": "Button text 'Run AI Council' is English-only on Arabic page",
+     "fix": "Add to i18n: 'sd.run_council': { en: 'Run AI Council', ar: 'تشغيل مجلس الذكاء الاصطناعي' }, then apply data-i18n='sd.run_council'"
+    },
+    {
+     "id": "PF-7",
+     "category": "hardcoded-english-in-js",
+     "lines": "407",
+     "current": "Ask Adviser",
+     "symptom": "Button text 'Ask Adviser' is English-only on Arabic page",
+     "fix": "Add to i18n: 'sd.ask_adviser': { en: 'Ask Adviser', ar: 'اسأل المستشار' }, then apply data-i18n='sd.ask_adviser'"
+    },
+    {
+     "id": "PF-8",
+     "category": "hardcoded-english-in-js",
+     "lines": "383",
+     "current": "Loading…",
+     "symptom": "Breadcrumb loading text is English-only; should use i18n key",
+     "fix": "Change to data-i18n='common.loading' (already defined in i18n.js)"
+    },
+    {
+     "id": "PF-9",
+     "category": "hardcoded-english-in-js",
+     "lines": "392",
+     "current": "Loading…",
+     "symptom": "Stock name loading placeholder is English-only",
+     "fix": "Apply data-i18n='common.loading' to the span.stock-name-loading element"
+    },
+    {
+     "id": "PF-10",
+     "category": "static-markup-untranslated",
+     "lines": "417",
+     "current": "Loading…",
+     "symptom": "Signal banner loading text is English-only",
+     "fix": "Apply data-i18n='common.loading'"
+    },
+    {
+     "id": "PF-11",
+     "category": "hardcoded-english-in-js",
+     "lines": "422",
+     "current": "Why this signal?",
+     "symptom": "Link text is English-only on Arabic page",
+     "fix": "Add to i18n: 'sd.why_signal': { en: 'Why this signal?', ar: 'لماذا هذه الإشارة؟' }, apply data-i18n='sd.why_signal'"
+    },
+    {
+     "id": "PF-12",
+     "category": "static-markup-untranslated",
+     "lines": "429",
+     "current": "Your Position",
+     "symptom": "Section title is English-only on Arabic page",
+     "fix": "Apply data-i18n='sd.your_position' (add to i18n dict: { en: 'Your Position', ar: 'مركزك' })"
+    },
+    {
+     "id": "PF-13",
+     "category": "static-markup-untranslated",
+     "lines": "431",
+     "current": "Adjust Position",
+     "symptom": "Button text is English-only",
+     "fix": "Add i18n key 'sd.adjust_position': { en: 'Adjust Position', ar: 'تعديل المركز' }, apply data-i18n"
+    },
+    {
+     "id": "PF-14",
+     "category": "static-markup-untranslated",
+     "lines": "432",
+     "current": "Record Sale",
+     "symptom": "Button text is English-only",
+     "fix": "Add i18n key 'sd.record_sale': { en: 'Record Sale', ar: 'تسجيل البيع' }, apply data-i18n"
+    },
+    {
+     "id": "PF-15",
+     "category": "static-markup-untranslated",
+     "lines": "436-439",
+     "current": "Shares, Avg Cost, Current Value, Unrealized P&L",
+     "symptom": "Position card labels are English-only on Arabic page",
+     "fix": "Add i18n keys: 'sd.shares': { en: 'Shares', ar: 'الأسهم' }, 'sd.avg_cost': { en: 'Avg Cost', ar: 'متوسط التكلفة' }, 'sd.current_value': { en: 'Current Value', ar: 'القيمة الحالية' }, 'sd.unrealized_pnl': { en: 'Unrealized P&L', ar: 'الربح/الخسارة غير المحققة' }, then apply data-i18n to each label element"
+    },
+    {
+     "id": "PF-16",
+     "category": "static-markup-untranslated",
+     "lines": "449-473",
+     "current": "Valuation, Profitability, Financial Health, Income & Growth",
+     "symptom": "Gauge card labels are English-only on Arabic page",
+     "fix": "Apply data-i18n='sd.valuation', 'sd.profitability', 'sd.financial_health', 'sd.income_growth' (add to i18n dict with Arabic translations)"
+    },
+    {
+     "id": "PF-17",
+     "category": "static-markup-untranslated",
+     "lines": "452, 459, 466, 473",
+     "current": "More details",
+     "symptom": "Gauge expand text is English-only on Arabic page",
+     "fix": "Add i18n key 'sd.more_details': { en: 'More details', ar: 'مزيد من التفاصيل' }, apply data-i18n"
+    },
+    {
+     "id": "PF-18",
+     "category": "static-markup-untranslated",
+     "lines": "453, 460, 467, 474, 523, 563, 578, 590",
+     "current": "Loading…",
+     "symptom": "All Loading placeholders are English-only",
+     "fix": "Apply data-i18n='common.loading' to all empty-state divs inside gauges, earnings, dividends, technical, and news sections"
+    },
+    {
+     "id": "PF-19",
+     "category": "static-markup-untranslated",
+     "lines": "515-517",
+     "current": "Low, Average, High",
+     "symptom": "Price target stat labels are English-only on Arabic page",
+     "fix": "Add i18n keys: 'sd.low': { en: 'Low', ar: 'الأدنى' }, 'sd.average': { en: 'Average', ar: 'المتوسط' }, 'sd.high': { en: 'High', ar: 'الأعلى' }, apply data-i18n"
+    },
+    {
+     "id": "PF-20",
+     "category": "static-markup-untranslated",
+     "lines": "524",
+     "current": "Actual EPS, Estimate",
+     "symptom": "Earnings legend labels are English-only on Arabic page",
+     "fix": "Add i18n keys: 'sd.actual_eps': { en: 'Actual EPS', ar: 'ربح السهم الفعلي' }, 'sd.estimate': { en: 'Estimate', ar: 'التقدير' }, apply data-i18n"
+    },
+    {
+     "id": "PF-21",
+     "category": "static-markup-untranslated",
+     "lines": "561",
+     "current": "Date, Type, Amount, Status (table headers)",
+     "symptom": "Dividend/corporate actions table headers are English-only",
+     "fix": "Add i18n keys: 'sd.date': { en: 'Date', ar: 'التاريخ' }, 'sd.type': { en: 'Type', ar: 'النوع' }, 'sd.amount': { en: 'Amount', ar: 'المبلغ' }, 'sd.status': { en: 'Status', ar: 'الحالة' }, apply data-i18n"
+    },
+    {
+     "id": "PF-22",
+     "category": "static-markup-untranslated",
+     "lines": "576",
+     "current": "Indicator, Value, Signal (table headers)",
+     "symptom": "Technical analysis table headers are English-only",
+     "fix": "Add i18n keys: 'sd.indicator': { en: 'Indicator', ar: 'المؤشر' }, 'sd.value': { en: 'Value', ar: 'القيمة' }, 'sd.signal': { en: 'Signal', ar: 'الإشارة' }, apply data-i18n"
+    },
+    {
+     "id": "PF-23",
+     "category": "hardcoded-english-in-js",
+     "lines": "556",
+     "current": "Dividends & Corporate Actions",
+     "symptom": "Section header is English-only on Arabic page",
+     "fix": "Add to existing i18n: 'sd.dividends_corporate': { en: 'Dividends & Corporate Actions', ar: 'التوزيعات والإجراءات الشركية' }, apply data-i18n"
+    },
+    {
+     "id": "PF-24",
+     "category": "static-markup-untranslated",
+     "lines": "613",
+     "current": "Questions About Aramco",
+     "symptom": "Hardcoded company name 'Aramco' in sidebar; should be dynamic and localized",
+     "fix": "Dynamically replace 'Aramco' with currentStock.name (which should be localized per PF-1), use JS to set via window.onPortfolioReady or 'ac:langchange' listener"
+    },
+    {
+     "id": "PF-25",
+     "category": "hardcoded-english-in-js",
+     "lines": "613-618",
+     "current": "Questions About [Stock]: all button data-question attributes with hardcoded [Stock] name",
+     "symptom": "Suggested questions show hardcoded stock name; should be dynamic and in the current language",
+     "fix": "Dynamically generate questions using currentStock.name and currentStock.sector, and provide Arabic translations for each question template"
+    },
+    {
+     "id": "PF-26",
+     "category": "hardcoded-english-in-js",
+     "lines": "630",
+     "current": "placeholder='Ask about Aramco...'",
+     "symptom": "Chat input placeholder shows hardcoded 'Aramco' instead of current stock name",
+     "fix": "Change to data-i18n-attr='placeholder:sd.chat_placeholder' and update the key to be dynamic: instead of static text, use JS to insert currentStock.name at runtime"
+    },
+    {
+     "id": "PF-27",
+     "category": "hardcoded-english-in-js",
+     "lines": "720, 743, 748",
+     "current": "'No price history available' / 'Couldn't load the price chart'",
+     "symptom": "Chart error/empty-state messages are English-only",
+     "fix": "Add i18n keys: 'sd.no_price_history': { en: 'No price history available', ar: 'لا توجد بيانات أسعار متاحة' }, 'sd.chart_error': { en: 'Couldn't load the price chart', ar: 'تعذر تحميل مخطط السعر' }, use buildChartSVG() to interpolate"
+    },
+    {
+     "id": "PF-28",
+     "category": "hardcoded-english-in-js",
+     "lines": "779, 794",
+     "current": "'No recent news for this stock yet' / 'Couldn't load news right now'",
+     "symptom": "News section empty/error states are English-only",
+     "fix": "Add i18n keys: 'sd.no_news': { en: 'No recent news for this stock yet', ar: 'لا توجد أخبار حديثة متاحة' }, 'sd.news_error': { en: 'Couldn't load news right now', ar: 'تعذر تحميل الأخبار الآن' }, apply in loadTickerNews()"
+    },
+    {
+     "id": "PF-29",
+     "category": "hardcoded-english-in-js",
+     "lines": "788",
+     "current": "'Ask Adviser' (in news card)",
+     "symptom": "News action button is English-only",
+     "fix": "Apply same i18n key as PF-7: 'sd.ask_adviser'"
+    },
+    {
+     "id": "PF-30",
+     "category": "hardcoded-english-in-js",
+     "lines": "819",
+     "current": "'Dividend' + (note ? ' · ' + note : '')",
+     "symptom": "Dividend row type label is English-only",
+     "fix": "Add i18n key: 'sd.dividend': { en: 'Dividend', ar: 'توزيع' }, use AC_I18N.t() in loadCorporate()"
+    },
+    {
+     "id": "PF-31",
+     "category": "hardcoded-english-in-js",
+     "lines": "821",
+     "current": "status: when && when <= today ? 'Paid' : 'Upcoming'",
+     "symptom": "Dividend status is English-only ('Paid' / 'Upcoming')",
+     "fix": "Add i18n keys: 'sd.paid': { en: 'Paid', ar: 'مدفوع' }, 'sd.upcoming': { en: 'Upcoming', ar: 'قادم' }, use AC_I18N.t() to localize in loadCorporate()"
+    },
+    {
+     "id": "PF-32",
+     "category": "hardcoded-english-in-js",
+     "lines": "831",
+     "current": "type: a.change_type || 'Corporate Action'",
+     "symptom": "Corporate action row type is English-only",
+     "fix": "Add i18n key: 'sd.corporate_action': { en: 'Corporate Action', ar: 'إجراء الشركة' }, use AC_I18N.t() in loadCorporate()"
+    },
+    {
+     "id": "PF-33",
+     "category": "hardcoded-english-in-js",
+     "lines": "837, 845",
+     "current": "'No dividends or corporate actions on record' / 'Couldn't load dividends right now'",
+     "symptom": "Dividends section empty/error states are English-only",
+     "fix": "Add i18n keys: 'sd.no_dividends': { en: 'No dividends or corporate actions on record', ar: 'لا توجد توزيعات أو إجراءات شركية مسجلة' }, 'sd.dividends_error': { en: 'Couldn't load dividends right now', ar: 'تعذر تحميل التوزيعات الآن' }, apply in loadCorporate()"
+    },
+    {
+     "id": "PF-34",
+     "category": "hardcoded-english-in-js",
+     "lines": "857",
+     "current": "['RSI (14)', ..., r >= 70 ? ['Overbought', ...] : (r <= 30 ? ['Oversold', ...] : ['Neutral', ...])]",
+     "symptom": "Technical indicator signals are English-only ('Overbought', 'Oversold', 'Neutral')",
+     "fix": "Add i18n keys: 'sd.overbought': { en: 'Overbought', ar: 'في منطقة الشراء الزائد' }, 'sd.oversold': { en: 'Oversold', ar: 'في منطقة البيع الزائد' }, 'sd.neutral': { en: 'Neutral', ar: 'محايد' }, use AC_I18N.t() in renderTechnicals()"
+    },
+    {
+     "id": "PF-35",
+     "category": "hardcoded-english-in-js",
+     "lines": "858",
+     "current": "['MACD', ..., tech.macd_bull ? ['Bullish', ...] : ['Bearish', ...]]",
+     "symptom": "MACD signal is English-only ('Bullish' / 'Bearish')",
+     "fix": "Add i18n keys: 'sd.bullish': { en: 'Bullish', ar: 'صعودي' }, 'sd.bearish': { en: 'Bearish', ar: 'هبوطي' }, use AC_I18N.t() in renderTechnicals()"
+    },
+    {
+     "id": "PF-36",
+     "category": "hardcoded-english-in-js",
+     "lines": "859-860",
+     "current": "['SMA 50' / 'SMA 200', ..., tech.above_50d ? ['Above', ...] : ['Below', ...]]",
+     "symptom": "SMA signals are English-only ('Above' / 'Below')",
+     "fix": "Add i18n keys: 'sd.above': { en: 'Above', ar: 'فوق' }, 'sd.below': { en: 'Below', ar: 'تحت' }, use AC_I18N.t() in renderTechnicals()"
+    },
+    {
+     "id": "PF-37",
+     "category": "hardcoded-english-in-js",
+     "lines": "862-863",
+     "current": "['52-Week High' / '52-Week Low', ...]",
+     "symptom": "52-week label is English-only",
+     "fix": "Add i18n keys: 'sd.52w_high': { en: '52-Week High', ar: 'أعلى 52 أسبوع' }, 'sd.52w_low': { en: '52-Week Low', ar: 'أدنى 52 أسبوع' }, use AC_I18N.t() in renderTechnicals()"
+    },
+    {
+     "id": "PF-38",
+     "category": "hardcoded-english-in-js",
+     "lines": "864",
+     "current": "'Technical indicators aren't available for this stock yet'",
+     "symptom": "Technical section empty state is English-only",
+     "fix": "Add i18n key: 'sd.no_technicals': { en: 'Technical indicators aren't available for this stock yet', ar: 'المؤشرات الفنية غير متاحة لهذا السهم حتى الآن' }, apply in renderTechnicals()"
+    },
+    {
+     "id": "PF-39",
+     "category": "hardcoded-english-in-js",
+     "lines": "875",
+     "current": "const LABEL = { pe: 'P/E Ratio', pb: 'P/B Ratio', ev_ebitda: 'EV/EBITDA', ... }",
+     "symptom": "Fundamental metric labels are all English-only",
+     "fix": "Create a localized version: check AC_I18N.lang and use corresponding Arabic label from an AR_LABEL object, or add i18n keys for each metric"
+    },
+    {
+     "id": "PF-40",
+     "category": "hardcoded-english-in-js",
+     "lines": "894",
+     "current": "rating.textContent = avg >= 67 ? 'Strong' : (avg >= 40 ? 'Moderate' : 'Weak')",
+     "symptom": "Gauge ratings are English-only ('Strong', 'Moderate', 'Weak')",
+     "fix": "Add i18n keys: 'sd.strong': { en: 'Strong', ar: 'قوي' }, 'sd.moderate': { en: 'Moderate', ar: 'معتدل' }, 'sd.weak': { en: 'Weak', ar: 'ضعيف' }, use AC_I18N.t() in renderGauges()"
+    },
+    {
+     "id": "PF-41",
+     "category": "hardcoded-english-in-js",
+     "lines": "920-921",
+     "current": "h3.textContent = 'AlphaCouncil Signal: ' + title; ... p.textContent = 'Derived from AlphaCouncil's composite score of ...'",
+     "symptom": "Signal banner heading and explanation text are English-only on Arabic page",
+     "fix": "Add i18n keys: 'sd.signal_derived': { en: 'Derived from AlphaCouncil's composite score of {score}/100 — a blend of fundamentals, technicals and news flow. A model output, not investment advice.', ar: 'مشتقة من درجة AlphaCouncil المركبة بمقدار {score}/100 — مزيج من الأساسيات والفنيات وتدفق الأخبار. مخرجات النموذج وليست نصيحة استثمارية.' }, use AC_I18N.t() with string interpolation in renderSignal()"
+    },
+    {
+     "id": "PF-42",
+     "category": "hardcoded-english-in-js",
+     "lines": "913-915",
+     "current": "if (s >= 66) { sig = 'BUY'; cls = ''; title = 'Constructive'; } else if (s >= 40) { sig = 'HOLD'; cls = 'hold'; title = 'Hold / Neutral'; } else { sig = 'REDUCE'; cls = 'caution'; title = 'Cautious'; }",
+     "symptom": "Signal titles are English-only ('Constructive', 'Hold / Neutral', 'Cautious'); BUY/HOLD/REDUCE text is also English",
+     "fix": "Add i18n keys: 'sd.buy': { en: 'BUY', ar: 'شراء' }, 'sd.hold': { en: 'HOLD', ar: 'احتفظ' }, 'sd.reduce': { en: 'REDUCE', ar: 'بيع' }, 'sd.constructive': { en: 'Constructive', ar: 'بناء' }, 'sd.neutral': { en: 'Hold / Neutral', ar: 'احتفظ / محايد' }, 'sd.cautious': { en: 'Cautious', ar: 'حذر' }, use AC_I18N.t() in renderSignal()"
+    },
+    {
+     "id": "PF-43",
+     "category": "hardcoded-english-in-js",
+     "lines": "922",
+     "current": "conf.textContent = 'Score ' + Math.round(s) + '/100'",
+     "symptom": "Score label is English-only",
+     "fix": "Add i18n key: 'sd.score': { en: 'Score', ar: 'الدرجة' }, use AC_I18N.t('sd.score') + ' ' + Math.round(s) + '/100'"
+    },
+    {
+     "id": "PF-44",
+     "category": "hardcoded-english-in-js",
+     "lines": "981",
+     "current": "labs[1].textContent = cur0 != null ? ('Current: ' + cur0.toFixed(2)) : ''",
+     "symptom": "'Current:' label is English-only in price target section",
+     "fix": "Add i18n key: 'sd.current': { en: 'Current', ar: 'الحالي' }, use AC_I18N.t() in loadForecast()"
+    },
+    {
+     "id": "PF-45",
+     "category": "hardcoded-english-in-js",
+     "lines": "985",
+     "current": "'Based on ' + (n != null ? n : '—') + ' analyst price targets' + (a.consensus ? (' · Consensus: ' + a.consensus) : '') + ...",
+     "symptom": "Analyst forecast footer is English-only ('Based on', 'Consensus', 'Updated')",
+     "fix": "Add i18n keys: 'sd.based_on': { en: 'Based on', ar: 'بناءً على' }, 'sd.analyst_targets': { en: 'analyst price targets', ar: 'أهداف السعر للمحلل' }, 'sd.consensus': { en: 'Consensus', ar: 'الإجماع' }, 'sd.updated': { en: 'Updated', ar: 'محدثة' }, compose message in loadForecast()"
+    },
+    {
+     "id": "PF-46",
+     "category": "hardcoded-english-in-js",
+     "lines": "1010-1013",
+     "current": "'Stock not found' / 'We couldn't load data for ... It may not be covered yet, or the ticker may be incorrect.'",
+     "symptom": "Not-found error message is English-only",
+     "fix": "Add i18n keys: 'sd.not_found': { en: 'Stock not found', ar: 'لم يتم العثور على السهم' }, 'sd.not_found_msg': { en: 'We couldn't load data for \"{ticker}\". It may not be covered yet, or the ticker may be incorrect.', ar: 'تعذر تحميل البيانات لـ \"{ticker}\". قد لا يكون مغطى بعد، أو قد يكون الرمز غير صحيح.' }, use in _stockNotFound()"
+    },
+    {
+     "id": "PF-47",
+     "category": "hardcoded-english-in-js",
+     "lines": "1101",
+     "current": "'Generating the 12-dimension thesis… this can take up to ~2 minutes.'",
+     "symptom": "Thesis generation progress text is English-only",
+     "fix": "Add i18n key: 'sd.generating_thesis': { en: 'Generating the 12-dimension thesis… this can take up to ~2 minutes.', ar: 'جارٍ توليد الأطروحة ذات ١٢ بُعدًا... قد يستغرق هذا حتى ~دقيقتين.' }, use AC_I18N.t() in generateThesis()"
+    },
+    {
+     "id": "PF-48",
+     "category": "hardcoded-english-in-js",
+     "lines": "1105-1108",
+     "current": "'Generation failed. Please try again.' / 'Please log in to generate an AI thesis.' / 'Daily thesis limit reached...' / 'Network error — could not reach the server.'",
+     "symptom": "Thesis error messages are all English-only",
+     "fix": "Add i18n keys for each error: 'sd.gen_failed', 'sd.auth_required', 'sd.daily_limit', 'sd.network_error', use AC_I18N.t() in generateThesis()"
+    },
+    {
+     "id": "PF-49",
+     "category": "hardcoded-english-in-js",
+     "lines": "1126-1128",
+     "current": "const INV = [['valuation','Valuation'],['growth','Growth'],...]; const TR = [...]; const BR = [...]",
+     "symptom": "All 12-dimension thesis dimension names are hardcoded English",
+     "fix": "Add i18n keys for each: 'sd.dim_valuation', 'sd.dim_growth', 'sd.dim_profitability', etc., create a localized array based on AC_I18N.lang in renderThesis()"
+    },
+    {
+     "id": "PF-50",
+     "category": "hardcoded-english-in-js",
+     "lines": "1160, 1187",
+     "current": "prompt('How many shares of ' + currentStock.name + '?'); ... prompt('Total shares of ' + currentStock.name + ' you now hold:', ...)",
+     "symptom": "Prompt messages use hardcoded English; should be localized",
+     "fix": "Add i18n keys: 'sd.prompt_shares': { en: 'How many shares of {name}?', ar: 'كم عدد أسهم {name}؟' }, 'sd.prompt_total': { en: 'Total shares of {name} you now hold:', ar: 'إجمالي أسهم {name} التي تمتلكها الآن:' }, use AC_I18N.t() with template interpolation in addToPortfolio() / adjustPosition()"
+    },
+    {
+     "id": "PF-51",
+     "category": "hardcoded-english-in-js",
+     "lines": "1162",
+     "current": "prompt('Average cost per share (' + currentStock.currency + ')?')",
+     "symptom": "Prompt message is English-only",
+     "fix": "Add i18n key: 'sd.prompt_cost': { en: 'Average cost per share ({currency})?', ar: 'متوسط تكلفة السهم ({currency})؟' }, use AC_I18N.t() in addToPortfolio()"
+    },
+    {
+     "id": "PF-52",
+     "category": "hardcoded-english-in-js",
+     "lines": "1170",
+     "current": "AlphaCouncil.showToast('Added to Watchlist', `${currentStock.name} is now on your watchlist`, 'success')",
+     "symptom": "Toast message is English-only",
+     "fix": "Add i18n key: 'sd.added_watchlist': { en: '{name} is now on your watchlist', ar: '{name} الآن في قائمة المتابعة الخاصة بك' }, use AC_I18N.t() in addToWatchlist()"
+    },
+    {
+     "id": "PF-53",
+     "category": "hardcoded-english-in-js",
+     "lines": "1173",
+     "current": "AlphaCouncil.showToast('Sign in required', 'Log in to track stocks on your watchlist', 'info')",
+     "symptom": "Toast message is English-only",
+     "fix": "Add i18n keys: 'sd.signin_required': { en: 'Sign in required', ar: 'تسجيل الدخول مطلوب' }, 'sd.login_watchlist': { en: 'Log in to track stocks on your watchlist', ar: 'سجل الدخول لتتبع الأسهم في قائمة المتابعة الخاصة بك' }, use AC_I18N.t() in addToWatchlist()"
+    },
+    {
+     "id": "PF-54",
+     "category": "hardcoded-english-in-js",
+     "lines": "1177",
+     "current": "AlphaCouncil.showToast('Couldn't add to watchlist', 'Please try again in a moment', 'error')",
+     "symptom": "Toast message is English-only",
+     "fix": "Add i18n keys: 'sd.watchlist_error': { en: 'Couldn't add to watchlist', ar: 'تعذر الإضافة إلى قائمة المتابعة' }, 'sd.retry': { en: 'Please try again in a moment', ar: 'يرجى المحاولة مرة أخرى في لحظة' }, use AC_I18N.t() in addToWatchlist()"
+    },
+    {
+     "id": "PF-55",
+     "category": "hardcoded-english-in-js",
+     "lines": "1196",
+     "current": "AlphaCouncil.showToast('No position', 'You have no recorded position in ' + currentStock.name + '.', 'info')",
+     "symptom": "Toast message is English-only",
+     "fix": "Add i18n keys: 'sd.no_pos': { en: 'No position', ar: 'لا يوجد مركز' }, 'sd.no_pos_msg': { en: 'You have no recorded position in {name}.', ar: 'ليس لديك مركز مسجل في {name}.' }, use AC_I18N.t() in recordSale()"
+    },
+    {
+     "id": "PF-56",
+     "category": "hardcoded-english-in-js",
+     "lines": "1197",
+     "current": "prompt('How many shares did you sell? (you hold ' + h.shares + ')', h.shares)",
+     "symptom": "Prompt message is English-only",
+     "fix": "Add i18n key: 'sd.prompt_sold': { en: 'How many shares did you sell? (you hold {count})', ar: 'كم عدد الأسهم التي بعتها؟ (تمتلك {count})' }, use AC_I18N.t() in recordSale()"
+    },
+    {
+     "id": "PF-57",
+     "category": "hardcoded-english-in-js",
+     "lines": "1203",
+     "current": "AlphaCouncil.showToast('Sale recorded', n + ' shares sold · ' + remaining + ' remaining', 'success')",
+     "symptom": "Toast message is English-only",
+     "fix": "Add i18n key: 'sd.sale_recorded': { en: '{count} shares sold · {remaining} remaining', ar: '{count} أسهم مباعة · {remaining} المتبقية' }, use AC_I18N.t() in recordSale()"
+    },
+    {
+     "id": "PF-58",
+     "category": "hardcoded-english-in-js",
+     "lines": "1189",
+     "current": "prompt('Average cost per share (' + (currentStock.currency || 'SAR') + '):', h ? h.avgCost : '')",
+     "symptom": "Prompt message is English-only",
+     "fix": "Add i18n key: 'sd.prompt_adjust_cost': { en: 'Average cost per share ({currency}):', ar: 'متوسط تكلفة السهم ({currency}):' }, use AC_I18N.t() in adjustPosition()"
+    },
+    {
+     "id": "PF-59",
+     "category": "hardcoded-english-in-js",
+     "lines": "1213",
+     "current": "const q = 'Why is AlphaCouncil's signal \"' + (_signal || 'neutral') + '\" for ' + (currentStock.name || 'this company') + '? Explain what drives its composite score.'",
+     "symptom": "Question text to adviser is English-only",
+     "fix": "Add i18n key: 'sd.signal_question': { en: 'Why is AlphaCouncil's signal \"{signal}\" for {name}? Explain what drives its composite score.', ar: 'لماذا إشارة AlphaCouncil \"{signal}\" لـ {name}؟ اشرح ما يحرك درجتها المركبة.' }, use AC_I18N.t() in showSignalExplanation()"
+    },
+    {
+     "id": "PF-60",
+     "category": "hardcoded-english-in-js",
+     "lines": "192",
+     "current": "::after { content: 'Click to ask Adviser'; ... }",
+     "symptom": "CSS-rendered hover tooltip is hardcoded English, cannot be translated without JS",
+     "fix": "Replace CSS ::after with a JS-generated tooltip on hover; add i18n key 'sd.click_ask': { en: 'Click to ask Adviser', ar: 'انقر للسؤال المستشار' }, apply on dimension-card:hover via JS"
+    }
+   ]
+  }
+ ],
+ "total": 219
+}

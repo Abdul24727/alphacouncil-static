@@ -411,9 +411,11 @@
       gap: 2px;
     }
 
+    /* TICKER = small/secondary line */
     .stock-ticker {
-      font-weight: 600;
-      color: var(--fg);
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--fg-dim);
       display: flex;
       align-items: center;
       gap: 6px;
@@ -428,9 +430,11 @@
       color: var(--accent-primary);
     }
 
+    /* NAME = large/primary line */
     .stock-name {
-      font-size: 11px;
-      color: var(--fg-dim);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--fg);
       max-width: 160px;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -1020,7 +1024,7 @@
   <nav class="app-nav" role="navigation" aria-label="Main navigation">
     <div class="app-nav-inner">
       <a href="dashboard.html" class="app-logo">
-        <img src="alpha-council-logo-transparent.png" alt="AlphaCouncil" style="height: 28px; width: auto;" onerror="this.style.display='none'; this.parentNode.innerHTML='<span style=\"font-weight: 600; letter-spacing: -0.02em;\">AlphaCouncil</span>';">
+        <img src="alpha-council-logo-transparent.png" alt="AlphaCouncil" style="height: 28px; width: auto;" onerror="this.onerror=null; this.parentNode.innerHTML='<span style=&quot;font-weight:600;letter-spacing:-0.02em;&quot;>AlphaCouncil</span>';">
       </a>
       <div class="app-nav-links">
         <a href="dashboard.html" data-i18n="nav.dashboard">Dashboard</a>
@@ -1204,11 +1208,11 @@
           <div class="screener-controls">
             <div class="search-box">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-              <input type="text" id="stockSearch" placeholder="Search by ticker or company name..." aria-label="Search stocks">
+              <input type="text" id="stockSearch" placeholder="Search by ticker or company name..." data-i18n-attr="placeholder:mkt.searchPlaceholder" aria-label="Search stocks">
             </div>
             <div class="filter-group">
               <select class="filter-select" id="exchangeFilter" aria-label="Filter by exchange">
-                <option value="">All Markets</option>
+                <option value="" data-i18n="mkt.allMarkets">All Markets</option>
                 <option value="TADAWUL">Saudi (Tadawul)</option>
                 <option value="ADX">Abu Dhabi (ADX)</option>
                 <option value="DFM">Dubai (DFM)</option>
@@ -1218,7 +1222,7 @@
                 <option value="MSM">Oman (MSX)</option>
               </select>
               <select class="filter-select" id="sectorFilter" aria-label="Filter by sector">
-                <option value="">All Sectors</option>
+                <option value="" data-i18n="mkt.allSectors">All Sectors</option>
                 <option value="Banks">Banks</option>
                 <option value="Energy">Energy</option>
                 <option value="Materials">Materials</option>
@@ -1240,27 +1244,27 @@
           <div class="quick-filters">
             <button class="quick-filter" data-filter="pe" data-value="15">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-              P/E &lt; 15
+              <span data-i18n="mkt.filterPe">P/E &lt; 15</span>
             </button>
             <button class="quick-filter" data-filter="yield" data-value="4">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-              Yield &ge; 4%
+              <span data-i18n="mkt.filterYield">Yield &ge; 4%</span>
             </button>
             <button class="quick-filter" data-filter="largecap" data-value="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-              Large Cap
+              <span data-i18n="mkt.filterLargeCap">Large Cap</span>
             </button>
             <button class="quick-filter" data-filter="rsi" data-value="oversold">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-              Oversold (RSI &lt; 30)
+              <span data-i18n="mkt.filterOversold">Oversold (RSI &lt; 30)</span>
             </button>
             <button class="quick-filter" data-filter="above200">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
-              Above 200 DMA
+              <span data-i18n="mkt.filterAbove200">Above 200 DMA</span>
             </button>
             <button class="quick-filter" data-filter="goldencross">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg>
-              Golden Cross
+              <span data-i18n="mkt.filterGoldenCross">Golden Cross</span>
             </button>
           </div>
 
@@ -1290,7 +1294,7 @@
                 </tr>
               </thead>
               <tbody id="screenerBody">
-                <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--fg-dim);">Loading 716 GCC stocks…</td></tr>
+                <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--fg-dim);" data-i18n="mkt.loadingStocks">Loading 716 GCC stocks…</td></tr>
               </tbody>
             </table>
           </div>
@@ -1313,7 +1317,7 @@
                 <button class="mover-tab gainers active" id="gainersTab" data-i18n="markets.gainers">Gainers</button>
                 <button class="mover-tab losers" id="losersTab" data-i18n="markets.losers">Losers</button>
               </div>
-              <div id="moversContent"><div style="padding:16px;color:var(--fg-dim);font-size:13px;">Loading…</div></div>
+              <div id="moversContent"><div style="padding:16px;color:var(--fg-dim);font-size:13px;" data-i18n="mkt.loading">Loading…</div></div>
             </div>
           </div>
 
@@ -1327,7 +1331,7 @@
               <a href="news.html" class="card-action" data-i18n="common.viewAll">View all</a>
             </div>
             <div class="card-body" id="marketNewsBody">
-              <div style="padding:16px;color:var(--fg-dim);font-size:13px;">Loading…</div>
+              <div style="padding:16px;color:var(--fg-dim);font-size:13px;" data-i18n="mkt.loading">Loading…</div>
             </div>
           </div>
         </div>
@@ -1347,21 +1351,21 @@
       </div>
 
       <div class="sidebar-context" id="sidebarContext">
-        <div class="context-label">Context</div>
-        <div class="context-stock">GCC Markets Screener</div>
+        <div class="context-label" data-i18n="adviser.context">Context</div>
+        <div class="context-stock" data-i18n="mkt.adviserContext">GCC Markets Screener</div>
       </div>
 
       <div class="sidebar-content">
         <div class="suggested-questions" id="suggestedQuestions">
-          <div class="suggested-q" onclick="askQuestion('Which stocks in my portfolio are underperforming?')">Which stocks in my portfolio are underperforming?</div>
-          <div class="suggested-q" onclick="askQuestion('Show me high-yield stocks under P/E 12')">Show me high-yield stocks under P/E 12</div>
-          <div class="suggested-q" onclick="askQuestion('Compare FAB vs Al Rajhi Bank')">Compare FAB vs Al Rajhi Bank</div>
-          <div class="suggested-q" onclick="askQuestion('What are the best Saudi bank stocks?')">What are the best Saudi bank stocks?</div>
+          <div class="suggested-q" onclick="askQuestion('Which stocks in my portfolio are underperforming?')" data-i18n="mkt.adviserQ1">Which stocks in my portfolio are underperforming?</div>
+          <div class="suggested-q" onclick="askQuestion('Show me high-yield stocks under P/E 12')" data-i18n="mkt.adviserQ2">Show me high-yield stocks under P/E 12</div>
+          <div class="suggested-q" onclick="askQuestion('Compare FAB vs Al Rajhi Bank')" data-i18n="mkt.adviserQ3">Compare FAB vs Al Rajhi Bank</div>
+          <div class="suggested-q" onclick="askQuestion('What are the best Saudi bank stocks?')" data-i18n="mkt.adviserQ4">What are the best Saudi bank stocks?</div>
         </div>
       </div>
 
       <div class="sidebar-input">
-        <input type="text" id="chatInput" placeholder="Ask about any GCC stock..." aria-label="Ask the AI adviser">
+        <input type="text" id="chatInput" placeholder="Ask about any GCC stock..." data-i18n-attr="placeholder:mkt.adviserPlaceholder" aria-label="Ask the AI adviser">
         <button id="chatSend" aria-label="Send message">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
         </button>
@@ -1398,7 +1402,79 @@
         'table.yield':          { en: 'Yield',     ar: 'العائد' },
         'table.rsi':            { en: 'RSI',       ar: 'مؤشر القوة' },
         'table.sector':         { en: 'Sector',    ar: 'القطاع' },
-        'search.placeholder':   { en: 'Search stocks...', ar: 'ابحث عن الأسهم...' }
+        'search.placeholder':   { en: 'Search stocks...', ar: 'ابحث عن الأسهم...' },
+        'common.viewAll':       { en: 'View all', ar: 'عرض الكل' },
+        'adviser.title':        { en: 'AI Adviser', ar: 'المستشار الذكي' },
+        'adviser.context':      { en: 'Context', ar: 'السياق' },
+
+        // MKT-3 — screener search input
+        'mkt.searchPlaceholder': { en: 'Search by ticker or company name...', ar: 'ابحث حسب الرمز أو اسم الشركة...' },
+
+        // MKT-4 — dropdown placeholders
+        'mkt.allMarkets':       { en: 'All Markets', ar: 'جميع الأسواق' },
+        'mkt.allSectors':       { en: 'All Sectors', ar: 'جميع القطاعات' },
+
+        // MKT-5 — quick filter chips
+        'mkt.filterPe':         { en: 'P/E < 15',            ar: 'مكرر ربح < 15' },
+        'mkt.filterYield':      { en: 'Yield ≥ 4%',          ar: 'عائد ≥ 4%' },
+        'mkt.filterLargeCap':   { en: 'Large Cap',           ar: 'كبيرة' },
+        'mkt.filterOversold':   { en: 'Oversold (RSI < 30)', ar: 'مبالغ في بيعه (مؤشر القوة < 30)' },
+        'mkt.filterAbove200':   { en: 'Above 200 DMA',       ar: 'فوق متوسط 200 يوم' },
+        'mkt.filterGoldenCross':{ en: 'Golden Cross',        ar: 'تقاطع ذهبي' },
+
+        // MKT-6 — results summary
+        'mkt.resultSingular':   { en: 'stock',            ar: 'سهم' },
+        'mkt.resultPlural':     { en: 'stocks',           ar: 'أسهم' },
+        'mkt.matchingFilters':  { en: 'matching filters', ar: 'مطابقة للفلاتر' },
+
+        // MKT-7 — screener empty / loading / show-more states
+        'mkt.loading':          { en: 'Loading…',                   ar: 'جارٍ التحميل…' },
+        'mkt.loadingStocks':    { en: 'Loading 716 GCC stocks…',    ar: 'جارٍ تحميل 716 سهماً خليجياً…' },
+        'mkt.noResults':        { en: 'No stocks match these filters.', ar: 'لا توجد أسهم تطابق هذه الفلاتر.' },
+        'mkt.showMore':         { en: 'Show more',                  ar: 'عرض المزيد' },
+        'mkt.more':             { en: 'more',                       ar: 'إضافي' },
+
+        // MKT-8 — watchlist button aria-labels
+        'mkt.addToWatchlist':   { en: 'Add to watchlist',      ar: 'أضف إلى قائمة المراقبة' },
+        'mkt.removeFromWatchlist': { en: 'Remove from watchlist', ar: 'أزل من قائمة المراقبة' },
+
+        // MKT-9 — held badge
+        'mkt.held':             { en: 'HELD', ar: 'مُحتَفظ به' },
+
+        // MKT-11 — toasts / error / empty states
+        'mkt.nothingToExport':  { en: 'Nothing to export',                    ar: 'لا شيء للتصدير' },
+        'mkt.nothingToExportMsg': { en: 'No stocks match the current filters.', ar: 'لا توجد أسهم تطابق الفلاتر الحالية.' },
+        'mkt.exported':         { en: 'Exported',                             ar: 'تم التصدير' },
+        'mkt.exportedMsg':      { en: 'stocks exported to CSV',               ar: 'سهماً تم تصديرها إلى ملف CSV' },
+        'mkt.noData':           { en: 'No data available.',                  ar: 'لا توجد بيانات متاحة.' },
+        'mkt.loadMovers':       { en: 'Couldn’t load movers.',               ar: 'تعذّر تحميل الأكثر تحركاً.' },
+        'mkt.noNews':           { en: 'No recent market news.',              ar: 'لا توجد أخبار سوق حديثة.' },
+        'mkt.loadNews':         { en: 'Couldn’t load market news.',          ar: 'تعذّر تحميل أخبار السوق.' },
+        'mkt.loadMarket':       { en: 'Couldn’t load market data. Please try again.', ar: 'تعذّر تحميل بيانات السوق. يرجى المحاولة مرة أخرى.' },
+        'mkt.noIndexData':      { en: 'No index data',                       ar: 'لا توجد بيانات مؤشر' },
+        'mkt.stocksMeta':       { en: 'stocks',                              ar: 'سهم' },
+
+        // MKT-12 — watchlist action toasts
+        'mkt.addedToWatchlist':   { en: 'Added to Watchlist',          ar: 'أُضيف إلى قائمة المراقبة' },
+        'mkt.removedFromWatchlist': { en: 'Removed from Watchlist',    ar: 'أُزيل من قائمة المراقبة' },
+        'mkt.nowOnWatchlist':     { en: 'is now on your watchlist',    ar: 'أصبح الآن في قائمة المراقبة' },
+        'mkt.wasRemoved':         { en: 'was removed',                 ar: 'تمت إزالته' },
+        'mkt.signInRequired':     { en: 'Sign in required',            ar: 'يلزم تسجيل الدخول' },
+        'mkt.signInForWatchlist': { en: 'Log in to use your watchlist', ar: 'سجّل الدخول لاستخدام قائمة المراقبة' },
+        'mkt.updateWatchlist':    { en: 'Couldn’t update watchlist',   ar: 'تعذّر تحديث قائمة المراقبة' },
+        'mkt.tryAgain':           { en: 'Please try again.',           ar: 'يرجى المحاولة مرة أخرى.' },
+
+        // MKT-13 — add-to-portfolio prompts
+        'mkt.promptShares':     { en: 'How many shares of',            ar: 'كم عدد الأسهم من' },
+        'mkt.promptCost':       { en: "Average cost per share (in the stock's native currency)?", ar: 'متوسط تكلفة السهم الواحد (بعملة السهم الأصلية)؟' },
+
+        // MKT-14 — AI Adviser sidebar suggested questions + placeholder
+        'mkt.adviserContext':   { en: 'GCC Markets Screener',          ar: 'فاحص الأسواق الخليجية' },
+        'mkt.adviserQ1':        { en: 'Which stocks in my portfolio are underperforming?', ar: 'أي الأسهم في محفظتي ضعيفة الأداء؟' },
+        'mkt.adviserQ2':        { en: 'Show me high-yield stocks under P/E 12',           ar: 'أظهر لي أسهماً عالية العائد بمكرر ربحية أقل من 12' },
+        'mkt.adviserQ3':        { en: 'Compare FAB vs Al Rajhi Bank',                     ar: 'قارن بين بنك أبوظبي الأول وبنك الراجحي' },
+        'mkt.adviserQ4':        { en: 'What are the best Saudi bank stocks?',             ar: 'ما أفضل أسهم البنوك السعودية؟' },
+        'mkt.adviserPlaceholder': { en: 'Ask about any GCC stock...',  ar: 'اسأل عن أي سهم خليجي...' }
       });
     })();
 
@@ -1416,7 +1492,10 @@
       var USD = { SAR: 0.2667, AED: 0.2723, QAR: 0.2747, KWD: 3.25, OMR: 2.597, BHD: 2.659 };
 
       function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-      function isAr() { try { return (localStorage.getItem('ac.lang') || 'en') === 'ar'; } catch (e) { return false; } }
+      function isAr() { return !!(window.AC_I18N && AC_I18N.lang === 'ar'); }
+      function t(key, fallback) { var v = (window.AC_I18N && AC_I18N.t) ? AC_I18N.t(key) : null; return (v == null ? (fallback == null ? key : fallback) : v); }
+      function locName(r) { return (window.AC_I18N && AC_I18N.localName) ? AC_I18N.localName(r) : (r.name_en || r.ticker); }
+      function locSector(r) { return (window.AC_I18N && AC_I18N.localSector) ? AC_I18N.localSector(r) : (r.sector_en || '—'); }
       function fmtNum(v, d) { return (v == null || !isFinite(v)) ? '—' : Number(v).toFixed(d == null ? 2 : d); }
       function fmtMcap(raw, cur) { // raw = millions of native currency
         if (raw == null || !isFinite(raw)) return '—';
@@ -1453,19 +1532,19 @@
         });
       }
       function rowHtml(r) {
-        var tk = r.ticker_key, sym = esc(r.ticker || tk), name = esc(isAr() ? (r.name_ar || r.name_en || r.ticker) : (r.name_en || r.ticker));
+        var tk = r.ticker_key, sym = esc(r.ticker || tk), name = esc(locName(r));
         var onW = watch.has(tk), isHeld = held.has(tk), up = (r.day_change_pct || 0) >= 0;
         var rsi = r.rsi_14, rsiCls = rsi == null ? 'neutral' : (rsi < 30 ? 'oversold' : (rsi > 70 ? 'overbought' : 'neutral'));
         var ma = r.above_200d === 1 ? '<span class="ma-badge bullish">▲200</span>' : (r.above_200d === 0 ? '<span class="ma-badge bearish">▼200</span>' : '');
         var nameAttr = name.replace(/'/g, '');
         return '<tr data-ticker="' + esc(tk) + '" onclick="viewStock(\'' + esc(tk) + '\')">'
           + '<td><div class="stock-cell">'
-          + '<button class="stock-watchlist' + (onW ? ' active' : '') + '" onclick="event.stopPropagation(); toggleWatchlist(\'' + esc(tk) + '\')" aria-label="' + (onW ? 'Remove from watchlist' : 'Add to watchlist') + '">'
+          + '<button class="stock-watchlist' + (onW ? ' active' : '') + '" onclick="event.stopPropagation(); toggleWatchlist(\'' + esc(tk) + '\')" aria-label="' + esc(onW ? t('mkt.removeFromWatchlist', 'Remove from watchlist') : t('mkt.addToWatchlist', 'Add to watchlist')) + '">'
           + '<svg viewBox="0 0 24 24" fill="' + (onW ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
           + '</button>'
           + '<div class="stock-logo">' + sym.slice(0, 4) + '</div>'
-          + '<div class="stock-info"><div class="stock-ticker">' + sym + (isHeld ? ' <span class="in-portfolio">HELD</span>' : '') + '</div>'
-          + '<div class="stock-name">' + name + '</div></div>'
+          + '<div class="stock-info"><div class="stock-name">' + name + '</div>'
+          + '<div class="stock-ticker">' + sym + (isHeld ? ' <span class="in-portfolio">' + esc(t('mkt.held', 'HELD')) + '</span>' : '') + '</div></div>'
           + '</div></td>'
           + '<td class="num-cell">' + (r.last_price != null ? (fmtNum(r.last_price) + ' ' + esc(r.currency || '')) : '—') + '</td>'
           + '<td class="num-cell change-cell ' + (up ? 'up' : 'down') + '">' + (r.day_change_pct != null ? ((up ? '+' : '') + fmtNum(r.day_change_pct) + '%') : '—') + '</td>'
@@ -1473,7 +1552,7 @@
           + '<td class="num-cell">' + fmtNum(r.pe, 1) + '</td>'
           + '<td class="num-cell">' + (r.dividend_yield_pct != null ? fmtNum(r.dividend_yield_pct, 1) + '%' : '—') + '</td>'
           + '<td class="num-cell"><div class="tech-cell"><span class="rsi-value ' + rsiCls + '">' + (rsi != null ? Math.round(rsi) : '—') + '</span>' + ma + '</div></td>'
-          + '<td><span class="sector-badge">' + esc(r.sector_en || '—') + '</span></td>'
+          + '<td><span class="sector-badge">' + esc(locSector(r) || '—') + '</span></td>'
           + '<td><div class="row-actions">'
           + '<button class="row-action" title="Ask Adviser" onclick="event.stopPropagation(); askAdviser(\'' + esc(tk) + '\',\'' + nameAttr + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>'
           + '<button class="row-action" title="Run Council" onclick="event.stopPropagation(); runCouncil(\'' + esc(tk) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>'
@@ -1483,11 +1562,11 @@
       function render() {
         var body = $('#screenerBody'); if (!body) return;
         var rows = sortRows(ALL.filter(passes));
-        var rc = $('#resultsCount'); if (rc) rc.innerHTML = '<strong>' + rows.length + '</strong> ' + (rows.length === 1 ? 'stock' : 'stocks') + ' matching filters';
-        if (!ALL.length) { body.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--fg-dim);">Loading…</td></tr>'; return; }
-        if (!rows.length) { body.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--fg-dim);">No stocks match these filters.</td></tr>'; return; }
+        var rc = $('#resultsCount'); if (rc) rc.innerHTML = '<strong>' + rows.length + '</strong> ' + esc(rows.length === 1 ? t('mkt.resultSingular', 'stock') : t('mkt.resultPlural', 'stocks')) + ' ' + esc(t('mkt.matchingFilters', 'matching filters'));
+        if (!ALL.length) { body.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--fg-dim);">' + esc(t('mkt.loading', 'Loading…')) + '</td></tr>'; return; }
+        if (!rows.length) { body.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--fg-dim);">' + esc(t('mkt.noResults', 'No stocks match these filters.')) + '</td></tr>'; return; }
         var shown = rows.slice(0, state.shown);
-        body.innerHTML = shown.map(rowHtml).join('') + (rows.length > shown.length ? ('<tr class="show-more-row"><td colspan="9" style="text-align:center;padding:14px;"><button class="btn btn-secondary" id="showMoreBtn">Show more (' + (rows.length - shown.length) + ' more)</button></td></tr>') : '');
+        body.innerHTML = shown.map(rowHtml).join('') + (rows.length > shown.length ? ('<tr class="show-more-row"><td colspan="9" style="text-align:center;padding:14px;"><button class="btn btn-secondary" id="showMoreBtn">' + esc(t('mkt.showMore', 'Show more')) + ' (' + (rows.length - shown.length) + ' ' + esc(t('mkt.more', 'more')) + ')</button></td></tr>') : '');
         var sm = $('#showMoreBtn'); if (sm) sm.addEventListener('click', function () { state.shown += 60; render(); });
       }
       function applyFilters() { state.shown = 60; render(); }
@@ -1525,7 +1604,7 @@
       var eb = $('#exportBtn');
       if (eb) eb.addEventListener('click', function () {
         var rows = sortRows(ALL.filter(passes));
-        if (!rows.length) { AlphaCouncil.showToast('Nothing to export', 'No stocks match the current filters.', 'info'); return; }
+        if (!rows.length) { AlphaCouncil.showToast(t('mkt.nothingToExport', 'Nothing to export'), t('mkt.nothingToExportMsg', 'No stocks match the current filters.'), 'info'); return; }
         var cols = ['ticker_key', 'ticker', 'name_en', 'exchange', 'currency', 'sector_en', 'last_price', 'day_change_pct', 'market_cap_raw', 'pe', 'dividend_yield_pct', 'rsi_14'];
         var csv = cols.join(',') + '\n' + rows.map(function (r) {
           return cols.map(function (c) { var v = (r[c] == null ? '' : String(r[c])); return /[",\n]/.test(v) ? ('"' + v.replace(/"/g, '""') + '"') : v; }).join(',');
@@ -1534,7 +1613,7 @@
         a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
         a.download = 'alphacouncil-markets.csv';
         document.body.appendChild(a); a.click(); a.remove();
-        AlphaCouncil.showToast('Exported', rows.length + ' stocks exported to CSV', 'success');
+        AlphaCouncil.showToast(t('mkt.exported', 'Exported'), rows.length + ' ' + t('mkt.exportedMsg', 'stocks exported to CSV'), 'success');
       });
 
       // ---- index cards (real value from ticker-tape + real count from screening) ----
@@ -1546,7 +1625,7 @@
       }
       function populateIndices() {
         var counts = {}; ALL.forEach(function (r) { counts[r.exchange] = (counts[r.exchange] || 0) + 1; });
-        ['TADAWUL', 'ADX', 'DFM', 'QSE', 'KSE', 'MSM', 'BSE'].forEach(function (ex) { setCard(ex, '—', 'No index data', 'neutral', counts[ex] ? (counts[ex] + ' stocks') : ''); });
+        ['TADAWUL', 'ADX', 'DFM', 'QSE', 'KSE', 'MSM', 'BSE'].forEach(function (ex) { setCard(ex, '—', t('mkt.noIndexData', 'No index data'), 'neutral', counts[ex] ? (counts[ex] + ' ' + t('mkt.stocksMeta', 'stocks')) : ''); });
         API.tickerTape().then(function (d) {
           (d && d.groups || []).forEach(function (g) {
             if (!g.index || g.index.price == null) return;
@@ -1559,35 +1638,35 @@
       // ---- movers ----
       function moverHtml(m) {
         var up = (m.day_change_pct || 0) >= 0;
-        return '<div class="mover-item" onclick="viewStock(\'' + esc(m.ticker_key) + '\')"><div class="mover-info"><div class="mover-ticker">' + esc(m.ticker || m.ticker_key) + '</div><div class="mover-name">' + esc(isAr() ? (m.name_ar || m.name_en || m.ticker) : (m.name_en || m.ticker)) + '</div></div><div class="mover-change ' + (up ? 'up' : 'down') + '">' + (up ? '+' : '') + Number(m.day_change_pct || 0).toFixed(2) + '%</div></div>';
+        return '<div class="mover-item" onclick="viewStock(\'' + esc(m.ticker_key) + '\')"><div class="mover-info"><div class="mover-ticker">' + esc(m.ticker || m.ticker_key) + '</div><div class="mover-name">' + esc(locName(m)) + '</div></div><div class="mover-change ' + (up ? 'up' : 'down') + '">' + (up ? '+' : '') + Number(m.day_change_pct || 0).toFixed(2) + '%</div></div>';
       }
-      function showMovers(type) { var c = $('#moversContent'); if (!c) return; var arr = MOVERS[type] || []; c.innerHTML = arr.length ? arr.slice(0, 6).map(moverHtml).join('') : '<div style="padding:16px;color:var(--fg-dim);font-size:13px;">No data available.</div>'; }
+      function showMovers(type) { var c = $('#moversContent'); if (!c) return; var arr = MOVERS[type] || []; c.innerHTML = arr.length ? arr.slice(0, 6).map(moverHtml).join('') : '<div style="padding:16px;color:var(--fg-dim);font-size:13px;">' + esc(t('mkt.noData', 'No data available.')) + '</div>'; }
       var gt = $('#gainersTab'), lt = $('#losersTab');
       if (gt) gt.addEventListener('click', function () { gt.classList.add('active'); if (lt) lt.classList.remove('active'); showMovers('gainers'); });
       if (lt) lt.addEventListener('click', function () { lt.classList.add('active'); if (gt) gt.classList.remove('active'); showMovers('losers'); });
       function loadMovers() {
-        var c = $('#moversContent'); if (c) c.innerHTML = '<div style="padding:16px;color:var(--fg-dim);font-size:13px;">Loading…</div>';
+        var c = $('#moversContent'); if (c) c.innerHTML = '<div style="padding:16px;color:var(--fg-dim);font-size:13px;">' + esc(t('mkt.loading', 'Loading…')) + '</div>';
         API.movers().then(function (d) {
           MOVERS.gainers = (d && d.gainers) || []; MOVERS.losers = (d && d.losers) || [];
           var fr = $('#dataFreshness'); if (fr && d && d.meta && d.meta.newest_date) fr.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> As of ' + esc(d.meta.newest_date);
           showMovers((lt && lt.classList.contains('active')) ? 'losers' : 'gainers');
-        }).catch(function () { if (c) c.innerHTML = '<div style="padding:16px;color:var(--fg-dim);font-size:13px;">Couldn’t load movers.</div>'; });
+        }).catch(function () { if (c) c.innerHTML = '<div style="padding:16px;color:var(--fg-dim);font-size:13px;">' + esc(t('mkt.loadMovers', 'Couldn’t load movers.')) + '</div>'; });
       }
 
       // ---- market news ----
       function loadMarketNews() {
         var host = $('#marketNewsBody'); if (!host) return;
-        host.innerHTML = '<div style="padding:16px;color:var(--fg-dim);font-size:13px;">Loading…</div>';
+        host.innerHTML = '<div style="padding:16px;color:var(--fg-dim);font-size:13px;">' + esc(t('mkt.loading', 'Loading…')) + '</div>';
         API.latestNews(6).then(function (items) {
           items = Array.isArray(items) ? items : ((items && items.items) || []);
-          if (!items.length) { host.innerHTML = '<div style="padding:16px;color:var(--fg-dim);font-size:13px;">No recent market news.</div>'; return; }
+          if (!items.length) { host.innerHTML = '<div style="padding:16px;color:var(--fg-dim);font-size:13px;">' + esc(t('mkt.noNews', 'No recent market news.')) + '</div>'; return; }
           host.innerHTML = items.slice(0, 6).map(function (it) {
             var title = esc(isAr() ? (it.headline_ar || it.headline_en || it.title || '') : (it.headline_en || it.title || ''));
             var src = esc(it.source || it.exchange || it.ticker_key || '');
             var when = esc(String(it.date || it.published_at || '').slice(0, 10));
             return '<div class="news-item" onclick="openNews()"><div class="news-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div><div class="news-content"><div class="news-source">' + src + '</div><div class="news-title">' + title + '</div><div class="news-meta">' + when + '</div></div></div>';
           }).join('');
-        }).catch(function () { host.innerHTML = '<div style="padding:16px;color:var(--fg-dim);font-size:13px;">Couldn’t load market news.</div>'; });
+        }).catch(function () { host.innerHTML = '<div style="padding:16px;color:var(--fg-dim);font-size:13px;">' + esc(t('mkt.loadNews', 'Couldn’t load market news.')) + '</div>'; });
       }
 
       // ---- load real data ----
@@ -1602,15 +1681,24 @@
         populateIndices();
         render();
       }).catch(function () {
-        var body = $('#screenerBody'); if (body) body.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--fg-dim);">Couldn’t load market data. Please try again.</td></tr>';
+        var body = $('#screenerBody'); if (body) body.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--fg-dim);">' + esc(t('mkt.loadMarket', 'Couldn’t load market data. Please try again.')) + '</td></tr>';
       });
       loadMovers();
       loadMarketNews();
+
+      // MKT-10 — re-paint all JS-rendered content when the user toggles language.
+      window.addEventListener('ac:langchange', function () {
+        render();
+        showMovers((lt && lt.classList.contains('active')) ? 'losers' : 'gainers');
+        populateIndices();
+        loadMarketNews();
+      });
     });
 
     // ============================================================
     // Global handlers (referenced from inline onclick)
     // ============================================================
+    function tG(key, fallback) { var v = (window.AC_I18N && AC_I18N.t) ? AC_I18N.t(key) : null; return (v == null ? (fallback == null ? key : fallback) : v); }
     function viewStock(tk) { window.location.href = 'stock-detail.html?ticker=' + encodeURIComponent(tk); }
     function toggleWatchlist(tk) {
       var btn = document.querySelector('tr[data-ticker="' + tk + '"] .stock-watchlist'); if (!btn) return;
@@ -1618,19 +1706,19 @@
       (add ? API.addToWatchlist(tk) : API.removeFromWatchlist(tk)).then(function () {
         btn.classList.toggle('active', add);
         var svg = btn.querySelector('svg'); if (svg) svg.setAttribute('fill', add ? 'currentColor' : 'none');
-        btn.setAttribute('aria-label', add ? 'Remove from watchlist' : 'Add to watchlist');
-        AlphaCouncil.showToast(add ? 'Added to Watchlist' : 'Removed from Watchlist', String(tk).split('_')[0] + (add ? ' is now on your watchlist' : ' was removed'), 'success');
+        btn.setAttribute('aria-label', add ? tG('mkt.removeFromWatchlist', 'Remove from watchlist') : tG('mkt.addToWatchlist', 'Add to watchlist'));
+        AlphaCouncil.showToast(add ? tG('mkt.addedToWatchlist', 'Added to Watchlist') : tG('mkt.removedFromWatchlist', 'Removed from Watchlist'), String(tk).split('_')[0] + ' ' + (add ? tG('mkt.nowOnWatchlist', 'is now on your watchlist') : tG('mkt.wasRemoved', 'was removed')), 'success');
       }).catch(function (e) {
-        if (e && e.status === 401) { AlphaCouncil.showToast('Sign in required', 'Log in to use your watchlist', 'info'); setTimeout(function () { window.location.href = 'login.html'; }, 900); return; }
-        AlphaCouncil.showToast('Couldn’t update watchlist', (e && e.message) || 'Please try again.', 'error');
+        if (e && e.status === 401) { AlphaCouncil.showToast(tG('mkt.signInRequired', 'Sign in required'), tG('mkt.signInForWatchlist', 'Log in to use your watchlist'), 'info'); setTimeout(function () { window.location.href = 'login.html'; }, 900); return; }
+        AlphaCouncil.showToast(tG('mkt.updateWatchlist', 'Couldn’t update watchlist'), (e && e.message) || tG('mkt.tryAgain', 'Please try again.'), 'error');
       });
     }
     function askAdviser(tk, name) { if (window.AlphaCouncil) { AlphaCouncil.openSidebar(); AlphaCouncil.askQuestion('Tell me about ' + (name || tk) + ' (' + String(tk).split('_')[0] + ')'); } }
     function runCouncil(tk) { if (window.AlphaCouncil && AlphaCouncil.openCouncilModal) AlphaCouncil.openCouncilModal({ tickerKey: tk }); }
     function addToPortfolio(tk) {
       if (!window.AlphaCouncil || !AlphaCouncil.addHolding) return;
-      var shares = prompt('How many shares of ' + String(tk).split('_')[0] + '?'); if (shares === null || String(shares).trim() === '') return;
-      var cost = prompt("Average cost per share (in the stock's native currency)?"); if (cost === null || String(cost).trim() === '') return;
+      var shares = prompt(tG('mkt.promptShares', 'How many shares of') + ' ' + String(tk).split('_')[0] + '?'); if (shares === null || String(shares).trim() === '') return;
+      var cost = prompt(tG('mkt.promptCost', "Average cost per share (in the stock's native currency)?")); if (cost === null || String(cost).trim() === '') return;
       AlphaCouncil.addHolding(tk, Number(shares), Number(cost));
     }
     function openNews() { window.location.href = 'news.html'; }

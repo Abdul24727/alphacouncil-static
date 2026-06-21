@@ -1143,7 +1143,7 @@
             </div>
             <div class="card-body">
               <p class="commentary-text">Get a live, model-written read on your portfolio — concentration, valuation, dividend income and the main risks — grounded in your <strong>real holdings</strong>.</p>
-              <button class="btn btn-secondary" style="margin-top:14px;" onclick="if(window.AlphaCouncil){AlphaCouncil.openSidebar&&AlphaCouncil.openSidebar();AlphaCouncil.askQuestion&&AlphaCouncil.askQuestion('Give me a commentary on my portfolio — concentration, valuation, dividend income and the main risks.');}">Ask the AI Adviser</button>
+              <button class="btn btn-secondary" style="margin-top:14px;" onclick="if(window.AlphaCouncil){AlphaCouncil.openSidebar&&AlphaCouncil.openSidebar();AlphaCouncil.askQuestion&&AlphaCouncil.askQuestion((window.AC_I18N&&AC_I18N.t('port.commentary_question'))||'Give me a commentary on my portfolio — concentration, valuation, dividend income and the main risks.');}">Ask the AI Adviser</button>
             </div>
           </div>
         </div>
@@ -1492,8 +1492,119 @@
     'port.add_holding':      { en: 'Add Holding', ar: 'إضافة مركز' },
     'port.import_holdings':  { en: 'Import Holdings', ar: 'استيراد المراكز' },
     'port.council_review':   { en: 'AI Analyst Council Review', ar: 'مراجعة مجلس المحلّلين الذكي' },
-    'port.adjust_position':  { en: 'Adjust Position', ar: 'تعديل المركز' }
+    'port.adjust_position':  { en: 'Adjust Position', ar: 'تعديل المركز' },
+    // --- O4b: dynamic + extra portfolio strings ---
+    'port.import_label':     { en: 'Import from screenshot/PDF', ar: 'استيراد من لقطة شاشة/PDF' },
+    'port.commentary_desc':  { en: 'Get a live, model-written read on your portfolio — concentration, valuation, dividend income and the main risks — grounded in your real holdings.', ar: 'احصل على قراءة حيّة مكتوبة بالنماذج لمحفظتك — التركّز والتقييم ودخل الأرباح وأهم المخاطر — مبنية على مراكزك الحقيقية.' },
+    'port.commentary_strong':{ en: 'real holdings', ar: 'مراكزك الحقيقية' },
+    'port.ask_adviser':      { en: 'Ask the AI Adviser', ar: 'اسأل المستشار الذكي' },
+    'port.commentary_question': { en: 'Give me a commentary on my portfolio — concentration, valuation, dividend income and the main risks.', ar: 'أعطني تعليقًا على محفظتي — التركّز والتقييم ودخل الأرباح وأهم المخاطر.' },
+    'port.council_desc':     { en: 'Convene a live multi-model AI Analyst Council on your portfolio — several models debate concentration, valuation and risk across your real holdings, then a chairman synthesises a balanced view.', ar: 'اعقد مجلس محلّلين ذكيًا حيًّا متعدّد النماذج على محفظتك — تتناقش عدّة نماذج حول التركّز والتقييم والمخاطر عبر مراكزك الحقيقية، ثم يصوغ رئيس المجلس رأيًا متوازنًا.' },
+    'port.persp_growth':     { en: 'Growth', ar: 'النمو' },
+    'port.persp_value':      { en: 'Value', ar: 'القيمة' },
+    'port.persp_risk':       { en: 'Risk', ar: 'المخاطر' },
+    'port.persp_macro':      { en: 'Macro', ar: 'الاقتصاد الكلي' },
+    'port.persp_income':     { en: 'Income', ar: 'الدخل' },
+    'port.run_council':      { en: 'Run full AI Council review', ar: 'تشغيل مراجعة المجلس الذكي الكاملة' },
+    'port.watchlist_hint':   { en: 'Open any stock and tap ☆ Watchlist to add', ar: 'افتح أي سهم واضغط ☆ المتابعة للإضافة' },
+    // allocation / holdings dynamic
+    'port.empty_allocation': { en: 'Add holdings to see your allocation.', ar: 'أضف مراكز لرؤية توزيع محفظتك.' },
+    'port.no_holdings_msg':  { en: 'No holdings yet — click “Add Holding” to start.', ar: 'لا توجد مراكز حتى الآن — اضغط «إضافة مركز» للبدء.' },
+    'port.other':            { en: 'Other', ar: 'أخرى' },
+    'port.sector_conc_warn': { en: '{name} is {pct}% of the portfolio — above the 25% single-sector guideline.', ar: '{name} يمثّل {pct}% من المحفظة — أعلى من حدّ الـ٢٥٪ الإرشادي للقطاع الواحد.' },
+    'port.country_conc_warn':{ en: '{name} is {pct}% of the portfolio — consider geographic diversification.', ar: '{name} يمثّل {pct}% من المحفظة — فكّر في التنويع الجغرافي.' },
+    // countries
+    'port.country_saudi':    { en: 'Saudi Arabia', ar: 'السعودية' },
+    'port.country_uae':      { en: 'UAE', ar: 'الإمارات' },
+    'port.country_qatar':    { en: 'Qatar', ar: 'قطر' },
+    'port.country_kuwait':   { en: 'Kuwait', ar: 'الكويت' },
+    'port.country_oman':     { en: 'Oman', ar: 'عُمان' },
+    'port.country_bahrain':  { en: 'Bahrain', ar: 'البحرين' },
+    // row action tooltips
+    'port.action_view':      { en: 'View details', ar: 'عرض التفاصيل' },
+    'port.action_ask':       { en: 'Ask Adviser', ar: 'اسأل المستشار' },
+    'port.action_council':   { en: 'Run Council', ar: 'تشغيل المجلس' },
+    'port.action_remove':    { en: 'Remove', ar: 'إزالة' },
+    'port.action_unwatch':   { en: 'Remove from watchlist', ar: 'إزالة من قائمة المتابعة' },
+    // alerts / news / watchlist (right column + bottom)
+    'port.alerts_empty':     { en: 'No alerts yet. As notable moves, technical signals and news hit your holdings, they’ll appear here.', ar: 'لا توجد تنبيهات حتى الآن. عندما تطرأ تحرّكات ملحوظة وإشارات فنية وأخبار على مراكزك، ستظهر هنا.' },
+    'port.alerts_signin':    { en: 'Sign in to see your alerts.', ar: 'سجّل الدخول لرؤية تنبيهاتك.' },
+    'port.alerts_error':     { en: 'Couldn’t load your alerts.', ar: 'تعذّر تحميل تنبيهاتك.' },
+    'port.news_empty':       { en: 'No recent news for your holdings yet.', ar: 'لا توجد أخبار حديثة عن مراكزك بعد.' },
+    'port.news_signin':      { en: 'Sign in to see news for your holdings.', ar: 'سجّل الدخول لرؤية أخبار مراكزك.' },
+    'port.news_error':       { en: 'Couldn’t load news right now.', ar: 'تعذّر تحميل الأخبار حاليًا.' },
+    'port.news_ask':         { en: 'Ask Adviser', ar: 'اسأل المستشار' },
+    'port.news_source':      { en: 'News', ar: 'أخبار' },
+    'port.watchlist_empty':  { en: 'Your watchlist is empty. Open any stock and tap <strong>☆ Watchlist</strong> to track it here.', ar: 'قائمة المتابعة فارغة. افتح أي سهم واضغط <strong>☆ المتابعة</strong> لتتبّعه هنا.' },
+    'port.watchlist_signin': { en: 'Sign in to use your watchlist.', ar: 'سجّل الدخول لاستخدام قائمة المتابعة.' },
+    'port.watchlist_error':  { en: 'Couldn’t load your watchlist.', ar: 'تعذّر تحميل قائمة المتابعة.' },
+    // alert kind fallbacks
+    'port.alert_kind_growth':   { en: 'Growth', ar: 'النمو' },
+    'port.alert_kind_risk':     { en: 'Risk', ar: 'المخاطر' },
+    'port.alert_kind_technical':{ en: 'Technical', ar: 'فني' },
+    'port.alert_kind_value':    { en: 'Value', ar: 'القيمة' },
+    'port.alert_kind_macro':    { en: 'Macro', ar: 'الاقتصاد الكلي' },
+    // relative time
+    'port.time_now':         { en: 'just now', ar: 'الآن' },
+    'port.time_m':           { en: '{n}m ago', ar: 'منذ {n} د' },
+    'port.time_h':           { en: '{n}h ago', ar: 'منذ {n} س' },
+    'port.time_d':           { en: '{n}d ago', ar: 'منذ {n} ي' },
+    'port.time_mo':          { en: '{n}mo ago', ar: 'منذ {n} شهر' },
+    // toasts (add / import / search)
+    'port.toast_pick_stock_t': { en: 'Pick a stock', ar: 'اختر سهمًا' },
+    'port.toast_pick_stock_m': { en: 'Search and select a stock from the list so we add the right ticker.', ar: 'ابحث واختر سهمًا من القائمة لنضيف الرمز الصحيح.' },
+    'port.toast_missing_shares_t': { en: 'Missing shares', ar: 'عدد الأسهم مفقود' },
+    'port.toast_missing_shares_m': { en: 'Enter the number of shares you hold.', ar: 'أدخل عدد الأسهم التي تملكها.' },
+    'port.toast_missing_cost_t': { en: 'Missing cost', ar: 'التكلفة مفقودة' },
+    'port.toast_missing_cost_m': { en: "Enter your average cost per share (in the stock's native currency).", ar: 'أدخل متوسط تكلفتك لكل سهم (بعملة السهم الأصلية).' },
+    'port.toast_added_t':    { en: 'Holding added', ar: 'تمت إضافة المركز' },
+    'port.toast_added_m':    { en: '{code} was added to your portfolio', ar: 'تمت إضافة {code} إلى محفظتك' },
+    'port.toast_add_fail_t': { en: 'Could not add holding', ar: 'تعذّرت إضافة المركز' },
+    'port.toast_try_again':  { en: 'Please try again.', ar: 'يرجى المحاولة مرة أخرى.' },
+    'port.toast_file_large_t': { en: 'File too large', ar: 'الملف كبير جدًا' },
+    'port.toast_file_large_m': { en: 'Please upload a file under 10MB.', ar: 'يرجى رفع ملف أقل من ١٠ ميغابايت.' },
+    'port.import_reading':   { en: 'Reading "{file}"…', ar: 'جارٍ قراءة "{file}"…' },
+    'port.import_drop':      { en: 'Drop file here or click to upload', ar: 'أفلت الملف هنا أو اضغط للرفع' },
+    'port.toast_read_fail_t':{ en: 'Could not read statement', ar: 'تعذّرت قراءة كشف الحساب' },
+    'port.toast_read_fail_m':{ en: 'Please try a clearer screenshot or PDF.', ar: 'يرجى تجربة لقطة شاشة أو ملف PDF أوضح.' },
+    'port.import_no_match':  { en: "We couldn't match any holdings on that statement to GCC tickers we cover. Nothing was imported.", ar: 'لم نتمكّن من مطابقة أي مراكز في هذا الكشف مع رموز الخليج التي نغطّيها. لم يتم استيراد أي شيء.' },
+    'port.import_review_one':{ en: 'Review {count} matched holding', ar: 'مراجعة {count} مركز مطابق' },
+    'port.import_review_many':{ en: 'Review {count} matched holdings', ar: 'مراجعة {count} مركز مطابق' },
+    'port.import_sh':        { en: 'sh', ar: 'سهم' },
+    'port.import_selected':  { en: 'Import selected', ar: 'استيراد المحدّد' },
+    'port.import_importing': { en: 'Importing…', ar: 'جارٍ الاستيراد…' },
+    'port.toast_nothing_sel_t': { en: 'Nothing selected', ar: 'لم يُحدَّد شيء' },
+    'port.toast_nothing_sel_m': { en: 'Tick at least one holding to import.', ar: 'حدّد مركزًا واحدًا على الأقل للاستيراد.' },
+    'port.toast_imported_t': { en: 'Holdings imported', ar: 'تم استيراد المراكز' },
+    'port.toast_imported_one_m': { en: '{count} position added to your portfolio', ar: 'تمت إضافة {count} مركز إلى محفظتك' },
+    'port.toast_imported_many_m':{ en: '{count} positions added to your portfolio', ar: 'تمت إضافة {count} مركز إلى محفظتك' },
+    'port.toast_import_fail_t': { en: 'Import failed', ar: 'فشل الاستيراد' },
+    'port.toast_removed_t':  { en: 'Removed', ar: 'تمت الإزالة' },
+    'port.toast_removed_m':  { en: 'Removed from your watchlist', ar: 'تمت الإزالة من قائمة المتابعة' },
+    'port.toast_remove_fail_t': { en: 'Couldn’t remove', ar: 'تعذّرت الإزالة' },
+    'port.toast_remove_fail_m': { en: 'Please try again', ar: 'يرجى المحاولة مرة أخرى' }
   });
+  // O4b: tiny interpolation helper — AC_I18N.t(key) with {placeholder} substitution.
+  function PT(key, vars){
+    var s = (window.AC_I18N && AC_I18N.t(key)) || '';
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars,k)) s = s.split('{'+k+'}').join(vars[k]);
+    return s;
+  }
+  // O4b: AlphaCouncil's normalized holdings only carry name_en/sector_en. Keep an Arabic-metadata
+  // lookup (tickerKey → {name_ar, sector_ar}) populated from the raw /api/portfolio/holdings rows so
+  // holdings/allocations can localise via AC_I18N.localName/localSector at render time.
+  var _ARMETA = {};
+  function _mergeArMeta(rows){
+    if (!Array.isArray(rows)) return;
+    rows.forEach(function(r){ var k = r.ticker || r.ticker_key; if (k) _ARMETA[k] = { name_ar: r.name_ar, name_en: r.name_en, sector_ar: r.sector_ar, sector_en: r.sector_en }; });
+  }
+  // Build a row AC_I18N.localName/localSector understands, blending the normalized holding with Arabic meta.
+  function _rowFor(h){
+    var meta = _ARMETA[h.tickerKey] || {};
+    return { name_en: meta.name_en || h.name, name_ar: meta.name_ar, sector_en: meta.sector_en || h.sector, sector_ar: meta.sector_ar, ticker: h.ticker };
+  }
+  function localNameFor(h){ return (window.AC_I18N && AC_I18N.localName(_rowFor(h))) || h.name || h.ticker || ''; }
+  function localSectorFor(h){ return (window.AC_I18N && AC_I18N.localSector(_rowFor(h))) || h.sector || ''; }
   (function () {
     var MAP = {
       'Total Portfolio Value': 'port.m_value', 'Total Cost': 'port.m_cost', 'Unrealized P&L': 'port.m_pnl',
@@ -1514,6 +1625,19 @@
     Array.prototype.forEach.call(document.querySelectorAll('.page-header p, .portfolio-subtitle, p'), function (el) {
       if ((el.textContent || '').trim() === 'Manage holdings, track performance, and run deep analysis') setKey(el, 'port.subtitle');
     });
+    // O4b: tag remaining static markup (buttons / descriptive copy / watchlist hint).
+    setKey(document.getElementById('importBtn'), 'port.import_label');
+    setKey(document.getElementById('addHoldingBtn'), 'port.add_holding');
+    setKey(document.getElementById('openCouncilModal'), 'port.run_council');
+    (function(){
+      var cd = document.querySelector('.commentary-text'); if (cd) cd.setAttribute('data-i18n', 'port.commentary_desc');
+      var cs = document.querySelector('.council-synthesis'); if (cs) cs.setAttribute('data-i18n', 'port.council_desc');
+      var ask = document.querySelector('.commentary-card .btn-secondary'); setKey(ask, 'port.ask_adviser');
+      var persps = document.querySelectorAll('.council-perspective');
+      var pKeys = ['port.persp_growth','port.persp_value','port.persp_risk','port.persp_macro','port.persp_income'];
+      Array.prototype.forEach.call(persps, function(el, i){ if (pKeys[i]) setKey(el, pKeys[i]); });
+      var hint = document.querySelector('#watchlistCard .card-action'); setKey(hint, 'port.watchlist_hint');
+    })();
     if (window.AC_I18N) AC_I18N.apply();
   })();
   </script>
@@ -1529,16 +1653,20 @@
       const IC_COUNCIL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>';
       const IC_DEL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>';
       // F1: real Sector + Country allocation from the user's live holdings (SAR-weighted), honest concentration flags.
+      // O4b: country/sector labels + warnings + empty state localised (re-renders on ac:langchange).
       function renderAllocations(holdings){
         const PALETTE = ['#27D3C3','#D7B76A','#8B5CF6','#3B82F6','#EF4444','#10B981','#F59E0B','#6B7A8F','#EC4899','#14B8A6'];
-        const EXCH_COUNTRY = { TADAWUL:'Saudi Arabia', DFM:'UAE', ADX:'UAE', ADSM:'UAE', QSE:'Qatar', KSE:'Kuwait', BOURSA:'Kuwait', MSM:'Oman', BSE:'Bahrain', BHB:'Bahrain' };
+        // exchange → i18n country key (label resolved at render time so it follows the language).
+        const EXCH_COUNTRY_KEY = { TADAWUL:'port.country_saudi', DFM:'port.country_uae', ADX:'port.country_uae', ADSM:'port.country_uae', QSE:'port.country_qatar', KSE:'port.country_kuwait', BOURSA:'port.country_kuwait', MSM:'port.country_oman', BSE:'port.country_bahrain', BHB:'port.country_bahrain' };
+        const OTHER = PT('port.other');
+        function countryName(exch){ const k = EXCH_COUNTRY_KEY[String(exch||'').toUpperCase()]; return k ? PT(k) : (exch || OTHER); }
         const total = holdings.reduce(function(s,h){ return s+(h.valueSar||0); },0);
         function group(containerId, flagId, keyFn, flagFn){
           const host = document.getElementById(containerId); if(!host) return;
           const flag = document.getElementById(flagId);
-          if(!total){ host.innerHTML = '<div style="color:var(--fg-dim);font-size:13px;padding:8px;">Add holdings to see your allocation.</div>'; if(flag) flag.style.display='none'; return; }
+          if(!total){ host.innerHTML = '<div style="color:var(--fg-dim);font-size:13px;padding:8px;">'+escP(PT('port.empty_allocation'))+'</div>'; if(flag) flag.style.display='none'; return; }
           const m = {};
-          holdings.forEach(function(h){ const k = (keyFn(h)||'Other'); m[k] = (m[k]||0) + (h.valueSar||0); });
+          holdings.forEach(function(h){ const k = (keyFn(h)||OTHER); m[k] = (m[k]||0) + (h.valueSar||0); });
           const rows = Object.keys(m).map(function(k){ return { name:k, pct:(m[k]/total)*100 }; }).sort(function(a,b){ return b.pct-a.pct; });
           host.innerHTML = rows.map(function(r,i){
             const col = PALETTE[i % PALETTE.length];
@@ -1548,11 +1676,11 @@
           }).join('');
           if(flag){ const txt = flagFn(rows); const t = flag.querySelector('.council-flag-text'); if(txt && t){ t.textContent = txt; flag.style.display=''; } else flag.style.display='none'; }
         }
-        group('sectorAllocItems','sectorAllocFlag', function(h){ return h.sector; }, function(rows){
-          const top = rows[0]; return (top && top.pct > 25) ? (top.name+' is '+Math.round(top.pct)+'% of the portfolio — above the 25% single-sector guideline.') : null;
+        group('sectorAllocItems','sectorAllocFlag', function(h){ return localSectorFor(h); }, function(rows){
+          const top = rows[0]; return (top && top.pct > 25) ? PT('port.sector_conc_warn', { name: top.name, pct: Math.round(top.pct) }) : null;
         });
-        group('countryAllocItems','countryAllocFlag', function(h){ return EXCH_COUNTRY[String(h.exchange||'').toUpperCase()] || h.exchange || 'Other'; }, function(rows){
-          const top = rows[0]; return (top && top.pct > 50) ? (top.name+' is '+Math.round(top.pct)+'% of the portfolio — consider geographic diversification.') : null;
+        group('countryAllocItems','countryAllocFlag', function(h){ return countryName(h.exchange); }, function(rows){
+          const top = rows[0]; return (top && top.pct > 50) ? PT('port.country_conc_warn', { name: top.name, pct: Math.round(top.pct) }) : null;
         });
       }
       window.onPortfolioReady = function(holdings){
@@ -1574,24 +1702,33 @@
         renderAllocations(holdings);   // F1: real sector + country allocation
         const tbody=document.getElementById('holdingsBody');
         if(!tbody) return;
-        if(!holdings.length){ tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--fg-dim);">No holdings yet — click “Add Holding” to start.</td></tr>'; return; }
+        if(!holdings.length){ tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--fg-dim);">'+escP(PT('port.no_holdings_msg'))+'</td></tr>'; return; }
         const maxW=Math.max.apply(null,holdings.map(function(h){return h.weight||0;}))||1;
+        const tipView=PT('port.action_view'), tipAsk=PT('port.action_ask'), tipCouncil=PT('port.action_council'), tipRemove=PT('port.action_remove');
         tbody.innerHTML=holdings.map(function(h){
-          const up=(h.pnlPct||0)>=0, sec=h.sector?(' · '+escP(h.sector)):'';
+          const up=(h.pnlPct||0)>=0, secName=localSectorFor(h), sec=secName?(' · '+escP(secName)):'';
           return '<tr data-ticker="'+escP(h.tickerKey)+'" class="holding-row">'
-            +'<td><div class="holding-name-wrapper"><div class="holding-logo">'+escP(h.ticker)+'</div><div><div class="holding-ticker">'+escP(h.name)+'</div><div class="holding-company">'+escP(h.ticker)+sec+'</div></div></div></td>'
+            +'<td><div class="holding-name-wrapper"><div class="holding-logo">'+escP(h.ticker)+'</div><div><div class="holding-ticker">'+escP(localNameFor(h))+'</div><div class="holding-company">'+escP(h.ticker)+sec+'</div></div></div></td>'
             +'<td class="weight-cell">'+(h.weight!=null?h.weight.toFixed(1)+'%':'—')+'<div class="weight-bar"><div class="weight-bar-fill" style="width:'+Math.round((h.weight||0)/maxW*100)+'%;"></div></div></td>'
             +'<td>'+formatCurrency(h.value,h.currency)+'</td>'
             +'<td class="pnl-cell"><div class="pnl-amount '+(up?'up':'down')+'">'+formatPercent(h.pnlPct)+'</div><div class="pnl-pct">'+(h.pnl>=0?'+':'')+formatCurrency(h.pnl,h.currency)+'</div></td>'
             +'<td class="thesis-cell"><span class="thesis-score">—</span></td>'
             +'<td><div class="row-actions">'
-              +'<button class="row-action" data-act="view" title="View details">'+IC_VIEW+'</button>'
-              +'<button class="row-action" data-act="ask" title="Ask Adviser">'+IC_ASK+'</button>'
-              +'<button class="row-action" data-act="council" title="Run Council">'+IC_COUNCIL+'</button>'
-              +'<button class="row-action" data-act="remove" title="Remove">'+IC_DEL+'</button>'
+              +'<button class="row-action" data-act="view" title="'+escP(tipView)+'">'+IC_VIEW+'</button>'
+              +'<button class="row-action" data-act="ask" title="'+escP(tipAsk)+'">'+IC_ASK+'</button>'
+              +'<button class="row-action" data-act="council" title="'+escP(tipCouncil)+'">'+IC_COUNCIL+'</button>'
+              +'<button class="row-action" data-act="remove" title="'+escP(tipRemove)+'">'+IC_DEL+'</button>'
             +'</div></td></tr>';
         }).join('');
       };
+      // O4b: fetch raw holdings rows once to capture name_ar/sector_ar for localisation, then re-render.
+      (function primeArMeta(){
+        if(!window.API || !API.portfolio) return;
+        API.portfolio().then(function(rows){
+          _mergeArMeta(rows);
+          if (window.AlphaCouncil && AlphaCouncil.getHoldings && AlphaCouncil.getHoldings().length) window.onPortfolioReady(AlphaCouncil.getHoldings());
+        }).catch(function(){});
+      })();
       // Delegated row actions (no inline onclick escaping).
       const _hb=document.getElementById('holdingsBody');
       if(_hb) _hb.addEventListener('click', function(e){
@@ -1609,8 +1746,9 @@
       if (AlphaCouncil.getHoldings && AlphaCouncil.getHoldings().length) window.onPortfolioReady(AlphaCouncil.getHoldings());
 
       // ---- F2: real Intelligent Alerts (/api/alerts) + News for Holdings (/api/news/for-holdings) ----
-      (function loadPortfolioAlertsAndNews(){
-        function timeAgo(iso){ const t=Date.parse(iso); if(isNaN(t)) return ''; let s=Math.max(0,Math.floor((Date.now()-t)/1000)); if(s<60) return 'just now'; const m=Math.floor(s/60); if(m<60) return m+'m ago'; const h=Math.floor(m/60); if(h<24) return h+'h ago'; const d=Math.floor(h/24); if(d<30) return d+'d ago'; return Math.floor(d/30)+'mo ago'; }
+      // O4b: named + re-runnable on ac:langchange; all copy/labels/relative-time localised.
+      window.loadPortfolioAlertsAndNews = function loadPortfolioAlertsAndNews(){
+        function timeAgo(iso){ const t=Date.parse(iso); if(isNaN(t)) return ''; let s=Math.max(0,Math.floor((Date.now()-t)/1000)); if(s<60) return PT('port.time_now'); const m=Math.floor(s/60); if(m<60) return PT('port.time_m',{n:m}); const h=Math.floor(m/60); if(h<24) return PT('port.time_h',{n:h}); const d=Math.floor(h/24); if(d<30) return PT('port.time_d',{n:d}); return PT('port.time_mo',{n:Math.floor(d/30)}); }
         const ALERT_ICONS = {
           growth:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
           risk:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
@@ -1622,7 +1760,7 @@
         function alertHTML(a){
           const kind=a.kind||'technical', icon=ALERT_ICONS[kind]||ALERT_ICONS._default;
           const href=a.url||(a.ticker_key?('stock-detail.html?ticker='+encodeURIComponent(a.ticker_key)):'');
-          const src=a.source||(kind.charAt(0).toUpperCase()+kind.slice(1)), text=a.title||a.body||'';
+          const src=a.source||PT('port.alert_kind_'+kind)||(kind.charAt(0).toUpperCase()+kind.slice(1)), text=a.title||a.body||'';
           const nav=href?(' role="button" tabindex="0" style="cursor:pointer;" data-href="'+escP(href)+'" onclick="window.location.href=this.dataset.href"'):'';
           return '<div class="alert-item"'+nav+'><div class="alert-icon '+escP(kind)+'">'+icon+'</div>'
             +'<div class="alert-content"><div class="alert-source">'+escP(src)+'</div><div class="alert-text">'+escP(text)+'</div></div>'
@@ -1633,9 +1771,9 @@
           try{
             const r=await API.alerts(6); const items=(r&&r.alerts)?r.alerts:[];
             body.innerHTML = items.length ? items.slice(0,6).map(alertHTML).join('')
-              : '<div class="alert-empty" style="padding:18px;color:var(--fg-dim);font-size:13px;line-height:1.5;">No alerts yet. As notable moves, technical signals and news hit your holdings, they’ll appear here.</div>';
+              : '<div class="alert-empty" style="padding:18px;color:var(--fg-dim);font-size:13px;line-height:1.5;">'+escP(PT('port.alerts_empty'))+'</div>';
           }catch(e){
-            body.innerHTML = '<div class="alert-empty" style="padding:18px;color:var(--fg-dim);font-size:13px;">'+(e&&e.status===401?'Sign in to see your alerts.':'Couldn’t load your alerts.')+'</div>';
+            body.innerHTML = '<div class="alert-empty" style="padding:18px;color:var(--fg-dim);font-size:13px;">'+escP(e&&e.status===401?PT('port.alerts_signin'):PT('port.alerts_error'))+'</div>';
           }
         })();
         (async function(){
@@ -1643,47 +1781,50 @@
           const THUMB='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>';
           try{
             const r=await API.holdingsNews(6); const items=Array.isArray(r)?r:((r&&r.items)||[]);
-            if(!items.length){ grid.innerHTML='<div style="padding:14px;color:var(--fg-dim);font-size:13px;">No recent news for your holdings yet.</div>'; return; }
+            if(!items.length){ grid.innerHTML='<div style="padding:14px;color:var(--fg-dim);font-size:13px;">'+escP(PT('port.news_empty'))+'</div>'; return; }
+            const askLabel=PT('port.news_ask'), newsSrc=PT('port.news_source');
             grid.innerHTML = items.slice(0,6).map(function(it){
-              const title=it.headline_en||it.title||'', src=it.category||it.sector||'News', code=String(it.ticker_key||'').split('_')[0];
+              const title=(AC_I18N.lang==='ar'?(it.headline_ar||it.headline_en):(it.headline_en||it.headline_ar))||it.title||'', src=it.category||it.sector||newsSrc, code=String(it.ticker_key||'').split('_')[0];
               return '<div class="news-item" data-nid="'+escP(String(it.id))+'" data-ntitle="'+escP(title)+'" data-tk="'+escP(it.ticker_key||'')+'">'
                 +'<div class="news-thumb">'+THUMB+'</div>'
                 +'<div class="news-content"><div class="news-source">'+escP(src)+'</div>'
                 +'<div class="news-title">'+escP(title)+'</div>'
                 +'<div class="news-meta">'+escP(timeAgo(it.date)||it.date||'')+(code?(' · '+escP(code)):'')+'</div></div>'
-                +'<button class="news-ask" data-ask="1">Ask Adviser</button></div>';
+                +'<button class="news-ask" data-ask="1">'+escP(askLabel)+'</button></div>';
             }).join('');
             grid.querySelectorAll('.news-item').forEach(function(card){
               card.addEventListener('click', function(){ if(window.AlphaCouncil&&AlphaCouncil.askAboutNews) AlphaCouncil.askAboutNews(card.dataset.nid, card.dataset.ntitle, card.dataset.tk?[card.dataset.tk]:[]); });
             });
           }catch(e){
-            grid.innerHTML = '<div style="padding:14px;color:var(--fg-dim);font-size:13px;">'+(e&&e.status===401?'Sign in to see news for your holdings.':'Couldn’t load news right now.')+'</div>';
+            grid.innerHTML = '<div style="padding:14px;color:var(--fg-dim);font-size:13px;">'+escP(e&&e.status===401?PT('port.news_signin'):PT('port.news_error'))+'</div>';
           }
         })();
-      })();
+      };
+      window.loadPortfolioAlertsAndNews();
 
       // ---- Watchlist (real, per-user) ----
       window.reloadWatchlist = async function(){
         const tb=document.getElementById('watchlistBody'); if(!tb) return;
         try{
           const rows=await API.watchlist();
-          if(!rows||!rows.length){ tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:28px;color:var(--fg-dim);line-height:1.5;">Your watchlist is empty. Open any stock and tap <strong>☆ Watchlist</strong> to track it here.</td></tr>'; return; }
+          if(!rows||!rows.length){ tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:28px;color:var(--fg-dim);line-height:1.5;">'+PT('port.watchlist_empty')+'</td></tr>'; return; }
+          const tipView=PT('port.action_view'), tipUnwatch=PT('port.action_unwatch');
           tb.innerHTML=rows.map(function(r){
             const up=(r.day_change_pct||0)>=0;
             const code=r.ticker_short||String(r.ticker).split('_')[0];
-            const nm=r.name_en||code;
+            const nm=(window.AC_I18N?AC_I18N.localName(r):null)||r.name_en||code;
             return '<tr data-ticker="'+escP(r.ticker)+'" class="holding-row">'
               +'<td><div class="holding-name-wrapper"><div class="holding-logo">'+escP(code)+'</div><div><div class="holding-ticker">'+escP(nm)+'</div><div class="holding-company">'+escP(code)+'</div></div></div></td>'
               +'<td>'+(r.last_price!=null?formatCurrency(r.last_price,r.currency):'—')+'</td>'
               +'<td class="pnl-cell"><div class="pnl-amount '+(up?'up':'down')+'">'+(r.day_change_pct!=null?formatPercent(r.day_change_pct):'—')+'</div></td>'
               +'<td><div class="row-actions">'
-                +'<button class="row-action" data-act="view" title="View details">'+IC_VIEW+'</button>'
-                +'<button class="row-action" data-act="unwatch" title="Remove from watchlist">'+IC_DEL+'</button>'
+                +'<button class="row-action" data-act="view" title="'+escP(tipView)+'">'+IC_VIEW+'</button>'
+                +'<button class="row-action" data-act="unwatch" title="'+escP(tipUnwatch)+'">'+IC_DEL+'</button>'
               +'</div></td></tr>';
           }).join('');
         }catch(e){
-          if(e&&e.status===401){ tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--fg-dim);">Sign in to use your watchlist.</td></tr>'; return; }
-          tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--fg-dim);">Couldn’t load your watchlist.</td></tr>';
+          if(e&&e.status===401){ tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--fg-dim);">'+escP(PT('port.watchlist_signin'))+'</td></tr>'; return; }
+          tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--fg-dim);">'+escP(PT('port.watchlist_error'))+'</td></tr>';
         }
       };
       const _wb=document.getElementById('watchlistBody');
@@ -1693,11 +1834,18 @@
         const key=row.getAttribute('data-ticker'), act=btn.getAttribute('data-act');
         if(act==='view') window.location.href='stock-detail.html?ticker='+encodeURIComponent(key);
         else if(act==='unwatch'){
-          try{ await API.removeFromWatchlist(key); AlphaCouncil.showToast('Removed','Removed from your watchlist','success'); window.reloadWatchlist(); }
-          catch(err){ AlphaCouncil.showToast('Couldn’t remove','Please try again','error'); }
+          try{ await API.removeFromWatchlist(key); AlphaCouncil.showToast(PT('port.toast_removed_t'),PT('port.toast_removed_m'),'success'); window.reloadWatchlist(); }
+          catch(err){ AlphaCouncil.showToast(PT('port.toast_remove_fail_t'),PT('port.toast_remove_fail_m'),'error'); }
         }
       });
       window.reloadWatchlist();
+
+      // O4b: re-render every JS-built section live when the user toggles language.
+      window.addEventListener('ac:langchange', function(){
+        try { if (window.AlphaCouncil && AlphaCouncil.getHoldings) window.onPortfolioReady(AlphaCouncil.getHoldings()); } catch(e){}
+        try { window.loadPortfolioAlertsAndNews(); } catch(e){}
+        try { window.reloadWatchlist(); } catch(e){}
+      });
     });
 
     // Legacy function mappings - delegate to AlphaCouncil
@@ -2028,16 +2176,17 @@
     // DOM-only mock that persisted nothing. Now: resolve a real ticker_key from the live
     // /api/screening universe, then AlphaCouncil.addHolding (POST + reload from the DB).
     (function () {
-      var universe = [];        // {ticker_key, ticker, name_en, exchange, currency}
+      var universe = [];        // {ticker_key, ticker, name_en, name_ar, exchange, currency}
       var resolvedKey = null;   // ticker_key chosen from the dropdown / exact match
       var searchEl = document.getElementById('stockSearch');
       var resultsEl = null;
       function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+      function uniName(m) { return (window.AC_I18N && AC_I18N.localName(m)) || m.name_en || m.ticker; }
       function loadUniverse() {
         if (universe.length) return Promise.resolve(universe);
         return API.screening(1000).then(function (d) {
           universe = ((d && d.data) || []).map(function (r) {
-            return { ticker_key: r.ticker_key, ticker: r.ticker, name_en: r.name_en || r.ticker, exchange: r.exchange, currency: r.currency };
+            return { ticker_key: r.ticker_key, ticker: r.ticker, name_en: r.name_en || r.ticker, name_ar: r.name_ar, exchange: r.exchange, currency: r.currency };
           });
           return universe;
         }).catch(function () { return []; });
@@ -2055,7 +2204,7 @@
         if (!matches.length) { el.style.display = 'none'; return; }
         el.innerHTML = matches.map(function (m) {
           return '<div class="ssr-item" data-key="' + esc(m.ticker_key) + '" style="padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--border,#2a2f3a)">'
-            + '<span style="font-weight:600">' + esc(m.name_en) + '</span>'
+            + '<span style="font-weight:600">' + esc(uniName(m)) + '</span>'
             + '<span style="color:var(--fg-dim,#8a93a3);font-size:12px">' + esc(m.ticker) + ' · ' + esc(m.exchange) + '</span></div>';
         }).join('');
         el.style.display = 'block';
@@ -2064,7 +2213,7 @@
             var m = universe.filter(function (u) { return u.ticker_key === it.getAttribute('data-key'); })[0];
             if (!m) return;
             resolvedKey = m.ticker_key;
-            searchEl.value = m.name_en + ' (' + m.ticker + ')';
+            searchEl.value = uniName(m) + ' (' + m.ticker + ')';
             el.style.display = 'none';
           });
         });
@@ -2077,7 +2226,7 @@
           var exact = list.filter(function (u) { return (u.ticker && u.ticker.toLowerCase() === q) || (u.ticker_key && u.ticker_key.toLowerCase() === q); })[0];
           if (exact) resolvedKey = exact.ticker_key;
           render(list.filter(function (u) {
-            return (u.name_en && u.name_en.toLowerCase().indexOf(q) >= 0) || (u.ticker && u.ticker.toLowerCase().indexOf(q) >= 0) || (u.ticker_key && u.ticker_key.toLowerCase().indexOf(q) >= 0);
+            return (u.name_en && u.name_en.toLowerCase().indexOf(q) >= 0) || (u.name_ar && u.name_ar.toLowerCase().indexOf(q) >= 0) || (u.ticker && u.ticker.toLowerCase().indexOf(q) >= 0) || (u.ticker_key && u.ticker_key.toLowerCase().indexOf(q) >= 0);
           }).slice(0, 8));
         });
       }
@@ -2097,22 +2246,23 @@
             var typed = (searchEl.value || '').trim().toLowerCase();
             var hit = universe.filter(function (u) {
               return (u.ticker_key && u.ticker_key.toLowerCase() === typed) || (u.ticker && u.ticker.toLowerCase() === typed)
-                || (u.name_en && u.name_en.toLowerCase() === typed) || ((searchEl.value || '').indexOf('(' + u.ticker + ')') >= 0);
+                || (u.name_en && u.name_en.toLowerCase() === typed) || (u.name_ar && u.name_ar.toLowerCase() === typed) || ((searchEl.value || '').indexOf('(' + u.ticker + ')') >= 0);
             })[0];
             if (hit) key = hit.ticker_key;
           }
-          if (!key) { showToast('Pick a stock', 'Search and select a stock from the list so we add the right ticker.', 'warning'); return; }
-          if (!shares || shares <= 0) { showToast('Missing shares', 'Enter the number of shares you hold.', 'warning'); return; }
-          if (!cost || cost <= 0) { showToast('Missing cost', "Enter your average cost per share (in the stock's native currency).", 'warning'); return; }
+          if (!key) { showToast(PT('port.toast_pick_stock_t'), PT('port.toast_pick_stock_m'), 'warning'); return; }
+          if (!shares || shares <= 0) { showToast(PT('port.toast_missing_shares_t'), PT('port.toast_missing_shares_m'), 'warning'); return; }
+          if (!cost || cost <= 0) { showToast(PT('port.toast_missing_cost_t'), PT('port.toast_missing_cost_m'), 'warning'); return; }
           confirmBtn.disabled = true;
           API.addHolding(key, Number(shares), Number(cost)).then(function () {
-            showToast('Holding added', String(key).split('_')[0] + ' was added to your portfolio', 'success');
+            showToast(PT('port.toast_added_t'), PT('port.toast_added_m', { code: String(key).split('_')[0] }), 'success');
             document.getElementById('addHoldingModal').classList.remove('open');
             searchEl.value = ''; document.getElementById('sharesInput').value = ''; document.getElementById('costInput').value = ''; resolvedKey = null;
             if (resultsEl) resultsEl.style.display = 'none';
             return AlphaCouncil.loadPortfolio();
-          }).then(function () { if (typeof window.onPortfolioReady === 'function') window.onPortfolioReady(AlphaCouncil.getHoldings()); })
-            .catch(function (e) { showToast('Could not add holding', (e && e.message) || 'Please try again.', 'error'); })
+          }).then(function () { return (window.API && API.portfolio) ? API.portfolio().then(function(rows){ _mergeArMeta(rows); }).catch(function(){}) : null; })
+            .then(function () { if (typeof window.onPortfolioReady === 'function') window.onPortfolioReady(AlphaCouncil.getHoldings()); })
+            .catch(function (e) { showToast(PT('port.toast_add_fail_t'), (e && e.message) || PT('port.toast_try_again'), 'error'); })
             .then(function () { confirmBtn.disabled = false; });
         });
       }
@@ -2131,55 +2281,58 @@
         fileIn.addEventListener('change', function () { if (fileIn.files[0]) handleFile(fileIn.files[0]); });
 
         function handleFile(file) {
-          if (file.size > 10 * 1024 * 1024) { showToast('File too large', 'Please upload a file under 10MB.', 'warning'); return; }
+          if (file.size > 10 * 1024 * 1024) { showToast(PT('port.toast_file_large_t'), PT('port.toast_file_large_m'), 'warning'); return; }
           var body = zone.parentElement;
           var oldRev = body.querySelector('#importReview'); if (oldRev) oldRev.remove();
-          if (heading) heading.textContent = 'Reading "' + file.name + '"…';
+          if (heading) heading.textContent = PT('port.import_reading', { file: file.name });
           var reader = new FileReader();
           reader.onload = function () {
             var b64 = String(reader.result).split(',')[1] || '';
             API.importExtract(file.type || 'application/octet-stream', b64, file.name).then(function (res) {
               renderReview((res && res.rows) || []);
             }).catch(function (e) {
-              if (heading) heading.textContent = 'Drop file here or click to upload';
-              showToast('Could not read statement', (e && e.message) || 'Please try a clearer screenshot or PDF.', 'error');
+              if (heading) heading.textContent = PT('port.import_drop');
+              showToast(PT('port.toast_read_fail_t'), (e && e.message) || PT('port.toast_read_fail_m'), 'error');
             });
           };
           reader.readAsDataURL(file);
         }
         function renderReview(rows) {
-          if (heading) heading.textContent = 'Drop file here or click to upload';
+          if (heading) heading.textContent = PT('port.import_drop');
           var matched = rows.filter(function (r) { return r.matched_ticker_key; });
           var body = zone.parentElement;
           var old = body.querySelector('#importReview'); if (old) old.remove();
           var box = document.createElement('div'); box.id = 'importReview'; box.style.cssText = 'margin-top:16px';
           if (!matched.length) {
-            box.innerHTML = '<div class="form-hint" style="text-align:center">We couldn\'t match any holdings on that statement to GCC tickers we cover. Nothing was imported.</div>';
+            box.innerHTML = '<div class="form-hint" style="text-align:center">' + esc(PT('port.import_no_match')) + '</div>';
             body.appendChild(box); return;
           }
-          box.innerHTML = '<div style="font-weight:600;margin-bottom:8px">Review ' + matched.length + ' matched holding' + (matched.length > 1 ? 's' : '') + '</div>'
+          var reviewHdr = PT(matched.length > 1 ? 'port.import_review_many' : 'port.import_review_one', { count: matched.length });
+          var shLabel = PT('port.import_sh');
+          box.innerHTML = '<div style="font-weight:600;margin-bottom:8px">' + esc(reviewHdr) + '</div>'
             + matched.map(function (r, i) {
               return '<label style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--border,#2a2f3a);border-radius:8px;margin-bottom:6px">'
                 + '<input type="checkbox" class="imp-row" data-i="' + i + '" checked>'
                 + '<span style="flex:1">' + esc(r.matched_name || r.raw_name || r.matched_ticker_key) + '</span>'
-                + '<span style="color:var(--fg-dim,#8a93a3);font-size:12px">' + (r.shares || 0) + ' sh · ' + (r.avg_cost != null ? r.avg_cost : '—') + ' ' + esc(r.currency || '') + '</span></label>';
+                + '<span style="color:var(--fg-dim,#8a93a3);font-size:12px">' + (r.shares || 0) + ' ' + esc(shLabel) + ' · ' + (r.avg_cost != null ? r.avg_cost : '—') + ' ' + esc(r.currency || '') + '</span></label>';
             }).join('')
-            + '<button class="btn btn-primary" id="confirmImportBtn" style="width:100%;margin-top:8px">Import selected</button>';
+            + '<button class="btn btn-primary" id="confirmImportBtn" style="width:100%;margin-top:8px">' + esc(PT('port.import_selected')) + '</button>';
           body.appendChild(box);
           box.querySelector('#confirmImportBtn').addEventListener('click', function () {
             var picks = [];
             Array.prototype.forEach.call(box.querySelectorAll('.imp-row'), function (cb) {
               if (cb.checked) { var r = matched[parseInt(cb.getAttribute('data-i'), 10)]; picks.push({ ticker_key: r.matched_ticker_key, shares: Number(r.shares) || 0, avg_cost: Number(r.avg_cost) || 0, currency: r.currency || undefined }); }
             });
-            if (!picks.length) { showToast('Nothing selected', 'Tick at least one holding to import.', 'warning'); return; }
-            var btn = box.querySelector('#confirmImportBtn'); btn.disabled = true; btn.textContent = 'Importing…';
+            if (!picks.length) { showToast(PT('port.toast_nothing_sel_t'), PT('port.toast_nothing_sel_m'), 'warning'); return; }
+            var btn = box.querySelector('#confirmImportBtn'); btn.disabled = true; btn.textContent = PT('port.import_importing');
             API.importConfirm(picks).then(function () {
-              showToast('Holdings imported', picks.length + ' position' + (picks.length > 1 ? 's' : '') + ' added to your portfolio', 'success');
+              showToast(PT('port.toast_imported_t'), PT(picks.length > 1 ? 'port.toast_imported_many_m' : 'port.toast_imported_one_m', { count: picks.length }), 'success');
               document.getElementById('importModal').classList.remove('open');
               box.remove();
               return AlphaCouncil.loadPortfolio();
-            }).then(function () { if (typeof window.onPortfolioReady === 'function') window.onPortfolioReady(AlphaCouncil.getHoldings()); })
-              .catch(function (e) { btn.disabled = false; btn.textContent = 'Import selected'; showToast('Import failed', (e && e.message) || 'Please try again.', 'error'); });
+            }).then(function () { return (window.API && API.portfolio) ? API.portfolio().then(function(rows){ _mergeArMeta(rows); }).catch(function(){}) : null; })
+              .then(function () { if (typeof window.onPortfolioReady === 'function') window.onPortfolioReady(AlphaCouncil.getHoldings()); })
+              .catch(function (e) { btn.disabled = false; btn.textContent = PT('port.import_selected'); showToast(PT('port.toast_import_fail_t'), (e && e.message) || PT('port.toast_try_again'), 'error'); });
           });
         }
       }

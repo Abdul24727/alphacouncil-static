@@ -475,7 +475,7 @@
 
       <!-- Page Header -->
       <div style="margin:0 0 20px;padding:12px 16px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;color:var(--fg-muted);font-size:13px;line-height:1.5;">
-        <strong style="color:#f59e0b;">Preview</strong> — the review shown below is an illustrative example. A saved history of your own Council reviews will appear here once review archiving is live.
+        <strong style="color:#f59e0b;" data-i18n="ch.preview_label">Preview</strong> — <span data-i18n="ch.preview_banner">the review shown below is an illustrative example. A saved history of your own Council reviews will appear here once review archiving is live.</span>
       </div>
       <div class="page-header">
         <div class="page-header-left">
@@ -490,11 +490,11 @@
         <div class="page-actions">
           <button class="btn btn-secondary" onclick="exportAllReports()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export All
+            <span data-i18n="ch.export_all">Export All</span>
           </button>
           <button class="btn btn-primary" onclick="runNewReview()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            Run New Review
+            <span data-i18n="ch.run_review">Run New Review</span>
           </button>
         </div>
       </div>
@@ -583,17 +583,17 @@
           </div>
 
           <div class="insight-item">
-            <p class="insight-text">Trends across your Council reviews will appear here once you've run a few.</p>
+            <p class="insight-text" data-i18n="ch.trends_text">Trends across your Council reviews will appear here once you've run a few.</p>
           </div>
 
           <div class="insights-actions">
             <button class="btn btn-primary" onclick="runNewReview()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-              Run New Review
+              <span data-i18n="ch.run_review">Run New Review</span>
             </button>
             <button class="btn btn-secondary" onclick="exportAllReports()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Export All Reports
+              <span data-i18n="ch.export_all_reports">Export All Reports</span>
             </button>
           </div>
         </div>
@@ -750,7 +750,29 @@
     'ch.search':           { en: 'Search ticker...', ar: 'ابحث عن رمز...' },
     'ch.chat_placeholder': { en: 'Ask about your review history...', ar: 'اسأل عن سجل مراجعاتك...' },
     'ch.empty_title':      { en: 'No Council Reviews Yet', ar: 'لا توجد مراجعات مجلس بعد' },
-    'ch.empty_text':       { en: 'Run your first AI Analyst Council review to get comprehensive portfolio intelligence. The Council analyzes your holdings across 12 dimensions with 7 specialized perspectives.', ar: 'شغّل أول مراجعة لمجلس المحلّلين الذكي للحصول على ذكاء شامل للمحفظة. يحلّل المجلس مراكزك عبر ١٢ بُعدًا مع ٧ وجهات نظر متخصّصة.' }
+    'ch.empty_text':       { en: 'Run your first AI Analyst Council review to get comprehensive portfolio intelligence. The Council analyzes your holdings across 12 dimensions with 7 specialized perspectives.', ar: 'شغّل أول مراجعة لمجلس المحلّلين الذكي للحصول على ذكاء شامل للمحفظة. يحلّل المجلس مراكزك عبر ١٢ بُعدًا مع ٧ وجهات نظر متخصّصة.' },
+    // Preview banner (static text at top of page)
+    'ch.preview_banner':   { en: 'the review shown below is an illustrative example. A saved history of your own Council reviews will appear here once review archiving is live.', ar: 'المراجعة الموضّحة أدناه هي مثال توضيحي. سيظهر هنا سجلٌّ محفوظ لمراجعات مجلسك بمجرد تفعيل أرشفة المراجعات.' },
+    'ch.preview_label':    { en: 'Preview', ar: 'معاينة' },
+    // Top-right action buttons
+    'ch.export_all':       { en: 'Export All', ar: 'تصدير الكل' },
+    'ch.export_all_reports': { en: 'Export All Reports', ar: 'تصدير كل التقارير' },
+    'ch.run_review':       { en: 'Run New Review', ar: 'تشغيل مراجعة جديدة' },
+    // Sidebar trends placeholder text
+    'ch.trends_text':      { en: "Trends across your Council reviews will appear here once you've run a few.", ar: 'ستظهر الاتجاهات عبر مراجعات مجلسك هنا بمجرد تشغيل بعضها.' },
+    // Dynamic empty state (rendered by loadCouncilHistory when there is no history)
+    'ch.empty_no_reviews':      { en: 'No council reviews yet', ar: 'لا توجد مراجعات مجلس بعد' },
+    'ch.empty_no_reviews_text': { en: 'Run your first AI Analyst Council review to build your history. The Council debates your holdings across multiple model perspectives, then a chairman synthesises a balanced view.', ar: 'شغّل أول مراجعة لمجلس المحلّلين الذكي لبناء سجلّك. يناقش المجلس مراكزك عبر وجهات نظر نماذج متعدّدة، ثم يصوغ الرئيس رؤية متوازنة.' },
+    'ch.empty_run_button':      { en: 'Run a Council Review', ar: 'تشغيل مراجعة مجلس' },
+    // Dynamic history-card strings
+    'ch.analyst_perspectives':  { en: 'analyst perspectives', ar: 'وجهات نظر تحليلية' },
+    'ch.action_export':         { en: 'Export', ar: 'تصدير' },
+    'ch.action_view':           { en: 'View', ar: 'عرض' },
+    // Error / auth fallbacks
+    'ch.load_error':            { en: 'Couldn’t load your council history.', ar: 'تعذّر تحميل سجل مجلسك.' },
+    'ch.signin_prompt_pre':     { en: 'Please ', ar: 'يرجى ' },
+    'ch.signin_link':           { en: 'sign in', ar: 'تسجيل الدخول' },
+    'ch.signin_prompt_post':    { en: ' to see your council history.', ar: ' لعرض سجل مجلسك.' }
   });
   (function () {
     function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
@@ -808,12 +830,13 @@
 
     // J1: real Council history from /api/adviser/council/history (replaces the hardcoded cards/stats).
     window.__councilHistory = {};
-    (function loadCouncilHistory(){
+    function loadCouncilHistory(){
       const listEl = document.getElementById('historyList');
       if (!listEl || !window.API || !API.councilHistory) return;
+      const T = function (key) { return (window.AC_I18N && AC_I18N.t(key)) || ''; };
       const esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
       const timeAgo = function (iso) { const t = Date.parse(iso); if (isNaN(t)) return ''; let s = Math.max(0, Math.floor((Date.now() - t) / 1000)); if (s < 60) return 'just now'; const m = Math.floor(s / 60); if (m < 60) return m + 'm ago'; const h = Math.floor(m / 60); if (h < 24) return h + 'h ago'; const d = Math.floor(h / 24); if (d < 30) return d + 'd ago'; return Math.floor(d / 30) + 'mo ago'; };
-      const fmtDate = function (iso) { const dt = new Date(iso); return isNaN(dt) ? (iso || '') : dt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); };
+      const fmtDate = function (iso) { const dt = new Date(iso); if (isNaN(dt)) return (iso || ''); const loc = (window.AC_I18N && AC_I18N.lang === 'ar') ? 'ar' : 'en-US'; return dt.toLocaleDateString(loc, { year: 'numeric', month: 'long', day: 'numeric' }); };
       const IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>';
       const setStats = function (items) {
         const sv = document.querySelectorAll('.stat-value');
@@ -826,28 +849,32 @@
         const items = (res && res.history) || [];
         setStats(items);
         if (!items.length) {
-          listEl.innerHTML = '<div class="empty-state"><h3 style="margin-bottom:10px;">No council reviews yet</h3><p class="empty-text" style="margin-bottom:18px;color:var(--fg-muted);">Run your first AI Analyst Council review to build your history. The Council debates your holdings across multiple model perspectives, then a chairman synthesises a balanced view.</p><button class="btn btn-primary" onclick="runNewReview()">Run a Council Review</button></div>';
+          listEl.innerHTML = '<div class="empty-state"><h3 style="margin-bottom:10px;">' + esc(T('ch.empty_no_reviews')) + '</h3><p class="empty-text" style="margin-bottom:18px;color:var(--fg-muted);">' + esc(T('ch.empty_no_reviews_text')) + '</p><button class="btn btn-primary" onclick="runNewReview()">' + esc(T('ch.empty_run_button')) + '</button></div>';
           return;
         }
         items.forEach(function (it) { window.__councilHistory[String(it.id)] = it; });
         listEl.innerHTML = items.map(function (it) {
-          const isTicker = !!it.ticker, subj = isTicker ? esc(String(it.ticker).split('_')[0]) : 'Portfolio-wide', badge = isTicker ? 'ticker' : 'portfolio';
+          const isTicker = !!it.ticker, subj = isTicker ? esc(String(it.ticker).split('_')[0]) : esc(T('ch.tab_portfolio')), badge = isTicker ? 'ticker' : 'portfolio';
           return '<div class="history-card" data-created="' + esc(String(it.created_at || '')) + '" data-analysts="' + (it.analyst_count || 0) + '" onclick="openDetailModal(\'' + esc(String(it.id)) + '\')">'
             + '<div class="history-card-header"><div class="history-card-left">'
             + '<div class="history-icon ' + badge + '">' + IC + '</div>'
             + '<div class="history-meta"><div class="history-date">' + esc(fmtDate(it.created_at)) + ' · ' + esc(timeAgo(it.created_at)) + '</div>'
             + '<div class="history-badges"><span class="history-badge ' + badge + '">' + subj + '</span></div>'
             + '<p class="history-summary">' + esc(it.question || '') + '</p></div></div></div>'
-            + '<div class="history-card-footer"><div class="history-signals"><strong>' + (it.analyst_count || 0) + '</strong> analyst perspectives</div>'
+            + '<div class="history-card-footer"><div class="history-signals"><strong>' + (it.analyst_count || 0) + '</strong> ' + esc(T('ch.analyst_perspectives')) + '</div>'
             + '<div class="history-actions">'
-            + '<button class="action-btn" onclick="event.stopPropagation(); exportReview(\'' + esc(String(it.id)) + '\')">Export</button>'
-            + '<button class="action-btn primary" onclick="event.stopPropagation(); openDetailModal(\'' + esc(String(it.id)) + '\')">View</button>'
+            + '<button class="action-btn" onclick="event.stopPropagation(); exportReview(\'' + esc(String(it.id)) + '\')">' + esc(T('ch.action_export')) + '</button>'
+            + '<button class="action-btn primary" onclick="event.stopPropagation(); openDetailModal(\'' + esc(String(it.id)) + '\')">' + esc(T('ch.action_view')) + '</button>'
             + '</div></div></div>';
         }).join('');
       }).catch(function (e) {
-        listEl.innerHTML = '<div class="empty-state"><p class="empty-text" style="color:var(--fg-muted);">' + (e && e.status === 401 ? 'Please <a href="login.html" style="color:var(--accent-primary);">sign in</a> to see your council history.' : 'Couldn’t load your council history.') + '</p></div>';
+        listEl.innerHTML = '<div class="empty-state"><p class="empty-text" style="color:var(--fg-muted);">' + (e && e.status === 401 ? (esc(T('ch.signin_prompt_pre')) + '<a href="login.html" style="color:var(--accent-primary);">' + esc(T('ch.signin_link')) + '</a>' + esc(T('ch.signin_prompt_post'))) : esc(T('ch.load_error'))) + '</p></div>';
       });
-    })();
+    }
+    loadCouncilHistory();
+
+    // ch-010: re-render the dynamic history (empty state, cards, error/auth messages) on language switch.
+    window.addEventListener('ac:langchange', function () { loadCouncilHistory(); });
 
     // Detail Modal — renders the clicked review's REAL synthesis + analyst perspectives.
     function openDetailModal(reviewId) {

@@ -1009,9 +1009,9 @@
           <div class="page-title-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           </div>
-          Settings
+          <span data-i18n="set.page_title">Settings</span>
         </h1>
-        <p class="page-subtitle">Manage your account, preferences, and how AlphaCouncil works for you.</p>
+        <p class="page-subtitle" data-i18n="set.page_sub">Manage your account, preferences, and how AlphaCouncil works for you.</p>
       </div>
 
       <!-- Settings Layout -->
@@ -1070,43 +1070,43 @@
                 <div class="avatar-upload">
                   <div class="avatar-preview"></div>
                   <div class="avatar-actions">
-                    <p class="form-hint" style="margin:0;">Profile photos are coming soon — your initials are shown for now.</p>
+                    <p class="form-hint" style="margin:0;" data-i18n="set.photo_hint">Profile photos are coming soon — your initials are shown for now.</p>
                   </div>
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group">
                   <label class="form-label" for="firstName">First Name</label>
-                  <input type="text" id="firstName" class="form-input" value="" placeholder="Enter first name">
+                  <input type="text" id="firstName" class="form-input" value="" placeholder="Enter first name" data-i18n-attr="placeholder:set.ph_first">
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="lastName">Last Name</label>
-                  <input type="text" id="lastName" class="form-input" value="" placeholder="Enter last name">
+                  <input type="text" id="lastName" class="form-input" value="" placeholder="Enter last name" data-i18n-attr="placeholder:set.ph_last">
                 </div>
               </div>
               <div class="form-group">
                 <label class="form-label" for="email">Email Address</label>
-                <input type="email" id="email" class="form-input" value="" placeholder="Enter email">
+                <input type="email" id="email" class="form-input" value="" placeholder="Enter email" data-i18n-attr="placeholder:set.ph_email">
                 <p class="form-hint">This email is used for account notifications and recovery.</p>
               </div>
               <div class="form-row">
                 <div class="form-group">
                   <label class="form-label" for="defaultMarket">Default Market</label>
                   <select id="defaultMarket" class="form-input form-select">
-                    <option value="sa" selected>Saudi Arabia (Tadawul)</option>
-                    <option value="ae-adx">UAE (ADX)</option>
-                    <option value="ae-dfm">UAE (DFM)</option>
-                    <option value="qa">Qatar (QSE)</option>
-                    <option value="kw">Kuwait (Boursa)</option>
-                    <option value="bh">Bahrain (Bahrain Bourse)</option>
-                    <option value="om">Oman (MSM)</option>
+                    <option value="sa" selected data-i18n="set.mkt_sa">Saudi Arabia (Tadawul)</option>
+                    <option value="ae-adx" data-i18n="set.mkt_adx">UAE (ADX)</option>
+                    <option value="ae-dfm" data-i18n="set.mkt_dfm">UAE (DFM)</option>
+                    <option value="qa" data-i18n="set.mkt_qa">Qatar (QSE)</option>
+                    <option value="kw" data-i18n="set.mkt_kw">Kuwait (Boursa)</option>
+                    <option value="bh" data-i18n="set.mkt_bh">Bahrain (Bahrain Bourse)</option>
+                    <option value="om" data-i18n="set.mkt_om">Oman (MSM)</option>
                   </select>
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="language">Language</label>
                   <select id="language" class="form-input form-select">
-                    <option value="en" selected>English</option>
-                    <option value="ar">العربية (Arabic)</option>
+                    <option value="en" selected data-i18n="set.lang_en">English</option>
+                    <option value="ar" data-i18n="set.lang_ar">العربية (Arabic)</option>
                   </select>
                 </div>
               </div>
@@ -1133,68 +1133,68 @@
                 <div class="segmented-control" role="radiogroup" aria-label="Primary Investment Goal">
                   <button class="segment-btn" role="radio" aria-checked="false">
                     <span class="segment-icon">📈</span>
-                    <span class="segment-label">Growth</span>
-                    <span class="segment-desc">Capital appreciation</span>
+                    <span class="segment-label" data-i18n="set.goal_growth">Growth</span>
+                    <span class="segment-desc" data-i18n="set.goal_growth_d">Capital appreciation</span>
                   </button>
                   <button class="segment-btn active" role="radio" aria-checked="true">
                     <span class="segment-icon">💰</span>
-                    <span class="segment-label">Income</span>
-                    <span class="segment-desc">Dividend focus</span>
+                    <span class="segment-label" data-i18n="set.goal_income">Income</span>
+                    <span class="segment-desc" data-i18n="set.goal_income_d">Dividend focus</span>
                   </button>
                   <button class="segment-btn" role="radio" aria-checked="false">
                     <span class="segment-icon">⚖️</span>
-                    <span class="segment-label">Balanced</span>
-                    <span class="segment-desc">Growth + Income</span>
+                    <span class="segment-label" data-i18n="set.goal_balanced">Balanced</span>
+                    <span class="segment-desc" data-i18n="set.goal_balanced_d">Growth + Income</span>
                   </button>
                   <button class="segment-btn" role="radio" aria-checked="false">
                     <span class="segment-icon">🛡️</span>
-                    <span class="segment-label">Preservation</span>
-                    <span class="segment-desc">Protect capital</span>
+                    <span class="segment-label" data-i18n="set.goal_preservation">Preservation</span>
+                    <span class="segment-desc" data-i18n="set.goal_preservation_d">Protect capital</span>
                   </button>
                 </div>
-                <p class="form-hint">This helps the Council prioritize relevant insights in your reviews.</p>
+                <p class="form-hint" data-i18n="set.goal_hint">This helps the Council prioritize relevant insights in your reviews.</p>
               </div>
 
               <div class="form-group">
                 <label class="form-label">Investment Time Horizon</label>
                 <div class="segmented-control" role="radiogroup" aria-label="Investment Time Horizon">
                   <button class="segment-btn" role="radio" aria-checked="false">
-                    <span class="segment-label">Short-term</span>
-                    <span class="segment-desc">Less than 1 year</span>
+                    <span class="segment-label" data-i18n="set.hz_short">Short-term</span>
+                    <span class="segment-desc" data-i18n="set.hz_short_d">Less than 1 year</span>
                   </button>
                   <button class="segment-btn active" role="radio" aria-checked="true">
-                    <span class="segment-label">Medium-term</span>
-                    <span class="segment-desc">1–5 years</span>
+                    <span class="segment-label" data-i18n="set.hz_medium">Medium-term</span>
+                    <span class="segment-desc" data-i18n="set.hz_medium_d">1–5 years</span>
                   </button>
                   <button class="segment-btn" role="radio" aria-checked="false">
-                    <span class="segment-label">Long-term</span>
-                    <span class="segment-desc">5+ years</span>
+                    <span class="segment-label" data-i18n="set.hz_long">Long-term</span>
+                    <span class="segment-desc" data-i18n="set.hz_long_d">5+ years</span>
                   </button>
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="form-label">Risk Tolerance</label>
+                <label class="form-label" data-i18n="set.risk">Risk Tolerance</label>
                 <div class="segmented-control" role="radiogroup" aria-label="Risk Tolerance">
                   <button class="segment-btn" role="radio" aria-checked="false">
-                    <span class="segment-label">Conservative</span>
-                    <span class="segment-desc">Minimize volatility</span>
+                    <span class="segment-label" data-i18n="set.risk_cons">Conservative</span>
+                    <span class="segment-desc" data-i18n="set.risk_cons_d">Minimize volatility</span>
                   </button>
                   <button class="segment-btn active" role="radio" aria-checked="true">
-                    <span class="segment-label">Moderate</span>
-                    <span class="segment-desc">Balanced approach</span>
+                    <span class="segment-label" data-i18n="set.risk_mod">Moderate</span>
+                    <span class="segment-desc" data-i18n="set.risk_mod_d">Balanced approach</span>
                   </button>
                   <button class="segment-btn" role="radio" aria-checked="false">
-                    <span class="segment-label">Aggressive</span>
-                    <span class="segment-desc">Higher risk/reward</span>
+                    <span class="segment-label" data-i18n="set.risk_agg">Aggressive</span>
+                    <span class="segment-desc" data-i18n="set.risk_agg_d">Higher risk/reward</span>
                   </button>
                 </div>
-                <p class="form-hint">The Risk Analyst perspective in Council reviews will adjust based on this setting.</p>
+                <p class="form-hint" data-i18n="set.risk_hint">The Risk Analyst perspective in Council reviews will adjust based on this setting.</p>
               </div>
 
               <div style="display: flex; gap: 12px; margin-top: 8px;">
-                <button class="btn btn-primary">Save Preferences</button>
-                <button class="btn btn-secondary">Reset to Default</button>
+                <button class="btn btn-primary" data-i18n="set.save_prefs">Save Preferences</button>
+                <button class="btn btn-secondary" data-i18n="set.reset_default">Reset to Default</button>
               </div>
             </div>
           </section>
@@ -1213,8 +1213,8 @@
             <div class="section-body">
               <div class="toggle-row">
                 <div class="toggle-info">
-                  <div class="toggle-label">New Council Reviews Ready</div>
-                  <div class="toggle-desc">Get notified when a new AI Council review is available for your portfolio</div>
+                  <div class="toggle-label" data-i18n="set.nt_reviews">New Council Reviews Ready</div>
+                  <div class="toggle-desc" data-i18n="set.nt_reviews_d">Get notified when a new AI Council review is available for your portfolio</div>
                 </div>
                 <label class="toggle-switch">
                   <input type="checkbox" checked aria-label="New Council Reviews Ready">
@@ -1223,8 +1223,8 @@
               </div>
               <div class="toggle-row">
                 <div class="toggle-info">
-                  <div class="toggle-label">Intelligent Alerts on Holdings</div>
-                  <div class="toggle-desc">Receive alerts when significant changes affect your holdings</div>
+                  <div class="toggle-label" data-i18n="set.nt_alerts">Intelligent Alerts on Holdings</div>
+                  <div class="toggle-desc" data-i18n="set.nt_alerts_d">Receive alerts when significant changes affect your holdings</div>
                 </div>
                 <label class="toggle-switch">
                   <input type="checkbox" checked aria-label="Intelligent Alerts on Holdings">
@@ -1233,8 +1233,8 @@
               </div>
               <div class="toggle-row">
                 <div class="toggle-info">
-                  <div class="toggle-label">Major News Impact on Portfolio</div>
-                  <div class="toggle-desc">Get notified when breaking news may affect your positions</div>
+                  <div class="toggle-label" data-i18n="set.nt_news">Major News Impact on Portfolio</div>
+                  <div class="toggle-desc" data-i18n="set.nt_news_d">Get notified when breaking news may affect your positions</div>
                 </div>
                 <label class="toggle-switch">
                   <input type="checkbox" checked aria-label="Major News Impact on Portfolio">
@@ -1243,8 +1243,8 @@
               </div>
               <div class="toggle-row">
                 <div class="toggle-info">
-                  <div class="toggle-label">Weekly Portfolio Summary</div>
-                  <div class="toggle-desc">Receive a weekly email summarizing your portfolio performance</div>
+                  <div class="toggle-label" data-i18n="set.nt_weekly">Weekly Portfolio Summary</div>
+                  <div class="toggle-desc" data-i18n="set.nt_weekly_d">Receive a weekly email summarizing your portfolio performance</div>
                 </div>
                 <label class="toggle-switch">
                   <input type="checkbox" aria-label="Weekly Portfolio Summary">
@@ -1253,8 +1253,8 @@
               </div>
               <div class="toggle-row">
                 <div class="toggle-info">
-                  <div class="toggle-label">Marketing & Product Updates</div>
-                  <div class="toggle-desc">Stay informed about new features and improvements</div>
+                  <div class="toggle-label" data-i18n="set.nt_marketing">Marketing & Product Updates</div>
+                  <div class="toggle-desc" data-i18n="set.nt_marketing_d">Stay informed about new features and improvements</div>
                 </div>
                 <label class="toggle-switch">
                   <input type="checkbox" aria-label="Marketing & Product Updates">
@@ -1263,21 +1263,21 @@
               </div>
 
               <div class="form-group" style="margin-top: 24px;">
-                <label class="form-label">Quiet Hours <span>(optional)</span></label>
+                <label class="form-label"><span data-i18n="set.quiet">Quiet Hours</span> <span data-i18n="set.optional">(optional)</span></label>
                 <div class="form-row">
                   <select class="form-input form-select" aria-label="Quiet hours time range">
-                    <option value="">No quiet hours</option>
-                    <option value="22-08" selected>10:00 PM – 8:00 AM</option>
-                    <option value="23-07">11:00 PM – 7:00 AM</option>
-                    <option value="custom">Custom</option>
+                    <option value="" data-i18n="set.qh_none">No quiet hours</option>
+                    <option value="22-08" selected data-i18n="set.qh_22">10:00 PM – 8:00 AM</option>
+                    <option value="23-07" data-i18n="set.qh_23">11:00 PM – 7:00 AM</option>
+                    <option value="custom" data-i18n="set.qh_custom">Custom</option>
                   </select>
                   <select class="form-input form-select" aria-label="Timezone">
-                    <option value="gst" selected>GST (Gulf Standard Time)</option>
-                    <option value="ast">AST (Arabia Standard Time)</option>
-                    <option value="utc">UTC</option>
+                    <option value="gst" selected data-i18n="set.tz_gst">GST (Gulf Standard Time)</option>
+                    <option value="ast" data-i18n="set.tz_ast">AST (Arabia Standard Time)</option>
+                    <option value="utc" data-i18n="set.tz_utc">UTC</option>
                   </select>
                 </div>
-                <p class="form-hint">Non-urgent notifications will be held during quiet hours.</p>
+                <p class="form-hint" data-i18n="set.quiet_hint">Non-urgent notifications will be held during quiet hours.</p>
               </div>
             </div>
           </section>
@@ -1301,32 +1301,32 @@
                     <div class="plan-name">Analyst Plan</div>
                     <div class="plan-price"><strong>—</strong></div>
                   </div>
-                  <div class="plan-badge">Current Plan</div>
+                  <div class="plan-badge" data-i18n="set.plan_current">Current Plan</div>
                 </div>
                 <div class="plan-features">
                   <div class="plan-feature">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    Unlimited Council reviews
+                    <span data-i18n="set.feat_reviews">Unlimited Council reviews</span>
                   </div>
                   <div class="plan-feature">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    12-dimension thesis scoring
+                    <span data-i18n="set.feat_thesis">12-dimension thesis scoring</span>
                   </div>
                   <div class="plan-feature">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    All 7 analyst perspectives
+                    <span data-i18n="set.feat_perspectives">All 7 analyst perspectives</span>
                   </div>
                   <div class="plan-feature">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    Priority AI Adviser access
+                    <span data-i18n="set.feat_adviser">Priority AI Adviser access</span>
                   </div>
                   <div class="plan-feature">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    Export reports to PDF
+                    <span data-i18n="set.feat_pdf">Export reports to PDF</span>
                   </div>
                   <div class="plan-feature">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    Email support
+                    <span data-i18n="set.feat_support">Email support</span>
                   </div>
                 </div>
                 <div class="plan-actions">
@@ -1336,8 +1336,8 @@
 
               <!-- Payment & invoices: honest placeholder until paid billing launches (no fake card). -->
               <div class="form-group" style="margin-top: 24px;">
-                <label class="form-label">Payment &amp; invoices</label>
-                <p class="form-hint">There's nothing to bill yet. When paid plans launch, your payment method and invoices will appear here — we don't display a saved card or charges you haven't made.</p>
+                <label class="form-label" data-i18n="set.payment">Payment &amp; invoices</label>
+                <p class="form-hint" data-i18n="set.payment_hint">There's nothing to bill yet. When paid plans launch, your payment method and invoices will appear here — we don't display a saved card or charges you haven't made.</p>
               </div>
 
               <!-- Billing history removed: no real charges to show. -->
@@ -1362,56 +1362,56 @@
                     <div class="methodology-card-icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                     </div>
-                    <div class="methodology-card-title">12-Dimension Thesis</div>
+                    <div class="methodology-card-title" data-i18n="set.mc_thesis">12-Dimension Thesis</div>
                   </div>
-                  <p class="methodology-card-text">Learn how we score stocks across 12 dimensions including valuation, momentum, quality, growth, dividend, risk, and more.</p>
+                  <p class="methodology-card-text" data-i18n="set.mc_thesis_t">Learn how we score stocks across 12 dimensions including valuation, momentum, quality, growth, dividend, risk, and more.</p>
                 </div>
                 <div class="methodology-card" tabindex="0" role="button" onclick="window.open('methodology.html', '_blank')">
                   <div class="methodology-card-header">
                     <div class="methodology-card-icon" style="background: var(--accent-violet-glow);">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-violet);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     </div>
-                    <div class="methodology-card-title">7 Council Perspectives</div>
+                    <div class="methodology-card-title" data-i18n="set.mc_persp">7 Council Perspectives</div>
                   </div>
-                  <p class="methodology-card-text">Understand how each AI analyst perspective (Risk, Valuation, Income, Momentum, News, Macro, Strategist) contributes to reviews.</p>
+                  <p class="methodology-card-text" data-i18n="set.mc_persp_t">Understand how each AI analyst perspective (Risk, Valuation, Income, Momentum, News, Macro, Strategist) contributes to reviews.</p>
                 </div>
                 <div class="methodology-card" tabindex="0" role="button" onclick="window.open('methodology.html', '_blank')">
                   <div class="methodology-card-header">
                     <div class="methodology-card-icon" style="background: var(--success-glow);">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--success);"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                     </div>
-                    <div class="methodology-card-title">Data Sources</div>
+                    <div class="methodology-card-title" data-i18n="set.mc_sources">Data Sources</div>
                   </div>
-                  <p class="methodology-card-text">We aggregate data from official GCC exchange feeds, regulatory filings, and news sources. Data refreshes every 15 minutes during market hours.</p>
+                  <p class="methodology-card-text" data-i18n="set.mc_sources_t">We aggregate data from official GCC exchange feeds, regulatory filings, and news sources. Data refreshes every 15 minutes during market hours.</p>
                 </div>
                 <div class="methodology-card" tabindex="0" role="button" onclick="window.open('methodology.html', '_blank')">
                   <div class="methodology-card-header">
                     <div class="methodology-card-icon" style="background: var(--accent-gold-glow);">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-gold);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     </div>
-                    <div class="methodology-card-title">Analysis Generation</div>
+                    <div class="methodology-card-title" data-i18n="set.mc_gen">Analysis Generation</div>
                   </div>
-                  <p class="methodology-card-text">Council reviews are generated using advanced AI models trained on financial analysis patterns, GCC market dynamics, and institutional research methodologies.</p>
+                  <p class="methodology-card-text" data-i18n="set.mc_gen_t">Council reviews are generated using advanced AI models trained on financial analysis patterns, GCC market dynamics, and institutional research methodologies.</p>
                 </div>
               </div>
 
               <div style="margin-top: 24px; padding: 20px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px;">
                 <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; color: var(--fg-dim);"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                  Data Freshness
+                  <span data-i18n="set.freshness">Data Freshness</span>
                 </h4>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
                   <div>
-                    <div style="font-size: 12px; color: var(--fg-dim); margin-bottom: 4px;">Price Data</div>
-                    <div style="font-size: 14px; font-weight: 500; color: var(--success);">Live (15-min delay)</div>
+                    <div style="font-size: 12px; color: var(--fg-dim); margin-bottom: 4px;" data-i18n="set.fr_price">Price Data</div>
+                    <div style="font-size: 14px; font-weight: 500; color: var(--success);" data-i18n="set.fr_price_v">Live (15-min delay)</div>
                   </div>
                   <div>
-                    <div style="font-size: 12px; color: var(--fg-dim); margin-bottom: 4px;">Fundamentals</div>
-                    <div style="font-size: 14px; font-weight: 500;">Updated daily</div>
+                    <div style="font-size: 12px; color: var(--fg-dim); margin-bottom: 4px;" data-i18n="set.fr_fund">Fundamentals</div>
+                    <div style="font-size: 14px; font-weight: 500;" data-i18n="set.fr_fund_v">Updated daily</div>
                   </div>
                   <div>
-                    <div style="font-size: 12px; color: var(--fg-dim); margin-bottom: 4px;">News & Sentiment</div>
-                    <div style="font-size: 14px; font-weight: 500;">Updated through the day</div>
+                    <div style="font-size: 12px; color: var(--fg-dim); margin-bottom: 4px;" data-i18n="set.fr_news">News & Sentiment</div>
+                    <div style="font-size: 14px; font-weight: 500;" data-i18n="set.fr_news_v">Updated through the day</div>
                   </div>
                 </div>
               </div>
@@ -1433,9 +1433,9 @@
               <div class="form-group">
                 <label class="form-label">Change Password</label>
                 <div style="display:flex;flex-direction:column;gap:10px;max-width:360px;">
-                  <input type="password" id="currentPassword" class="form-input" placeholder="Current password" autocomplete="current-password">
-                  <input type="password" id="newPassword" class="form-input" placeholder="New password (min 8 characters)" autocomplete="new-password">
-                  <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm new password" autocomplete="new-password">
+                  <input type="password" id="currentPassword" class="form-input" placeholder="Current password" autocomplete="current-password" data-i18n-attr="placeholder:set.ph_cur_pw">
+                  <input type="password" id="newPassword" class="form-input" placeholder="New password (min 8 characters)" autocomplete="new-password" data-i18n-attr="placeholder:set.ph_new_pw">
+                  <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm new password" autocomplete="new-password" data-i18n-attr="placeholder:set.ph_conf_pw">
                   <button class="btn btn-primary btn-sm" id="changePasswordBtn" style="align-self:flex-start;">Update Password</button>
                 </div>
                 <p class="form-hint">Use at least 8 characters. You'll stay signed in on this device.</p>
@@ -1603,9 +1603,9 @@
                     <div class="export-card-icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
                     </div>
-                    <div class="export-card-title">Export Portfolio</div>
+                    <div class="export-card-title" data-i18n="set.exp_portfolio">Export Portfolio</div>
                   </div>
-                  <p class="export-card-desc">Download your current portfolio holdings with all transaction history and cost basis data.</p>
+                  <p class="export-card-desc" data-i18n="set.exp_portfolio_d">Download your current portfolio holdings with all transaction history and cost basis data.</p>
                   <div class="export-formats">
                     <button class="format-btn" onclick="exportData('portfolio', 'csv')">CSV</button>
                     <button class="format-btn" onclick="exportData('portfolio', 'json')">JSON</button>
@@ -1616,9 +1616,9 @@
                     <div class="export-card-icon" style="background: var(--accent-violet-glow);">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-violet);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                     </div>
-                    <div class="export-card-title">Export Council History</div>
+                    <div class="export-card-title" data-i18n="set.exp_council">Export Council History</div>
                   </div>
-                  <p class="export-card-desc">Download all your past AI Analyst Council reviews and reports in a comprehensive format.</p>
+                  <p class="export-card-desc" data-i18n="set.exp_council_d">Download all your past AI Analyst Council reviews and reports in a comprehensive format.</p>
                   <div class="export-formats">
                     <button class="format-btn" onclick="exportData('council', 'json')">JSON</button>
                   </div>
@@ -1629,12 +1629,12 @@
               <div class="danger-zone" style="margin-top: 32px;">
                 <div class="danger-zone-header">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                  <h4>Danger Zone</h4>
+                  <h4 data-i18n="set.danger">Danger Zone</h4>
                 </div>
-                <p class="danger-zone-text">Once you delete your account, there is no going back. This action will permanently remove all your data, portfolio information, Council history, and preferences. Please be certain.</p>
+                <p class="danger-zone-text" data-i18n="set.danger_text">Once you delete your account, there is no going back. This action will permanently remove all your data, portfolio information, Council history, and preferences. Please be certain.</p>
                 <div style="display: flex; gap: 12px;">
-                  <button class="btn btn-danger" onclick="requestDataExport()">Request Data Export</button>
-                  <button class="btn btn-danger" onclick="deleteAccount()">Delete Account</button>
+                  <button class="btn btn-danger" onclick="requestDataExport()" data-i18n="set.req_export">Request Data Export</button>
+                  <button class="btn btn-danger" onclick="deleteAccount()" data-i18n="set.delete_account">Delete Account</button>
                 </div>
               </div>
             </div>
@@ -1682,10 +1682,10 @@
           </div>
         </div>
         <div class="suggested-questions">
-          <div class="suggested-label">Suggested Questions</div>
-          <button class="suggested-question" onclick="askQuestion('How do my preferences affect Council reviews?')">How do my preferences affect Council reviews?</button>
-          <button class="suggested-question" onclick="askQuestion('Explain the risk tolerance options')">Explain the risk tolerance options</button>
-          <button class="suggested-question" onclick="askQuestion('What data does AlphaCouncil store?')">What data does AlphaCouncil store?</button>
+          <div class="suggested-label" data-i18n="set.sq_label">Suggested Questions</div>
+          <button class="suggested-question" onclick="askQuestion('How do my preferences affect Council reviews?')" data-i18n="set.sq_1">How do my preferences affect Council reviews?</button>
+          <button class="suggested-question" onclick="askQuestion('Explain the risk tolerance options')" data-i18n="set.sq_2">Explain the risk tolerance options</button>
+          <button class="suggested-question" onclick="askQuestion('What data does AlphaCouncil store?')" data-i18n="set.sq_3">What data does AlphaCouncil store?</button>
         </div>
         <div class="chat-input-area">
           <div class="chat-input-row">
@@ -1703,8 +1703,14 @@
   <script src="js/i18n.js"></script>
   <script src="adviser-core.js"></script>
   <script>
-  // O4: settings nav + section titles + key form labels/buttons.
+  // O4: full Arabic pass — settings nav, section titles, every form label/hint,
+  // segmented-control options, dropdown <option>s, billing/methodology/security/export
+  // copy, buttons, and the JS-built toast/2FA/notification strings.
   AC_I18N.add({
+    // Page header
+    'set.page_title':   { en: 'Settings', ar: 'الإعدادات' },
+    'set.page_sub':     { en: 'Manage your account, preferences, and how AlphaCouncil works for you.', ar: 'إدارة حسابك وتفضيلاتك وطريقة عمل AlphaCouncil لك.' },
+    // Nav + section headings
     'set.profile':      { en: 'Profile', ar: 'الملف الشخصي' },
     'set.preferences':  { en: 'Investment Preferences', ar: 'تفضيلات الاستثمار' },
     'set.notifications':{ en: 'Notifications', ar: 'الإشعارات' },
@@ -1714,24 +1720,166 @@
     'set.export':       { en: 'Data & Export', ar: 'البيانات والتصدير' },
     'set.profile_sub':  { en: 'Manage your personal information and preferences', ar: 'إدارة معلوماتك الشخصية وتفضيلاتك' },
     'set.prefs_sub':    { en: 'These preferences help tailor Council reviews to your investment style', ar: 'تساعد هذه التفضيلات على تخصيص مراجعات المجلس وفق أسلوبك الاستثماري' },
+    'set.notif_sub':    { en: 'Control how and when AlphaCouncil contacts you', ar: 'تحكّم في كيفية وتوقيت تواصل AlphaCouncil معك' },
+    'set.billing_sub':  { en: 'Manage your subscription and payment details', ar: 'إدارة اشتراكك وتفاصيل الدفع' },
+    'set.method_sub':   { en: 'Understand how AlphaCouncil generates analysis', ar: 'تعرّف على كيفية إنشاء AlphaCouncil للتحليلات' },
+    'set.security_sub': { en: 'Protect your account and manage access', ar: 'احمِ حسابك وأدِر الوصول إليه' },
+    'set.export_sub':   { en: 'Export your data or manage data preferences', ar: 'صدّر بياناتك أو أدِر تفضيلات البيانات' },
+    // Profile section
     'set.photo':        { en: 'Profile Photo', ar: 'صورة الملف الشخصي' },
+    'set.photo_hint':   { en: 'Profile photos are coming soon — your initials are shown for now.', ar: 'صور الملف الشخصي قادمة قريبًا — تُعرض الأحرف الأولى من اسمك حاليًا.' },
     'set.first_name':   { en: 'First Name', ar: 'الاسم الأول' },
     'set.last_name':    { en: 'Last Name', ar: 'اسم العائلة' },
     'set.email':        { en: 'Email Address', ar: 'البريد الإلكتروني' },
     'set.market':       { en: 'Default Market', ar: 'السوق الافتراضي' },
     'set.language':     { en: 'Language', ar: 'اللغة' },
+    'set.email_hint':   { en: 'This email is used for account notifications and recovery.', ar: 'يُستخدم هذا البريد لإشعارات الحساب واستعادته.' },
+    'set.ph_first':     { en: 'Enter first name', ar: 'أدخل الاسم الأول' },
+    'set.ph_last':      { en: 'Enter last name', ar: 'أدخل اسم العائلة' },
+    'set.ph_email':     { en: 'Enter email', ar: 'أدخل البريد الإلكتروني' },
+    // Default Market options
+    'set.mkt_sa':       { en: 'Saudi Arabia (Tadawul)', ar: 'السعودية (تداول)' },
+    'set.mkt_adx':      { en: 'UAE (ADX)', ar: 'الإمارات (سوق أبوظبي)' },
+    'set.mkt_dfm':      { en: 'UAE (DFM)', ar: 'الإمارات (سوق دبي)' },
+    'set.mkt_qa':       { en: 'Qatar (QSE)', ar: 'قطر (بورصة قطر)' },
+    'set.mkt_kw':       { en: 'Kuwait (Boursa)', ar: 'الكويت (بورصة الكويت)' },
+    'set.mkt_bh':       { en: 'Bahrain (Bahrain Bourse)', ar: 'البحرين (بورصة البحرين)' },
+    'set.mkt_om':       { en: 'Oman (MSM)', ar: 'عُمان (سوق مسقط)' },
+    // Language options
+    'set.lang_en':      { en: 'English', ar: 'الإنجليزية' },
+    'set.lang_ar':      { en: 'العربية (Arabic)', ar: 'العربية' },
+    // Investment preferences
     'set.goal':         { en: 'Primary Investment Goal', ar: 'هدف الاستثمار الأساسي' },
+    'set.goal_hint':    { en: 'This helps the Council prioritize relevant insights in your reviews.', ar: 'يساعد هذا المجلس على إعطاء الأولوية للرؤى ذات الصلة في مراجعاتك.' },
+    'set.goal_growth':       { en: 'Growth', ar: 'النمو' },
+    'set.goal_growth_d':     { en: 'Capital appreciation', ar: 'نمو رأس المال' },
+    'set.goal_income':       { en: 'Income', ar: 'الدخل' },
+    'set.goal_income_d':     { en: 'Dividend focus', ar: 'التركيز على التوزيعات' },
+    'set.goal_balanced':     { en: 'Balanced', ar: 'متوازن' },
+    'set.goal_balanced_d':   { en: 'Growth + Income', ar: 'نمو + دخل' },
+    'set.goal_preservation':   { en: 'Preservation', ar: 'الحفاظ على رأس المال' },
+    'set.goal_preservation_d': { en: 'Protect capital', ar: 'حماية رأس المال' },
     'set.horizon':      { en: 'Investment Time Horizon', ar: 'أفق الاستثمار الزمني' },
-    'set.change_pw':    { en: 'Change Password', ar: 'تغيير كلمة المرور' },
-    'set.twofa':        { en: 'Two-Factor Authentication', ar: 'المصادقة الثنائية' },
-    'set.sessions':     { en: 'Sessions', ar: 'الجلسات' },
-    'set.payment':      { en: 'Payment & invoices', ar: 'المدفوعات والفواتير' },
-    'set.save':         { en: 'Save Changes', ar: 'حفظ التغييرات' },
-    'set.save_prefs':   { en: 'Save Preferences', ar: 'حفظ التفضيلات' },
-    'set.update_pw':    { en: 'Update Password', ar: 'تحديث كلمة المرور' },
-    'set.sign_out':     { en: 'Sign out', ar: 'تسجيل الخروج' },
-    'set.upgrade':      { en: 'Upgrade to Council', ar: 'الترقية إلى المجلس' },
-    'set.email_hint':   { en: 'This email is used for account notifications and recovery.', ar: 'يُستخدم هذا البريد لإشعارات الحساب واستعادته.' }
+    'set.hz_short':     { en: 'Short-term', ar: 'قصير الأجل' },
+    'set.hz_short_d':   { en: 'Less than 1 year', ar: 'أقل من سنة' },
+    'set.hz_medium':    { en: 'Medium-term', ar: 'متوسط الأجل' },
+    'set.hz_medium_d':  { en: '1–5 years', ar: '1–5 سنوات' },
+    'set.hz_long':      { en: 'Long-term', ar: 'طويل الأجل' },
+    'set.hz_long_d':    { en: '5+ years', ar: 'أكثر من 5 سنوات' },
+    'set.risk':         { en: 'Risk Tolerance', ar: 'تحمّل المخاطر' },
+    'set.risk_hint':    { en: 'The Risk Analyst perspective in Council reviews will adjust based on this setting.', ar: 'سيتكيّف منظور محلل المخاطر في مراجعات المجلس بناءً على هذا الإعداد.' },
+    'set.risk_cons':    { en: 'Conservative', ar: 'متحفّظ' },
+    'set.risk_cons_d':  { en: 'Minimize volatility', ar: 'تقليل التقلبات' },
+    'set.risk_mod':     { en: 'Moderate', ar: 'معتدل' },
+    'set.risk_mod_d':   { en: 'Balanced approach', ar: 'نهج متوازن' },
+    'set.risk_agg':     { en: 'Aggressive', ar: 'جريء' },
+    'set.risk_agg_d':   { en: 'Higher risk/reward', ar: 'مخاطرة/عائد أعلى' },
+    // Notifications toggles
+    'set.nt_reviews':       { en: 'New Council Reviews Ready', ar: 'مراجعات مجلس جديدة جاهزة' },
+    'set.nt_reviews_d':     { en: 'Get notified when a new AI Council review is available for your portfolio', ar: 'احصل على إشعار عند توفر مراجعة جديدة من مجلس الذكاء الاصطناعي لمحفظتك' },
+    'set.nt_alerts':        { en: 'Intelligent Alerts on Holdings', ar: 'تنبيهات ذكية على الحيازات' },
+    'set.nt_alerts_d':      { en: 'Receive alerts when significant changes affect your holdings', ar: 'استقبل تنبيهات عند حدوث تغييرات مهمة تؤثر على حيازاتك' },
+    'set.nt_news':          { en: 'Major News Impact on Portfolio', ar: 'تأثير الأخبار المهمة على المحفظة' },
+    'set.nt_news_d':        { en: 'Get notified when breaking news may affect your positions', ar: 'احصل على إشعار عندما قد تؤثر الأخبار العاجلة على مراكزك' },
+    'set.nt_weekly':        { en: 'Weekly Portfolio Summary', ar: 'ملخص أسبوعي للمحفظة' },
+    'set.nt_weekly_d':      { en: 'Receive a weekly email summarizing your portfolio performance', ar: 'استقبل بريدًا أسبوعيًا يلخّص أداء محفظتك' },
+    'set.nt_marketing':     { en: 'Marketing & Product Updates', ar: 'التسويق وتحديثات المنتج' },
+    'set.nt_marketing_d':   { en: 'Stay informed about new features and improvements', ar: 'ابقَ على اطلاع بالميزات والتحسينات الجديدة' },
+    'set.quiet':            { en: 'Quiet Hours', ar: 'ساعات الهدوء' },
+    'set.optional':         { en: '(optional)', ar: '(اختياري)' },
+    'set.quiet_hint':       { en: 'Non-urgent notifications will be held during quiet hours.', ar: 'سيتم تأجيل الإشعارات غير العاجلة خلال ساعات الهدوء.' },
+    'set.qh_none':          { en: 'No quiet hours', ar: 'بدون ساعات هدوء' },
+    'set.qh_22':            { en: '10:00 PM – 8:00 AM', ar: '10:00 مساءً – 8:00 صباحًا' },
+    'set.qh_23':            { en: '11:00 PM – 7:00 AM', ar: '11:00 مساءً – 7:00 صباحًا' },
+    'set.qh_custom':        { en: 'Custom', ar: 'مخصص' },
+    'set.tz_gst':           { en: 'GST (Gulf Standard Time)', ar: 'توقيت الخليج القياسي (GST)' },
+    'set.tz_ast':           { en: 'AST (Arabia Standard Time)', ar: 'التوقيت العربي القياسي (AST)' },
+    'set.tz_utc':           { en: 'UTC', ar: 'التوقيت العالمي المنسق (UTC)' },
+    'set.notif_note':       { en: 'These delivery preferences aren’t saved yet — email/push controls are coming soon. Your in-app alerts (the bell) are already live.', ar: 'لم يتم حفظ تفضيلات التسليم هذه بعد — عناصر التحكم في البريد/الإشعارات الفورية قادمة قريبًا. تنبيهاتك داخل التطبيق (الجرس) فعّالة بالفعل.' },
+    // Billing
+    'set.plan_current':     { en: 'Current Plan', ar: 'الخطة الحالية' },
+    'set.plan_suffix':      { en: 'Plan', ar: 'الخطة' },
+    'set.plan_per_month':   { en: '/ month', ar: '/ شهريًا' },
+    'set.plan_tier':        { en: 'tier', ar: 'الباقة' },
+    'set.plan_top':         { en: 'You are on the top tier', ar: 'أنت على أعلى باقة' },
+    'set.plan_upgrade':     { en: 'Upgrade', ar: 'ترقية' },
+    'set.plan_manage':      { en: 'Manage plan', ar: 'إدارة الخطة' },
+    'set.feat_reviews':     { en: 'Unlimited Council reviews', ar: 'مراجعات مجلس غير محدودة' },
+    'set.feat_thesis':      { en: '12-dimension thesis scoring', ar: 'تقييم الأطروحة عبر 12 بُعدًا' },
+    'set.feat_perspectives':{ en: 'All 7 analyst perspectives', ar: 'جميع منظورات المحللين السبعة' },
+    'set.feat_adviser':     { en: 'Priority AI Adviser access', ar: 'وصول ذو أولوية للمستشار الذكي' },
+    'set.feat_pdf':         { en: 'Export reports to PDF', ar: 'تصدير التقارير إلى PDF' },
+    'set.feat_support':     { en: 'Email support', ar: 'دعم عبر البريد الإلكتروني' },
+    'set.upgrade':          { en: 'Upgrade to Council', ar: 'الترقية إلى المجلس' },
+    'set.payment':          { en: 'Payment & invoices', ar: 'المدفوعات والفواتير' },
+    'set.payment_hint':     { en: 'There\'s nothing to bill yet. When paid plans launch, your payment method and invoices will appear here — we don\'t display a saved card or charges you haven\'t made.', ar: 'لا توجد أي رسوم بعد. عند إطلاق الخطط المدفوعة، ستظهر هنا طريقة الدفع والفواتير الخاصة بك — نحن لا نعرض بطاقة محفوظة أو رسومًا لم تقم بها.' },
+    // Methodology cards
+    'set.mc_thesis':        { en: '12-Dimension Thesis', ar: 'أطروحة بـ12 بُعدًا' },
+    'set.mc_thesis_t':      { en: 'Learn how we score stocks across 12 dimensions including valuation, momentum, quality, growth, dividend, risk, and more.', ar: 'تعرّف على كيفية تقييمنا للأسهم عبر 12 بُعدًا تشمل التقييم والزخم والجودة والنمو والتوزيعات والمخاطر والمزيد.' },
+    'set.mc_persp':         { en: '7 Council Perspectives', ar: '7 منظورات للمجلس' },
+    'set.mc_persp_t':       { en: 'Understand how each AI analyst perspective (Risk, Valuation, Income, Momentum, News, Macro, Strategist) contributes to reviews.', ar: 'افهم كيف يساهم كل منظور لمحلل الذكاء الاصطناعي (المخاطر، التقييم، الدخل، الزخم، الأخبار، الاقتصاد الكلي، الاستراتيجي) في المراجعات.' },
+    'set.mc_sources':       { en: 'Data Sources', ar: 'مصادر البيانات' },
+    'set.mc_sources_t':     { en: 'We aggregate data from official GCC exchange feeds, regulatory filings, and news sources. Data refreshes every 15 minutes during market hours.', ar: 'نجمع البيانات من موجزات بورصات دول الخليج الرسمية والإيداعات التنظيمية ومصادر الأخبار. يتم تحديث البيانات كل 15 دقيقة خلال ساعات التداول.' },
+    'set.mc_gen':           { en: 'Analysis Generation', ar: 'إنشاء التحليل' },
+    'set.mc_gen_t':         { en: 'Council reviews are generated using advanced AI models trained on financial analysis patterns, GCC market dynamics, and institutional research methodologies.', ar: 'يتم إنشاء مراجعات المجلس باستخدام نماذج ذكاء اصطناعي متقدمة مدرّبة على أنماط التحليل المالي وديناميكيات أسواق الخليج ومنهجيات البحث المؤسسي.' },
+    'set.freshness':        { en: 'Data Freshness', ar: 'حداثة البيانات' },
+    'set.fr_price':         { en: 'Price Data', ar: 'بيانات الأسعار' },
+    'set.fr_price_v':       { en: 'Live (15-min delay)', ar: 'مباشر (تأخير 15 دقيقة)' },
+    'set.fr_fund':          { en: 'Fundamentals', ar: 'البيانات الأساسية' },
+    'set.fr_fund_v':        { en: 'Updated daily', ar: 'يُحدّث يوميًا' },
+    'set.fr_news':          { en: 'News & Sentiment', ar: 'الأخبار والمعنويات' },
+    'set.fr_news_v':        { en: 'Updated through the day', ar: 'يُحدّث على مدار اليوم' },
+    // Security
+    'set.change_pw':        { en: 'Change Password', ar: 'تغيير كلمة المرور' },
+    'set.ph_cur_pw':        { en: 'Current password', ar: 'كلمة المرور الحالية' },
+    'set.ph_new_pw':        { en: 'New password (min 8 characters)', ar: 'كلمة مرور جديدة (8 أحرف على الأقل)' },
+    'set.ph_conf_pw':       { en: 'Confirm new password', ar: 'تأكيد كلمة المرور الجديدة' },
+    'set.update_pw':        { en: 'Update Password', ar: 'تحديث كلمة المرور' },
+    'set.pw_hint':          { en: 'Use at least 8 characters. You\'ll stay signed in on this device.', ar: 'استخدم 8 أحرف على الأقل. ستبقى مسجّل الدخول على هذا الجهاز.' },
+    'set.twofa':            { en: 'Two-Factor Authentication', ar: 'المصادقة الثنائية' },
+    'set.twofa_soon':       { en: 'Coming soon', ar: 'قادم قريبًا' },
+    'set.twofa_soon_p':     { en: 'TOTP authenticator support is on the way. We won’t show a two-factor toggle until it actually protects your account.', ar: 'دعم تطبيقات المصادقة (TOTP) في الطريق. لن نعرض مفتاح المصادقة الثنائية حتى يحمي حسابك فعليًا.' },
+    'set.sessions':         { en: 'Sessions', ar: 'الجلسات' },
+    'set.sessions_hint':    { en: 'You\'re signed in on this device. Per-device session history and remote sign-out are coming soon — we don\'t list sessions we can\'t actually track.', ar: 'أنت مسجّل الدخول على هذا الجهاز. سجلّ الجلسات لكل جهاز وتسجيل الخروج عن بُعد قادمان قريبًا — لا نعرض جلسات لا يمكننا تتبّعها فعليًا.' },
+    'set.sign_out':         { en: 'Sign out', ar: 'تسجيل الخروج' },
+    // Data & Export
+    'set.exp_portfolio':    { en: 'Export Portfolio', ar: 'تصدير المحفظة' },
+    'set.exp_portfolio_d':  { en: 'Download your current portfolio holdings with all transaction history and cost basis data.', ar: 'نزّل حيازات محفظتك الحالية مع كامل سجل المعاملات وبيانات أساس التكلفة.' },
+    'set.exp_council':      { en: 'Export Council History', ar: 'تصدير سجل المجلس' },
+    'set.exp_council_d':    { en: 'Download all your past AI Analyst Council reviews and reports in a comprehensive format.', ar: 'نزّل جميع مراجعات وتقارير مجلس محللي الذكاء الاصطناعي السابقة بصيغة شاملة.' },
+    'set.danger':           { en: 'Danger Zone', ar: 'منطقة الخطر' },
+    'set.danger_text':      { en: 'Once you delete your account, there is no going back. This action will permanently remove all your data, portfolio information, Council history, and preferences. Please be certain.', ar: 'بمجرد حذف حسابك، لا يمكن التراجع. سيؤدي هذا الإجراء إلى الإزالة الدائمة لجميع بياناتك ومعلومات محفظتك وسجل المجلس وتفضيلاتك. يرجى التأكد.' },
+    'set.req_export':       { en: 'Request Data Export', ar: 'طلب تصدير البيانات' },
+    'set.delete_account':   { en: 'Delete Account', ar: 'حذف الحساب' },
+    // Buttons
+    'set.save':             { en: 'Save Changes', ar: 'حفظ التغييرات' },
+    'set.save_prefs':       { en: 'Save Preferences', ar: 'حفظ التفضيلات' },
+    'set.reset_default':    { en: 'Reset to Default', ar: 'إعادة التعيين إلى الافتراضي' },
+    // Adviser sidebar
+    'set.sq_label':         { en: 'Suggested Questions', ar: 'أسئلة مقترحة' },
+    'set.sq_1':             { en: 'How do my preferences affect Council reviews?', ar: 'كيف تؤثر تفضيلاتي على مراجعات المجلس؟' },
+    'set.sq_2':             { en: 'Explain the risk tolerance options', ar: 'اشرح خيارات تحمّل المخاطر' },
+    'set.sq_3':             { en: 'What data does AlphaCouncil store?', ar: 'ما البيانات التي يخزّنها AlphaCouncil؟' },
+    // JS strings: toasts + statuses
+    'set.t_saving':         { en: 'Saving…', ar: 'جارٍ الحفظ…' },
+    'set.t_updating':       { en: 'Updating…', ar: 'جارٍ التحديث…' },
+    'set.t_saved':          { en: 'Saved', ar: 'تم الحفظ' },
+    'set.t_profile_updated':{ en: 'Your profile was updated.', ar: 'تم تحديث ملفك الشخصي.' },
+    'set.t_risk_updated':   { en: 'Risk profile updated — the Council will use it.', ar: 'تم تحديث ملف المخاطر — سيستخدمه المجلس.' },
+    'set.t_signin_req':     { en: 'Sign in required', ar: 'تسجيل الدخول مطلوب' },
+    'set.t_signin_prefs':   { en: 'Log in to save your preferences.', ar: 'سجّل الدخول لحفظ تفضيلاتك.' },
+    'set.t_save_failed':    { en: 'Save failed', ar: 'فشل الحفظ' },
+    'set.t_try_again':      { en: 'Please try again.', ar: 'يرجى المحاولة مرة أخرى.' },
+    'set.t_missing':        { en: 'Missing fields', ar: 'حقول ناقصة' },
+    'set.t_missing_pw':     { en: 'Enter your current and new password.', ar: 'أدخل كلمة المرور الحالية والجديدة.' },
+    'set.t_too_short':      { en: 'Too short', ar: 'قصيرة جدًا' },
+    'set.t_too_short_pw':   { en: 'New password must be at least 8 characters.', ar: 'يجب أن تتكوّن كلمة المرور الجديدة من 8 أحرف على الأقل.' },
+    'set.t_mismatch':       { en: 'Mismatch', ar: 'عدم تطابق' },
+    'set.t_mismatch_pw':    { en: 'New password and confirmation don’t match.', ar: 'كلمة المرور الجديدة والتأكيد غير متطابقين.' },
+    'set.t_pw_updated':     { en: 'Password updated', ar: 'تم تحديث كلمة المرور' },
+    'set.t_pw_changed':     { en: 'Your password was changed.', ar: 'تم تغيير كلمة المرور.' },
+    'set.t_pw_failed':      { en: 'Could not change password', ar: 'تعذّر تغيير كلمة المرور' },
+    'set.t_pw_check':       { en: 'Check your current password and try again.', ar: 'تحقق من كلمة المرور الحالية وحاول مرة أخرى.' }
   });
   (function () {
     function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
@@ -1741,14 +1889,26 @@
       'Billing & Plan': 'set.billing', 'Methodology & Data': 'set.methodology', 'Security': 'set.security', 'Data & Export': 'set.export',
       'Manage your personal information and preferences': 'set.profile_sub',
       'These preferences help tailor Council reviews to your investment style': 'set.prefs_sub',
+      'Control how and when AlphaCouncil contacts you': 'set.notif_sub',
+      'Manage your subscription and payment details': 'set.billing_sub',
+      'Understand how AlphaCouncil generates analysis': 'set.method_sub',
+      'Protect your account and manage access': 'set.security_sub',
+      'Export your data or manage data preferences': 'set.export_sub',
       'Profile Photo': 'set.photo', 'First Name': 'set.first_name', 'Last Name': 'set.last_name', 'Email Address': 'set.email',
+      'Profile photos are coming soon — your initials are shown for now.': 'set.photo_hint',
       'Default Market': 'set.market', 'Language': 'set.language', 'Primary Investment Goal': 'set.goal',
-      'Investment Time Horizon': 'set.horizon', 'Change Password': 'set.change_pw', 'Two-Factor Authentication': 'set.twofa',
+      'This helps the Council prioritize relevant insights in your reviews.': 'set.goal_hint',
+      'Investment Time Horizon': 'set.horizon', 'Risk Tolerance': 'set.risk',
+      'The Risk Analyst perspective in Council reviews will adjust based on this setting.': 'set.risk_hint',
+      'Change Password': 'set.change_pw', 'Two-Factor Authentication': 'set.twofa',
+      'Use at least 8 characters. You\'ll stay signed in on this device.': 'set.pw_hint',
       'Sessions': 'set.sessions', 'Payment & invoices': 'set.payment', 'Save Changes': 'set.save', 'Save Preferences': 'set.save_prefs',
-      'Update Password': 'set.update_pw', 'Sign out': 'set.sign_out', 'Upgrade to Council': 'set.upgrade',
-      'This email is used for account notifications and recovery.': 'set.email_hint'
+      'Reset to Default': 'set.reset_default', 'Update Password': 'set.update_pw', 'Sign out': 'set.sign_out',
+      'This email is used for account notifications and recovery.': 'set.email_hint',
+      'Non-urgent notifications will be held during quiet hours.': 'set.quiet_hint',
+      'Data Freshness': 'set.freshness', 'Danger Zone': 'set.danger', 'Request Data Export': 'set.req_export', 'Delete Account': 'set.delete_account'
     };
-    Array.prototype.forEach.call(document.querySelectorAll('.settings-nav-item, .section-title-group h2, .section-title-group p, .form-label, .form-hint, .twofa-title, .btn'), function (el) {
+    Array.prototype.forEach.call(document.querySelectorAll('.settings-nav-item, .section-title-group h2, .section-title-group p, .form-label, .form-hint, .twofa-title, .btn, .danger-zone-header h4'), function (el) {
       var k = MAP[firstText(el)]; if (k) setKey(el, k);
     });
     if (window.AC_I18N) AC_I18N.apply();
@@ -1766,30 +1926,36 @@
 
     let _rp = { risk_style: null, max_position_pct: null, hedge_appetite: null };
 
+    let _identityUser = null;  // last user shown, so langchange can re-render plan labels
     window.onUserReady = function(u){
       if(!u) return;
+      _identityUser = u;
       const em = document.getElementById('email');
       if(em && u.email){ em.value = u.email; em.setAttribute('readonly','readonly'); em.style.opacity='0.85'; em.title='Email changes aren’t available yet'; }
-      // Real user initials for the avatar (no fabricated 'SK').
+      // Avatar: derive via the SAME helper the top-nav uses so both avatars always match.
       const av = document.querySelector('.avatar-preview');
-      if(av){
-        const fn = (u.first_name||'').trim(), ln = (u.last_name||'').trim();
-        let initials = '';
-        if(fn || ln){ initials = ((fn[0]||'') + (ln[0]||'')).toUpperCase(); }
-        else if(u.email){ const local = String(u.email).split('@')[0].replace(/[^a-zA-Z]/g,''); initials = local.slice(0,2).toUpperCase(); }
-        av.textContent = initials || '—';
-      }
+      if(av){ av.textContent = (AlphaCouncil.initials(u) || '—'); }
+      if(AlphaCouncil.refreshIdentity) AlphaCouncil.refreshIdentity(u);
+      // Keep the Language <select> in sync with the live UI language (not the stale 'en' default),
+      // so saving doesn't clobber the account language back to English.
+      const langSel = document.getElementById('language');
+      if(langSel && window.AC_I18N) langSel.value = AC_I18N.lang;
       const plan = (u.plan || 'free').toLowerCase();
       const label = plan.charAt(0).toUpperCase() + plan.slice(1);
-      const nameEl = document.querySelector('.plan-name'); if(nameEl) nameEl.textContent = label + ' Plan';
+      const nameEl = document.querySelector('.plan-name'); if(nameEl) nameEl.textContent = label + ' ' + AC_I18N.t('set.plan_suffix');
       const priceEl = document.querySelector('.plan-price');
-      if(priceEl) priceEl.innerHTML = plan==='free' ? '<strong>$0</strong> / month' : '<strong>'+label+'</strong> tier';
+      if(priceEl) priceEl.innerHTML = plan==='free' ? '<strong>$0</strong> ' + AC_I18N.t('set.plan_per_month') : '<strong>'+label+'</strong> ' + AC_I18N.t('set.plan_tier');
       const upg = document.querySelector('.plan-actions .btn-primary');
       if(upg){
-        if(plan==='elite'){ upg.textContent='You are on the top tier'; upg.disabled=true; }
-        else { upg.textContent = (plan==='free' ? 'Upgrade' : 'Manage plan'); upg.onclick=function(){ window.location.href='pricing.html'; }; }
+        if(plan==='elite'){ upg.textContent=AC_I18N.t('set.plan_top'); upg.disabled=true; }
+        else { upg.textContent = (plan==='free' ? AC_I18N.t('set.plan_upgrade') : AC_I18N.t('set.plan_manage')); upg.onclick=function(){ window.location.href='pricing.html'; }; }
       }
     };
+
+    // Re-render JS-set plan labels when the language is toggled live.
+    window.addEventListener('ac:langchange', function(){
+      if(_identityUser && typeof window.onUserReady==='function') window.onUserReady(_identityUser);
+    });
 
     // Risk Tolerance is the 3rd segmented-control in #preferences; maps to risk_style.
     function _riskSegBtns(){
@@ -1812,16 +1978,17 @@
     // Save Preferences -> persist risk_style (preserving the other profile fields).
     (function(){
       const btns = document.querySelectorAll('#preferences .section-body .btn');
-      const saveBtn = Array.from(btns).find(function(b){ return /Save Preferences/i.test(b.textContent); });
-      const resetBtn = Array.from(btns).find(function(b){ return /Reset to Default/i.test(b.textContent); });
+      // Match by data-i18n key (not textContent) so this still works when the UI is in Arabic.
+      const saveBtn = Array.from(btns).find(function(b){ return b.getAttribute('data-i18n')==='set.save_prefs' || /Save Preferences/i.test(b.textContent); });
+      const resetBtn = Array.from(btns).find(function(b){ return b.getAttribute('data-i18n')==='set.reset_default' || /Reset to Default/i.test(b.textContent); });
       if(saveBtn) saveBtn.addEventListener('click', async function(){
         const style = _selectedRiskStyle();
-        const orig = saveBtn.textContent; saveBtn.textContent='Saving…'; saveBtn.disabled=true;
+        const orig = saveBtn.textContent; saveBtn.textContent=AC_I18N.t('set.t_saving'); saveBtn.disabled=true;
         try {
           _rp = await API.saveRiskProfile({ risk_style: style, max_position_pct: (_rp&&_rp.max_position_pct)||null, hedge_appetite: (_rp&&_rp.hedge_appetite)||null });
-          if(AlphaCouncil.showToast) AlphaCouncil.showToast('Saved','Risk profile updated — the Council will use it.','success');
+          if(AlphaCouncil.showToast) AlphaCouncil.showToast(AC_I18N.t('set.t_saved'),AC_I18N.t('set.t_risk_updated'),'success');
         } catch(e){
-          if(AlphaCouncil.showToast) AlphaCouncil.showToast(e&&e.status===401?'Sign in required':'Save failed', e&&e.status===401?'Log in to save your preferences.':((e&&e.message)||'Please try again.'),'error');
+          if(AlphaCouncil.showToast) AlphaCouncil.showToast(e&&e.status===401?AC_I18N.t('set.t_signin_req'):AC_I18N.t('set.t_save_failed'), e&&e.status===401?AC_I18N.t('set.t_signin_prefs'):((e&&e.message)||AC_I18N.t('set.t_try_again')),'error');
         } finally { saveBtn.textContent=orig; saveBtn.disabled=false; }
       });
       if(resetBtn) resetBtn.addEventListener('click', function(){ _setActiveRisk('balanced'); });
@@ -1968,17 +2135,20 @@
       var tfa = document.getElementById('twofaSection');
       if(tfa) tfa.innerHTML = '<div class="twofa-header"><div class="twofa-title">'
         + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
-        + 'Two-Factor Authentication</div><span class="twofa-badge disabled">Coming soon</span></div>'
-        + '<p style="font-size:13px;color:var(--fg-dim);line-height:1.6;margin:12px 0 0;">TOTP authenticator support is on the way. We won’t show a two-factor toggle until it actually protects your account.</p>';
+        + '<span data-i18n="set.twofa">Two-Factor Authentication</span></div><span class="twofa-badge disabled" data-i18n="set.twofa_soon">Coming soon</span></div>'
+        + '<p style="font-size:13px;color:var(--fg-dim);line-height:1.6;margin:12px 0 0;" data-i18n="set.twofa_soon_p">TOTP authenticator support is on the way. We won’t show a two-factor toggle until it actually protects your account.</p>';
 
       // Notifications: the delivery toggles don't persist yet — say so honestly (the in-app bell is already live).
       var notifBody = document.querySelector('#notifications .section-body');
       if(notifBody && !document.getElementById('notifNote')){
         var n = document.createElement('p'); n.id='notifNote'; n.className='form-hint';
         n.style.cssText='margin:0 0 16px;padding:12px;border:1px solid var(--border,#2a2f3a);border-radius:8px;';
+        n.setAttribute('data-i18n','set.notif_note');
         n.textContent='These delivery preferences aren’t saved yet — email/push controls are coming soon. Your in-app alerts (the bell) are already live.';
         notifBody.insertBefore(n, notifBody.firstChild);
       }
+      // The injected 2FA + notif markup carries data-i18n; resolve it now (and on langchange via the global handler).
+      if(window.AC_I18N) AC_I18N.apply();
 
       async function loadProfile(){
         var u = null;
@@ -1986,18 +2156,27 @@
         if(!u) return;
         var fn=document.getElementById('firstName'); if(fn) fn.value = u.first_name || '';
         var ln=document.getElementById('lastName'); if(ln) ln.value = u.last_name || '';
-        // Real user initials for the avatar (fallback path; no fabricated 'SK').
+        // Avatar: derive via the SAME helper the top-nav uses so both avatars always match.
         var av=document.querySelector('.avatar-preview');
-        if(av){
-          var f=(u.first_name||'').trim(), l=(u.last_name||'').trim(), ini='';
-          if(f||l){ ini=((f[0]||'')+(l[0]||'')).toUpperCase(); }
-          else if(u.email){ ini=String(u.email).split('@')[0].replace(/[^a-zA-Z]/g,'').slice(0,2).toUpperCase(); }
-          av.textContent = ini || '—';
-        }
-        var lang=document.getElementById('language'); if(lang && u.preferred_language) lang.value = u.preferred_language;
+        if(av){ av.textContent = (AlphaCouncil.initials(u) || '—'); }
+        if(AlphaCouncil.refreshIdentity) AlphaCouncil.refreshIdentity(u);
+        // Sync the Language <select> to the LIVE UI language (from i18n), not the account's
+        // stored value — otherwise saving while viewing Arabic would downgrade to English.
+        var lang=document.getElementById('language'); if(lang && window.AC_I18N) lang.value = AC_I18N.lang;
         var mkt=document.getElementById('defaultMarket'); if(mkt && u.market){ try { mkt.value = u.market; } catch(e){} }
       }
       loadProfile();
+
+      // When the user changes the Language dropdown, switch the UI immediately (and i18n persists it).
+      var langSel = document.getElementById('language');
+      if(langSel) langSel.addEventListener('change', function(){
+        if(window.AC_I18N) AC_I18N.set(langSel.value);
+      });
+      // Keep the dropdown in sync if the language is toggled elsewhere (e.g. the top-nav toggle).
+      window.addEventListener('ac:langchange', function(){
+        var ls = document.getElementById('language');
+        if(ls && window.AC_I18N) ls.value = AC_I18N.lang;
+      });
 
       var saveBtn = document.getElementById('saveProfileBtn');
       if(saveBtn) saveBtn.addEventListener('click', async function(){
@@ -2007,12 +2186,17 @@
           market: (document.getElementById('defaultMarket')||{}).value || '',
           preferred_language: (document.getElementById('language')||{}).value || 'en'
         };
-        var orig = saveBtn.textContent; saveBtn.disabled=true; saveBtn.textContent='Saving…';
+        var orig = saveBtn.textContent; saveBtn.disabled=true; saveBtn.textContent=AC_I18N.t('set.t_saving');
         try {
           await API.updateProfile(fields);
-          if(typeof showToast==='function') showToast('Saved','Your profile was updated.','success');
+          // Refresh BOTH avatars from the just-saved name via the shared derivation so they match.
+          var idUser = { first_name: fields.first_name, last_name: fields.last_name, email: (document.getElementById('email')||{}).value || '' };
+          var av = document.querySelector('.avatar-preview');
+          if(av) av.textContent = (AlphaCouncil.initials(idUser) || '—');
+          if(AlphaCouncil.refreshIdentity) AlphaCouncil.refreshIdentity(idUser);
+          if(typeof showToast==='function') showToast(AC_I18N.t('set.t_saved'),AC_I18N.t('set.t_profile_updated'),'success');
         } catch(e){
-          if(typeof showToast==='function') showToast(e&&e.status===401?'Sign in required':'Save failed', (e&&e.message)||'Please try again.','error');
+          if(typeof showToast==='function') showToast(e&&e.status===401?AC_I18N.t('set.t_signin_req'):AC_I18N.t('set.t_save_failed'), (e&&e.message)||AC_I18N.t('set.t_try_again'),'error');
         } finally { saveBtn.disabled=false; saveBtn.textContent=orig; }
       });
 
@@ -2021,16 +2205,16 @@
         var cur=(document.getElementById('currentPassword')||{}).value||'';
         var nw=(document.getElementById('newPassword')||{}).value||'';
         var cf=(document.getElementById('confirmPassword')||{}).value||'';
-        if(!cur || !nw){ if(typeof showToast==='function') showToast('Missing fields','Enter your current and new password.','warning'); return; }
-        if(nw.length<8){ if(typeof showToast==='function') showToast('Too short','New password must be at least 8 characters.','warning'); return; }
-        if(nw!==cf){ if(typeof showToast==='function') showToast('Mismatch','New password and confirmation don’t match.','warning'); return; }
-        var orig=cpBtn.textContent; cpBtn.disabled=true; cpBtn.textContent='Updating…';
+        if(!cur || !nw){ if(typeof showToast==='function') showToast(AC_I18N.t('set.t_missing'),AC_I18N.t('set.t_missing_pw'),'warning'); return; }
+        if(nw.length<8){ if(typeof showToast==='function') showToast(AC_I18N.t('set.t_too_short'),AC_I18N.t('set.t_too_short_pw'),'warning'); return; }
+        if(nw!==cf){ if(typeof showToast==='function') showToast(AC_I18N.t('set.t_mismatch'),AC_I18N.t('set.t_mismatch_pw'),'warning'); return; }
+        var orig=cpBtn.textContent; cpBtn.disabled=true; cpBtn.textContent=AC_I18N.t('set.t_updating');
         try {
           await API.changePassword(cur, nw);
           ['currentPassword','newPassword','confirmPassword'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
-          if(typeof showToast==='function') showToast('Password updated','Your password was changed.','success');
+          if(typeof showToast==='function') showToast(AC_I18N.t('set.t_pw_updated'),AC_I18N.t('set.t_pw_changed'),'success');
         } catch(e){
-          if(typeof showToast==='function') showToast('Could not change password', (e&&e.message)||'Check your current password and try again.','error');
+          if(typeof showToast==='function') showToast(AC_I18N.t('set.t_pw_failed'), (e&&e.message)||AC_I18N.t('set.t_pw_check'),'error');
         } finally { cpBtn.disabled=false; cpBtn.textContent=orig; }
       });
 

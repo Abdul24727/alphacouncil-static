@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Article — AlphaCouncil</title>
+  <meta name="description" content="Portfolio-aware news and market intelligence for GCC investors.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/alphacouncil.css">
+  <style>
+    .article-wrap { max-width: 760px; margin: 0 auto; }
+    .article-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--fg-muted); background: none; border: none; cursor: pointer; padding: 0; margin-bottom: 20px; }
+    .article-back:hover { color: var(--fg); }
+    .article-back svg { width: 16px; height: 16px; }
+    [dir="rtl"] .article-back svg { transform: scaleX(-1); }
+    .article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12px; color: var(--fg-muted); margin-bottom: 14px; }
+    .article-chip { padding: 3px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); font-weight: 500; }
+    .article-chip.ticker { color: var(--accent-primary); border-color: var(--accent-primary); cursor: pointer; }
+    .article-title { font-size: 30px; line-height: 1.25; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 16px; }
+    .article-image { width: 100%; border-radius: 14px; border: 1px solid var(--border); margin: 8px 0 22px; display: block; aspect-ratio: 16/9; object-fit: cover; background: var(--surface); }
+    .article-summary { font-size: 16px; line-height: 1.7; color: var(--fg); background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent-primary); border-radius: 10px; padding: 16px 18px; margin-bottom: 22px; }
+    [dir="rtl"] .article-summary { border-left: 1px solid var(--border); border-right: 3px solid var(--accent-primary); }
+    .article-impact { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.6; padding: 12px 16px; border-radius: 10px; margin-bottom: 22px; }
+    .article-impact.positive { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.3); }
+    .article-impact.negative { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); }
+    .article-impact.neutral { background: var(--surface); border: 1px solid var(--border); }
+    .article-impact b { display: block; margin-bottom: 2px; }
+    .article-body { font-size: 15px; line-height: 1.85; color: var(--fg); }
+    .article-body p { margin: 0 0 16px; }
+    .article-source { margin: 26px 0 8px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 13px; color: var(--fg-muted); }
+    .article-source a { color: var(--accent-primary); text-decoration: none; }
+    .article-source a:hover { text-decoration: underline; }
+    .article-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0 8px; }
+    .article-state { padding: 60px 20px; text-align: center; color: var(--fg-muted); font-size: 14px; }
+    .article-disclaimer { font-size: 11px; color: var(--fg-dim); margin-top: 18px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <nav class="app-nav" role="navigation" aria-label="Main navigation">
+    <div class="app-nav-inner">
+      <a href="index.html" class="app-logo">
+        <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
+      </a>
+      <div class="app-nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="scenarios.html" data-i18n="nav.scenarios">Scenarios</a>
+        <a href="markets-app.html">Markets</a>
+        <a href="news.html" class="active">News</a>
+        <a href="council-history.html">Council</a>
+        <a href="alerts.html">Alerts</a>
+      </div>
+      <div class="app-nav-right">
+        <div class="app-search" id="searchBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <span data-i18n="common.search">Search</span>
+          <kbd>/</kbd>
+        </div>
+        <div class="lang-toggle">
+          <button class="active" data-lang="en">EN</button>
+          <button data-lang="ar">AR</button>
+        </div>
+        <button class="nav-icon-btn" id="adviserToggle" title="Toggle AI Adviser" aria-label="Toggle AI Adviser sidebar" aria-expanded="false" aria-controls="adviserSidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="nav-icon-btn" id="notificationsBtn" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="badge" aria-hidden="true" style="display:none"></span>
+        </button>
+        <button class="nav-icon-btn" id="settingsBtn" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button class="user-avatar" id="userMenu" aria-label="User menu" aria-haspopup="true"></button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="indices-bar" role="region" aria-label="Live market indices">
+    <div class="indices-inner">
+      <div class="index-item"><span class="index-name">TASI</span><span class="index-value">—</span><span class="index-change neutral">—</span></div>
+      <div class="index-item"><span class="index-name">ADX</span><span class="index-value">—</span><span class="index-change neutral">—</span></div>
+      <div class="index-item"><span class="index-name">DFM</span><span class="index-value">—</span><span class="index-change neutral">—</span></div>
+    </div>
+  </div>
+
+  <div class="app-wrapper" id="appWrapper">
+    <main class="app-main" id="mainContent" role="main" aria-label="Article">
+      <div class="article-wrap">
+        <button class="article-back" onclick="goBackToNews()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          <span data-i18n="art.back">Back to News</span>
+        </button>
+        <div id="articleContent">
+          <div class="article-state" data-i18n="art.loading">Loading article…</div>
+        </div>
+      </div>
+    </main>
+
+    <aside class="adviser-sidebar" id="adviserSidebar" role="complementary" aria-label="AI Adviser" aria-hidden="true">
+      <div class="sidebar-inner">
+        <div class="sidebar-header">
+          <div class="sidebar-header-left">
+            <div class="sidebar-logo" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="sidebar-title">
+              <h3 data-i18n="adv.title">AlphaCouncil Adviser</h3>
+              <p aria-live="polite" data-i18n="adv.ready">Ready to help</p>
+            </div>
+          </div>
+          <div class="sidebar-header-right">
+            <button class="sidebar-btn" id="closeSidebar" aria-label="Close sidebar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="sidebar-content">
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-message adviser">
+              <div class="chat-avatar">AC</div>
+              <div>
+                <div class="chat-bubble" data-i18n="art.chat_welcome">Ask me anything about this story and how it may affect your holdings. Data analysis only — not financial advice.</div>
+                <div class="chat-time" data-i18n="adv.just_now">Just now</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <div class="chat-input-row">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Ask about this story...">
+            <button class="chat-send" id="chatSend" aria-label="Send message">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo"><span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span></div>
+        <p class="footer-slogan" data-i18n="art.slogan">Your AI adviser for TADAWUL, ADX and DFM.</p>
+      </div>
+      <p class="footer-disclaimer" data-i18n="art.disclaimer">AlphaCouncil provides data analysis and portfolio intelligence tools. All content is for informational purposes only and does not constitute financial advice, investment recommendations, or an offer to buy or sell securities.</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="adviser-core.js"></script>
+  <script>
+    (function () {
+      // i18n strings for this page (EN identical to prior copy; natural AR).
+      if (window.AC_I18N && AC_I18N.add) AC_I18N.add({
+        'art.back':        { en: 'Back to News', ar: 'العودة إلى الأخبار' },
+        'art.loading':     { en: 'Loading article…', ar: 'جارٍ تحميل المقال…' },
+        'art.not_found':   { en: 'Article not found.', ar: 'لم يُعثر على المقال.' },
+        'art.error':       { en: "Couldn’t load this article. Please try again.", ar: 'تعذّر تحميل هذا المقال. يرجى المحاولة مرة أخرى.' },
+        'art.summary_label': { en: 'Summary', ar: 'الملخص' },
+        'art.impact_label':  { en: 'Why it matters', ar: 'لماذا يهمّك' },
+        'art.ask_adviser': { en: 'Ask the adviser about this', ar: 'اسأل المستشار عن هذا الخبر' },
+        'art.view_stock':  { en: 'View stock', ar: 'عرض السهم' },
+        'art.source':      { en: 'Source', ar: 'المصدر' },
+        'art.read_original': { en: 'Read the original report', ar: 'اقرأ التقرير الأصلي' },
+        'art.impact_pos':  { en: 'Positive impact', ar: 'أثر إيجابي' },
+        'art.impact_neg':  { en: 'Negative impact', ar: 'أثر سلبي' },
+        'art.impact_neu':  { en: 'Neutral impact', ar: 'أثر محايد' },
+        'art.chat_welcome': { en: 'Ask me anything about this story and how it may affect your holdings. Data analysis only — not financial advice.', ar: 'اسألني أي شيء عن هذا الخبر وكيف قد يؤثر على مراكزك. تحليل بيانات فقط — وليس نصيحة مالية.' },
+        'art.slogan':      { en: 'Your AI adviser for TADAWUL, ADX and DFM.', ar: 'مستشارك الذكي لأسواق تداول وأبوظبي ودبي.' },
+        'art.disclaimer':  { en: 'AlphaCouncil provides data analysis and portfolio intelligence tools. All content is for informational purposes only and does not constitute financial advice, investment recommendations, or an offer to buy or sell securities.', ar: 'يوفّر AlphaCouncil أدوات تحليل بيانات وذكاء للمحافظ. جميع المحتويات لأغراض إعلامية فقط ولا تشكّل نصيحة مالية أو توصية استثمارية أو عرضًا لشراء أو بيع أوراق مالية.' },
+        'adv.title':       { en: 'AlphaCouncil Adviser', ar: 'مستشار AlphaCouncil' },
+        'adv.ready':       { en: 'Ready to help', ar: 'جاهز للمساعدة' },
+        'adv.just_now':    { en: 'Just now', ar: 'الآن' }
+      });
+
+      function qs(name) { var m = new RegExp('[?&]' + name + '=([^&]+)').exec(location.search); return m ? decodeURIComponent(m[1]) : ''; }
+      function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+      function lang() { return (window.AC_I18N && AC_I18N.lang === 'ar') ? 'ar' : 'en'; }
+      function T(k, en) { var v = window.AC_I18N && AC_I18N.t(k); return v != null ? v : en; }
+
+      var ID = qs('id');
+      var ITEM = null;
+
+      window.goBackToNews = function () { if (history.length > 1) history.back(); else window.location.href = 'news.html'; };
+
+      function pickHeadline(it) {
+        return lang() === 'ar' ? (it.headline_ar || it.title || it.headline_en) : (it.headline_en || it.title || it.headline_ar);
+      }
+      function pickSummary(it) {
+        return lang() === 'ar' ? (it.ai_summary_ar || it.summary_ar || it.ai_summary_en) : (it.ai_summary_en || it.summary_en || it.ai_summary_ar);
+      }
+      function pickBody(it) {
+        return lang() === 'ar' ? (it.article_ar || it.article_en || it.main_text || it.full_text) : (it.article_en || it.article_ar || it.main_text || it.full_text);
+      }
+      function pickImpactReason(it) {
+        return lang() === 'ar' ? (it.impact_reason_ar || it.impact_reason_en) : (it.impact_reason_en || it.impact_reason_ar);
+      }
+      function impactClass(it) {
+        var s = String(it.impact || '').toLowerCase();
+        if (/pos|bull|up|positive/.test(s)) return 'positive';
+        if (/neg|bear|down|negative/.test(s)) return 'negative';
+        return 'neutral';
+      }
+      function fmtDate(d) {
+        if (!d) return '';
+        var t = Date.parse(d); if (isNaN(t)) return d;
+        try { return new Date(t).toLocaleDateString(lang() === 'ar' ? 'ar' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' }); } catch (e) { return d; }
+      }
+
+      function render() {
+        var box = document.getElementById('articleContent');
+        if (!box) return;
+        if (ITEM === 'notfound') { box.innerHTML = '<div class="article-state">' + esc(T('art.not_found', 'Article not found.')) + '</div>'; document.title = 'AlphaCouncil'; return; }
+        if (ITEM === 'error') { box.innerHTML = '<div class="article-state">' + esc(T('art.error', "Couldn’t load this article. Please try again.")) + '</div>'; return; }
+        if (!ITEM) { box.innerHTML = '<div class="article-state">' + esc(T('art.loading', 'Loading article…')) + '</div>'; return; }
+
+        var it = ITEM;
+        var headline = pickHeadline(it) || '';
+        var summary = pickSummary(it) || '';
+        var bodyTxt = pickBody(it) || '';
+        var reason = pickImpactReason(it) || '';
+        var stockName = (window.AC_I18N && AC_I18N.localName(it)) || it.name_en || it.name_ar || '';
+        var tickerShort = it.ticker_key ? String(it.ticker_key).split('_')[0] : '';
+        var img = it.gen_image ? ('/api/news/image/' + encodeURIComponent(it.gen_image)) : '';
+        document.title = (headline ? headline + ' — ' : '') + 'AlphaCouncil';
+
+        var paras = String(bodyTxt).split(/\n{2,}|\r\n\r\n/).map(function (p) { return p.trim(); }).filter(Boolean);
+        if (paras.length <= 1) paras = String(bodyTxt).split(/\n/).map(function (p) { return p.trim(); }).filter(Boolean);
+
+        var impCls = impactClass(it);
+        var impLabel = impCls === 'positive' ? T('art.impact_pos', 'Positive impact') : impCls === 'negative' ? T('art.impact_neg', 'Negative impact') : T('art.impact_neu', 'Neutral impact');
+
+        var html = '';
+        html += '<div class="article-meta">';
+        if (it.date) html += '<span>' + esc(fmtDate(it.date)) + '</span>';
+        if (it.category) html += '<span class="article-chip">' + esc(String(it.category).toUpperCase()) + '</span>';
+        if (stockName && it.ticker_key) html += '<span class="article-chip ticker" onclick="viewStock(\'' + esc(it.ticker_key) + '\')">' + esc(stockName) + (tickerShort ? ' · ' + esc(tickerShort) : '') + '</span>';
+        else if (it.sector) html += '<span class="article-chip">' + esc(it.sector) + '</span>';
+        html += '</div>';
+
+        html += '<h1 class="article-title">' + esc(headline) + '</h1>';
+        if (img) html += '<img class="article-image" src="' + esc(img) + '" alt="" onerror="this.style.display=\'none\'">';
+        if (summary) html += '<div class="article-summary">' + esc(summary) + '</div>';
+        if (reason) html += '<div class="article-impact ' + impCls + '"><div><b>' + esc(impLabel) + '</b>' + esc(reason) + '</div></div>';
+
+        if (paras.length) html += '<div class="article-body">' + paras.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div>';
+
+        html += '<div class="article-actions">';
+        html += '<button class="btn btn-primary" onclick="askAboutArticle()">' + esc(T('art.ask_adviser', 'Ask the adviser about this')) + '</button>';
+        if (it.ticker_key) html += '<button class="btn btn-secondary" onclick="viewStock(\'' + esc(it.ticker_key) + '\')">' + esc(T('art.view_stock', 'View stock')) + '</button>';
+        html += '</div>';
+
+        if (it.url) html += '<div class="article-source">' + esc(T('art.source', 'Source')) + ': <a href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">' + esc(T('art.read_original', 'Read the original report')) + ' ↗</a></div>';
+
+        box.innerHTML = html;
+      }
+
+      window.viewStock = function (key) { if (key) window.location.href = 'stock-detail.html?ticker=' + encodeURIComponent(key); };
+      window.askAboutArticle = function () {
+        if (!ITEM || typeof ITEM !== 'object' || !window.AlphaCouncil) return;
+        var h = pickHeadline(ITEM) || '';
+        AlphaCouncil.openSidebar();
+        AlphaCouncil.askQuestion((lang() === 'ar' ? 'بخصوص هذا الخبر: ' : 'About this news: ') + h);
+      };
+
+      function load() {
+        if (!ID) { ITEM = 'notfound'; render(); return; }
+        if (!window.API || !API.newsItem) { ITEM = 'error'; render(); return; }
+        API.newsItem(ID).then(function (d) {
+          ITEM = (d && (d.id || d.headline_en || d.title)) ? d : 'notfound';
+          render();
+        }).catch(function () { ITEM = 'error'; render(); });
+      }
+
+      // Re-render on language switch (static markup auto-translates; this re-renders the article body).
+      window.addEventListener('ac:langchange', function () { if (ITEM && typeof ITEM === 'object') render(); });
+
+      if (window.AlphaCouncil) AlphaCouncil.init('news');
+      load();
+    })();
+  </script>
+</body>
+</html>

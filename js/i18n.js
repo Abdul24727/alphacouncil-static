@@ -70,6 +70,22 @@
     return entry[l] != null ? entry[l] : entry.en;
   }
 
+  // Pick the language-appropriate stock NAME from an API row. The screening / movers /
+  // holdings endpoints all return both name_en and name_ar; in Arabic we prefer name_ar
+  // (falling back to name_en, then the ticker) so stock lists localise everywhere.
+  function localName(row) {
+    if (!row) return '';
+    var ar = current === 'ar';
+    var n = ar ? (row.name_ar || row.name_en) : (row.name_en || row.name_ar);
+    return n || row.ticker || row.ticker_short || row.ticker_key || '';
+  }
+  // Same idea for the sector label (sector_en / sector_ar).
+  function localSector(row) {
+    if (!row) return '';
+    var ar = current === 'ar';
+    return (ar ? (row.sector_ar || row.sector_en) : (row.sector_en || row.sector_ar)) || '';
+  }
+
   // Set translated text while preserving child elements (e.g. an icon <svg>): when the
   // node has exactly one non-empty text node alongside elements, replace only that text
   // node; with no children just set textContent; with text fragments around children,
@@ -212,6 +228,7 @@
 
   global.AC_I18N = {
     t: t, apply: apply, set: set, toggle: toggle, init: init, retag: autoTagNav,
+    localName: localName, localSector: localSector,
     get lang() { return current; },
     dict: DICT,
     add: function (extra) { for (var k in extra) if (Object.prototype.hasOwnProperty.call(extra, k)) DICT[k] = extra[k]; }

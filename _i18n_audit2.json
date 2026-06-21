@@ -1,0 +1,371 @@
+{
+ "surfaces": [
+  {
+   "surface": "news.html",
+   "rerenders_on_langchange": "no. news.html has NO listener for the 'ac:langchange' CustomEvent fired by i18n.js. Dynamic news content (rendered via API.latestNews() and API.holdingsNews()) is built using headline_en and ai_summary_en only, with no fallback to Arabic fields (headline_ar / ai_summary_ar). Static markup has been partially tagged with data-i18n keys but the dynamically-rendered news cards are hardcoded to English.",
+   "findings": [
+    {
+     "id": "news-001",
+     "category": "static-markup-untranslated",
+     "severity": "major",
+     "lines": "244-245",
+     "current": "<h1>News</h1>\n<p>What moved markets — and why it matters to you.</p>",
+     "symptom": "Page title and subtitle are hardcoded English and do not switch to Arabic when user selects AR language.",
+     "fix": "Add data-i18n tags: <h1 data-i18n=\"news.title\">News</h1> and <p data-i18n=\"news.subtitle\">What moved markets — and why it matters to you.</p>. The keys news.title and news.subtitle are already defined in the i18n bootstrap script at line 957-958 but are not applied to the markup."
+    },
+    {
+     "id": "news-002",
+     "category": "static-markup-untranslated",
+     "severity": "major",
+     "lines": "250-251",
+     "current": "<button class=\"page-tab active\" data-tab=\"all\">All</button>\n<button class=\"page-tab\" data-tab=\"watchlist\">For Your Holdings</button>",
+     "symptom": "Tab labels stay English (All, For Your Holdings) when user switches to Arabic.",
+     "fix": "Add data-i18n: <button class=\"page-tab active\" data-tab=\"all\" data-i18n=\"news.tab_all\">All</button> and <button class=\"page-tab\" data-tab=\"watchlist\" data-i18n=\"news.tab_holdings\">For Your Holdings</button>. Keys already exist in i18n dictionary (lines 959-960)."
+    },
+    {
+     "id": "news-003",
+     "category": "hardcoded-english-in-js",
+     "severity": "blocker",
+     "lines": "703-704, 721-722, 763",
+     "current": "hl.textContent = it.headline_en || it.title || ''; ... sm.textContent = it.ai_summary_en || it.snippet || ''; ... const title = it.headline_en || it.title || '';",
+     "symptom": "All dynamically-rendered news card headlines and summaries display ONLY headline_en and ai_summary_en. No code checks AC_I18N.lang or uses headline_ar / ai_summary_ar. Arabic users see 100% English content even when language is set to AR.",
+     "fix": "Detect language in renderFeatured() and cardHtml(): const lang = AC_I18N && AC_I18N.lang === 'ar' ? 'ar' : 'en'; then use: it['headline_' + lang] || it.headline_en || it.title, and it['ai_summary_' + lang] || it.ai_summary_en || it.snippet. Confirm API returns headline_ar and ai_summary_ar fields (verify at runtime in browser DevTools by checking /api/news/latest response)."
+    },
+    {
+     "id": "news-004",
+     "category": "no-rerender-on-langchange",
+     "severity": "blocker",
+     "lines": "none",
+     "current": "news.html has no 'ac:langchange' event listener",
+     "symptom": "Even if headline_ar/ai_summary_ar code is added, switching language via the lang toggle will NOT re-render the news cards. The page does not listen to window.ac:langchange event.",
+     "fix": "Add at the end of the DOMContentLoaded block (after loadNews() and loadTopStories() calls, around line 793): window.addEventListener('ac:langchange', function(e) { const tab = document.querySelector('.page-tab.active'); if(tab) loadNews(tab.getAttribute('data-tab')); loadTopStories(); });"
+    },
+    {
+     "id": "news-005",
+     "category": "static-markup-untranslated",
+     "severity": "major",
+     "lines": "562-563",
+     "current": "<h3 class=\"top-stories-title\">\n  <svg ...></svg>\n  Top Stories\n</h3>",
+     "symptom": "'Top Stories' sidebar header is hardcoded English and does not translate to Arabic.",
+     "fix": "Add data-i18n=\"news.top_stories\" to the <h3> element. The key is already defined at line 961."
+    },
+    {
+     "id": "news-006",
+     "category": "static-markup-untranslated",
+     "severity": "major",
+     "lines": "571-573",
+     "current": "<button class=\"summarize-btn\" onclick=\"summarizeNews()\">\n  <svg ...></svg>\n  Summarize today's news for my holdings\n</button>",
+     "symptom": "Summarize button text is hardcoded English and does not translate to Arabic.",
+     "fix": "Add data-i18n=\"news.summarize\" to the button. The key is already defined at line 962."
+    },
+    {
+     "id": "news-007",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "766",
+     "current": "const cat = String(it.category || it.section || 'NEWS').toUpperCase();",
+     "symptom": "'NEWS' fallback category text is hardcoded English in the Top Stories sidebar items. Will display as 'NEWS' in Arabic mode.",
+     "fix": "Replace with: const cat = (AC_I18N && AC_I18N.lang === 'ar' ? 'أخبار' : 'NEWS'). Or better: define a i18n key 'news.category_default' and use AC_I18N.t('news.category_default')."
+    },
+    {
+     "id": "news-008",
+     "category": "functional-bug",
+     "severity": "blocker",
+     "lines": "301, 329, 360, 403, 430, 457, 496, 523, 550, 709, 724",
+     "current": "<a href=\"#\" class=\"read-more\">Read more</a> and '<a class=\"btn btn-secondary\" href=\"'+escN(it.url)+'\" target=\"_blank\" rel=\"noopener\">Read Full Story ↗</a>'",
+     "symptom": "'Read more'/'Read Full Story' links navigate to EXTERNAL news source (it.url with target=\"_blank\"), not an on-site article page. Founder wants on-site article page styled like the rest of the app.",
+     "fix": "Change href from it.url to 'article.html?id=' + it.id to route to on-site detail view. BLOCKER: No article.html page exists in the repo (checked all .html files). A new article-detail template must be built that displays the full news article with styling matching the AlphaCouncil design system."
+    },
+    {
+     "id": "news-009",
+     "category": "stray-element",
+     "severity": "major",
+     "lines": "657-666",
+     "current": "<div class=\"toast\" id=\"toast\">\n  <div class=\"toast-icon success\">\n    <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polyline points=\"20 6 9 17 4 12\"/></svg>\n  </div>\n  <div class=\"toast-content\">\n    <div class=\"toast-title\" id=\"toastTitle\">Success</div>\n    <div class=\"toast-text\" id=\"toastText\">Action completed</div>\n  </div>\n</div>",
+     "symptom": "A large green checkmark with 'Success' / 'Action completed' appears at the bottom of the page for no reason. This is leftover static HTML with no CSS rules styling it and no JavaScript triggering it. It looks like a stray UI element.",
+     "fix": "DELETE the entire <div class=\"toast\" id=\"toast\"> block (lines 657-666). The adviser-core.js already implements a proper dynamic 'globalToast' system that creates toasts on-demand via AlphaCouncil.showToast(). This static element is deprecated and confusing to users."
+    },
+    {
+     "id": "news-010",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "299, 327, 357, 401, 427, 454, 493, 520, 547",
+     "current": "<button class=\"ask-adviser-btn\" onclick=\"askAdviser('deals-1')\">\n  <svg ...></svg>\n  Ask Adviser\n</button>",
+     "symptom": "'Ask Adviser' button text is hardcoded English in all static news cards (9 cards shown). Does not translate to Arabic when language is switched.",
+     "fix": "The hardcoded static cards (deals-1 through projects-3) are bootstrap placeholders. Since they are replaced by renderFeatured() and renderMain() from the live API, the real fix is in those dynamic rendering functions: add data-i18n=\"news.ask_adviser\" to the dynamically-created button, or wrap the text in a <span data-i18n=\"news.ask_adviser\">Ask Adviser</span>. Also add the i18n key: 'news.ask_adviser': { en: 'Ask Adviser', ar: 'استشر المستشار' } to the i18n dictionary."
+    },
+    {
+     "id": "news-011",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "708, 779",
+     "current": "'Ask Adviser' and 'Read Full Story ↗' in the featured story",
+     "symptom": "Featured story button labels are hardcoded English in the renderFeatured() function. Do not localize.",
+     "fix": "In renderFeatured() at line 708-709, add i18n: '<button class=\"btn btn-primary\" data-act=\"ask\" data-i18n=\"news.ask_adviser\">... Ask Adviser</button>' and '<a class=\"btn btn-secondary\" href=\"'+escN(it.url)+'\" target=\"_blank\" rel=\"noopener\" data-i18n=\"news.read_full\">... Read Full Story ↗</a>'. Define keys: 'news.ask_adviser' and 'news.read_full' in the i18n dictionary, and call AC_I18N.apply() after setting innerHTML."
+    },
+    {
+     "id": "news-012",
+     "category": "static-markup-untranslated",
+     "severity": "major",
+     "lines": "269-271, 370-372, 468-470",
+     "current": "<h2 class=\"section-title\">\n  <svg ...></svg>\n  Deals & Ownership\n</h2> (and similar for other sections)",
+     "symptom": "Section headers ('Deals & Ownership', 'Earnings & Capital', 'Companies & Projects') are hardcoded English and do not translate to Arabic.",
+     "fix": "Add data-i18n keys to these headers (or wrap the text in <span data-i18n=\"news.section_deals\">). Define i18n keys: 'news.section_deals', 'news.section_earnings', 'news.section_projects' with Arabic translations."
+    }
+   ]
+  },
+  {
+   "surface": "council-history",
+   "rerenders_on_langchange": "partial — static elements with data-i18n tags re-render (page title, stats labels, filter options, sidebar title); dynamic content injected by JavaScript (empty state, error messages, card action buttons, \"analyst perspectives\" text) does NOT re-render because there is no 'ac:langchange' event listener in the page-specific JavaScript",
+   "findings": [
+    {
+     "id": "ch-001",
+     "category": "static-markup-untranslated",
+     "severity": "major",
+     "lines": "477-479",
+     "current": "<strong style=\"color:#f59e0b;\">Preview</strong> — the review shown below is an illustrative example. A saved history of your own Council reviews will appear here once review archiving is live.",
+     "symptom": "Arabic user sees English-only warning/preview message at the top of the page",
+     "fix": "Add data-i18n-attr to the parent div for the static text, or extract to a labeled element with data-i18n=\"ch.preview_banner\" and add to AC_I18N.add() with Arabic translation 'معاينة — المراجعة الموضحة أدناه هي مثال توضيحي...'"
+    },
+    {
+     "id": "ch-002",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "493",
+     "current": "<button class=\"btn btn-secondary\" onclick=\"exportAllReports()\">...Export All</button>",
+     "symptom": "Top-right 'Export All' button remains English on Arabic language; NOT in auto-tagging MAP",
+     "fix": "Add 'Export All': 'ch.export_all' to the MAP at line 758-765, and add i18n entry: 'ch.export_all': { en: 'Export All', ar: 'تصدير الكل' } at line 750"
+    },
+    {
+     "id": "ch-003",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "497",
+     "current": "<button class=\"btn btn-primary\" onclick=\"runNewReview()\">...Run New Review</button>",
+     "symptom": "Top-right 'Run New Review' button remains English on Arabic language; NOT in auto-tagging MAP",
+     "fix": "Add 'Run New Review': 'ch.run_review' to the MAP at line 758-765, and add i18n entry: 'ch.run_review': { en: 'Run New Review', ar: 'تشغيل مراجعة جديدة' } at line 750"
+    },
+    {
+     "id": "ch-004",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "586",
+     "current": "<p class=\"insight-text\">Trends across your Council reviews will appear here once you've run a few.</p>",
+     "symptom": "Right sidebar insight text remains English on Arabic language; NOT in auto-tagging MAP or i18n dictionary",
+     "fix": "Add 'Trends across your Council reviews...': 'ch.trends_text' to the MAP, add i18n entry: 'ch.trends_text': { en: 'Trends across your Council reviews will appear here once you've run a few.', ar: 'ستظهر الاتجاهات عبر مراجعات مجلسك هنا بمجرد تشغيل بعضها.' }, and tag the element with data-i18n=\"ch.trends_text\""
+    },
+    {
+     "id": "ch-005",
+     "category": "hardcoded-english-in-js",
+     "severity": "blocker",
+     "lines": "829",
+     "current": "listEl.innerHTML = '<div class=\"empty-state\"><h3 style=\"margin-bottom:10px;\">No council reviews yet</h3><p class=\"empty-text\"...Run your first AI Analyst Council review to build your history...</p><button...>Run a Council Review</button></div>';",
+     "symptom": "Empty state rendered dynamically with three hardcoded English strings: title 'No council reviews yet', body text 'Run your first...', and button 'Run a Council Review'; will NOT translate on language switch",
+     "fix": "Add to AC_I18N.add(): 'ch.empty_no_reviews': { en: 'No council reviews yet', ar: 'لا توجد مراجعات مجلس بعد' }, 'ch.empty_no_reviews_text': { en: 'Run your first AI Analyst Council review to build your history. The Council debates your holdings across multiple model perspectives, then a chairman synthesises a balanced view.', ar: '...[Arabic]...' }, 'ch.empty_run_button': { en: 'Run a Council Review', ar: 'تشغيل مراجعة مجلس' }. Then modify line 829 to use AC_I18N.t() for each string: `'<h3>' + AC_I18N.t('ch.empty_no_reviews') + '</h3><p>' + AC_I18N.t('ch.empty_no_reviews_text') + '</p><button>' + AC_I18N.t('ch.empty_run_button') + '</button>'` and add an 'ac:langchange' listener to reload the empty state when language changes"
+    },
+    {
+     "id": "ch-006",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "841",
+     "current": "\"<div class=\"history-signals\"><strong>\" + (it.analyst_count || 0) + \"</strong> analyst perspectives</div>\"",
+     "symptom": "Hardcoded English string ' analyst perspectives' appears in dynamically-rendered history cards; will NOT translate on language switch",
+     "fix": "Add to AC_I18N.add(): 'ch.analyst_perspectives': { en: 'analyst perspectives', ar: 'وجهات نظر تحليلية' }. Replace the concatenation with: `'<strong>' + (it.analyst_count || 0) + '</strong> ' + AC_I18N.t('ch.analyst_perspectives')`"
+    },
+    {
+     "id": "ch-007",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "843",
+     "current": "\"<button class=\"action-btn\" onclick=\"event.stopPropagation(); exportReview(...)\">Export</button>\"",
+     "symptom": "Action button text 'Export' is hardcoded English in dynamically-rendered history cards; will NOT translate on language switch",
+     "fix": "Add to AC_I18N.add(): 'ch.action_export': { en: 'Export', ar: 'تصدير' }. Replace with: `'<button ...>' + AC_I18N.t('ch.action_export') + '</button>'`"
+    },
+    {
+     "id": "ch-008",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "844",
+     "current": "\"<button class=\"action-btn primary\" onclick=\"event.stopPropagation(); openDetailModal(...)\">View</button>\"",
+     "symptom": "Action button text 'View' is hardcoded English in dynamically-rendered history cards; will NOT translate on language switch",
+     "fix": "Add to AC_I18N.add(): 'ch.action_view': { en: 'View', ar: 'عرض' }. Replace with: `'<button ...>' + AC_I18N.t('ch.action_view') + '</button>'`"
+    },
+    {
+     "id": "ch-009",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "848",
+     "current": "\"Couldn't load your council history.\"",
+     "symptom": "Error message fallback is hardcoded English when API call fails; user sees no Arabic translation fallback",
+     "fix": "Add to AC_I18N.add(): 'ch.load_error': { en: 'Couldn't load your council history.', ar: 'تعذر تحميل سجل مجلسك.' }. Replace with: `AC_I18N.t('ch.load_error')`"
+    },
+    {
+     "id": "ch-010",
+     "category": "no-rerender-on-langchange",
+     "severity": "blocker",
+     "lines": "810-850 (entire loadCouncilHistory function)",
+     "current": "JavaScript closure at line 811 loads and renders all dynamic content (empty state, cards, error messages) WITHOUT an 'ac:langchange' event listener to re-render when user switches language",
+     "symptom": "When user switches from EN to AR after page load, all dynamically-injected HTML strings remain in English; only static data-i18n elements re-render; user must reload page to see Arabic content in dynamic areas",
+     "fix": "Add event listener after line 850: `window.addEventListener('ac:langchange', function() { loadCouncilHistory(); });` to re-invoke the full load/render flow on language switch"
+    }
+   ]
+  },
+  {
+   "surface": "alerts.html",
+   "rerenders_on_langchange": "Partial — static i18n-marked elements re-translate on 'ac:langchange', but dynamic JS-rendered alert timeAgo() strings ('just now', 'm ago', 'h ago', etc.) and empty-state fallback HTML do NOT re-render.",
+   "findings": [
+    {
+     "id": "AL-001",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "934, 955",
+     "current": "function timeAgo(iso) { ... if (s < 60) return 'just now'; var m = Math.floor(s / 60); if (m < 60) return m + 'm ago'; ... }",
+     "symptom": "Arabic user sees 'just now', '5m ago', '2h ago' etc. in relative timestamps on alert cards instead of Arabic. The UI renders dynamic alert HTML that includes timeAgo() output which is never translated.",
+     "fix": "Extract timeAgo() into the i18n system with al.timeago.* keys (just_now, m_ago, h_ago, d_ago, mo_ago). Listen to 'ac:langchange' and re-render loaded alerts when language switches."
+    },
+    {
+     "id": "AL-002",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "955",
+     "current": "listEl.innerHTML = '<div...>No alerts yet. As notable moves, technical signals and news hit your holdings, they\\'ll show up here.</div>';",
+     "symptom": "When alerts list is empty and loaded dynamically via API, the fallback 'No alerts yet' message is hardcoded English and does not use data-i18n or the translation system.",
+     "fix": "Add i18n key 'al.empty_state_message' with values { en: 'No alerts yet. As notable moves...', ar: '[Arabic text]' } and render it via AC_I18N.t() or inject a data-i18n element before calling apply()."
+    },
+    {
+     "id": "AL-003",
+     "category": "static-markup-untranslated",
+     "severity": "major",
+     "lines": "414",
+     "current": "<strong style=\"color:#27D3C3;\">Live</strong> — these alerts are generated from <strong>your actual holdings</strong> (notable price moves, technical signals and impactful news)",
+     "symptom": "Arabic user sees 'your actual holdings', 'notable price moves', 'technical signals' in English. The introductory banner uses inline HTML with no data-i18n attributes.",
+     "fix": "Convert to data-i18n attribute or wrap in a translatable element. Add keys: al.banner_live (text), al.banner_holdings, al.banner_signals."
+    },
+    {
+     "id": "AL-004",
+     "category": "static-markup-untranslated",
+     "severity": "major",
+     "lines": "426-428",
+     "current": "<div class=\"quick-stat\"><span class=\"dot active\"></span><strong>—</strong> active</div>\n<div class=\"quick-stat\"><span class=\"dot new\"></span><strong>—</strong> new today</div>\n<div class=\"quick-stat\"><span class=\"dot time\"></span> Last updated: <strong>just now</strong></div>",
+     "symptom": "Arabic user sees 'active', 'new today', 'Last updated: just now' in English in the quick stats. These are hardcoded static text, plus 'just now' is overwritten by JS to show relative time in English.",
+     "fix": "Wrap in data-i18n attributes: al.stat_active, al.stat_new_today, al.stat_last_updated (label) and al.timeago.just_now (value). Regenerate on language change and when timeAgo() is re-called."
+    },
+    {
+     "id": "AL-005",
+     "category": "static-markup-untranslated",
+     "severity": "major",
+     "lines": "868-869",
+     "current": "<h2 class=\"empty-title\">All Clear</h2>\n<p class=\"empty-text\">You have no active alerts. The AI Analyst Council is monitoring your portfolio and will notify you of significant developments.</p>",
+     "symptom": "The template (#emptyStateTemplate) for the 'All Clear' empty state has no i18n attributes. If the alerts list ever becomes empty after initial load, an Arabic user will see English text.",
+     "fix": "Add data-i18n=\"al.empty_title\" and data-i18n=\"al.empty_text\" to the template elements."
+    },
+    {
+     "id": "AL-006",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "1190, 1211",
+     "current": "showToast('Coming soon', 'Custom alert rules aren\\'t available yet — AlphaCouncil already auto-generates alerts...')\nnote.innerHTML = '<strong...>Custom alert rules are coming soon.</strong><br>AlphaCouncil already auto-generates...'",
+     "symptom": "Arabic user sees 'Coming soon', 'Custom alert rules', 'auto-generates alerts' in English in toast and in the rules panel when they try to create rules.",
+     "fix": "Add i18n keys: al.rules_coming_soon (toast title), al.rules_coming_soon_desc (toast text), al.rules_panel_note_title, al.rules_panel_note_body. Render via AC_I18N.t()."
+    },
+    {
+     "id": "AL-007",
+     "category": "rtl-layout-order",
+     "severity": "major",
+     "lines": "175-179 (alert-header flex)",
+     "current": ".alert-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 12px; }\n.alert-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }",
+     "symptom": "In RTL (Arabic), the alert card's timestamp/badge/severity row (alert-meta) should be mirrored so the time appears at the right and badges flow right-to-left, matching the founder's complaint that layout 'should be switched around' for RTL.",
+     "fix": "Add [dir=\"rtl\"] .alert-header { flex-direction: row-reverse; } and [dir=\"rtl\"] .alert-meta { flex-direction: row-reverse; } in i18n.js RTL injection or dedicated CSS rule."
+    },
+    {
+     "id": "AL-008",
+     "category": "broken-ticker",
+     "severity": "blocker",
+     "lines": "398-406 (indices-bar static), 1546-1585 (initIndicesTicker)",
+     "current": "Static <div class=\"indices-inner\"> with hardcoded index rows (TASI, ADX, DFM, QSE, Brent). initIndicesTicker() replaces with live .indices-track marquee from API, but does NOT listen to 'ac:langchange' to re-render.",
+     "symptom": "Founder reports: 'The top stocks running bar (indices ticker) is BROKEN'. When user switches from EN to AR, the ticker continues showing EN market names (TASI, ADX, etc.) and any soft label text stays in English. No re-render on language switch.",
+     "fix": "Add 'ac:langchange' listener in adviser-core.js or separately in a ticker module. On 'ac:langchange', call initIndicesTicker() again or inject name_ar from the live API data if available. Ensure market names and labels are translated dynamically."
+    },
+    {
+     "id": "AL-009",
+     "category": "no-rerender-on-langchange",
+     "severity": "major",
+     "lines": "880-916",
+     "current": "AC_I18N.add({...}); (function () { ... Array.prototype.forEach.call(document.querySelectorAll('.page-title, .tab-btn, ...'), function (el) { setKey(el, MAP[firstText(el)]); }); ... AC_I18N.apply(); })();",
+     "symptom": "The i18n tagging script runs once at page load and tags static elements. It never re-tags dynamically rendered elements (alert cards from API) or listens to 'ac:langchange' to re-apply translations to new DOM nodes.",
+     "fix": "Add window.addEventListener('ac:langchange', function() { AC_I18N.apply(); }); and re-tag/re-render alert cards when alerts are loaded or when language switches. Emit a custom event after rendering so AC_I18N.apply() can find and translate new elements."
+    },
+    {
+     "id": "AL-010",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "1001, 1003, 1015, 1017",
+     "current": "listEl.innerHTML = '<div...>Please <a href=\"login.html\">sign in</a> to see your alerts.</div>';\nlistEl.innerHTML = '<div...>Loading your alerts…</div>';\nlistEl.innerHTML = '<div...>Sign in to see your alerts.</div>';\nlistEl.innerHTML = '<div...>Couldn\\'t load your alerts. Please try again.</div>';",
+     "symptom": "JavaScript renders error/loading states with hardcoded English strings. An Arabic user sees 'Loading your alerts', 'Couldn't load your alerts' in English.",
+     "fix": "Extract to i18n: al.auth_required, al.loading_alerts, al.load_error. Render with AC_I18N.t() or append data-i18n elements and call AC_I18N.apply()."
+    },
+    {
+     "id": "AL-011",
+     "category": "hardcoded-english-in-js",
+     "severity": "minor",
+     "lines": "1118, 1132",
+     "current": "userMsg.innerHTML = `<div class=\"chat-avatar\">SK</div>...<div class=\"chat-time\">Just now</div>`;\nadviserMsg.innerHTML = `...<div class=\"chat-time\">Just now</div>`;",
+     "symptom": "When user clicks 'Ask Adviser' on an alert, the chat message bubble shows 'Just now' (hardcoded) in English even if the user is in Arabic mode.",
+     "fix": "Use AC_I18N.t('al.chat_just_now') or a dynamic timestamp formatter that respects the current language."
+    }
+   ]
+  },
+  {
+   "surface": "adviser-core adviser drawer (shared)",
+   "rerenders_on_langchange": "partial - static markup re-renders but dynamic JS content (suggested questions in updateSidebarContext) does not",
+   "findings": [
+    {
+     "id": "1-chat-scroll",
+     "category": "chat-scroll",
+     "severity": "blocker",
+     "lines": "css/alphacouncil.css:728-735",
+     "current": ".chat-messages { flex: 1; padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-4); overflow-y: auto; }",
+     "symptom": "Messages area does not scroll internally; scrolling affects the entire page instead",
+     "fix": "Add `min-height: 0;` to `.chat-messages` and `.sidebar-content` to force flex child shrinking: `.chat-messages { flex: 1; min-height: 0; overflow-y: auto; ... } .sidebar-content { flex: 1; min-height: 0; ... }`"
+    },
+    {
+     "id": "2-oversized-icon",
+     "category": "oversized-icon",
+     "severity": "major",
+     "lines": "dashboard.html:243, 715-717 (CSS and HTML)",
+     "current": ".sidebar-logo { width: 36px; height: 36px; ... } .sidebar-logo svg { width: 20px; height: 20px; }",
+     "symptom": "Icon at top of chat/adviser panel header is too large, takes unnecessary space",
+     "fix": "Reduce logo to 24×24px and SVG to 16×16px. Also reduce .sidebar-header padding from 16px 20px to 12px 16px. CSS: `.sidebar-logo { width: 24px; height: 24px; ... } .sidebar-logo svg { width: 16px; height: 16px; } .sidebar-header { padding: 12px 16px; ... }`"
+    },
+    {
+     "id": "3-hardcoded-english-adviser",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "dashboard.html:719-720, 735, 737-742",
+     "current": "<h3>Adviser</h3><p>Online</p><div>Suggested questions</div><button>How healthy is my portfolio right now?</button>",
+     "symptom": "Arabic user sees English text in adviser sidebar (title, status, suggested questions label, all question buttons)",
+     "fix": "Mark with data-i18n: `<h3 data-i18n=\"dash.adviser\">Adviser</h3><p data-i18n=\"dash.online\">Online</p><div data-i18n=\"dash.suggested_questions\">Suggested questions</div><button data-i18n=\"dash.portfolio_health\">...</button>` and add i18n keys to dashboard.html AC_I18N.add() call with both 'en' and 'ar' translations (adv.adviser, adv.online, adv.suggested_questions, adv.q_* for each question)"
+    },
+    {
+     "id": "4-dynamic-questions-no-i18n",
+     "category": "hardcoded-english-in-js",
+     "severity": "major",
+     "lines": "adviser-core.js:167-307 (updateSidebarContext function)",
+     "current": "questions = [ `Explain the current thesis score for ${state.currentStock.name}`, ... ] (hardcoded English)",
+     "symptom": "When Arabic user switches language, suggested questions remain in English because they are generated in JavaScript without i18n keys",
+     "fix": "Either (1) move question strings to i18n DICT with keys like 'adv.q_thesis_score', 'adv.q_compare_peers', etc. and call AC_I18N.t(key) in updateSidebarContext(), or (2) add a listener for 'ac:langchange' event to rebuild the questions in the current language. Recommended: `document.addEventListener('ac:langchange', () => updateSidebarContext());` in init() + refactor questions array to use i18n keys"
+    },
+    {
+     "id": "5-no-langchange-listener",
+     "category": "no-rerender-on-langchange",
+     "severity": "major",
+     "lines": "adviser-core.js:1604-1682 (init function)",
+     "current": "No document event listener for 'ac:langchange' in adviser-core.js",
+     "symptom": "Adviser sidebar does not update when user switches language (e.g., from EN to AR) - suggested questions, headers remain in first language loaded",
+     "fix": "Add to init() or at module level: `document.addEventListener('ac:langchange', function(e) { updateSidebarContext(); });` to re-render sidebar context (questions, labels) when language changes"
+    }
+   ]
+  }
+ ],
+ "total": 38
+}

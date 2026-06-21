@@ -27,6 +27,43 @@ const AlphaCouncil = (function() {
     portfolioReady: false
   };
 
+  // ── i18n bridge for this shared module ──────────────────────────────────────
+  // All app pages load js/i18n.js (global AC_I18N) before this file. L(key, en)
+  // returns the Arabic/English string for `key`, falling back to the English
+  // literal if i18n isn't loaded or the key is missing. LN/LS localise a stock
+  // row's name / sector. acLang() is the current language.
+  function L(key, en) {
+    try { var v = window.AC_I18N && AC_I18N.t(key); return v != null ? v : en; } catch (e) { return en; }
+  }
+  function LN(row) { try { return (window.AC_I18N && AC_I18N.localName(row)) || (row && (row.name_en || row.name_ar)) || ''; } catch (e) { return (row && (row.name_en || row.name_ar)) || ''; } }
+  function acLang() { try { return (window.AC_I18N && AC_I18N.lang) || 'en'; } catch (e) { return 'en'; } }
+  // Adviser-core's own shared strings (top-nav dropdowns, search modal, alerts bell,
+  // relative time). Registered into AC_I18N so the toggle translates them live.
+  (function registerAdviserStrings() {
+    try {
+      if (!window.AC_I18N || !AC_I18N.add) return;
+      AC_I18N.add({
+        'adv.alerts_title':    { en: 'Alerts',    ar: 'التنبيهات' },
+        'adv.view_all':        { en: 'View all',  ar: 'عرض الكل' },
+        'adv.loading':         { en: 'Loading…',  ar: 'جارٍ التحميل…' },
+        'adv.alerts_empty':    { en: "No alerts yet. We’ll flag notable moves, signals and news on your holdings here.", ar: 'لا توجد تنبيهات حتى الآن. سننبّهك إلى التحركات والإشارات والأخبار المهمة على مراكزك هنا.' },
+        'adv.alerts_error':    { en: "Couldn’t load alerts.", ar: 'تعذّر تحميل التنبيهات.' },
+        'adv.new':             { en: 'New',       ar: 'جديد' },
+        'adv.account':         { en: 'Your account', ar: 'حسابك' },
+        'adv.profile_account': { en: 'Profile & Account', ar: 'الملف الشخصي والحساب' },
+        'adv.settings':        { en: 'Settings',  ar: 'الإعدادات' },
+        'adv.logout':          { en: 'Log out',   ar: 'تسجيل الخروج' },
+        'adv.search_placeholder': { en: 'Search GCC stocks (e.g., Aramco, Al Rajhi, QNB...)', ar: 'ابحث في أسهم الخليج (مثل أرامكو، الراجحي، QNB...)' },
+        'adv.search_aria':     { en: 'Search stocks', ar: 'بحث عن الأسهم' },
+        'adv.search_hint':     { en: 'Start typing to search GCC stocks…', ar: 'ابدأ الكتابة للبحث في أسهم الخليج…' },
+        'adv.search_loading':  { en: 'Loading stocks…', ar: 'جارٍ تحميل الأسهم…' },
+        'adv.search_unavailable': { en: 'Search is unavailable right now — please try again.', ar: 'البحث غير متاح حاليًا — يرجى المحاولة مرة أخرى.' },
+        'adv.search_nomatch':  { en: 'No stocks match', ar: 'لا توجد أسهم مطابقة لـ' },
+        'time.now':            { en: 'just now', ar: 'الآن' }
+      });
+    } catch (e) {}
+  })();
+
   // Load the signed-in user's REAL holdings from the live backend and normalise
   // them to the shape the UI expects (ticker_key -> short ticker, native value,
   // P&L, weight). Replaces the former hardcoded demo array entirely.
@@ -42,6 +79,10 @@ const AlphaCouncil = (function() {
           tickerKey: r.ticker,
           ticker: r.ticker_short || (String(r.ticker).split('_')[0]),
           name: r.name_en || r.ticker_short || String(r.ticker).split('_')[0],
+          // keep raw bilingual fields so AC_I18N.localName/localSector can render
+          // Arabic names on every consumer (dashboard holdings, etc.)
+          name_en: r.name_en, name_ar: r.name_ar,
+          sector_en: r.sector_en, sector_ar: r.sector_ar,
           shares: r.shares,
           avgCost: r.avg_cost,
           currentPrice: r.last_price,
@@ -1114,8 +1155,16 @@ const AlphaCouncil = (function() {
     if (willOpen) {
       const r = trigger.getBoundingClientRect();
       panel.style.top = (r.bottom + 8) + 'px';
-      panel.style.right = Math.max(12, window.innerWidth - r.right) + 'px';
-      panel.style.left = 'auto';
+      // RTL: the nav is mirrored to the left, so anchor the panel to the trigger's
+      // LEFT edge; otherwise it gets pushed off-screen. LTR anchors to the right.
+      var rtl = document.documentElement.getAttribute('dir') === 'rtl';
+      if (rtl) {
+        panel.style.left = Math.max(12, r.left) + 'px';
+        panel.style.right = 'auto';
+      } else {
+        panel.style.right = Math.max(12, window.innerWidth - r.right) + 'px';
+        panel.style.left = 'auto';
+      }
       panel.classList.add('open');
     }
   }
@@ -1137,11 +1186,12 @@ const AlphaCouncil = (function() {
     const t = Date.parse(iso);
     if (isNaN(t)) return '';
     let s = Math.max(0, Math.floor((Date.now() - t) / 1000));
-    if (s < 60) return 'just now';
-    const m = Math.floor(s / 60); if (m < 60) return m + 'm ago';
-    const h = Math.floor(m / 60); if (h < 24) return h + 'h ago';
-    const d = Math.floor(h / 24); if (d < 30) return d + 'd ago';
-    return Math.floor(d / 30) + 'mo ago';
+    const ar = acLang() === 'ar';
+    if (s < 60) return L('time.now', 'just now');
+    const m = Math.floor(s / 60); if (m < 60) return ar ? ('قبل ' + m + ' د') : (m + 'm ago');
+    const h = Math.floor(m / 60); if (h < 24) return ar ? ('قبل ' + h + ' س') : (h + 'h ago');
+    const d = Math.floor(h / 24); if (d < 30) return ar ? ('قبل ' + d + ' ي') : (d + 'd ago');
+    const mo = Math.floor(d / 30); return ar ? ('قبل ' + mo + ' شهر') : (mo + 'mo ago');
   }
 
   // Bell badge — driven by the REAL unread count (hidden at 0 / signed out / error).
@@ -1187,16 +1237,16 @@ const AlphaCouncil = (function() {
   function renderNavAlerts(list) {
     const box = document.getElementById('acAlertsList');
     if (!box) return;
-    if (list === null) { box.innerHTML = '<div class="ac-dd-empty">Couldn’t load alerts.</div>'; return; }
+    if (list === null) { box.innerHTML = '<div class="ac-dd-empty">' + escapeHtml(L('adv.alerts_error', 'Couldn’t load alerts.')) + '</div>'; return; }
     if (!list.length) {
-      box.innerHTML = '<div class="ac-dd-empty">No alerts yet. We’ll flag notable moves, signals and news on your holdings here.</div>';
+      box.innerHTML = '<div class="ac-dd-empty">' + escapeHtml(L('adv.alerts_empty', "No alerts yet. We’ll flag notable moves, signals and news on your holdings here.")) + '</div>';
       return;
     }
     box.innerHTML = list.slice(0, 8).map(function (a) {
       const href = a.url || 'alerts.html';
       return '<a class="ac-dd-alert" href="' + escapeHtml(href) + '">'
         + '<div class="ac-dd-ai ' + escapeHtml(a.kind || 'macro') + '">' + acAlertIcon(a.kind) + '</div>'
-        + '<div class="ac-dd-ac"><div class="ac-dd-src">' + escapeHtml(a.source || 'Alert') + (a.read ? '' : '<span class="new">New</span>') + '</div>'
+        + '<div class="ac-dd-ac"><div class="ac-dd-src">' + escapeHtml(a.source || L('adv.alerts_title', 'Alert')) + (a.read ? '' : '<span class="new">' + escapeHtml(L('adv.new', 'New')) + '</span>') + '</div>'
         + '<div class="ac-dd-txt">' + escapeHtml(a.title || a.body || '') + '</div>'
         + '<div class="ac-dd-time">' + escapeHtml(acTimeAgo(a.created_at)) + '</div></div></a>';
     }).join('');
@@ -1209,8 +1259,8 @@ const AlphaCouncil = (function() {
     panel.className = 'ac-dropdown';
     panel.id = 'acAlertsDropdown';
     panel.setAttribute('role', 'menu');
-    panel.innerHTML = '<div class="ac-dd-head"><span class="t">Alerts</span><a class="a" href="alerts.html">View all</a></div>'
-      + '<div class="ac-dd-alerts" id="acAlertsList"><div class="ac-dd-empty">Loading…</div></div>';
+    panel.innerHTML = '<div class="ac-dd-head"><span class="t">' + escapeHtml(L('adv.alerts_title', 'Alerts')) + '</span><a class="a" href="alerts.html">' + escapeHtml(L('adv.view_all', 'View all')) + '</a></div>'
+      + '<div class="ac-dd-alerts" id="acAlertsList"><div class="ac-dd-empty">' + escapeHtml(L('adv.loading', 'Loading…')) + '</div></div>';
     panel.addEventListener('click', function (e) { e.stopPropagation(); });
     document.body.appendChild(panel);
     return panel;
@@ -1251,15 +1301,15 @@ const AlphaCouncil = (function() {
     }
     const u = state.user || {};
     const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ').trim();
-    const name = fullName || u.username || u.name || u.full_name || 'Your account';
+    const name = fullName || u.username || u.name || u.full_name || L('adv.account', 'Your account');
     const email = u.email || '';
     panel.innerHTML =
       '<div class="ac-dd-user"><div class="nm">' + escapeHtml(name) + '</div>' + (email ? '<div class="em">' + escapeHtml(email) + '</div>' : '') + '</div>'
       + '<div class="ac-dd-menu">'
-      + '<a class="ac-dd-mi" href="settings.html" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile &amp; Account</a>'
-      + '<a class="ac-dd-mi" href="settings.html" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>'
+      + '<a class="ac-dd-mi" href="settings.html" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' + escapeHtml(L('adv.profile_account', 'Profile & Account')) + '</a>'
+      + '<a class="ac-dd-mi" href="settings.html" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>' + escapeHtml(L('adv.settings', 'Settings')) + '</a>'
       + '<div class="ac-dd-sep"></div>'
-      + '<button class="ac-dd-mi danger" type="button" role="menuitem" onclick="AlphaCouncil.logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Log out</button>'
+      + '<button class="ac-dd-mi danger" type="button" role="menuitem" onclick="AlphaCouncil.logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>' + escapeHtml(L('adv.logout', 'Log out')) + '</button>'
       + '</div>';
     return panel;
   }
@@ -1283,10 +1333,10 @@ const AlphaCouncil = (function() {
       '<div class="ac-search-box" role="dialog" aria-label="Search stocks">'
       + '<div class="ac-search-top">'
       + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>'
-      + '<input type="text" class="ac-search-input" id="acSearchInput" placeholder="Search GCC stocks (e.g., Aramco, Al Rajhi, QNB...)" autocomplete="off" aria-label="Search stocks">'
+      + '<input type="text" class="ac-search-input" id="acSearchInput" placeholder="' + escapeHtml(L('adv.search_placeholder', 'Search GCC stocks (e.g., Aramco, Al Rajhi, QNB...)')) + '" autocomplete="off" aria-label="' + escapeHtml(L('adv.search_aria', 'Search stocks')) + '">'
       + '<kbd class="ac-search-kbd">ESC</kbd>'
       + '</div>'
-      + '<div class="ac-search-results" id="acSearchResults"><div class="ac-search-msg">Start typing to search GCC stocks…</div></div>'
+      + '<div class="ac-search-results" id="acSearchResults"><div class="ac-search-msg">' + escapeHtml(L('adv.search_hint', 'Start typing to search GCC stocks…')) + '</div></div>'
       + '</div>';
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeSearchModal(); });
     const input = overlay.querySelector('#acSearchInput');
@@ -1314,7 +1364,7 @@ const AlphaCouncil = (function() {
       const resp = await API.screening();
       const data = (resp && resp.data) ? resp.data : (Array.isArray(resp) ? resp : []);
       _searchUniverse = data.map(function (s) {
-        return { ticker: s.ticker, tickerKey: s.ticker_key || s.ticker, name: s.name_en || s.ticker, exchange: s.exchange || '' };
+        return { ticker: s.ticker, tickerKey: s.ticker_key || s.ticker, name_en: s.name_en, name_ar: s.name_ar, name: s.name_en || s.ticker, exchange: s.exchange || '' };
       });
     } catch (e) { _searchUniverse = null; }
     _searchLoading = false;
@@ -1326,7 +1376,8 @@ const AlphaCouncil = (function() {
     q = String(q).trim().toLowerCase();
     if (!q) return [];
     return _searchUniverse.filter(function (s) {
-      return (s.name && s.name.toLowerCase().indexOf(q) !== -1)
+      return (s.name_en && s.name_en.toLowerCase().indexOf(q) !== -1)
+        || (s.name_ar && s.name_ar.indexOf(q) !== -1)
         || (s.ticker && String(s.ticker).toLowerCase().indexOf(q) !== -1)
         || (s.tickerKey && String(s.tickerKey).toLowerCase().indexOf(q) !== -1);
     }).slice(0, 8);
@@ -1335,15 +1386,15 @@ const AlphaCouncil = (function() {
     const box = document.getElementById('acSearchResults');
     if (!box) return;
     const query = (q || '').trim();
-    if (!query) { box.innerHTML = '<div class="ac-search-msg">Start typing to search GCC stocks…</div>'; return; }
-    if (!_searchUniverse) { box.innerHTML = '<div class="ac-search-msg">' + (_searchLoading ? 'Loading stocks…' : 'Search is unavailable right now — please try again.') + '</div>'; return; }
+    if (!query) { box.innerHTML = '<div class="ac-search-msg">' + escapeHtml(L('adv.search_hint', 'Start typing to search GCC stocks…')) + '</div>'; return; }
+    if (!_searchUniverse) { box.innerHTML = '<div class="ac-search-msg">' + escapeHtml(_searchLoading ? L('adv.search_loading', 'Loading stocks…') : L('adv.search_unavailable', 'Search is unavailable right now — please try again.')) + '</div>'; return; }
     const results = searchMatches(query);
-    if (!results.length) { box.innerHTML = '<div class="ac-search-msg">No stocks match “' + escapeHtml(query) + '”.</div>'; return; }
+    if (!results.length) { box.innerHTML = '<div class="ac-search-msg">' + escapeHtml(L('adv.search_nomatch', 'No stocks match') + ' “' + query + '”.') + '</div>'; return; }
     box.innerHTML = results.map(function (s, i) {
       const short = String(s.ticker || s.tickerKey).split('_')[0].split('.')[0].slice(0, 4);
       return '<div class="ac-search-result' + (i === 0 ? ' active' : '') + '" data-ticker="' + escapeHtml(s.tickerKey) + '">'
         + '<div class="ac-search-logo">' + escapeHtml(short) + '</div>'
-        + '<div class="ac-search-info"><div class="ac-search-name">' + escapeHtml(s.name) + '</div><div class="ac-search-tk">' + escapeHtml(s.ticker || s.tickerKey) + '</div></div>'
+        + '<div class="ac-search-info"><div class="ac-search-name">' + escapeHtml(LN(s)) + '</div><div class="ac-search-tk">' + escapeHtml(s.ticker || s.tickerKey) + '</div></div>'
         + (s.exchange ? '<span class="ac-search-ex">' + escapeHtml(s.exchange) + '</span>' : '')
         + '</div>';
     }).join('');
@@ -1638,6 +1689,20 @@ const AlphaCouncil = (function() {
     // Turn the static market-indices row into a live scrolling ticker
     initIndicesTicker();
 
+    // When the language toggle flips, drop the cached top-nav dropdowns + search
+    // overlay so they rebuild in the new language on next open, and re-apply the
+    // RTL/LTR-correct nav identity. Pages handle their own dynamic content.
+    if (!state._langWired) {
+      state._langWired = true;
+      window.addEventListener('ac:langchange', function () {
+        acCloseDropdowns();
+        ['acAlertsDropdown', 'acUserDropdown', 'acSearchOverlay'].forEach(function (id) {
+          var el = document.getElementById(id); if (el) el.parentNode.removeChild(el);
+        });
+        if (state.user) setNavIdentity(state.user);
+      });
+    }
+
     // Wire up close sidebar
     const closeSidebar = document.getElementById('closeSidebar');
     if (closeSidebar) {
@@ -1759,6 +1824,12 @@ const AlphaCouncil = (function() {
     openSearchModal,
     closeSearchModal,
     logout,
+    // Identity — initials shown on the top-bar avatar. Pages (e.g. settings, after a
+    // name change) call refreshIdentity(user) to keep the nav avatar AND their own
+    // avatar consistent, using one shared initials derivation.
+    initials: initialsFromUser,
+    setNavIdentity,
+    refreshIdentity: function (u) { if (u) state.user = u; setNavIdentity(state.user); return initialsFromUser(state.user || {}); },
     askAboutNews,
     askAboutDimension,
     getHoldings: () => state.holdings,

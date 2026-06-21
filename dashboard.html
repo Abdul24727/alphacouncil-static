@@ -841,7 +841,26 @@
     'dash.footer_slogan':      { en: 'Understand your portfolio before the market moves.', ar: 'افهم محفظتك قبل أن يتحرّك السوق.' },
     'dash.footer_disclaimer':  { en: 'AlphaCouncil provides data-driven market analysis and educational insights. It does not provide licensed financial advice, execute trades, manage money, or guarantee returns. Always verify information before making investment decisions.', ar: 'يقدّم AlphaCouncil تحليلًا للسوق قائمًا على البيانات ورؤى تعليمية. وهو لا يقدّم استشارات مالية مرخّصة، ولا ينفّذ صفقات، ولا يدير أموالًا، ولا يضمن عوائد. تحقّق دائمًا من المعلومات قبل اتخاذ قرارات استثمارية.' },
     'dash.adviser':            { en: 'Adviser', ar: 'المستشار' },
-    'dash.online':             { en: 'Online', ar: 'متصل' }
+    'dash.online':             { en: 'Online', ar: 'متصل' },
+    'dash.metric_overall':     { en: 'overall', ar: 'إجمالي' },
+    'dash.no_holdings':        { en: 'No holdings yet — add one to get started.', ar: 'لا توجد مراكز حتى الآن — أضف واحدًا للبدء.' },
+    'dash.no_data':            { en: 'No data available.', ar: 'لا توجد بيانات متاحة.' },
+    'dash.error_movers':       { en: 'Couldn’t load market movers.', ar: 'تعذّر تحميل أكثر الأسهم تحركًا.' },
+    'dash.watchlist_empty':    { en: 'Your watchlist is empty. Open any stock and tap <strong>☆ Watchlist</strong> to track it here.', ar: 'قائمة المتابعة فارغة. افتح أي سهم واضغط على <strong>☆ المتابعة</strong> لتتبعه هنا.' },
+    'dash.error_watchlist':    { en: 'Couldn’t load your watchlist.', ar: 'تعذّر تحميل قائمة المتابعة.' },
+    'dash.no_alerts':          { en: 'No alerts yet. As notable moves, technical signals and news hit your holdings, they’ll appear here.', ar: 'لا توجد تنبيهات حتى الآن. عندما تحدث تحركات ملحوظة وإشارات فنية وأخبار على مراكزك، ستظهر هنا.' },
+    'dash.signin_alerts':      { en: 'Sign in to see your alerts.', ar: 'سجّل الدخول لرؤية تنبيهاتك.' },
+    'dash.error_alerts':       { en: 'Couldn’t load your alerts.', ar: 'تعذّر تحميل التنبيهات.' },
+    'dash.alert_new':          { en: 'New', ar: 'جديد' },
+    'dash.alert_growth':       { en: 'Growth', ar: 'النمو' },
+    'dash.alert_risk':         { en: 'Risk', ar: 'المخاطر' },
+    'dash.alert_technical':    { en: 'Technical', ar: 'التحليل الفني' },
+    'dash.alert_value':        { en: 'Value', ar: 'القيمة' },
+    'dash.alert_macro':        { en: 'Macro', ar: 'الاقتصاد الكلي' },
+    'dash.sidebar_pinned':     { en: 'Sidebar Pinned', ar: 'تم تثبيت الشريط الجانبي' },
+    'dash.sidebar_unpinned':   { en: 'Sidebar Unpinned', ar: 'تم فك تثبيت الشريط الجانبي' },
+    'dash.sidebar_keep_open':  { en: 'Sidebar will stay open', ar: 'سيبقى الشريط الجانبي مفتوحًا' },
+    'dash.sidebar_can_close':  { en: 'Sidebar can be closed', ar: 'يمكن إغلاق الشريط الجانبي' }
   });
 
   // Tag dashboard body elements programmatically (the engine preserves their icons).
@@ -881,12 +900,13 @@
         const tbody = document.querySelector('#holdingsTable tbody');
         if(!tbody) return;
         if(!holdings || !holdings.length){
-          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--fg-dim);">No holdings yet — add one to get started.</td></tr>';
+          const emptyMsg = AC_I18N.t('dash.no_holdings') || 'No holdings yet — add one to get started.';
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--fg-dim);">'+escH(emptyMsg)+'</td></tr>';
           return;
         }
         tbody.innerHTML = holdings.map(function(h){
           const up = (h.pnlPct||0) >= 0;
-          const nm = h.name || h.ticker;            // real company name (Saudi Aramco), not the code
+          const nm = AC_I18N.localName(h) || h.name || h.ticker;   // localized company name (name_ar/name_en), not the code
           const href = 'stock-detail.html?ticker='+encodeURIComponent(h.tickerKey);
           return '<tr data-ticker="'+escH(h.tickerKey)+'" class="holding-row" role="button" tabindex="0" style="cursor:pointer;" data-href="'+href+'" onclick="window.location.href=this.dataset.href" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();window.location.href=this.dataset.href;}">'
             +'<td><div class="holding-name"><div class="holding-logo">'+escH(initials(nm, h.ticker))+'</div><div><div class="holding-ticker">'+escH(nm)+'</div><div class="holding-company">'+escH(h.ticker)+'</div></div></div></td>'
@@ -926,7 +946,7 @@
         const dayChg = totalValue>0 ? holdings.reduce(function(s,h){ return s+((h.valueSar||0)*(h.dayChange||0)); },0)/totalValue : null;
         const mv = document.querySelectorAll('.metrics-row .metric-value');
         if(mv[0]) mv[0].textContent = hasH ? formatCurrency(totalValue,'SAR') : '—';
-        if(mv[1]){ mv[1].textContent = hasH ? ((pnl>=0?'+':'')+formatCurrency(pnl,'SAR')) : '—'; mv[1].style.color = hasH ? (pnl>=0?'var(--success)':'var(--danger)') : ''; const c=mv[1].parentElement.querySelector('.metric-change'); if(c){ if(hasH){ c.style.display=''; c.className='metric-change '+(pnl>=0?'up':'down'); c.textContent=formatPercent(pnlPct)+' overall'; } else c.style.display='none'; } }
+        if(mv[1]){ mv[1].textContent = hasH ? ((pnl>=0?'+':'')+formatCurrency(pnl,'SAR')) : '—'; mv[1].style.color = hasH ? (pnl>=0?'var(--success)':'var(--danger)') : ''; const c=mv[1].parentElement.querySelector('.metric-change'); if(c){ if(hasH){ c.style.display=''; c.className='metric-change '+(pnl>=0?'up':'down'); c.textContent=formatPercent(pnlPct)+' '+(AC_I18N.t('dash.metric_overall')||'overall'); } else c.style.display='none'; } }
         if(mv[2]) mv[2].textContent = (hasH && wYield>0) ? wYield.toFixed(1)+'%' : '—';
         if(mv[3]){ const ok = hasH && dayChg!=null && isFinite(dayChg); mv[3].textContent = ok ? formatPercent(dayChg) : '—'; mv[3].style.color = ok ? (dayChg>=0?'var(--success)':'var(--danger)') : ''; }
         const qs = document.querySelectorAll('.quick-stats .quick-stat-value');
@@ -972,37 +992,41 @@
       function emptyRow(msg){ return '<div class="mover-empty" style="padding:18px;color:var(--fg-dim);font-size:13px;">'+escH(msg)+'</div>'; }
       function fillSection(id, html){ const el = document.getElementById(id); if(el) el.innerHTML = html; }
 
-      (async function loadMovers(){
+      window.loadMovers = async function(){
         try{
           const d = await API.movers();
           const g = (d && d.gainers) || [], l = (d && d.losers) || [];
-          const row = function(r){ return stockRowHTML({ tickerKey: r.ticker_key, name: r.name_en, code: r.ticker, changePct: r.day_change_pct, price: r.last_price, currency: r.currency }); };
-          fillSection('topGainersBody', g.length ? g.map(row).join('') : emptyRow('No data available.'));
-          fillSection('topLosersBody',  l.length ? l.map(row).join('') : emptyRow('No data available.'));
+          const row = function(r){ return stockRowHTML({ tickerKey: r.ticker_key, name: AC_I18N.localName(r), code: r.ticker, changePct: r.day_change_pct, price: r.last_price, currency: r.currency }); };
+          const noData = AC_I18N.t('dash.no_data') || 'No data available.';
+          fillSection('topGainersBody', g.length ? g.map(row).join('') : emptyRow(noData));
+          fillSection('topLosersBody',  l.length ? l.map(row).join('') : emptyRow(noData));
         }catch(e){
-          fillSection('topGainersBody', emptyRow('Couldn’t load market movers.'));
-          fillSection('topLosersBody',  emptyRow('Couldn’t load market movers.'));
+          const errMsg = AC_I18N.t('dash.error_movers') || 'Couldn’t load market movers.';
+          fillSection('topGainersBody', emptyRow(errMsg));
+          fillSection('topLosersBody',  emptyRow(errMsg));
         }
-      })();
+      };
+      window.loadMovers();
 
       window.reloadWatchlist = async function(){
         try{
           const rows = await API.watchlist();
           if(!rows || !rows.length){
-            fillSection('watchlistBody', '<div class="mover-empty" style="padding:18px;color:var(--fg-dim);font-size:13px;line-height:1.5;">Your watchlist is empty. Open any stock and tap <strong>☆ Watchlist</strong> to track it here.</div>');
+            const emptyMsg = AC_I18N.t('dash.watchlist_empty') || 'Your watchlist is empty. Open any stock and tap <strong>☆ Watchlist</strong> to track it here.';
+            fillSection('watchlistBody', '<div class="mover-empty" style="padding:18px;color:var(--fg-dim);font-size:13px;line-height:1.5;">'+emptyMsg+'</div>');
             return;
           }
           fillSection('watchlistBody', rows.map(function(r){
-            return stockRowHTML({ tickerKey: r.ticker, name: r.name_en, code: r.ticker_short || String(r.ticker).split('_')[0], changePct: r.day_change_pct, price: r.last_price, currency: r.currency });
+            return stockRowHTML({ tickerKey: r.ticker, name: AC_I18N.localName(r), code: r.ticker_short || String(r.ticker).split('_')[0], changePct: r.day_change_pct, price: r.last_price, currency: r.currency });
           }).join(''));
         }catch(e){
-          fillSection('watchlistBody', emptyRow('Couldn’t load your watchlist.'));
+          fillSection('watchlistBody', emptyRow(AC_I18N.t('dash.error_watchlist') || 'Couldn’t load your watchlist.'));
         }
       };
       window.reloadWatchlist();
 
       // ---- REAL DATA: Intelligent Alerts (live /api/alerts, per-user) ----
-      function timeAgo(iso){ const t=Date.parse(iso); if(isNaN(t)) return ''; let s=Math.max(0,Math.floor((Date.now()-t)/1000)); if(s<60) return 'just now'; const m=Math.floor(s/60); if(m<60) return m+'m ago'; const h=Math.floor(m/60); if(h<24) return h+'h ago'; const d=Math.floor(h/24); if(d<30) return d+'d ago'; return Math.floor(d/30)+'mo ago'; }
+      function timeAgo(iso){ const t=Date.parse(iso); if(isNaN(t)) return ''; let s=Math.max(0,Math.floor((Date.now()-t)/1000)); const m=Math.floor(s/60), h=Math.floor(m/60), d=Math.floor(h/24); const ar = (window.AC_I18N && AC_I18N.lang) === 'ar'; if(ar){ if(s<60) return 'الآن'; if(m<60) return 'قبل '+m+' د'; if(h<24) return 'قبل '+h+' س'; if(d<30) return 'قبل '+d+' ي'; return 'قبل '+Math.floor(d/30)+' ش'; } if(s<60) return 'just now'; if(m<60) return m+'m ago'; if(h<24) return h+'h ago'; if(d<30) return d+'d ago'; return Math.floor(d/30)+'mo ago'; }
       const ALERT_ICONS = {
         growth:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
         risk:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
@@ -1015,7 +1039,8 @@
         const kind = a.kind || 'technical';
         const icon = ALERT_ICONS[kind] || ALERT_ICONS._default;
         const href = a.url || (a.ticker_key ? ('stock-detail.html?ticker=' + encodeURIComponent(a.ticker_key)) : '');
-        const src = a.source || (kind.charAt(0).toUpperCase() + kind.slice(1));
+        const srcLabels = { growth: AC_I18N.t('dash.alert_growth'), risk: AC_I18N.t('dash.alert_risk'), technical: AC_I18N.t('dash.alert_technical'), value: AC_I18N.t('dash.alert_value'), macro: AC_I18N.t('dash.alert_macro') };
+        const src = a.source || srcLabels[kind] || (kind.charAt(0).toUpperCase() + kind.slice(1));
         const text = a.title || a.body || '';
         const nav = href
           ? ' role="button" tabindex="0" style="cursor:pointer;" data-href="'+escH(href)+'" onclick="window.location.href=this.dataset.href" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();window.location.href=this.dataset.href;}"'
@@ -1025,23 +1050,25 @@
           + '<div class="alert-content"><div class="alert-source">'+escH(src)+'</div>'
           + '<div class="alert-text">'+escH(text)+'</div></div>'
           + '<div class="alert-meta"><span class="alert-time">'+escH(timeAgo(a.created_at))+'</span>'
-          + (a.read ? '' : '<span class="alert-badge">New</span>')+'</div></div>';
+          + (a.read ? '' : '<span class="alert-badge">'+escH(AC_I18N.t('dash.alert_new')||'New')+'</span>')+'</div></div>';
       }
-      (async function loadAlerts(){
+      window.loadAlerts = async function(){
         const body = document.getElementById('alertsCardBody'); if(!body) return;
         try{
           const r = await API.alerts(5);
           const items = (r && r.alerts) ? r.alerts : [];
           if(!items.length){
-            body.innerHTML = '<div class="alert-empty" style="padding:18px;color:var(--fg-dim);font-size:13px;line-height:1.5;">No alerts yet. As notable moves, technical signals and news hit your holdings, they’ll appear here.</div>';
+            const emptyMsg = AC_I18N.t('dash.no_alerts') || 'No alerts yet. As notable moves, technical signals and news hit your holdings, they’ll appear here.';
+            body.innerHTML = '<div class="alert-empty" style="padding:18px;color:var(--fg-dim);font-size:13px;line-height:1.5;">'+escH(emptyMsg)+'</div>';
             return;
           }
           body.innerHTML = items.slice(0,5).map(alertItemHTML).join('');
         }catch(e){
-          if(e && e.status===401){ body.innerHTML = emptyRow('Sign in to see your alerts.'); return; }
-          body.innerHTML = emptyRow('Couldn’t load your alerts.');
+          if(e && e.status===401){ body.innerHTML = emptyRow(AC_I18N.t('dash.signin_alerts') || 'Sign in to see your alerts.'); return; }
+          body.innerHTML = emptyRow(AC_I18N.t('dash.error_alerts') || 'Couldn’t load your alerts.');
         }
-      })();
+      };
+      window.loadAlerts();
 
       // Pin button state
       let isPinned = false;
@@ -1051,7 +1078,7 @@
           isPinned = !isPinned;
           sidebarPin.classList.toggle('active', isPinned);
           sidebarPin.setAttribute('aria-pressed', isPinned);
-          showToast(isPinned ? 'Sidebar Pinned' : 'Sidebar Unpinned', isPinned ? 'Sidebar will stay open' : 'Sidebar can be closed', 'info');
+          showToast(isPinned ? (AC_I18N.t('dash.sidebar_pinned')||'Sidebar Pinned') : (AC_I18N.t('dash.sidebar_unpinned')||'Sidebar Unpinned'), isPinned ? (AC_I18N.t('dash.sidebar_keep_open')||'Sidebar will stay open') : (AC_I18N.t('dash.sidebar_can_close')||'Sidebar can be closed'), 'info');
         });
       }
 
@@ -1093,6 +1120,17 @@
           e.preventDefault();
           openSidebar();
         }
+      });
+
+      // i18n: re-render all JS-built sections when the user toggles language so stock names,
+      // empty/error states, alert source labels and relative times switch live (the engine
+      // only auto-reapplies static data-i18n markup, not innerHTML built here).
+      window.addEventListener('ac:langchange', function(){
+        if (window.loadMovers) window.loadMovers();
+        if (window.reloadWatchlist) window.reloadWatchlist();
+        if (window.loadAlerts) window.loadAlerts();
+        // Re-render holdings table + metric "overall" label from the cached live holdings.
+        if (AlphaCouncil.getHoldings && window.onPortfolioReady) window.onPortfolioReady(AlphaCouncil.getHoldings());
       });
     });
   </script>

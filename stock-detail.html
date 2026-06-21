@@ -189,7 +189,8 @@
     .dimension-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 14px; transition: all 0.2s; cursor: pointer; position: relative; }
     .dimension-card:hover { border-color: var(--accent-primary); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(39, 211, 195, 0.1); }
     .dimension-card:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
-    .dimension-card:hover::after { content: 'Click to ask Adviser'; position: absolute; bottom: 8px; right: 10px; font-size: 9px; color: var(--accent-primary); opacity: 0.8; background: var(--bg-elevated); padding: 2px 6px; border-radius: 4px; }
+    /* PF-60: tooltip text is localized via the data-tip attribute (set in JS) so it can switch EN/AR. */
+    .dimension-card:hover::after { content: attr(data-tip); position: absolute; bottom: 8px; right: 10px; font-size: 9px; color: var(--accent-primary); opacity: 0.8; background: var(--bg-elevated); padding: 2px 6px; border-radius: 4px; }
     .dimension-card:active { transform: translateY(0); }
     .dimension-bar { height: 3px; background: var(--bg-deep); border-radius: 2px; margin-bottom: 8px; overflow: hidden; }
     .dimension-bar-fill { height: 100%; border-radius: 2px; }
@@ -380,7 +381,7 @@
         <span class="breadcrumb-sep">/</span>
         <a href="portfolio.html" class="breadcrumb-item">Portfolio</a>
         <span class="breadcrumb-sep">/</span>
-        <span class="breadcrumb-current">Loading…</span>
+        <span class="breadcrumb-current" data-i18n="common.loading">Loading…</span>
       </nav>
 
       <!-- Stock Header -->
@@ -389,7 +390,7 @@
           <div class="stock-identity">
             <div class="stock-logo" id="stockLogo">—</div>
             <div class="stock-info">
-              <h1><span class="stock-ticker"></span> <span class="stock-name-loading" style="color:var(--fg-dim);">Loading…</span> <span class="stock-exchange"></span></h1>
+              <h1><span class="stock-ticker"></span> <span class="stock-name-loading" style="color:var(--fg-dim);" data-i18n="common.loading">Loading…</span> <span class="stock-exchange"></span></h1>
               <p class="stock-subtitle" id="stockSubtitle"></p>
             </div>
           </div>
@@ -400,11 +401,11 @@
           </div>
         </div>
         <div class="stock-actions">
-          <button class="action-btn primary" onclick="addToPortfolio()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Add to Portfolio</button>
-          <button class="action-btn secondary" onclick="addToWatchlist()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Watchlist</button>
-          <button class="action-btn secondary" onclick="setAlert()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Set Alert</button>
-          <button class="action-btn council" onclick="openCouncilModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Run AI Council</button>
-          <button class="action-btn secondary" onclick="toggleSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Ask Adviser</button>
+          <button class="action-btn primary" onclick="addToPortfolio()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg><span data-i18n="sd.add_to_portfolio">Add to Portfolio</span></button>
+          <button class="action-btn secondary" onclick="addToWatchlist()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="sd.watchlist_btn">Watchlist</span></button>
+          <button class="action-btn secondary" onclick="setAlert()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg><span data-i18n="sd.set_alert">Set Alert</span></button>
+          <button class="action-btn council" onclick="openCouncilModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span data-i18n="sd.run_council">Run AI Council</span></button>
+          <button class="action-btn secondary" onclick="toggleSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i18n="sd.ask_adviser">Ask Adviser</span></button>
         </div>
       </header>
 
@@ -413,30 +414,30 @@
         <div class="signal-left">
           <span class="signal-badge">—</span>
           <div class="signal-content">
-            <h3>AlphaCouncil Signal</h3>
-            <p>Loading…</p>
+            <h3 data-i18n="sd.signal">AlphaCouncil Signal</h3>
+            <p data-i18n="common.loading">Loading…</p>
           </div>
         </div>
         <div class="signal-right">
           <span class="confidence-badge">—</span>
-          <a href="#" class="signal-link" onclick="showSignalExplanation(); return false;">Why this signal? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          <a href="#" class="signal-link" onclick="showSignalExplanation(); return false;"><span data-i18n="sd.why_signal">Why this signal?</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
         </div>
       </div>
 
       <!-- Your Position — D5: populated by renderPosition() from the signed-in user's real holding; hidden when not held -->
       <div class="position-card" style="display:none">
         <div class="position-header">
-          <span class="position-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>Your Position</span>
+          <span class="position-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg><span data-i18n="sd.your_position">Your Position</span></span>
           <div class="position-actions">
-            <button class="position-btn" onclick="adjustPosition()">Adjust Position</button>
-            <button class="position-btn" onclick="recordSale()">Record Sale</button>
+            <button class="position-btn" onclick="adjustPosition()" data-i18n="sd.adjust_position">Adjust Position</button>
+            <button class="position-btn" onclick="recordSale()" data-i18n="sd.record_sale">Record Sale</button>
           </div>
         </div>
         <div class="position-grid">
-          <div class="position-item"><label>Shares</label><div class="value">—</div></div>
-          <div class="position-item"><label>Avg Cost</label><div class="value">—</div></div>
-          <div class="position-item"><label>Current Value</label><div class="value">—</div></div>
-          <div class="position-item"><label>Unrealized P&L</label><div class="value">—</div></div>
+          <div class="position-item" data-pos="shares"><label data-i18n="sd.shares">Shares</label><div class="value">—</div></div>
+          <div class="position-item" data-pos="avgCost"><label data-i18n="sd.avg_cost">Avg Cost</label><div class="value">—</div></div>
+          <div class="position-item" data-pos="value"><label data-i18n="sd.current_value">Current Value</label><div class="value">—</div></div>
+          <div class="position-item" data-pos="pnl"><label data-i18n="sd.unrealized_pnl">Unrealized P&L</label><div class="value">—</div></div>
         </div>
       </div>
 
@@ -446,32 +447,32 @@
           <!-- Key Facts Gauges -->
           <div class="gauges-grid">
             <div class="gauge-card" data-group="valuation" onclick="toggleGauge(this)">
-              <div class="gauge-label">Valuation</div>
+              <div class="gauge-label" data-i18n="sd.valuation">Valuation</div>
               <div class="gauge-visual"><div class="gauge-ring" style="--score: 0"><div class="gauge-inner">—</div></div></div>
               <div class="gauge-rating">—</div>
-              <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>More details</div>
-              <div class="gauge-details"><div class="gauge-detail-row"><span>Loading…</span><span></span></div></div>
+              <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg><span data-i18n="sd.more_details">More details</span></div>
+              <div class="gauge-details"><div class="gauge-detail-row"><span data-i18n="common.loading">Loading…</span><span></span></div></div>
             </div>
             <div class="gauge-card" data-group="profitability" onclick="toggleGauge(this)">
-              <div class="gauge-label">Profitability</div>
+              <div class="gauge-label" data-i18n="sd.profitability">Profitability</div>
               <div class="gauge-visual"><div class="gauge-ring" style="--score: 0"><div class="gauge-inner">—</div></div></div>
               <div class="gauge-rating">—</div>
-              <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>More details</div>
-              <div class="gauge-details"><div class="gauge-detail-row"><span>Loading…</span><span></span></div></div>
+              <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg><span data-i18n="sd.more_details">More details</span></div>
+              <div class="gauge-details"><div class="gauge-detail-row"><span data-i18n="common.loading">Loading…</span><span></span></div></div>
             </div>
             <div class="gauge-card" data-group="health" onclick="toggleGauge(this)">
-              <div class="gauge-label">Financial Health</div>
+              <div class="gauge-label" data-i18n="sd.financial_health">Financial Health</div>
               <div class="gauge-visual"><div class="gauge-ring" style="--score: 0"><div class="gauge-inner">—</div></div></div>
               <div class="gauge-rating">—</div>
-              <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>More details</div>
-              <div class="gauge-details"><div class="gauge-detail-row"><span>Loading…</span><span></span></div></div>
+              <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg><span data-i18n="sd.more_details">More details</span></div>
+              <div class="gauge-details"><div class="gauge-detail-row"><span data-i18n="common.loading">Loading…</span><span></span></div></div>
             </div>
             <div class="gauge-card" data-group="income" onclick="toggleGauge(this)">
-              <div class="gauge-label">Income & Growth</div>
+              <div class="gauge-label" data-i18n="sd.income_growth">Income & Growth</div>
               <div class="gauge-visual"><div class="gauge-ring" style="--score: 0"><div class="gauge-inner">—</div></div></div>
               <div class="gauge-rating">—</div>
-              <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>More details</div>
-              <div class="gauge-details"><div class="gauge-detail-row"><span>Loading…</span><span></span></div></div>
+              <div class="gauge-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg><span data-i18n="sd.more_details">More details</span></div>
+              <div class="gauge-details"><div class="gauge-detail-row"><span data-i18n="common.loading">Loading…</span><span></span></div></div>
             </div>
           </div>
 
@@ -493,7 +494,7 @@
               </div>
             </div>
             <div class="chart-body" style="display:block;height:auto;min-height:360px;padding:10px 14px;">
-              <div id="chartHost" style="width:100%;"><div class="chart-placeholder">Loading chart…</div></div>
+              <div id="chartHost" style="width:100%;"><div class="chart-placeholder" data-i18n="sd.loading_chart">Loading chart…</div></div>
             </div>
           </div>
 
@@ -502,7 +503,7 @@
           <div class="forecast-section" id="forecastSection" style="display:none">
             <div class="forecast-grid">
               <div class="forecast-card">
-                <div class="forecast-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Price Target</div>
+                <div class="forecast-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span data-i18n="sd.price_target">Price Target</span></div>
                 <div class="price-target-visual">
                   <div class="target-bar">
                     <div class="target-range" style="left: 0%; width: 100%;"></div>
@@ -512,16 +513,16 @@
                   <div class="target-labels"><span>—</span><span></span><span>—</span></div>
                 </div>
                 <div class="target-stats">
-                  <div class="target-stat"><label>Low</label><div class="value low">—</div></div>
-                  <div class="target-stat"><label>Average</label><div class="value avg">—</div></div>
-                  <div class="target-stat"><label>High</label><div class="value high">—</div></div>
+                  <div class="target-stat"><label data-i18n="sd.low">Low</label><div class="value low">—</div></div>
+                  <div class="target-stat"><label data-i18n="sd.average">Average</label><div class="value avg">—</div></div>
+                  <div class="target-stat"><label data-i18n="sd.high">High</label><div class="value high">—</div></div>
                 </div>
                 <div class="analyst-count">—</div>
               </div>
               <div class="forecast-card">
-                <div class="forecast-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Earnings Trend (EPS)</div>
-                <div class="earnings-bars"><div style="color:var(--fg-dim);font-size:12px;padding:12px;">Loading…</div></div>
-                <div class="earnings-legend"><span class="act">Actual EPS</span><span class="est">Estimate</span></div>
+                <div class="forecast-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg><span data-i18n="sd.earnings_trend">Earnings Trend (EPS)</span></div>
+                <div class="earnings-bars"><div style="color:var(--fg-dim);font-size:12px;padding:12px;" data-i18n="common.loading">Loading…</div></div>
+                <div class="earnings-legend"><span class="act" data-i18n="sd.actual_eps">Actual EPS</span><span class="est" data-i18n="sd.estimate">Estimate</span></div>
               </div>
             </div>
           </div>
@@ -553,14 +554,14 @@
 
           <div class="expand-section" onclick="toggleExpand(this)">
             <div class="expand-header">
-              <span class="expand-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Dividends & Corporate Actions</span>
+              <span class="expand-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span data-i18n="sd.dividends_corporate">Dividends & Corporate Actions</span></span>
               <span class="expand-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
             </div>
             <div class="expand-body">
               <table class="data-table">
-                <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
+                <thead><tr><th data-i18n="sd.date">Date</th><th data-i18n="sd.type">Type</th><th data-i18n="sd.amount">Amount</th><th data-i18n="sd.status">Status</th></tr></thead>
                 <tbody id="dividendsBody">
-                  <tr><td colspan="4" style="text-align:center;color:var(--fg-dim);padding:14px;">Loading…</td></tr>
+                  <tr><td colspan="4" style="text-align:center;color:var(--fg-dim);padding:14px;" data-i18n="common.loading">Loading…</td></tr>
                 </tbody>
               </table>
             </div>
@@ -568,14 +569,14 @@
 
           <div class="expand-section" onclick="toggleExpand(this)">
             <div class="expand-header">
-              <span class="expand-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Technical Analysis</span>
+              <span class="expand-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg><span data-i18n="sd.technical_analysis">Technical Analysis</span></span>
               <span class="expand-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
             </div>
             <div class="expand-body">
               <table class="data-table">
-                <thead><tr><th>Indicator</th><th>Value</th><th>Signal</th></tr></thead>
+                <thead><tr><th data-i18n="sd.indicator">Indicator</th><th data-i18n="sd.value">Value</th><th data-i18n="sd.signal">Signal</th></tr></thead>
                 <tbody id="technicalBody">
-                  <tr><td colspan="3" style="text-align:center;color:var(--fg-dim);padding:12px;">Loading…</td></tr>
+                  <tr><td colspan="3" style="text-align:center;color:var(--fg-dim);padding:12px;" data-i18n="common.loading">Loading…</td></tr>
                 </tbody>
               </table>
             </div>
@@ -587,7 +588,7 @@
           <div class="card">
             <div class="card-header"><h3 class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/></svg>Recent News</h3></div>
             <div class="card-body" id="tickerNewsBody" style="padding: 12px;">
-              <div class="news-empty" style="padding:12px;color:var(--fg-dim);font-size:13px;">Loading…</div>
+              <div class="news-empty" style="padding:12px;color:var(--fg-dim);font-size:13px;" data-i18n="common.loading">Loading…</div>
             </div>
           </div>
         </aside>
@@ -605,23 +606,23 @@
           <button class="sidebar-btn" id="closeSidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
         </div>
         <div class="sidebar-context">
-          <div class="context-label">Viewing</div>
+          <div class="context-label" data-i18n="sd.viewing">Viewing</div>
           <div class="context-stock"></div>
         </div>
         <div class="sidebar-content">
           <div class="sidebar-section">
-            <div class="sidebar-section-title">Questions About Aramco</div>
+            <div class="sidebar-section-title" id="sdQuestionsTitle">Questions About Aramco</div>
             <div class="suggested-questions">
-              <button class="suggested-question" data-question="Explain the current Valuation score for Aramco">Explain the current Valuation score</button>
-              <button class="suggested-question" data-question="Compare Aramco to stronger GCC energy peers">Compare to stronger GCC energy peers</button>
-              <button class="suggested-question" data-question="What would trimming 10% of my Aramco position do to my portfolio?">What would trimming 10% do to my portfolio?</button>
-              <button class="suggested-question" data-question="What are the key risks for Aramco?">What are the key risks?</button>
+              <button class="suggested-question" data-q="valuation" data-question="Explain the current Valuation score for Aramco" data-i18n="sd.q_valuation">Explain the current Valuation score</button>
+              <button class="suggested-question" data-q="peers" data-question="Compare Aramco to stronger GCC energy peers" data-i18n="sd.q_peers">Compare to stronger GCC energy peers</button>
+              <button class="suggested-question" data-q="trim" data-question="What would trimming 10% of my Aramco position do to my portfolio?" data-i18n="sd.q_trim">What would trimming 10% do to my portfolio?</button>
+              <button class="suggested-question" data-q="risks" data-question="What are the key risks for Aramco?" data-i18n="sd.q_risks">What are the key risks?</button>
             </div>
           </div>
           <div class="chat-messages" id="chatMessages">
             <div class="chat-message adviser">
               <div class="chat-avatar">AC</div>
-              <div><div class="chat-bubble">I can help you analyze this stock's thesis, compare it to peers, or understand how it fits your portfolio.<br><br><em>Data analysis only — not financial advice.</em></div></div>
+              <div><div class="chat-bubble"><span data-i18n="sd.chat_intro">I can help you analyze this stock's thesis, compare it to peers, or understand how it fits your portfolio.</span><br><br><em data-i18n="sd.chat_disclaimer">Data analysis only — not financial advice.</em></div></div>
             </div>
           </div>
         </div>
@@ -670,8 +671,192 @@
     'sd.performance':       { en: 'Performance & Seasonality', ar: 'الأداء والموسمية' },
     'sd.dividends':         { en: 'Dividends', ar: 'التوزيعات' },
     'sd.major_holders':     { en: 'Major Holders', ar: 'كبار المالكين' },
-    'sd.corporate_actions': { en: 'Corporate Actions', ar: 'إجراءات الشركة' }
+    'sd.corporate_actions': { en: 'Corporate Actions', ar: 'إجراءات الشركة' },
+    // Header action buttons
+    'sd.add_to_portfolio':  { en: 'Add to Portfolio', ar: 'إضافة إلى المحفظة' },
+    'sd.watchlist_btn':     { en: 'Watchlist', ar: 'قائمة المتابعة' },
+    'sd.set_alert':         { en: 'Set Alert', ar: 'تعيين تنبيه' },
+    'sd.run_council':       { en: 'Run AI Council', ar: 'تشغيل مجلس الذكاء الاصطناعي' },
+    'sd.ask_adviser':       { en: 'Ask Adviser', ar: 'اسأل المستشار' },
+    // Signal banner
+    'sd.why_signal':        { en: 'Why this signal?', ar: 'لماذا هذه الإشارة؟' },
+    'sd.buy':               { en: 'BUY', ar: 'شراء' },
+    'sd.hold':              { en: 'HOLD', ar: 'احتفظ' },
+    'sd.reduce':            { en: 'REDUCE', ar: 'بيع' },
+    'sd.constructive':      { en: 'Constructive', ar: 'بنّاء' },
+    'sd.hold_neutral':      { en: 'Hold / Neutral', ar: 'احتفظ / محايد' },
+    'sd.cautious':          { en: 'Cautious', ar: 'حذر' },
+    'sd.signal_label':      { en: 'AlphaCouncil Signal: {title}', ar: 'إشارة AlphaCouncil: {title}' },
+    'sd.signal_derived':    { en: 'Derived from AlphaCouncil’s composite score of {score}/100 — a blend of fundamentals, technicals and news flow. A model output, not investment advice.', ar: 'مُشتقّة من درجة AlphaCouncil المركّبة البالغة {score}/100 — مزيج من الأساسيات والمؤشرات الفنية وتدفّق الأخبار. مُخرَج نموذجي وليس نصيحة استثمارية.' },
+    'sd.score':             { en: 'Score {score}/100', ar: 'الدرجة {score}/100' },
+    // Position card
+    'sd.your_position':     { en: 'Your Position', ar: 'مركزك' },
+    'sd.adjust_position':   { en: 'Adjust Position', ar: 'تعديل المركز' },
+    'sd.record_sale':       { en: 'Record Sale', ar: 'تسجيل البيع' },
+    'sd.shares':            { en: 'Shares', ar: 'الأسهم' },
+    'sd.avg_cost':          { en: 'Avg Cost', ar: 'متوسط التكلفة' },
+    'sd.current_value':     { en: 'Current Value', ar: 'القيمة الحالية' },
+    'sd.unrealized_pnl':    { en: 'Unrealized P&L', ar: 'الربح/الخسارة غير المحققة' },
+    // Gauge cards
+    'sd.valuation':         { en: 'Valuation', ar: 'التقييم' },
+    'sd.profitability':     { en: 'Profitability', ar: 'الربحية' },
+    'sd.financial_health':  { en: 'Financial Health', ar: 'الصحة المالية' },
+    'sd.income_growth':     { en: 'Income & Growth', ar: 'الدخل والنمو' },
+    'sd.more_details':      { en: 'More details', ar: 'مزيد من التفاصيل' },
+    'sd.strong':            { en: 'Strong', ar: 'قوي' },
+    'sd.moderate':          { en: 'Moderate', ar: 'معتدل' },
+    'sd.weak':              { en: 'Weak', ar: 'ضعيف' },
+    // Gauge fundamental metric labels
+    'sd.metric_pe':         { en: 'P/E Ratio', ar: 'مكرر الربحية' },
+    'sd.metric_pb':         { en: 'P/B Ratio', ar: 'مكرر القيمة الدفترية' },
+    'sd.metric_ev_ebitda':  { en: 'EV/EBITDA', ar: 'قيمة المنشأة/الأرباح قبل الفوائد' },
+    'sd.metric_ps':         { en: 'P/S Ratio', ar: 'مكرر المبيعات' },
+    'sd.metric_roe':        { en: 'ROE', ar: 'العائد على حقوق الملكية' },
+    'sd.metric_roa':        { en: 'ROA', ar: 'العائد على الأصول' },
+    'sd.metric_roic':       { en: 'ROIC', ar: 'العائد على رأس المال المستثمر' },
+    'sd.metric_net_margin': { en: 'Net Margin', ar: 'صافي الهامش' },
+    'sd.metric_gross_margin':{ en: 'Gross Margin', ar: 'إجمالي الهامش' },
+    'sd.metric_debt_equity':{ en: 'Debt/Equity', ar: 'الدين/حقوق الملكية' },
+    'sd.metric_current_ratio':{ en: 'Current Ratio', ar: 'النسبة الجارية' },
+    'sd.metric_interest_coverage':{ en: 'Interest Coverage', ar: 'تغطية الفوائد' },
+    'sd.metric_fcf_yield':  { en: 'FCF Yield', ar: 'عائد التدفق النقدي الحر' },
+    'sd.metric_div_yield':  { en: 'Dividend Yield', ar: 'عائد التوزيعات' },
+    'sd.metric_payout':     { en: 'Payout Ratio', ar: 'نسبة التوزيع' },
+    'sd.metric_rev_cagr':   { en: 'Rev Growth', ar: 'نمو الإيرادات' },
+    'sd.metric_eps_cagr':   { en: 'EPS Growth', ar: 'نمو ربحية السهم' },
+    // Price chart
+    'sd.loading_chart':     { en: 'Loading chart…', ar: 'جارٍ تحميل المخطط…' },
+    'sd.no_price_history':  { en: 'No price history available.', ar: 'لا توجد بيانات أسعار متاحة.' },
+    'sd.no_price_history_stock':{ en: 'No price history available for this stock.', ar: 'لا توجد بيانات أسعار متاحة لهذا السهم.' },
+    'sd.chart_error':       { en: 'Couldn’t load the price chart.', ar: 'تعذّر تحميل مخطط السعر.' },
+    'sd.price_chart':       { en: 'Price chart', ar: 'مخطط السعر' },
+    // Analyst forecast
+    'sd.price_target':      { en: 'Price Target', ar: 'السعر المستهدف' },
+    'sd.earnings_trend':    { en: 'Earnings Trend (EPS)', ar: 'اتجاه الأرباح (ربحية السهم)' },
+    'sd.low':               { en: 'Low', ar: 'الأدنى' },
+    'sd.average':           { en: 'Average', ar: 'المتوسط' },
+    'sd.high':              { en: 'High', ar: 'الأعلى' },
+    'sd.actual_eps':        { en: 'Actual EPS', ar: 'ربحية السهم الفعلية' },
+    'sd.estimate':          { en: 'Estimate', ar: 'التقدير' },
+    'sd.current':           { en: 'Current', ar: 'الحالي' },
+    'sd.forecast_footer':   { en: 'Based on {count} analyst price targets', ar: 'بناءً على {count} من أهداف أسعار المحلّلين' },
+    'sd.consensus':         { en: 'Consensus', ar: 'الإجماع' },
+    'sd.updated':           { en: 'Updated', ar: 'مُحدّث' },
+    // Dividends & corporate actions
+    'sd.dividends_corporate':{ en: 'Dividends & Corporate Actions', ar: 'التوزيعات وإجراءات الشركة' },
+    'sd.technical_analysis':{ en: 'Technical Analysis', ar: 'التحليل الفني' },
+    'sd.date':              { en: 'Date', ar: 'التاريخ' },
+    'sd.type':              { en: 'Type', ar: 'النوع' },
+    'sd.amount':            { en: 'Amount', ar: 'المبلغ' },
+    'sd.status':            { en: 'Status', ar: 'الحالة' },
+    'sd.dividend':          { en: 'Dividend', ar: 'توزيع' },
+    'sd.corporate_action':  { en: 'Corporate Action', ar: 'إجراء شركة' },
+    'sd.paid':              { en: 'Paid', ar: 'مدفوع' },
+    'sd.upcoming':          { en: 'Upcoming', ar: 'قادم' },
+    'sd.no_dividends':      { en: 'No dividends or corporate actions on record.', ar: 'لا توجد توزيعات أو إجراءات شركة مسجّلة.' },
+    'sd.dividends_error':   { en: 'Couldn’t load dividends right now.', ar: 'تعذّر تحميل التوزيعات الآن.' },
+    // Technical analysis
+    'sd.indicator':         { en: 'Indicator', ar: 'المؤشر' },
+    'sd.value':             { en: 'Value', ar: 'القيمة' },
+    'sd.signal':            { en: 'Signal', ar: 'الإشارة' },
+    'sd.overbought':        { en: 'Overbought', ar: 'تشبّع شرائي' },
+    'sd.oversold':          { en: 'Oversold', ar: 'تشبّع بيعي' },
+    'sd.neutral':           { en: 'Neutral', ar: 'محايد' },
+    'sd.bullish':           { en: 'Bullish', ar: 'صعودي' },
+    'sd.bearish':           { en: 'Bearish', ar: 'هبوطي' },
+    'sd.above':             { en: 'Above', ar: 'فوق' },
+    'sd.below':             { en: 'Below', ar: 'تحت' },
+    'sd.52w_high':          { en: '52-Week High', ar: 'أعلى 52 أسبوعًا' },
+    'sd.52w_low':           { en: '52-Week Low', ar: 'أدنى 52 أسبوعًا' },
+    'sd.rsi_14':            { en: 'RSI (14)', ar: 'مؤشر القوة النسبية (14)' },
+    'sd.macd':              { en: 'MACD', ar: 'الماكد' },
+    'sd.sma_50':            { en: 'SMA 50', ar: 'المتوسط المتحرك 50' },
+    'sd.sma_200':           { en: 'SMA 200', ar: 'المتوسط المتحرك 200' },
+    'sd.no_technicals':     { en: 'Technical indicators aren’t available for this stock yet.', ar: 'المؤشرات الفنية غير متاحة لهذا السهم بعد.' },
+    // News
+    'sd.read':              { en: 'Read', ar: 'قراءة' },
+    'sd.no_news':           { en: 'No recent news for this stock yet.', ar: 'لا توجد أخبار حديثة لهذا السهم بعد.' },
+    'sd.news_error':        { en: 'Couldn’t load news right now.', ar: 'تعذّر تحميل الأخبار الآن.' },
+    // Stock not found
+    'sd.not_found':         { en: 'Stock not found', ar: 'لم يتم العثور على السهم' },
+    'sd.not_found_msg':     { en: 'We couldn’t load data for “{ticker}”. It may not be covered yet, or the ticker may be incorrect.', ar: 'تعذّر تحميل البيانات لـ ”{ticker}“. قد لا يكون مُغطّى بعد، أو قد يكون الرمز غير صحيح.' },
+    'sd.back_to_dashboard': { en: 'Back to dashboard', ar: 'العودة إلى لوحة التحكم' },
+    // Council snapshot synthesis
+    'sd.council_synthesis': { en: 'Run a live multi-model AI Analyst Council review of {name}: several models debate the bull and bear case, then a chairman synthesises a balanced view.', ar: 'شغّل مراجعة حيّة متعددة النماذج لمجلس المحلّلين الذكي لـ {name}: تتناقش عدة نماذج حول الحالة الصعودية والهبوطية، ثم يُلخّص الرئيس رؤية متوازنة.' },
+    'sd.council_synthesis_company':{ en: 'this company', ar: 'هذه الشركة' },
+    'sd.run_full_council':  { en: 'Run Full AI Analyst Council Review', ar: 'تشغيل مراجعة مجلس المحلّلين الذكي الكاملة' },
+    // Thesis
+    'sd.thesis_intro':      { en: 'A 12-dimension AI thesis — 9 investment, 2 trading and 1 bridge dimension, each scored 1–10 by Claude Opus and grounded in this company’s real fundamentals, peers and news. Generated on demand.', ar: 'أطروحة ذكاء اصطناعي بـ 12 بُعدًا — 9 استثمارية و2 للتداول وبُعد جسري واحد، يُقيَّم كل منها من 1 إلى 10 بواسطة Claude Opus ومستند إلى الأساسيات الحقيقية لهذه الشركة ونظرائها وأخبارها. يُولَّد عند الطلب.' },
+    'sd.generate_thesis':   { en: 'Generate AI Thesis', ar: 'توليد أطروحة الذكاء الاصطناعي' },
+    'sd.thesis_first_gen':  { en: 'First generation can take up to ~2 minutes; afterwards it is cached.', ar: 'قد يستغرق التوليد الأول حتى ~دقيقتين؛ بعد ذلك يتم تخزينه مؤقتًا.' },
+    'sd.generating_thesis': { en: 'Generating the 12-dimension thesis… this can take up to ~2 minutes.', ar: 'جارٍ توليد الأطروحة ذات 12 بُعدًا… قد يستغرق هذا حتى ~دقيقتين.' },
+    'sd.gen_failed':        { en: 'Generation failed. Please try again.', ar: 'فشل التوليد. يرجى المحاولة مرة أخرى.' },
+    'sd.auth_required':     { en: 'Please log in to generate an AI thesis.', ar: 'يرجى تسجيل الدخول لتوليد أطروحة الذكاء الاصطناعي.' },
+    'sd.daily_limit':       { en: 'Daily thesis limit reached — please try again later.', ar: 'تم الوصول إلى الحد اليومي للأطروحات — يرجى المحاولة لاحقًا.' },
+    'sd.network_error':     { en: 'Network error — could not reach the server.', ar: 'خطأ في الشبكة — تعذّر الوصول إلى الخادم.' },
+    'sd.thesis_unavailable':{ en: 'Thesis unavailable for this ticker.', ar: 'الأطروحة غير متاحة لهذا الرمز.' },
+    'sd.thesis_confidence': { en: 'AI thesis confidence:', ar: 'ثقة أطروحة الذكاء الاصطناعي:' },
+    'sd.generated':         { en: 'generated', ar: 'تم التوليد' },
+    'sd.investment_horizon':{ en: 'Investment Horizon', ar: 'أفق الاستثمار' },
+    'sd.investment_sub':    { en: 'Long-term fundamental factors', ar: 'عوامل أساسية طويلة الأجل' },
+    'sd.trading_horizon':   { en: 'Trading Horizon', ar: 'أفق التداول' },
+    'sd.trading_sub':       { en: 'Short-term technical factors', ar: 'عوامل فنية قصيرة الأجل' },
+    'sd.bridge_horizon':    { en: 'Bridge Horizon', ar: 'الأفق الجسري' },
+    'sd.bridge_sub':        { en: 'Sentiment & news flow', ar: 'المعنويات وتدفّق الأخبار' },
+    'sd.not_in_data':       { en: 'Not in our data', ar: 'غير متوفر في بياناتنا' },
+    'sd.scen_bull':         { en: 'Bull', ar: 'صعودي' },
+    'sd.scen_base':         { en: 'Base', ar: 'أساسي' },
+    'sd.scen_bear':         { en: 'Bear', ar: 'هبوطي' },
+    // Thesis dimension names
+    'sd.dim_valuation':     { en: 'Valuation', ar: 'التقييم' },
+    'sd.dim_growth':        { en: 'Growth', ar: 'النمو' },
+    'sd.dim_profitability': { en: 'Profitability', ar: 'الربحية' },
+    'sd.dim_quality':       { en: 'Quality', ar: 'الجودة' },
+    'sd.dim_dividends':     { en: 'Dividends', ar: 'التوزيعات' },
+    'sd.dim_ownership':     { en: 'Ownership', ar: 'الملكية' },
+    'sd.dim_governance':    { en: 'Governance', ar: 'الحوكمة' },
+    'sd.dim_esg':           { en: 'ESG', ar: 'الحوكمة البيئية والاجتماعية' },
+    'sd.dim_macro':         { en: 'Macro', ar: 'الاقتصاد الكلي' },
+    'sd.dim_momentum':      { en: 'Momentum', ar: 'الزخم' },
+    'sd.dim_technicals':    { en: 'Technicals', ar: 'المؤشرات الفنية' },
+    'sd.dim_sentiment_news':{ en: 'Sentiment & News', ar: 'المعنويات والأخبار' },
+    'sd.click_ask':         { en: 'Click to ask Adviser', ar: 'انقر لسؤال المستشار' },
+    // Sidebar adviser
+    'sd.questions_about':   { en: 'Questions About {name}', ar: 'أسئلة حول {name}' },
+    'sd.viewing':           { en: 'Viewing', ar: 'تعرض' },
+    'sd.q_valuation':       { en: 'Explain the current Valuation score', ar: 'اشرح درجة التقييم الحالية' },
+    'sd.q_peers':           { en: 'Compare to stronger GCC energy peers', ar: 'قارن بنظراء الطاقة الخليجيين الأقوى' },
+    'sd.q_trim':            { en: 'What would trimming 10% do to my portfolio?', ar: 'ماذا سيفعل تقليص 10% بمحفظتي؟' },
+    'sd.q_risks':           { en: 'What are the key risks?', ar: 'ما هي المخاطر الرئيسية؟' },
+    'sd.chat_about':        { en: 'Ask about {name}...', ar: 'اسأل عن {name}...' },
+    'sd.chat_intro':        { en: 'I can help you analyze this stock’s thesis, compare it to peers, or understand how it fits your portfolio.', ar: 'يمكنني مساعدتك في تحليل أطروحة هذا السهم، أو مقارنته بنظرائه، أو فهم كيفية ملاءمته لمحفظتك.' },
+    'sd.chat_disclaimer':   { en: 'Data analysis only — not financial advice.', ar: 'تحليل بيانات فقط — وليس نصيحة استثمارية.' },
+    // Prompts & toasts
+    'sd.prompt_shares':     { en: 'How many shares of {name}?', ar: 'كم عدد أسهم {name}؟' },
+    'sd.prompt_cost':       { en: 'Average cost per share ({currency})?', ar: 'متوسط تكلفة السهم ({currency})؟' },
+    'sd.prompt_total':      { en: 'Total shares of {name} you now hold:', ar: 'إجمالي أسهم {name} التي تمتلكها الآن:' },
+    'sd.prompt_adjust_cost':{ en: 'Average cost per share ({currency}):', ar: 'متوسط تكلفة السهم ({currency}):' },
+    'sd.prompt_sold':       { en: 'How many shares did you sell? (you hold {count})', ar: 'كم عدد الأسهم التي بعتها؟ (تمتلك {count})' },
+    'sd.added_watchlist':   { en: 'Added to Watchlist', ar: 'أُضيف إلى قائمة المتابعة' },
+    'sd.added_watchlist_msg':{ en: '{name} is now on your watchlist', ar: '{name} الآن في قائمة المتابعة الخاصة بك' },
+    'sd.signin_required':   { en: 'Sign in required', ar: 'تسجيل الدخول مطلوب' },
+    'sd.login_watchlist':   { en: 'Log in to track stocks on your watchlist', ar: 'سجّل الدخول لتتبّع الأسهم في قائمة المتابعة الخاصة بك' },
+    'sd.watchlist_add_error':{ en: 'Couldn’t add to watchlist', ar: 'تعذّرت الإضافة إلى قائمة المتابعة' },
+    'sd.retry':             { en: 'Please try again in a moment', ar: 'يرجى المحاولة مرة أخرى بعد لحظات' },
+    'sd.no_pos':            { en: 'No position', ar: 'لا يوجد مركز' },
+    'sd.no_pos_msg':        { en: 'You have no recorded position in {name}.', ar: 'ليس لديك مركز مسجّل في {name}.' },
+    'sd.sale_recorded':     { en: 'Sale recorded', ar: 'تم تسجيل البيع' },
+    'sd.sale_recorded_msg': { en: '{count} shares sold · {remaining} remaining', ar: '{count} سهم مُباع · {remaining} متبقٍّ' },
+    'sd.signal_question':   { en: 'Why is AlphaCouncil’s signal "{signal}" for {name}? Explain what drives its composite score.', ar: 'لماذا إشارة AlphaCouncil "{signal}" لـ {name}؟ اشرح ما الذي يحرّك درجتها المركّبة.' },
+    'sd.signal_neutral':    { en: 'neutral', ar: 'محايدة' }
   });
+  // Tiny {placeholder} interpolation over AC_I18N.t (no interpolation in the shared helper).
+  function _t(key, vars) {
+    var s = (window.AC_I18N && AC_I18N.t(key));
+    if (s == null) return null;
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
   (function () {
     function setKey(el, key) { if (el && !el.getAttribute('data-i18n')) el.setAttribute('data-i18n', key); }
     function firstText(el) { for (var i = 0; i < el.childNodes.length; i++) { var c = el.childNodes[i]; if (c.nodeType === 3 && (c.nodeValue || '').trim()) return c.nodeValue.trim(); } return (el.textContent || '').trim(); }
@@ -685,7 +870,8 @@
     Array.prototype.forEach.call(document.querySelectorAll('.card-title, .section-title, .card-action, .sidebar-title h3, .sidebar-title p, h2, h3'), function (el) {
       var k = MAP[firstText(el)]; if (k) setKey(el, k);
     });
-    var ci = document.getElementById('chatInput'); if (ci) ci.setAttribute('data-i18n-attr', 'placeholder:sd.chat_placeholder');
+    // #chatInput placeholder is set dynamically (stock-name aware) by syncStockI18n();
+    // do not data-i18n-attr it here, or it would clobber the per-stock placeholder.
     if (window.AC_I18N) AC_I18N.apply();
   })();
   </script>
@@ -699,6 +885,8 @@
       ticker: (tickerParam.split('_')[0] || tickerParam), tickerKey: tickerParam,
       name: (tickerParam.split('_')[0] || tickerParam), currency: 'SAR', exchange: ''
     };
+    // Last raw /api/ticker row + tech, kept so an ac:langchange can re-localize name/sector/labels.
+    let _lastTicker = null;
     function _esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -717,7 +905,7 @@
       const W = 760, H = 340, padL = 10, padR = 58, padT = 14, padB = 26;
       const volH = ov.volume ? 46 : 0, top = padT, bot = H - padB - volH, ph = bot - top, pw = W - padL - padR;
       const closes = bars.map(b => b.close).filter(v => v != null && isFinite(v));
-      if (!closes.length) return '<div class="chart-placeholder" style="height:340px;">No price history available.</div>';
+      if (!closes.length) return '<div class="chart-placeholder" style="height:340px;">' + _esc(_t('sd.no_price_history') || 'No price history available.') + '</div>';
       let lo = Math.min.apply(null, closes), hi = Math.max.apply(null, closes); if (lo === hi) { lo -= 1; hi += 1; }
       const pdg = (hi - lo) * 0.08; lo -= pdg; hi += pdg;
       const n = bars.length, X = i => padL + (n === 1 ? pw / 2 : (i / (n - 1)) * pw), Y = v => top + (1 - (v - lo) / (hi - lo)) * ph;
@@ -740,12 +928,12 @@
     async function loadChart() {
       const host = document.getElementById('chartHost'); if (!host || !_chart.tk) return;
       const tf = _TF[_chart.tf] || ['daily', 252];
-      host.innerHTML = '<div class="chart-placeholder" style="height:340px;">Loading chart…</div>';
+      host.innerHTML = '<div class="chart-placeholder" style="height:340px;">' + _esc(_t('sd.loading_chart') || 'Loading chart…') + '</div>';
       try {
         const d = await API.get('/api/ticker/' + encodeURIComponent(_chart.tk) + '/price-history?timeframe=' + tf[0] + (tf[1] ? ('&limit=' + tf[1]) : ''));
         _chart.bars = (d && d.bars) || [];
-        host.innerHTML = _chart.bars.length ? buildChartSVG(_chart.bars, _chart.ov) : '<div class="chart-placeholder" style="height:340px;">No price history available for this stock.</div>';
-      } catch (e) { host.innerHTML = '<div class="chart-placeholder" style="height:340px;">Couldn’t load the price chart.</div>'; }
+        host.innerHTML = _chart.bars.length ? buildChartSVG(_chart.bars, _chart.ov) : '<div class="chart-placeholder" style="height:340px;">' + _esc(_t('sd.no_price_history_stock') || 'No price history available for this stock.') + '</div>';
+      } catch (e) { host.innerHTML = '<div class="chart-placeholder" style="height:340px;">' + _esc(_t('sd.chart_error') || 'Couldn’t load the price chart.') + '</div>'; }
     }
     let _chartWired = false;
     function initPriceChart(tk) {
@@ -776,22 +964,24 @@
       const host = document.getElementById('tickerNewsBody'); if (!host) return;
       API.get('/api/ticker/' + encodeURIComponent(tk) + '/news?limit=6&section=news').then((res) => {
         const items = Array.isArray(res) ? res : (res && res.items) || [];
-        if (!items.length) { host.innerHTML = '<div class="news-empty" style="padding:12px;color:var(--fg-dim);font-size:13px;">No recent news for this stock yet.</div>'; return; }
+        if (!items.length) { host.innerHTML = '<div class="news-empty" style="padding:12px;color:var(--fg-dim);font-size:13px;">' + _esc(_t('sd.no_news') || 'No recent news for this stock yet.') + '</div>'; return; }
+        const readLbl = _t('sd.read') || 'Read';
+        const askLbl = _t('sd.ask_adviser') || 'Ask Adviser';
         host.innerHTML = items.slice(0, 6).map((it) => {
           const cat = it.category || it.section || 'News';
           const url = it.url || '';
           const title = it.title || '';
-          const read = url ? '<a class="ask-btn" href="' + _esc(url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read</a>' : '';
+          const read = url ? '<a class="ask-btn" href="' + _esc(url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + _esc(readLbl) + '</a>' : '';
           return '<div class="news-card" data-nid="' + _esc(String(it.id)) + '" data-ntitle="' + _esc(title) + '">'
             + '<div class="news-meta"><span class="news-tag">' + _esc(cat) + '</span><span class="news-time">' + _esc(it.date || '') + '</span></div>'
             + '<p class="news-headline">' + _esc(title) + '</p>'
-            + '<div class="news-actions">' + read + '<button class="ask-btn" data-ask="1">Ask Adviser</button></div></div>';
+            + '<div class="news-actions">' + read + '<button class="ask-btn" data-ask="1">' + _esc(askLbl) + '</button></div></div>';
         }).join('');
         host.querySelectorAll('.news-card').forEach((card) => {
           // whole card → real adviser (the Read link stops propagation so it opens the article)
           card.addEventListener('click', () => { if (window.AlphaCouncil && AlphaCouncil.askAboutNews) AlphaCouncil.askAboutNews(card.dataset.nid, card.dataset.ntitle, [tk]); });
         });
-      }).catch(() => { host.innerHTML = '<div class="news-empty" style="padding:12px;color:var(--fg-dim);font-size:13px;">Couldn’t load news right now.</div>'; });
+      }).catch(() => { host.innerHTML = '<div class="news-empty" style="padding:12px;color:var(--fg-dim);font-size:13px;">' + _esc(_t('sd.news_error') || 'Couldn’t load news right now.') + '</div>'; });
     }
 
     // D3: real dividends + corporate actions from /api/ticker/{key}/corporate
@@ -809,6 +999,10 @@
       API.get('/api/ticker/' + encodeURIComponent(tk) + '/corporate').then((c) => {
         const rows = [];
         const today = new Date().toISOString().slice(0, 10);
+        const dividendLbl = _t('sd.dividend') || 'Dividend';
+        const paidLbl = _t('sd.paid') || 'Paid';
+        const upcomingLbl = _t('sd.upcoming') || 'Upcoming';
+        const corpActionLbl = _t('sd.corporate_action') || 'Corporate Action';
         const divs = (c && c.dividends && c.dividends.history) || [];
         divs.forEach((d) => {
           const when = d.pay_date || d.ex_date || d.announce_date || '';
@@ -816,9 +1010,9 @@
           rows.push({
             sort: when,
             date: fmtDate(when),
-            type: 'Dividend' + (note ? ' · ' + note : ''),
+            type: dividendLbl + (note ? ' · ' + note : ''),
             amount: d.dps != null ? cur + ' ' + Number(d.dps).toFixed(2) : '—',
-            status: when && when <= today ? 'Paid' : 'Upcoming'
+            status: when && when <= today ? paidLbl : upcomingLbl
           });
         });
         const caps = (c && c.corporate_actions && c.corporate_actions.capital_changes) || [];
@@ -828,13 +1022,13 @@
           rows.push({
             sort: a.date || '',
             date: fmtDate(a.date),
-            type: a.change_type || 'Corporate Action',
+            type: a.change_type || corpActionLbl,
             amount: pct,
             status: '—'
           });
         });
         if (!rows.length) {
-          tb.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--fg-dim);padding:14px;">No dividends or corporate actions on record.</td></tr>';
+          tb.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--fg-dim);padding:14px;">' + _esc(_t('sd.no_dividends') || 'No dividends or corporate actions on record.') + '</td></tr>';
           return;
         }
         rows.sort((a, b) => String(b.sort).localeCompare(String(a.sort)));
@@ -842,7 +1036,7 @@
           '<tr><td>' + _esc(r.date) + '</td><td>' + _esc(r.type) + '</td><td>' + _esc(r.amount) + '</td><td>' + _esc(r.status) + '</td></tr>'
         ).join('');
       }).catch(() => {
-        tb.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--fg-dim);padding:14px;">Couldn’t load dividends right now.</td></tr>';
+        tb.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--fg-dim);padding:14px;">' + _esc(_t('sd.dividends_error') || 'Couldn’t load dividends right now.') + '</td></tr>';
       });
     }
 
@@ -853,15 +1047,16 @@
       cur = cur || 'SAR';
       const n = (v) => (v == null || !isFinite(Number(v))) ? null : Number(v);
       const price = (v) => cur + ' ' + Number(v).toFixed(2);
+      const L = (k, en) => _t(k) || en;
       const rows = [];
-      if (n(tech.rsi_14) != null) { const r = n(tech.rsi_14); rows.push(['RSI (14)', r.toFixed(1), r >= 70 ? ['Overbought', 'danger'] : (r <= 30 ? ['Oversold', 'success'] : ['Neutral', 'accent-gold'])]); }
-      if (n(tech.macd_line) != null) rows.push(['MACD', n(tech.macd_line).toFixed(2), tech.macd_bull ? ['Bullish', 'success'] : ['Bearish', 'danger']]);
-      if (n(tech.sma_50) != null) rows.push(['SMA 50', price(tech.sma_50), tech.above_50d ? ['Above', 'success'] : ['Below', 'danger']]);
-      if (n(tech.sma_200) != null) rows.push(['SMA 200', price(tech.sma_200), tech.above_200d ? ['Above', 'success'] : ['Below', 'danger']]);
+      if (n(tech.rsi_14) != null) { const r = n(tech.rsi_14); rows.push([L('sd.rsi_14','RSI (14)'), r.toFixed(1), r >= 70 ? [L('sd.overbought','Overbought'), 'danger'] : (r <= 30 ? [L('sd.oversold','Oversold'), 'success'] : [L('sd.neutral','Neutral'), 'accent-gold'])]); }
+      if (n(tech.macd_line) != null) rows.push([L('sd.macd','MACD'), n(tech.macd_line).toFixed(2), tech.macd_bull ? [L('sd.bullish','Bullish'), 'success'] : [L('sd.bearish','Bearish'), 'danger']]);
+      if (n(tech.sma_50) != null) rows.push([L('sd.sma_50','SMA 50'), price(tech.sma_50), tech.above_50d ? [L('sd.above','Above'), 'success'] : [L('sd.below','Below'), 'danger']]);
+      if (n(tech.sma_200) != null) rows.push([L('sd.sma_200','SMA 200'), price(tech.sma_200), tech.above_200d ? [L('sd.above','Above'), 'success'] : [L('sd.below','Below'), 'danger']]);
       const lc = n(tech.last_close) != null ? n(tech.last_close) : n(currentStock.price);
-      if (lc != null && n(tech.dist_to_52w_high) != null) { const dh = n(tech.dist_to_52w_high); rows.push(['52-Week High', price(lc / (1 + dh / 100)), [dh.toFixed(1) + '%', 'fg-muted']]); }
-      if (lc != null && n(tech.dist_from_52w_low) != null) { const dl = n(tech.dist_from_52w_low); rows.push(['52-Week Low', price(lc / (1 + dl / 100)), ['+' + dl.toFixed(1) + '%', 'success']]); }
-      if (!rows.length) { tb.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--fg-dim);padding:12px;">Technical indicators aren’t available for this stock yet.</td></tr>'; return; }
+      if (lc != null && n(tech.dist_to_52w_high) != null) { const dh = n(tech.dist_to_52w_high); rows.push([L('sd.52w_high','52-Week High'), price(lc / (1 + dh / 100)), [dh.toFixed(1) + '%', 'fg-muted']]); }
+      if (lc != null && n(tech.dist_from_52w_low) != null) { const dl = n(tech.dist_from_52w_low); rows.push([L('sd.52w_low','52-Week Low'), price(lc / (1 + dl / 100)), ['+' + dl.toFixed(1) + '%', 'success']]); }
+      if (!rows.length) { tb.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--fg-dim);padding:12px;">' + _esc(_t('sd.no_technicals') || 'Technical indicators aren’t available for this stock yet.') + '</td></tr>'; return; }
       tb.innerHTML = rows.map((r) => '<tr><td>' + _esc(r[0]) + '</td><td>' + _esc(r[1]) + '</td><td style="color:var(--' + r[2][1] + ')">' + _esc(r[2][0]) + '</td></tr>').join('');
     }
 
@@ -872,7 +1067,8 @@
     }
     function renderGauges(fund) {
       const ROWS = { valuation: ['pe', 'pb', 'ev_ebitda', 'ps'], profitability: ['net_margin', 'roe', 'roa', 'gross_margin'], health: ['debt_equity', 'current_ratio', 'interest_coverage', 'fcf_yield'], income: ['div_yield', 'payout', 'rev_cagr', 'eps_cagr'] };
-      const LABEL = { pe: 'P/E Ratio', pb: 'P/B Ratio', ev_ebitda: 'EV/EBITDA', ps: 'P/S Ratio', roe: 'ROE', roa: 'ROA', roic: 'ROIC', net_margin: 'Net Margin', gross_margin: 'Gross Margin', debt_equity: 'Debt/Equity', current_ratio: 'Current Ratio', interest_coverage: 'Interest Coverage', fcf_yield: 'FCF Yield', div_yield: 'Dividend Yield', payout: 'Payout Ratio', rev_cagr: 'Rev Growth', eps_cagr: 'EPS Growth' };
+      const LABEL_EN = { pe: 'P/E Ratio', pb: 'P/B Ratio', ev_ebitda: 'EV/EBITDA', ps: 'P/S Ratio', roe: 'ROE', roa: 'ROA', roic: 'ROIC', net_margin: 'Net Margin', gross_margin: 'Gross Margin', debt_equity: 'Debt/Equity', current_ratio: 'Current Ratio', interest_coverage: 'Interest Coverage', fcf_yield: 'FCF Yield', div_yield: 'Dividend Yield', payout: 'Payout Ratio', rev_cagr: 'Rev Growth', eps_cagr: 'EPS Growth' };
+      const LABEL = function (k) { return _t('sd.metric_' + k) || LABEL_EN[k] || k; };
       const fmtVal = (m) => {
         if (!m || m.value == null || !isFinite(Number(m.value))) return '—';
         const v = Number(m.value), u = m.unit;
@@ -891,35 +1087,37 @@
           const avg = scs.reduce((a, b) => a + b, 0) / scs.length;   // 0–100, real sector percentile
           if (ring) { ring.className = 'gauge-ring' + (avg >= 67 ? '' : (avg >= 40 ? ' medium' : ' low')); ring.style.setProperty('--score', Math.round(avg)); }
           if (inner) inner.textContent = (avg / 10).toFixed(1);
-          if (rating) { rating.textContent = avg >= 67 ? 'Strong' : (avg >= 40 ? 'Moderate' : 'Weak'); rating.className = 'gauge-rating ' + (avg >= 67 ? 'high' : (avg >= 40 ? 'medium' : 'low')); }
+          if (rating) { rating.textContent = avg >= 67 ? (_t('sd.strong') || 'Strong') : (avg >= 40 ? (_t('sd.moderate') || 'Moderate') : (_t('sd.weak') || 'Weak')); rating.className = 'gauge-rating ' + (avg >= 67 ? 'high' : (avg >= 40 ? 'medium' : 'low')); }
         } else {
           if (ring) { ring.className = 'gauge-ring'; ring.style.setProperty('--score', 0); }
           if (inner) inner.textContent = '—';
           if (rating) { rating.textContent = '—'; rating.className = 'gauge-rating'; }
         }
         const host = card.querySelector('.gauge-details');
-        if (host) host.innerHTML = (ROWS[g] || []).map((k) => '<div class="gauge-detail-row"><span>' + _esc(LABEL[k] || k) + '</span><span>' + _esc(fmtVal(byKey[k])) + '</span></div>').join('');
+        if (host) host.innerHTML = (ROWS[g] || []).map((k) => '<div class="gauge-detail-row"><span>' + _esc(LABEL(k)) + '</span><span>' + _esc(fmtVal(byKey[k])) + '</span></div>').join('');
       });
     }
 
     // ---- D5: real BUY/HOLD/REDUCE signal from the composite score (no fabricated "confidence") ----
     let _signal = null;
+    let _signalScore = null;
     function renderSignal(scores) {
       const banner = document.querySelector('.signal-banner'); if (!banner) return;
       const raw = scores && scores.composite_score;
       if (raw == null || !isFinite(Number(raw))) { banner.style.display = 'none'; _signal = null; return; }
       const s = Number(raw);
       let sig, cls, title;
-      if (s >= 66) { sig = 'BUY'; cls = ''; title = 'Constructive'; }
-      else if (s >= 40) { sig = 'HOLD'; cls = 'hold'; title = 'Hold / Neutral'; }
-      else { sig = 'REDUCE'; cls = 'caution'; title = 'Cautious'; }
+      if (s >= 66) { sig = _t('sd.buy') || 'BUY'; cls = ''; title = _t('sd.constructive') || 'Constructive'; }
+      else if (s >= 40) { sig = _t('sd.hold') || 'HOLD'; cls = 'hold'; title = _t('sd.hold_neutral') || 'Hold / Neutral'; }
+      else { sig = _t('sd.reduce') || 'REDUCE'; cls = 'caution'; title = _t('sd.cautious') || 'Cautious'; }
       _signal = sig;
+      _signalScore = Math.round(s);   // kept for ac:langchange re-render
       banner.style.display = '';
       banner.className = 'signal-banner' + (cls ? ' ' + cls : '');
       const badge = banner.querySelector('.signal-badge'); if (badge) badge.textContent = sig;
-      const h3 = banner.querySelector('.signal-content h3'); if (h3) h3.textContent = 'AlphaCouncil Signal: ' + title;
-      const p = banner.querySelector('.signal-content p'); if (p) p.textContent = 'Derived from AlphaCouncil’s composite score of ' + Math.round(s) + '/100 — a blend of fundamentals, technicals and news flow. A model output, not investment advice.';
-      const conf = banner.querySelector('.confidence-badge'); if (conf) conf.textContent = 'Score ' + Math.round(s) + '/100';
+      const h3 = banner.querySelector('.signal-content h3'); if (h3) { h3.removeAttribute('data-i18n'); h3.textContent = _t('sd.signal_label', { title: title }) || ('AlphaCouncil Signal: ' + title); }
+      const p = banner.querySelector('.signal-content p'); if (p) { p.removeAttribute('data-i18n'); p.textContent = _t('sd.signal_derived', { score: Math.round(s) }) || ('Derived from AlphaCouncil’s composite score of ' + Math.round(s) + '/100 — a blend of fundamentals, technicals and news flow. A model output, not investment advice.'); }
+      const conf = banner.querySelector('.confidence-badge'); if (conf) conf.textContent = _t('sd.score', { score: Math.round(s) }) || ('Score ' + Math.round(s) + '/100');
     }
 
     // ---- D5: the signed-in user's REAL position for this ticker (hidden when not held) ----
@@ -929,16 +1127,12 @@
       if (!tk) return null;
       return list.find(function (x) { return x.tickerKey === tk || x.ticker === currentStock.ticker; }) || null;
     }
-    function _setPosItem(card, label, text, cls) {
-      const items = card.querySelectorAll('.position-item');
-      for (let i = 0; i < items.length; i++) {
-        const lab = items[i].querySelector('label');
-        if (lab && lab.textContent.trim().toLowerCase() === label.toLowerCase()) {
-          const v = items[i].querySelector('.value');
-          if (v) { v.textContent = text; if (cls !== undefined) v.className = 'value' + (cls ? ' ' + cls : ''); }
-          return;
-        }
-      }
+    // Look up the value cell by the item's stable data-pos key (so localized labels don't break it).
+    function _setPosItem(card, key, text, cls) {
+      const item = card.querySelector('.position-item[data-pos="' + key + '"]');
+      if (!item) return;
+      const v = item.querySelector('.value');
+      if (v) { v.textContent = text; if (cls !== undefined) v.className = 'value' + (cls ? ' ' + cls : ''); }
     }
     function renderPosition() {
       const card = document.querySelector('.position-card'); if (!card) return;
@@ -947,11 +1141,11 @@
       card.style.display = '';
       const cur = h.currency || (currentStock && currentStock.currency) || 'SAR';
       const money = function (v, dp) { return cur + ' ' + Number(v).toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp }); };
-      _setPosItem(card, 'Shares', Number(h.shares).toLocaleString('en-US'));
-      _setPosItem(card, 'Avg Cost', money(h.avgCost, 2));
-      _setPosItem(card, 'Current Value', money(h.value, 0));
+      _setPosItem(card, 'shares', Number(h.shares).toLocaleString('en-US'));
+      _setPosItem(card, 'avgCost', money(h.avgCost, 2));
+      _setPosItem(card, 'value', money(h.value, 0));
       const pnl = Number(h.pnl || 0), pct = Number(h.pnlPct || 0), up = pnl >= 0;
-      _setPosItem(card, 'Unrealized P&L', (up ? '+' : '−') + cur + ' ' + Math.abs(pnl).toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' (' + (up ? '+' : '') + pct.toFixed(2) + '%)', up ? 'profit' : 'loss');
+      _setPosItem(card, 'pnl', (up ? '+' : '−') + cur + ' ' + Math.abs(pnl).toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' (' + (up ? '+' : '') + pct.toFixed(2) + '%)', up ? 'profit' : 'loss');
     }
     // re-render the position whenever real holdings load or change (add / sale)
     window.onPortfolioReady = function () { renderPosition(); };
@@ -978,11 +1172,17 @@
           const avgM = ptCard.querySelector('.target-avg'); if (avgM) avgM.style.left = pct(av) + '%';
           const curM = ptCard.querySelector('.target-current'); if (curM) { if (cur0 != null) { curM.style.display = ''; curM.style.left = pct(cur0) + '%'; } else curM.style.display = 'none'; }
           const labs = ptCard.querySelectorAll('.target-labels span');
-          if (labs.length >= 3) { labs[0].textContent = money(lo); labs[1].textContent = cur0 != null ? ('Current: ' + cur0.toFixed(2)) : ''; labs[2].textContent = money(hi); }
+          if (labs.length >= 3) { labs[0].textContent = money(lo); labs[1].textContent = cur0 != null ? ((_t('sd.current') || 'Current') + ': ' + cur0.toFixed(2)) : ''; labs[2].textContent = money(hi); }
           const stats = ptCard.querySelectorAll('.target-stat .value');
           if (stats.length >= 3) { stats[0].textContent = money(lo); stats[1].textContent = money(av); stats[2].textContent = money(hi); }
           const cnt = ptCard.querySelector('.analyst-count');
-          if (cnt) { const n = a.target_count != null ? a.target_count : a.analyst_count; cnt.textContent = 'Based on ' + (n != null ? n : '—') + ' analyst price targets' + (a.consensus ? (' · Consensus: ' + a.consensus) : '') + (ins.updated_at ? (' · Updated ' + String(ins.updated_at).slice(0, 10)) : ''); }
+          if (cnt) {
+            const n = a.target_count != null ? a.target_count : a.analyst_count;
+            let footer = _t('sd.forecast_footer', { count: (n != null ? n : '—') }) || ('Based on ' + (n != null ? n : '—') + ' analyst price targets');
+            if (a.consensus) footer += ' · ' + (_t('sd.consensus') || 'Consensus') + ': ' + a.consensus;
+            if (ins.updated_at) footer += ' · ' + (_t('sd.updated') || 'Updated') + ' ' + String(ins.updated_at).slice(0, 10);
+            cnt.textContent = footer;
+          }
         } else if (ptCard) { ptCard.style.display = 'none'; }
         // ---- Earnings Trend: real EPS by year (actual solid, estimate faded) ----
         const eps = (est && Array.isArray(est.eps)) ? est.eps.filter(function (e) { return e && num(e.value) != null; }) : [];
@@ -1006,28 +1206,17 @@
     const _EXCH_COUNTRY = { TADAWUL: 'Saudi Arabia', ADX: 'United Arab Emirates', DFM: 'United Arab Emirates', QSE: 'Qatar', KSE: 'Kuwait', MSM: 'Oman', BSE: 'Bahrain' };
     function _stockNotFound() {
       const main = document.getElementById('mainContent');
+      const title = _t('sd.not_found') || 'Stock not found';
+      const msg = _t('sd.not_found_msg', { ticker: tickerParam }) || ('We couldn’t load data for “' + tickerParam + '”. It may not be covered yet, or the ticker may be incorrect.');
+      const back = _t('sd.back_to_dashboard') || 'Back to dashboard';
       if (main) main.innerHTML = '<div class="card" style="padding:56px 24px;text-align:center;max-width:560px;margin:48px auto;">'
-        + '<h1 style="font-size:20px;margin:0 0 10px;">Stock not found</h1>'
-        + '<p style="color:var(--fg-muted);line-height:1.6;margin:0 0 18px;">We couldn’t load data for “' + _esc(tickerParam) + '”. It may not be covered yet, or the ticker may be incorrect.</p>'
-        + '<a href="dashboard.html" class="action-btn primary" style="display:inline-flex;text-decoration:none;">Back to dashboard</a></div>';
-      document.title = 'Stock not found — AlphaCouncil';
+        + '<h1 style="font-size:20px;margin:0 0 10px;">' + _esc(title) + '</h1>'
+        + '<p style="color:var(--fg-muted);line-height:1.6;margin:0 0 18px;">' + _esc(msg) + '</p>'
+        + '<a href="dashboard.html" class="action-btn primary" style="display:inline-flex;text-decoration:none;">' + _esc(back) + '</a></div>';
+      document.title = title + ' — AlphaCouncil';
     }
-    async function loadRealStock() {
-      let d;
-      try { d = await API.ticker(tickerParam); }
-      catch (e) { _stockNotFound(); return; }
-      if (!d || !(d.ticker_key || d.ticker)) { _stockNotFound(); return; }
-      currentStock = {
-        ticker: d.ticker || (tickerParam.split('_')[0] || tickerParam),
-        tickerKey: d.ticker_key || tickerParam,
-        name: d.name_en || d.name || d.company_name || (tickerParam.split('_')[0] || tickerParam),
-        exchange: d.exchange || '',
-        currency: d.currency || 'SAR',
-        sector: d.sector_en || '',
-        price: (d.last_price != null ? d.last_price : (d.price != null ? d.price : (d.last_close != null ? d.last_close : null))),
-        dayChangePct: (d.day_change_pct != null ? d.day_change_pct : (d.tech && d.tech.day_change_pct != null ? d.tech.day_change_pct : null)),
-        asOf: d.as_of_date || (d.tech && d.tech.as_of_date) || null
-      };
+    // Header identity (name/sector) + breadcrumb + sidebar context + title — re-runnable on langchange.
+    function renderStockIdentity() {
       const tEl = document.querySelector('.stock-ticker');
       const h1 = tEl ? tEl.closest('h1') : null;
       if (h1) h1.innerHTML = '<span class="stock-ticker">'+_esc(currentStock.ticker)+'</span> '+_esc(currentStock.name)+(currentStock.exchange?' <span class="stock-exchange">'+_esc(currentStock.exchange)+'</span>':'');
@@ -1040,6 +1229,56 @@
         if (country) bits.push(_esc(country));
         subEl.innerHTML = bits.join(' · ');
       }
+      document.title = currentStock.name + ' — AlphaCouncil';
+      const bc = document.querySelector('.breadcrumb-current'); if (bc) bc.textContent = currentStock.name + ' (' + currentStock.ticker + ')';
+      const cs = document.querySelector('.context-stock'); if (cs) cs.textContent = currentStock.ticker + ' · ' + currentStock.name;
+    }
+    // Sidebar adviser strings that embed the (localized) stock name: section title, suggested
+    // question data-question attrs, and the chat input placeholder. data-i18n on the visible
+    // button labels is handled by AC_I18N.apply(); this fills the dynamic, name-bearing bits.
+    function syncStockI18n() {
+      const nm = (currentStock && currentStock.name) || (_t('sd.council_synthesis_company') || 'this company');
+      const qt = document.getElementById('sdQuestionsTitle');
+      if (qt) qt.textContent = _t('sd.questions_about', { name: nm }) || ('Questions About ' + nm);
+      // English data-question templates stay byte-identical; they drive the adviser query text.
+      const QMAP = {
+        valuation: 'Explain the current Valuation score for ' + nm,
+        peers: 'Compare ' + nm + ' to stronger GCC energy peers',
+        trim: 'What would trimming 10% of my ' + nm + ' position do to my portfolio?',
+        risks: 'What are the key risks for ' + nm + '?'
+      };
+      document.querySelectorAll('.suggested-question[data-q]').forEach(function (b) {
+        const q = QMAP[b.getAttribute('data-q')]; if (q) b.setAttribute('data-question', q);
+      });
+      const ci = document.getElementById('chatInput');
+      if (ci) ci.setAttribute('placeholder', _t('sd.chat_about', { name: nm }) || ('Ask about ' + nm + '...'));
+    }
+    async function loadRealStock() {
+      let d;
+      try { d = await API.ticker(tickerParam); }
+      catch (e) { _stockNotFound(); return; }
+      if (!d || !(d.ticker_key || d.ticker)) { _stockNotFound(); return; }
+      _lastTicker = d;   // keep the raw row for ac:langchange re-localization
+      const _fallbackName = (tickerParam.split('_')[0] || tickerParam);
+      currentStock = {
+        ticker: d.ticker || _fallbackName,
+        tickerKey: d.ticker_key || tickerParam,
+        // PF-1: localized name (name_ar in Arabic, falling back to name_en/ticker via localName).
+        name: (AC_I18N.localName(d) || d.name || d.company_name || _fallbackName),
+        name_en: d.name_en || d.name || d.company_name || _fallbackName,
+        name_ar: d.name_ar || '',
+        exchange: d.exchange || '',
+        currency: d.currency || 'SAR',
+        // PF-2: localized sector (sector_ar in Arabic, falling back to sector_en via localSector).
+        sector: AC_I18N.localSector(d),
+        sector_en: d.sector_en || '',
+        sector_ar: d.sector_ar || '',
+        price: (d.last_price != null ? d.last_price : (d.price != null ? d.price : (d.last_close != null ? d.last_close : null))),
+        dayChangePct: (d.day_change_pct != null ? d.day_change_pct : (d.tech && d.tech.day_change_pct != null ? d.tech.day_change_pct : null)),
+        asOf: d.as_of_date || (d.tech && d.tech.as_of_date) || null
+      };
+      renderStockIdentity();   // header h1 + subtitle + breadcrumb + sidebar context + title (re-localizable)
+      syncStockI18n();         // sidebar question title + data-question attrs + chat placeholder (name-aware)
       const pEl = document.querySelector('.stock-price');
       if (pEl) pEl.textContent = currentStock.price != null ? (currentStock.currency + ' ' + Number(currentStock.price).toFixed(2)) : '';
       const chgEl = document.getElementById('stockChange');
@@ -1052,9 +1291,6 @@
       }
       const updEl = document.getElementById('stockUpdated');
       if (updEl) updEl.textContent = currentStock.asOf ? ('As of ' + String(currentStock.asOf).slice(0, 10)) : '';
-      document.title = currentStock.name + ' — AlphaCouncil';
-      const bc = document.querySelector('.breadcrumb-current'); if (bc) bc.textContent = currentStock.name + ' (' + currentStock.ticker + ')';
-      const cs = document.querySelector('.context-stock'); if (cs) cs.textContent = currentStock.ticker + ' · ' + currentStock.name;
 
       initPriceChart(currentStock.tickerKey);   // D1: render the real price chart
       loadTickerNews(currentStock.tickerKey);   // D2: real recent news
@@ -1076,9 +1312,9 @@
     function thesisCtaHtml(prefix){
       return (prefix || '')
         + '<div style="padding:24px 20px;text-align:center;">'
-        + '<p style="color:var(--fg-muted);font-size:13px;line-height:1.6;max-width:540px;margin:0 auto 16px;">A 12-dimension AI thesis — 9 investment, 2 trading and 1 bridge dimension, each scored 1–10 by Claude Opus and grounded in this company’s real fundamentals, peers and news. Generated on demand.</p>'
-        + '<button id="genThesisBtn" style="' + _GEN_BTN_STYLE + '">Generate AI Thesis</button>'
-        + '<p style="color:var(--fg-dim);font-size:11px;margin-top:10px;">First generation can take up to ~2 minutes; afterwards it is cached.</p>'
+        + '<p style="color:var(--fg-muted);font-size:13px;line-height:1.6;max-width:540px;margin:0 auto 16px;">' + _esc(_t('sd.thesis_intro') || 'A 12-dimension AI thesis — 9 investment, 2 trading and 1 bridge dimension, each scored 1–10 by Claude Opus and grounded in this company’s real fundamentals, peers and news. Generated on demand.') + '</p>'
+        + '<button id="genThesisBtn" style="' + _GEN_BTN_STYLE + '">' + _esc(_t('sd.generate_thesis') || 'Generate AI Thesis') + '</button>'
+        + '<p style="color:var(--fg-dim);font-size:11px;margin-top:10px;">' + _esc(_t('sd.thesis_first_gen') || 'First generation can take up to ~2 minutes; afterwards it is cached.') + '</p>'
         + '</div>';
     }
     function loadThesis(){
@@ -1094,18 +1330,25 @@
       }
       // Neutralise the fabricated Council synthesis (it asserted fake per-company text).
       const syn = document.querySelector('.council-synthesis');
-      if (syn) syn.innerHTML = 'Run a live multi-model AI Analyst Council review of <strong>' + _esc(currentStock.name || 'this company') + '</strong>: several models debate the bull and bear case, then a chairman synthesises a balanced view.';
+      if (syn) {
+        const nm = currentStock.name || (_t('sd.council_synthesis_company') || 'this company');
+        // Use a sentinel for {name}, escape the rest, then inject the bolded (escaped) name.
+        var SENT = '__SD_NAME__';
+        var tmpl = _t('sd.council_synthesis', { name: SENT })
+          || ('Run a live multi-model AI Analyst Council review of ' + SENT + ': several models debate the bull and bear case, then a chairman synthesises a balanced view.');
+        syn.innerHTML = _esc(tmpl).split(SENT).join('<strong>' + _esc(nm) + '</strong>');
+      }
     }
     async function generateThesis(){
       const body = document.getElementById('thesisBody'); if (!body) return;
-      body.innerHTML = '<div style="padding:44px 20px;text-align:center;color:var(--fg-muted);font-size:13px;">Generating the 12-dimension thesis… this can take up to ~2 minutes.</div>';
+      body.innerHTML = '<div style="padding:44px 20px;text-align:center;color:var(--fg-muted);font-size:13px;">' + _esc(_t('sd.generating_thesis') || 'Generating the 12-dimension thesis… this can take up to ~2 minutes.') + '</div>';
       let res;
       try { res = await API.thesis(currentStock.tickerKey); }
       catch (e){
-        let msg = (e && e.message) || 'Generation failed. Please try again.';
-        if (e && e.status === 401) msg = 'Please log in to generate an AI thesis.';
-        else if (e && e.status === 429) msg = 'Daily thesis limit reached — please try again later.';
-        else if (e && e.status === 0) msg = 'Network error — could not reach the server.';
+        let msg = (e && e.message) || (_t('sd.gen_failed') || 'Generation failed. Please try again.');
+        if (e && e.status === 401) msg = _t('sd.auth_required') || 'Please log in to generate an AI thesis.';
+        else if (e && e.status === 429) msg = _t('sd.daily_limit') || 'Daily thesis limit reached — please try again later.';
+        else if (e && e.status === 0) msg = _t('sd.network_error') || 'Network error — could not reach the server.';
         body.innerHTML = thesisCtaHtml('<div style="padding:18px 20px 0;text-align:center;color:var(--danger);font-size:12px;">' + _esc(msg) + '</div>');
         const g = body.querySelector('#genThesisBtn'); if (g) g.addEventListener('click', generateThesis);
         return;
@@ -1113,36 +1356,41 @@
       renderThesis(res);
     }
     function _dimCard(label, score){
-      if (score == null) return '<div class="dimension-card"><div class="dimension-header"><span class="dimension-name">' + _esc(label) + '</span><span class="dimension-score" style="color:var(--fg-dim);">—</span></div><div class="dimension-bar"><div class="dimension-bar-fill" style="width:0;"></div></div><p class="dimension-insight" style="font-size:10px;margin-top:6px;">Not in our data</p></div>';
+      if (score == null) return '<div class="dimension-card"><div class="dimension-header"><span class="dimension-name">' + _esc(label) + '</span><span class="dimension-score" style="color:var(--fg-dim);">—</span></div><div class="dimension-bar"><div class="dimension-bar-fill" style="width:0;"></div></div><p class="dimension-insight" style="font-size:10px;margin-top:6px;">' + _esc(_t('sd.not_in_data') || 'Not in our data') + '</p></div>';
       const s = Number(score), pct = Math.round((s / 10) * 100);
       const cls = s >= 7.5 ? 'high' : (s >= 5 ? 'medium' : 'low');
       return '<div class="dimension-card"><div class="dimension-header"><span class="dimension-name">' + _esc(label) + '</span><span class="dimension-score ' + cls + '">' + s.toFixed(1) + '</span></div><div class="dimension-bar"><div class="dimension-bar-fill ' + cls + '" style="width:' + pct + '%"></div></div></div>';
     }
+    let _lastThesis = null;   // cached generated thesis so ac:langchange can re-render it localized
     function renderThesis(res){
+      _lastThesis = res;
       const t = (res && res.thesis) ? res.thesis : res;
       const body = document.getElementById('thesisBody'); if (!body) return;
-      if (!t || !t.scores){ body.innerHTML = thesisCtaHtml('<div style="padding:18px 20px 0;text-align:center;color:var(--fg-dim);font-size:12px;">Thesis unavailable for this ticker.</div>'); const g=body.querySelector('#genThesisBtn'); if(g) g.addEventListener('click', generateThesis); return; }
+      if (!t || !t.scores){ body.innerHTML = thesisCtaHtml('<div style="padding:18px 20px 0;text-align:center;color:var(--fg-dim);font-size:12px;">' + _esc(_t('sd.thesis_unavailable') || 'Thesis unavailable for this ticker.') + '</div>'); const g=body.querySelector('#genThesisBtn'); if(g) g.addEventListener('click', generateThesis); return; }
       const inv = t.scores.investment || {}, tr = t.scores.trading || {}, br = t.scores.bridge || {};
-      const INV = [['valuation','Valuation'],['growth','Growth'],['profitability','Profitability'],['quality','Quality'],['dividends','Dividends'],['ownership','Ownership'],['governance','Governance'],['esg','ESG'],['macro','Macro']];
-      const TR = [['momentum','Momentum'],['technicals','Technicals']];
-      const BR = [['sentiment_news','Sentiment & News']];
+      const DIM = function (k, en) { return _t('sd.dim_' + k) || en; };
+      const INV = [['valuation',DIM('valuation','Valuation')],['growth',DIM('growth','Growth')],['profitability',DIM('profitability','Profitability')],['quality',DIM('quality','Quality')],['dividends',DIM('dividends','Dividends')],['ownership',DIM('ownership','Ownership')],['governance',DIM('governance','Governance')],['esg',DIM('esg','ESG')],['macro',DIM('macro','Macro')]];
+      const TR = [['momentum',DIM('momentum','Momentum')],['technicals',DIM('technicals','Technicals')]];
+      const BR = [['sentiment_news',DIM('sentiment_news','Sentiment & News')]];
       function grid(map, src, two){ const cards = map.map(function(m){ return _dimCard(m[1], src[m[0]]); }).filter(Boolean).join(''); return cards ? '<div class="dimension-grid' + (two ? ' two-col' : '') + '">' + cards + '</div>' : ''; }
       let html = '';
-      if (t.confidence) html += '<div class="thesis-intro">AI thesis confidence: <strong>' + _esc(t.confidence) + '</strong>' + (res && res.generated_at ? (' · generated ' + _esc(String(res.generated_at).slice(0,10))) : '') + '</div>';
-      html += '<div class="horizon-group"><div class="horizon-header"><span class="horizon-badge investment">Investment Horizon</span><span class="horizon-title">Long-term fundamental factors</span></div>' + grid(INV, inv, false) + '</div>';
-      html += '<div class="horizon-group"><div class="horizon-header"><span class="horizon-badge trading">Trading Horizon</span><span class="horizon-title">Short-term technical factors</span></div>' + grid(TR, tr, true) + '</div>';
-      html += '<div class="horizon-group"><div class="horizon-header"><span class="horizon-badge bridge">Bridge Horizon</span><span class="horizon-title">Sentiment &amp; news flow</span></div>' + grid(BR, br, true) + '</div>';
+      if (t.confidence) html += '<div class="thesis-intro">' + _esc(_t('sd.thesis_confidence') || 'AI thesis confidence:') + ' <strong>' + _esc(t.confidence) + '</strong>' + (res && res.generated_at ? (' · ' + _esc(_t('sd.generated') || 'generated') + ' ' + _esc(String(res.generated_at).slice(0,10))) : '') + '</div>';
+      html += '<div class="horizon-group"><div class="horizon-header"><span class="horizon-badge investment">' + _esc(_t('sd.investment_horizon') || 'Investment Horizon') + '</span><span class="horizon-title">' + _esc(_t('sd.investment_sub') || 'Long-term fundamental factors') + '</span></div>' + grid(INV, inv, false) + '</div>';
+      html += '<div class="horizon-group"><div class="horizon-header"><span class="horizon-badge trading">' + _esc(_t('sd.trading_horizon') || 'Trading Horizon') + '</span><span class="horizon-title">' + _esc(_t('sd.trading_sub') || 'Short-term technical factors') + '</span></div>' + grid(TR, tr, true) + '</div>';
+      html += '<div class="horizon-group"><div class="horizon-header"><span class="horizon-badge bridge">' + _esc(_t('sd.bridge_horizon') || 'Bridge Horizon') + '</span><span class="horizon-title">' + _esc(_t('sd.bridge_sub') || 'Sentiment & news flow') + '</span></div>' + grid(BR, br, true) + '</div>';
       if (t.thesis_body) html += '<div class="thesis-intro" style="margin-top:16px;">' + _esc(t.thesis_body).replace(/\n/g, '<br>') + '</div>';
       if (t.scenarios){
         const sc = t.scenarios;
-        function scen(name, o, color){ if (!o) return ''; return '<div style="flex:1;min-width:170px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:10px;padding:12px;"><div style="font-weight:600;color:' + color + ';margin-bottom:6px;">' + name + (o.price_target != null ? (' · ' + currentStock.currency + ' ' + Number(o.price_target).toFixed(2)) : '') + (o.probability != null ? (' · ' + o.probability + '%') : '') + '</div><div style="font-size:12px;color:var(--fg-muted);line-height:1.5;">' + _esc(o.summary || '') + '</div></div>'; }
-        html += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin:16px 20px;">' + scen('Bull', sc.bull, 'var(--success)') + scen('Base', sc.base, 'var(--accent-gold)') + scen('Bear', sc.bear, 'var(--danger)') + '</div>';
+        function scen(name, o, color){ if (!o) return ''; return '<div style="flex:1;min-width:170px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:10px;padding:12px;"><div style="font-weight:600;color:' + color + ';margin-bottom:6px;">' + _esc(name) + (o.price_target != null ? (' · ' + currentStock.currency + ' ' + Number(o.price_target).toFixed(2)) : '') + (o.probability != null ? (' · ' + o.probability + '%') : '') + '</div><div style="font-size:12px;color:var(--fg-muted);line-height:1.5;">' + _esc(o.summary || '') + '</div></div>'; }
+        html += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin:16px 20px;">' + scen(_t('sd.scen_bull') || 'Bull', sc.bull, 'var(--success)') + scen(_t('sd.scen_base') || 'Base', sc.base, 'var(--accent-gold)') + scen(_t('sd.scen_bear') || 'Bear', sc.bear, 'var(--danger)') + '</div>';
       }
       body.innerHTML = html;
       // D7: real thesis cards → real adviser (askAboutDimension), replacing the dead canned map.
+      const tip = _t('sd.click_ask') || 'Click to ask Adviser';
       body.querySelectorAll('.dimension-card').forEach(function (card) {
         const nm = card.querySelector('.dimension-name'); if (!nm) return;
         card.style.cursor = 'pointer';
+        card.setAttribute('data-tip', tip);   // PF-60: localized hover tooltip
         card.addEventListener('click', function () {
           if (window.AlphaCouncil && AlphaCouncil.askAboutDimension) AlphaCouncil.askAboutDimension(nm.textContent.trim(), currentStock.name, currentStock.ticker);
         });
@@ -1157,9 +1405,9 @@
 
     // Stock actions - now fully functional
     function addToPortfolio() {
-      const shares = prompt('How many shares of ' + currentStock.name + '?');
+      const shares = prompt(_t('sd.prompt_shares', { name: currentStock.name }) || ('How many shares of ' + currentStock.name + '?'));
       if (!shares) return;
-      const cost = prompt('Average cost per share (' + currentStock.currency + ')?');
+      const cost = prompt(_t('sd.prompt_cost', { currency: currentStock.currency }) || ('Average cost per share (' + currentStock.currency + ')?'));
       if (!cost) return;
       AlphaCouncil.addHolding(currentStock.tickerKey, shares, cost);
     }
@@ -1167,14 +1415,14 @@
       if (!currentStock || !currentStock.tickerKey) return;
       try {
         await API.addToWatchlist(currentStock.tickerKey);
-        AlphaCouncil.showToast('Added to Watchlist', `${currentStock.name} is now on your watchlist`, 'success');
+        AlphaCouncil.showToast(_t('sd.added_watchlist') || 'Added to Watchlist', _t('sd.added_watchlist_msg', { name: currentStock.name }) || (currentStock.name + ' is now on your watchlist'), 'success');
       } catch (e) {
         if (e && e.status === 401) {
-          AlphaCouncil.showToast('Sign in required', 'Log in to track stocks on your watchlist', 'info');
+          AlphaCouncil.showToast(_t('sd.signin_required') || 'Sign in required', _t('sd.login_watchlist') || 'Log in to track stocks on your watchlist', 'info');
           setTimeout(function(){ window.location.href = 'login.html'; }, 900);
           return;
         }
-        AlphaCouncil.showToast('Couldn’t add to watchlist', 'Please try again in a moment', 'error');
+        AlphaCouncil.showToast(_t('sd.watchlist_add_error') || 'Couldn’t add to watchlist', _t('sd.retry') || 'Please try again in a moment', 'error');
       }
     }
     function setAlert() {
@@ -1184,23 +1432,23 @@
     function adjustPosition() {
       if (!currentStock || !currentStock.tickerKey) return;
       const h = _myHolding();
-      const shares = prompt('Total shares of ' + currentStock.name + ' you now hold:', h ? h.shares : '');
+      const shares = prompt(_t('sd.prompt_total', { name: currentStock.name }) || ('Total shares of ' + currentStock.name + ' you now hold:'), h ? h.shares : '');
       if (shares === null || String(shares).trim() === '') return;
-      const cost = prompt('Average cost per share (' + (currentStock.currency || 'SAR') + '):', h ? h.avgCost : '');
+      const cost = prompt(_t('sd.prompt_adjust_cost', { currency: (currentStock.currency || 'SAR') }) || ('Average cost per share (' + (currentStock.currency || 'SAR') + '):'), h ? h.avgCost : '');
       if (cost === null || String(cost).trim() === '') return;
       AlphaCouncil.addHolding(currentStock.tickerKey, Number(shares), Number(cost));   // upserts, reloads, re-renders via onPortfolioReady
     }
     function recordSale() {
       if (!currentStock || !currentStock.tickerKey) return;
       const h = _myHolding();
-      if (!h || !(Number(h.shares) > 0)) { AlphaCouncil.showToast('No position', 'You have no recorded position in ' + currentStock.name + '.', 'info'); return; }
-      const sold = prompt('How many shares did you sell? (you hold ' + h.shares + ')', h.shares);
+      if (!h || !(Number(h.shares) > 0)) { AlphaCouncil.showToast(_t('sd.no_pos') || 'No position', _t('sd.no_pos_msg', { name: currentStock.name }) || ('You have no recorded position in ' + currentStock.name + '.'), 'info'); return; }
+      const sold = prompt(_t('sd.prompt_sold', { count: h.shares }) || ('How many shares did you sell? (you hold ' + h.shares + ')'), h.shares);
       if (sold === null || String(sold).trim() === '') return;
       const n = Number(sold);
       if (!(n > 0)) return;
       const remaining = Math.max(0, Number(h.shares) - n);
       if (remaining <= 0) { AlphaCouncil.removeHolding(currentStock.tickerKey); }
-      else { AlphaCouncil.addHolding(currentStock.tickerKey, remaining, h.avgCost); AlphaCouncil.showToast('Sale recorded', n + ' shares sold · ' + remaining + ' remaining', 'success'); }
+      else { AlphaCouncil.addHolding(currentStock.tickerKey, remaining, h.avgCost); AlphaCouncil.showToast(_t('sd.sale_recorded') || 'Sale recorded', _t('sd.sale_recorded_msg', { count: n, remaining: remaining }) || (n + ' shares sold · ' + remaining + ' remaining'), 'success'); }
     }
     function openCouncilModal() {
       AlphaCouncil.openCouncilModal(currentStock);
@@ -1210,7 +1458,10 @@
     }
     // D5: route the "Why this signal?" link to the REAL adviser (no canned per-company text).
     function showSignalExplanation() {
-      const q = 'Why is AlphaCouncil’s signal "' + (_signal || 'neutral') + '" for ' + (currentStock.name || 'this company') + '? Explain what drives its composite score.';
+      const sig = _signal || (_t('sd.signal_neutral') || 'neutral');
+      const nm = currentStock.name || (_t('sd.council_synthesis_company') || 'this company');
+      const q = _t('sd.signal_question', { signal: sig, name: nm })
+        || ('Why is AlphaCouncil’s signal "' + sig + '" for ' + nm + '? Explain what drives its composite score.');
       if (window.AlphaCouncil) { if (AlphaCouncil.openSidebar) AlphaCouncil.openSidebar(); if (AlphaCouncil.askQuestion) AlphaCouncil.askQuestion(q); }
     }
 
@@ -1218,6 +1469,41 @@
     // (superseded by D2's real /api/ticker/{key}/news cards) and duplicate
     // .chart-tab/.overlay-btn click listeners (superseded by D1's initPriceChart,
     // which owns timeframe + overlay state and was double-toggling the active class).
+
+    // ---- O4: re-render all JS-built content when the user toggles EN/AR ----
+    // Static data-i18n markup is re-applied automatically by i18n.js; this re-runs the
+    // dynamic renders (which read from cached API rows / re-fetch) so names, sectors,
+    // labels, signal text, technicals, gauges, forecast, news and the thesis switch live.
+    window.addEventListener('ac:langchange', function () {
+      if (_lastTicker) {
+        // Re-localize the cached header name + sector from the raw API row.
+        currentStock.name = AC_I18N.localName(_lastTicker) || currentStock.name_en || currentStock.name;
+        currentStock.sector = AC_I18N.localSector(_lastTicker);
+        renderStockIdentity();
+        syncStockI18n();
+        if (window.AlphaCouncil && AlphaCouncil.setStockContext) AlphaCouncil.setStockContext(currentStock);
+        renderSignal(_lastTicker.scores);                                  // signal banner text
+        renderTechnicals(_lastTicker.tech || {}, currentStock.currency);  // technical table
+        loadFundamentalGauges(currentStock.tickerKey);                    // gauge ratings + metric labels
+        loadForecast(currentStock.tickerKey, currentStock.currency, currentStock.price);  // analyst forecast
+        loadTickerNews(currentStock.tickerKey);                           // recent news
+        loadCorporate(currentStock.tickerKey, currentStock.currency);    // dividends / corporate actions
+        renderPosition();                                                 // your-position values (labels via data-i18n)
+        // Council synthesis sentence embeds the localized name.
+        const syn = document.querySelector('.council-synthesis');
+        if (syn) {
+          const nm = currentStock.name || (_t('sd.council_synthesis_company') || 'this company');
+          const SENT = '__SD_NAME__';
+          const tmpl = _t('sd.council_synthesis', { name: SENT })
+            || ('Run a live multi-model AI Analyst Council review of ' + SENT + ': several models debate the bull and bear case, then a chairman synthesises a balanced view.');
+          syn.innerHTML = _esc(tmpl).split(SENT).join('<strong>' + _esc(nm) + '</strong>');
+        }
+      } else {
+        syncStockI18n();
+      }
+      // Re-render an already-generated thesis (else the on-demand CTA keeps its data-i18n markup).
+      if (_lastThesis && document.querySelector('#thesisBody .dimension-card')) renderThesis(_lastThesis);
+    });
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
