@@ -1193,8 +1193,8 @@
               </div>
 
               <div style="display: flex; gap: 12px; margin-top: 8px;">
-                <button class="btn btn-primary" data-i18n="set.save_prefs">Save Preferences</button>
-                <button class="btn btn-secondary" data-i18n="set.reset_default">Reset to Default</button>
+                <button class="btn btn-primary" id="savePrefsBtn" data-i18n="set.save_prefs">Save Preferences</button>
+                <button class="btn btn-secondary" id="resetPrefsBtn" data-i18n="set.reset_default">Reset to Default</button>
               </div>
             </div>
           </section>
@@ -2049,6 +2049,53 @@
         });
       });
     });
+
+    // Investment Preferences (risk profile) — REAL load + save. The "Save Preferences"
+    // button used to be a dead control and nothing loaded, so choices always reset to the
+    // hardcoded defaults. Now persisted to + restored from /api/adviser/risk-profile.
+    (function () {
+      function L(en, ar) { return (window.AC_I18N && AC_I18N.lang === 'ar') ? ar : en; }
+      var CTRL_PREF = { 'Primary Investment Goal': 'investment_goal', 'Investment Time Horizon': 'time_horizon', 'Risk Tolerance': 'risk_tolerance' };
+      var KEY2VAL = {
+        'set.goal_growth': 'growth', 'set.goal_income': 'income', 'set.goal_balanced': 'balanced', 'set.goal_preservation': 'preservation',
+        'set.hz_short': 'short', 'set.hz_medium': 'medium', 'set.hz_long': 'long',
+        'set.risk_cons': 'conservative', 'set.risk_mod': 'moderate', 'set.risk_agg': 'aggressive'
+      };
+      var RISK2STYLE = { conservative: 'conservative', moderate: 'balanced', aggressive: 'aggressive' };
+      function prefControls() { return Array.prototype.slice.call(document.querySelectorAll('#preferences .segmented-control')); }
+      function ctrlPref(ctrl) { return CTRL_PREF[ctrl.getAttribute('aria-label')] || null; }
+      function btnVal(btn) { var l = btn.querySelector('.segment-label'); var k = l && l.getAttribute('data-i18n'); return k ? (KEY2VAL[k] || null) : null; }
+      function setActive(ctrl, val) {
+        ctrl.querySelectorAll('.segment-btn').forEach(function (b) { var on = btnVal(b) === val; b.classList.toggle('active', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); });
+      }
+      function collect() { var out = {}; prefControls().forEach(function (c) { var p = ctrlPref(c); if (!p) return; var a = c.querySelector('.segment-btn.active'); out[p] = a ? btnVal(a) : null; }); return out; }
+      function loadPrefs() {
+        if (!window.API || !API.riskProfile) return;
+        API.riskProfile().then(function (rp) {
+          rp = rp || {};
+          prefControls().forEach(function (c) { var p = ctrlPref(c); if (p && rp[p]) setActive(c, rp[p]); });
+        }).catch(function () {});
+      }
+      var saveBtn = document.getElementById('savePrefsBtn');
+      if (saveBtn) saveBtn.addEventListener('click', function () {
+        if (!window.API || !API.saveRiskProfile) return;
+        var p = collect();
+        var payload = { investment_goal: p.investment_goal, time_horizon: p.time_horizon, risk_tolerance: p.risk_tolerance, risk_style: RISK2STYLE[p.risk_tolerance] || null };
+        var orig = saveBtn.textContent; saveBtn.disabled = true; saveBtn.textContent = L('Saving…', 'جارٍ الحفظ…');
+        API.saveRiskProfile(payload).then(function () {
+          if (typeof showToast === 'function') showToast(L('Saved', 'تم الحفظ'), L('Your investment preferences were saved.', 'تم حفظ تفضيلاتك الاستثمارية.'), 'success');
+        }).catch(function (e) {
+          if (typeof showToast === 'function') showToast(e && e.status === 401 ? L('Sign in required', 'يلزم تسجيل الدخول') : L('Save failed', 'فشل الحفظ'), (e && e.message) || L('Please try again.', 'يرجى المحاولة مرة أخرى.'), 'error');
+        }).finally(function () { saveBtn.disabled = false; saveBtn.textContent = orig; });
+      });
+      var resetBtn = document.getElementById('resetPrefsBtn');
+      if (resetBtn) resetBtn.addEventListener('click', function () {
+        var DEF = { investment_goal: 'income', time_horizon: 'medium', risk_tolerance: 'moderate' };
+        prefControls().forEach(function (c) { var p = ctrlPref(c); if (p && DEF[p]) setActive(c, DEF[p]); });
+        if (typeof showToast === 'function') showToast(L('Reset', 'إعادة تعيين'), L('Defaults restored — click Save Preferences to keep them.', 'تمت استعادة الإعدادات الافتراضية — اضغط حفظ التفضيلات للإبقاء عليها.'), 'info');
+      });
+      loadPrefs();
+    })();
 
     // Sidebar toggle is wired by adviser-core (AlphaCouncil.init): #adviserToggle and
     // #closeSidebar both call AlphaCouncil.toggleSidebar(). A duplicate inline handler
