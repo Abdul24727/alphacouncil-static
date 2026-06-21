@@ -22,6 +22,20 @@ test('app nav is consistent + correctly linked on every app page', async ({ requ
   }
 });
 
+// Every app page's top-nav search bar carries id="searchBtn" so adviser-core's
+// initTopNav() can wire the click/keyboard handler (the dead-search bug on
+// portfolio.html + stock-detail.html was a missing id on the .app-search div).
+test('every app page top-nav search bar is wireable (id="searchBtn")', async ({ request }) => {
+  const dead = [];
+  for (const p of APP_PAGES) {
+    const html = await get(request, p + '.html');
+    const hasSearchBar = /<div[^>]*class="app-search"/.test(html);
+    const isWired = /class="app-search"[^>]*\bid="searchBtn"|id="searchBtn"[^>]*class="app-search"/.test(html);
+    if (hasSearchBar && !isWired) dead.push(p);
+  }
+  expect(dead, 'app pages with a .app-search bar missing id="searchBtn":\n' + dead.join('\n')).toEqual([]);
+});
+
 // No internal .html link anywhere points to a page that does not exist.
 test('no internal link targets a missing page', async ({ request }) => {
   const missing = [];

@@ -154,8 +154,28 @@ _Examined every internal link site-wide (href + window.open/location targets acr
 
 ---
 
+# ROUND 5 — signed-in Markets tab (build + audit)
+
+_Founder supplied a newly-designed `markets-app.html` (the app-context Markets tab for logged-in users — resolves **R4-m1**). It arrived as a 100%-mock design (hardcoded screener rows, demo movers "Al Babtain Power", fabricated index `12,847.32`, dead pagination). Per founder direction ("wire to real data + integrate + deploy") I converted it to a fully real-data page and integrated it into the app nav, then ran an adversarial audit._
+
+## What was built (commit `4014b26` + pagination-cleanup commit, deployed to static-v2, live-verified)
+- **Real screener** from `API.screening()` (`/api/screening`): all 716 GCC tickers, keyed on real `ticker_key`. Client-side **search** (ticker/name), **exchange filter** (only that market's rows), **sector filter**, **column sort** (price/change/P/E/etc., toggle dir), **pagination** via a real "Show more" button (60/page). Honest **loading / empty / error** states on every path.
+- **Real movers** from `API.movers()` (demo "Al Babtain Power" rows gone), **real index cards** per exchange from `/api/ticker-tape` (live value + real "NNN stocks" count, not `12,847.32`), **real watchlist/portfolio** strips, **real latest news** (`API.latestNews`).
+- **Real row actions:** view → `stock-detail.html?ticker={ticker_key}`; ☆ watchlist toggle → real `API.addToWatchlist/removeFromWatchlist` (401 → login); Ask adviser → real sidebar; Run council → `openCouncilModal`; Add to portfolio → real `AlphaCouncil.addHolding`; **Export → real CSV** of the current filtered/sorted set.
+- **Bilingual** EN/AR (markets.*/table.* i18n keys) + RTL via `js/i18n.js`; app nav (Dashboard·Portfolio·Scenarios·Markets·News·Council·Alerts, Markets active), rewired the "Markets" nav slot to `markets-app.html` across all 8 app pages (marketing `markets.html` untouched).
+
+## Fixes during the audit
+- **R5-01 (major) dead `#exportBtn`** — the "Export" control had no handler (placebo). → real CSV export of the filtered/sorted rows + honest "nothing to export" toast. Commit `4014b26`. ✅
+- **R5-02 (minor) leftover static pagination block** — fabricated `Showing 1–60 of 716` + page buttons (1,2,3…12, Prev/Next) with no handlers (dead controls, rule 2). → removed; real paging is the JS "Show more" button. ✅
+
+**Round 5 result: markets-app.html is real-data, integrated, and CLEAN** — adversarial audit returned no blocker/major; `tests/markets-app.spec.js` (real rows keyed on ticker_key, search/exchange/sort, real movers + index cards, clean console) green; `tests/nav-links.spec.js` green (markets-app in KNOWN + APP_PAGES, nav consistent, no missing-page links).
+
+**FINAL (updated): zero open blocker/major across Rounds 1-5. Remaining items are all under NEEDS FOUNDER REVIEW.**
+
+---
+
 ## NEEDS FOUNDER REVIEW (ambiguous / cosmetic / out-of-scope)
-- **R4-m1 app "Markets" nav → `markets.html`:** a real markets-overview page, but it carries *marketing* chrome (How-it-works/Pricing/Sign-in nav), so a signed-in user context-switches into marketing-land (recoverable via logo → dashboard). Not a broken link; consider an app-context markets/screener view or auth-aware chrome. (Marketing footer's market list also shows only Saudi/UAE/Qatar/Kuwait though Oman+Bahrain anchors exist.)
+- **R4-m1 RESOLVED → marketing `markets.html` still in footer/marketing context:** the signed-in Markets tab now points to the real `markets-app.html` (Round 5). The marketing `markets.html` overview page remains for anon/marketing; its footer market list still shows only Saudi/UAE/Qatar/Kuwait though Oman+Bahrain anchors exist (cosmetic).
 - **R3-m2 methodology example scale:** the "Example Score Breakdown" uses a 0-100 scale while the framework text says dimensions are "1-10". Labeled "Example" (illustrative) — cosmetic copy inconsistency; pick one scale.
 - **R3-m4 scenarios "Run Council on This Scenario":** runs a REAL council but on the portfolio-wide prompt (openCouncilModal ignores the scenario text) — under-delivers on the label. Decide: pass scenario context to the council, or relabel.
 - **Dead-code purge (not shown):** news.html orphaned `newsStories['featured-1']` JS object (PIF text, unreferenced); scenarios orphan `.multi-compare-toggle` CSS. Harmless; clean when convenient.
