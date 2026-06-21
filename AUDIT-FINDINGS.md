@@ -171,7 +171,39 @@ _Founder supplied a newly-designed `markets-app.html` (the app-context Markets t
 
 **Round 5 result: markets-app.html is real-data, integrated, and CLEAN** — adversarial audit returned no blocker/major; `tests/markets-app.spec.js` (real rows keyed on ticker_key, search/exchange/sort, real movers + index cards, clean console) green; `tests/nav-links.spec.js` green (markets-app in KNOWN + APP_PAGES, nav consistent, no missing-page links).
 
-**FINAL (updated): zero open blocker/major across Rounds 1-5. Remaining items are all under NEEDS FOUNDER REVIEW.**
+**Round 5 result (cont.): zero open blocker/major across Rounds 1-5.**
+
+---
+
+# ROUND 6 — Arabic/RTL localization + functional bugs + agentic adviser (founder-driven)
+
+_Founder manually QA'd the Arabic side and reported: nearly the whole app showed English on the AR version, plus functional bugs (off-screen dropdowns, un-scrollable chat, oversized icon, broken settings chat, external news links, a stray success checkmark). Two read-only audit Workflows (one agent/page) found 219 + ~40 findings; a 9-agent fix Workflow (one HTML file each) implemented them; I did the shared core + verification myself._
+
+## Shared core (adviser-core.js / js/i18n.js / css/alphacouncil.css)
+- **`AC_I18N.localName(row)` / `localSector(row)`** — render Arabic stock/sector names when lang=ar (screening/movers/holdings all return *_ar — confirmed live). `loadPortfolio` now retains name_ar/sector_ar so dashboard holdings localize.
+- **R6-01 (major) RTL dropdowns off-screen** — `acToggleDropdown` always anchored right → user-menu + notifications dropdowns went off the left edge in RTL. → anchor left under dir=rtl. ✅
+- **R6-02 (major) adviser chat wouldn't scroll** — `.chat-messages` lacked `min-height:0` (flexbox) → whole page scrolled instead. ✅
+- **R6-03 (major) oversized chat icon** — `.sidebar-logo` sizing lived only in dashboard's inline CSS → unconstrained huge SVG on pages without it (news). → moved to shared stylesheet. ✅
+- i18n for alerts-bell / user-menu / search modal / relative-time + localized search-result names; `AlphaCouncil.refreshIdentity/initials/setNavIdentity`.
+
+## Per-page (9 app pages, ~545 keys) — all FIXED
+Every app page translates + shows Arabic stock names + re-renders dynamic content on the `ac:langchange` event. Page-specific:
+- **R6-04 (major) markets** name/ticker hierarchy flipped (name now primary), Arabic names, translated filters/placeholders/chips.
+- **R6-05 (major) news** stray static "Success/Action complete" toast removed; "Read full story" now routes to the on-site **article.html** (was an external jump); headlines/summaries localized; duplicate footer brand removed.
+- **R6-06 (major) settings** full-tab i18n + language-select no longer clobbers AR→EN on save + avatar initials update on save and match the top-nav avatar.
+- **R6-07 (blocker) scenarios crash** — its `ac:langchange` listener called `AC_I18N.apply()`, which re-dispatches the event → infinite recursion / stack overflow on load in Arabic. → removed the apply() call. ✅
+- **R6-08 (major) stock-detail duplicate `sd.signal` key** — registered for both the "AlphaCouncil Signal" banner and the technicals "Signal" column → collision made the banner show "Signal"/"الإشارة" (EN regression too). → table column uses `sd.signal_col`. ✅
+
+## Functional bugs
+- **R6-09 (major) adviser chat opened unreliably** on settings/council-history/scenarios/alerts — each double-wired `#adviserToggle`/`#closeSidebar` on top of adviser-core, so clicks cancelled out (founder: "chat not available on settings"). → removed the duplicate per-page handlers; adviser-core is the single source of truth. ✅
+- **New: on-site `article.html`** — reader via `API.newsItem(id)` (full AI article EN+AR, summary, impact, image, source link), bilingual + RTL.
+
+## Agentic adviser (new capability)
+The chat now performs real site actions before falling through to the LLM: navigate/open-stock, watchlist add/remove, holding add/remove (**confirmed in-chat** for destructive), run-council, price quote, list-news, switch-language — resolves stocks from the screening universe, bilingual, with a **question-guard** ("should I sell X?" → advice, not a sell). Custom-alert create/delete intentionally NOT wired (no backend API; alerts are auto-generated).
+
+**Verification:** `tests/_arabic_verify.spec.js` 12/12 (RTL + Arabic content + Arabic names + dropdown on-screen + article renders); `tests/_settings_chat.spec.js` 4/4 (chat opens + input usable); `tests/_agentic.spec.js` 6/6; `tests/i18n.spec.js` + `tests/marketing.spec.js` green (incl. sd.signal fix). Commits 51015c9, 65cacd5, agentic, sd.signal-fix. _Note: the live backend 502s on /api/auth/login under heavy concurrent Playwright load — full-suite "failures" are transient apiLogin-502s that pass in isolation; the clean gate runs at `--workers=1/2`._
+
+**FINAL (updated): zero open blocker/major across Rounds 1-6.**
 
 ---
 

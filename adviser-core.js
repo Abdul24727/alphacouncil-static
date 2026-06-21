@@ -388,6 +388,11 @@ const AlphaCouncil = (function() {
     addChatMessage(text, true);
     chatInput.value = '';
 
+    // AGENTIC: try to fulfil a concrete site action first (navigate, open a stock,
+    // add/remove holding or watchlist, run the council, switch language, quote a price,
+    // list news…). If the message isn't a recognised command, fall through to the LLM.
+    try { if (await handleAgentCommand(text)) return; } catch (e) { /* fall through to LLM */ }
+
     const typing = addTypingIndicator();
     const ticker = state.currentStock && state.currentStock.tickerKey ? state.currentStock.tickerKey : undefined;
     try {
@@ -1790,10 +1795,270 @@ const AlphaCouncil = (function() {
   }
 
   // ============================================
+  // AGENTIC ADVISER — the chat can DO things, not just answer.
+  // A deterministic intent layer runs before the LLM (see processChat). If the message
+  // maps to a real site action it is executed via the real API / navigation, with
+  // destructive actions confirmed in-chat. Everything else falls through to /adviser/ask.
+  // All replies are bilingual. Custom alert create/delete is intentionally NOT here —
+  // the backend auto-generates alerts (no custom-rule API yet), so we say so honestly.
+  // ============================================
+  function acMsg(en, ar) { return acLang() === 'ar' ? ar : en; }
+  function agentSay(html) { addChatMessage(html); }
+  function actionErr(e) {
+    var s = e && e.status;
+    if (s === 401) return acMsg('Please sign in first to do that.', 'يرجى تسجيل الدخول أولاً للقيام بذلك.');
+    return acMsg("Sorry, that didn’t work — please try again.", 'عذرًا، لم تنجح العملية — يرجى المحاولة مرة أخرى.');
+  }
+
+  // Ensure the stock universe (name_en/name_ar/ticker) is available for entity resolution.
+  async function agentEnsureUniverse() {
+    if (_searchUniverse && _searchUniverse.length) return _searchUniverse;
+    if (window.API && API.screening) {
+      try {
+        var resp = await API.screening();
+        var data = (resp && resp.data) ? resp.data : (Array.isArray(resp) ? resp : []);
+        _searchUniverse = data.map(function (s) {
+          return { ticker: s.ticker, tickerKey: s.ticker_key || s.ticker, name_en: s.name_en, name_ar: s.name_ar, name: s.name_en || s.ticker, exchange: s.exchange || '', last_price: s.last_price, day_change_pct: s.day_change_pct, currency: s.currency };
+        });
+      } catch (e) { _searchUniverse = _searchUniverse || []; }
+    }
+    return _searchUniverse || [];
+  }
+
+  var AGENT_STOP = ['saudi', 'arabia', 'arabian', 'company', 'co', 'bank', 'group', 'holding', 'holdings', 'national', 'first', 'international', 'industries', 'industrial', 'for', 'the', 'and', 'al', 'to', 'my', 'a', 'of', 'in', 'on', 'add', 'buy', 'sell', 'remove', 'open', 'show', 'watch', 'stock', 'shares', 'share', 'price', 'run', 'council'];
+  // Best-effort resolve a single stock named in a free-text message.
+  function agentResolveStock(msg) {
+    var list = _searchUniverse || [];
+    if (!list.length) return null;
+    var lower = ' ' + String(msg).toLowerCase().replace(/[.,!؟?’'"():%]/g, ' ').replace(/\s+/g, ' ') + ' ';
+    var best = null, bestScore = 0;
+    for (var i = 0; i < list.length; i++) {
+      var s = list[i], score = 0;
+      var tk = String(s.ticker || '').toLowerCase();
+      var short = String(s.tickerKey || '').split('_')[0].toLowerCase();
+      if (tk && tk.length >= 2 && lower.indexOf(' ' + tk + ' ') >= 0) score = Math.max(score, 30 + tk.length);
+      if (short && short.length >= 2 && lower.indexOf(' ' + short + ' ') >= 0) score = Math.max(score, 30 + short.length);
+      if (s.name_en) {
+        var n = s.name_en.toLowerCase();
+        if (n.length >= 4 && lower.indexOf(n) >= 0) score = Math.max(score, 40 + n.length);
+        else {
+          var words = n.split(/[\s.&-]+/);
+          for (var w = 0; w < words.length; w++) {
+            var word = words[w];
+            if (word.length >= 4 && AGENT_STOP.indexOf(word) < 0 && lower.indexOf(' ' + word + ' ') >= 0) score = Math.max(score, 18 + word.length);
+          }
+        }
+      }
+      if (s.name_ar && s.name_ar.length >= 3 && String(msg).indexOf(s.name_ar) >= 0) score = Math.max(score, 40 + s.name_ar.length);
+      if (score > bestScore) { bestScore = score; best = s; }
+    }
+    return bestScore >= 18 ? best : null;
+  }
+
+  // In-chat confirmation for destructive actions.
+  var _agentPending = null;
+  function agentConfirm(promptHtml, doIt) {
+    _agentPending = doIt;
+    agentSay(promptHtml
+      + '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">'
+      + '<button type="button" class="btn btn-primary" style="padding:6px 14px;font-size:13px;" onclick="AlphaCouncil.confirmAction()">' + escapeHtml(acMsg('Yes, do it', 'نعم، نفّذ')) + '</button>'
+      + '<button type="button" class="btn btn-secondary" style="padding:6px 14px;font-size:13px;" onclick="AlphaCouncil.cancelAction()">' + escapeHtml(acMsg('Cancel', 'إلغاء')) + '</button>'
+      + '</div>');
+  }
+  function confirmAction() { var a = _agentPending; _agentPending = null; if (a) a(); }
+  function cancelAction() { _agentPending = null; agentSay(escapeHtml(acMsg('Okay, cancelled.', 'تمام، تم الإلغاء.'))); }
+
+  function agentNameOf(s) { return escapeHtml(LN(s) || s.name_en || s.tickerKey); }
+
+  // ---- executors ----
+  function agentNav(label, href) {
+    agentSay(escapeHtml(acMsg('Opening ', 'جارٍ فتح ') + label) + '…');
+    setTimeout(function () { window.location.href = href; }, 500);
+  }
+  function agentOpenStock(s) {
+    agentSay(escapeHtml(acMsg('Opening ', 'جارٍ فتح ')) + '<strong>' + agentNameOf(s) + '</strong>…');
+    setTimeout(function () { window.location.href = 'stock-detail.html?ticker=' + encodeURIComponent(s.tickerKey); }, 500);
+  }
+  async function agentAddWatch(s) {
+    try { await API.addToWatchlist(s.tickerKey); agentSay(escapeHtml(acMsg('Added ', 'تمت إضافة ')) + '<strong>' + agentNameOf(s) + '</strong>' + escapeHtml(acMsg(' to your watchlist.', ' إلى قائمة متابعتك.'))); }
+    catch (e) { agentSay(escapeHtml(actionErr(e))); }
+  }
+  async function agentRemoveWatch(s) {
+    try { await API.removeFromWatchlist(s.tickerKey); agentSay(escapeHtml(acMsg('Removed ', 'تمت إزالة ')) + '<strong>' + agentNameOf(s) + '</strong>' + escapeHtml(acMsg(' from your watchlist.', ' من قائمة متابعتك.'))); }
+    catch (e) { agentSay(escapeHtml(actionErr(e))); }
+  }
+  async function agentAddHolding(s, shares, cost) {
+    try {
+      await API.addHolding(s.tickerKey, shares, cost);
+      agentSay(escapeHtml(acMsg('Added ', 'تمت إضافة ')) + '<strong>' + shares + ' × ' + agentNameOf(s) + '</strong>' + escapeHtml(acMsg(' to your portfolio.', ' إلى محفظتك.')));
+      if (state.currentPage === 'portfolio' || state.currentPage === 'dashboard') { try { await loadPortfolio(); if (typeof window.onPortfolioReady === 'function') window.onPortfolioReady(state.holdings); } catch (e) {} }
+    } catch (e) { agentSay(escapeHtml(actionErr(e))); }
+  }
+  async function agentRemoveHolding(s) {
+    try {
+      await API.deleteHolding(s.tickerKey);
+      agentSay(escapeHtml(acMsg('Removed ', 'تمت إزالة ')) + '<strong>' + agentNameOf(s) + '</strong>' + escapeHtml(acMsg(' from your portfolio.', ' من محفظتك.')));
+      if (state.currentPage === 'portfolio' || state.currentPage === 'dashboard') { try { await loadPortfolio(); if (typeof window.onPortfolioReady === 'function') window.onPortfolioReady(state.holdings); } catch (e) {} }
+    } catch (e) { agentSay(escapeHtml(actionErr(e))); }
+  }
+  function agentQuote(s) {
+    var p = s.last_price, c = s.day_change_pct;
+    if (p == null) { agentSay('<strong>' + agentNameOf(s) + '</strong> — ' + escapeHtml(acMsg('no live price available.', 'لا يتوفر سعر حالي.'))); return; }
+    var sign = (c != null && c >= 0) ? '+' : '';
+    var chg = (c != null) ? (' (' + sign + Number(c).toFixed(2) + '%)') : '';
+    agentSay('<strong>' + agentNameOf(s) + '</strong>: ' + escapeHtml(String(p) + ' ' + (s.currency || '') + chg)
+      + '<br><a href="stock-detail.html?ticker=' + escapeHtml(s.tickerKey) + '" style="color:var(--accent-primary,#27D3C3);font-size:13px;">' + escapeHtml(acMsg('Open full page', 'فتح الصفحة الكاملة')) + ' →</a>');
+  }
+  async function agentListNews() {
+    if (!window.API || !API.latestNews) { agentNav(acMsg('News', 'الأخبار'), 'news.html'); return; }
+    try {
+      var d = await API.latestNews(5);
+      var items = Array.isArray(d) ? d : (d.items || d.data || []);
+      if (!items.length) { agentSay(escapeHtml(acMsg('No news right now.', 'لا توجد أخبار حاليًا.'))); return; }
+      var ar = acLang() === 'ar';
+      var html = '<strong>' + escapeHtml(acMsg('Latest news', 'أحدث الأخبار')) + '</strong><br>'
+        + items.slice(0, 5).map(function (it) {
+          var h = ar ? (it.headline_ar || it.title || it.headline_en) : (it.headline_en || it.title);
+          return '• <a href="article.html?id=' + encodeURIComponent(it.id) + '" style="color:var(--accent-primary,#27D3C3);">' + escapeHtml(h || '') + '</a>';
+        }).join('<br>');
+      agentSay(html);
+    } catch (e) { agentNav(acMsg('News', 'الأخبار'), 'news.html'); }
+  }
+  function agentHelp() {
+    agentSay(
+      '<strong>' + escapeHtml(acMsg('I can act on the site for you. Try:', 'يمكنني تنفيذ إجراءات على الموقع نيابةً عنك. جرّب:')) + '</strong><br>'
+      + escapeHtml(acMsg('• Open Aramco / show Al Rajhi', '• افتح أرامكو / أظهر الراجحي')) + '<br>'
+      + escapeHtml(acMsg('• Add SABIC to my watchlist / unwatch QNB', '• أضف سابك إلى قائمة المتابعة / أزل QNB')) + '<br>'
+      + escapeHtml(acMsg('• Add 100 shares of Aramco at 35 / sell Emaar', '• أضف 100 سهم من أرامكو بسعر 35 / بِع إعمار')) + '<br>'
+      + escapeHtml(acMsg('• Run the council on Aramco', '• شغّل المجلس على أرامكو')) + '<br>'
+      + escapeHtml(acMsg('• What’s the price of QNB / latest news', '• ما سعر QNB / آخر الأخبار')) + '<br>'
+      + escapeHtml(acMsg('• Open portfolio / news / alerts / settings', '• افتح المحفظة / الأخبار / التنبيهات / الإعدادات')) + '<br>'
+      + escapeHtml(acMsg('• Switch to Arabic / English', '• بدّل إلى الإنجليزية / العربية'))
+    );
+  }
+
+  // ---- intent interpreter → returns true if it handled the message ----
+  async function handleAgentCommand(text) {
+    var raw = String(text || '').trim();
+    var t = ' ' + raw.toLowerCase() + ' ';
+    // Is this a QUESTION / analysis request rather than a command? If so we only run the
+    // safe read-only intents (price, help, language, page nav, news) and let the LLM
+    // handle anything that resolves to a stock — so "what's your view on Aramco?" gets an
+    // answer instead of navigating, and "should I sell SABIC?" gets advice, not a sell.
+    var isQuestion = /[?؟]/.test(raw)
+      || /^\s*(what|how|why|should|is|are|do|does|did|can|could|would|will|which|who|when|where|tell me|explain|compare|recommend|do you|your (view|opinion|take|thoughts)|i'?m? ?(wondering|thinking))/i.test(raw)
+      || /^\s*(ما|ماذا|كيف|لماذا|هل|متى|أين|من|قارن|رأيك|برأيك|أخبرني|اشرح)/.test(raw);
+
+    // help
+    if (/\b(what can you do|what can i ask|help me|your commands|capabilities)\b/.test(t) || /(ماذا تستطيع|ماذا يمكنك|كيف تساعدني|الأوامر)/.test(raw)) { agentHelp(); return true; }
+
+    // language switch
+    if (/(switch|change|set|use|go).{0,12}(arabic)/.test(t) || /(بالعربية|للعربية|العربي|عربي)\b/.test(raw)) { if (window.AC_I18N) AC_I18N.set('ar'); agentSay('تم التبديل إلى العربية.'); return true; }
+    if (/(switch|change|set|use|go).{0,12}(english)/.test(t) || /(بالانجليزي|بالإنجليزي|للإنجليزية|انجليزي)\b/.test(raw)) { if (window.AC_I18N) AC_I18N.set('en'); agentSay('Switched to English.'); return true; }
+
+    // mark alerts read
+    if (/(mark|clear).{0,16}(alerts?|notifications?).{0,10}(read|seen)?/.test(t) || /(علّم|اجعل).{0,16}(التنبيهات|الإشعارات).{0,10}(مقروء)?/.test(raw)) {
+      if (window.API && API.markAlertsRead) { try { await API.markAlertsRead(); setAlertBadge(0); agentSay(escapeHtml(acMsg('Marked your alerts as read.', 'تم وضع علامة مقروء على تنبيهاتك.'))); return true; } catch (e) { agentSay(escapeHtml(actionErr(e))); return true; } }
+    }
+
+    // navigation (no stock needed)
+    var NAV = [
+      { re: /(portfolio|my (stocks|holdings|positions))|المحفظة|محفظتي/, label: acMsg('Portfolio', 'المحفظة'), href: 'portfolio.html' },
+      { re: /(markets|screener|screen)|الأسواق|الفرز/, label: acMsg('Markets', 'الأسواق'), href: 'markets-app.html' },
+      { re: /\bnews\b|الأخبار|الاخبار/, label: acMsg('News', 'الأخبار'), href: 'news.html' },
+      { re: /(alerts|notifications)|التنبيهات|الإشعارات/, label: acMsg('Alerts', 'التنبيهات'), href: 'alerts.html' },
+      { re: /(settings|preferences|account)|الإعدادات|الاعدادات|الحساب/, label: acMsg('Settings', 'الإعدادات'), href: 'settings.html' },
+      { re: /(scenario|scenarios|what.?if)|السيناريو|سيناريو/, label: acMsg('Scenarios', 'السيناريوهات'), href: 'scenarios.html' },
+      { re: /(council history|my reviews|past reviews)|سجل المجلس|المراجعات/, label: acMsg('Council History', 'سجل المجلس'), href: 'council-history.html' },
+      { re: /(dashboard|home)|لوحة التحكم|الرئيسية/, label: acMsg('Dashboard', 'لوحة التحكم'), href: 'dashboard.html' }
+    ];
+    if (/\b(open|go to|take me to|show me|navigate|view)\b/.test(t) || /(افتح|اذهب|انتقل|روح|أظهر|اعرض)/.test(raw)) {
+      for (var i = 0; i < NAV.length; i++) { if (NAV[i].re.test(t) || NAV[i].re.test(raw)) { agentNav(NAV[i].label, NAV[i].href); return true; } }
+    }
+
+    // list news
+    if (/(latest|show|list|what.?s the).{0,12}news/.test(t) || /(آخر|أحدث|اعرض).{0,8}(الأخبار|الاخبار)/.test(raw)) { await agentListNews(); return true; }
+
+    // settings change we don't directly support → route honestly to settings
+    if (/(change|set|update).{0,20}(default market|my market|market)/.test(t) || /(غيّر|عدّل).{0,20}(السوق)/.test(raw)) {
+      agentSay(escapeHtml(acMsg('You can set your default market in Settings — opening it now.', 'يمكنك ضبط السوق الافتراضي من الإعدادات — جارٍ فتحها.')));
+      setTimeout(function () { window.location.href = 'settings.html'; }, 700); return true;
+    }
+
+    // everything below needs a stock — see if the message intends a stock action
+    var wantsAction = /(add|buy|sell|remove|delete|watch|unwatch|follow|unfollow|track|untrack|open|show|view|price|quote|council)/.test(t)
+      || /(أضف|اشترِ|بِع|أزل|احذف|تابع|راقب|افتح|أظهر|اعرض|سعر|المجلس|شغّل)/.test(raw);
+    if (!wantsAction) return false; // not a command → let the LLM answer
+
+    await agentEnsureUniverse();
+    var stock = agentResolveStock(raw);
+
+    // run council (works portfolio-wide even without a stock)
+    if (/\b(run|convene|start).{0,16}council\b/.test(t) || /(شغّل|ابدأ|اعقد).{0,16}المجلس/.test(raw) || /\bcouncil on\b/.test(t)) {
+      agentSay(escapeHtml(acMsg('Convening the council…', 'جارٍ عقد المجلس…')));
+      setTimeout(function () { openCouncilModal(stock ? { tickerKey: stock.tickerKey } : null); }, 400);
+      return true;
+    }
+
+    if (!stock) {
+      // an action verb but no resolvable stock → ask, but only if it clearly wanted one
+      if (/(add|buy|sell|remove|watch|unwatch|price|quote|open|show)/.test(t) || /(أضف|بِع|أزل|تابع|سعر|افتح)/.test(raw)) {
+        agentSay(escapeHtml(acMsg("Which stock? Try a name or ticker, e.g. “Aramco” or “2222”.", 'أي سهم؟ جرّب اسمًا أو رمزًا، مثل «أرامكو» أو «2222».')));
+        return true;
+      }
+      return false;
+    }
+
+    // price / quote (safe to answer even when phrased as a question)
+    if (/\b(price|quote|how much|trading at)\b/.test(t) || /(سعر|كم سعر|بكم)/.test(raw)) { agentQuote(stock); return true; }
+
+    // Beyond this point are state changes / navigation — never trigger them for a
+    // question or advice request; let the LLM answer instead.
+    if (isQuestion) return false;
+
+    // watchlist remove
+    if (/\b(unwatch|unfollow|untrack)\b/.test(t) || /(remove|delete|drop).{0,24}(watchlist|watch list)/.test(t) || /(أزل|احذف).{0,16}(المتابعة|قائمة المتابعة)/.test(raw)) { await agentRemoveWatch(stock); return true; }
+    // watchlist add
+    if (/(watch|follow|track)\b/.test(t) || /(add|put).{0,24}(watchlist|watch list)/.test(t) || /(تابع|راقب|أضف.{0,16}المتابعة)/.test(raw)) { await agentAddWatch(stock); return true; }
+
+    // holding remove / sell
+    if (/\b(sell|remove|delete|drop)\b/.test(t) || /(بِع|أزل|احذف).{0,24}(المحفظة|محفظتي)?/.test(raw)) {
+      agentConfirm(escapeHtml(acMsg('Remove ', 'إزالة ')) + '<strong>' + agentNameOf(stock) + '</strong>' + escapeHtml(acMsg(' from your portfolio?', ' من محفظتك؟')), function () { agentRemoveHolding(stock); });
+      return true;
+    }
+
+    // holding add / buy
+    if (/\b(add|buy|bought|own|hold)\b/.test(t) || /(أضف|اشتر|أملك).{0,24}(المحفظة)?/.test(raw)) {
+      var nums = (raw.match(/(\d+(?:\.\d+)?)/g) || []).map(Number);
+      var shares = null, cost = null;
+      var atM = raw.match(/(?:at|@|price|بسعر|بـ)\s*(\d+(?:\.\d+)?)/i);
+      if (atM) { cost = Number(atM[1]); shares = nums.filter(function (n) { return n !== cost; })[0]; }
+      else if (nums.length >= 2) { shares = nums[0]; cost = nums[1]; }
+      else if (nums.length === 1) { shares = nums[0]; }
+      if (shares && cost) {
+        agentConfirm(escapeHtml(acMsg('Add ', 'إضافة ')) + '<strong>' + shares + ' × ' + agentNameOf(stock) + '</strong> ' + escapeHtml(acMsg('at ', 'بسعر ')) + escapeHtml(String(cost) + ' ' + (stock.currency || '')) + escapeHtml(acMsg(' to your portfolio?', ' إلى محفظتك؟')), function () { agentAddHolding(stock, shares, cost); });
+        return true;
+      }
+      // missing numbers → open the add-holding modal prefilled if available, else ask
+      if (typeof openAddHoldingModal === 'function') { agentSay(escapeHtml(acMsg('Opening the add-holding form for ', 'جارٍ فتح نموذج إضافة المركز لـ ')) + '<strong>' + agentNameOf(stock) + '</strong>…'); setTimeout(function () { try { openAddHoldingModal(stock.tickerKey); } catch (e) { openAddHoldingModal(); } }, 400); return true; }
+      agentSay(escapeHtml(acMsg('How many shares and at what average price? e.g. “100 at 35”.', 'كم عدد الأسهم وبأي متوسط سعر؟ مثال: «100 بسعر 35».')));
+      return true;
+    }
+
+    // open / show stock ('view' deliberately excluded — too easily a question like "your view on X")
+    if (/\b(open|show|pull up|go to|take me to)\b/.test(t) || /(افتح|أظهر|اعرض)/.test(raw)) { agentOpenStock(stock); return true; }
+
+    return false;
+  }
+
+  // ============================================
   // PUBLIC API
   // ============================================
   return {
     init,
+    confirmAction,
+    cancelAction,
+    handleAgentCommand,
     state,
     formatCurrency,
     formatPercent,
