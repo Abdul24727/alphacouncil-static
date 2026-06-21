@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify your email — AlphaCouncil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#0b0f14; --card:#121822; --fg:#e6edf5; --fg-dim:#8b97a7; --border:#222c3a; --accent:#27d3c3; --ok:#22c55e; --err:#ef4444; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; background:var(--bg); color:var(--fg); font-family:Inter,system-ui,sans-serif; display:flex; align-items:center; justify-content:center; padding:24px; }
+    .topbar { position:fixed; top:0; left:0; right:0; display:flex; align-items:center; justify-content:space-between; padding:16px 22px; }
+    .brand { font-weight:700; letter-spacing:-0.02em; }
+    .lang-toggle { display:inline-flex; align-items:center; border:1px solid var(--border); border-radius:999px; padding:2px; background:var(--card); }
+    .lang-toggle button { padding:4px 12px; font-size:12px; font-weight:600; border:none; background:transparent; color:var(--fg-dim); border-radius:999px; cursor:pointer; font-family:inherit; }
+    .lang-toggle button.active { background:var(--accent); color:var(--bg); }
+    .card { width:100%; max-width:440px; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:34px 30px; text-align:center; }
+    .icon { width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; }
+    .icon svg { width:28px; height:28px; }
+    .icon.ok { background:rgba(34,197,94,.12); color:var(--ok); }
+    .icon.err { background:rgba(239,68,68,.12); color:var(--err); }
+    .icon.load { background:rgba(39,211,195,.12); color:var(--accent); }
+    h1 { font-size:21px; margin:0 0 8px; }
+    p { font-size:14px; line-height:1.6; color:var(--fg-dim); margin:0 0 18px; }
+    .btn { display:inline-block; width:100%; padding:12px 16px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--fg); text-decoration:none; font-family:inherit; }
+    .btn-primary { background:var(--accent); color:var(--bg); border-color:var(--accent); }
+    .btn + .btn { margin-top:10px; }
+    .resend { margin-top:14px; display:none; }
+    .resend input { width:100%; padding:11px 13px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--fg); font-family:inherit; font-size:14px; margin-bottom:10px; }
+    .spinner { width:26px; height:26px; border:3px solid rgba(255,255,255,.15); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .hidden { display:none; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <a href="index.html" class="brand" style="color:var(--fg);text-decoration:none;">AlphaCouncil</a>
+    <div class="lang-toggle"><button data-lang="en" class="active">EN</button><button data-lang="ar">AR</button></div>
+  </div>
+
+  <div class="card">
+    <!-- Loading -->
+    <div id="stepLoading">
+      <div class="icon load"><div class="spinner"></div></div>
+      <h1 data-i18n="ve.loading_t">Verifying your email…</h1>
+      <p data-i18n="ve.loading_s">One moment while we confirm your verification link.</p>
+    </div>
+
+    <!-- Success -->
+    <div id="stepSuccess" class="hidden">
+      <div class="icon ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <h1 data-i18n="ve.ok_t">Email verified</h1>
+      <p data-i18n="ve.ok_s">Your email address is confirmed. You can now sign in to AlphaCouncil.</p>
+      <a class="btn btn-primary" href="login.html" data-i18n="ve.signin">Sign in</a>
+    </div>
+
+    <!-- Error / expired -->
+    <div id="stepError" class="hidden">
+      <div class="icon err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12" y2="16.5"/></svg></div>
+      <h1 data-i18n="ve.err_t">Link invalid or expired</h1>
+      <p id="errText" data-i18n="ve.err_s">This verification link is invalid or has expired. Enter your email to get a new one.</p>
+      <div class="resend" id="resendBox" style="display:block;">
+        <input type="email" id="resendEmail" data-i18n-attr="placeholder:ve.email_ph" placeholder="you@email.com">
+        <button class="btn btn-primary" id="resendBtn" data-i18n="ve.resend">Resend verification link</button>
+      </div>
+      <a class="btn" href="login.html" style="margin-top:10px;" data-i18n="ve.back">Back to sign in</a>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script>
+    if (window.AC_I18N && AC_I18N.add) AC_I18N.add({
+      've.loading_t': { en: 'Verifying your email…', ar: 'جارٍ التحقق من بريدك الإلكتروني…' },
+      've.loading_s': { en: 'One moment while we confirm your verification link.', ar: 'لحظة من فضلك بينما نؤكّد رابط التحقق.' },
+      've.ok_t':      { en: 'Email verified', ar: 'تم توثيق البريد الإلكتروني' },
+      've.ok_s':      { en: 'Your email address is confirmed. You can now sign in to AlphaCouncil.', ar: 'تم تأكيد بريدك الإلكتروني. يمكنك الآن تسجيل الدخول إلى AlphaCouncil.' },
+      've.signin':    { en: 'Sign in', ar: 'تسجيل الدخول' },
+      've.err_t':     { en: 'Link invalid or expired', ar: 'الرابط غير صالح أو منتهي الصلاحية' },
+      've.err_s':     { en: 'This verification link is invalid or has expired. Enter your email to get a new one.', ar: 'رابط التحقق هذا غير صالح أو منتهي الصلاحية. أدخل بريدك للحصول على رابط جديد.' },
+      've.email_ph':  { en: 'you@email.com', ar: 'you@email.com' },
+      've.resend':    { en: 'Resend verification link', ar: 'إعادة إرسال رابط التحقق' },
+      've.resend_done': { en: 'If an unverified account exists for that email, a new link has been sent. Check your inbox.', ar: 'إذا كان هناك حساب غير موثّق بهذا البريد، فقد أُرسل رابط جديد. تحقّق من بريدك.' },
+      've.back':      { en: 'Back to sign in', ar: 'العودة لتسجيل الدخول' }
+    });
+
+    (function () {
+      function show(id) { ['stepLoading', 'stepSuccess', 'stepError'].forEach(function (s) { document.getElementById(s).classList.toggle('hidden', s !== id); }); }
+      function t(k, fb) { var v = window.AC_I18N && AC_I18N.t(k); return v != null ? v : fb; }
+      var token = new URLSearchParams(location.search).get('token') || '';
+
+      function fail(msg) { if (msg) document.getElementById('errText').textContent = msg; show('stepError'); }
+
+      if (!token) {
+        fail();
+      } else if (!window.API || !API.verifyEmail) {
+        fail();
+      } else {
+        API.verifyEmail(token).then(function () {
+          show('stepSuccess');
+        }).catch(function (err) {
+          fail((err && err.message) || t('ve.err_s', 'This verification link is invalid or has expired.'));
+        });
+      }
+
+      var rb = document.getElementById('resendBtn');
+      if (rb) rb.addEventListener('click', function () {
+        var email = (document.getElementById('resendEmail').value || '').trim();
+        if (!email) return;
+        rb.disabled = true;
+        var done = function () { document.getElementById('errText').textContent = t('ve.resend_done', 'If an unverified account exists for that email, a new link has been sent. Check your inbox.'); document.getElementById('resendBox').style.display = 'none'; };
+        if (window.API && API.resendVerificationPublic) { API.resendVerificationPublic(email).then(done).catch(done); } else { done(); }
+      });
+    })();
+  </script>
+</body>
+</html>

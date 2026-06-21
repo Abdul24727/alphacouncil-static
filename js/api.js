@@ -84,6 +84,7 @@
       });
     },
     resendVerificationPublic: function (email) { return API.post('/api/auth/resend-verification-public', { email: email }); },
+    verifyEmail: function (token) { return API.post('/api/auth/verify-email', { token: token }); },
     me: function () { return API.get('/api/auth/me'); },
     logout: function () { return API.post('/api/auth/logout', {}); },
     updateProfile: function (fields) { return API.put('/api/account/profile', fields); },
