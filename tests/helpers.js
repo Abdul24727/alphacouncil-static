@@ -39,10 +39,25 @@ function assertClean(diag, expect, extraAllow = []) {
 // Programmatic login on a browser context (sets the session cookie in the context's
 // jar; subsequent page.goto in that context is authenticated). Avoids typing the
 // password into the login form.
+// The live VPS backend transiently returns 502/503 on /api/auth/login when the suite
+// drives many logins at once (it recovers within ~1s). That's an infra rate-ceiling, not
+// an app defect, so retry the login bootstrap with backoff on 5xx/429/network errors.
+// Real creds errors (401/400) still fail fast. App-behaviour assertions remain strict.
 async function apiLogin(context, email, password) {
-  const r = await context.request.post('/api/auth/login', { data: { email, password, remember: true } });
-  if (!r.ok()) throw new Error('apiLogin failed: ' + r.status() + ' ' + (await r.text()));
-  return r;
+  let last = 'apiLogin failed';
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      const r = await context.request.post('/api/auth/login', { data: { email, password, remember: true } });
+      if (r.ok()) return r;
+      const status = r.status();
+      last = 'apiLogin failed: ' + status;
+      if (status < 500 && status !== 429) throw new Error(last + ' ' + (await r.text()));
+    } catch (e) {
+      last = String((e && e.message) || e);
+    }
+    await new Promise((res) => setTimeout(res, 700 * (attempt + 1)));
+  }
+  throw new Error(last);
 }
 
 // Capture an evidence screenshot to test-results/screens/<name>.png.
