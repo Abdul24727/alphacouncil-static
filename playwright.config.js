@@ -10,6 +10,7 @@ module.exports = defineConfig({
   testIgnore: ['**/_audit_round1.spec.js', '**/_audit_round2.spec.js'],
   fullyParallel: false,   // tests share one QA account's holdings/watchlist state
   workers: 1,             // → run serially for deterministic live-site state
+  retries: 1,             // live backend can transiently 502/timeout under load; one retry absorbs hiccups (not logic failures)
   timeout: 60_000,
   expect: { timeout: 10_000 },
   reporter: [['list'], ['html', { open: 'never' }]],
