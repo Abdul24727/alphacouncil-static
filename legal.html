@@ -417,17 +417,17 @@
         <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
       </a>
       <ul class="nav-links" style="gap:22px;">
-        <li><a href="how-it-works.html">How it works</a></li>
-        <li><a href="features.html">Features</a></li>
-        <li><a href="pricing.html">Pricing</a></li>
-        <li><a href="methodology.html">Methodology</a></li>
-        <li><a href="markets.html">Markets</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="contact.html">Contact</a></li>
+        <li><a href="how-it-works.html" data-i18n="mnav.how_it_works">How it works</a></li>
+        <li><a href="features.html" data-i18n="mnav.features">Features</a></li>
+        <li><a href="pricing.html" data-i18n="mnav.pricing">Pricing</a></li>
+        <li><a href="methodology.html" data-i18n="mnav.methodology">Methodology</a></li>
+        <li><a href="markets.html" data-i18n="mnav.markets">Markets</a></li>
+        <li><a href="about.html" data-i18n="mnav.about">About</a></li>
+        <li><a href="contact.html" data-i18n="mnav.contact">Contact</a></li>
       </ul>
       <div class="nav-actions">
-        <a href="login.html" class="nav-signin">Sign in</a>
-        <a href="signup.html" class="btn btn-primary">Start free</a>
+        <a href="login.html" class="nav-signin" data-i18n="mnav.sign_in">Sign in</a>
+        <a href="signup.html" class="btn btn-primary" data-i18n="mnav.start_free">Start free</a>
       </div>
     </div>
   </nav>
@@ -452,105 +452,116 @@
     .legal-block li { font-size:14px; color:var(--fg-muted); line-height:1.8; margin-bottom:6px; }
     .legal-callout { background:var(--accent-gold-glow); border:1px solid rgba(215,183,106,0.3); border-radius:12px; padding:18px 20px; margin:18px 0; }
     .legal-callout p { color:var(--fg); font-size:13.5px; margin:0; }
+    /* Language toggle (engine toggles .active class on the buttons) */
+    .lang-toggle button { background:transparent; color:var(--fg-dim); }
+    .lang-toggle button.active { background:var(--accent-primary); color:var(--bg-deep); }
+    /* Convenience-translation notice */
+    .legal-translation-note { background:var(--bg-elevated); border:1px solid var(--border-strong); border-radius:10px; padding:14px 18px; font-size:12.5px; color:var(--fg-muted); margin-bottom:20px; line-height:1.7; }
+    [dir="rtl"] .legal-block ul { margin:6px 20px 14px 0; }
   </style>
 
   <section class="legal-hero reveal">
-    <div class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg> Legal</div>
-    <h1>Legal &amp; Compliance</h1>
-    <p>The terms, privacy practices and disclaimers that govern your use of AlphaCouncil.</p>
+    <div class="lang-toggle" style="display:inline-flex;gap:2px;border:1px solid var(--border);border-radius:8px;padding:2px;align-items:center;margin-bottom:20px;">
+      <button data-lang="en" class="active" style="padding:4px 12px;font-size:12px;font-weight:600;border:none;background:var(--accent-primary);color:var(--bg-deep);border-radius:6px;cursor:pointer;line-height:1.4;">EN</button>
+      <button data-lang="ar" style="padding:4px 12px;font-size:12px;font-weight:600;border:none;background:transparent;color:var(--fg-dim);border-radius:6px;cursor:pointer;line-height:1.4;">AR</button>
+    </div>
+    <div class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg> <span data-i18n="lgl.badge">Legal</span></div>
+    <h1 data-i18n="lgl.title">Legal &amp; Compliance</h1>
+    <p data-i18n="lgl.intro">The terms, privacy practices and disclaimers that govern your use of AlphaCouncil.</p>
   </section>
 
   <div class="legal-tabs">
-    <a href="#terms" class="legal-tab">Terms of Service</a>
-    <a href="#privacy" class="legal-tab">Privacy Policy</a>
-    <a href="#disclaimer" class="legal-tab">Disclaimer</a>
+    <a href="#terms" class="legal-tab" data-i18n="lgl.tab_terms">Terms of Service</a>
+    <a href="#privacy" class="legal-tab" data-i18n="lgl.tab_privacy">Privacy Policy</a>
+    <a href="#disclaimer" class="legal-tab" data-i18n="lgl.tab_disclaimer">Disclaimer</a>
   </div>
 
   <div class="legal-wrap">
-    <div class="review-flag">These documents are provided as clear, good-faith templates and are pending final review by qualified legal counsel in the relevant jurisdiction. They do not yet constitute a binding legal agreement and will be updated when finalised.</div>
+    <div class="legal-translation-note" data-i18n="lgl.convenience_note">This Arabic translation is provided for convenience only. In case of any discrepancy, the English version of these terms prevails.</div>
+    <div class="review-flag" data-i18n="lgl.review_flag">These documents are provided as clear, good-faith templates and are pending final review by qualified legal counsel in the relevant jurisdiction. They do not yet constitute a binding legal agreement and will be updated when finalised.</div>
 
     <section class="legal-block" id="terms">
-      <div class="updated">Last updated: June 2026</div>
-      <h2>Terms of Service</h2>
-      <p>These Terms of Service (&ldquo;Terms&rdquo;) govern your access to and use of the AlphaCouncil website, applications and services (the &ldquo;Service&rdquo;). By creating an account or using the Service, you agree to these Terms.</p>
+      <div class="updated" data-i18n="lgl.updated">Last updated: June 2026</div>
+      <h2 data-i18n="lgl.terms_h">Terms of Service</h2>
+      <p data-i18n="lgl.terms_intro">These Terms of Service (&ldquo;Terms&rdquo;) govern your access to and use of the AlphaCouncil website, applications and services (the &ldquo;Service&rdquo;). By creating an account or using the Service, you agree to these Terms.</p>
 
-      <h3>1. The Service</h3>
-      <p>AlphaCouncil provides data-driven research, scoring and educational analysis for GCC-listed equities. The Service is provided for informational purposes only and does not constitute financial, investment, legal or tax advice.</p>
+      <h3 data-i18n="lgl.terms_1_h">1. The Service</h3>
+      <p data-i18n="lgl.terms_1_p">AlphaCouncil provides data-driven research, scoring and educational analysis for GCC-listed equities. The Service is provided for informational purposes only and does not constitute financial, investment, legal or tax advice.</p>
 
-      <h3>2. Accounts</h3>
-      <p>You are responsible for maintaining the confidentiality of your account credentials and for all activity under your account. You agree to provide accurate information and to notify us promptly of any unauthorised use. You must be of legal age in your jurisdiction to use the Service.</p>
+      <h3 data-i18n="lgl.terms_2_h">2. Accounts</h3>
+      <p data-i18n="lgl.terms_2_p">You are responsible for maintaining the confidentiality of your account credentials and for all activity under your account. You agree to provide accurate information and to notify us promptly of any unauthorised use. You must be of legal age in your jurisdiction to use the Service.</p>
 
-      <h3>3. Acceptable use</h3>
-      <p>You agree not to misuse the Service. In particular, you will not:</p>
+      <h3 data-i18n="lgl.terms_3_h">3. Acceptable use</h3>
+      <p data-i18n="lgl.terms_3_p">You agree not to misuse the Service. In particular, you will not:</p>
       <ul>
-        <li>scrape, resell or redistribute our data or analysis without written permission;</li>
-        <li>attempt to gain unauthorised access to our systems or other users&rsquo; data;</li>
-        <li>use the Service to violate any applicable law or regulation; or</li>
-        <li>represent our analysis as licensed advice or as your own.</li>
+        <li data-i18n="lgl.terms_3_li1">scrape, resell or redistribute our data or analysis without written permission;</li>
+        <li data-i18n="lgl.terms_3_li2">attempt to gain unauthorised access to our systems or other users&rsquo; data;</li>
+        <li data-i18n="lgl.terms_3_li3">use the Service to violate any applicable law or regulation; or</li>
+        <li data-i18n="lgl.terms_3_li4">represent our analysis as licensed advice or as your own.</li>
       </ul>
 
-      <h3>4. Subscriptions &amp; billing</h3>
-      <p>Certain features require a paid subscription. Plan inclusions, usage limits and prices are shown on the pricing page and may change with reasonable notice. A free plan is available; paid plans renew until cancelled. Where required by law, applicable refund rights apply.</p>
+      <h3 data-i18n="lgl.terms_4_h">4. Subscriptions &amp; billing</h3>
+      <p data-i18n="lgl.terms_4_p">Certain features require a paid subscription. Plan inclusions, usage limits and prices are shown on the pricing page and may change with reasonable notice. A free plan is available; paid plans renew until cancelled. Where required by law, applicable refund rights apply.</p>
 
-      <h3>5. Intellectual property</h3>
-      <p>The Service, including its design, scoring methodology and generated analysis, is owned by AlphaCouncil and protected by intellectual-property laws. We grant you a limited, non-exclusive, non-transferable licence to use the Service for your personal investment research.</p>
+      <h3 data-i18n="lgl.terms_5_h">5. Intellectual property</h3>
+      <p data-i18n="lgl.terms_5_p">The Service, including its design, scoring methodology and generated analysis, is owned by AlphaCouncil and protected by intellectual-property laws. We grant you a limited, non-exclusive, non-transferable licence to use the Service for your personal investment research.</p>
 
-      <h3>6. Disclaimers &amp; limitation of liability</h3>
-      <p>The Service is provided &ldquo;as is&rdquo; without warranties of any kind. To the maximum extent permitted by law, AlphaCouncil is not liable for any investment losses or for any indirect, incidental or consequential damages arising from your use of the Service. See the <a href="#disclaimer" style="color:var(--accent-primary);">Disclaimer</a> below.</p>
+      <h3 data-i18n="lgl.terms_6_h">6. Disclaimers &amp; limitation of liability</h3>
+      <p><span data-i18n="lgl.terms_6_p1">The Service is provided &ldquo;as is&rdquo; without warranties of any kind. To the maximum extent permitted by law, AlphaCouncil is not liable for any investment losses or for any indirect, incidental or consequential damages arising from your use of the Service. See the </span><a href="#disclaimer" style="color:var(--accent-primary);" data-i18n="lgl.terms_6_link">Disclaimer</a><span data-i18n="lgl.terms_6_p2"> below.</span></p>
 
-      <h3>7. Changes &amp; termination</h3>
-      <p>We may update these Terms or the Service over time. Continued use after changes constitutes acceptance. We may suspend or terminate accounts that breach these Terms.</p>
+      <h3 data-i18n="lgl.terms_7_h">7. Changes &amp; termination</h3>
+      <p data-i18n="lgl.terms_7_p">We may update these Terms or the Service over time. Continued use after changes constitutes acceptance. We may suspend or terminate accounts that breach these Terms.</p>
 
-      <h3>8. Contact</h3>
-      <p>Questions about these Terms? <a href="contact.html" style="color:var(--accent-primary);">Get in touch</a>.</p>
+      <h3 data-i18n="lgl.terms_8_h">8. Contact</h3>
+      <p><span data-i18n="lgl.terms_8_p1">Questions about these Terms? </span><a href="contact.html" style="color:var(--accent-primary);" data-i18n="lgl.terms_8_link">Get in touch</a><span data-i18n="lgl.terms_8_p2">.</span></p>
     </section>
 
     <section class="legal-block" id="privacy">
-      <div class="updated">Last updated: June 2026</div>
-      <h2>Privacy Policy</h2>
-      <p>This Privacy Policy explains what information AlphaCouncil collects, how we use it, and the choices you have. We aim to collect only what we need to run the Service well.</p>
+      <div class="updated" data-i18n="lgl.updated">Last updated: June 2026</div>
+      <h2 data-i18n="lgl.privacy_h">Privacy Policy</h2>
+      <p data-i18n="lgl.privacy_intro">This Privacy Policy explains what information AlphaCouncil collects, how we use it, and the choices you have. We aim to collect only what we need to run the Service well.</p>
 
-      <h3>1. Information we collect</h3>
+      <h3 data-i18n="lgl.privacy_1_h">1. Information we collect</h3>
       <ul>
-        <li><strong>Account information</strong> &mdash; your email address and authentication details when you register.</li>
-        <li><strong>Portfolio &amp; preferences</strong> &mdash; the holdings and risk profile you choose to add, used to personalise your dashboard and analysis.</li>
-        <li><strong>Usage data</strong> &mdash; basic technical and interaction data to keep the Service secure and improve it.</li>
+        <li><strong data-i18n="lgl.privacy_1_li1_b">Account information</strong> <span data-i18n="lgl.privacy_1_li1_t">&mdash; your email address and authentication details when you register.</span></li>
+        <li><strong data-i18n="lgl.privacy_1_li2_b">Portfolio &amp; preferences</strong> <span data-i18n="lgl.privacy_1_li2_t">&mdash; the holdings and risk profile you choose to add, used to personalise your dashboard and analysis.</span></li>
+        <li><strong data-i18n="lgl.privacy_1_li3_b">Usage data</strong> <span data-i18n="lgl.privacy_1_li3_t">&mdash; basic technical and interaction data to keep the Service secure and improve it.</span></li>
       </ul>
 
-      <h3>2. How we use it</h3>
-      <p>We use your information to provide and personalise the Service, to authenticate you, to respond to enquiries, and to maintain security and reliability. We do not sell your personal information.</p>
+      <h3 data-i18n="lgl.privacy_2_h">2. How we use it</h3>
+      <p data-i18n="lgl.privacy_2_p">We use your information to provide and personalise the Service, to authenticate you, to respond to enquiries, and to maintain security and reliability. We do not sell your personal information.</p>
 
-      <h3>3. Your portfolio data</h3>
-      <div class="legal-callout"><p>Your holdings are yours. We use them only to power your own dashboard, adviser and Council reviews. We do not sell, share or publish your portfolio, and we do not compile it with other users&rsquo; data for resale.</p></div>
+      <h3 data-i18n="lgl.privacy_3_h">3. Your portfolio data</h3>
+      <div class="legal-callout"><p data-i18n="lgl.privacy_3_callout">Your holdings are yours. We use them only to power your own dashboard, adviser and Council reviews. We do not sell, share or publish your portfolio, and we do not compile it with other users&rsquo; data for resale.</p></div>
 
-      <h3>4. Cookies</h3>
-      <p>We use a small number of essential cookies (for example, to keep you signed in and to protect against cross-site request forgery). We minimise non-essential cookies and do not use your data for third-party ad targeting.</p>
+      <h3 data-i18n="lgl.privacy_4_h">4. Cookies</h3>
+      <p data-i18n="lgl.privacy_4_p">We use a small number of essential cookies (for example, to keep you signed in and to protect against cross-site request forgery). We minimise non-essential cookies and do not use your data for third-party ad targeting.</p>
 
-      <h3>5. Data security &amp; retention</h3>
-      <p>We use reasonable technical and organisational measures to protect your data, including encrypted credentials and access controls. We retain your information for as long as your account is active or as needed to provide the Service and meet legal obligations.</p>
+      <h3 data-i18n="lgl.privacy_5_h">5. Data security &amp; retention</h3>
+      <p data-i18n="lgl.privacy_5_p">We use reasonable technical and organisational measures to protect your data, including encrypted credentials and access controls. We retain your information for as long as your account is active or as needed to provide the Service and meet legal obligations.</p>
 
-      <h3>6. Your rights</h3>
-      <p>You may access, correct or delete your account data, and you can contact us to exercise privacy rights available under applicable law. To request deletion of your account, <a href="contact.html" style="color:var(--accent-primary);">contact us</a>.</p>
+      <h3 data-i18n="lgl.privacy_6_h">6. Your rights</h3>
+      <p><span data-i18n="lgl.privacy_6_p1">You may access, correct or delete your account data, and you can contact us to exercise privacy rights available under applicable law. To request deletion of your account, </span><a href="contact.html" style="color:var(--accent-primary);" data-i18n="lgl.privacy_6_link">contact us</a><span data-i18n="lgl.privacy_6_p2">.</span></p>
     </section>
 
     <section class="legal-block" id="disclaimer">
-      <div class="updated">Last updated: June 2026</div>
-      <h2>Disclaimer</h2>
-      <div class="legal-callout"><p><strong>AlphaCouncil is not a licensed financial adviser.</strong> The Service provides data-driven information and educational analysis only. It does not provide personalised investment advice, execute trades, manage money, or recommend that you buy or sell any specific security.</p></div>
+      <div class="updated" data-i18n="lgl.updated">Last updated: June 2026</div>
+      <h2 data-i18n="lgl.disclaimer_h">Disclaimer</h2>
+      <div class="legal-callout"><p><strong data-i18n="lgl.disclaimer_callout_b">AlphaCouncil is not a licensed financial adviser.</strong> <span data-i18n="lgl.disclaimer_callout_t">The Service provides data-driven information and educational analysis only. It does not provide personalised investment advice, execute trades, manage money, or recommend that you buy or sell any specific security.</span></p></div>
 
-      <h3>Informational purposes only</h3>
-      <p>All scores, theses, Council reviews and other content are produced by automated models and data pipelines for general informational and educational purposes. They are one structured input into your own research &mdash; not a directive, signal or guarantee.</p>
+      <h3 data-i18n="lgl.disclaimer_1_h">Informational purposes only</h3>
+      <p data-i18n="lgl.disclaimer_1_p">All scores, theses, Council reviews and other content are produced by automated models and data pipelines for general informational and educational purposes. They are one structured input into your own research &mdash; not a directive, signal or guarantee.</p>
 
-      <h3>No guarantee of accuracy</h3>
-      <p>Our analysis draws on third-party data (including market data and broker research) that may contain errors, gaps or delays. Where data is missing, we show a dash rather than a guess &mdash; but we cannot warrant that all information is complete, accurate or current. Always verify figures before acting on them.</p>
+      <h3 data-i18n="lgl.disclaimer_2_h">No guarantee of accuracy</h3>
+      <p data-i18n="lgl.disclaimer_2_p">Our analysis draws on third-party data (including market data and broker research) that may contain errors, gaps or delays. Where data is missing, we show a dash rather than a guess &mdash; but we cannot warrant that all information is complete, accurate or current. Always verify figures before acting on them.</p>
 
-      <h3>Past performance is not indicative of future results</h3>
-      <p>Markets carry risk. The value of investments can go down as well as up, and you may get back less than you invested. Historical performance, scores or scenarios do not predict or guarantee future outcomes.</p>
+      <h3 data-i18n="lgl.disclaimer_3_h">Past performance is not indicative of future results</h3>
+      <p data-i18n="lgl.disclaimer_3_p">Markets carry risk. The value of investments can go down as well as up, and you may get back less than you invested. Historical performance, scores or scenarios do not predict or guarantee future outcomes.</p>
 
-      <h3>Your decisions are your own</h3>
-      <p>You are solely responsible for your investment decisions. Consider your own financial situation, objectives and risk tolerance, and consult a licensed financial adviser in your jurisdiction before making investment decisions. AlphaCouncil accepts no liability for losses arising from reliance on the Service.</p>
+      <h3 data-i18n="lgl.disclaimer_4_h">Your decisions are your own</h3>
+      <p data-i18n="lgl.disclaimer_4_p">You are solely responsible for your investment decisions. Consider your own financial situation, objectives and risk tolerance, and consult a licensed financial adviser in your jurisdiction before making investment decisions. AlphaCouncil accepts no liability for losses arising from reliance on the Service.</p>
 
-      <p style="margin-top:18px;">Questions about this disclaimer? <a href="contact.html" style="color:var(--accent-primary);">Contact us</a>.</p>
+      <p style="margin-top:18px;"><span data-i18n="lgl.disclaimer_contact_p1">Questions about this disclaimer? </span><a href="contact.html" style="color:var(--accent-primary);" data-i18n="lgl.disclaimer_contact_link">Contact us</a><span data-i18n="lgl.disclaimer_contact_p2">.</span></p>
     </section>
   </div>
 
@@ -560,47 +571,140 @@
       <div class="ac-footer-top">
         <div class="ac-footer-brand">
           <a href="index.html" class="ac-flogo">AlphaCouncil</a>
-          <p>AI-powered portfolio intelligence for GCC stock investors. Understand your portfolio before the market moves.</p>
+          <p data-i18n="lgl.footer_tagline">AI-powered portfolio intelligence for GCC stock investors. Understand your portfolio before the market moves.</p>
         </div>
         <div class="ac-footer-col">
-          <h4>Product</h4>
+          <h4 data-i18n="lgl.footer_product">Product</h4>
           <ul>
-            <li><a href="how-it-works.html">How it works</a></li>
-            <li><a href="features.html">Features</a></li>
-            <li><a href="pricing.html">Pricing</a></li>
-            <li><a href="methodology.html">Methodology</a></li>
+            <li><a href="how-it-works.html" data-i18n="mnav.how_it_works">How it works</a></li>
+            <li><a href="features.html" data-i18n="mnav.features">Features</a></li>
+            <li><a href="pricing.html" data-i18n="mnav.pricing">Pricing</a></li>
+            <li><a href="methodology.html" data-i18n="mnav.methodology">Methodology</a></li>
           </ul>
         </div>
         <div class="ac-footer-col">
-          <h4>Markets</h4>
+          <h4 data-i18n="lgl.footer_markets">Markets</h4>
           <ul>
-            <li><a href="markets.html#saudi">Saudi (Tadawul)</a></li>
-            <li><a href="markets.html#uae">UAE (ADX / DFM)</a></li>
-            <li><a href="markets.html#qatar">Qatar (QSE)</a></li>
-            <li><a href="markets.html#kuwait">Kuwait (Boursa)</a></li>
+            <li><a href="markets.html#saudi" data-i18n="lgl.footer_saudi">Saudi (Tadawul)</a></li>
+            <li><a href="markets.html#uae" data-i18n="lgl.footer_uae">UAE (ADX / DFM)</a></li>
+            <li><a href="markets.html#qatar" data-i18n="lgl.footer_qatar">Qatar (QSE)</a></li>
+            <li><a href="markets.html#kuwait" data-i18n="lgl.footer_kuwait">Kuwait (Boursa)</a></li>
           </ul>
         </div>
         <div class="ac-footer-col">
-          <h4>Company</h4>
+          <h4 data-i18n="lgl.footer_company">Company</h4>
           <ul>
-            <li><a href="login.html">Sign in</a></li>
-            <li><a href="signup.html">Start free</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="contact.html">Contact</a></li>
+            <li><a href="login.html" data-i18n="mnav.sign_in">Sign in</a></li>
+            <li><a href="signup.html" data-i18n="mnav.start_free">Start free</a></li>
+            <li><a href="about.html" data-i18n="mnav.about">About</a></li>
+            <li><a href="contact.html" data-i18n="mnav.contact">Contact</a></li>
           </ul>
         </div>
       </div>
       <div class="ac-footer-bottom">
-        <p class="ac-copy">&copy; 2026 AlphaCouncil. All rights reserved.</p>
+        <p class="ac-copy" data-i18n="lgl.footer_copyright">&copy; 2026 AlphaCouncil. All rights reserved.</p>
         <div class="ac-legal">
-          <a href="legal.html#terms">Terms</a>
-          <a href="legal.html#privacy">Privacy</a>
-          <a href="legal.html#disclaimer">Disclaimer</a>
+          <a href="legal.html#terms" data-i18n="lgl.footer_terms">Terms</a>
+          <a href="legal.html#privacy" data-i18n="lgl.footer_privacy">Privacy</a>
+          <a href="legal.html#disclaimer" data-i18n="lgl.footer_disclaimer">Disclaimer</a>
         </div>
       </div>
     </div>
   </footer>
 
+  <script src="js/i18n.js"></script>
+  <script>
+    /* Legal & Compliance page strings. EN is byte-identical to the visible source text;
+       AR is a faithful, formal MSA legal translation. Convenience-only — English prevails. */
+    AC_I18N.add({
+      'lgl.badge': { en: 'Legal', ar: 'الشؤون القانونية' },
+      'lgl.title': { en: 'Legal & Compliance', ar: 'الشؤون القانونية والامتثال' },
+      'lgl.intro': { en: 'The terms, privacy practices and disclaimers that govern your use of AlphaCouncil.', ar: 'الشروط وممارسات الخصوصية وإخلاءات المسؤولية التي تحكم استخدامك لخدمة AlphaCouncil.' },
+      'lgl.tab_terms': { en: 'Terms of Service', ar: 'شروط الخدمة' },
+      'lgl.tab_privacy': { en: 'Privacy Policy', ar: 'سياسة الخصوصية' },
+      'lgl.tab_disclaimer': { en: 'Disclaimer', ar: 'إخلاء المسؤولية' },
+      'lgl.convenience_note': { en: 'This Arabic translation is provided for convenience only. In case of any discrepancy, the English version of these terms prevails.', ar: 'هذه الترجمة العربية مقدّمة للتيسير فقط. في حال وجود أي تعارض، يُعتمد النص الإنجليزي لهذه الشروط.' },
+      'lgl.review_flag': { en: 'These documents are provided as clear, good-faith templates and are pending final review by qualified legal counsel in the relevant jurisdiction. They do not yet constitute a binding legal agreement and will be updated when finalised.', ar: 'تُقدَّم هذه المستندات بوصفها نماذج واضحة وحسنة النية، وهي قيد المراجعة النهائية من قِبل مستشار قانوني مؤهَّل في الولاية القضائية ذات الصلة. وهي لا تشكّل بعد اتفاقًا قانونيًا مُلزِمًا وسيتم تحديثها عند وضعها في صيغتها النهائية.' },
+      'lgl.updated': { en: 'Last updated: June 2026', ar: 'آخر تحديث: يونيو 2026' },
+
+      'lgl.terms_h': { en: 'Terms of Service', ar: 'شروط الخدمة' },
+      'lgl.terms_intro': { en: 'These Terms of Service (“Terms”) govern your access to and use of the AlphaCouncil website, applications and services (the “Service”). By creating an account or using the Service, you agree to these Terms.', ar: 'تحكم شروط الخدمة هذه ("الشروط") وصولك إلى موقع AlphaCouncil وتطبيقاته وخدماته واستخدامك لها ("الخدمة"). وبإنشائك حسابًا أو استخدامك الخدمة، فإنك توافق على هذه الشروط.' },
+      'lgl.terms_1_h': { en: '1. The Service', ar: '1. الخدمة' },
+      'lgl.terms_1_p': { en: 'AlphaCouncil provides data-driven research, scoring and educational analysis for GCC-listed equities. The Service is provided for informational purposes only and does not constitute financial, investment, legal or tax advice.', ar: 'تقدّم AlphaCouncil أبحاثًا قائمة على البيانات وتقييمات وتحليلات تثقيفية للأسهم المدرجة في أسواق دول مجلس التعاون الخليجي. وتُقدَّم الخدمة لأغراض إعلامية فقط ولا تشكّل استشارة مالية أو استثمارية أو قانونية أو ضريبية.' },
+      'lgl.terms_2_h': { en: '2. Accounts', ar: '2. الحسابات' },
+      'lgl.terms_2_p': { en: 'You are responsible for maintaining the confidentiality of your account credentials and for all activity under your account. You agree to provide accurate information and to notify us promptly of any unauthorised use. You must be of legal age in your jurisdiction to use the Service.', ar: 'تتحمّل مسؤولية الحفاظ على سرية بيانات اعتماد حسابك وعن جميع الأنشطة التي تجري ضمن حسابك. وتوافق على تقديم معلومات دقيقة وإخطارنا فورًا بأي استخدام غير مصرّح به. ويجب أن تكون قد بلغت السن القانونية في ولايتك القضائية لاستخدام الخدمة.' },
+      'lgl.terms_3_h': { en: '3. Acceptable use', ar: '3. الاستخدام المقبول' },
+      'lgl.terms_3_p': { en: 'You agree not to misuse the Service. In particular, you will not:', ar: 'توافق على عدم إساءة استخدام الخدمة. وعلى وجه الخصوص، لن تقوم بما يلي:' },
+      'lgl.terms_3_li1': { en: 'scrape, resell or redistribute our data or analysis without written permission;', ar: 'استخلاص بياناتنا أو تحليلاتنا أو إعادة بيعها أو إعادة توزيعها دون إذن خطي؛' },
+      'lgl.terms_3_li2': { en: 'attempt to gain unauthorised access to our systems or other users’ data;', ar: 'محاولة الوصول غير المصرّح به إلى أنظمتنا أو إلى بيانات المستخدمين الآخرين؛' },
+      'lgl.terms_3_li3': { en: 'use the Service to violate any applicable law or regulation; or', ar: 'استخدام الخدمة لانتهاك أي قانون أو لائحة سارية؛ أو' },
+      'lgl.terms_3_li4': { en: 'represent our analysis as licensed advice or as your own.', ar: 'تقديم تحليلاتنا على أنها استشارة مرخّصة أو على أنها من إعدادك.' },
+      'lgl.terms_4_h': { en: '4. Subscriptions & billing', ar: '4. الاشتراكات والفوترة' },
+      'lgl.terms_4_p': { en: 'Certain features require a paid subscription. Plan inclusions, usage limits and prices are shown on the pricing page and may change with reasonable notice. A free plan is available; paid plans renew until cancelled. Where required by law, applicable refund rights apply.', ar: 'تتطلّب بعض الميزات اشتراكًا مدفوعًا. وتُعرض مشمولات الخطط وحدود الاستخدام والأسعار في صفحة الأسعار، وقد تتغيّر بعد إشعار معقول. وتتوفّر خطة مجانية؛ أما الخطط المدفوعة فتُجدَّد إلى حين إلغائها. وحيثما يقتضي القانون ذلك، تُطبَّق حقوق الاسترداد السارية.' },
+      'lgl.terms_5_h': { en: '5. Intellectual property', ar: '5. الملكية الفكرية' },
+      'lgl.terms_5_p': { en: 'The Service, including its design, scoring methodology and generated analysis, is owned by AlphaCouncil and protected by intellectual-property laws. We grant you a limited, non-exclusive, non-transferable licence to use the Service for your personal investment research.', ar: 'الخدمة، بما في ذلك تصميمها ومنهجية التقييم والتحليلات المُنشأة، مملوكة لشركة AlphaCouncil ومحمية بموجب قوانين الملكية الفكرية. ونمنحك ترخيصًا محدودًا وغير حصري وغير قابل للتحويل لاستخدام الخدمة لأغراض أبحاثك الاستثمارية الشخصية.' },
+      'lgl.terms_6_h': { en: '6. Disclaimers & limitation of liability', ar: '6. إخلاءات المسؤولية وتحديد المسؤولية' },
+      'lgl.terms_6_p1': { en: 'The Service is provided “as is” without warranties of any kind. To the maximum extent permitted by law, AlphaCouncil is not liable for any investment losses or for any indirect, incidental or consequential damages arising from your use of the Service. See the ', ar: 'تُقدَّم الخدمة "كما هي" دون أي ضمانات من أي نوع. وإلى أقصى حد يسمح به القانون، لا تتحمّل AlphaCouncil المسؤولية عن أي خسائر استثمارية أو عن أي أضرار غير مباشرة أو عرضية أو تبعية تنشأ عن استخدامك الخدمة. راجع ' },
+      'lgl.terms_6_link': { en: 'Disclaimer', ar: 'إخلاء المسؤولية' },
+      'lgl.terms_6_p2': { en: ' below.', ar: ' أدناه.' },
+      'lgl.terms_7_h': { en: '7. Changes & termination', ar: '7. التغييرات والإنهاء' },
+      'lgl.terms_7_p': { en: 'We may update these Terms or the Service over time. Continued use after changes constitutes acceptance. We may suspend or terminate accounts that breach these Terms.', ar: 'يجوز لنا تحديث هذه الشروط أو الخدمة من وقت لآخر. ويُعدّ استمرارك في الاستخدام بعد إجراء التغييرات قبولًا بها. ويجوز لنا تعليق أو إنهاء الحسابات التي تخالف هذه الشروط.' },
+      'lgl.terms_8_h': { en: '8. Contact', ar: '8. التواصل' },
+      'lgl.terms_8_p1': { en: 'Questions about these Terms? ', ar: 'هل لديك أسئلة بشأن هذه الشروط؟ ' },
+      'lgl.terms_8_link': { en: 'Get in touch', ar: 'تواصل معنا' },
+      'lgl.terms_8_p2': { en: '.', ar: '.' },
+
+      'lgl.privacy_h': { en: 'Privacy Policy', ar: 'سياسة الخصوصية' },
+      'lgl.privacy_intro': { en: 'This Privacy Policy explains what information AlphaCouncil collects, how we use it, and the choices you have. We aim to collect only what we need to run the Service well.', ar: 'توضّح سياسة الخصوصية هذه ما الذي تجمعه AlphaCouncil من معلومات، وكيفية استخدامنا لها، والخيارات المتاحة لك. ونحرص على ألا نجمع سوى ما نحتاج إليه لتشغيل الخدمة على نحو جيد.' },
+      'lgl.privacy_1_h': { en: '1. Information we collect', ar: '1. المعلومات التي نجمعها' },
+      'lgl.privacy_1_li1_b': { en: 'Account information', ar: 'معلومات الحساب' },
+      'lgl.privacy_1_li1_t': { en: '— your email address and authentication details when you register.', ar: '— عنوان بريدك الإلكتروني وبيانات المصادقة عند تسجيلك.' },
+      'lgl.privacy_1_li2_b': { en: 'Portfolio & preferences', ar: 'المحفظة والتفضيلات' },
+      'lgl.privacy_1_li2_t': { en: '— the holdings and risk profile you choose to add, used to personalise your dashboard and analysis.', ar: '— المراكز ومستوى تحمّل المخاطر التي تختار إضافتها، والمستخدمة لتخصيص لوحة تحكمك وتحليلاتك.' },
+      'lgl.privacy_1_li3_b': { en: 'Usage data', ar: 'بيانات الاستخدام' },
+      'lgl.privacy_1_li3_t': { en: '— basic technical and interaction data to keep the Service secure and improve it.', ar: '— بيانات تقنية وتفاعلية أساسية للحفاظ على أمان الخدمة وتحسينها.' },
+      'lgl.privacy_2_h': { en: '2. How we use it', ar: '2. كيفية استخدامنا لها' },
+      'lgl.privacy_2_p': { en: 'We use your information to provide and personalise the Service, to authenticate you, to respond to enquiries, and to maintain security and reliability. We do not sell your personal information.', ar: 'نستخدم معلوماتك لتقديم الخدمة وتخصيصها، وللتحقق من هويتك، وللرد على الاستفسارات، وللحفاظ على الأمان والموثوقية. ونحن لا نبيع معلوماتك الشخصية.' },
+      'lgl.privacy_3_h': { en: '3. Your portfolio data', ar: '3. بيانات محفظتك' },
+      'lgl.privacy_3_callout': { en: 'Your holdings are yours. We use them only to power your own dashboard, adviser and Council reviews. We do not sell, share or publish your portfolio, and we do not compile it with other users’ data for resale.', ar: 'مراكزك ملك لك. ونحن نستخدمها فقط لتشغيل لوحة تحكمك ومستشارك ومراجعات المجلس الخاصة بك. ولا نبيع محفظتك أو نشاركها أو ننشرها، ولا نجمّعها مع بيانات المستخدمين الآخرين لإعادة بيعها.' },
+      'lgl.privacy_4_h': { en: '4. Cookies', ar: '4. ملفات تعريف الارتباط' },
+      'lgl.privacy_4_p': { en: 'We use a small number of essential cookies (for example, to keep you signed in and to protect against cross-site request forgery). We minimise non-essential cookies and do not use your data for third-party ad targeting.', ar: 'نستخدم عددًا قليلًا من ملفات تعريف الارتباط الأساسية (على سبيل المثال، لإبقائك مسجَّل الدخول وللحماية من تزوير الطلبات عبر المواقع). ونقلّل من ملفات تعريف الارتباط غير الأساسية إلى أدنى حد، ولا نستخدم بياناتك في الاستهداف الإعلاني من جهات خارجية.' },
+      'lgl.privacy_5_h': { en: '5. Data security & retention', ar: '5. أمن البيانات والاحتفاظ بها' },
+      'lgl.privacy_5_p': { en: 'We use reasonable technical and organisational measures to protect your data, including encrypted credentials and access controls. We retain your information for as long as your account is active or as needed to provide the Service and meet legal obligations.', ar: 'نتّخذ تدابير تقنية وتنظيمية معقولة لحماية بياناتك، بما في ذلك تشفير بيانات الاعتماد وضوابط الوصول. ونحتفظ بمعلوماتك طالما ظل حسابك نشطًا أو بالقدر اللازم لتقديم الخدمة والوفاء بالالتزامات القانونية.' },
+      'lgl.privacy_6_h': { en: '6. Your rights', ar: '6. حقوقك' },
+      'lgl.privacy_6_p1': { en: 'You may access, correct or delete your account data, and you can contact us to exercise privacy rights available under applicable law. To request deletion of your account, ', ar: 'يحق لك الوصول إلى بيانات حسابك أو تصحيحها أو حذفها، ويمكنك التواصل معنا لممارسة حقوق الخصوصية المتاحة بموجب القانون الساري. ولطلب حذف حسابك، ' },
+      'lgl.privacy_6_link': { en: 'contact us', ar: 'تواصل معنا' },
+      'lgl.privacy_6_p2': { en: '.', ar: '.' },
+
+      'lgl.disclaimer_h': { en: 'Disclaimer', ar: 'إخلاء المسؤولية' },
+      'lgl.disclaimer_callout_b': { en: 'AlphaCouncil is not a licensed financial adviser.', ar: 'AlphaCouncil ليست مستشارًا ماليًا مرخّصًا.' },
+      'lgl.disclaimer_callout_t': { en: 'The Service provides data-driven information and educational analysis only. It does not provide personalised investment advice, execute trades, manage money, or recommend that you buy or sell any specific security.', ar: 'تقدّم الخدمة معلومات قائمة على البيانات وتحليلات تثقيفية فقط. وهي لا تقدّم استشارات استثمارية مخصّصة، ولا تنفّذ صفقات، ولا تدير الأموال، ولا توصي بشراء أو بيع أي ورقة مالية بعينها.' },
+      'lgl.disclaimer_1_h': { en: 'Informational purposes only', ar: 'لأغراض إعلامية فقط' },
+      'lgl.disclaimer_1_p': { en: 'All scores, theses, Council reviews and other content are produced by automated models and data pipelines for general informational and educational purposes. They are one structured input into your own research — not a directive, signal or guarantee.', ar: 'تُنتَج جميع التقييمات والأطروحات ومراجعات المجلس وسائر المحتوى بواسطة نماذج آلية وخطوط معالجة بيانات لأغراض إعلامية وتثقيفية عامة. وهي تمثّل أحد المدخلات المنظَّمة في أبحاثك الخاصة — وليست توجيهًا أو إشارة أو ضمانًا.' },
+      'lgl.disclaimer_2_h': { en: 'No guarantee of accuracy', ar: 'لا ضمان للدقة' },
+      'lgl.disclaimer_2_p': { en: 'Our analysis draws on third-party data (including market data and broker research) that may contain errors, gaps or delays. Where data is missing, we show a dash rather than a guess — but we cannot warrant that all information is complete, accurate or current. Always verify figures before acting on them.', ar: 'تعتمد تحليلاتنا على بيانات من جهات خارجية (بما في ذلك بيانات السوق وأبحاث الوسطاء) قد تتضمّن أخطاءً أو ثغراتٍ أو تأخيرات. وحيثما تكون البيانات مفقودة، نعرض شَرطة بدلًا من التخمين — غير أننا لا نستطيع أن نضمن أن جميع المعلومات كاملة أو دقيقة أو محدّثة. تحقّق دائمًا من الأرقام قبل التصرّف بناءً عليها.' },
+      'lgl.disclaimer_3_h': { en: 'Past performance is not indicative of future results', ar: 'الأداء السابق لا يدل على النتائج المستقبلية' },
+      'lgl.disclaimer_3_p': { en: 'Markets carry risk. The value of investments can go down as well as up, and you may get back less than you invested. Historical performance, scores or scenarios do not predict or guarantee future outcomes.', ar: 'تنطوي الأسواق على مخاطر. فقيمة الاستثمارات قد تنخفض كما قد ترتفع، وقد تسترد مبلغًا أقل مما استثمرت. والأداء التاريخي أو التقييمات أو السيناريوهات لا تتنبّأ بالنتائج المستقبلية ولا تضمنها.' },
+      'lgl.disclaimer_4_h': { en: 'Your decisions are your own', ar: 'قراراتك مسؤوليتك وحدك' },
+      'lgl.disclaimer_4_p': { en: 'You are solely responsible for your investment decisions. Consider your own financial situation, objectives and risk tolerance, and consult a licensed financial adviser in your jurisdiction before making investment decisions. AlphaCouncil accepts no liability for losses arising from reliance on the Service.', ar: 'أنت وحدك المسؤول عن قراراتك الاستثمارية. ضع في اعتبارك وضعك المالي وأهدافك ومدى تحمّلك للمخاطر، واستشر مستشارًا ماليًا مرخّصًا في ولايتك القضائية قبل اتخاذ القرارات الاستثمارية. ولا تتحمّل AlphaCouncil أي مسؤولية عن الخسائر الناشئة عن الاعتماد على الخدمة.' },
+      'lgl.disclaimer_contact_p1': { en: 'Questions about this disclaimer? ', ar: 'هل لديك أسئلة بشأن إخلاء المسؤولية هذا؟ ' },
+      'lgl.disclaimer_contact_link': { en: 'Contact us', ar: 'تواصل معنا' },
+      'lgl.disclaimer_contact_p2': { en: '.', ar: '.' },
+
+      'lgl.footer_tagline': { en: 'AI-powered portfolio intelligence for GCC stock investors. Understand your portfolio before the market moves.', ar: 'ذكاء استثماري مدعوم بالذكاء الاصطناعي لمستثمري أسهم دول مجلس التعاون الخليجي. افهم محفظتك قبل أن يتحرك السوق.' },
+      'lgl.footer_product': { en: 'Product', ar: 'المنتج' },
+      'lgl.footer_markets': { en: 'Markets', ar: 'الأسواق' },
+      'lgl.footer_saudi': { en: 'Saudi (Tadawul)', ar: 'السعودية (تداول)' },
+      'lgl.footer_uae': { en: 'UAE (ADX / DFM)', ar: 'الإمارات (سوق أبوظبي / سوق دبي)' },
+      'lgl.footer_qatar': { en: 'Qatar (QSE)', ar: 'قطر (بورصة قطر)' },
+      'lgl.footer_kuwait': { en: 'Kuwait (Boursa)', ar: 'الكويت (بورصة الكويت)' },
+      'lgl.footer_company': { en: 'Company', ar: 'الشركة' },
+      'lgl.footer_copyright': { en: '© 2026 AlphaCouncil. All rights reserved.', ar: '© 2026 AlphaCouncil. جميع الحقوق محفوظة.' },
+      'lgl.footer_terms': { en: 'Terms', ar: 'الشروط' },
+      'lgl.footer_privacy': { en: 'Privacy', ar: 'الخصوصية' },
+      'lgl.footer_disclaimer': { en: 'Disclaimer', ar: 'إخلاء المسؤولية' }
+    });
+  </script>
   <script>
     const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
