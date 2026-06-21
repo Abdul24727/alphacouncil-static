@@ -79,9 +79,11 @@
       return API.post('/api/auth/register', {
         email: email, password: password,
         preferred_language: opts.lang || 'en',
-        first_name: opts.firstName || '', last_name: opts.lastName || '', market: opts.market || ''
+        first_name: opts.firstName || '', last_name: opts.lastName || '', market: opts.market || '',
+        turnstile_token: opts.turnstileToken || ''
       });
     },
+    resendVerificationPublic: function (email) { return API.post('/api/auth/resend-verification-public', { email: email }); },
     me: function () { return API.get('/api/auth/me'); },
     logout: function () { return API.post('/api/auth/logout', {}); },
     updateProfile: function (fields) { return API.put('/api/account/profile', fields); },

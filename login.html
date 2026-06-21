@@ -258,6 +258,9 @@
       'lg.err_title':       { en: 'Sign in failed', ar: 'فشل تسجيل الدخول' },
       'lg.err_401':         { en: 'Invalid email or password.', ar: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.' },
       'lg.err_403':         { en: 'This account is deactivated.', ar: 'هذا الحساب معطّل.' },
+      'lg.err_429':         { en: 'Too many attempts. Please wait a few minutes and try again.', ar: 'محاولات كثيرة جدًا. يرجى الانتظار بضع دقائق ثم المحاولة مرة أخرى.' },
+      'lg.verify_title':    { en: 'Verify your email', ar: 'وثّق بريدك الإلكتروني' },
+      'lg.verify_text':     { en: 'Your email isn’t verified yet. We’ve sent a new verification link to your inbox — please verify, then sign in.', ar: 'لم يتم توثيق بريدك الإلكتروني بعد. أرسلنا رابط توثيق جديدًا إلى بريدك — يرجى التوثيق ثم تسجيل الدخول.' },
       'lg.err_generic':     { en: 'Something went wrong. Please try again.', ar: 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.' },
       'lg.apple_soon_title':{ en: 'Apple Sign In is coming soon', ar: 'تسجيل الدخول عبر Apple قريبًا' },
       'lg.apple_soon_text': { en: 'We’re currently finalizing the integration. You can use Google or Microsoft to sign in for now.', ar: 'نعمل حاليًا على إتمام التكامل. يمكنك استخدام Google أو Microsoft لتسجيل الدخول في الوقت الحالي.' },
@@ -298,10 +301,19 @@
         showToast('success', AC_I18N.t('lg.success_title'), AC_I18N.t('lg.success_text'));
         setTimeout(() => { window.location.href = 'dashboard.html'; }, 700);
       } catch (err) {
-        const msg = err.status === 401 ? AC_I18N.t('lg.err_401')
-                  : err.status === 403 ? AC_I18N.t('lg.err_403')
-                  : (err.message || AC_I18N.t('lg.err_generic'));
-        showToast('error', AC_I18N.t('lg.err_title'), msg);
+        const code = ((err && err.message) || '') + '';   // ApiError.message carries the backend detail string
+        if (err && err.status === 403 && /EMAIL_NOT_VERIFIED/i.test(code)) {
+          // account exists + password is right, but the email isn't verified yet →
+          // re-send the verification link and tell them to check their inbox.
+          try { await API.resendVerificationPublic(email); } catch (e) {}
+          showToast('info', AC_I18N.t('lg.verify_title'), AC_I18N.t('lg.verify_text'));
+        } else {
+          const msg = err.status === 401 ? AC_I18N.t('lg.err_401')
+                    : err.status === 429 ? AC_I18N.t('lg.err_429')
+                    : err.status === 403 ? AC_I18N.t('lg.err_403')
+                    : (err.message || AC_I18N.t('lg.err_generic'));
+          showToast('error', AC_I18N.t('lg.err_title'), msg);
+        }
         btn.innerHTML = '<span data-i18n="lg.signin">' + AC_I18N.t('lg.signin') + '</span>';
         btn.disabled = false;
       }

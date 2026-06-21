@@ -721,6 +721,10 @@
           <span><span data-i18n="su.terms_agree">I agree to the</span> <a href="legal.html#terms" target="_blank" rel="noopener" data-i18n="su.terms_link">Terms of Service</a> <span data-i18n="su.terms_and">and</span> <a href="legal.html#privacy" target="_blank" rel="noopener" data-i18n="su.privacy_link">Privacy Policy</a><span data-i18n="su.terms_disclaimer">. I understand AlphaCouncil provides analysis, not financial advice.</span></span>
         </label>
 
+        <!-- Cloudflare Turnstile (bot protection). Renders only when a site key is
+             configured below; until then it's inert and sign-up works normally. -->
+        <div id="turnstileBox" style="margin: 4px 0 8px;"></div>
+
         <button type="submit" class="btn-primary" id="signupBtn" disabled>
           <span data-i18n="su.create_account">Create account</span>
         </button>
@@ -830,6 +834,9 @@
       'su.t_err_generic':         { en: 'Could not create account. Please try again.', ar: 'تعذّر إنشاء الحساب. يرجى المحاولة مرة أخرى.' },
       'su.t_err_exists':          { en: 'An account with this email already exists — try logging in.', ar: 'يوجد حساب بهذا البريد الإلكتروني بالفعل — حاول تسجيل الدخول.' },
       'su.t_err_check':           { en: 'Please check your details and try again.', ar: 'يرجى التحقق من بياناتك والمحاولة مرة أخرى.' },
+      'su.t_err_ratelimit':       { en: 'Too many sign-up attempts. Please try again later.', ar: 'محاولات تسجيل كثيرة جدًا. يرجى المحاولة لاحقًا.' },
+      'su.t_err_disposable':      { en: 'Please use a permanent email address — disposable email providers aren’t allowed.', ar: 'يرجى استخدام بريد إلكتروني دائم — لا يُسمح بمزوّدي البريد المؤقت.' },
+      'su.t_err_captcha':         { en: 'Please complete the verification challenge and try again.', ar: 'يرجى إكمال اختبار التحقق ثم المحاولة مرة أخرى.' },
       'su.t_err_network':         { en: 'Network error — could not reach the server.', ar: 'خطأ في الشبكة — تعذّر الوصول إلى الخادم.' },
       'su.t_apple_title':         { en: 'Apple Sign In is coming soon', ar: 'تسجيل الدخول عبر Apple قريبًا' },
       'su.t_apple_text':          { en: 'We’re currently finalizing the integration. You can use Google or Microsoft to sign up for now.', ar: 'نعمل حاليًا على إنهاء التكامل. يمكنك استخدام Google أو Microsoft للتسجيل في الوقت الحالي.' },
@@ -918,6 +925,29 @@
       }
     });
 
+    // ── Cloudflare Turnstile (bot protection) ──────────────────────────────
+    // Paste your widget's SITE key below to activate it. While empty, the widget is
+    // inert and getTurnstileToken() returns '' — and the backend skips verification
+    // until ITS secret is also set, so sign-up keeps working until both are configured.
+    var TURNSTILE_SITE_KEY = '';   // <-- Cloudflare Turnstile SITE key goes here
+    var _tsWidgetId = null;
+    function getTurnstileToken() {
+      try { return (TURNSTILE_SITE_KEY && window.turnstile && _tsWidgetId !== null) ? (turnstile.getResponse(_tsWidgetId) || '') : ''; }
+      catch (e) { return ''; }
+    }
+    window.onTurnstileLoad = function () {
+      if (!TURNSTILE_SITE_KEY || !window.turnstile) return;
+      var box = document.getElementById('turnstileBox');
+      if (box) { try { _tsWidgetId = turnstile.render(box, { sitekey: TURNSTILE_SITE_KEY, theme: 'auto' }); } catch (e) {} }
+    };
+    (function loadTurnstile() {
+      if (!TURNSTILE_SITE_KEY) return;   // dormant until a site key is provided
+      var s = document.createElement('script');
+      s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit';
+      s.async = true; s.defer = true;
+      document.head.appendChild(s);
+    })();
+
     document.getElementById('signupForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
@@ -938,7 +968,7 @@
       btn.disabled = true;
 
       try {
-        await API.register(email, password, { firstName: firstName, lastName: lastName, market: market, lang: 'en' });
+        await API.register(email, password, { firstName: firstName, lastName: lastName, market: market, lang: 'en', turnstileToken: getTurnstileToken() });
         // Try to establish a session immediately (most deployments auto-login on register).
         try {
           await API.login(email, password);
@@ -952,7 +982,11 @@
       } catch (err) {
         btn.innerHTML = orig; btn.disabled = false; btn.classList.remove('is-loading');
         let msg = AC_I18N.t('su.t_err_generic');
+        const d = ((err && (err.message || err.detail)) || '') + '';
         if (err && err.status === 409) msg = AC_I18N.t('su.t_err_exists');
+        else if (err && err.status === 429) msg = AC_I18N.t('su.t_err_ratelimit');
+        else if (err && err.status === 400 && /disposable|permanent email/i.test(d)) msg = AC_I18N.t('su.t_err_disposable');
+        else if (err && err.status === 400 && /captcha/i.test(d)) { msg = AC_I18N.t('su.t_err_captcha'); try { if (window.turnstile && _tsWidgetId !== null) turnstile.reset(_tsWidgetId); } catch (e) {} }
         else if (err && err.status === 400) msg = (err.message || AC_I18N.t('su.t_err_check'));
         else if (err && err.status === 0) msg = AC_I18N.t('su.t_err_network');
         else if (err && err.message) msg = err.message;
