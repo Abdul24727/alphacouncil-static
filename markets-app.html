@@ -1541,6 +1541,22 @@
       });
       $$('.index-card').forEach(function (card) { card.addEventListener('click', function () { var ex = card.dataset.exchange; if (ef) ef.value = ex; state.exchange = ex; applyFilters(); }); });
 
+      // Export: download the CURRENT (filtered + sorted) screener view as a real CSV.
+      var eb = $('#exportBtn');
+      if (eb) eb.addEventListener('click', function () {
+        var rows = sortRows(ALL.filter(passes));
+        if (!rows.length) { AlphaCouncil.showToast('Nothing to export', 'No stocks match the current filters.', 'info'); return; }
+        var cols = ['ticker_key', 'ticker', 'name_en', 'exchange', 'currency', 'sector_en', 'last_price', 'day_change_pct', 'market_cap_raw', 'pe', 'dividend_yield_pct', 'rsi_14'];
+        var csv = cols.join(',') + '\n' + rows.map(function (r) {
+          return cols.map(function (c) { var v = (r[c] == null ? '' : String(r[c])); return /[",\n]/.test(v) ? ('"' + v.replace(/"/g, '""') + '"') : v; }).join(',');
+        }).join('\n');
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+        a.download = 'alphacouncil-markets.csv';
+        document.body.appendChild(a); a.click(); a.remove();
+        AlphaCouncil.showToast('Exported', rows.length + ' stocks exported to CSV', 'success');
+      });
+
       // ---- index cards (real value from ticker-tape + real count from screening) ----
       function setCard(ex, val, change, cls, meta) {
         var card = document.querySelector('.index-card[data-exchange="' + ex + '"]'); if (!card) return;
