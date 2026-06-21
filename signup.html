@@ -929,7 +929,7 @@
     // Paste your widget's SITE key below to activate it. While empty, the widget is
     // inert and getTurnstileToken() returns '' — and the backend skips verification
     // until ITS secret is also set, so sign-up keeps working until both are configured.
-    var TURNSTILE_SITE_KEY = '';   // <-- Cloudflare Turnstile SITE key goes here
+    var TURNSTILE_SITE_KEY = '0x4AAAAAADoxyhgLIaK5NH5B';   // Cloudflare Turnstile SITE key (public)
     var _tsWidgetId = null;
     function getTurnstileToken() {
       try { return (TURNSTILE_SITE_KEY && window.turnstile && _tsWidgetId !== null) ? (turnstile.getResponse(_tsWidgetId) || '') : ''; }
