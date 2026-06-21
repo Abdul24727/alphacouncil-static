@@ -3,7 +3,7 @@
 const { test, expect } = require('@playwright/test');
 const { shot } = require('./helpers');
 
-const PAGES = ['index.html', 'pricing.html', 'how-it-works.html', 'methodology.html', 'about.html', 'contact.html'];
+const PAGES = ['index.html', 'pricing.html', 'how-it-works.html', 'methodology.html', 'about.html', 'contact.html', 'markets.html'];
 
 for (const p of PAGES) {
   test('AR marketing: ' + p, async ({ browser }) => {
