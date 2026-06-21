@@ -6,11 +6,11 @@ const get = async (request, p) => (await request.get(`${BASE}/${p}`)).text();
 const KNOWN = [
   'about.html', 'alerts.html', 'contact.html', 'council-history.html', 'dashboard.html',
   'features.html', 'forgot-password.html', 'how-it-works.html', 'index.html', 'legal.html',
-  'login.html', 'markets.html', 'methodology.html', 'news.html', 'onboarding.html',
+  'login.html', 'markets.html', 'markets-app.html', 'methodology.html', 'news.html', 'onboarding.html',
   'portfolio.html', 'pricing.html', 'reset-password.html', 'scenarios.html', 'settings.html',
   'signup.html', 'stock-detail.html',
 ];
-const APP_PAGES = ['dashboard', 'portfolio', 'news', 'alerts', 'council-history', 'scenarios', 'settings', 'stock-detail'];
+const APP_PAGES = ['dashboard', 'portfolio', 'news', 'alerts', 'council-history', 'scenarios', 'settings', 'stock-detail', 'markets-app'];
 
 // Every app page's top nav is consistent + correctly targeted (the old Watchlist->portfolio
 // mislink is gone; the previously-orphaned Scenarios page is reachable from each).
