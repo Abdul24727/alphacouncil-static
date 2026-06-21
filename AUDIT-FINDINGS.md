@@ -140,11 +140,22 @@ A full adversarial re-verification confirmed all 11 pages' fixes held + function
 - Commit `544d0ba`; regression `tests/round3-fixes.spec.js` now 13/13 green. A targeted re-verification of both fixed pages returned **CLEAN**; a comprehensive count-class sweep across all pages found no remaining unhandled instance (other numeric literals are accepted marketing facts/mockups or JS-overwritten + already tested).
 - _Non-blocking note:_ council-history suggested-question buttons are double-bound (inline onclick + JS listener); harmless (2nd call no-ops on the cleared input).
 
-**FINAL: zero open blocker/major across Rounds 1-3 + re-verification. Remaining items are all under NEEDS FOUNDER REVIEW.**
+---
+
+# ROUND 4 — link integrity (cross-page navigation)
+
+_Examined every internal link site-wide (href + window.open/location targets across all 22 pages). No 404/missing-page links. Found the app navigation mislinked + inconsistent:_
+- **R4-01 (major) "Watchlist" nav linked to `portfolio.html`** on 7 app pages — label ≠ destination (no watchlist page exists). → FIXED.
+- **R4-02 (major) inconsistent app nav → scenarios.html orphaned** — every app page showed "Watchlist" in nav slot 3 except scenarios.html (which showed "Scenarios"), and nothing else linked to scenarios.html → the Scenarios page was **unreachable via navigation**. → FIXED: standardized all 8 app pages to one nav — **Dashboard · Portfolio · Scenarios · Markets · News · Council · Alerts** (matches scenarios.html's intent). Scenarios now reachable everywhere; no label/destination mismatch; watchlist stays accessible as its section on Dashboard + Portfolio.
+- Commit `b8e38d1`; deployed + live-verified each app page; `tests/nav-links.spec.js` green (nav consistency + no-missing-page-links + all 6 markets anchors); i18n still green.
+- Verified clean: marketing nav/footer consistent; `markets.html#saudi/uae/qatar/kuwait/oman/bahrain` anchors all exist; auth-page footers resolve; logo href JS-set (dashboard signed-in / index otherwise).
+
+**FINAL: zero open blocker/major across Rounds 1-4 + re-verification. Full prod parity re-deployed (all 22 HTML + js + css; hashes match). Remaining items are all under NEEDS FOUNDER REVIEW.**
 
 ---
 
 ## NEEDS FOUNDER REVIEW (ambiguous / cosmetic / out-of-scope)
+- **R4-m1 app "Markets" nav → `markets.html`:** a real markets-overview page, but it carries *marketing* chrome (How-it-works/Pricing/Sign-in nav), so a signed-in user context-switches into marketing-land (recoverable via logo → dashboard). Not a broken link; consider an app-context markets/screener view or auth-aware chrome. (Marketing footer's market list also shows only Saudi/UAE/Qatar/Kuwait though Oman+Bahrain anchors exist.)
 - **R3-m2 methodology example scale:** the "Example Score Breakdown" uses a 0-100 scale while the framework text says dimensions are "1-10". Labeled "Example" (illustrative) — cosmetic copy inconsistency; pick one scale.
 - **R3-m4 scenarios "Run Council on This Scenario":** runs a REAL council but on the portfolio-wide prompt (openCouncilModal ignores the scenario text) — under-delivers on the label. Decide: pass scenario context to the council, or relabel.
 - **Dead-code purge (not shown):** news.html orphaned `newsStories['featured-1']` JS object (PIF text, unreferenced); scenarios orphan `.multi-compare-toggle` CSS. Harmless; clean when convenient.
