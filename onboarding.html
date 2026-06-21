@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome — AlphaCouncil</title>
+  <title data-i18n="ob.page_title">Welcome — AlphaCouncil</title>
   <meta name="description" content="Set up your GCC portfolio in minutes. Connect your holdings to AI-powered analysis.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1771,41 +1771,49 @@
 </head>
 <body>
   <!-- Skip Link for Accessibility -->
-  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <a href="#main-content" class="skip-link" data-i18n="ob.skip_link">Skip to main content</a>
 
   <div class="atmosphere"></div>
 
+  <style>
+    .lang-toggle button.active { background: var(--accent-primary) !important; color: var(--bg-deep) !important; }
+  </style>
+
   <header class="onboarding-header" role="banner">
-    <a href="index.html" class="header-logo" aria-label="AlphaCouncil home">
+    <a href="index.html" class="header-logo" aria-label="AlphaCouncil home" data-i18n-attr="aria-label:ob.home_aria">
       <span style="font-weight: 700; letter-spacing: -0.02em;">AlphaCouncil</span>
     </a>
     <div class="header-right">
-      <button type="button" class="header-skip" onclick="skipOnboarding()" aria-label="Skip setup and go straight to the dashboard">
-        Skip setup
+      <div class="lang-toggle" style="display:inline-flex;align-items:center;gap:2px;padding:2px;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:100px;">
+        <button data-lang="en" class="active" style="font:inherit;font-size:12px;font-weight:600;line-height:1;padding:5px 10px;border:none;border-radius:100px;cursor:pointer;background:transparent;color:var(--fg-muted);">EN</button>
+        <button data-lang="ar" style="font:inherit;font-size:12px;font-weight:600;line-height:1;padding:5px 10px;border:none;border-radius:100px;cursor:pointer;background:transparent;color:var(--fg-muted);">AR</button>
+      </div>
+      <button type="button" class="header-skip" onclick="skipOnboarding()" aria-label="Skip setup and go straight to the dashboard" data-i18n-attr="aria-label:ob.skip_setup_aria">
+        <span data-i18n="ob.skip_setup">Skip setup</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
-      <a href="contact.html" class="header-help" aria-label="Get help with onboarding">
+      <a href="contact.html" class="header-help" aria-label="Get help with onboarding" data-i18n-attr="aria-label:ob.need_help_aria">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-        Need help?
+        <span data-i18n="ob.need_help">Need help?</span>
       </a>
-      <button class="adviser-toggle" id="adviserToggle" aria-label="Toggle AI Adviser" aria-expanded="false" aria-controls="adviserSidebar">
+      <button class="adviser-toggle" id="adviserToggle" aria-label="Toggle AI Adviser" aria-expanded="false" aria-controls="adviserSidebar" data-i18n-attr="aria-label:ob.toggle_adviser">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       </button>
     </div>
   </header>
 
-  <div class="progress-bar" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" aria-label="Onboarding progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" aria-label="Onboarding progress" data-i18n-attr="aria-label:ob.progress_aria">
     <div class="progress-fill" id="progressFill" style="width: 20%;"></div>
   </div>
 
   <div class="app-wrapper">
     <main class="app-main" id="main-content" role="main">
-      <nav class="step-indicator" id="stepIndicator" role="tablist" aria-label="Onboarding steps">
-        <div class="step-dot active" data-step="1" role="tab" aria-selected="true" aria-label="Step 1: Welcome" tabindex="0"></div>
-        <div class="step-dot" data-step="2" role="tab" aria-selected="false" aria-label="Step 2: Choose method" tabindex="-1"></div>
-        <div class="step-dot" data-step="3" role="tab" aria-selected="false" aria-label="Step 3: Add holdings" tabindex="-1"></div>
-        <div class="step-dot" data-step="4" role="tab" aria-selected="false" aria-label="Step 4: Profile" tabindex="-1"></div>
-        <div class="step-dot" data-step="5" role="tab" aria-selected="false" aria-label="Step 5: Complete" tabindex="-1"></div>
+      <nav class="step-indicator" id="stepIndicator" role="tablist" aria-label="Onboarding steps" data-i18n-attr="aria-label:ob.steps_aria">
+        <div class="step-dot active" data-step="1" role="tab" aria-selected="true" aria-label="Step 1: Welcome" tabindex="0" data-i18n-attr="aria-label:ob.step1_dot"></div>
+        <div class="step-dot" data-step="2" role="tab" aria-selected="false" aria-label="Step 2: Choose method" tabindex="-1" data-i18n-attr="aria-label:ob.step2_dot"></div>
+        <div class="step-dot" data-step="3" role="tab" aria-selected="false" aria-label="Step 3: Add holdings" tabindex="-1" data-i18n-attr="aria-label:ob.step3_dot"></div>
+        <div class="step-dot" data-step="4" role="tab" aria-selected="false" aria-label="Step 4: Profile" tabindex="-1" data-i18n-attr="aria-label:ob.step4_dot"></div>
+        <div class="step-dot" data-step="5" role="tab" aria-selected="false" aria-label="Step 5: Complete" tabindex="-1" data-i18n-attr="aria-label:ob.step5_dot"></div>
       </nav>
 
       <div class="steps-container">
@@ -1815,14 +1823,14 @@
             <div class="welcome-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
             </div>
-            <h1 class="welcome-title" id="step1-heading">Welcome to AlphaCouncil</h1>
-            <p class="welcome-subtitle">Add your GCC holdings and connect them to real-time market data, news, and AI-powered analysis — so you know what the data suggests.</p>
+            <h1 class="welcome-title" id="step1-heading" data-i18n="ob.welcome_title">Welcome to AlphaCouncil</h1>
+            <p class="welcome-subtitle" data-i18n="ob.welcome_subtitle">Add your GCC holdings and connect them to real-time market data, news, and AI-powered analysis — so you know what the data suggests.</p>
             <div class="welcome-actions">
               <button class="btn-primary-large" onclick="goToStep(2)" aria-describedby="step1-heading">
-                Get Started
+                <span data-i18n="ob.get_started">Get Started</span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </button>
-              <button class="btn-link" onclick="window.location.href='dashboard.html'">I already have a portfolio</button>
+              <button class="btn-link" onclick="window.location.href='dashboard.html'" data-i18n="ob.have_portfolio">I already have a portfolio</button>
             </div>
           </div>
         </section>
@@ -1831,17 +1839,17 @@
         <section class="step" id="step2" role="tabpanel" aria-labelledby="step2-heading">
           <div class="method-step">
             <div class="method-header">
-              <h2 class="method-title" id="step2-heading">How would you like to add your portfolio?</h2>
-              <p class="method-subtitle">Choose the option that works best for you</p>
+              <h2 class="method-title" id="step2-heading" data-i18n="ob.method_title">How would you like to add your portfolio?</h2>
+              <p class="method-subtitle" data-i18n="ob.method_subtitle">Choose the option that works best for you</p>
             </div>
             <div class="method-cards" role="radiogroup" aria-labelledby="step2-heading">
               <div class="method-card" onclick="selectMethod('manual')" id="methodManual" role="radio" aria-checked="false" tabindex="0" onkeydown="handleMethodKeydown(event, 'manual')">
                 <div class="method-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 </div>
-                <h3 class="method-card-title">Add holdings manually</h3>
-                <p class="method-card-desc">Search for GCC stocks and enter your positions one by one. Great for small portfolios or precise entry.</p>
-                <div class="method-features" aria-label="Supported exchanges">
+                <h3 class="method-card-title" data-i18n="ob.method_manual_title">Add holdings manually</h3>
+                <p class="method-card-desc" data-i18n="ob.method_manual_desc">Search for GCC stocks and enter your positions one by one. Great for small portfolios or precise entry.</p>
+                <div class="method-features" aria-label="Supported exchanges" data-i18n-attr="aria-label:ob.exchanges_aria">
                   <span class="method-feature">Tadawul</span>
                   <span class="method-feature">ADX</span>
                   <span class="method-feature">DFM</span>
@@ -1850,17 +1858,17 @@
                 </div>
               </div>
               <div class="method-card" onclick="selectMethod('upload')" id="methodUpload" role="radio" aria-checked="false" tabindex="0" onkeydown="handleMethodKeydown(event, 'upload')">
-                <span class="method-badge">AI-Powered</span>
+                <span class="method-badge" data-i18n="ob.method_upload_badge">AI-Powered</span>
                 <div class="method-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 </div>
-                <h3 class="method-card-title">Upload statement or screenshot</h3>
-                <p class="method-card-desc">Upload your broker statement, portfolio screenshot, or CSV. Our AI extracts your holdings automatically.</p>
-                <div class="method-features" aria-label="Supported formats">
-                  <span class="method-feature">Screenshot</span>
-                  <span class="method-feature">PDF</span>
-                  <span class="method-feature">CSV/Excel</span>
-                  <span class="method-feature">Broker statement</span>
+                <h3 class="method-card-title" data-i18n="ob.method_upload_title">Upload statement or screenshot</h3>
+                <p class="method-card-desc" data-i18n="ob.method_upload_desc">Upload your broker statement, portfolio screenshot, or CSV. Our AI extracts your holdings automatically.</p>
+                <div class="method-features" aria-label="Supported formats" data-i18n-attr="aria-label:ob.formats_aria">
+                  <span class="method-feature" data-i18n="ob.fmt_screenshot">Screenshot</span>
+                  <span class="method-feature" data-i18n="ob.fmt_pdf">PDF</span>
+                  <span class="method-feature" data-i18n="ob.fmt_csv_excel">CSV/Excel</span>
+                  <span class="method-feature" data-i18n="ob.fmt_broker">Broker statement</span>
                 </div>
               </div>
             </div>
@@ -1871,14 +1879,14 @@
         <section class="step" id="step3a" role="tabpanel" aria-labelledby="step3a-heading">
           <div class="manual-step">
             <div class="manual-header">
-              <h2 class="manual-title" id="step3a-heading">Add your holdings</h2>
-              <span class="manual-count" aria-live="polite"><span id="holdingCount">0</span> holdings added</span>
+              <h2 class="manual-title" id="step3a-heading" data-i18n="ob.manual_title">Add your holdings</h2>
+              <span class="manual-count" aria-live="polite"><span id="holdingCount">0</span><span data-i18n="ob.holdings_added"> holdings added</span></span>
             </div>
             <div class="search-box" role="search">
               <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-              <input type="text" class="search-input" id="stockSearch" placeholder="Search GCC stocks (e.g., Aramco, Al Rajhi, QNB...)" autocomplete="off" aria-label="Search for stocks" aria-describedby="searchHelp" aria-controls="searchResults" aria-expanded="false">
-              <span id="searchHelp" class="sr-only">Type at least 2 characters to search for stocks</span>
-              <div class="search-results" id="searchResults" role="listbox" aria-label="Stock search results"></div>
+              <input type="text" class="search-input" id="stockSearch" placeholder="Search GCC stocks (e.g., Aramco, Al Rajhi, QNB...)" autocomplete="off" aria-label="Search for stocks" aria-describedby="searchHelp" aria-controls="searchResults" aria-expanded="false" data-i18n-attr="placeholder:ob.search_ph,aria-label:ob.search_aria">
+              <span id="searchHelp" class="sr-only" data-i18n="ob.search_help">Type at least 2 characters to search for stocks</span>
+              <div class="search-results" id="searchResults" role="listbox" aria-label="Stock search results" data-i18n-attr="aria-label:ob.search_results_aria"></div>
             </div>
             <div class="add-form" id="addForm" aria-hidden="true">
               <div class="form-header">
@@ -1889,33 +1897,33 @@
                     <p id="formTicker">2222.SR · Tadawul</p>
                   </div>
                 </div>
-                <button class="form-close" onclick="closeAddForm()" aria-label="Close add holding form">
+                <button class="form-close" onclick="closeAddForm()" aria-label="Close add holding form" data-i18n-attr="aria-label:ob.form_close_aria">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
                 </button>
               </div>
               <div class="form-grid">
                 <div class="form-group">
-                  <label class="form-label" for="sharesInput">Number of Shares <span aria-hidden="true">*</span><span class="sr-only">(required)</span></label>
-                  <input type="number" class="form-input" id="sharesInput" placeholder="e.g., 500" required aria-required="true">
+                  <label class="form-label" for="sharesInput"><span data-i18n="ob.shares_label">Number of Shares</span> <span aria-hidden="true">*</span><span class="sr-only" data-i18n="ob.required_sr">(required)</span></label>
+                  <input type="number" class="form-input" id="sharesInput" placeholder="e.g., 500" required aria-required="true" data-i18n-attr="placeholder:ob.shares_ph">
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="priceInput">Average Buy Price <span aria-hidden="true">*</span><span class="sr-only">(required)</span></label>
-                  <input type="number" class="form-input" id="priceInput" placeholder="e.g., 28.50" step="0.01" required aria-required="true">
+                  <label class="form-label" for="priceInput"><span data-i18n="ob.price_label">Average Buy Price</span> <span aria-hidden="true">*</span><span class="sr-only" data-i18n="ob.required_sr">(required)</span></label>
+                  <input type="number" class="form-input" id="priceInput" placeholder="e.g., 28.50" step="0.01" required aria-required="true" data-i18n-attr="placeholder:ob.price_ph">
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="dateInput">Buy Date <span class="text-dim">(optional)</span></label>
+                  <label class="form-label" for="dateInput"><span data-i18n="ob.date_label">Buy Date</span> <span class="text-dim" data-i18n="ob.optional">(optional)</span></label>
                   <input type="date" class="form-input" id="dateInput">
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="notesInput">Notes <span class="text-dim">(optional)</span></label>
-                  <input type="text" class="form-input" id="notesInput" placeholder="e.g., Initial position">
+                  <label class="form-label" for="notesInput"><span data-i18n="ob.notes_label">Notes</span> <span class="text-dim" data-i18n="ob.optional">(optional)</span></label>
+                  <input type="text" class="form-input" id="notesInput" placeholder="e.g., Initial position" data-i18n-attr="placeholder:ob.notes_ph">
                 </div>
               </div>
               <div class="form-actions">
-                <button class="btn btn-secondary" onclick="closeAddForm()">Cancel</button>
+                <button class="btn btn-secondary" onclick="closeAddForm()" data-i18n="ob.cancel">Cancel</button>
                 <button class="btn btn-primary" onclick="addHolding()">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-                  Add Holding
+                  <span data-i18n="ob.add_holding">Add Holding</span>
                 </button>
               </div>
             </div>
@@ -1923,7 +1931,7 @@
               <div class="holdings-preview-header">
                 <span class="holdings-preview-title" id="holdings-preview-title">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-                  Your Holdings
+                  <span data-i18n="ob.your_holdings">Your Holdings</span>
                 </span>
               </div>
               <div id="holdingsTableWrapper">
@@ -1931,16 +1939,16 @@
                   <div class="empty-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
                   </div>
-                  <p class="empty-text">Search and add your first holding to get started</p>
+                  <p class="empty-text" data-i18n="ob.empty_text">Search and add your first holding to get started</p>
                 </div>
-                <table class="holdings-table" id="holdingsTable" style="display: none;" aria-label="Your portfolio holdings">
+                <table class="holdings-table" id="holdingsTable" style="display: none;" aria-label="Your portfolio holdings" data-i18n-attr="aria-label:ob.holdings_table_aria">
                   <thead>
                     <tr>
-                      <th scope="col">Holding</th>
-                      <th scope="col">Shares</th>
-                      <th scope="col">Avg Price</th>
-                      <th scope="col">Value</th>
-                      <th scope="col"><span class="sr-only">Actions</span></th>
+                      <th scope="col" data-i18n="ob.th_holding">Holding</th>
+                      <th scope="col" data-i18n="ob.th_shares">Shares</th>
+                      <th scope="col" data-i18n="ob.th_avg_price">Avg Price</th>
+                      <th scope="col" data-i18n="ob.th_value">Value</th>
+                      <th scope="col"><span class="sr-only" data-i18n="ob.th_actions">Actions</span></th>
                     </tr>
                   </thead>
                   <tbody id="holdingsBody"></tbody>
@@ -1954,48 +1962,48 @@
         <section class="step" id="step3b" role="tabpanel" aria-labelledby="step3b-heading">
           <div class="upload-step">
             <div class="upload-header">
-              <h2 class="upload-title" id="step3b-heading">Upload your portfolio</h2>
-              <p class="upload-subtitle">Our AI will extract your holdings automatically</p>
+              <h2 class="upload-title" id="step3b-heading" data-i18n="ob.upload_title">Upload your portfolio</h2>
+              <p class="upload-subtitle" data-i18n="ob.upload_subtitle">Our AI will extract your holdings automatically</p>
             </div>
-            <div class="upload-zone" id="uploadZone" tabindex="0" role="button" aria-label="Upload portfolio file. Drag and drop or click to browse." onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('fileInput').click();}">
+            <div class="upload-zone" id="uploadZone" tabindex="0" role="button" aria-label="Upload portfolio file. Drag and drop or click to browse." onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('fileInput').click();}" data-i18n-attr="aria-label:ob.upload_zone_aria">
               <div class="upload-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               </div>
-              <p class="upload-text">Drag & drop your file here</p>
-              <p class="upload-hint">or click to browse files</p>
-              <div class="upload-formats" aria-label="Supported file formats">
-                <span class="format-tag">Screenshot</span>
-                <span class="format-tag">PDF</span>
+              <p class="upload-text" data-i18n="ob.upload_text">Drag & drop your file here</p>
+              <p class="upload-hint" data-i18n="ob.upload_hint">or click to browse files</p>
+              <div class="upload-formats" aria-label="Supported file formats" data-i18n-attr="aria-label:ob.upload_formats_aria">
+                <span class="format-tag" data-i18n="ob.fmt_screenshot">Screenshot</span>
+                <span class="format-tag" data-i18n="ob.fmt_pdf">PDF</span>
                 <span class="format-tag">CSV</span>
-                <span class="format-tag">Excel</span>
-                <span class="format-tag">Broker Statement</span>
+                <span class="format-tag" data-i18n="ob.fmt_excel">Excel</span>
+                <span class="format-tag" data-i18n="ob.fmt_broker2">Broker Statement</span>
               </div>
-              <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Choose File</button>
-              <input type="file" class="upload-input" id="fileInput" accept=".pdf,.csv,.xlsx,.xls,.png,.jpg,.jpeg" aria-label="Choose file to upload">
+              <button class="upload-btn" onclick="document.getElementById('fileInput').click()" data-i18n="ob.choose_file">Choose File</button>
+              <input type="file" class="upload-input" id="fileInput" accept=".pdf,.csv,.xlsx,.xls,.png,.jpg,.jpeg" aria-label="Choose file to upload" data-i18n-attr="aria-label:ob.file_input_aria">
             </div>
             <div class="processing-state" id="processingState" aria-live="polite" aria-busy="true">
-              <div class="processing-spinner" role="status" aria-label="Processing file"></div>
-              <p class="processing-text">Extracting holdings...</p>
-              <p class="processing-hint">Our AI is analyzing your document</p>
+              <div class="processing-spinner" role="status" aria-label="Processing file" data-i18n-attr="aria-label:ob.processing_aria"></div>
+              <p class="processing-text" data-i18n="ob.processing_text">Extracting holdings...</p>
+              <p class="processing-hint" data-i18n="ob.processing_hint">Our AI is analyzing your document</p>
             </div>
             <div class="extracted-holdings" id="extractedHoldings" aria-live="polite">
               <div class="extracted-header">
                 <div class="extracted-title">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                  Holdings Extracted
+                  <span data-i18n="ob.extracted_title">Holdings Extracted</span>
                   <span class="extracted-badge" id="extractedCount">5 found</span>
                 </div>
-                <p class="extracted-hint">Review and adjust if needed</p>
+                <p class="extracted-hint" data-i18n="ob.extracted_hint">Review and adjust if needed</p>
               </div>
               <div class="holdings-preview">
-                <table class="holdings-table" aria-label="Extracted holdings">
+                <table class="holdings-table" aria-label="Extracted holdings" data-i18n-attr="aria-label:ob.extracted_table_aria">
                   <thead>
                     <tr>
-                      <th scope="col">Holding</th>
-                      <th scope="col">Shares</th>
-                      <th scope="col">Avg Price</th>
-                      <th scope="col">Value</th>
-                      <th scope="col"><span class="sr-only">Actions</span></th>
+                      <th scope="col" data-i18n="ob.th_holding">Holding</th>
+                      <th scope="col" data-i18n="ob.th_shares">Shares</th>
+                      <th scope="col" data-i18n="ob.th_avg_price">Avg Price</th>
+                      <th scope="col" data-i18n="ob.th_value">Value</th>
+                      <th scope="col"><span class="sr-only" data-i18n="ob.th_actions">Actions</span></th>
                     </tr>
                   </thead>
                   <tbody id="extractedBody"></tbody>
@@ -2009,38 +2017,38 @@
         <section class="step" id="step4" role="tabpanel" aria-labelledby="step4-heading">
           <div class="profile-step">
             <div class="profile-header">
-              <h2 class="profile-title" id="step4-heading">Quick profile setup</h2>
-              <p class="profile-subtitle">Help us personalize your experience (optional)</p>
+              <h2 class="profile-title" id="step4-heading" data-i18n="ob.profile_title">Quick profile setup</h2>
+              <p class="profile-subtitle" data-i18n="ob.profile_subtitle">Help us personalize your experience (optional)</p>
             </div>
             <div class="profile-questions">
               <fieldset class="profile-question">
                 <legend class="question-label">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                  What is your primary investment goal?
+                  <span data-i18n="ob.q_goal">What is your primary investment goal?</span>
                 </legend>
                 <div class="option-buttons" data-question="goal" role="group">
-                  <button type="button" class="option-btn" data-value="growth" aria-pressed="false">Growth</button>
-                  <button type="button" class="option-btn" data-value="income" aria-pressed="false">Income</button>
-                  <button type="button" class="option-btn" data-value="balanced" aria-pressed="false">Balanced</button>
-                  <button type="button" class="option-btn" data-value="preservation" aria-pressed="false">Capital Preservation</button>
+                  <button type="button" class="option-btn" data-value="growth" aria-pressed="false" data-i18n="ob.goal_growth">Growth</button>
+                  <button type="button" class="option-btn" data-value="income" aria-pressed="false" data-i18n="ob.goal_income">Income</button>
+                  <button type="button" class="option-btn" data-value="balanced" aria-pressed="false" data-i18n="ob.goal_balanced">Balanced</button>
+                  <button type="button" class="option-btn" data-value="preservation" aria-pressed="false" data-i18n="ob.goal_preservation">Capital Preservation</button>
                 </div>
               </fieldset>
               <fieldset class="profile-question">
                 <legend class="question-label">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  What's your investment timeline?
+                  <span data-i18n="ob.q_timeline">What's your investment timeline?</span>
                 </legend>
                 <div class="option-buttons" data-question="timeline" role="group">
-                  <button type="button" class="option-btn" data-value="short" aria-pressed="false">1-3 years</button>
-                  <button type="button" class="option-btn" data-value="medium" aria-pressed="false">3-7 years</button>
-                  <button type="button" class="option-btn" data-value="long" aria-pressed="false">7+ years</button>
+                  <button type="button" class="option-btn" data-value="short" aria-pressed="false" data-i18n="ob.tl_short">1-3 years</button>
+                  <button type="button" class="option-btn" data-value="medium" aria-pressed="false" data-i18n="ob.tl_medium">3-7 years</button>
+                  <button type="button" class="option-btn" data-value="long" aria-pressed="false" data-i18n="ob.tl_long">7+ years</button>
                 </div>
               </fieldset>
             </div>
             <div class="profile-actions">
-              <button class="btn btn-secondary" onclick="goToStep(5)">Skip for now</button>
+              <button class="btn btn-secondary" onclick="goToStep(5)" data-i18n="ob.skip_for_now">Skip for now</button>
               <button class="btn btn-primary" onclick="saveProfileAndContinue()">
-                Continue
+                <span data-i18n="ob.continue">Continue</span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </button>
             </div>
@@ -2053,21 +2061,21 @@
             <div class="success-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-            <h1 class="success-title" id="step5-heading">Your portfolio is ready!</h1>
-            <p class="success-subtitle">We've connected <span id="successCount">5</span> holdings to real-time market data and AI analysis.</p>
-            <div class="portfolio-preview" id="portfolioPreview" role="region" aria-label="Portfolio summary">
+            <h1 class="success-title" id="step5-heading" data-i18n="ob.success_title">Your portfolio is ready!</h1>
+            <p class="success-subtitle"><span data-i18n="ob.success_sub_a">We've connected </span><span id="successCount">5</span><span data-i18n="ob.success_sub_b"> holdings to real-time market data and AI analysis.</span></p>
+            <div class="portfolio-preview" id="portfolioPreview" role="region" aria-label="Portfolio summary" data-i18n-attr="aria-label:ob.portfolio_summary_aria">
               <div class="preview-header">
-                <span class="preview-title">Portfolio Summary</span>
+                <span class="preview-title" data-i18n="ob.preview_title">Portfolio Summary</span>
               </div>
               <div class="preview-value" id="previewValue">SAR 847,250</div>
               <div class="preview-metrics">
                 <div class="preview-metric">
                   <div class="preview-metric-value" id="previewHoldingsCount">—</div>
-                  <div class="preview-metric-label">Holdings</div>
+                  <div class="preview-metric-label" data-i18n="ob.metric_holdings">Holdings</div>
                 </div>
                 <div class="preview-metric">
                   <div class="preview-metric-value" id="previewMarkets">—</div>
-                  <div class="preview-metric-label">Markets</div>
+                  <div class="preview-metric-label" data-i18n="ob.metric_markets">Markets</div>
                 </div>
               </div>
               <div class="preview-holdings" id="previewHoldings">
@@ -2077,10 +2085,10 @@
             <div class="success-actions">
               <button class="btn-council" onclick="runFirstCouncil()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                Run my first AI Analyst Council review
+                <span data-i18n="ob.run_council">Run my first AI Analyst Council review</span>
               </button>
               <a href="dashboard.html" class="btn-dashboard" onclick="persistAndGo(event)">
-                Go to Dashboard
+                <span data-i18n="ob.go_dashboard">Go to Dashboard</span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </a>
             </div>
@@ -2089,22 +2097,22 @@
       </div>
 
       <div class="step-footer" id="stepFooter">
-        <button class="footer-back" id="footerBack" onclick="goBack()" aria-label="Go to previous step">
+        <button class="footer-back" id="footerBack" onclick="goBack()" aria-label="Go to previous step" data-i18n-attr="aria-label:ob.back_aria">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Back
+          <span data-i18n="ob.back">Back</span>
         </button>
-        <button class="footer-continue" id="footerContinue" onclick="goForward()" aria-label="Continue to next step">
-          Continue
+        <button class="footer-continue" id="footerContinue" onclick="goForward()" aria-label="Continue to next step" data-i18n-attr="aria-label:ob.continue_aria">
+          <span data-i18n="ob.continue">Continue</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </div>
 
       <div class="disclaimer" role="contentinfo">
-        <p>AlphaCouncil provides market data and AI-powered analysis for informational purposes only. This does not constitute investment advice. Past performance does not guarantee future results. Always conduct your own research before making investment decisions.</p>
+        <p data-i18n="ob.disclaimer">AlphaCouncil provides market data and AI-powered analysis for informational purposes only. This does not constitute investment advice. Past performance does not guarantee future results. Always conduct your own research before making investment decisions.</p>
       </div>
     </main>
 
-    <aside class="adviser-sidebar" id="adviserSidebar" aria-label="AI Adviser" aria-hidden="true">
+    <aside class="adviser-sidebar" id="adviserSidebar" aria-label="AI Adviser" aria-hidden="true" data-i18n-attr="aria-label:ob.adviser_label">
       <div class="sidebar-inner">
         <div class="sidebar-header">
           <div class="sidebar-header-left">
@@ -2112,39 +2120,39 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             </div>
             <div class="sidebar-title">
-              <h3>AI Adviser</h3>
-              <p>Online</p>
+              <h3 data-i18n="ob.adviser_title">AI Adviser</h3>
+              <p data-i18n="ob.adviser_online">Online</p>
             </div>
           </div>
-          <button class="sidebar-close" onclick="toggleSidebar()" aria-label="Close AI Adviser">
+          <button class="sidebar-close" onclick="toggleSidebar()" aria-label="Close AI Adviser" data-i18n-attr="aria-label:ob.adviser_close">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </button>
         </div>
         <div class="sidebar-content">
           <div class="context-card">
-            <div class="context-label">Current Step</div>
-            <div class="context-value" id="sidebarContext">Getting started with your portfolio</div>
+            <div class="context-label" data-i18n="ob.current_step">Current Step</div>
+            <div class="context-value" id="sidebarContext" data-i18n="ob.ctx_1">Getting started with your portfolio</div>
           </div>
           <div>
-            <div class="sidebar-section-title">Suggested Questions</div>
+            <div class="sidebar-section-title" data-i18n="ob.suggested_questions">Suggested Questions</div>
             <div class="suggested-questions" id="suggestedQuestions" role="list">
-              <button class="suggested-question" onclick="askQuestion('What is AlphaCouncil?')" role="listitem">What is AlphaCouncil and how does it work?</button>
-              <button class="suggested-question" onclick="askQuestion('Is my data secure?')" role="listitem">Is my portfolio data secure?</button>
-              <button class="suggested-question" onclick="askQuestion('Which GCC exchanges are supported?')" role="listitem">Which GCC exchanges do you support?</button>
+              <button class="suggested-question" onclick="askQuestion('What is AlphaCouncil?')" role="listitem" data-i18n="ob.sq_what_is">What is AlphaCouncil and how does it work?</button>
+              <button class="suggested-question" onclick="askQuestion('Is my data secure?')" role="listitem" data-i18n="ob.sq_secure">Is my portfolio data secure?</button>
+              <button class="suggested-question" onclick="askQuestion('Which GCC exchanges are supported?')" role="listitem" data-i18n="ob.sq_exchanges">Which GCC exchanges do you support?</button>
             </div>
           </div>
-          <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Chat messages">
+          <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Chat messages" data-i18n-attr="aria-label:ob.chat_messages_aria">
             <div class="chat-message adviser">
               <div class="chat-avatar" aria-hidden="true">AI</div>
-              <div class="chat-bubble">Welcome! I'm here to help you set up your portfolio. Feel free to ask any questions along the way.</div>
+              <div class="chat-bubble" data-i18n="ob.adviser_welcome">Welcome! I'm here to help you set up your portfolio. Feel free to ask any questions along the way.</div>
             </div>
           </div>
         </div>
         <div class="chat-input-area">
           <div class="chat-input-row">
-            <label for="chatInput" class="sr-only">Type your message</label>
-            <textarea class="chat-input" id="chatInput" placeholder="Ask anything..." rows="1" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
-            <button class="chat-send" onclick="sendMessage()" aria-label="Send message">
+            <label for="chatInput" class="sr-only" data-i18n="ob.chat_input_label">Type your message</label>
+            <textarea class="chat-input" id="chatInput" placeholder="Ask anything..." rows="1" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendMessage();}" data-i18n-attr="placeholder:ob.chat_input_ph"></textarea>
+            <button class="chat-send" onclick="sendMessage()" aria-label="Send message" data-i18n-attr="aria-label:ob.chat_send_aria">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             </button>
           </div>
@@ -2290,8 +2298,8 @@
       updateSidebarContext();
 
       // Announce step change
-      const stepNames = ['Welcome', 'Choose method', 'Add holdings', 'Profile', 'Complete'];
-      announce(`Step ${step} of 5: ${stepNames[step - 1]}`);
+      const stepNames = [AC_I18N.t('ob.sname_welcome'), AC_I18N.t('ob.sname_choose'), AC_I18N.t('ob.sname_add'), AC_I18N.t('ob.sname_profile'), AC_I18N.t('ob.sname_complete')];
+      announce(`${AC_I18N.t('ob.announce_step_a')}${step}${AC_I18N.t('ob.announce_step_b')}${stepNames[step - 1]}`);
 
       // Focus management
       setTimeout(() => {
@@ -2361,7 +2369,7 @@
       selectedCard.classList.add('selected');
       selectedCard.setAttribute('aria-checked', 'true');
       updateFooter();
-      announce(`Selected: ${method === 'manual' ? 'Add holdings manually' : 'Upload statement'}`);
+      announce(method === 'manual' ? AC_I18N.t('ob.sel_manual') : AC_I18N.t('ob.sel_upload'));
     }
 
     // Search
@@ -2461,7 +2469,7 @@
       addForm.classList.add('show');
       addForm.setAttribute('aria-hidden', 'false');
       document.getElementById('sharesInput').focus();
-      announce(`Selected ${selectedStock.name}. Enter holding details.`);
+      announce(`${AC_I18N.t('ob.ann_selected_stock_a')}${selectedStock.name}${AC_I18N.t('ob.ann_selected_stock_b')}`);
     }
 
     function closeAddForm() {
@@ -2480,7 +2488,7 @@
       const shares = parseFloat(document.getElementById('sharesInput').value);
       const price = parseFloat(document.getElementById('priceInput').value);
       if (!shares || !price || !selectedStock) {
-        showToast('Please fill in required fields', 'Enter shares and average price', 'info');
+        showToast(AC_I18N.t('ob.toast_fill_title'), AC_I18N.t('ob.toast_fill_text'), 'info');
         return;
       }
       // Capture the stock BEFORE closeAddForm() resets selectedStock to null —
@@ -2499,8 +2507,8 @@
       renderHoldings();
       closeAddForm();
       updateFooter();   // enable Continue now that a holding exists — must run before any toast
-      showToast('Holding added', `${stock.name} added to portfolio`, 'success');
-      announce(`${holding.name} added to portfolio. ${holdings.length} holdings total.`);
+      showToast(AC_I18N.t('ob.toast_added_title'), `${stock.name}${AC_I18N.t('ob.toast_added_text')}`, 'success');
+      announce(`${holding.name}${AC_I18N.t('ob.ann_added_a')}${holdings.length}${AC_I18N.t('ob.ann_added_b')}`);
     }
 
     function removeHolding(index) {
@@ -2508,7 +2516,7 @@
       holdings.splice(index, 1);
       renderHoldings();
       updateFooter();
-      announce(`${removedName} removed from portfolio.`);
+      announce(`${removedName}${AC_I18N.t('ob.ann_removed')}`);
     }
 
     function renderHoldings() {
@@ -2538,7 +2546,7 @@
             <td>${h.currency} ${h.avgPrice.toFixed(2)}</td>
             <td>${h.currency} ${h.value.toLocaleString()}</td>
             <td>
-              <button class="holding-remove" onclick="removeHolding(${i})" aria-label="Remove ${h.name} from portfolio">
+              <button class="holding-remove" onclick="removeHolding(${i})" aria-label="${AC_I18N.t('ob.remove_aria')}${h.name}${AC_I18N.t('ob.remove_aria_from')}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
               </button>
             </td>
@@ -2578,7 +2586,7 @@
     // fabricated, and unmatched rows are skipped (they'd be dropped by persistHoldings anyway).
     // persistHoldings() then writes them to the real portfolio on finish.
     function renderExtractedTable() {
-      document.getElementById('extractedCount').textContent = holdings.length + ' found';
+      document.getElementById('extractedCount').textContent = holdings.length + AC_I18N.t('ob.count_found');
       document.getElementById('extractedBody').innerHTML = holdings.map((h, i) => `
         <tr>
           <td>
@@ -2594,7 +2602,7 @@
           <td>${h.currency || ''} ${Number(h.avgPrice || 0).toFixed(2)}</td>
           <td>${h.currency || ''} ${Number(h.value || 0).toLocaleString()}</td>
           <td>
-            <button class="holding-remove" onclick="removeExtracted(${i})" aria-label="Remove ${h.name || ''}">
+            <button class="holding-remove" onclick="removeExtracted(${i})" aria-label="${AC_I18N.t('ob.remove_aria')}${h.name || ''}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
           </td>
@@ -2607,12 +2615,12 @@
       const zone = document.getElementById('uploadZone');
       const processing = document.getElementById('processingState');
       const extracted = document.getElementById('extractedHoldings');
-      if (!window.API || !API.importExtract) { showToast('Sign in required', 'Please sign in to import a statement.', 'error'); return; }
+      if (!window.API || !API.importExtract) { showToast(AC_I18N.t('ob.toast_signin_title'), AC_I18N.t('ob.toast_signin_text'), 'error'); return; }
       zone.style.display = 'none';
       processing.classList.add('show');
-      announce('Processing file. Extracting holdings.');
+      announce(AC_I18N.t('ob.ann_processing'));
       const reader = new FileReader();
-      reader.onerror = function () { processing.classList.remove('show'); zone.style.display = ''; showToast('Couldn’t read the file', 'Please try again.', 'error'); };
+      reader.onerror = function () { processing.classList.remove('show'); zone.style.display = ''; showToast(AC_I18N.t('ob.toast_read_title'), AC_I18N.t('ob.toast_read_retry'), 'error'); };
       reader.onload = function () {
         const url = String(reader.result || '');
         const b64 = url.indexOf(',') >= 0 ? url.slice(url.indexOf(',') + 1) : url;
@@ -2636,18 +2644,18 @@
           extracted.classList.add('show');
           const skipped = rows.length - holdings.length;
           if (!holdings.length) {
-            document.getElementById('extractedCount').textContent = '0 found';
-            document.getElementById('extractedBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--fg-dim,#6B7A8F);">We couldn’t match any holdings to a covered GCC ticker. You can add positions manually instead.</td></tr>';
+            document.getElementById('extractedCount').textContent = '0' + AC_I18N.t('ob.count_found');
+            document.getElementById('extractedBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--fg-dim,#6B7A8F);">' + AC_I18N.t('ob.no_match') + '</td></tr>';
             updateFooter();
           } else {
             renderExtractedTable();
           }
-          showToast('Holdings extracted', holdings.length + ' position' + (holdings.length === 1 ? '' : 's') + ' matched' + (skipped > 0 ? (' · ' + skipped + ' unmatched skipped') : ''), 'success');
-          announce(holdings.length + ' holdings extracted from file.');
+          showToast(AC_I18N.t('ob.toast_extracted_title'), holdings.length + (holdings.length === 1 ? AC_I18N.t('ob.toast_ext_pos') : AC_I18N.t('ob.toast_ext_pos_pl')) + AC_I18N.t('ob.toast_ext_matched') + (skipped > 0 ? (AC_I18N.t('ob.toast_ext_skipped_a') + skipped + AC_I18N.t('ob.toast_ext_skipped_b')) : ''), 'success');
+          announce(holdings.length + AC_I18N.t('ob.ann_extracted'));
         }).catch(function (e) {
           processing.classList.remove('show'); zone.style.display = '';
-          const msg = (e && e.status === 401) ? 'Please sign in to import a statement.' : ((e && e.message) || 'Try a clearer screenshot or a different file.');
-          showToast('Couldn’t read the file', msg, 'error');
+          const msg = (e && e.status === 401) ? AC_I18N.t('ob.toast_signin_text') : ((e && e.message) || AC_I18N.t('ob.toast_read_clearer'));
+          showToast(AC_I18N.t('ob.toast_read_title'), msg, 'error');
         });
       };
       reader.readAsDataURL(file);
@@ -2656,7 +2664,7 @@
     function removeExtracted(index) {
       const removedName = holdings[index].name;
       holdings.splice(index, 1);
-      document.getElementById('extractedCount').textContent = holdings.length + ' found';
+      document.getElementById('extractedCount').textContent = holdings.length + AC_I18N.t('ob.count_found');
       document.getElementById('extractedBody').innerHTML = holdings.map((h, i) => `
         <tr>
           <td>
@@ -2672,14 +2680,14 @@
           <td>${h.currency} ${h.avgPrice.toFixed(2)}</td>
           <td>${h.currency} ${h.value.toLocaleString()}</td>
           <td>
-            <button class="holding-remove" onclick="removeExtracted(${i})" aria-label="Remove ${h.name}">
+            <button class="holding-remove" onclick="removeExtracted(${i})" aria-label="${AC_I18N.t('ob.remove_aria')}${h.name}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
           </td>
         </tr>
       `).join('');
       updateFooter();
-      announce(`${removedName} removed.`);
+      announce(`${removedName}${AC_I18N.t('ob.ann_removed_short')}`);
     }
 
     // Profile
@@ -2694,7 +2702,7 @@
           btn.classList.add('selected');
           btn.setAttribute('aria-pressed', 'true');
           userProfile[parent.dataset.question] = btn.dataset.value;
-          announce(`Selected: ${btn.textContent}`);
+          announce(`${AC_I18N.t('ob.sel_prefix')}${btn.textContent.trim()}`);
         });
       });
     }
@@ -2760,21 +2768,22 @@
         setTimeout(() => {
           document.getElementById('chatInput').focus();
         }, 300);
-        announce('AI Adviser opened');
+        announce(AC_I18N.t('ob.ann_adviser_open'));
       } else {
-        announce('AI Adviser closed');
+        announce(AC_I18N.t('ob.ann_adviser_close'));
       }
     }
 
     function updateSidebarContext() {
       const contextMap = {
-        1: 'Getting started with your portfolio',
-        2: 'Choosing how to add holdings',
-        3: 'Adding your GCC holdings',
-        4: 'Setting up your profile',
-        5: 'Portfolio setup complete'
+        1: AC_I18N.t('ob.ctx_1'),
+        2: AC_I18N.t('ob.ctx_2'),
+        3: AC_I18N.t('ob.ctx_3'),
+        4: AC_I18N.t('ob.ctx_4'),
+        5: AC_I18N.t('ob.ctx_5')
       };
       document.getElementById('sidebarContext').textContent = contextMap[currentStep];
+      // The onclick key stays English (it indexes the canned-answers map); the label localizes.
       const questionsMap = {
         1: ['What is AlphaCouncil?', 'Is my data secure?', 'Which GCC exchanges are supported?'],
         2: ['Which method is faster?', 'Can I do both methods?', 'What file formats are supported?'],
@@ -2783,7 +2792,7 @@
         5: ['What does the Council analyze?', 'How often is data updated?', 'Can I add more holdings?']
       };
       document.getElementById('suggestedQuestions').innerHTML = questionsMap[currentStep].map(q =>
-        `<button class="suggested-question" onclick="askQuestion('${q}')" role="listitem">${q}</button>`
+        `<button class="suggested-question" onclick="askQuestion('${q.replace(/'/g, "\\'")}')" role="listitem">${AC_I18N.t('ob.sq.' + q) || q}</button>`
       ).join('');
     }
 
@@ -2807,7 +2816,7 @@
           'How often is data updated?': 'Market prices update in real-time during trading hours. News and analysis are refreshed continuously.',
           'Can I add more holdings?': 'Yes! Go to Portfolio from the dashboard to add more holdings anytime.'
         };
-        const response = responses[question] || 'I understand your question. Let me help guide you through the setup process. Feel free to ask more specific questions about any step.';
+        const response = AC_I18N.t('ob.ans.' + question) || responses[question] || AC_I18N.t('ob.ans_default');
         addChatMessage(response, 'adviser');
       }, 800);
     }
@@ -2832,7 +2841,7 @@
       addChatMessage(text, 'user');
       input.value = '';
       setTimeout(() => {
-        addChatMessage('Thanks for your question! I\'m here to help you set up your portfolio. The data you add will be connected to real-time market information and our AI analysis engine.', 'adviser');
+        addChatMessage(AC_I18N.t('ob.send_reply'), 'adviser');
       }, 1000);
     }
 
@@ -2848,7 +2857,7 @@
           score: 72
         });
       } else {
-        showToast('Council review initiated', 'Opening AI Analyst Council for your top holding...', 'info');
+        showToast(AC_I18N.t('ob.toast_council_title'), AC_I18N.t('ob.toast_council_text'), 'info');
         setTimeout(() => {
           window.location.href = 'stock-detail.html?ticker=' + (holdings[0]?.ticker || '2222.SR');
         }, 1500);
@@ -2874,6 +2883,221 @@
     observer.observe(document.getElementById('step5'), { attributes: true, attributeFilter: ['class'] });
   </script>
   <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script>
+    AC_I18N.add({
+      // ── Header / chrome ──
+      'ob.page_title':        { en: 'Welcome — AlphaCouncil', ar: 'مرحبًا — AlphaCouncil' },
+      'ob.skip_setup':        { en: 'Skip setup', ar: 'تخطّي الإعداد' },
+      'ob.skip_setup_aria':   { en: 'Skip setup and go straight to the dashboard', ar: 'تخطّي الإعداد والانتقال مباشرة إلى لوحة التحكم' },
+      'ob.need_help':         { en: 'Need help?', ar: 'تحتاج مساعدة؟' },
+      'ob.need_help_aria':    { en: 'Get help with onboarding', ar: 'احصل على مساعدة في الإعداد' },
+      'ob.toggle_adviser':    { en: 'Toggle AI Adviser', ar: 'إظهار/إخفاء المستشار الذكي' },
+      'ob.skip_link':         { en: 'Skip to main content', ar: 'تخطّي إلى المحتوى الرئيسي' },
+      'ob.home_aria':         { en: 'AlphaCouncil home', ar: 'الصفحة الرئيسية لـ AlphaCouncil' },
+      // ── Progress / step indicator ──
+      'ob.progress_aria':     { en: 'Onboarding progress', ar: 'تقدّم الإعداد' },
+      'ob.steps_aria':        { en: 'Onboarding steps', ar: 'خطوات الإعداد' },
+      'ob.step1_dot':         { en: 'Step 1: Welcome', ar: 'الخطوة 1: الترحيب' },
+      'ob.step2_dot':         { en: 'Step 2: Choose method', ar: 'الخطوة 2: اختيار الطريقة' },
+      'ob.step3_dot':         { en: 'Step 3: Add holdings', ar: 'الخطوة 3: إضافة المراكز' },
+      'ob.step4_dot':         { en: 'Step 4: Profile', ar: 'الخطوة 4: الملف الشخصي' },
+      'ob.step5_dot':         { en: 'Step 5: Complete', ar: 'الخطوة 5: الاكتمال' },
+      // ── Step 1: Welcome ──
+      'ob.welcome_title':     { en: 'Welcome to AlphaCouncil', ar: 'مرحبًا بك في AlphaCouncil' },
+      'ob.welcome_subtitle':  { en: 'Add your GCC holdings and connect them to real-time market data, news, and AI-powered analysis — so you know what the data suggests.', ar: 'أضِف مراكزك في أسواق الخليج واربطها ببيانات السوق اللحظية والأخبار والتحليلات المدعومة بالذكاء الاصطناعي — لتعرف ما تشير إليه البيانات.' },
+      'ob.get_started':       { en: 'Get Started', ar: 'ابدأ الآن' },
+      'ob.have_portfolio':    { en: 'I already have a portfolio', ar: 'لديّ محفظة بالفعل' },
+      // ── Step 2: Choose method ──
+      'ob.method_title':      { en: 'How would you like to add your portfolio?', ar: 'كيف تودّ إضافة محفظتك؟' },
+      'ob.method_subtitle':   { en: 'Choose the option that works best for you', ar: 'اختر الخيار الأنسب لك' },
+      'ob.method_manual_title':{ en: 'Add holdings manually', ar: 'إضافة المراكز يدويًا' },
+      'ob.method_manual_desc':{ en: 'Search for GCC stocks and enter your positions one by one. Great for small portfolios or precise entry.', ar: 'ابحث عن أسهم الخليج وأدخل مراكزك واحدًا تلو الآخر. مثالي للمحافظ الصغيرة أو للإدخال الدقيق.' },
+      'ob.method_upload_badge':{ en: 'AI-Powered', ar: 'مدعوم بالذكاء الاصطناعي' },
+      'ob.method_upload_title':{ en: 'Upload statement or screenshot', ar: 'رفع كشف حساب أو لقطة شاشة' },
+      'ob.method_upload_desc':{ en: 'Upload your broker statement, portfolio screenshot, or CSV. Our AI extracts your holdings automatically.', ar: 'ارفع كشف حساب الوسيط أو لقطة شاشة للمحفظة أو ملف CSV. يستخرج الذكاء الاصطناعي مراكزك تلقائيًا.' },
+      'ob.exchanges_aria':    { en: 'Supported exchanges', ar: 'الأسواق المدعومة' },
+      'ob.formats_aria':      { en: 'Supported formats', ar: 'الصيغ المدعومة' },
+      'ob.fmt_screenshot':    { en: 'Screenshot', ar: 'لقطة شاشة' },
+      'ob.fmt_pdf':           { en: 'PDF', ar: 'PDF' },
+      'ob.fmt_csv_excel':     { en: 'CSV/Excel', ar: 'CSV/Excel' },
+      'ob.fmt_broker':        { en: 'Broker statement', ar: 'كشف حساب الوسيط' },
+      // ── Step 3a: Manual entry ──
+      'ob.manual_title':      { en: 'Add your holdings', ar: 'أضِف مراكزك' },
+      'ob.holdings_added':    { en: ' holdings added', ar: ' مراكز مُضافة' },
+      'ob.search_ph':         { en: 'Search GCC stocks (e.g., Aramco, Al Rajhi, QNB...)', ar: 'ابحث عن أسهم الخليج (مثل أرامكو، الراجحي، QNB...)' },
+      'ob.search_aria':       { en: 'Search for stocks', ar: 'البحث عن الأسهم' },
+      'ob.search_help':       { en: 'Type at least 2 characters to search for stocks', ar: 'اكتب حرفين على الأقل للبحث عن الأسهم' },
+      'ob.search_results_aria':{ en: 'Stock search results', ar: 'نتائج البحث عن الأسهم' },
+      'ob.form_close_aria':   { en: 'Close add holding form', ar: 'إغلاق نموذج إضافة المركز' },
+      'ob.shares_label':      { en: 'Number of Shares', ar: 'عدد الأسهم' },
+      'ob.required_sr':       { en: '(required)', ar: '(مطلوب)' },
+      'ob.optional':          { en: '(optional)', ar: '(اختياري)' },
+      'ob.shares_ph':         { en: 'e.g., 500', ar: 'مثال: 500' },
+      'ob.price_label':       { en: 'Average Buy Price', ar: 'متوسط سعر الشراء' },
+      'ob.price_ph':          { en: 'e.g., 28.50', ar: 'مثال: 28.50' },
+      'ob.date_label':        { en: 'Buy Date', ar: 'تاريخ الشراء' },
+      'ob.notes_label':       { en: 'Notes', ar: 'ملاحظات' },
+      'ob.notes_ph':          { en: 'e.g., Initial position', ar: 'مثال: مركز ابتدائي' },
+      'ob.cancel':            { en: 'Cancel', ar: 'إلغاء' },
+      'ob.add_holding':       { en: 'Add Holding', ar: 'إضافة مركز' },
+      'ob.your_holdings':     { en: 'Your Holdings', ar: 'مراكزك' },
+      'ob.empty_text':        { en: 'Search and add your first holding to get started', ar: 'ابحث وأضِف مركزك الأول للبدء' },
+      'ob.holdings_table_aria':{ en: 'Your portfolio holdings', ar: 'مراكز محفظتك' },
+      'ob.th_holding':        { en: 'Holding', ar: 'المركز' },
+      'ob.th_shares':         { en: 'Shares', ar: 'الأسهم' },
+      'ob.th_avg_price':      { en: 'Avg Price', ar: 'متوسط السعر' },
+      'ob.th_value':          { en: 'Value', ar: 'القيمة' },
+      'ob.th_actions':        { en: 'Actions', ar: 'إجراءات' },
+      // ── Step 3b: Upload flow ──
+      'ob.upload_title':      { en: 'Upload your portfolio', ar: 'ارفع محفظتك' },
+      'ob.upload_subtitle':   { en: 'Our AI will extract your holdings automatically', ar: 'سيستخرج الذكاء الاصطناعي مراكزك تلقائيًا' },
+      'ob.upload_zone_aria':  { en: 'Upload portfolio file. Drag and drop or click to browse.', ar: 'رفع ملف المحفظة. اسحب وأفلِت أو انقر للاستعراض.' },
+      'ob.upload_text':       { en: 'Drag & drop your file here', ar: 'اسحب وأفلِت ملفك هنا' },
+      'ob.upload_hint':       { en: 'or click to browse files', ar: 'أو انقر لاستعراض الملفات' },
+      'ob.upload_formats_aria':{ en: 'Supported file formats', ar: 'صيغ الملفات المدعومة' },
+      'ob.fmt_excel':         { en: 'Excel', ar: 'Excel' },
+      'ob.fmt_broker2':       { en: 'Broker Statement', ar: 'كشف حساب الوسيط' },
+      'ob.choose_file':       { en: 'Choose File', ar: 'اختيار ملف' },
+      'ob.file_input_aria':   { en: 'Choose file to upload', ar: 'اختر ملفًا للرفع' },
+      'ob.processing_aria':   { en: 'Processing file', ar: 'جارٍ معالجة الملف' },
+      'ob.processing_text':   { en: 'Extracting holdings...', ar: 'جارٍ استخراج المراكز...' },
+      'ob.processing_hint':   { en: 'Our AI is analyzing your document', ar: 'يحلّل الذكاء الاصطناعي مستندك' },
+      'ob.extracted_title':   { en: 'Holdings Extracted', ar: 'تم استخراج المراكز' },
+      'ob.extracted_hint':    { en: 'Review and adjust if needed', ar: 'راجِع وعدّل عند الحاجة' },
+      'ob.extracted_table_aria':{ en: 'Extracted holdings', ar: 'المراكز المستخرَجة' },
+      // ── Step 4: Profile ──
+      'ob.profile_title':     { en: 'Quick profile setup', ar: 'إعداد سريع للملف الشخصي' },
+      'ob.profile_subtitle':  { en: 'Help us personalize your experience (optional)', ar: 'ساعِدنا في تخصيص تجربتك (اختياري)' },
+      'ob.q_goal':            { en: 'What is your primary investment goal?', ar: 'ما هو هدفك الاستثماري الأساسي؟' },
+      'ob.goal_growth':       { en: 'Growth', ar: 'النمو' },
+      'ob.goal_income':       { en: 'Income', ar: 'الدخل' },
+      'ob.goal_balanced':     { en: 'Balanced', ar: 'متوازن' },
+      'ob.goal_preservation': { en: 'Capital Preservation', ar: 'الحفاظ على رأس المال' },
+      'ob.q_timeline':        { en: "What's your investment timeline?", ar: 'ما هو أفقك الزمني للاستثمار؟' },
+      'ob.tl_short':          { en: '1-3 years', ar: '1-3 سنوات' },
+      'ob.tl_medium':         { en: '3-7 years', ar: '3-7 سنوات' },
+      'ob.tl_long':           { en: '7+ years', ar: '7 سنوات فأكثر' },
+      'ob.skip_for_now':      { en: 'Skip for now', ar: 'تخطّي الآن' },
+      'ob.continue':          { en: 'Continue', ar: 'متابعة' },
+      // ── Step 5: Success ──
+      'ob.success_title':     { en: 'Your portfolio is ready!', ar: 'محفظتك جاهزة!' },
+      'ob.success_sub_a':     { en: "We've connected ", ar: 'لقد ربطنا ' },
+      'ob.success_sub_b':     { en: ' holdings to real-time market data and AI analysis.', ar: ' مركزًا ببيانات السوق اللحظية والتحليل بالذكاء الاصطناعي.' },
+      'ob.portfolio_summary_aria':{ en: 'Portfolio summary', ar: 'ملخّص المحفظة' },
+      'ob.preview_title':     { en: 'Portfolio Summary', ar: 'ملخّص المحفظة' },
+      'ob.metric_holdings':   { en: 'Holdings', ar: 'المراكز' },
+      'ob.metric_markets':    { en: 'Markets', ar: 'الأسواق' },
+      'ob.run_council':       { en: 'Run my first AI Analyst Council review', ar: 'تشغيل أول مراجعة لمجلس المحللين الذكي' },
+      'ob.go_dashboard':      { en: 'Go to Dashboard', ar: 'الانتقال إلى لوحة التحكم' },
+      // ── Footer / disclaimer ──
+      'ob.back':              { en: 'Back', ar: 'رجوع' },
+      'ob.back_aria':         { en: 'Go to previous step', ar: 'العودة إلى الخطوة السابقة' },
+      'ob.continue_aria':     { en: 'Continue to next step', ar: 'المتابعة إلى الخطوة التالية' },
+      'ob.disclaimer':        { en: 'AlphaCouncil provides market data and AI-powered analysis for informational purposes only. This does not constitute investment advice. Past performance does not guarantee future results. Always conduct your own research before making investment decisions.', ar: 'يوفّر AlphaCouncil بيانات السوق والتحليلات المدعومة بالذكاء الاصطناعي لأغراض إعلامية فقط. وهذا لا يُعدّ نصيحة استثمارية. الأداء السابق لا يضمن النتائج المستقبلية. تأكّد دائمًا من إجراء بحثك الخاص قبل اتخاذ قرارات الاستثمار.' },
+      // ── AI Adviser sidebar ──
+      'ob.adviser_title':     { en: 'AI Adviser', ar: 'المستشار الذكي' },
+      'ob.adviser_online':    { en: 'Online', ar: 'متصل' },
+      'ob.adviser_label':     { en: 'AI Adviser', ar: 'المستشار الذكي' },
+      'ob.adviser_close':     { en: 'Close AI Adviser', ar: 'إغلاق المستشار الذكي' },
+      'ob.current_step':      { en: 'Current Step', ar: 'الخطوة الحالية' },
+      'ob.suggested_questions':{ en: 'Suggested Questions', ar: 'أسئلة مقترحة' },
+      'ob.sq_what_is':        { en: 'What is AlphaCouncil and how does it work?', ar: 'ما هو AlphaCouncil وكيف يعمل؟' },
+      'ob.sq_secure':         { en: 'Is my portfolio data secure?', ar: 'هل بيانات محفظتي آمنة؟' },
+      'ob.sq_exchanges':      { en: 'Which GCC exchanges do you support?', ar: 'ما هي أسواق الخليج التي تدعمونها؟' },
+      'ob.adviser_welcome':   { en: "Welcome! I'm here to help you set up your portfolio. Feel free to ask any questions along the way.", ar: 'مرحبًا! أنا هنا لمساعدتك في إعداد محفظتك. لا تتردّد في طرح أي أسئلة على طول الطريق.' },
+      'ob.chat_input_label':  { en: 'Type your message', ar: 'اكتب رسالتك' },
+      'ob.chat_input_ph':     { en: 'Ask anything...', ar: 'اسأل عن أي شيء...' },
+      'ob.chat_send_aria':    { en: 'Send message', ar: 'إرسال الرسالة' },
+      'ob.chat_messages_aria':{ en: 'Chat messages', ar: 'رسائل المحادثة' },
+      // ── JS-injected: step / context labels ──
+      'ob.sname_welcome':     { en: 'Welcome', ar: 'الترحيب' },
+      'ob.sname_choose':      { en: 'Choose method', ar: 'اختيار الطريقة' },
+      'ob.sname_add':         { en: 'Add holdings', ar: 'إضافة المراكز' },
+      'ob.sname_profile':     { en: 'Profile', ar: 'الملف الشخصي' },
+      'ob.sname_complete':    { en: 'Complete', ar: 'الاكتمال' },
+      'ob.announce_step_a':   { en: 'Step ', ar: 'الخطوة ' },
+      'ob.announce_step_b':   { en: ' of 5: ', ar: ' من 5: ' },
+      'ob.ctx_1':             { en: 'Getting started with your portfolio', ar: 'البدء بإعداد محفظتك' },
+      'ob.ctx_2':             { en: 'Choosing how to add holdings', ar: 'اختيار طريقة إضافة المراكز' },
+      'ob.ctx_3':             { en: 'Adding your GCC holdings', ar: 'إضافة مراكزك في أسواق الخليج' },
+      'ob.ctx_4':             { en: 'Setting up your profile', ar: 'إعداد ملفك الشخصي' },
+      'ob.ctx_5':             { en: 'Portfolio setup complete', ar: 'اكتمل إعداد المحفظة' },
+      // ── JS-injected: method-select announcements ──
+      'ob.sel_manual':        { en: 'Selected: Add holdings manually', ar: 'تم الاختيار: إضافة المراكز يدويًا' },
+      'ob.sel_upload':        { en: 'Selected: Upload statement', ar: 'تم الاختيار: رفع كشف حساب' },
+      'ob.sel_prefix':        { en: 'Selected: ', ar: 'تم الاختيار: ' },
+      // ── JS-injected: holdings count suffixes / table copy ──
+      'ob.count_found':       { en: ' found', ar: ' نتيجة' },
+      'ob.no_match':          { en: "We couldn’t match any holdings to a covered GCC ticker. You can add positions manually instead.", ar: 'تعذّر مطابقة أي مراكز برمز سهم خليجي مُغطّى. يمكنك إضافة المراكز يدويًا بدلًا من ذلك.' },
+      // ── JS-injected: announcements (holdings add/remove/extract) ──
+      'ob.ann_added_a':       { en: ' added to portfolio. ', ar: ' أُضيف إلى المحفظة. ' },
+      'ob.ann_added_b':       { en: ' holdings total.', ar: ' إجمالي المراكز.' },
+      'ob.ann_removed':       { en: ' removed from portfolio.', ar: ' أُزيل من المحفظة.' },
+      'ob.ann_removed_short': { en: ' removed.', ar: ' أُزيل.' },
+      'ob.ann_selected_stock_a':{ en: 'Selected ', ar: 'تم اختيار ' },
+      'ob.ann_selected_stock_b':{ en: '. Enter holding details.', ar: '. أدخل تفاصيل المركز.' },
+      'ob.ann_processing':    { en: 'Processing file. Extracting holdings.', ar: 'جارٍ معالجة الملف. استخراج المراكز.' },
+      'ob.ann_extracted':     { en: ' holdings extracted from file.', ar: ' مراكز مُستخرَجة من الملف.' },
+      'ob.ann_adviser_open':  { en: 'AI Adviser opened', ar: 'تم فتح المستشار الذكي' },
+      'ob.ann_adviser_close': { en: 'AI Adviser closed', ar: 'تم إغلاق المستشار الذكي' },
+      'ob.remove_aria':       { en: 'Remove ', ar: 'إزالة ' },
+      'ob.remove_aria_from':  { en: ' from portfolio', ar: ' من المحفظة' },
+      // ── JS-injected: toasts ──
+      'ob.toast_fill_title':  { en: 'Please fill in required fields', ar: 'يُرجى تعبئة الحقول المطلوبة' },
+      'ob.toast_fill_text':   { en: 'Enter shares and average price', ar: 'أدخل عدد الأسهم ومتوسط السعر' },
+      'ob.toast_added_title': { en: 'Holding added', ar: 'تمت إضافة المركز' },
+      'ob.toast_added_text':  { en: ' added to portfolio', ar: ' أُضيف إلى المحفظة' },
+      'ob.toast_signin_title':{ en: 'Sign in required', ar: 'يلزم تسجيل الدخول' },
+      'ob.toast_signin_text': { en: 'Please sign in to import a statement.', ar: 'يُرجى تسجيل الدخول لاستيراد كشف حساب.' },
+      'ob.toast_read_title':  { en: 'Couldn’t read the file', ar: 'تعذّرت قراءة الملف' },
+      'ob.toast_read_retry':  { en: 'Please try again.', ar: 'يُرجى المحاولة مرة أخرى.' },
+      'ob.toast_read_clearer':{ en: 'Try a clearer screenshot or a different file.', ar: 'جرّب لقطة شاشة أوضح أو ملفًا مختلفًا.' },
+      'ob.toast_extracted_title':{ en: 'Holdings extracted', ar: 'تم استخراج المراكز' },
+      'ob.toast_ext_pos':     { en: ' position', ar: ' مركز' },
+      'ob.toast_ext_pos_pl':  { en: ' positions', ar: ' مراكز' },
+      'ob.toast_ext_matched': { en: ' matched', ar: ' تمت مطابقته' },
+      'ob.toast_ext_skipped_a':{ en: ' · ', ar: ' · ' },
+      'ob.toast_ext_skipped_b':{ en: ' unmatched skipped', ar: ' غير مطابق تم تخطّيه' },
+      'ob.toast_council_title':{ en: 'Council review initiated', ar: 'بدأت مراجعة المجلس' },
+      'ob.toast_council_text':{ en: 'Opening AI Analyst Council for your top holding...', ar: 'جارٍ فتح مجلس المحللين الذكي لأكبر مراكزك...' },
+      // ── JS: adviser canned answers ──
+      'ob.ans_default':       { en: 'I understand your question. Let me help guide you through the setup process. Feel free to ask more specific questions about any step.', ar: 'أفهم سؤالك. دعني أساعدك في إرشادك خلال عملية الإعداد. لا تتردّد في طرح أسئلة أكثر تحديدًا حول أي خطوة.' },
+      'ob.send_reply':        { en: "Thanks for your question! I'm here to help you set up your portfolio. The data you add will be connected to real-time market information and our AI analysis engine.", ar: 'شكرًا على سؤالك! أنا هنا لمساعدتك في إعداد محفظتك. ستُربط البيانات التي تضيفها بمعلومات السوق اللحظية ومحرّك التحليل بالذكاء الاصطناعي لدينا.' },
+      // ── JS-injected: per-step suggested-question labels (keyed by the English onclick key) ──
+      'ob.sq.What is AlphaCouncil?':            { en: 'What is AlphaCouncil and how does it work?', ar: 'ما هو AlphaCouncil وكيف يعمل؟' },
+      'ob.sq.Is my data secure?':               { en: 'Is my portfolio data secure?', ar: 'هل بيانات محفظتي آمنة؟' },
+      'ob.sq.Which GCC exchanges are supported?':{ en: 'Which GCC exchanges do you support?', ar: 'ما هي أسواق الخليج التي تدعمونها؟' },
+      'ob.sq.Which method is faster?':          { en: 'Which method is faster?', ar: 'أي طريقة أسرع؟' },
+      'ob.sq.Can I do both methods?':           { en: 'Can I do both methods?', ar: 'هل يمكنني استخدام الطريقتين معًا؟' },
+      'ob.sq.What file formats are supported?': { en: 'What file formats are supported?', ar: 'ما صيغ الملفات المدعومة؟' },
+      'ob.sq.How do I find my ticker?':         { en: 'How do I find my ticker?', ar: 'كيف أجد رمز السهم الخاص بي؟' },
+      'ob.sq.Can I add multiple lots?':         { en: 'Can I add multiple lots?', ar: 'هل يمكنني إضافة عدة دفعات شراء؟' },
+      'ob.sq.What if my stock is not listed?':  { en: 'What if my stock is not listed?', ar: 'ماذا لو لم يكن سهمي مُدرجًا؟' },
+      'ob.sq.Why do you need this info?':       { en: 'Why do you need this info?', ar: 'لماذا تحتاجون هذه المعلومات؟' },
+      'ob.sq.Can I change this later?':         { en: 'Can I change this later?', ar: 'هل يمكنني تغيير هذا لاحقًا؟' },
+      'ob.sq.Is this data shared?':             { en: 'Is this data shared?', ar: 'هل تتم مشاركة هذه البيانات؟' },
+      'ob.sq.What does the Council analyze?':   { en: 'What does the Council analyze?', ar: 'ماذا يحلّل المجلس؟' },
+      'ob.sq.How often is data updated?':       { en: 'How often is data updated?', ar: 'كم مرة يتم تحديث البيانات؟' },
+      'ob.sq.Can I add more holdings?':         { en: 'Can I add more holdings?', ar: 'هل يمكنني إضافة المزيد من المراكز؟' },
+      // ── JS-injected: adviser canned answers (keyed by the English question) ──
+      'ob.ans.What is AlphaCouncil?':           { en: 'AlphaCouncil is an AI-powered portfolio intelligence platform designed specifically for GCC stock investors. We provide real-time market data, news analysis, and a unique "AI Analyst Council" that evaluates your holdings across 12 dimensions.', ar: 'AlphaCouncil منصّة لذكاء المحافظ مدعومة بالذكاء الاصطناعي ومصمّمة خصيصًا لمستثمري أسهم الخليج. نوفّر بيانات السوق اللحظية وتحليل الأخبار و«مجلس المحللين الذكي» الفريد الذي يقيّم مراكزك عبر 12 بُعدًا.' },
+      'ob.ans.Is my data secure?':              { en: 'Your portfolio data is encrypted and stored securely. We use bank-grade security protocols. Your data is never shared with third parties.', ar: 'بيانات محفظتك مشفّرة ومخزّنة بأمان. نستخدم بروتوكولات أمان بمستوى البنوك. ولا تتم مشاركة بياناتك مع أي طرف ثالث.' },
+      'ob.ans.Which GCC exchanges are supported?':{ en: 'We support all major GCC exchanges including Tadawul (Saudi), ADX and DFM (UAE), QSE (Qatar), and Boursa Kuwait.', ar: 'ندعم جميع أسواق الخليج الرئيسية بما في ذلك تداول (السعودية)، وسوق أبوظبي وسوق دبي المالي (الإمارات)، وبورصة قطر، وبورصة الكويت.' },
+      'ob.ans.Which method is faster?':         { en: 'The AI upload method is typically faster for portfolios with 5+ holdings. Manual entry gives you more control for precise position tracking.', ar: 'طريقة الرفع بالذكاء الاصطناعي عادةً أسرع للمحافظ التي تضم 5 مراكز فأكثر. أما الإدخال اليدوي فيمنحك تحكّمًا أكبر لتتبّع المراكز بدقّة.' },
+      'ob.ans.Can I do both methods?':          { en: 'Yes! You can upload a statement first, then add additional holdings manually. The methods complement each other.', ar: 'نعم! يمكنك رفع كشف حساب أولًا ثم إضافة مراكز إضافية يدويًا. الطريقتان تُكمّلان بعضهما.' },
+      'ob.ans.What file formats are supported?':{ en: 'We accept screenshots (PNG, JPG), PDFs, CSV files, and Excel spreadsheets. Broker statements from major GCC brokers are automatically recognized.', ar: 'نقبل لقطات الشاشة (PNG، JPG)، وملفات PDF، وملفات CSV، وجداول Excel. ويتم التعرّف تلقائيًا على كشوف الحساب من كبار وسطاء الخليج.' },
+      'ob.ans.How do I find my ticker?':        { en: 'Just start typing the company name or ticker symbol. Our search covers all GCC-listed stocks with their official tickers.', ar: 'ابدأ بكتابة اسم الشركة أو رمز السهم فقط. يغطّي بحثنا جميع الأسهم المُدرجة في الخليج برموزها الرسمية.' },
+      'ob.ans.Can I add multiple lots?':        { en: 'Yes, after initial setup you can track multiple purchase lots per holding with different buy dates and prices.', ar: 'نعم، بعد الإعداد الأولي يمكنك تتبّع عدة دفعات شراء لكل مركز بتواريخ وأسعار شراء مختلفة.' },
+      'ob.ans.What if my stock is not listed?': { en: 'All officially listed GCC stocks are in our database. If you cannot find a stock, it may be recently listed or trading under a different symbol.', ar: 'جميع أسهم الخليج المُدرجة رسميًا موجودة في قاعدة بياناتنا. إذا لم تجد سهمًا، فقد يكون مُدرجًا حديثًا أو يُتداول برمز مختلف.' },
+      'ob.ans.Why do you need this info?':      { en: 'Your investment goals and timeline help us prioritize which insights to highlight. The AI Council adjusts its analysis focus based on your profile.', ar: 'تساعدنا أهدافك الاستثمارية وأفقك الزمني في تحديد أولوية الرؤى التي نُبرزها. ويعدّل المجلس الذكي محور تحليله بناءً على ملفك الشخصي.' },
+      'ob.ans.Can I change this later?':        { en: 'Absolutely. You can update your profile anytime in Settings.', ar: 'بالتأكيد. يمكنك تحديث ملفك الشخصي في أي وقت من الإعدادات.' },
+      'ob.ans.Is this data shared?':           { en: 'No, your profile data stays private and is only used to personalize your experience.', ar: 'لا، تبقى بيانات ملفك الشخصي خاصة وتُستخدم فقط لتخصيص تجربتك.' },
+      'ob.ans.What does the Council analyze?':  { en: 'The AI Analyst Council evaluates stocks across 12 dimensions including Valuation, Growth, Profitability, Quality, Dividends, Ownership, Governance, ESG, Macro factors, Momentum, Technicals, and Sentiment.', ar: 'يقيّم مجلس المحللين الذكي الأسهم عبر 12 بُعدًا تشمل التقييم، والنمو، والربحية، والجودة، والأرباح الموزّعة، والملكية، والحوكمة، والاستدامة (ESG)، والعوامل الكلية، والزخم، والمؤشرات الفنية، ومعنويات السوق.' },
+      'ob.ans.How often is data updated?':      { en: 'Market prices update in real-time during trading hours. News and analysis are refreshed continuously.', ar: 'تُحدَّث أسعار السوق لحظيًا خلال ساعات التداول. وتُحدَّث الأخبار والتحليلات باستمرار.' },
+      'ob.ans.Can I add more holdings?':        { en: 'Yes! Go to Portfolio from the dashboard to add more holdings anytime.', ar: 'نعم! انتقل إلى المحفظة من لوحة التحكم لإضافة المزيد من المراكز في أي وقت.' }
+    });
+  </script>
   <script src="adviser-core.js"></script>
   <script>
     if (typeof AlphaCouncil !== 'undefined') {
