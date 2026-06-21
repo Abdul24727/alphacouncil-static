@@ -2050,28 +2050,10 @@
       });
     });
 
-    // Sidebar toggle
-    const adviserToggle = document.getElementById('adviserToggle');
-    const adviserSidebar = document.getElementById('adviserSidebar');
-    const closeSidebar = document.getElementById('closeSidebar');
-
-    if (adviserToggle) {
-      adviserToggle.addEventListener('click', () => {
-        const isOpen = adviserSidebar.classList.toggle('open');
-        adviserToggle.classList.toggle('active');
-        adviserToggle.setAttribute('aria-expanded', isOpen);
-        document.body.classList.toggle('sidebar-open');
-      });
-    }
-
-    if (closeSidebar) {
-      closeSidebar.addEventListener('click', () => {
-        adviserSidebar.classList.remove('open');
-        adviserToggle.classList.remove('active');
-        adviserToggle.setAttribute('aria-expanded', 'false');
-        document.body.classList.remove('sidebar-open');
-      });
-    }
+    // Sidebar toggle is wired by adviser-core (AlphaCouncil.init): #adviserToggle and
+    // #closeSidebar both call AlphaCouncil.toggleSidebar(). A duplicate inline handler
+    // used to live here, but it fought adviser-core's (each toggled .open), so the chat
+    // opened unreliably on this page — removed. Single source of truth now.
 
     // ── L1: real exports / real delete / profile save / change-password / honest 2FA ──
     function _download(filename, text, mime){

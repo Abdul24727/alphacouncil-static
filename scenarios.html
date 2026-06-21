@@ -2535,10 +2535,9 @@
       relocalizeTradeSelects();
     });
 
-    // Adviser Toggle
-    document.getElementById('adviserToggle').addEventListener('click', () => {
-      AlphaCouncil.toggleSidebar();
-    });
+    // Adviser toggle is wired by adviser-core (AlphaCouncil.init). A duplicate inline
+    // handler used to live here and double-called toggleSidebar() (open then close), so
+    // the chat would not stay open — removed.
   </script>
 </body>
 </html>

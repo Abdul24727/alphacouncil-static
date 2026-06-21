@@ -919,26 +919,10 @@
       }
     });
 
-    // Sidebar toggle
-    const adviserToggle = document.getElementById('adviserToggle');
-    const adviserSidebar = document.getElementById('adviserSidebar');
-    const closeSidebar = document.getElementById('closeSidebar');
-
-    if (adviserToggle) {
-      adviserToggle.addEventListener('click', () => {
-        adviserSidebar.classList.toggle('open');
-        adviserToggle.classList.toggle('active');
-        document.body.classList.toggle('sidebar-open');
-      });
-    }
-
-    if (closeSidebar) {
-      closeSidebar.addEventListener('click', () => {
-        adviserSidebar.classList.remove('open');
-        adviserToggle.classList.remove('active');
-        document.body.classList.remove('sidebar-open');
-      });
-    }
+    // Sidebar toggle is wired by adviser-core (AlphaCouncil.init): #adviserToggle and
+    // #closeSidebar call AlphaCouncil.toggleSidebar(). A duplicate inline handler used to
+    // live here and fought adviser-core's (each toggled .open), so the chat opened
+    // unreliably — removed for a single source of truth.
 
     // Action functions
     function runNewReview() {
