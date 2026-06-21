@@ -72,7 +72,11 @@ test.describe('O4 — i18n shared chrome rolled out across app pages', () => {
     { path: '/alerts.html',           name: 'alerts', body: { sel: '.rules-title[data-i18n="alerts.rules_title"]', ar: 'قواعد التنبيه' } },
     { path: '/council-history.html',  name: 'council-history', body: { sel: '.page-title[data-i18n="ch.title"]', ar: 'سجل المجلس' } },
     { path: '/scenarios.html',        name: 'scenarios', body: { sel: 'h1[data-i18n="sc.title"]', ar: 'سيناريوهات المحفظة' } },
-    { path: '/stock-detail.html?ticker=2222_TADAWUL', name: 'stock-detail', body: { sel: '[data-i18n="sd.signal"]', ar: 'إشارة AlphaCouncil' } },
+    // NB: target a STABLE heading — the banner's [data-i18n="sd.signal"] has its data-i18n
+    // removed by the page JS once the live signal loads (it becomes the dynamic
+    // "إشارة AlphaCouncil: <signal>"), so asserting on it races the fetch. sd.why_signal
+    // is a static span the JS never touches.
+    { path: '/stock-detail.html?ticker=2222_TADAWUL', name: 'stock-detail', body: { sel: '[data-i18n="sd.why_signal"]', ar: 'لماذا هذه الإشارة؟' } },
   ];
 
   for (const pg of PAGES) {
