@@ -454,22 +454,26 @@ const AlphaCouncil = (function() {
     if (!modal) { modal = createCouncilModal(); document.body.appendChild(modal); }
 
     const tickerKey = context && (context.tickerKey || context.ticker) ? (context.tickerKey || context.ticker) : null;
+    const scenario = context && context.scenario ? String(context.scenario).trim() : null;
     const badge = document.getElementById('councilBadge');
     if (badge) {
-      if (tickerKey) { badge.textContent = String(tickerKey).split('_')[0] + ' Position'; badge.className = 'council-badge position'; }
+      if (scenario) { badge.textContent = (context && context.scenarioName) ? ('Scenario · ' + context.scenarioName) : 'Scenario'; badge.className = 'council-badge'; }
+      else if (tickerKey) { badge.textContent = String(tickerKey).split('_')[0] + ' Position'; badge.className = 'council-badge position'; }
       else { badge.textContent = 'Portfolio-Wide'; badge.className = 'council-badge'; }
     }
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
-    runCouncil(tickerKey);
+    runCouncil(tickerKey, scenario);
   }
 
   // REAL convene: POST /api/adviser/council/ask (Pro/Elite, ~90s). Renders the
   // chairman's synthesis + the anonymised committee deliberation, or honest errors.
-  async function runCouncil(tickerKey) {
+  async function runCouncil(tickerKey, scenario) {
     const body = document.querySelector('#councilModalOverlay .council-body');
     if (!body) return;
-    const question = tickerKey
+    const question = scenario
+      ? ('Convene the Council on this portfolio scenario I am considering:\n"' + scenario + '"\n\nAnalyze the impact on my actual holdings: the key risks, the opportunities, the effect on concentration and diversification, and what I should weigh before acting on it.')
+      : tickerKey
       ? ('Convene the Council on my position in ' + String(tickerKey).split('_')[0] + ': is the thesis intact, what are the key risks, and what should I consider?')
       : 'Convene the Council on my portfolio: concentration, the biggest risks, diversification, and what I should consider next.';
     body.innerHTML = councilLoadingHtml();

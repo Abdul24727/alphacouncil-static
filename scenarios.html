@@ -2425,14 +2425,23 @@
 
     // Run Council on Scenario
     function runCouncilOnScenario(scenarioId) {
-      const scenarioCard = document.querySelector(`.scenario-card[data-id="${scenarioId}"]`);
-      const scenarioName = scenarioCard ? scenarioCard.querySelector('.scenario-name').textContent : 'Current Scenario';
+      // Feed the ACTUAL scenario to the Council: prefer what the user typed in the
+      // natural-language box; otherwise fall back to the selected scenario card.
+      const nl = document.getElementById('scenarioInput');
+      const typed = (nl && nl.value ? nl.value : '').trim();
+      const card = document.querySelector(`.scenario-card[data-id="${scenarioId}"]`) || document.querySelector('.scenario-card.active');
+      const name = card ? ((card.querySelector('.scenario-name') || {}).textContent || '').trim() : '';
+      const desc = card ? ((card.querySelector('.scenario-description') || {}).textContent || '').trim() : '';
+      const scenarioText = typed || [name, desc].filter(Boolean).join(' — ');
 
-      AlphaCouncil.openCouncilModal({
-        mode: 'scenario',
-        scenarioName: scenarioName,
-        context: 'Analyze this portfolio scenario and provide perspectives from each AI Analyst.'
-      });
+      if (!scenarioText) {
+        if (window.AlphaCouncil && AlphaCouncil.showToast) {
+          AlphaCouncil.showToast(AC_I18N.t('sc.toast_input_required') || 'Describe a scenario',
+            AC_I18N.t('sc.toast_input_required_msg') || 'Please describe your scenario first', 'warning');
+        }
+        return;
+      }
+      AlphaCouncil.openCouncilModal({ scenario: scenarioText, scenarioName: name });
     }
 
     // Modal Functions
