@@ -5,6 +5,7 @@ node_modules/
 .env
 .env.test
 .env.local
+js/config.js
 test-results/
 playwright-report/
 playwright/.cache/
@@ -12,3 +13,15 @@ playwright/.cache/
 # os
 Thumbs.db
 .DS_Store
+
+# Claude Code session data
+.claude/
+
+# Local scratch / generated reports (not source)
+_audit_report.json
+tests/_*.spec.js
+
+# Frontend Sentry: PARKED, not wired into any page yet — re-enable when the
+# Sentry DSN is provisioned (config.js holds the DSN, deployed per-server,
+# already gitignored above). Kept on disk, out of git until then.
+js/sentry-loader.js
