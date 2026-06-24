@@ -77,6 +77,16 @@
     .signal-link:hover { text-decoration: underline; }
     .signal-link:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; border-radius: var(--radius-sm); }
     .signal-link svg { width: 12px; height: 12px; }
+    /* Per-category data freshness badges — honest per-category age, never one global timestamp. */
+    .freshness-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+    .freshness-badges:empty { display: none; }
+    .freshness-badge { display: inline-flex; align-items: center; gap: 7px; padding: 5px 11px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; font-size: 11px; font-weight: 600; }
+    .freshness-badge .fb-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); flex: none; }
+    .freshness-badge .fb-label { color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.04em; }
+    .freshness-badge .fb-age { color: var(--fg); font-weight: 700; }
+    .freshness-badge.is-stale { border-color: rgba(239, 68, 68, 0.45); background: rgba(239, 68, 68, 0.08); }
+    .freshness-badge.is-stale .fb-dot { background: var(--danger); }
+    .freshness-badge.is-stale .fb-age { color: var(--danger); }
 
     /* Position Card */
     .position-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 22px; margin-bottom: 20px; }
@@ -322,6 +332,8 @@
       .right-column { grid-template-columns: 1fr; }
     }
   </style>
+  <script src="js/config.js"></script>
+  <script src="js/sentry-loader.js"></script>
 </head>
 <body>
   <!-- Skip Link for Accessibility -->
@@ -423,6 +435,12 @@
           <a href="#" class="signal-link" onclick="showSignalExplanation(); return false;"><span data-i18n="sd.why_signal">Why this signal?</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
         </div>
       </div>
+
+      <!-- Per-category data freshness — populated by renderFreshness() from
+           d.scores.freshness; empty (CSS-hidden) until data loads. Each category
+           judged against ITS own threshold so quarterly data isn't lied about as
+           stale while >2-day-old daily data is honestly flagged. -->
+      <div class="freshness-badges" id="freshnessBadges" aria-label="Data freshness by category"></div>
 
       <!-- Your Position — D5: populated by renderPosition() from the signed-in user's real holding; hidden when not held -->
       <div class="position-card" style="display:none">
@@ -848,7 +866,15 @@
     'sd.sale_recorded':     { en: 'Sale recorded', ar: 'تم تسجيل البيع' },
     'sd.sale_recorded_msg': { en: '{count} shares sold · {remaining} remaining', ar: '{count} سهم مُباع · {remaining} متبقٍّ' },
     'sd.signal_question':   { en: 'Why is AlphaCouncil’s signal "{signal}" for {name}? Explain what drives its composite score.', ar: 'لماذا إشارة AlphaCouncil "{signal}" لـ {name}؟ اشرح ما الذي يحرّك درجتها المركّبة.' },
-    'sd.signal_neutral':    { en: 'neutral', ar: 'محايدة' }
+    'sd.signal_neutral':    { en: 'neutral', ar: 'محايدة' },
+    'sd.fresh_prices':      { en: 'Prices', ar: 'الأسعار' },
+    'sd.fresh_fundamentals':{ en: 'Fundamentals', ar: 'الأساسيات' },
+    'sd.fresh_news':        { en: 'News', ar: 'الأخبار' },
+    'sd.fresh_today':       { en: 'today', ar: 'اليوم' },
+    'sd.fresh_days':        { en: '{n}d', ar: '{n} ي' },
+    'sd.fresh_nodata':      { en: 'no data', ar: 'لا بيانات' },
+    'sd.fresh_fresh_t':     { en: 'Up to date ({age}, within {max}d)', ar: 'محدّث ({age}، خلال {max} يوم)' },
+    'sd.fresh_stale_t':     { en: 'Stale: {age} old, older than the {max}-day freshness window', ar: 'قديمة: عمرها {age}، أقدم من نافذة التحديث ({max} يوم)' }
   });
   // Tiny {placeholder} interpolation over AC_I18N.t (no interpolation in the shared helper).
   function _t(key, vars) {
@@ -1104,7 +1130,11 @@
     function renderSignal(scores) {
       const banner = document.querySelector('.signal-banner'); if (!banner) return;
       const raw = scores && scores.composite_score;
-      if (raw == null || !isFinite(Number(raw))) { banner.style.display = 'none'; _signal = null; return; }
+      // Honor staleness at the display edge: if the score is missing, non-numeric, OR the
+      // backend flagged it stale (score_stale), withhold the signal entirely — hide the
+      // banner, exactly as for a missing score. No fabricated neutral "HOLD": an honest
+      // "no signal" beats a confident-but-stale one.
+      if (raw == null || !isFinite(Number(raw)) || (scores && scores.score_stale)) { banner.style.display = 'none'; _signal = null; _signalScore = null; return; }
       const s = Number(raw);
       let sig, cls, title;
       if (s >= 66) { sig = _t('sd.buy') || 'BUY'; cls = ''; title = _t('sd.constructive') || 'Constructive'; }
@@ -1118,6 +1148,45 @@
       const h3 = banner.querySelector('.signal-content h3'); if (h3) { h3.removeAttribute('data-i18n'); h3.textContent = _t('sd.signal_label', { title: title }) || ('AlphaCouncil Signal: ' + title); }
       const p = banner.querySelector('.signal-content p'); if (p) { p.removeAttribute('data-i18n'); p.textContent = _t('sd.signal_derived', { score: Math.round(s) }) || ('Derived from AlphaCouncil’s composite score of ' + Math.round(s) + '/100 — a blend of fundamentals, technicals and news flow. A model output, not investment advice.'); }
       const conf = banner.querySelector('.confidence-badge'); if (conf) conf.textContent = _t('sd.score', { score: Math.round(s) }) || ('Score ' + Math.round(s) + '/100');
+    }
+
+    // ---- Per-category data freshness badges (real per-category age, never one global stamp) ----
+    // Reads d.scores.freshness.{prices,fundamentals,news}.{age_days,is_stale,max_age_days}.
+    // A missing category or a null age renders as honest "no data" (stale), never a fake-fresh
+    // value; if the whole dict is absent (older backend), the row stays empty and CSS hides it.
+    function _freshAgeText(age) {
+      if (age == null) return _t('sd.fresh_nodata') || 'no data';
+      if (age <= 0) return _t('sd.fresh_today') || 'today';
+      return _t('sd.fresh_days', { n: age }) || (age + 'd');
+    }
+    function renderFreshness(fr) {
+      const wrap = document.getElementById('freshnessBadges'); if (!wrap) return;
+      wrap.innerHTML = '';
+      if (!fr || typeof fr !== 'object') return;
+      const CATS = [
+        { key: 'prices',       label: 'sd.fresh_prices' },
+        { key: 'fundamentals', label: 'sd.fresh_fundamentals' },
+        { key: 'news',         label: 'sd.fresh_news' }
+      ];
+      CATS.forEach(function (c) {
+        const e = fr[c.key]; if (!e) return;
+        const age = (e.age_days == null ? null : Number(e.age_days));
+        // Stale if the backend says so OR we have no age at all — a null age must
+        // never paint a fresh badge (honest unknown beats fake-fresh), even if a
+        // future/looser backend omits is_stale.
+        const stale = !!e.is_stale || age == null;
+        const ageText = _freshAgeText(age);
+        const maxd = (e.max_age_days != null ? e.max_age_days : '');
+        const label = _t(c.label) || c.key;
+        const tip = _t(stale ? 'sd.fresh_stale_t' : 'sd.fresh_fresh_t', { age: ageText, max: maxd })
+                    || (label + ': ' + ageText);
+        const badge = document.createElement('span');
+        badge.className = 'freshness-badge' + (stale ? ' is-stale' : '');
+        badge.title = tip;
+        badge.innerHTML = '<span class="fb-dot"></span><span class="fb-label">' + _esc(label)
+                          + '</span><span class="fb-age">' + _esc(ageText) + '</span>';
+        wrap.appendChild(badge);
+      });
     }
 
     // ---- D5: the signed-in user's REAL position for this ticker (hidden when not held) ----
@@ -1302,6 +1371,7 @@
       loadFundamentalGauges(currentStock.tickerKey);
 
       renderSignal(d.scores);   // D5: BUY/HOLD/REDUCE from the real composite score
+      renderFreshness(d.scores && d.scores.freshness);   // per-category data freshness badges
       renderPosition();         // D5: the signed-in user's real position (or hidden)
       AlphaCouncil.setStockContext(currentStock);
       loadThesis();
@@ -1483,6 +1553,7 @@
         syncStockI18n();
         if (window.AlphaCouncil && AlphaCouncil.setStockContext) AlphaCouncil.setStockContext(currentStock);
         renderSignal(_lastTicker.scores);                                  // signal banner text
+        renderFreshness(_lastTicker.scores && _lastTicker.scores.freshness);  // freshness badge labels (EN/AR)
         renderTechnicals(_lastTicker.tech || {}, currentStock.currency);  // technical table
         loadFundamentalGauges(currentStock.tickerKey);                    // gauge ratings + metric labels
         loadForecast(currentStock.tickerKey, currentStock.currency, currentStock.price);  // analyst forecast
