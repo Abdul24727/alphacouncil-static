@@ -2065,9 +2065,15 @@
           if(isCur){ act='<span class="bill-badge-cur">'+L('Current','الحالية')+'</span>'; }
           else if(p.rank>curRank){ act='<button class="btn btn-primary bill-act" data-up="'+p.id+'"'+(s.billing_configured?'':' disabled')+'>'+L('Upgrade','ترقية')+'</button>'; }
           else { act='<button class="btn btn-ghost bill-act" data-down="'+p.id+'">'+(p.id==='free'?L('Cancel / move to Free','إلغاء / المجاني'):L('Downgrade','تخفيض'))+'</button>'; }
-          h+='<div class="bill-plan'+(isCur?' is-cur':'')+'"><div class="bill-plan-top"><span class="bill-plan-name">'+esc((window.AC_I18N&&AC_I18N.lang==='ar'&&p.name_ar)?p.name_ar:p.name)+'</span>'+
+          var isAr=(window.AC_I18N&&AC_I18N.lang==='ar');
+          var feats=(isAr&&p.features_ar)?p.features_ar:(p.features||[]);
+          var tag=(isAr&&p.tagline_ar)?p.tagline_ar:(p.tagline||'');
+          h+='<div class="bill-plan'+(isCur?' is-cur':'')+'"><div class="bill-plan-top"><span class="bill-plan-name">'+esc(isAr&&p.name_ar?p.name_ar:p.name)+'</span>'+
              '<span class="bill-plan-price">'+esc(p.price_sar===0?L('Free','مجاني'):SAR(p.price_sar)+'/'+L('mo','شهر'))+'</span></div>'+
-             '<div class="bill-plan-tag">'+esc(p.tagline||'')+'</div><div class="bill-plan-act">'+act+'</div></div>';
+             '<div class="bill-plan-tag">'+esc(tag)+'</div>'+
+             '<ul class="bill-plan-feats" style="list-style:none;padding:0;margin:8px 0 0;font-size:12px;color:var(--fg-dim,#8A97A8);line-height:1.7;">'+
+               feats.map(function(f){return '<li>✓ '+esc(f)+'</li>';}).join('')+'</ul>'+
+             '<div class="bill-plan-act" style="margin-top:10px;">'+act+'</div></div>';
         });
         h+='</div>';
         root.innerHTML=h;

@@ -316,13 +316,6 @@
         </div>
         <h1 class="hero-title">Intelligence That <span class="highlight">Scales</span> With Your Portfolio</h1>
         <p class="hero-subtitle">Pricing reflects the depth of analysis — from basic portfolio tracking to full AI Analyst Council synthesis, Adviser access, and comprehensive GCC market coverage.</p>
-
-        <div class="billing-toggle">
-          <span class="billing-option active" data-billing="monthly">Monthly</span>
-          <div class="billing-switch" id="billingSwitch"></div>
-          <span class="billing-option" data-billing="annual">Annual</span>
-          <span class="billing-save" data-i18n="pr.billing_save">Save 20%</span>
-        </div>
       </div>
     </div>
   </section>
@@ -332,12 +325,11 @@
     <div class="section-inner">
       <div class="pricing-grid">
         <!-- Free -->
-        <div class="pricing-card reveal stagger-1">
+        <div class="pricing-card reveal stagger-1" data-plan="free">
           <div class="pricing-header">
             <div class="pricing-tier" data-i18n="pr.tier_free">Free</div>
             <div class="pricing-price">
-              <span class="pricing-currency">$</span>
-              <span class="pricing-amount">0</span>
+              <span class="pricing-amount">Free</span>
             </div>
             <div class="pricing-period" data-i18n="pr.free_period">Free forever</div>
             <p class="pricing-tagline" data-i18n="pr.free_tagline">Test the platform with core portfolio tracking</p>
@@ -353,7 +345,7 @@
             </div>
             <div class="pricing-feature">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-              <span data-i18n="pr.free_f3">5 Adviser questions per month</span>
+              <span data-cap="free-adviser" data-i18n="pr.free_f3">5 Adviser questions per month</span>
             </div>
             <div class="pricing-feature">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
@@ -378,16 +370,15 @@
         </div>
 
         <!-- Pro (Recommended) -->
-        <div class="pricing-card featured reveal stagger-2">
+        <div class="pricing-card featured reveal stagger-2" data-plan="pro">
           <div class="pricing-badge" data-i18n="pr.badge_popular">Most Popular</div>
           <div class="pricing-header">
             <div class="pricing-tier" data-i18n="pr.tier_pro">Pro</div>
             <div class="pricing-price">
-              <span class="pricing-currency">$</span>
-              <span class="pricing-amount" data-monthly="29" data-annual="23">29</span>
+              <span class="pricing-currency" data-i18n="pr.sar">SAR</span>
+              <span class="pricing-amount">79</span>
               <span class="pricing-period" data-i18n="pr.per_month">/month</span>
             </div>
-            <div class="pricing-annual" data-monthly="Billed monthly" data-annual="$276/year (save $72)" data-i18n="pr.pro_billed_monthly" data-i18n-attr="data-monthly:pr.pro_billed_monthly,data-annual:pr.pro_billed_annual">Billed monthly</div>
             <p class="pricing-tagline" data-i18n="pr.pro_tagline">Full analytical depth for serious investors</p>
           </div>
           <div class="pricing-features">
@@ -401,11 +392,11 @@
             </div>
             <div class="pricing-feature">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-              <span><strong data-i18n="pr.pro_f3">Up to 2 Council reviews per day</strong></span>
+              <span><strong data-cap="pro-council" data-i18n="pr.pro_f3">20 Council reviews per month</strong></span>
             </div>
             <div class="pricing-feature">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-              <span data-i18n="pr.pro_f4">Up to 10 Adviser questions per day</span>
+              <span data-cap="pro-adviser" data-i18n="pr.pro_f4">120 Adviser questions per month</span>
             </div>
             <div class="pricing-feature">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
@@ -426,16 +417,15 @@
         </div>
 
         <!-- Elite -->
-        <div class="pricing-card reveal stagger-3">
+        <div class="pricing-card reveal stagger-3" data-plan="elite">
           <div class="pricing-header">
             <div class="pricing-tier" data-i18n="pr.tier_elite">Elite</div>
             <div class="pricing-price">
-              <span class="pricing-currency">$</span>
-              <span class="pricing-amount" data-monthly="89" data-annual="71">89</span>
+              <span class="pricing-currency" data-i18n="pr.sar">SAR</span>
+              <span class="pricing-amount">399</span>
               <span class="pricing-period" data-i18n="pr.per_month">/month</span>
             </div>
-            <div class="pricing-annual" data-monthly="Billed monthly" data-annual="$852/year (save $216)" data-i18n="pr.elite_billed_monthly" data-i18n-attr="data-monthly:pr.elite_billed_monthly,data-annual:pr.elite_billed_annual">Billed monthly</div>
-            <p class="pricing-tagline" data-i18n="pr.elite_tagline">Maximum depth for portfolio construction</p>
+            <p class="pricing-tagline" data-i18n="pr.elite_tagline">Higher caps, macro &amp; oil overlay and the Council archive</p>
           </div>
           <div class="pricing-features">
             <div class="pricing-feature">
@@ -444,19 +434,15 @@
             </div>
             <div class="pricing-feature">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-              <span><strong data-i18n="pr.elite_f2">Up to 6 Council reviews per day</strong></span>
+              <span><strong data-cap="elite-council" data-i18n="pr.elite_f2">40 Council reviews per month</strong></span>
             </div>
             <div class="pricing-feature">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-              <span data-i18n="pr.elite_f3">Priority synthesis depth</span>
+              <span data-cap="elite-adviser" data-i18n="pr.elite_f3">400 Adviser questions per month</span>
             </div>
             <div class="pricing-feature">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
               <span data-i18n="pr.elite_f4">Historical Council reports archive</span>
-            </div>
-            <div class="pricing-feature">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-              <span data-i18n="pr.elite_f5">Advanced portfolio construction tools</span>
             </div>
             <div class="pricing-feature">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
@@ -524,25 +510,13 @@
               <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
               <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
             </tr>
-            <tr>
-              <td data-i18n="pr.row_construction">Portfolio construction tools</td>
-              <td class="comparison-dash">—</td>
-              <td class="comparison-dash">—</td>
-              <td><svg class="comparison-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></td>
-            </tr>
 
             <tr><td colspan="4" class="comparison-category" data-i18n="pr.cat_council">AI Analyst Council</td></tr>
             <tr>
-              <td data-i18n="pr.row_reviews">Council reviews per day</td>
-              <td class="comparison-dash">—</td>
-              <td class="comparison-text" data-i18n="pr.val_2day">2 per day</td>
-              <td class="comparison-text comparison-highlight" data-i18n="pr.val_6day">6 per day</td>
-            </tr>
-            <tr>
-              <td data-i18n="pr.row_synthesis">Synthesis depth</td>
-              <td class="comparison-dash">—</td>
-              <td class="comparison-text" data-i18n="pr.val_standard">Standard</td>
-              <td class="comparison-text comparison-highlight" data-i18n="pr.val_priority">Priority</td>
+              <td data-i18n="pr.row_reviews">Council reviews per month</td>
+              <td class="comparison-text">0</td>
+              <td class="comparison-text" data-cap="pro-council-tbl" data-i18n="pr.val_pro_reviews">20 / month</td>
+              <td class="comparison-text comparison-highlight" data-cap="elite-council-tbl" data-i18n="pr.val_elite_reviews">40 / month</td>
             </tr>
             <tr>
               <td data-i18n="pr.row_historical">Historical Council reports</td>
@@ -554,9 +528,9 @@
             <tr><td colspan="4" class="comparison-category" data-i18n="pr.cat_adviser">Adviser Access</td></tr>
             <tr>
               <td data-i18n="pr.row_questions">Adviser questions</td>
-              <td class="comparison-text" data-i18n="pr.val_5month">5/month</td>
-              <td class="comparison-text comparison-highlight" data-i18n="pr.val_10day">10 per day</td>
-              <td class="comparison-text comparison-highlight" data-i18n="pr.val_10day">10 per day</td>
+              <td class="comparison-text" data-cap="free-adviser-tbl" data-i18n="pr.val_5month">5 / month</td>
+              <td class="comparison-text comparison-highlight" data-cap="pro-adviser-tbl" data-i18n="pr.val_pro_questions">120 / month</td>
+              <td class="comparison-text comparison-highlight" data-cap="elite-adviser-tbl" data-i18n="pr.val_elite_questions">400 / month</td>
             </tr>
             <tr>
               <td data-i18n="pr.row_aware">Portfolio-aware responses</td>
@@ -699,19 +673,19 @@
           </button>
           <div class="faq-answer" aria-hidden="true">
             <div class="faq-answer-inner" data-i18n="pr.faq3_a">
-              Free: no Council reviews. Pro: up to 2 AI Analyst Council reviews per day. Elite: up to 6 per day, plus priority synthesis depth and full access to historical Council reports.
+              Free: no Council reviews. Pro: 20 AI Analyst Council reviews per month. Elite: 40 per month, plus the macro & oil overlay and the Council history archive.
             </div>
           </div>
         </div>
 
         <div class="faq-item">
           <button class="faq-question" aria-expanded="false">
-            <h4>Is there a discount for annual billing?</h4>
+            <h4>How does billing work?</h4>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <div class="faq-answer" aria-hidden="true">
             <div class="faq-answer-inner" data-i18n="pr.faq4_a">
-              Yes. Annual billing saves 20% compared to monthly. Pro is $23/month ($276/year) and Elite is $71/month ($852/year) when billed annually. You can switch to annual billing from your account settings at any time.
+              Billing is monthly. Pro is SAR 79/month and Elite is SAR 399/month. You can upgrade, downgrade, or cancel at any time from your account settings.
             </div>
           </div>
         </div>
@@ -818,31 +792,6 @@
       nav.classList.toggle('scrolled', window.scrollY > 20);
     });
 
-    // Billing toggle
-    const billingSwitch = document.getElementById('billingSwitch');
-    const billingOptions = document.querySelectorAll('.billing-option');
-    const priceAmounts = document.querySelectorAll('.pricing-amount[data-monthly]');
-    const priceAnnuals = document.querySelectorAll('.pricing-annual[data-monthly]');
-
-    billingSwitch.addEventListener('click', () => {
-      const isAnnual = billingSwitch.classList.toggle('annual');
-
-      billingOptions.forEach(opt => {
-        opt.classList.toggle('active',
-          (isAnnual && opt.dataset.billing === 'annual') ||
-          (!isAnnual && opt.dataset.billing === 'monthly')
-        );
-      });
-
-      priceAmounts.forEach(el => {
-        el.textContent = isAnnual ? el.dataset.annual : el.dataset.monthly;
-      });
-
-      priceAnnuals.forEach(el => {
-        el.textContent = isAnnual ? el.dataset.annual : el.dataset.monthly;
-      });
-    });
-
     // FAQ accordion
     document.querySelectorAll('.faq-item').forEach(item => {
       const question = item.querySelector('.faq-question');
@@ -886,19 +835,19 @@
     'pr.faq1': { en: 'Can I upgrade or downgrade anytime?', ar: 'هل يمكنني الترقية أو التخفيض في أي وقت؟' },
     'pr.faq2': { en: 'What happens to my portfolio data if I cancel?', ar: 'ماذا يحدث لبيانات محفظتي إذا ألغيت الاشتراك؟' },
     'pr.faq3': { en: 'How many Council reviews do I get on each plan?', ar: 'كم عدد مراجعات المجلس في كل خطة؟' },
-    'pr.faq4': { en: 'Is there a discount for annual billing?', ar: 'هل هناك خصم للفوترة السنوية؟' },
+    'pr.faq4': { en: 'How does billing work?', ar: 'كيف تعمل الفوترة؟' },
     'pr.faq5': { en: 'Do you offer institutional or family-office plans?', ar: 'هل تقدّمون خططًا للمؤسّسات أو المكاتب العائلية؟' },
     'pr.faq6': { en: 'How is this different from generic stock screeners?', ar: 'كيف يختلف هذا عن أدوات فرز الأسهم العامة؟' },
 
-    // Hero badge + billing
+    // Hero badge
     'pr.badge_early':   { en: 'Early Access Pricing', ar: 'أسعار الوصول المبكر' },
-    'pr.billing_save':  { en: 'Save 20%', ar: 'وفّر 20%' },
 
     // Plan tier names
     'pr.tier_free':     { en: 'Free', ar: 'مجاني' },
     'pr.tier_pro':      { en: 'Pro', ar: 'برو' },
     'pr.tier_elite':    { en: 'Elite', ar: 'إيليت' },
     'pr.per_month':     { en: '/month', ar: '/شهريًا' },
+    'pr.sar':           { en: 'SAR', ar: 'ريال' },
 
     // Free plan
     'pr.free_period':   { en: 'Free forever', ar: 'مجاني للأبد' },
@@ -914,25 +863,21 @@
 
     // Pro plan
     'pr.badge_popular': { en: 'Most Popular', ar: 'الأكثر شيوعًا' },
-    'pr.pro_billed_monthly': { en: 'Billed monthly', ar: 'تُحتسب الفوترة شهريًا' },
-    'pr.pro_billed_annual':  { en: '$276/year (save $72)', ar: '276$ سنويًا (وفّر 72$)' },
     'pr.pro_tagline':   { en: 'Full analytical depth for serious investors', ar: 'عمق تحليلي كامل للمستثمرين الجادّين' },
     'pr.pro_f1':        { en: 'Track unlimited holdings', ar: 'تتبّع مراكز غير محدودة' },
     'pr.pro_f2':        { en: 'Full 12-dimension stock thesis', ar: 'أطروحة سهم كاملة من 12 بُعدًا' },
-    'pr.pro_f3':        { en: 'Up to 2 Council reviews per day', ar: 'حتى مراجعتين للمجلس يوميًا' },
-    'pr.pro_f4':        { en: 'Up to 10 Adviser questions per day', ar: 'حتى 10 أسئلة للمستشار يوميًا' },
+    'pr.pro_f3':        { en: '20 Council reviews per month', ar: '20 مراجعة للمجلس شهريًا' },
+    'pr.pro_f4':        { en: '120 Adviser questions per month', ar: '120 سؤال للمستشار شهريًا' },
     'pr.pro_f5':        { en: 'Portfolio-aware news + alerts', ar: 'أخبار وتنبيهات مدركة للمحفظة' },
     'pr.pro_f6':        { en: 'Deep GCC data (fundamentals, ownership, dividends)', ar: 'بيانات خليجية معمّقة (الأساسيات والملكية والتوزيعات)' },
     'pr.pro_f7':        { en: 'Technical indicators + charts', ar: 'مؤشّرات فنية ورسوم بيانية' },
     'pr.pro_cta':       { en: 'Get started', ar: 'ابدأ الآن' },
 
     // Elite plan
-    'pr.elite_billed_monthly': { en: 'Billed monthly', ar: 'تُحتسب الفوترة شهريًا' },
-    'pr.elite_billed_annual':  { en: '$852/year (save $216)', ar: '852$ سنويًا (وفّر 216$)' },
-    'pr.elite_tagline': { en: 'Maximum depth for portfolio construction', ar: 'أقصى عمق لبناء المحفظة' },
+    'pr.elite_tagline': { en: 'Higher caps, macro & oil overlay and the Council archive', ar: 'حدود أعلى، وتراكب الماكرو والنفط، وأرشيف المجلس' },
     'pr.elite_f1':      { en: 'Everything in Pro, plus:', ar: 'كل ما في برو، بالإضافة إلى:' },
-    'pr.elite_f2':      { en: 'Up to 6 Council reviews per day', ar: 'حتى 6 مراجعات للمجلس يوميًا' },
-    'pr.elite_f3':      { en: 'Priority synthesis depth', ar: 'عمق خلاصة بأولوية' },
+    'pr.elite_f2':      { en: '40 Council reviews per month', ar: '40 مراجعة للمجلس شهريًا' },
+    'pr.elite_f3':      { en: '400 Adviser questions per month', ar: '400 سؤال للمستشار شهريًا' },
     'pr.elite_f4':      { en: 'Historical Council reports archive', ar: 'أرشيف تقارير المجلس التاريخية' },
     'pr.elite_f5':      { en: 'Advanced portfolio construction tools', ar: 'أدوات متقدّمة لبناء المحفظة' },
     'pr.elite_f6':      { en: 'Early access to new GCC market features', ar: 'وصول مبكر إلى مزايا أسواق الخليج الجديدة' },
@@ -957,8 +902,7 @@
     'pr.row_health':       { en: 'Portfolio health overview', ar: 'نظرة عامة على صحة المحفظة' },
     'pr.row_thesis':       { en: '12-dimension stock thesis', ar: 'أطروحة سهم من 12 بُعدًا' },
     'pr.row_construction': { en: 'Portfolio construction tools', ar: 'أدوات بناء المحفظة' },
-    'pr.row_reviews':      { en: 'Council reviews per day', ar: 'مراجعات المجلس يوميًا' },
-    'pr.row_synthesis':    { en: 'Synthesis depth', ar: 'عمق الخلاصة' },
+    'pr.row_reviews':      { en: 'Council reviews per month', ar: 'مراجعات المجلس شهريًا' },
     'pr.row_historical':   { en: 'Historical Council reports', ar: 'تقارير المجلس التاريخية' },
     'pr.row_questions':    { en: 'Adviser questions', ar: 'أسئلة المستشار' },
     'pr.row_aware':        { en: 'Portfolio-aware responses', ar: 'ردود مدركة للمحفظة' },
@@ -974,14 +918,13 @@
     // Comparison table — cell values
     'pr.val_upto15':      { en: 'Up to 15', ar: 'حتى 15' },
     'pr.val_unlimited':   { en: 'Unlimited', ar: 'غير محدود' },
-    'pr.val_2day':        { en: '2 per day', ar: '2 يوميًا' },
-    'pr.val_6day':        { en: '6 per day', ar: '6 يوميًا' },
-    'pr.val_standard':    { en: 'Standard', ar: 'قياسي' },
-    'pr.val_priority':    { en: 'Priority', ar: 'بأولوية' },
+    'pr.val_pro_reviews':   { en: '20 / month', ar: '20 شهريًا' },
+    'pr.val_elite_reviews': { en: '40 / month', ar: '40 شهريًا' },
     'pr.val_30days':      { en: '30 days', ar: '30 يومًا' },
     'pr.val_fullarchive': { en: 'Full archive', ar: 'الأرشيف الكامل' },
-    'pr.val_5month':      { en: '5/month', ar: '5/شهريًا' },
-    'pr.val_10day':       { en: '10 per day', ar: '10 يوميًا' },
+    'pr.val_5month':        { en: '5 / month', ar: '5 شهريًا' },
+    'pr.val_pro_questions':   { en: '120 / month', ar: '120 شهريًا' },
+    'pr.val_elite_questions': { en: '400 / month', ar: '400 شهريًا' },
     'pr.val_publicdata':  { en: 'Public data', ar: 'بيانات عامة' },
     'pr.val_fulldepth':   { en: 'Full depth', ar: 'عمق كامل' },
 
@@ -996,8 +939,8 @@
     // FAQ answers
     'pr.faq1_a': { en: "Yes. You can switch between tiers at any time from your account settings. When upgrading, you'll get immediate access to additional features. When downgrading, your current tier continues until the end of your billing cycle, then the new tier takes effect.", ar: 'نعم. يمكنك التبديل بين الفئات في أي وقت من إعدادات حسابك. عند الترقية، تحصل على وصول فوري إلى المزايا الإضافية. وعند التخفيض، تستمرّ فئتك الحالية حتى نهاية دورة الفوترة، ثم تُطبَّق الفئة الجديدة.' },
     'pr.faq2_a': { en: 'Your portfolio data remains available in read-only mode for 90 days after cancellation. You can export your holdings and historical analysis at any time. After 90 days, your data is securely deleted unless you reactivate your account.', ar: 'تبقى بيانات محفظتك متاحة في وضع القراءة فقط لمدة 90 يومًا بعد الإلغاء. يمكنك تصدير مراكزك وتحليلك التاريخي في أي وقت. بعد 90 يومًا، تُحذف بياناتك بأمان ما لم تُعِد تفعيل حسابك.' },
-    'pr.faq3_a': { en: 'Free: no Council reviews. Pro: up to 2 AI Analyst Council reviews per day. Elite: up to 6 per day, plus priority synthesis depth and full access to historical Council reports.', ar: 'المجانية: بلا مراجعات للمجلس. برو: حتى مراجعتين لمجلس المحلّلين الذكي يوميًا. إيليت: حتى 6 يوميًا، إضافة إلى عمق خلاصة بأولوية ووصول كامل إلى تقارير المجلس التاريخية.' },
-    'pr.faq4_a': { en: 'Yes. Annual billing saves 20% compared to monthly. Pro is $23/month ($276/year) and Elite is $71/month ($852/year) when billed annually. You can switch to annual billing from your account settings at any time.', ar: 'نعم. توفّر الفوترة السنوية 20% مقارنةً بالشهرية. تكون برو بسعر 23$ شهريًا (276$ سنويًا) وإيليت بسعر 71$ شهريًا (852$ سنويًا) عند الفوترة السنوية. يمكنك التحوّل إلى الفوترة السنوية من إعدادات حسابك في أي وقت.' },
+    'pr.faq3_a': { en: 'Free: no Council reviews. Pro: 20 AI Analyst Council reviews per month. Elite: 40 per month, plus the macro & oil overlay and the Council history archive.', ar: 'المجانية: بلا مراجعات للمجلس. برو: 20 مراجعة لمجلس المحلّلين الذكي شهريًا. إيليت: 40 شهريًا، إضافة إلى طبقة الاقتصاد الكلّي والنفط وأرشيف تاريخ المجلس.' },
+    'pr.faq4_a': { en: 'Billing is monthly. Pro is SAR 79/month and Elite is SAR 399/month. You can upgrade, downgrade, or cancel at any time from your account settings.', ar: 'الفوترة شهرية. برو بسعر 79 ريال شهريًا وإيليت بسعر 399 ريال شهريًا. يمكنك الترقية أو التخفيض أو الإلغاء في أي وقت من إعدادات حسابك.' },
     'pr.faq5_a': { en: "We're developing institutional tiers with multi-user access, shared portfolios, and API integrations. Contact us at hello@alphacouncil.tech to discuss your requirements and join the early access list for institutional features.", ar: 'نعمل على تطوير فئات مؤسّسية تتيح وصولًا لعدّة مستخدمين ومحافظ مشتركة وتكاملات عبر واجهات برمجة التطبيقات (API). تواصل معنا على hello@alphacouncil.tech لمناقشة متطلّباتك والانضمام إلى قائمة الوصول المبكر لمزايا المؤسّسات.' },
     'pr.faq6_a': { en: 'AlphaCouncil is purpose-built for GCC markets — not a global platform with a regional filter. We process Arabic filings, track family and sovereign ownership, factor oil sensitivity into analysis, and synthesize insights through an AI Analyst Council that debates your portfolio from multiple perspectives. Generic screeners provide data; we provide structured intelligence.', ar: 'صُمّم AlphaCouncil خصّيصًا لأسواق الخليج — وليس منصة عالمية بمرشّح إقليمي. نعالج الإفصاحات العربية، ونتتبّع الملكية العائلية والسيادية، ونُدخل حساسية النفط في التحليل، ونُخلّص الرؤى عبر مجلس محلّلين ذكي يناقش محفظتك من زوايا متعدّدة. أدوات الفرز العامة تقدّم البيانات؛ أمّا نحن فنقدّم ذكاءً منظّمًا.' },
 
@@ -1035,13 +978,64 @@
     tagPair('Frequently Asked', 'pr.t_questions');
     var MAP = {
       'Compare Plans': 'pr.eye_compare', 'What You Get': 'pr.eye_get', 'Questions': 'pr.eye_questions',
-      'Monthly': 'pr.billing_monthly', 'Annual': 'pr.billing_annual',
       'Can I upgrade or downgrade anytime?': 'pr.faq1', 'What happens to my portfolio data if I cancel?': 'pr.faq2',
-      'How many Council reviews do I get on each plan?': 'pr.faq3', 'Is there a discount for annual billing?': 'pr.faq4',
+      'How many Council reviews do I get on each plan?': 'pr.faq3', 'How does billing work?': 'pr.faq4',
       'Do you offer institutional or family-office plans?': 'pr.faq5', 'How is this different from generic stock screeners?': 'pr.faq6'
     };
-    Array.prototype.forEach.call(document.querySelectorAll('.section-eyebrow, .billing-option, .faq-question h4'), function (el) { var k = MAP[firstText(el)]; if (k) setKey(el, k); });
+    Array.prototype.forEach.call(document.querySelectorAll('.section-eyebrow, .faq-question h4'), function (el) { var k = MAP[firstText(el)]; if (k) setKey(el, k); });
     if (window.AC_I18N) AC_I18N.apply();
+  })();
+  </script>
+  <script>
+  // Populate prices + caps from the canonical billing config (GET /api/billing/plans).
+  // The static markup above is already correct (SAR monthly, monthly caps), so this is a
+  // progressive enhancement — on any error we leave the static fallback untouched.
+  (function () {
+    function isAr() { return !!(window.AC_I18N && AC_I18N.lang === 'ar'); }
+
+    function setCap(plan, kind, n) {
+      var ar = isAr();
+      var council = ' Council reviews per month', councilAr = ' مراجعة للمجلس شهريًا';
+      var adviser = ' Adviser questions per month', adviserAr = ' سؤال للمستشار شهريًا';
+      var cardText = n + (kind === 'council' ? (ar ? councilAr : council) : (ar ? adviserAr : adviser));
+      var tblText = n + (ar ? ' شهريًا' : ' / month');
+      var card = document.querySelector('[data-cap="' + plan + '-' + kind + '"]');
+      if (card) card.textContent = cardText;
+      var tbl = document.querySelector('[data-cap="' + plan + '-' + kind + '-tbl"]');
+      if (tbl) tbl.textContent = tblText;
+    }
+
+    function applyPlans(plans) {
+      var ar = isAr();
+      var freeLabel = ar ? 'مجاني' : 'Free';
+      plans.forEach(function (p) {
+        var card = document.querySelector('.pricing-card[data-plan="' + p.id + '"]');
+        if (card) {
+          var amount = card.querySelector('.pricing-amount');
+          if (amount) amount.textContent = (Number(p.price_sar) === 0 ? freeLabel : p.price_sar);
+        }
+        if (p.id !== 'free') {
+          if (p.council_cap != null) setCap(p.id, 'council', p.council_cap);
+          if (p.adviser_cap != null) setCap(p.id, 'adviser', p.adviser_cap);
+        } else {
+          // Free: adviser cap only (no Council reviews); table Council cell stays "0".
+          if (p.adviser_cap != null) setCap('free', 'adviser', p.adviser_cap);
+        }
+      });
+    }
+
+    function load() {
+      try {
+        fetch('/api/billing/plans', { credentials: 'same-origin' })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) { if (data && Array.isArray(data.plans)) applyPlans(data.plans); })
+          .catch(function () {});
+      } catch (e) { /* never throw — static text is the fallback */ }
+    }
+
+    load();
+    // Re-localise the dynamic caps when the user switches language.
+    try { window.addEventListener('ac:langchange', load); } catch (e) {}
   })();
   </script>
 </body>

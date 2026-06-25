@@ -409,7 +409,7 @@ const AlphaCouncil = (function() {
   function adviserErrorMessage(e) {
     const s = e && e.status;
     if (s === 401) return 'Please <a href="login.html" style="color:var(--accent-primary,#27D3C3);">sign in</a> to ask the Adviser.';
-    if (s === 429) return "You've reached today's limit (10 questions/day). It resets tomorrow.";
+    if (s === 429) return "You've reached your monthly Adviser limit. It resets next billing period.";
     if (s === 503) return 'The Adviser is temporarily unavailable. Please try again in a moment.';
     if (s === 0) return "Couldn't reach the server. Check your connection and try again.";
     return (e && e.message) ? e.message : 'Something went wrong. Please try again.';
@@ -510,7 +510,7 @@ const AlphaCouncil = (function() {
 
     return '<section class="synthesis-section"><div class="synthesis-card">'
       + '<div class="synthesis-header"><span class="synthesis-label">Chairman’s synthesis</span>'
-      + '<span class="synthesis-timestamp">' + (res.council_remaining_today != null ? (Math.max(0, res.council_remaining_today) + ' left today') : '') + '</span></div>'
+      + '<span class="synthesis-timestamp">' + (res.council_remaining != null ? (Math.max(0, res.council_remaining) + ' left this month') : '') + '</span></div>'
       + (detected ? '<div style="margin-bottom:10px;font-size:11px;color:#6B7A8F;">Real analyst data injected for' + detected + '</div>' : '')
       + '<p class="synthesis-text">' + rich(res.answer) + '</p></div></section>'
       + '<details style="margin-top:6px;"><summary style="cursor:pointer;font-size:13px;color:var(--accent-primary,#27D3C3);font-weight:600;padding:8px 0;list-style:none;">Show committee deliberation</summary>'
@@ -522,7 +522,7 @@ const AlphaCouncil = (function() {
     const s = e && e.status;
     let msg;
     if (s === 403) msg = 'The Council is a Pro & Elite feature. <a href="pricing.html" style="color:var(--accent-primary,#27D3C3);">Upgrade</a> to convene the committee.';
-    else if (s === 429) msg = "You’ve used today’s Council convenings. They reset tomorrow.";
+    else if (s === 429) msg = "You’ve used this month’s Council reviews. They reset next billing period.";
     else if (s === 401) msg = 'Please <a href="login.html" style="color:var(--accent-primary,#27D3C3);">sign in</a> to convene the Council.';
     else msg = "The Council couldn’t convene just now — please try again in a moment.";
     return '<div class="ac-error-state ac-fade-in"><div class="ac-error-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div><div class="ac-error-title" style="color:#F8FAFC;">Council unavailable</div><p class="ac-error-text">' + msg + '</p></div>';
