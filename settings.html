@@ -235,6 +235,36 @@
       gap: 12px;
     }
 
+    /* Self-service plan management */
+    .bill-current { padding: 18px 20px; background: var(--bg-elevated, #101624); border: 1px solid var(--border); border-radius: 12px; }
+    .bill-cur-label { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--fg-dim); }
+    .bill-cur-name { font-size: 22px; font-weight: 700; margin-top: 4px; }
+    .bill-cur-name .bill-per { font-size: 13px; font-weight: 500; color: var(--fg-muted); }
+    .bill-cur-status { margin-top: 6px; font-size: 13px; }
+    .bill-ok { color: var(--success, #10B981); }
+    .bill-warn { color: var(--accent-gold, #D7B76A); }
+    .bill-muted { color: var(--fg-muted); }
+    .bill-plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-top: 18px; }
+    .bill-plan { padding: 16px; background: var(--surface, #111A2B); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .bill-plan.is-cur { border-color: var(--accent-primary, #27D3C3); box-shadow: 0 0 0 1px var(--accent-primary, #27D3C3) inset; }
+    .bill-plan-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .bill-plan-name { font-weight: 700; font-size: 15px; }
+    .bill-plan-price { font-size: 13px; color: var(--fg-muted); white-space: nowrap; }
+    .bill-plan-tag { font-size: 12px; color: var(--fg-dim); line-height: 1.5; flex: 1; }
+    .bill-plan-act { margin-top: 6px; }
+    .bill-plan-act .btn { width: 100%; }
+    .bill-badge-cur { display: inline-block; width: 100%; text-align: center; padding: 8px; font-size: 12px; font-weight: 600; color: var(--accent-primary, #27D3C3); border: 1px dashed var(--border-strong, rgba(255,255,255,.12)); border-radius: 8px; }
+    .btn-ghost { background: transparent; border: 1px solid var(--border-strong, rgba(255,255,255,.12)); color: var(--fg); }
+    .btn-ghost:hover { border-color: var(--accent-primary, #27D3C3); }
+    /* Confirm modal */
+    .ac-modal-ov { position: fixed; inset: 0; background: rgba(3, 8, 18, 0.66); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+    .ac-modal { width: 100%; max-width: 440px; background: var(--surface, #111A2B); border: 1px solid var(--border-strong, rgba(255,255,255,.12)); border-radius: 16px; padding: 24px; }
+    .ac-modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+    .ac-modal-body { font-size: 14px; color: var(--fg-muted); line-height: 1.6; }
+    .ac-modal-body strong { color: var(--fg); }
+    .ac-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+    .ac-modal-actions .btn { padding: 10px 18px; border-radius: 9px; font-weight: 600; cursor: pointer; }
+
     /* Billing History Table */
     .billing-table {
       width: 100%;
@@ -1294,53 +1324,12 @@
               </div>
             </div>
             <div class="section-body">
-              <!-- Current Plan -->
-              <div class="plan-card">
-                <div class="plan-header">
-                  <div>
-                    <div class="plan-name">Analyst Plan</div>
-                    <div class="plan-price"><strong>—</strong></div>
-                  </div>
-                  <div class="plan-badge" data-i18n="set.plan_current">Current Plan</div>
-                </div>
-                <div class="plan-features">
-                  <div class="plan-feature">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span data-i18n="set.feat_reviews">Unlimited Council reviews</span>
-                  </div>
-                  <div class="plan-feature">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span data-i18n="set.feat_thesis">12-dimension thesis scoring</span>
-                  </div>
-                  <div class="plan-feature">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span data-i18n="set.feat_perspectives">All 7 analyst perspectives</span>
-                  </div>
-                  <div class="plan-feature">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span data-i18n="set.feat_adviser">Priority AI Adviser access</span>
-                  </div>
-                  <div class="plan-feature">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span data-i18n="set.feat_pdf">Export reports to PDF</span>
-                  </div>
-                  <div class="plan-feature">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span data-i18n="set.feat_support">Email support</span>
-                  </div>
-                </div>
-                <div class="plan-actions">
-                  <button class="btn btn-primary">Upgrade to Council</button>
-                </div>
+              <!-- Self-service plan management — populated by loadBilling() from
+                   /api/billing/summary. Prices come from the central pricing config,
+                   not hardcoded here. Every change goes through effective_plan(). -->
+              <div id="billingRoot" class="billing-root">
+                <p class="form-hint">Loading your plan…</p>
               </div>
-
-              <!-- Payment & invoices: honest placeholder until paid billing launches (no fake card). -->
-              <div class="form-group" style="margin-top: 24px;">
-                <label class="form-label" data-i18n="set.payment">Payment &amp; invoices</label>
-                <p class="form-hint" data-i18n="set.payment_hint">There's nothing to bill yet. When paid plans launch, your payment method and invoices will appear here — we don't display a saved card or charges you haven't made.</p>
-              </div>
-
-              <!-- Billing history removed: no real charges to show. -->
             </div>
           </section>
 
@@ -1940,16 +1929,7 @@
       // so saving doesn't clobber the account language back to English.
       const langSel = document.getElementById('language');
       if(langSel && window.AC_I18N) langSel.value = AC_I18N.lang;
-      const plan = (u.plan || 'free').toLowerCase();
-      const label = plan.charAt(0).toUpperCase() + plan.slice(1);
-      const nameEl = document.querySelector('.plan-name'); if(nameEl) nameEl.textContent = label + ' ' + AC_I18N.t('set.plan_suffix');
-      const priceEl = document.querySelector('.plan-price');
-      if(priceEl) priceEl.innerHTML = plan==='free' ? '<strong>$0</strong> ' + AC_I18N.t('set.plan_per_month') : '<strong>'+label+'</strong> ' + AC_I18N.t('set.plan_tier');
-      const upg = document.querySelector('.plan-actions .btn-primary');
-      if(upg){
-        if(plan==='elite'){ upg.textContent=AC_I18N.t('set.plan_top'); upg.disabled=true; }
-        else { upg.textContent = (plan==='free' ? AC_I18N.t('set.plan_upgrade') : AC_I18N.t('set.plan_manage')); upg.onclick=function(){ window.location.href='pricing.html'; }; }
-      }
+      if (typeof window.loadBilling === 'function') window.loadBilling();
     };
 
     // Re-render JS-set plan labels when the language is toggled live.
@@ -2001,6 +1981,113 @@
       if(!u) return;
       if(typeof window.onUserReady==='function') window.onUserReady(u);
       try { _rp = await API.riskProfile(); _setActiveRisk(_rp && _rp.risk_style); } catch(e){}
+    })();
+
+    // ── Self-service plan management (Section A UI) ───────────────────────────
+    // Driven entirely by /api/billing/summary (prices from the central config).
+    // Upgrade -> Tap checkout; downgrade/cancel -> take effect at period end with an
+    // honest "you keep access until [date]" confirmation. No dead buttons.
+    (function () {
+      function L(en, ar) { return (window.AC_I18N && AC_I18N.lang === 'ar') ? ar : en; }
+      function SAR(n) { return (window.AC_I18N && AC_I18N.lang === 'ar') ? (n + ' ر.س') : ('SAR ' + n); }
+      function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+      function fmtDate(iso){ if(!iso) return '—'; try{ var d=new Date(iso); return d.toLocaleDateString((window.AC_I18N&&AC_I18N.lang==='ar')?'ar':'en-GB',{year:'numeric',month:'short',day:'numeric'}); }catch(e){ return String(iso).slice(0,10); } }
+      function toast(kind, t, m){ if(window.AlphaCouncil&&AlphaCouncil.showToast) AlphaCouncil.showToast(t,m||'',kind); }
+      function rankOf(s, id){ var p=(s.plans||[]).filter(function(x){return x.id===id;})[0]; return p?p.rank:0; }
+      function planName(s, id){ var p=(s.plans||[]).filter(function(x){return x.id===id;})[0]; return p?((window.AC_I18N&&AC_I18N.lang==='ar'&&p.name_ar)?p.name_ar:p.name):id; }
+
+      function getCookie(n){ var m=document.cookie.match(new RegExp('(?:^|; )'+n.replace(/([.*+?^${}()|[\]\\])/g,'\\$1')+'=([^;]*)')); return m?decodeURIComponent(m[1]):''; }
+      function api(method, path, body){
+        var headers={}; if(body) headers['Content-Type']='application/json';
+        // CSRF double-submit on writes: echo the ac_csrf cookie in X-CSRF-Token (same as api.js).
+        if(method!=='GET'){ var csrf=(window.API&&API.getCookie)?API.getCookie('ac_csrf'):getCookie('ac_csrf'); if(csrf) headers['X-CSRF-Token']=csrf; }
+        return fetch(path, { method: method, credentials:'include', headers: headers, body: body? JSON.stringify(body): undefined
+        }).then(function(r){ return r.json().then(function(j){ return {ok:r.ok,status:r.status,data:j}; }).catch(function(){ return {ok:r.ok,status:r.status,data:{}}; }); });
+      }
+
+      function confirmModal(opts){
+        return new Promise(function(resolve){
+          var ov=document.createElement('div'); ov.className='ac-modal-ov';
+          ov.innerHTML='<div class="ac-modal" role="dialog" aria-modal="true"><h3>'+esc(opts.title)+'</h3><div class="ac-modal-body">'+opts.body+'</div>'+
+            '<div class="ac-modal-actions"><button class="btn btn-ghost" data-x>'+esc(opts.cancel||L('Cancel','إلغاء'))+'</button>'+
+            '<button class="btn btn-primary" data-ok>'+esc(opts.confirm||L('Confirm','تأكيد'))+'</button></div></div>';
+          document.body.appendChild(ov);
+          function done(v){ ov.remove(); resolve(v); }
+          ov.querySelector('[data-x]').onclick=function(){done(false);};
+          ov.querySelector('[data-ok]').onclick=function(){done(true);};
+          ov.onclick=function(e){ if(e.target===ov) done(false); };
+        });
+      }
+
+      function doUpgrade(plan, s){
+        var p=(s.plans||[]).filter(function(x){return x.id===plan;})[0]||{};
+        confirmModal({ title:L('Upgrade to ','ترقية إلى ')+(p.name||plan),
+          body:'<p>'+L('You’ll be charged ','ستُحصَّل ')+'<strong>'+esc(SAR(p.price_sar))+'/'+L('month','شهر')+'</strong> '+L('today, then monthly. Continue to secure payment (card, mada or Apple Pay).','اليوم ثم شهريًا. تابع إلى الدفع الآمن (بطاقة، مدى، أو Apple Pay).')+'</p>',
+          confirm:L('Continue to payment','المتابعة للدفع') }).then(function(go){
+          if(!go) return;
+          api('POST','/api/billing/checkout',{plan:plan}).then(function(r){
+            if(r.ok && r.data && r.data.checkout_url){ window.location.href=r.data.checkout_url; }
+            else { toast('error', L('Couldn’t start checkout','تعذّر بدء الدفع'), (r.data&&r.data.detail)||''); }
+          });
+        });
+      }
+      function doDowngrade(plan, s){
+        var toFree = plan==='free';
+        var p=(s.plans||[]).filter(function(x){return x.id===plan;})[0]||{name:'Free'};
+        confirmModal({ title: toFree?L('Cancel subscription','إلغاء الاشتراك'):L('Downgrade to ','تخفيض إلى ')+(p.name||plan),
+          body:'<p>'+L('You keep your current plan until ','تحتفظ بخطتك الحالية حتى ')+'<strong>'+fmtDate(s.renews_on)+'</strong>'+
+               (toFree? L(', then your account moves to Free. No further charges.',' ثم ينتقل حسابك إلى المجاني. لا رسوم إضافية.')
+                       : L(', then you move to ',' ثم تنتقل إلى ')+esc(p.name)+L('. No access is lost before then.','. لا تفقد أي ميزة قبل ذلك.'))+'</p>',
+          confirm: toFree?L('Cancel plan','إلغاء الخطة'):L('Schedule downgrade','جدولة التخفيض') }).then(function(go){
+          if(!go) return;
+          var toFreePath = toFree? '/api/billing/cancel' : '/api/billing/change';
+          api('POST', toFreePath, toFree? null : {plan:plan}).then(function(r){
+            if(r.ok){ toast('success', L('Done','تم'), (r.data&&r.data.message)||''); window.loadBilling(); }
+            else { toast('error', L('Couldn’t update plan','تعذّر تحديث الخطة'), (r.data&&r.data.detail)||''); }
+          });
+        });
+      }
+
+      function render(s){
+        var root=document.getElementById('billingRoot'); if(!root) return;
+        var paid=s.is_paid, curRank=rankOf(s, s.plan), status='';
+        if(paid && s.cancel_at_period_end){ status='<span class="bill-warn">'+L('Cancels — access until ','يُلغى — الوصول حتى ')+fmtDate(s.renews_on)+'</span>'; }
+        else if(paid && s.pending_plan){ status='<span class="bill-warn">'+L('Changes to ','يتغير إلى ')+esc(planName(s,s.pending_plan))+L(' on ',' في ')+fmtDate(s.renews_on)+'</span>'; }
+        else if(paid){ status='<span class="bill-ok">'+L('Renews ','يتجدد ')+fmtDate(s.renews_on)+'</span>'; }
+        else { status='<span class="bill-muted">'+L('Free plan','الخطة المجانية')+'</span>'; }
+        var h='<div class="bill-current"><div class="bill-cur-label">'+L('Current plan','خطتك الحالية')+'</div>'+
+              '<div class="bill-cur-name">'+esc(s.plan_name)+' · '+esc(SAR(s.price_sar))+'<span class="bill-per">/'+L('mo','شهر')+'</span></div>'+
+              '<div class="bill-cur-status">'+status+'</div></div>';
+        if(!s.billing_configured){ h+='<p class="form-hint" style="margin-top:10px">'+L('Online payment is activating soon. To change your plan now, ','الدفع الإلكتروني قيد التفعيل. لتغيير خطتك الآن، ')+'<a href="contact.html">'+L('contact support','تواصل مع الدعم')+'</a>.</p>'; }
+        h+='<div class="bill-plans">';
+        (s.plans||[]).forEach(function(p){
+          var isCur=p.id===s.plan, act='';
+          if(isCur){ act='<span class="bill-badge-cur">'+L('Current','الحالية')+'</span>'; }
+          else if(p.rank>curRank){ act='<button class="btn btn-primary bill-act" data-up="'+p.id+'"'+(s.billing_configured?'':' disabled')+'>'+L('Upgrade','ترقية')+'</button>'; }
+          else { act='<button class="btn btn-ghost bill-act" data-down="'+p.id+'">'+(p.id==='free'?L('Cancel / move to Free','إلغاء / المجاني'):L('Downgrade','تخفيض'))+'</button>'; }
+          h+='<div class="bill-plan'+(isCur?' is-cur':'')+'"><div class="bill-plan-top"><span class="bill-plan-name">'+esc((window.AC_I18N&&AC_I18N.lang==='ar'&&p.name_ar)?p.name_ar:p.name)+'</span>'+
+             '<span class="bill-plan-price">'+esc(p.price_sar===0?L('Free','مجاني'):SAR(p.price_sar)+'/'+L('mo','شهر'))+'</span></div>'+
+             '<div class="bill-plan-tag">'+esc(p.tagline||'')+'</div><div class="bill-plan-act">'+act+'</div></div>';
+        });
+        h+='</div>';
+        root.innerHTML=h;
+        Array.prototype.forEach.call(root.querySelectorAll('[data-up]'),function(b){ b.onclick=function(){ doUpgrade(b.getAttribute('data-up'), s); }; });
+        Array.prototype.forEach.call(root.querySelectorAll('[data-down]'),function(b){ b.onclick=function(){ doDowngrade(b.getAttribute('data-down'), s); }; });
+      }
+
+      window.loadBilling=function(){
+        var root=document.getElementById('billingRoot'); if(!root) return;
+        api('GET','/api/billing/summary').then(function(r){
+          if(r.status===401){ root.innerHTML='<p class="form-hint">'+L('Please sign in to manage your plan.','يرجى تسجيل الدخول لإدارة خطتك.')+'</p>'; return; }
+          if(!r.ok){ root.innerHTML='<p class="form-hint">'+L('Couldn’t load your plan right now.','تعذّر تحميل خطتك حاليًا.')+'</p>'; return; }
+          render(r.data);
+        }).catch(function(){ root.innerHTML='<p class="form-hint">'+L('Couldn’t load your plan right now.','تعذّر تحميل خطتك حاليًا.')+'</p>'; });
+      };
+      window.addEventListener('ac:langchange', function(){ if(document.getElementById('billingRoot')) window.loadBilling(); });
+      (function(){ var q=new URLSearchParams(location.search);
+        if(q.get('upgraded')) setTimeout(function(){toast('success',L('Plan upgraded','تمت الترقية'),L('Your new plan is active.','خطتك الجديدة فعّالة الآن.'));},500);
+        else if(q.get('checkout')==='incomplete') setTimeout(function(){toast('info',L('Checkout not completed','لم يكتمل الدفع'),L('No charge was made.','لم يتم أي خصم.'));},500);
+      })();
     })();
 
     // Logout via the user-menu avatar.
