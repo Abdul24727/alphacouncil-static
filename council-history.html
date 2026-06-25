@@ -900,11 +900,11 @@
         if (body) {
           const analysts = it.analysts || [];
           body.innerHTML =
-            '<div class="synthesis-section"><div class="synthesis-card"><div class="synthesis-header"><div class="synthesis-label">Strategic Synthesis (Chairman' + (it.chairman_model ? ' · ' + esc(it.chairman_model) : '') + ')</div></div>'
+            '<div class="synthesis-section"><div class="synthesis-card"><div class="synthesis-header"><div class="synthesis-label">Strategic Synthesis (Chairman)</div></div>'
             + '<p class="synthesis-text" style="white-space:pre-wrap;">' + esc(it.answer || '') + '</p></div></div>'
             + '<div class="perspectives-section"><div class="section-header"><div class="section-title">AI Analyst Council (' + analysts.length + ' perspective' + (analysts.length === 1 ? '' : 's') + ')</div></div>'
             + '<div class="perspectives-grid">'
-            + (analysts.length ? analysts.map(function (a) { return '<div class="perspective-card"><div class="perspective-header"><div class="perspective-name">' + esc(a.model || 'Analyst') + '</div></div><div class="perspective-observations" style="white-space:pre-wrap;">' + esc(a.response || '') + '</div></div>'; }).join('') : '<p style="color:var(--fg-dim);padding:12px;">No individual analyst breakdown was stored for this review.</p>')
+            + (analysts.length ? analysts.map(function (a, i) { return '<div class="perspective-card"><div class="perspective-header"><div class="perspective-name">' + esc(a.label || ('Analyst ' + (i + 1))) + '</div></div><div class="perspective-observations" style="white-space:pre-wrap;">' + esc(a.response || '') + '</div></div>'; }).join('') : '<p style="color:var(--fg-dim);padding:12px;">No individual analyst breakdown was stored for this review.</p>')
             + '</div></div>';
         }
       }
@@ -951,7 +951,7 @@
       if (!it) { showToast('Not available', 'Open a review first.', 'info'); return; }
       const nl = String.fromCharCode(10);
       const lines = ['AlphaCouncil — Council Review', 'Date: ' + (it.created_at || ''), 'Subject: ' + (it.ticker || 'Portfolio-wide'), '', 'Question:', it.question || '', '', 'Chairman synthesis:', it.answer || '', ''];
-      (it.analysts || []).forEach(function (a) { lines.push('--- ' + (a.model || 'Analyst') + ' ---', a.response || '', ''); });
+      (it.analysts || []).forEach(function (a, i) { lines.push('--- ' + (a.label || ('Analyst ' + (i + 1))) + ' ---', a.response || '', ''); });
       const blob = new Blob([lines.join(nl)], { type: 'text/plain;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a'); a.href = url; a.download = 'council-review-' + reviewId + '.txt';

@@ -495,8 +495,7 @@ const AlphaCouncil = (function() {
 
   function councilResultHtml(res) {
     const colors = ['#6366f1', '#0ea5e9', '#14b8a6', '#f59e0b', '#a855f7'];
-    const idx = {}; (res.analysts || []).forEach(function (a, i) { idx[a.model] = i; });
-    const mem = function (i) { return 'Member ' + (i + 1); };
+    const mem = function (a, i) { return (a && a.label) ? a.label : ('Member ' + (i + 1)); };
     const rich = function (t) { return escapeHtml(t || '').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\n{2,}/g, '<br><br>').replace(/\n/g, '<br>'); };
 
     const detected = (res.tickers_detected || []).map(function (t) {
@@ -505,13 +504,8 @@ const AlphaCouncil = (function() {
 
     const analysts = (res.analysts || []).map(function (a, i) {
       return '<div style="border:1px solid var(--border,rgba(255,255,255,0.08));border-radius:12px;padding:14px;margin-bottom:10px;background:#111A2B;">'
-        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="width:9px;height:9px;border-radius:50%;background:' + colors[i % 5] + ';"></span><span style="font-weight:600;font-size:13px;color:#F8FAFC;">' + mem(i) + '</span><span style="font-size:10px;color:#6B7A8F;text-transform:uppercase;letter-spacing:.04em;">individual take</span></div>'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="width:9px;height:9px;border-radius:50%;background:' + colors[i % 5] + ';"></span><span style="font-weight:600;font-size:13px;color:#F8FAFC;">' + mem(a, i) + '</span><span style="font-size:10px;color:#6B7A8F;text-transform:uppercase;letter-spacing:.04em;">individual take</span></div>'
         + '<div style="font-size:13px;color:#AAB6C5;line-height:1.6;">' + rich(a.response) + '</div></div>';
-    }).join('');
-
-    const rankings = (res.rankings || []).map(function (r, i) {
-      const mi = idx[r.model] != null ? idx[r.model] : i;
-      return '<div style="display:flex;align-items:center;gap:10px;font-size:13px;padding:4px 0;color:#F8FAFC;"><span style="width:16px;text-align:center;color:#6B7A8F;font-family:var(--font-mono,monospace);font-size:11px;">' + (i + 1) + '</span><span style="width:8px;height:8px;border-radius:50%;background:' + colors[mi % 5] + ';"></span><span style="flex:1;font-weight:500;">' + mem(mi) + '</span><span style="font-size:11px;color:#6B7A8F;font-family:var(--font-mono,monospace);">avg ' + (r.average_rank != null ? r.average_rank.toFixed(1) : '—') + '</span></div>';
     }).join('');
 
     return '<section class="synthesis-section"><div class="synthesis-card">'
@@ -520,7 +514,6 @@ const AlphaCouncil = (function() {
       + (detected ? '<div style="margin-bottom:10px;font-size:11px;color:#6B7A8F;">Real analyst data injected for' + detected + '</div>' : '')
       + '<p class="synthesis-text">' + rich(res.answer) + '</p></div></section>'
       + '<details style="margin-top:6px;"><summary style="cursor:pointer;font-size:13px;color:var(--accent-primary,#27D3C3);font-weight:600;padding:8px 0;list-style:none;">Show committee deliberation</summary>'
-      + (rankings ? '<div style="border:1px solid var(--border,rgba(255,255,255,0.08));border-radius:12px;padding:14px;margin:10px 0;background:#111A2B;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6B7A8F;font-weight:600;margin-bottom:8px;">Peer ranking</div>' + rankings + '</div>' : '')
       + analysts + '</details>'
       + (res.disclaimer ? '<p style="font-size:11px;color:#6B7A8F;line-height:1.5;margin-top:14px;border-top:1px solid var(--border,rgba(255,255,255,0.08));padding-top:10px;">' + escapeHtml(res.disclaimer) + '</p>' : '');
   }
