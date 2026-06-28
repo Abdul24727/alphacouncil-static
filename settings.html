@@ -106,6 +106,26 @@
       margin-top: 4px;
     }
 
+    /* Markets multi-select — chips (reuse .segment-btn styling) → exchange-code CSV.
+       Distinct container class so the global .segmented-control radio handler doesn't
+       hijack it (these toggle independently / multi-select). */
+    .market-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .market-chips .market-chip {
+      flex: 0 1 auto;
+      min-width: 0;
+      padding: 10px 16px;
+    }
+
+    .market-all-hint {
+      color: var(--accent-primary);
+      margin-top: 6px;
+    }
+
     /* Toggle Row (settings-specific layout) */
     .toggle-row {
       display: flex;
@@ -1119,19 +1139,32 @@
                 <input type="email" id="email" class="form-input" value="" placeholder="Enter email" data-i18n-attr="placeholder:set.ph_email">
                 <p class="form-hint">This email is used for account notifications and recovery.</p>
               </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label" for="defaultMarket">Default Market</label>
-                  <select id="defaultMarket" class="form-input form-select">
-                    <option value="sa" selected data-i18n="set.mkt_sa">Saudi Arabia (Tadawul)</option>
-                    <option value="ae-adx" data-i18n="set.mkt_adx">UAE (ADX)</option>
-                    <option value="ae-dfm" data-i18n="set.mkt_dfm">UAE (DFM)</option>
-                    <option value="qa" data-i18n="set.mkt_qa">Qatar (QSE)</option>
-                    <option value="kw" data-i18n="set.mkt_kw">Kuwait (Boursa)</option>
-                    <option value="bh" data-i18n="set.mkt_bh">Bahrain (Bahrain Bourse)</option>
-                    <option value="om" data-i18n="set.mkt_om">Oman (MSM)</option>
-                  </select>
+              <div class="form-group">
+                <label class="form-label" data-i18n="set.mkts_heading">Markets</label>
+                <div id="marketSelect" class="market-chips" role="group" aria-label="Markets">
+                  <button type="button" class="segment-btn market-chip" aria-pressed="false" data-codes="TADAWUL">
+                    <span class="segment-label" data-i18n="set.mkts_sa">Saudi Arabia (Tadawul)</span>
+                  </button>
+                  <button type="button" class="segment-btn market-chip" aria-pressed="false" data-codes="ADX,DFM">
+                    <span class="segment-label" data-i18n="set.mkts_ae">UAE (ADX + DFM)</span>
+                  </button>
+                  <button type="button" class="segment-btn market-chip" aria-pressed="false" data-codes="KSE">
+                    <span class="segment-label" data-i18n="set.mkts_kw">Kuwait (Boursa)</span>
+                  </button>
+                  <button type="button" class="segment-btn market-chip" aria-pressed="false" data-codes="QSE">
+                    <span class="segment-label" data-i18n="set.mkts_qa">Qatar (QSE)</span>
+                  </button>
+                  <button type="button" class="segment-btn market-chip" aria-pressed="false" data-codes="MSM">
+                    <span class="segment-label" data-i18n="set.mkts_om">Oman (MSM)</span>
+                  </button>
+                  <button type="button" class="segment-btn market-chip" aria-pressed="false" data-codes="BSE">
+                    <span class="segment-label" data-i18n="set.mkts_bh">Bahrain (Bahrain Bourse)</span>
+                  </button>
                 </div>
+                <p class="form-hint" data-i18n="set.mkts_help">Pick the GCC markets you want AlphaCouncil to focus on in screens and Council reviews. Leave all unselected to include every market.</p>
+                <p class="form-hint market-all-hint" id="marketAllHint" data-i18n="set.mkts_all_hint" role="status" aria-live="polite">✓ All GCC markets included — no restriction.</p>
+              </div>
+              <div class="form-row">
                 <div class="form-group">
                   <label class="form-label" for="language">Language</label>
                   <select id="language" class="form-input form-select">
@@ -1734,6 +1767,16 @@
     'set.mkt_kw':       { en: 'Kuwait (Boursa)', ar: 'الكويت (بورصة الكويت)' },
     'set.mkt_bh':       { en: 'Bahrain (Bahrain Bourse)', ar: 'البحرين (بورصة البحرين)' },
     'set.mkt_om':       { en: 'Oman (MSM)', ar: 'عُمان (سوق مسقط)' },
+    // Markets multi-select (country-grouped chips -> exchange-code CSV; empty = all GCC)
+    'set.mkts_heading': { en: 'Markets', ar: 'الأسواق' },
+    'set.mkts_help':    { en: 'Pick the GCC markets you want AlphaCouncil to focus on in screens and Council reviews. Leave all unselected to include every market.', ar: 'اختر أسواق دول الخليج التي تريد أن يركّز عليها AlphaCouncil في عمليات الفرز ومراجعات المجلس. اترك الكل دون تحديد لتضمين جميع الأسواق.' },
+    'set.mkts_all_hint':{ en: '✓ All GCC markets included — no restriction.', ar: '✓ جميع أسواق دول الخليج مُضمَّنة — دون قيود.' },
+    'set.mkts_sa':      { en: 'Saudi Arabia (Tadawul)', ar: 'السعودية (تداول)' },
+    'set.mkts_ae':      { en: 'UAE (ADX + DFM)', ar: 'الإمارات (أبوظبي + دبي)' },
+    'set.mkts_kw':      { en: 'Kuwait (Boursa)', ar: 'الكويت (بورصة الكويت)' },
+    'set.mkts_qa':      { en: 'Qatar (QSE)', ar: 'قطر (بورصة قطر)' },
+    'set.mkts_om':      { en: 'Oman (MSM)', ar: 'عُمان (سوق مسقط)' },
+    'set.mkts_bh':      { en: 'Bahrain (Bahrain Bourse)', ar: 'البحرين (بورصة البحرين)' },
     // Language options
     'set.lang_en':      { en: 'English', ar: 'الإنجليزية' },
     'set.lang_ar':      { en: 'العربية (Arabic)', ar: 'العربية' },
@@ -2272,6 +2315,45 @@
       // The injected 2FA + notif markup carries data-i18n; resolve it now (and on langchange via the global handler).
       if(window.AC_I18N) AC_I18N.apply();
 
+      // ── Markets multi-select (country chips → exchange-code CSV) ───────────────
+      // Backend stores `market` as a validated CSV of exchange codes
+      // (TADAWUL/ADX/DFM/KSE/QSE/MSM/BSE); empty = all GCC (unrestricted). Each chip
+      // maps to one or more codes (UAE = ADX+DFM). Chips toggle independently — the
+      // container is .market-chips (NOT .segmented-control) so the global single-select
+      // radio handler above never touches it.
+      function marketChips(){ return Array.prototype.slice.call(document.querySelectorAll('#marketSelect .market-chip')); }
+      function setChipActive(btn, on){ btn.classList.toggle('active', !!on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+      function updateMarketHint(){
+        var hint = document.getElementById('marketAllHint');
+        if(hint) hint.style.display = marketChips().some(function(b){ return b.classList.contains('active'); }) ? 'none' : '';
+      }
+      function collectMarkets(){
+        var codes = [];
+        marketChips().forEach(function(b){
+          if(b.classList.contains('active')){
+            (b.getAttribute('data-codes')||'').split(',').forEach(function(c){
+              c = c.trim().toUpperCase(); if(c && codes.indexOf(c) === -1) codes.push(c);
+            });
+          }
+        });
+        return codes.join(',');   // '' when nothing selected => all GCC (unrestricted)
+      }
+      function applyMarketSelection(csv){
+        var have = {};
+        String(csv||'').split(/[,\s]+/).forEach(function(c){ c=c.trim().toUpperCase(); if(c) have[c]=1; });
+        marketChips().forEach(function(b){
+          var codes = (b.getAttribute('data-codes')||'').split(',');
+          // a chip lights up if ANY of its exchange codes is in the stored set
+          var on = codes.some(function(c){ return have[c.trim().toUpperCase()]; });
+          setChipActive(b, on);
+        });
+        updateMarketHint();
+      }
+      marketChips().forEach(function(b){
+        b.addEventListener('click', function(){ setChipActive(b, !b.classList.contains('active')); updateMarketHint(); });
+      });
+      updateMarketHint();
+
       async function loadProfile(){
         var u = null;
         try { u = await API.me(); } catch(e){ return; }
@@ -2285,7 +2367,7 @@
         // Sync the Language <select> to the LIVE UI language (from i18n), not the account's
         // stored value — otherwise saving while viewing Arabic would downgrade to English.
         var lang=document.getElementById('language'); if(lang && window.AC_I18N) lang.value = AC_I18N.lang;
-        var mkt=document.getElementById('defaultMarket'); if(mkt && u.market){ try { mkt.value = u.market; } catch(e){} }
+        applyMarketSelection(u.market || '');   // pre-select chips from the stored exchange-code CSV
       }
       loadProfile();
 
@@ -2305,7 +2387,7 @@
         var fields = {
           first_name: (document.getElementById('firstName')||{}).value || '',
           last_name: (document.getElementById('lastName')||{}).value || '',
-          market: (document.getElementById('defaultMarket')||{}).value || '',
+          market: collectMarkets(),   // CSV of selected exchange codes; '' => all GCC
           preferred_language: (document.getElementById('language')||{}).value || 'en'
         };
         var orig = saveBtn.textContent; saveBtn.disabled=true; saveBtn.textContent=AC_I18N.t('set.t_saving');
