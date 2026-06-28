@@ -702,14 +702,14 @@
 
         <div class="form-group">
           <label class="form-label" for="market" data-i18n="su.market">Primary GCC market</label>
-          <select class="form-select" id="market" required>
-            <option value="" disabled selected data-i18n="su.market_select">Select your market</option>
-            <option value="SA" data-i18n="su.market_sa">Saudi Arabia (Tadawul)</option>
-            <option value="AE" data-i18n="su.market_ae">UAE (ADX / DFM)</option>
-            <option value="QA" data-i18n="su.market_qa">Qatar (QSE)</option>
-            <option value="KW" data-i18n="su.market_kw">Kuwait (Boursa Kuwait)</option>
-            <option value="BH" data-i18n="su.market_bh">Bahrain (BSE)</option>
-            <option value="OM" data-i18n="su.market_om">Oman (MSX)</option>
+          <select class="form-select" id="market">
+            <option value="" selected data-i18n="su.market_all">All GCC markets</option>
+            <option value="TADAWUL" data-i18n="su.market_sa">Saudi Arabia (Tadawul)</option>
+            <option value="ADX,DFM" data-i18n="su.market_ae">UAE (ADX / DFM)</option>
+            <option value="QSE" data-i18n="su.market_qa">Qatar (QSE)</option>
+            <option value="KSE" data-i18n="su.market_kw">Kuwait (Boursa Kuwait)</option>
+            <option value="BSE" data-i18n="su.market_bh">Bahrain (BSE)</option>
+            <option value="MSM" data-i18n="su.market_om">Oman (MSX)</option>
           </select>
         </div>
 
@@ -795,6 +795,7 @@
       'su.hide_password':     { en: 'Hide password', ar: 'إخفاء كلمة المرور' },
       'su.market':            { en: 'Primary GCC market', ar: 'السوق الخليجي الرئيسي' },
       'su.market_select':     { en: 'Select your market', ar: 'اختر سوقك' },
+      'su.market_all':        { en: 'All GCC markets', ar: 'جميع أسواق دول الخليج' },
       'su.market_sa':         { en: 'Saudi Arabia (Tadawul)', ar: 'السعودية (تداول)' },
       'su.market_ae':         { en: 'UAE (ADX / DFM)', ar: 'الإمارات (سوق أبوظبي / سوق دبي)' },
       'su.market_qa':         { en: 'Qatar (QSE)', ar: 'قطر (بورصة قطر)' },
