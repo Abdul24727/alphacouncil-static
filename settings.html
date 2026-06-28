@@ -2062,15 +2062,53 @@
         });
       }
 
+      // Embedded Moyasar.js (mpf) — lazy-loaded only when the user starts an upgrade.
+      var _MOYASAR_CSS='https://cdn.moyasar.com/mpf/1.7.3/moyasar.css';
+      var _MOYASAR_JS='https://cdn.moyasar.com/mpf/1.7.3/moyasar.js';
+      function _loadMoyasar(cb){
+        if(window.Moyasar){ cb(); return; }
+        if(!document.querySelector('link[data-moyasar]')){ var l=document.createElement('link'); l.rel='stylesheet'; l.href=_MOYASAR_CSS; l.setAttribute('data-moyasar','1'); document.head.appendChild(l); }
+        var ex=document.querySelector('script[data-moyasar]');
+        if(ex){ ex.addEventListener('load', cb); return; }
+        var sc=document.createElement('script'); sc.src=_MOYASAR_JS; sc.setAttribute('data-moyasar','1');
+        sc.onload=function(){ cb(); };
+        sc.onerror=function(){ toast('error', L('Payment form failed to load','تعذّر تحميل نموذج الدفع'), ''); };
+        document.head.appendChild(sc);
+      }
+      function _openMoyasarForm(cfg){
+        var ov=document.createElement('div'); ov.className='ac-modal-ov';
+        ov.innerHTML='<div class="ac-modal" role="dialog" aria-modal="true"><h3>'+esc(cfg.description||L('Payment','الدفع'))+'</h3>'+
+          '<p class="form-hint" style="margin:0 0 12px">'+L('Pay securely with card or mada. You’ll be redirected when the payment completes.','ادفع بأمان عبر البطاقة أو مدى. ستتم إعادة توجيهك عند اكتمال الدفع.')+'</p>'+
+          '<div class="mysr-form" id="mysrForm"></div>'+
+          '<div class="ac-modal-actions"><button class="btn btn-ghost" data-x>'+L('Cancel','إلغاء')+'</button></div></div>';
+        document.body.appendChild(ov);
+        ov.querySelector('[data-x]').onclick=function(){ ov.remove(); };
+        _loadMoyasar(function(){
+          try {
+            window.Moyasar.init({
+              element: '#mysrForm',
+              amount: cfg.amount,                       // halalas (server-set, re-verified server-side)
+              currency: cfg.currency||'SAR',
+              description: cfg.description||'',
+              publishable_api_key: cfg.publishable_key,
+              callback_url: cfg.callback_url,           // -> /api/billing/return?id=... -> verify + activate
+              methods: ['creditcard'],                  // card + mada (mada detected by BIN); Apple Pay later
+              metadata: cfg.metadata||{}
+            });
+          } catch(e){ toast('error', L('Couldn’t start payment','تعذّر بدء الدفع'), String((e&&e.message)||e)); }
+        });
+      }
       function doUpgrade(plan, s){
         var p=(s.plans||[]).filter(function(x){return x.id===plan;})[0]||{};
         confirmModal({ title:L('Upgrade to ','ترقية إلى ')+(p.name||plan),
-          body:'<p>'+L('You’ll be charged ','ستُحصَّل ')+'<strong>'+esc(SAR(p.price_sar))+'/'+L('month','شهر')+'</strong> '+L('today, then monthly. Continue to secure payment (card, mada or Apple Pay).','اليوم ثم شهريًا. تابع إلى الدفع الآمن (بطاقة، مدى، أو Apple Pay).')+'</p>',
+          body:'<p>'+L('You’ll be charged ','ستُحصَّل ')+'<strong>'+esc(SAR(p.price_sar))+'/'+L('month','شهر')+'</strong> '+L('today, then monthly. Continue to secure payment (card or mada).','اليوم ثم شهريًا. تابع إلى الدفع الآمن (بطاقة أو مدى).')+'</p>',
           confirm:L('Continue to payment','المتابعة للدفع') }).then(function(go){
           if(!go) return;
           api('POST','/api/billing/checkout',{plan:plan}).then(function(r){
-            if(r.ok && r.data && r.data.checkout_url){ window.location.href=r.data.checkout_url; }
-            else { toast('error', L('Couldn’t start checkout','تعذّر بدء الدفع'), (r.data&&r.data.detail)||''); }
+            if(!r.ok){ toast('error', L('Couldn’t start checkout','تعذّر بدء الدفع'), (r.data&&r.data.detail)||''); return; }
+            if(r.data && r.data.provider==='moyasar' && r.data.mode==='embedded'){ _openMoyasarForm(r.data); return; }
+            if(r.data && r.data.checkout_url){ window.location.href=r.data.checkout_url; return; }  // Tap (dormant)
+            toast('error', L('Couldn’t start checkout','تعذّر بدء الدفع'), '');
           });
         });
       }
