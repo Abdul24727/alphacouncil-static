@@ -64,7 +64,11 @@ const AlphaCouncil = (function() {
         'adv.disc_more':  { en: 'Full disclaimer', ar: 'إخلاء المسؤولية الكامل' },
         'adv.disc_full':  { en: 'Disclaimer: This is AI-generated analysis for informational purposes only. It does not constitute financial advice, a recommendation, or an offer to buy or sell any security. Always consult a licensed financial adviser before making investment decisions.', ar: 'إخلاء مسؤولية: هذا تحليل مُنشأ بالذكاء الاصطناعي لأغراض إعلامية فقط. لا يُشكل نصيحة مالية أو توصية أو عرضًا لشراء أو بيع أي ورقة مالية. استشر دائمًا مستشارًا ماليًا مرخصًا قبل اتخاذ قرارات استثمارية.' },
         'adv.helpers_toggle_both': { en: 'Suggestions & quick actions', ar: 'الاقتراحات والإجراءات السريعة' },
-        'adv.helpers_toggle_q':    { en: 'Suggested questions', ar: 'الأسئلة المقترحة' }
+        'adv.helpers_toggle_q':    { en: 'Suggested questions', ar: 'الأسئلة المقترحة' },
+        'adv.sq_good_time':  { en: 'Good time to invest now?', ar: 'هل الوقت مناسب للشراء؟' },
+        'adv.sq_read_aramco':{ en: 'Your read on Aramco?', ar: 'رأيك في أرامكو؟' },
+        'adv.sq_thesis':     { en: 'The 12-dimension thesis?', ar: 'ما نظرية الأبعاد الـ12؟' },
+        'adv.sq_council':    { en: 'How does the Council work?', ar: 'كيف يعمل المجلس؟' }
       });
     } catch (e) {}
   })();
@@ -481,7 +485,12 @@ const AlphaCouncil = (function() {
   // time. Structure-agnostic (works on every chat page); preserves all existing actions.
   function setChatHelpersCollapsed(collapsed) {
     (state._helperSections || []).forEach(function (sec) { sec.classList.toggle('ac-collapsed', !!collapsed); });
-    if (state._helpersToggle) state._helpersToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    if (state._helpersToggle) {
+      state._helpersToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      // The toggle bar appears ONLY when collapsed (re-open affordance); the fresh/expanded
+      // state shows just the compact chips + action row, so nothing extra eats the window.
+      state._helpersToggle.classList.toggle('ac-show', !!collapsed);
+    }
   }
   function setupChatHelpers() {
     if (state._helpersWired) return;
@@ -508,15 +517,23 @@ const AlphaCouncil = (function() {
         + '.ac-helpers-toggle .ac-helpers-chevron{width:16px;height:16px;flex:0 0 auto;transition:transform .2s;}'
         + '.ac-helpers-toggle[aria-expanded="false"] .ac-helpers-chevron{transform:rotate(-90deg);}'
         + '.ac-helper-section.ac-collapsed{display:none;}'
-        // lighter footprint even when expanded (tighter, same design language)
-        + '.ac-helper-section .suggested-question{padding:9px 12px;font-size:12.5px;}'
-        + '.ac-helper-section .quick-action{padding:10px 8px;}';
+        // COMPACT fresh state: kept visible but a thin strip so the chat dominates immediately.
+        + '.ac-helper-section{padding:8px 12px;}'
+        + '.ac-helper-section .sidebar-section-title{display:none;}'   // chips + icons are self-evident
+        // suggested questions become small chips in a 2-column grid (always 2 tidy rows for 4,
+        // at any width — robust on mobile), instead of 4 big stacked buttons
+        + '.ac-helper-section .suggested-questions{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;}'
+        + '.ac-helper-section .suggested-question{padding:7px 10px;font-size:11.5px;line-height:1.25;border-radius:999px;text-align:center;white-space:normal;}'
+        // quick actions become one compact row of small icon buttons (was a 2x2 grid of cards)
+        + '.ac-helper-section .quick-actions{grid-template-columns:repeat(4,1fr);gap:6px;}'
+        + '.ac-helper-section .quick-action{padding:7px 4px;font-size:10px;gap:4px;border-radius:9px;line-height:1.2;}'
+        + '.ac-helper-section .quick-action svg{width:17px;height:17px;}';
       document.head.appendChild(st);
     }
     var first = sections[0];
     var toggle = document.createElement('button');
     toggle.type = 'button';
-    toggle.className = 'ac-helpers-toggle ac-show';
+    toggle.className = 'ac-helpers-toggle';   // shown only when collapsed (see setChatHelpersCollapsed)
     toggle.setAttribute('aria-expanded', 'true');
     var labelKey = qa ? 'adv.helpers_toggle_both' : 'adv.helpers_toggle_q';
     var labelEn = qa ? 'Suggestions & quick actions' : 'Suggested questions';
