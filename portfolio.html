@@ -2006,150 +2006,17 @@
       setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
     }
 
-    // F4: route the portfolio sidebar chat to the REAL adviser. The canned command branches below
-    // are now unreachable (left for the deferred dead-code purge — they never render or run).
-    function processChat() {
-      const text = chatInput.value.trim();
-      if (!text) return;
-      chatInput.value = '';
-      if (window.AlphaCouncil) { if (AlphaCouncil.openSidebar) AlphaCouncil.openSidebar(); if (AlphaCouncil.askQuestion) AlphaCouncil.askQuestion(text); }
-      return;
-
-      const lowerText = text.toLowerCase();
-
-      // Handle trim commands first
-      if (lowerText.includes('trim') && (lowerText.includes('rajhi') || lowerText.includes('1120'))) {
-        addChatMessage(text, true);
-        chatInput.value = '';
-
-        const pctMatch = lowerText.match(/(\d+)%/);
-        const trimPct = pctMatch ? parseInt(pctMatch[1]) : 15;
-        const currentShares = 1412;
-        const sharesToSell = Math.round(currentShares * trimPct / 100);
-        const currentPrice = 85.20;
-
-        setTimeout(() => {
-          addChatMessage(`I'll help you trim <strong>${trimPct}%</strong> of your Al Rajhi position.<br><br>
-            <strong>Current position:</strong> 1,412 shares<br>
-            <strong>Shares to sell:</strong> ${sharesToSell} shares<br>
-            <strong>Current price:</strong> SAR ${currentPrice.toFixed(2)}<br>
-            <strong>Estimated proceeds:</strong> SAR ${(sharesToSell * currentPrice).toLocaleString()}<br><br>
-            Recording this partial sale now...`);
-
-          setTimeout(() => {
-            const historyRow = document.querySelector('tr[data-ticker-history="1120"]');
-            if (historyRow) {
-              const tbody = historyRow.querySelector('.tx-table tbody');
-              const newRow = document.createElement('tr');
-              newRow.style.animation = 'fadeIn 0.3s ease';
-              const realizedPnl = Math.round((currentPrice - 78.40) * sharesToSell);
-              newRow.innerHTML = `
-                <td>Jun 16, 2026</td>
-                <td><span class="tx-type sell">Sell</span></td>
-                <td>${sharesToSell}</td>
-                <td>SAR ${currentPrice.toFixed(2)}</td>
-                <td class="tx-realized profit">+SAR ${realizedPnl.toLocaleString()}</td>
-                <td>${currentShares - sharesToSell}</td>
-                <td class="tx-note">Trimmed ${trimPct}% per Council</td>
-              `;
-              tbody.appendChild(newRow);
-            }
-
-            addChatMessage(`Done! Partial sale recorded:<br><br>
-              • <strong>Sold:</strong> ${sharesToSell} shares @ SAR ${currentPrice.toFixed(2)}<br>
-              • <strong>Realized P&L:</strong> +SAR ${Math.round((currentPrice - 78.40) * sharesToSell).toLocaleString()}<br>
-              • <strong>Remaining:</strong> ${currentShares - sharesToSell} shares<br><br>
-              Banking concentration has decreased. Check the Al Rajhi history panel for details.`);
-
-            showToast('Position trimmed', `Sold ${sharesToSell} Al Rajhi shares`, 'success');
-            toggleExpand('1120');
-          }, 1200);
-        }, 800);
-        return;
-      }
-
-      addChatMessage(text, true);
-      chatInput.value = '';
-
-      setTimeout(() => {
-        let response = `I can help you manage your portfolio. You can ask me to add holdings, remove positions, trim positions, or analyze your allocation.`;
-
-        if (lowerText.includes('add') && lowerText.includes('snb')) {
-          addHoldingRow({
-            ticker: '1180.SR',
-            logo: 'SNB',
-            name: 'Saudi National Bank',
-            sector: 'Banking',
-            weight: '5.2',
-            value: 'SAR 44,000'
-          });
-          response = `Done! I've added <strong>Saudi National Bank (SNB)</strong> to your portfolio:<br><br>• Weight: 5.2%<br>• Value: SAR 44,000<br><br>Note: This increases your banking concentration to 37.4%. Data suggests monitoring sector exposure.`;
-          showToast('Holding added', 'SNB added to portfolio', 'success');
-        } else if (lowerText.includes('remove') && lowerText.includes('sabic')) {
-          if (removeHoldingRow('2010')) {
-            response = `Done! I've removed <strong>SABIC</strong> from your portfolio.<br><br>Your Materials sector allocation is now 0%. This reduces your overall portfolio risk score.`;
-            showToast('Holding removed', 'SABIC removed from portfolio', 'success');
-          }
-        } else if (lowerText.includes('weak') && lowerText.includes('thesis')) {
-          response = `Your <strong>weakest thesis score</strong> is <strong>SABIC at 5.8/10</strong>.<br><br>Key concerns:<br>• Margin compression from commodity pricing<br>• Below-peer earnings momentum<br>• Elevated sector risk exposure<br><br>Data suggests reviewing this position relative to your overall portfolio objectives.`;
-        } else if (lowerText.includes('banking') && lowerText.includes('concentration')) {
-          response = `To reduce banking concentration from 32.2%:<br><br>1. <strong>Reduce largest positions</strong> — Al Rajhi (14.2%) or QNB (9.6%)<br>2. <strong>Add non-bank holdings</strong> — Consider telecom, utilities, or consumer names<br>3. <strong>Diversify geographically</strong> — Your UAE exposure is only 14.5%<br><br>Would you like specific alternatives to consider?`;
-        } else if (lowerText.includes('allocation') || lowerText.includes('benchmark')) {
-          response = `Your GCC allocation vs benchmarks:<br><br><strong>Your Portfolio:</strong><br>• Saudi: 51.6% (benchmark: 48%)<br>• UAE: 14.5% (benchmark: 22%)<br>• Qatar: 9.6% (benchmark: 15%)<br><br>Data suggests you may be underweight UAE and Qatar relative to regional benchmarks. Consider reviewing geographic diversification.`;
-        } else if ((lowerText.includes('add') || lowerText.includes('buy')) && (lowerText.includes('aramco') || lowerText.includes('2222'))) {
-          const sharesMatch = lowerText.match(/(\d+)\s*shares?/);
-          const newShares = sharesMatch ? parseInt(sharesMatch[1]) : 100;
-          response = `I'll help you add to your <strong>Saudi Aramco</strong> position.<br><br>
-            • <strong>Current:</strong> 320 shares @ SAR 28.15 avg<br>
-            • <strong>Adding:</strong> ${newShares} shares @ SAR 28.90 (current)<br>
-            • <strong>New position:</strong> ${320 + newShares} shares<br><br>
-            Click the expand arrow on Aramco's row to add this lot, or I can record it now.`;
-          showToast('Review lot', 'Check Aramco transaction history', 'info');
-          toggleExpand('2222');
-        } else if ((lowerText.includes('reduce') || lowerText.includes('sell')) && (lowerText.includes('stc') || lowerText.includes('7010'))) {
-          response = `To reduce your <strong>stc</strong> position:<br><br>
-            • <strong>Current:</strong> 520 shares @ SAR 9.35 avg<br>
-            • <strong>Current value:</strong> SAR 4,862<br>
-            • <strong>Unrealized P&L:</strong> -SAR 88 (-1.8%)<br><br>
-            Click the expand arrow on stc's row and use "Partial Sale" to record the transaction, or tell me how many shares to sell.`;
-          toggleExpand('7010');
-        } else if (lowerText.includes('rebalance') || lowerText.includes('optimize')) {
-          response = `Based on your current allocation, data suggests considering:<br><br>
-            <strong>Potential adjustments:</strong><br>
-            1. Trim Al Rajhi 10-15% (reduce banking from 32%)<br>
-            2. Add UAE exposure (currently underweight)<br>
-            3. Review SABIC thesis (score: 5.8/10)<br><br>
-            These are observations based on your portfolio data, not recommendations. Would you like me to model any specific changes?`;
-        }
-
-        addChatMessage(response);
-      }, 800);
-    }
-
-    chatSend.addEventListener('click', processChat);
-    chatInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        processChat();
-      }
-    });
-
-    document.querySelectorAll('.suggested-question').forEach(btn => {
-      btn.addEventListener('click', () => {
-        chatInput.value = btn.dataset.question;
-        processChat();
-      });
-    });
+    // Chat is handled SOLELY by adviser-core.js: init('portfolio') wires chatSend, chatInput
+    // (Enter) and the suggested-question chips to the REAL adviser (AlphaCouncil.askQuestion
+    // -> POST /api/adviser/ask). The former inline handler with hardcoded canned responses
+    // that fabricated portfolio figures has been removed entirely.
 
     document.querySelectorAll('.quick-action').forEach(btn => {
       btn.addEventListener('click', () => {
         const action = btn.dataset.action;
         if (action === 'add') AlphaCouncil.openAddHoldingModal();
-        else if (action === 'remove') {
-          const chatInput = document.getElementById('chatInput');
-          if (chatInput) chatInput.value = 'Remove SABIC from my portfolio';
-          processChat();
-        } else if (action === 'council') AlphaCouncil.openCouncilModal();
+        else if (action === 'remove') { if (AlphaCouncil.openSidebar) AlphaCouncil.openSidebar(); AlphaCouncil.askQuestion('Remove a holding from my portfolio'); }
+        else if (action === 'council') AlphaCouncil.openCouncilModal();
         else if (action === 'alert') AlphaCouncil.openAlertModal();
         else if (action === 'edit') AlphaCouncil.showToast('Edit mode', 'Click any holding to edit position', 'info');
       });
