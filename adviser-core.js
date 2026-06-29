@@ -59,7 +59,10 @@ const AlphaCouncil = (function() {
         'adv.search_loading':  { en: 'Loading stocks…', ar: 'جارٍ تحميل الأسهم…' },
         'adv.search_unavailable': { en: 'Search is unavailable right now — please try again.', ar: 'البحث غير متاح حاليًا — يرجى المحاولة مرة أخرى.' },
         'adv.search_nomatch':  { en: 'No stocks match', ar: 'لا توجد أسهم مطابقة لـ' },
-        'time.now':            { en: 'just now', ar: 'الآن' }
+        'time.now':            { en: 'just now', ar: 'الآن' },
+        'adv.disc_short': { en: 'AI-generated analysis — not financial advice.', ar: 'تحليل مُولّد بالذكاء الاصطناعي — وليس نصيحة مالية.' },
+        'adv.disc_more':  { en: 'Full disclaimer', ar: 'إخلاء المسؤولية الكامل' },
+        'adv.disc_full':  { en: 'Disclaimer: This is AI-generated analysis for informational purposes only. It does not constitute financial advice, a recommendation, or an offer to buy or sell any security. Always consult a licensed financial adviser before making investment decisions.', ar: 'إخلاء مسؤولية: هذا تحليل مُنشأ بالذكاء الاصطناعي لأغراض إعلامية فقط. لا يُشكل نصيحة مالية أو توصية أو عرضًا لشراء أو بيع أي ورقة مالية. استشر دائمًا مستشارًا ماليًا مرخصًا قبل اتخاذ قرارات استثمارية.' }
       });
     } catch (e) {}
   })();
@@ -398,7 +401,7 @@ const AlphaCouncil = (function() {
     try {
       const res = await API.askAdviser(text, ticker);
       removeTypingIndicator(typing);
-      addChatMessage(formatAdviserAnswer(res.answer, res.disclaimer));
+      addChatMessage(formatAdviserAnswer(res.answer));
     } catch (e) {
       removeTypingIndicator(typing);
       addChatMessage(adviserErrorMessage(e));
@@ -415,23 +418,56 @@ const AlphaCouncil = (function() {
     return (e && e.message) ? e.message : 'Something went wrong. Please try again.';
   }
 
-  // Render the real LLM answer (light markdown) as safe HTML, with the mandatory
-  // disclaimer appended verbatim and muted.
-  function formatAdviserAnswer(answer, disclaimer) {
-    let body = escapeHtml(answer || '')
+  // Render the real LLM answer (light markdown) as safe HTML. The mandatory
+  // "not financial advice" disclaimer is shown ONCE as a persistent footer under the
+  // chat input (ensureChatDisclaimer) — NOT stamped on every message (cleaner UX, still
+  // always visible with the full legal text one click away).
+  function formatAdviserAnswer(answer) {
+    return escapeHtml(answer || '')
       .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
       .replace(/\n{2,}/g, '<br><br>')
       .replace(/\n/g, '<br>');
-    if (disclaimer) {
-      body += '<br><br><span style="font-size:11px;color:var(--fg-dim,#6B7A8F);line-height:1.5;display:block;border-top:1px solid var(--border,rgba(255,255,255,0.08));padding-top:8px;margin-top:4px;">' + escapeHtml(disclaimer) + '</span>';
-    }
-    return body;
   }
 
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
+  }
+
+  // Persistent, unobtrusive "not financial advice" disclaimer under the chat input —
+  // shown ONCE (not stamped on every message). The summary line is always visible; the
+  // full legal text is one click away (<details>). Bilingual via AC_I18N (data-i18n is
+  // re-translated automatically on every language toggle). Idempotent.
+  function ensureChatDisclaimer() {
+    var input = document.getElementById('chatInput');
+    if (!input || document.getElementById('acChatDisclaimer')) return;   // chat pages only, once
+    var area = input.closest('.chat-input-area') || input.closest('.chat-input-row') || input.parentNode;
+    if (!area) return;
+    if (!document.getElementById('acChatDiscStyle')) {
+      var st = document.createElement('style');
+      st.id = 'acChatDiscStyle';
+      st.textContent =
+        '.ac-chat-disclaimer{margin:8px 4px 2px;font-size:11px;color:var(--fg-dim,#6B7A8F);line-height:1.5;}'
+        + '.ac-chat-disclaimer>summary{list-style:none;cursor:pointer;display:flex;gap:6px;flex-wrap:wrap;align-items:baseline;}'
+        + '.ac-chat-disclaimer>summary::-webkit-details-marker{display:none;}'
+        + '.ac-chat-disclaimer .ac-disc-more{color:var(--accent-primary,#27D3C3);font-weight:600;text-decoration:underline;text-underline-offset:2px;}'
+        + '.ac-chat-disclaimer:not([open])>summary .ac-disc-more::after{content:" \\25BE";}'
+        + '.ac-chat-disclaimer[open]>summary .ac-disc-more::after{content:" \\25B4";}'
+        + '.ac-chat-disclaimer p{margin:6px 0 0;padding-top:6px;border-top:1px solid var(--border,rgba(255,255,255,0.08));}';
+      document.head.appendChild(st);
+    }
+    var d = document.createElement('details');
+    d.id = 'acChatDisclaimer';
+    d.className = 'ac-chat-disclaimer';
+    d.innerHTML =
+      '<summary><span data-i18n="adv.disc_short">AI-generated analysis — not financial advice.</span>'
+      + ' <span class="ac-disc-more" data-i18n="adv.disc_more">Full disclaimer</span></summary>'
+      + '<p data-i18n="adv.disc_full">Disclaimer: This is AI-generated analysis for informational purposes only. '
+      + 'It does not constitute financial advice, a recommendation, or an offer to buy or sell any security. '
+      + 'Always consult a licensed financial adviser before making investment decisions.</p>';
+    area.appendChild(d);
+    try { if (window.AC_I18N && AC_I18N.apply) AC_I18N.apply(); } catch (e) {}
   }
 
   function addTypingIndicator() {
@@ -1725,6 +1761,10 @@ const AlphaCouncil = (function() {
         }
       });
     }
+
+    // Show the "not financial advice" disclaimer ONCE as a persistent footer under the
+    // chat input (replaces the old per-message stamp).
+    ensureChatDisclaimer();
 
     // Wire up suggested questions
     document.querySelectorAll('.suggested-question').forEach(btn => {
