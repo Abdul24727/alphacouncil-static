@@ -521,7 +521,7 @@ const AlphaCouncil = (function() {
   function councilErrorHtml(e) {
     const s = e && e.status;
     let msg;
-    if (s === 403) msg = 'The Council is a Pro & Elite feature. <a href="pricing.html" style="color:var(--accent-primary,#27D3C3);">Upgrade</a> to convene the committee.';
+    if (s === 403) msg = 'The Council is a Pro & Elite feature. <a href="settings.html#billing" style="color:var(--accent-primary,#27D3C3);">Upgrade</a> to convene the committee.';
     else if (s === 429) msg = "You’ve used this month’s Council reviews. They reset next billing period.";
     else if (s === 401) msg = 'Please <a href="login.html" style="color:var(--accent-primary,#27D3C3);">sign in</a> to convene the Council.';
     else msg = "The Council couldn’t convene just now — please try again in a moment.";
