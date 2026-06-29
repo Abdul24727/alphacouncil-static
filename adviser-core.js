@@ -62,7 +62,9 @@ const AlphaCouncil = (function() {
         'time.now':            { en: 'just now', ar: 'الآن' },
         'adv.disc_short': { en: 'AI-generated analysis — not financial advice.', ar: 'تحليل مُولّد بالذكاء الاصطناعي — وليس نصيحة مالية.' },
         'adv.disc_more':  { en: 'Full disclaimer', ar: 'إخلاء المسؤولية الكامل' },
-        'adv.disc_full':  { en: 'Disclaimer: This is AI-generated analysis for informational purposes only. It does not constitute financial advice, a recommendation, or an offer to buy or sell any security. Always consult a licensed financial adviser before making investment decisions.', ar: 'إخلاء مسؤولية: هذا تحليل مُنشأ بالذكاء الاصطناعي لأغراض إعلامية فقط. لا يُشكل نصيحة مالية أو توصية أو عرضًا لشراء أو بيع أي ورقة مالية. استشر دائمًا مستشارًا ماليًا مرخصًا قبل اتخاذ قرارات استثمارية.' }
+        'adv.disc_full':  { en: 'Disclaimer: This is AI-generated analysis for informational purposes only. It does not constitute financial advice, a recommendation, or an offer to buy or sell any security. Always consult a licensed financial adviser before making investment decisions.', ar: 'إخلاء مسؤولية: هذا تحليل مُنشأ بالذكاء الاصطناعي لأغراض إعلامية فقط. لا يُشكل نصيحة مالية أو توصية أو عرضًا لشراء أو بيع أي ورقة مالية. استشر دائمًا مستشارًا ماليًا مرخصًا قبل اتخاذ قرارات استثمارية.' },
+        'adv.helpers_toggle_both': { en: 'Suggestions & quick actions', ar: 'الاقتراحات والإجراءات السريعة' },
+        'adv.helpers_toggle_q':    { en: 'Suggested questions', ar: 'الأسئلة المقترحة' }
       });
     } catch (e) {}
   })();
@@ -379,6 +381,9 @@ const AlphaCouncil = (function() {
     `;
     chatMessages.appendChild(message);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+    // Once the conversation starts, collapse the onboarding helpers (suggested questions +
+    // quick actions) so the chat gets the full window. They stay reachable via the toggle.
+    if (isUser) { try { setChatHelpersCollapsed(true); } catch (e) {} }
   }
 
   // REAL adviser: POST /api/adviser/ask (portfolio-aware server-side, 10/day).
@@ -467,6 +472,64 @@ const AlphaCouncil = (function() {
       + 'It does not constitute financial advice, a recommendation, or an offer to buy or sell any security. '
       + 'Always consult a licensed financial adviser before making investment decisions.</p>';
     area.appendChild(d);
+    try { if (window.AC_I18N && AC_I18N.apply) AC_I18N.apply(); } catch (e) {}
+  }
+
+  // The "Suggested questions" + "Quick actions" sections are useful onboarding prompts when
+  // the chat is fresh, but they dominate the window. Collapse them behind one compact toggle:
+  // shown when the chat is empty, auto-collapsed once a conversation starts, re-openable any
+  // time. Structure-agnostic (works on every chat page); preserves all existing actions.
+  function setChatHelpersCollapsed(collapsed) {
+    (state._helperSections || []).forEach(function (sec) { sec.classList.toggle('ac-collapsed', !!collapsed); });
+    if (state._helpersToggle) state._helpersToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  }
+  function setupChatHelpers() {
+    if (state._helpersWired) return;
+    var sq = document.querySelector('.suggested-questions');
+    var qa = document.querySelector('.quick-actions');
+    var sections = [];
+    [sq, qa].forEach(function (el) {
+      if (!el) return;
+      var sec = el.closest('.sidebar-section') || el;   // collapse the whole titled section if present
+      if (sections.indexOf(sec) < 0) { sections.push(sec); sec.classList.add('ac-helper-section'); }
+    });
+    if (!sections.length) return;                          // no helpers on this page → nothing to do
+    state._helpersWired = true;
+    state._helperSections = sections;
+    if (!document.getElementById('acHelpersStyle')) {
+      var st = document.createElement('style');
+      st.id = 'acHelpersStyle';
+      st.textContent =
+        '.ac-helpers-toggle{display:none;align-items:center;justify-content:space-between;gap:8px;width:100%;'
+        + 'padding:8px 12px;margin:0 0 10px;background:var(--bg-elevated,#131a2a);border:1px solid var(--border,rgba(255,255,255,0.08));'
+        + 'border-radius:10px;color:var(--fg-muted,#8b97a8);font-size:12px;font-weight:600;cursor:pointer;text-align:start;}'
+        + '.ac-helpers-toggle.ac-show{display:flex;}'
+        + '.ac-helpers-toggle:hover{border-color:var(--accent-primary,#27D3C3);color:var(--accent-primary,#27D3C3);}'
+        + '.ac-helpers-toggle .ac-helpers-chevron{width:16px;height:16px;flex:0 0 auto;transition:transform .2s;}'
+        + '.ac-helpers-toggle[aria-expanded="false"] .ac-helpers-chevron{transform:rotate(-90deg);}'
+        + '.ac-helper-section.ac-collapsed{display:none;}'
+        // lighter footprint even when expanded (tighter, same design language)
+        + '.ac-helper-section .suggested-question{padding:9px 12px;font-size:12.5px;}'
+        + '.ac-helper-section .quick-action{padding:10px 8px;}';
+      document.head.appendChild(st);
+    }
+    var first = sections[0];
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'ac-helpers-toggle ac-show';
+    toggle.setAttribute('aria-expanded', 'true');
+    var labelKey = qa ? 'adv.helpers_toggle_both' : 'adv.helpers_toggle_q';
+    var labelEn = qa ? 'Suggestions & quick actions' : 'Suggested questions';
+    toggle.innerHTML = '<span data-i18n="' + labelKey + '">' + escapeHtml(labelEn) + '</span>'
+      + '<svg class="ac-helpers-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+    first.parentNode.insertBefore(toggle, first);
+    state._helpersToggle = toggle;
+    toggle.addEventListener('click', function () {
+      setChatHelpersCollapsed(!first.classList.contains('ac-collapsed'));
+    });
+    // If the conversation already has user messages (e.g. re-init), start collapsed.
+    var started = !!document.querySelector('#chatMessages .chat-message.user');
+    setChatHelpersCollapsed(started);
     try { if (window.AC_I18N && AC_I18N.apply) AC_I18N.apply(); } catch (e) {}
   }
 
@@ -1765,6 +1828,10 @@ const AlphaCouncil = (function() {
     // Show the "not financial advice" disclaimer ONCE as a persistent footer under the
     // chat input (replaces the old per-message stamp).
     ensureChatDisclaimer();
+
+    // Collapse the suggested-questions + quick-actions behind a compact toggle so the
+    // conversation is the primary focus (auto-collapses once the user sends a message).
+    setupChatHelpers();
 
     // Wire up suggested questions
     document.querySelectorAll('.suggested-question').forEach(btn => {
