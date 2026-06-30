@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — AlphaCouncil</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Moyasar payment form (mpf) — loaded normally in <head> on a CLEAN, dedicated page.
+       The previous attempt rendered the form inside a modal in the settings page; the card
+       iframes never rendered there. A standalone page avoids that CSS/modal conflict. -->
+  <link rel="stylesheet" href="https://cdn.moyasar.com/mpf/1.16.0/moyasar.css">
+  <style>
+    :root{ --bg-deep:#07111F; --surface:#111A2B; --surface-2:#192536; --fg:#F8FAFC; --fg-muted:#AAB6C5;
+      --fg-dim:#6B7A8F; --accent:#27D3C3; --border:rgba(255,255,255,0.08); --font-sans:'Inter',-apple-system,system-ui,sans-serif; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:var(--font-sans);background:var(--bg-deep);color:var(--fg);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+    .atmosphere{position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(ellipse 80% 50% at 50% 0%, rgba(39,211,195,0.06) 0%, transparent 55%);}
+    .lang-toggle{position:fixed;top:16px;right:16px;display:flex;gap:2px;border:1px solid var(--border);border-radius:8px;padding:2px;z-index:5;}
+    .lang-toggle button{padding:4px 11px;font-size:12px;font-weight:600;border:none;background:transparent;color:var(--fg-dim);border-radius:6px;cursor:pointer;}
+    .lang-toggle button.active{background:var(--accent);color:var(--bg-deep);}
+    [dir="rtl"] .lang-toggle{right:auto;left:16px;}
+    .card{width:100%;max-width:460px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:30px 26px;box-shadow:0 24px 70px rgba(0,0,0,0.35);}
+    h1{font-size:21px;font-weight:700;margin-bottom:6px;letter-spacing:-0.01em;}
+    .sub{font-size:14px;color:var(--fg-muted);line-height:1.55;margin-bottom:18px;}
+    .plan-row{display:flex;align-items:baseline;justify-content:space-between;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;margin-bottom:18px;}
+    .plan-name{font-weight:600;font-size:15px;color:var(--accent);}
+    .plan-price{font-weight:700;font-size:18px;}
+    .plan-price small{font-weight:400;font-size:12px;color:var(--fg-dim);}
+    /* The mpf form renders on its own light surface so the card inputs are legible. */
+    .form-wrap{background:#fff;border-radius:12px;padding:16px;}
+    .mysr-form{min-height:210px;}
+    .secure{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--fg-dim);margin-top:14px;line-height:1.5;}
+    .spinner{width:42px;height:42px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;margin:34px auto;animation:spin .8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .err{background:rgba(239,68,68,0.10);border:1px solid rgba(239,68,68,0.30);color:#FCA5A5;border-radius:10px;padding:14px;font-size:14px;line-height:1.5;}
+    .btn{display:block;width:100%;padding:12px 18px;border-radius:11px;background:var(--accent);color:var(--bg-deep);font-weight:600;font-size:15px;border:none;cursor:pointer;text-decoration:none;text-align:center;margin-top:14px;}
+    .btn.ghost{background:transparent;color:var(--fg-dim);box-shadow:none;}
+    .muted{font-size:12px;color:var(--fg-dim);margin-top:16px;text-align:center;}
+    .muted a{color:var(--accent);text-decoration:none;}
+    .hide{display:none;}
+  </style>
+</head>
+<body>
+  <div class="atmosphere"></div>
+  <div class="lang-toggle"><button data-lang="en" class="active">EN</button><button data-lang="ar">AR</button></div>
+
+  <div class="card">
+    <div id="st-loading">
+      <div class="spinner"></div>
+      <p class="sub" style="text-align:center" data-i18n="co.loading">Preparing secure checkout…</p>
+    </div>
+
+    <div id="st-form" class="hide">
+      <h1 data-i18n="co.title">Complete your upgrade</h1>
+      <p class="sub" data-i18n="co.sub">Enter your card to start your monthly subscription. It renews automatically each month — you can cancel anytime.</p>
+      <div class="plan-row"><span class="plan-name" id="planName">—</span><span class="plan-price" id="planPrice">—</span></div>
+      <div class="form-wrap"><div class="mysr-form" id="mysrForm"></div></div>
+      <div class="secure"><span>🔒</span><span data-i18n="co.secure">Secured by Moyasar. Your card is saved only to renew this subscription — AlphaCouncil never sees or stores your card number.</span></div>
+      <a class="btn ghost" href="settings.html#billing" data-i18n="co.cancel">Cancel</a>
+    </div>
+
+    <div id="st-error" class="hide">
+      <h1 data-i18n="co.error_title">Checkout unavailable</h1>
+      <div class="err" id="errMsg" style="margin-top:12px">—</div>
+      <a class="btn" href="settings.html#billing" data-i18n="co.back">Back to settings</a>
+    </div>
+
+    <p class="muted"><span data-i18n="co.support">Questions? Email</span> <a href="mailto:support@alphacouncil.tech">support@alphacouncil.tech</a></p>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="https://cdn.moyasar.com/mpf/1.16.0/moyasar.js"></script>
+  <script>
+    if (window.AC_I18N && AC_I18N.add) AC_I18N.add({
+      'co.loading':      { en: 'Preparing secure checkout…', ar: 'جارٍ تجهيز الدفع الآمن…' },
+      'co.title':        { en: 'Complete your upgrade', ar: 'أكمل ترقيتك' },
+      'co.sub':          { en: 'Enter your card to start your monthly subscription. It renews automatically each month — you can cancel anytime.', ar: 'أدخل بطاقتك لبدء اشتراكك الشهري. يتجدد تلقائيًا كل شهر — ويمكنك الإلغاء في أي وقت.' },
+      'co.secure':       { en: 'Secured by Moyasar. Your card is saved only to renew this subscription — AlphaCouncil never sees or stores your card number.', ar: 'دفع آمن عبر ميسر. تُحفظ بطاقتك فقط لتجديد هذا الاشتراك — ولا تطّلع AlphaCouncil على رقم بطاقتك أو تخزّنه.' },
+      'co.cancel':       { en: 'Cancel', ar: 'إلغاء' },
+      'co.back':         { en: 'Back to settings', ar: 'العودة إلى الإعدادات' },
+      'co.error_title':  { en: 'Checkout unavailable', ar: 'الدفع غير متاح' },
+      'co.support':      { en: 'Questions? Email', ar: 'لديك سؤال؟ راسلنا على' }
+    });
+    if (window.AC_I18N && AC_I18N.apply) AC_I18N.apply();
+
+    function show(id){ ['st-loading','st-form','st-error'].forEach(function(s){ document.getElementById(s).classList.toggle('hide', s !== id); }); }
+    function showError(msg){ document.getElementById('errMsg').textContent = msg || 'Something went wrong. Please try again.'; show('st-error'); }
+    var PLAN_NAMES = { pro: 'AlphaCouncil Pro', elite: 'AlphaCouncil Elite' };
+
+    (async function(){
+      // 1) Must be signed in.
+      try { await API.me(); }
+      catch (e) { if (e && e.status === 401) { window.location.href = 'login.html'; return; } }
+
+      // 2) Resolve the requested plan.
+      var plan = (new URLSearchParams(window.location.search).get('plan') || '').toLowerCase();
+      if (plan !== 'pro' && plan !== 'elite') { showError('No valid plan was selected.'); return; }
+
+      // 3) Server validates the upgrade and returns the SERVER-SET amount + metadata
+      //    (re-verified again on activation — the browser can't lower the price).
+      var cfg;
+      try { cfg = await API.post('/api/billing/checkout', { plan: plan }); }
+      catch (e) { showError((e && e.detail) || 'Could not start checkout. Please try again.'); return; }
+      if (!cfg || cfg.mode !== 'embedded' || !cfg.publishable_key) { showError('Online payment isn’t available yet.'); return; }
+
+      document.getElementById('planName').textContent = PLAN_NAMES[plan] || plan;
+      document.getElementById('planPrice').innerHTML = (cfg.amount / 100) + ' ' + (cfg.currency || 'SAR') + ' <small>/ month</small>';
+      show('st-form');  // the form container must be VISIBLE before Moyasar.init renders its iframes
+
+      try {
+        window.Moyasar.init({
+          element: '.mysr-form',
+          amount: cfg.amount,                       // halalas, server-set
+          currency: cfg.currency || 'SAR',
+          description: cfg.description || ('AlphaCouncil ' + plan),
+          publishable_api_key: cfg.publishable_key,
+          callback_url: cfg.callback_url,           // -> /api/billing/return?id=... -> verify, activate, capture token
+          methods: ['creditcard'],
+          supported_networks: ['mada', 'visa', 'mastercard'],
+          credit_card: { save_card: true },         // <-- save the card token for monthly auto-renewal
+          metadata: cfg.metadata || {}
+        });
+      } catch (err) {
+        showError('The payment form failed to load. Please refresh or try again.');
+      }
+    })();
+  </script>
+</body>
+</html>

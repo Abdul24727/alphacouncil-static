@@ -2068,12 +2068,10 @@
           body:'<p>'+L('You’ll be charged ','ستُحصَّل ')+'<strong>'+esc(SAR(p.price_sar))+'/'+L('month','شهر')+'</strong> '+L('today, then monthly. Continue to secure payment (card or mada).','اليوم ثم شهريًا. تابع إلى الدفع الآمن (بطاقة أو مدى).')+'</p>',
           confirm:L('Continue to payment','المتابعة للدفع') }).then(function(go){
           if(!go) return;
-          api('POST','/api/billing/checkout',{plan:plan}).then(function(r){
-            if(!r.ok){ toast('error', L('Couldn’t start checkout','تعذّر بدء الدفع'), (r.data&&r.data.detail)||''); return; }
-            // Moyasar uses a HOSTED invoice page (and Tap a hosted checkout): redirect to the provider's secure payment page.
-            if(r.data && r.data.checkout_url){ window.location.href=r.data.checkout_url; return; }
-            toast('error', L('Couldn’t start checkout','تعذّر بدء الدفع'), '');
-          });
+          // Embedded tokenizing checkout (saves the card for monthly auto-renewal) lives on
+          // its own clean page; checkout.html calls /api/billing/checkout itself for the
+          // server-set config and renders the Moyasar.js card form.
+          window.location.href='checkout.html?plan='+encodeURIComponent(plan);
         });
       }
       function doDowngrade(plan, s){
