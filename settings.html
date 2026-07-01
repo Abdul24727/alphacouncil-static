@@ -2091,6 +2091,23 @@
         });
       }
 
+      // Cooling-off refund: FULL refund of the last payment + immediate move to Free.
+      // Only reachable while the server says s.refund_eligible (inside the window).
+      function doRefund(s){
+        confirmModal({ title:L('Request a refund','طلب استرداد'),
+          body:'<p>'+L('This refunds your last payment (','هذا يُعيد آخر دفعة (')+'<strong>'+esc(SAR(s.price_sar))+'</strong>'+
+               L(') in full and moves your account to Free right away — you’ll lose paid access immediately. The refund appears on your card within a few business days.',
+                 ') بالكامل وينقل حسابك إلى الخطة المجانية فورًا — ستفقد الوصول المدفوع في الحال. ويظهر المبلغ على بطاقتك خلال أيام عمل قليلة.')+'</p>',
+          confirm:L('Refund & move to Free','استرداد والانتقال للمجاني'),
+          cancel:L('Keep my plan','الاحتفاظ بخطتي') }).then(function(go){
+          if(!go) return;
+          api('POST','/api/billing/refund', null).then(function(r){
+            if(r.ok){ toast('success', L('Refund issued','تم الاسترداد'), (r.data&&r.data.message)||''); window.loadBilling(); }
+            else { toast('error', L('Couldn’t process refund','تعذّر تنفيذ الاسترداد'), (r.data&&r.data.detail)||L('Please try again or contact support.','يرجى المحاولة مجددًا أو التواصل مع الدعم.')); }
+          });
+        });
+      }
+
       function render(s){
         var root=document.getElementById('billingRoot'); if(!root) return;
         var paid=s.is_paid, curRank=rankOf(s, s.plan), status='';
@@ -2102,6 +2119,14 @@
               '<div class="bill-cur-name">'+esc(s.plan_name)+' · '+esc(SAR(s.price_sar))+'<span class="bill-per">/'+L('mo','شهر')+'</span></div>'+
               '<div class="bill-cur-status">'+status+'</div></div>';
         if(!s.billing_configured){ h+='<p class="form-hint" style="margin-top:10px">'+L('Online payment is activating soon. To change your plan now, ','الدفع الإلكتروني قيد التفعيل. لتغيير خطتك الآن، ')+'<a href="contact.html">'+L('contact support','تواصل مع الدعم')+'</a>.</p>'; }
+        if(s.refund_eligible){
+          h+='<div class="bill-refund" style="margin-top:12px;padding:12px 14px;background:rgba(39,211,195,0.06);border:1px solid var(--border,rgba(255,255,255,0.08));border-radius:10px;">'+
+             '<div style="font-size:12.5px;color:var(--fg-muted,#AAB6C5);line-height:1.55;margin-bottom:9px;">'+
+               L('You’re within your money-back window. A refund returns your last payment in full and moves you to Free immediately.',
+                 'أنت ضمن فترة استرداد الأموال. يعيد الاسترداد آخر دفعة بالكامل وينقلك إلى الخطة المجانية فورًا.')+
+               (s.refund_eligible_until? ' '+L('Available until ','متاح حتى ')+'<strong>'+fmtDate(s.refund_eligible_until)+'</strong>.':'')+'</div>'+
+             '<button class="btn btn-ghost bill-act" data-refund="1">'+L('Request a refund','طلب استرداد')+'</button></div>';
+        }
         h+='<div class="bill-plans">';
         (s.plans||[]).forEach(function(p){
           var isCur=p.id===s.plan, act='';
@@ -2122,6 +2147,7 @@
         root.innerHTML=h;
         Array.prototype.forEach.call(root.querySelectorAll('[data-up]'),function(b){ b.onclick=function(){ doUpgrade(b.getAttribute('data-up'), s); }; });
         Array.prototype.forEach.call(root.querySelectorAll('[data-down]'),function(b){ b.onclick=function(){ doDowngrade(b.getAttribute('data-down'), s); }; });
+        Array.prototype.forEach.call(root.querySelectorAll('[data-refund]'),function(b){ b.onclick=function(){ doRefund(s); }; });
       }
 
       window.loadBilling=function(){
