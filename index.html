@@ -2140,6 +2140,52 @@
       .ac-footer-bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
     }
 
+    /* ── COMPARE: AlphaCouncil vs your own AI agent ─────────────────── */
+    .compare-section { position: relative; padding: 100px 24px; background: var(--bg-base); }
+    .compare-inner { max-width: 1080px; margin: 0 auto; }
+
+    .compare-bars { background: var(--surface); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 28px 28px 22px; margin: 40px 0 18px; }
+    .compare-bars-h { font-size: 15px; font-weight: 600; color: var(--fg); margin: 0 0 18px; }
+    .compare-bar-row { margin-bottom: 16px; }
+    .compare-bar-label { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; margin-bottom: 7px; }
+    .compare-bar-label .who { color: var(--fg-muted); font-weight: 600; }
+    .compare-bar-label .val { color: var(--fg-dim); text-align: end; }
+    .compare-bar-track { height: 12px; border-radius: 999px; background: rgba(255,255,255,0.05); overflow: hidden; }
+    .compare-bar-fill { height: 100%; border-radius: 999px; }
+    .compare-bar-fill.ours { width: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-emerald)); box-shadow: 0 0 18px var(--accent-primary-glow); }
+    .compare-bar-fill.theirs { width: 2.5%; min-width: 8px; background: var(--fg-dim); opacity: 0.55; }
+    .compare-bar-row .num { color: var(--accent-primary); font-weight: 700; }
+
+    .compare-chips-h { font-size: 12.5px; color: var(--fg-dim); margin: 18px 0 10px; }
+    .compare-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .compare-chip { font-size: 12px; line-height: 1.45; color: var(--fg-muted); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 999px; padding: 5px 12px; }
+
+    .compare-grid { display: grid; grid-template-columns: 0.9fr 1.1fr 1.1fr; gap: 0; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; margin-top: 26px; }
+    .compare-grid > div { padding: 16px 18px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 13.5px; line-height: 1.55; }
+    .compare-grid .cmp-head { border-top: none; background: var(--surface-elevated); font-weight: 700; font-size: 14px; color: var(--fg); }
+    .compare-grid .cmp-crit { color: var(--fg); font-weight: 600; background: rgba(255,255,255,0.02); }
+    .compare-grid .cmp-ours { color: var(--fg-muted); background: rgba(39, 211, 195, 0.045); border-inline-start: 1px solid rgba(255,255,255,0.06); }
+    .compare-grid .cmp-theirs { color: var(--fg-dim); border-inline-start: 1px solid rgba(255,255,255,0.06); }
+    .compare-grid .cmp-head.cmp-ours-h { background: rgba(39, 211, 195, 0.10); color: var(--accent-primary); border-inline-start: 1px solid rgba(255,255,255,0.06); }
+    .compare-grid .cmp-head.cmp-theirs-h { border-inline-start: 1px solid rgba(255,255,255,0.06); }
+    .cmp-cell-tag { display: none; }
+
+    .compare-council { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 26px; }
+    .compare-card { background: var(--surface); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 26px 26px 24px; }
+    .compare-card h3 { font-size: 18px; color: var(--fg); margin: 0 0 12px; line-height: 1.4; }
+    .compare-card p { font-size: 13.5px; color: var(--fg-muted); line-height: 1.65; margin: 0; }
+    .compare-card.council-card { border-color: rgba(39, 211, 195, 0.25); background: linear-gradient(180deg, rgba(39,211,195,0.05), var(--surface)); }
+
+    @media (max-width: 860px) {
+      .compare-grid { grid-template-columns: 1fr; }
+      .compare-grid .cmp-head { display: none; }
+      .compare-grid .cmp-crit { background: var(--surface-elevated); font-size: 14px; }
+      .compare-grid .cmp-ours, .compare-grid .cmp-theirs { border-inline-start: none; }
+      .cmp-cell-tag { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.4px; margin-bottom: 5px; }
+      .cmp-ours .cmp-cell-tag { color: var(--accent-primary); }
+      .cmp-theirs .cmp-cell-tag { color: var(--fg-dim); }
+      .compare-council { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -2879,6 +2925,104 @@
   </section>
 
   <!-- ═══════════════════════════════════════════════════════════════
+       COMPARE — AlphaCouncil vs your own AI agent
+       NOTE: model names below mirror backend config.py COUNCIL_MODELS /
+       CHAIRMAN_MODEL (GPT-5.1, Claude Sonnet 5, chairman Claude Opus 4.8).
+       Update this copy if the lineup changes.
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="compare-section" id="compare">
+    <div class="compare-inner">
+      <header class="section-header reveal">
+        <p class="section-eyebrow" data-i18n="idx.cmp_eyebrow">The honest comparison</p>
+        <h2 class="section-title" data-i18n="idx.cmp_title">Why not just ask an AI chatbot?</h2>
+        <p class="section-subtitle" data-i18n="idx.cmp_sub">You could — or you could even wire up your own AI agent. Here is what you would be taking on, and what you would still be missing.</p>
+      </header>
+
+      <div class="compare-bars reveal stagger-1">
+        <p class="compare-bars-h" data-i18n="idx.cmp_bars_h">What the AI actually sees before it answers</p>
+        <div class="compare-bar-row">
+          <div class="compare-bar-label">
+            <span class="who" data-i18n="idx.cmp_bar1_l">AlphaCouncil Adviser &amp; Council</span>
+            <span class="val"><span class="num" data-i18n="idx.cmp_bar1_n">40+</span> <span data-i18n="idx.cmp_bar1_v">live GCC data points per stock — refreshed nightly</span></span>
+          </div>
+          <div class="compare-bar-track"><div class="compare-bar-fill ours"></div></div>
+        </div>
+        <div class="compare-bar-row">
+          <div class="compare-bar-label">
+            <span class="who" data-i18n="idx.cmp_bar2_l">A general AI chat</span>
+            <span class="val"><span data-i18n="idx.cmp_bar2_v">0 live GCC data points — answers from training memory</span></span>
+          </div>
+          <div class="compare-bar-track"><div class="compare-bar-fill theirs"></div></div>
+        </div>
+        <p class="compare-chips-h" data-i18n="idx.cmp_chips_h">Inside those data points, for every covered stock:</p>
+        <div class="compare-chips">
+          <span class="compare-chip" data-i18n="idx.cmp_chip1">Valuation multiples (P/E, P/B, EPS)</span>
+          <span class="compare-chip" data-i18n="idx.cmp_chip2">Profitability (ROE, ROA)</span>
+          <span class="compare-chip" data-i18n="idx.cmp_chip3">Dividend yield</span>
+          <span class="compare-chip" data-i18n="idx.cmp_chip4">EPS &amp; net-income growth (CAGR)</span>
+          <span class="compare-chip" data-i18n="idx.cmp_chip5">Sector-percentile gauges</span>
+          <span class="compare-chip" data-i18n="idx.cmp_chip6">Bank asset quality (NPL, coverage, cost-to-income)</span>
+          <span class="compare-chip" data-i18n="idx.cmp_chip7">Momentum (RSI, MACD, ROC, ADX)</span>
+          <span class="compare-chip" data-i18n="idx.cmp_chip8">Trend regime (50D / 200D, golden cross)</span>
+          <span class="compare-chip" data-i18n="idx.cmp_chip9">Volatility (ATR, max drawdown)</span>
+          <span class="compare-chip" data-i18n="idx.cmp_chip10">52-week structure &amp; volume</span>
+          <span class="compare-chip" data-i18n="idx.cmp_chip11">Nightly news &amp; disclosures</span>
+          <span class="compare-chip" data-i18n="idx.cmp_chip12">Broker consensus &amp; price targets</span>
+        </div>
+      </div>
+
+      <div class="compare-grid reveal stagger-2">
+        <div class="cmp-head" data-i18n="idx.cmp_h_crit">Compared on</div>
+        <div class="cmp-head cmp-ours-h">AlphaCouncil</div>
+        <div class="cmp-head cmp-theirs-h" data-i18n="idx.cmp_h_theirs">Your own AI agent</div>
+
+        <div class="cmp-crit" data-i18n="idx.cmp_r1_c">Live GCC market data</div>
+        <div class="cmp-ours"><span class="cmp-cell-tag">AlphaCouncil</span><span data-i18n="idx.cmp_r1_a">Tadawul and GCC fundamentals, dividends, news and disclosures — refreshed every night.</span></div>
+        <div class="cmp-theirs"><span class="cmp-cell-tag" data-i18n="idx.cmp_h_theirs">Your own AI agent</span><span data-i18n="idx.cmp_r1_b">Frozen at its training cut-off. No live Saudi or GCC feed — unless you build and maintain your own data pipeline.</span></div>
+
+        <div class="cmp-crit" data-i18n="idx.cmp_r2_c">Fundamental analysis</div>
+        <div class="cmp-ours"><span class="cmp-cell-tag">AlphaCouncil</span><span data-i18n="idx.cmp_r2_a">Real, dated figures: P/E, P/B, ROE, ROA, dividend yield, EPS growth and sector percentiles — for every covered GCC stock.</span></div>
+        <div class="cmp-theirs"><span class="cmp-cell-tag" data-i18n="idx.cmp_h_theirs">Your own AI agent</span><span data-i18n="idx.cmp_r2_b">Recalls or estimates numbers. Ratios are often outdated — or simply invented.</span></div>
+
+        <div class="cmp-crit" data-i18n="idx.cmp_r3_c">Technical analysis</div>
+        <div class="cmp-ours"><span class="cmp-cell-tag">AlphaCouncil</span><span data-i18n="idx.cmp_r3_a">RSI, MACD, ADX, 50/200-day trend regime, volatility and drawdown, 52-week structure and volume — computed from actual price history.</span></div>
+        <div class="cmp-theirs"><span class="cmp-cell-tag" data-i18n="idx.cmp_h_theirs">Your own AI agent</span><span data-i18n="idx.cmp_r3_b">No price data, so no real technicals. It can explain RSI — it cannot calculate it for your stock.</span></div>
+
+        <div class="cmp-crit" data-i18n="idx.cmp_r4_c">A council, not one opinion</div>
+        <div class="cmp-ours"><span class="cmp-cell-tag">AlphaCouncil</span><span data-i18n="idx.cmp_r4_a">Five frontier models — including OpenAI's GPT-5.1 (the engine behind ChatGPT) and Anthropic's Claude Sonnet 5 — analyse independently and rank each other's work, and Claude Opus 4.8 chairs the final verdict.</span></div>
+        <div class="cmp-theirs"><span class="cmp-cell-tag" data-i18n="idx.cmp_h_theirs">Your own AI agent</span><span data-i18n="idx.cmp_r4_b">One model, one opinion, no peer review. Convening and refereeing rival frontier models is not something a chat window can do.</span></div>
+
+        <div class="cmp-crit" data-i18n="idx.cmp_r5_c">Your portfolio &amp; risk profile</div>
+        <div class="cmp-ours"><span class="cmp-cell-tag">AlphaCouncil</span><span data-i18n="idx.cmp_r5_a">Every answer is grounded in your actual holdings, risk style and time horizon.</span></div>
+        <div class="cmp-theirs"><span class="cmp-cell-tag" data-i18n="idx.cmp_h_theirs">Your own AI agent</span><span data-i18n="idx.cmp_r5_b">Starts from zero every time — unless you paste your portfolio into every prompt.</span></div>
+
+        <div class="cmp-crit" data-i18n="idx.cmp_r6_c">Discipline &amp; guardrails</div>
+        <div class="cmp-ours"><span class="cmp-cell-tag">AlphaCouncil</span><span data-i18n="idx.cmp_r6_a">Figures are tied to dated sources; stale data is withheld, never guessed. Analysis — not trade orders.</span></div>
+        <div class="cmp-theirs"><span class="cmp-cell-tag" data-i18n="idx.cmp_h_theirs">Your own AI agent</span><span data-i18n="idx.cmp_r6_b">Free to fabricate tickers, prices and ratios — confidently.</span></div>
+
+        <div class="cmp-crit" data-i18n="idx.cmp_r7_c">Arabic, natively</div>
+        <div class="cmp-ours"><span class="cmp-cell-tag">AlphaCouncil</span><span data-i18n="idx.cmp_r7_a">Ask in Arabic, get analysis in Arabic — company names included: أرامكو، الراجحي، سابك.</span></div>
+        <div class="cmp-theirs"><span class="cmp-cell-tag" data-i18n="idx.cmp_h_theirs">Your own AI agent</span><span data-i18n="idx.cmp_r7_b">Depends on the model — nothing tuned for GCC markets.</span></div>
+
+        <div class="cmp-crit" data-i18n="idx.cmp_r8_c">Setup, upkeep &amp; cost</div>
+        <div class="cmp-ours"><span class="cmp-cell-tag">AlphaCouncil</span><span data-i18n="idx.cmp_r8_a">Sign up, add your holdings, ask. Free to start; Pro from SAR 79/month.</span></div>
+        <div class="cmp-theirs"><span class="cmp-cell-tag" data-i18n="idx.cmp_h_theirs">Your own AI agent</span><span data-i18n="idx.cmp_r8_b">API keys, data scraping, prompt engineering, hosting and maintenance — API fees plus your time.</span></div>
+      </div>
+
+      <div class="compare-council">
+        <div class="compare-card council-card reveal stagger-3">
+          <h3 data-i18n="idx.cmp_council_t">You can chat with one model. You can't convene five.</h3>
+          <p data-i18n="idx.cmp_council_b">The Council is not a prompt — it is infrastructure. Five frontier models each write an independent analysis from the same audited GCC data. The drafts are ranked blind, and a chairman model — Claude Opus 4.8 — reconciles them into one clear verdict. That debate catches the blind spots a single model misses, and it cannot be recreated in a chat window.</p>
+        </div>
+        <div class="compare-card reveal stagger-4">
+          <h3 data-i18n="idx.cmp_close_t">The model is the easy part.</h3>
+          <p data-i18n="idx.cmp_close_b">Frontier AI is a commodity — anyone can call the same models. The audited GCC data underneath, the nightly freshness, and the discipline of a council are what turn raw intelligence into analysis you can actually use.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
        FINAL CTA
   ═══════════════════════════════════════════════════════════════ -->
   <section class="final-cta">
@@ -3209,6 +3353,60 @@
     'idx.cta_t2':   { en: 'means for your portfolio.', ar: 'بالنسبة لمحفظتك.' },
     'idx.cta_sub':  { en: 'Add your holdings, let AlphaCouncil monitor the GCC market, and use your AI Analyst Council to understand what the data suggests.', ar: 'أضِف مراكزك، ودع AlphaCouncil يراقب السوق الخليجي، واستعِن بمجلس المحلّلين الذكي لفهم ما تشير إليه البيانات.' },
     'idx.cta_note': { en: 'No credit card required · Set up in 90 seconds', ar: 'لا حاجة لبطاقة ائتمان · الإعداد في ٩٠ ثانية' },
+
+    /* Compare section — AlphaCouncil vs your own AI agent */
+    'idx.cmp_eyebrow': { en: 'The honest comparison', ar: 'مقارنة صريحة' },
+    'idx.cmp_title': { en: 'Why not just ask an AI chatbot?', ar: 'لماذا لا تكتفي بسؤال روبوت دردشة ذكي؟' },
+    'idx.cmp_sub': { en: 'You could — or you could even wire up your own AI agent. Here is what you would be taking on, and what you would still be missing.', ar: 'يمكنك ذلك — بل يمكنك حتى تشغيل وكيل ذكاء اصطناعي خاص بك. إليك ما ستتحمّله من عبء، وما سيظل ناقصًا رغم ذلك.' },
+    'idx.cmp_bars_h': { en: 'What the AI actually sees before it answers', ar: 'ما الذي يراه الذكاء الاصطناعي فعليًا قبل أن يجيب' },
+    'idx.cmp_bar1_l': { en: 'AlphaCouncil Adviser & Council', ar: 'مستشار ومجلس AlphaCouncil' },
+    'idx.cmp_bar1_n': { en: '40+', ar: '+٤٠' },
+    'idx.cmp_bar1_v': { en: 'live GCC data points per stock — refreshed nightly', ar: 'نقطة بيانات خليجية حيّة لكل سهم — تُحدَّث كل ليلة' },
+    'idx.cmp_bar2_l': { en: 'A general AI chat', ar: 'روبوت دردشة عام' },
+    'idx.cmp_bar2_v': { en: '0 live GCC data points — answers from training memory', ar: 'صفر نقطة بيانات خليجية حيّة — إجابات من ذاكرة التدريب' },
+    'idx.cmp_chips_h': { en: 'Inside those data points, for every covered stock:', ar: 'ما الذي تشمله تلك النقاط لكل سهم مغطى:' },
+    'idx.cmp_chip1': { en: 'Valuation multiples (P/E, P/B, EPS)', ar: 'مضاعفات التقييم (P/E، P/B، EPS)' },
+    'idx.cmp_chip2': { en: 'Profitability (ROE, ROA)', ar: 'الربحية (ROE، ROA)' },
+    'idx.cmp_chip3': { en: 'Dividend yield', ar: 'عائد التوزيعات' },
+    'idx.cmp_chip4': { en: 'EPS & net-income growth (CAGR)', ar: 'نمو ربحية السهم وصافي الدخل (CAGR)' },
+    'idx.cmp_chip5': { en: 'Sector-percentile gauges', ar: 'مؤشرات مئينية مقارنةً بالقطاع' },
+    'idx.cmp_chip6': { en: 'Bank asset quality (NPL, coverage, cost-to-income)', ar: 'جودة أصول البنوك (القروض المتعثرة، التغطية، التكلفة إلى الدخل)' },
+    'idx.cmp_chip7': { en: 'Momentum (RSI, MACD, ROC, ADX)', ar: 'الزخم (RSI، MACD، ROC، ADX)' },
+    'idx.cmp_chip8': { en: 'Trend regime (50D / 200D, golden cross)', ar: 'نظام الاتجاه (٥٠ و٢٠٠ يوم، التقاطع الذهبي)' },
+    'idx.cmp_chip9': { en: 'Volatility (ATR, max drawdown)', ar: 'التقلب (ATR، أقصى تراجع)' },
+    'idx.cmp_chip10': { en: '52-week structure & volume', ar: 'نطاق ٥٢ أسبوعًا وحجم التداول' },
+    'idx.cmp_chip11': { en: 'Nightly news & disclosures', ar: 'أخبار وإفصاحات تُحدَّث ليليًا' },
+    'idx.cmp_chip12': { en: 'Broker consensus & price targets', ar: 'إجماع بيوت التحليل والأهداف السعرية' },
+    'idx.cmp_h_crit': { en: 'Compared on', ar: 'وجه المقارنة' },
+    'idx.cmp_h_theirs': { en: 'Your own AI agent', ar: 'وكيل ذكاء اصطناعي خاص بك' },
+    'idx.cmp_r1_c': { en: 'Live GCC market data', ar: 'بيانات السوق الخليجية الحيّة' },
+    'idx.cmp_r1_a': { en: 'Tadawul and GCC fundamentals, dividends, news and disclosures — refreshed every night.', ar: 'أساسيات تداول وأسواق الخليج، والتوزيعات، والأخبار والإفصاحات — تُحدَّث كل ليلة.' },
+    'idx.cmp_r1_b': { en: 'Frozen at its training cut-off. No live Saudi or GCC feed — unless you build and maintain your own data pipeline.', ar: 'متجمّد عند تاريخ انتهاء تدريبه. لا تغذية سعودية أو خليجية حيّة — إلا إذا بنيت خط بيانات خاصًا بك وواظبت على صيانته.' },
+    'idx.cmp_r2_c': { en: 'Fundamental analysis', ar: 'التحليل الأساسي' },
+    'idx.cmp_r2_a': { en: 'Real, dated figures: P/E, P/B, ROE, ROA, dividend yield, EPS growth and sector percentiles — for every covered GCC stock.', ar: 'أرقام حقيقية مؤرَّخة: P/E وP/B وROE وROA وعائد التوزيعات ونمو الأرباح والمئينيات القطاعية — لكل سهم خليجي مغطى.' },
+    'idx.cmp_r2_b': { en: 'Recalls or estimates numbers. Ratios are often outdated — or simply invented.', ar: 'يتذكّر الأرقام أو يقدّرها. والنسب غالبًا قديمة — أو مختلَقة بكل بساطة.' },
+    'idx.cmp_r3_c': { en: 'Technical analysis', ar: 'التحليل الفني' },
+    'idx.cmp_r3_a': { en: 'RSI, MACD, ADX, 50/200-day trend regime, volatility and drawdown, 52-week structure and volume — computed from actual price history.', ar: 'RSI وMACD وADX ونظام الاتجاه (٥٠/٢٠٠ يوم) والتقلب وأقصى التراجع ونطاق ٥٢ أسبوعًا وحجم التداول — محسوبة من تاريخ الأسعار الفعلي.' },
+    'idx.cmp_r3_b': { en: 'No price data, so no real technicals. It can explain RSI — it cannot calculate it for your stock.', ar: 'لا بيانات أسعار، فلا تحليل فني حقيقي. يستطيع شرح مؤشر RSI — لكنه لا يستطيع حسابه لسهمك.' },
+    'idx.cmp_r4_c': { en: 'A council, not one opinion', ar: 'مجلس، لا رأي واحد' },
+    'idx.cmp_r4_a': { en: "Five frontier models — including OpenAI's GPT-5.1 (the engine behind ChatGPT) and Anthropic's Claude Sonnet 5 — analyse independently and rank each other's work, and Claude Opus 4.8 chairs the final verdict.", ar: 'خمسة نماذج رائدة — من بينها GPT-5.1 من OpenAI (محرّك ChatGPT) وClaude Sonnet 5 من Anthropic — تحلّل باستقلالية وتقيّم أعمال بعضها، ثم يرأس Claude Opus 4.8 صياغة الخلاصة النهائية.' },
+    'idx.cmp_r4_b': { en: 'One model, one opinion, no peer review. Convening and refereeing rival frontier models is not something a chat window can do.', ar: 'نموذج واحد ورأي واحد بلا مراجعة أقران. عقد مجلس من نماذج متنافسة والتحكيم بينها ليس مما تقدر عليه نافذة دردشة.' },
+    'idx.cmp_r5_c': { en: 'Your portfolio & risk profile', ar: 'محفظتك ومستوى مخاطرك' },
+    'idx.cmp_r5_a': { en: 'Every answer is grounded in your actual holdings, risk style and time horizon.', ar: 'كل إجابة تستند إلى مراكزك الفعلية وأسلوب مخاطرك وأفقك الزمني.' },
+    'idx.cmp_r5_b': { en: 'Starts from zero every time — unless you paste your portfolio into every prompt.', ar: 'يبدأ من الصفر في كل مرة — إلا إذا ألصقت محفظتك في كل سؤال.' },
+    'idx.cmp_r6_c': { en: 'Discipline & guardrails', ar: 'الانضباط والضوابط' },
+    'idx.cmp_r6_a': { en: 'Figures are tied to dated sources; stale data is withheld, never guessed. Analysis — not trade orders.', ar: 'الأرقام مربوطة بمصادر مؤرَّخة؛ والبيانات القديمة تُحجب ولا تُخمَّن. تحليل — لا أوامر تداول.' },
+    'idx.cmp_r6_b': { en: 'Free to fabricate tickers, prices and ratios — confidently.', ar: 'حرّ في اختلاق الرموز والأسعار والنسب — وبكل ثقة.' },
+    'idx.cmp_r7_c': { en: 'Arabic, natively', ar: 'العربية أصلًا' },
+    'idx.cmp_r7_a': { en: 'Ask in Arabic, get analysis in Arabic — company names included: أرامكو، الراجحي، سابك.', ar: 'اسأل بالعربية واحصل على التحليل بالعربية — بأسماء الشركات نفسها: أرامكو، الراجحي، سابك.' },
+    'idx.cmp_r7_b': { en: 'Depends on the model — nothing tuned for GCC markets.', ar: 'يعتمد على النموذج — ولا شيء مضبوط لأسواق الخليج.' },
+    'idx.cmp_r8_c': { en: 'Setup, upkeep & cost', ar: 'الإعداد والصيانة والتكلفة' },
+    'idx.cmp_r8_a': { en: 'Sign up, add your holdings, ask. Free to start; Pro from SAR 79/month.', ar: 'سجّل، أضف مراكزك، واسأل. مجاني للبدء؛ وبرو من ٧٩ ريالًا شهريًا.' },
+    'idx.cmp_r8_b': { en: 'API keys, data scraping, prompt engineering, hosting and maintenance — API fees plus your time.', ar: 'مفاتيح API وجمع بيانات وهندسة أوامر واستضافة وصيانة — رسوم API إضافةً إلى وقتك.' },
+    'idx.cmp_council_t': { en: "You can chat with one model. You can't convene five.", ar: 'يمكنك محادثة نموذج واحد. لكنك لا تستطيع عقد مجلس من خمسة.' },
+    'idx.cmp_council_b': { en: 'The Council is not a prompt — it is infrastructure. Five frontier models each write an independent analysis from the same audited GCC data. The drafts are ranked blind, and a chairman model — Claude Opus 4.8 — reconciles them into one clear verdict. That debate catches the blind spots a single model misses, and it cannot be recreated in a chat window.', ar: 'المجلس ليس مجرد سؤال ذكي — إنه بنية تحتية. خمسة نماذج رائدة يكتب كل منها تحليلًا مستقلًا من البيانات الخليجية المدقّقة نفسها، ثم تُرتَّب المسودات بتقييم أعمى، وأخيرًا يوفّق رئيس المجلس — Claude Opus 4.8 — بينها في خلاصة واحدة واضحة. هذا التداول هو ما يلتقط النقاط العمياء التي يغفلها نموذج واحد، وليس مما يمكن إعادة إنتاجه في نافذة دردشة.' },
+    'idx.cmp_close_t': { en: 'The model is the easy part.', ar: 'النموذج هو الجزء السهل.' },
+    'idx.cmp_close_b': { en: 'Frontier AI is a commodity — anyone can call the same models. The audited GCC data underneath, the nightly freshness, and the discipline of a council are what turn raw intelligence into analysis you can actually use.', ar: 'نماذج الذكاء الاصطناعي الرائدة متاحة للجميع — الكل يستطيع استدعاء النماذج نفسها. أما البيانات الخليجية المدقّقة تحتها، والتحديث الليلي، وانضباط المجلس، فهي ما يحوّل الذكاء الخام إلى تحليل يمكنك استخدامه فعلًا.' },
 
     /* Footer */
     'idx.foot_tagline':  { en: 'AI-powered portfolio intelligence for GCC stock investors. Understand your portfolio before the market moves.', ar: 'ذكاء محفظة مدعوم بالذكاء الاصطناعي لمستثمري أسهم الخليج. افهم محفظتك قبل أن يتحرّك السوق.' },
