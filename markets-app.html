@@ -120,6 +120,13 @@
       gap: 20px;
     }
 
+    /* Grid items default to min-width:auto, so the screener column would refuse
+       to shrink below the table's intrinsic width and stretch the page on small
+       windows; min-width:0 lets the table scroll inside .screener-table-wrapper. */
+    .main-left {
+      min-width: 0;
+    }
+
     /* Screener Controls */
     .screener-controls {
       display: flex;
