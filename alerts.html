@@ -24,8 +24,8 @@
       --accent-primary-glow: rgba(39, 211, 195, 0.2);
       --accent-gold: #D7B76A;
       --accent-gold-glow: rgba(215, 183, 106, 0.15);
-      --accent-violet: #8B5CF6;
-      --accent-violet-glow: rgba(139, 92, 246, 0.15);
+      --accent-violet: #27D3C3;
+      --accent-violet-glow: rgba(39, 211, 195, 0.15);
       --accent-blue: #3B82F6;
       --accent-blue-glow: rgba(59, 130, 246, 0.15);
       --success: #10B981;
@@ -200,8 +200,8 @@
     .alert-badge.income { background: var(--success-glow); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--success); }
     .alert-badge.momentum { background: var(--accent-blue-glow); border: 1px solid rgba(59, 130, 246, 0.3); color: var(--accent-blue); }
     .alert-badge.news { background: var(--accent-primary-glow); border: 1px solid rgba(39, 211, 195, 0.3); color: var(--accent-primary); }
-    .alert-badge.macro { background: var(--accent-violet-glow); border: 1px solid rgba(139, 92, 246, 0.3); color: var(--accent-violet); }
-    .alert-badge.strategist { background: linear-gradient(135deg, var(--accent-violet-glow), var(--accent-primary-glow)); border: 1px solid rgba(139, 92, 246, 0.3); color: var(--accent-violet); }
+    .alert-badge.macro { background: var(--accent-violet-glow); border: 1px solid rgba(39, 211, 195, 0.3); color: var(--accent-violet); }
+    .alert-badge.strategist { background: linear-gradient(135deg, var(--accent-violet-glow), var(--accent-primary-glow)); border: 1px solid rgba(39, 211, 195, 0.3); color: var(--accent-violet); }
     .alert-severity { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
     .alert-severity.high { background: var(--danger-glow); color: var(--danger); }
     .alert-severity.medium { background: var(--warning-glow); color: var(--warning); }
@@ -776,7 +776,7 @@
       var loaded = [], oldestId = null, exhausted = false, lastState = '';
 
       function badgeColor(kind) {
-        return ({ growth: '#10B981', risk: '#EF4444', technical: '#8B5CF6', macro: '#27D3C3', value: '#F59E0B' })[kind] || '#27D3C3';
+        return ({ growth: '#10B981', risk: '#EF4444', technical: '#27D3C3', macro: '#27D3C3', value: '#F59E0B' })[kind] || '#27D3C3';
       }
       function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
       // i18n-aware string lookup with a {n} count substitution; falls back to English value.

@@ -24,8 +24,8 @@
       --accent-primary-glow: rgba(39, 211, 195, 0.2);
       --accent-gold: #D7B76A;
       --accent-gold-glow: rgba(215, 183, 106, 0.15);
-      --accent-violet: #8B5CF6;
-      --accent-violet-glow: rgba(139, 92, 246, 0.15);
+      --accent-violet: #27D3C3;
+      --accent-violet-glow: rgba(39, 211, 195, 0.15);
       --accent-emerald: #10B981;
       --accent-emerald-glow: rgba(16, 185, 129, 0.15);
       --success: #10B981;
@@ -47,7 +47,7 @@
     .atmosphere { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
     .atmosphere-base { position: absolute; inset: 0; background: linear-gradient(180deg, var(--bg-deep) 0%, #050a16 30%, #071120 60%, var(--bg-deep) 100%); }
     .atmosphere-noise { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); opacity: 0.025; }
-    .atmosphere-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 100% 40% at 75% 15%, rgba(39, 211, 195, 0.06) 0%, transparent 60%), radial-gradient(ellipse 80% 50% at 20% 45%, rgba(139, 92, 246, 0.04) 0%, transparent 50%), radial-gradient(ellipse 70% 40% at 85% 70%, rgba(215, 183, 106, 0.035) 0%, transparent 50%); }
+    .atmosphere-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 100% 40% at 75% 15%, rgba(39, 211, 195, 0.06) 0%, transparent 60%), radial-gradient(ellipse 80% 50% at 20% 45%, rgba(39, 211, 195, 0.04) 0%, transparent 50%), radial-gradient(ellipse 70% 40% at 85% 70%, rgba(215, 183, 106, 0.035) 0%, transparent 50%); }
     .atmosphere-waves { position: absolute; bottom: 20%; left: 0; right: 0; height: 300px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 100'%3E%3Cpath fill='none' stroke='rgba(39,211,195,0.08)' stroke-width='1' d='M0,50 Q360,20 720,50 T1440,50'/%3E%3Cpath fill='none' stroke='rgba(215,183,106,0.05)' stroke-width='1' d='M0,60 Q360,30 720,60 T1440,60'/%3E%3C/svg%3E"); background-size: 200% 100%; animation: wave-drift 30s linear infinite; opacity: 0.7; }
     @keyframes wave-drift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
     .atmosphere-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 50%, transparent 20%, rgba(5, 10, 22, 0.5) 100%); }

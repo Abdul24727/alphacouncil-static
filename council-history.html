@@ -24,8 +24,8 @@
       --accent-primary-glow: rgba(39, 211, 195, 0.2);
       --accent-gold: #D7B76A;
       --accent-gold-glow: rgba(215, 183, 106, 0.15);
-      --accent-violet: #8B5CF6;
-      --accent-violet-glow: rgba(139, 92, 246, 0.15);
+      --accent-violet: #27D3C3;
+      --accent-violet-glow: rgba(39, 211, 195, 0.15);
       --accent-blue: #3B82F6;
       --accent-blue-glow: rgba(59, 130, 246, 0.15);
       --success: #10B981;
@@ -52,7 +52,7 @@
     ::-webkit-scrollbar-thumb:hover { background: var(--fg-dim); }
 
     .atmosphere { position: fixed; inset: 0; pointer-events: none; z-index: -1; }
-    .atmosphere::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 50% at 20% 20%, rgba(139, 92, 246, 0.04) 0%, transparent 50%), radial-gradient(ellipse 60% 40% at 80% 60%, rgba(39, 211, 195, 0.03) 0%, transparent 50%); }
+    .atmosphere::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 50% at 20% 20%, rgba(39, 211, 195, 0.04) 0%, transparent 50%), radial-gradient(ellipse 60% 40% at 80% 60%, rgba(39, 211, 195, 0.03) 0%, transparent 50%); }
 
     /* App Nav */
     .app-nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-height); background: var(--bg-base); border-bottom: 1px solid var(--border); z-index: 100; }
@@ -135,7 +135,7 @@
     .stat-icon svg { width: 16px; height: 16px; color: var(--fg-dim); }
     .stat-icon.primary { background: var(--accent-primary-glow); border-color: rgba(39, 211, 195, 0.3); }
     .stat-icon.primary svg { color: var(--accent-primary); }
-    .stat-icon.violet { background: var(--accent-violet-glow); border-color: rgba(139, 92, 246, 0.3); }
+    .stat-icon.violet { background: var(--accent-violet-glow); border-color: rgba(39, 211, 195, 0.3); }
     .stat-icon.violet svg { color: var(--accent-violet); }
     .stat-icon.gold { background: var(--accent-gold-glow); border-color: rgba(215, 183, 106, 0.3); }
     .stat-icon.gold svg { color: var(--accent-gold); }
@@ -229,7 +229,7 @@
     .detail-modal-overlay.open { opacity: 1; visibility: visible; }
     .detail-modal { background: var(--bg-base); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 1100px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; transform: scale(0.95) translateY(20px); opacity: 0; transition: all 0.4s var(--ease-out); box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.1) inset; }
     .detail-modal-overlay.open .detail-modal { transform: scale(1) translateY(0); opacity: 1; }
-    .detail-header { padding: 24px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; background: linear-gradient(180deg, rgba(139, 92, 246, 0.08) 0%, transparent 100%); flex-shrink: 0; }
+    .detail-header { padding: 24px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; background: linear-gradient(180deg, rgba(39, 211, 195, 0.08) 0%, transparent 100%); flex-shrink: 0; }
     .detail-header-left { display: flex; align-items: flex-start; gap: 16px; }
     .detail-icon { width: 56px; height: 56px; background: linear-gradient(135deg, var(--accent-violet), var(--accent-primary)); border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 8px 24px var(--accent-violet-glow); }
     .detail-icon svg { width: 28px; height: 28px; color: white; }
@@ -297,7 +297,7 @@
     .perspective-card.macro .perspective-signal svg { color: var(--accent-violet); }
     .perspective-card.strategist .perspective-signal svg { color: var(--accent-primary); }
     .signal-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--fg-dim); display: block; margin-bottom: 2px; }
-    .perspective-card.strategist { grid-column: span 3; display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: start; background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(39, 211, 195, 0.05)); }
+    .perspective-card.strategist { grid-column: span 3; display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: start; background: linear-gradient(135deg, rgba(39, 211, 195, 0.05), rgba(39, 211, 195, 0.05)); }
     .perspective-card.strategist .perspective-observations { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 24px; margin-bottom: 0; }
 
     /* Thesis Section */

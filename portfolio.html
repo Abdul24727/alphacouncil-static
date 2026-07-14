@@ -532,13 +532,13 @@
 
     .allocation-bar.banking { background: linear-gradient(90deg, #27D3C3, #1FA89A); }
     .allocation-bar.energy { background: linear-gradient(90deg, #D7B76A, #C9A84E); }
-    .allocation-bar.telecom { background: linear-gradient(90deg, #8B5CF6, #7C3AED); }
+    .allocation-bar.telecom { background: linear-gradient(90deg, #27D3C3, #7C3AED); }
     .allocation-bar.materials { background: linear-gradient(90deg, #3B82F6, #2563EB); }
     .allocation-bar.realestate { background: linear-gradient(90deg, #EF4444, #DC2626); }
     .allocation-bar.other { background: linear-gradient(90deg, #6B7A8F, #556070); }
     .allocation-bar.saudi { background: linear-gradient(90deg, #10B981, #059669); }
     .allocation-bar.uae { background: linear-gradient(90deg, #D7B76A, #C9A84E); }
-    .allocation-bar.qatar { background: linear-gradient(90deg, #8B5CF6, #7C3AED); }
+    .allocation-bar.qatar { background: linear-gradient(90deg, #27D3C3, #7C3AED); }
     .allocation-bar.kuwait { background: linear-gradient(90deg, #3B82F6, #2563EB); }
 
     .allocation-pct {
@@ -608,12 +608,12 @@
 
     /* Council Card - Portfolio-specific variant */
     .council-card {
-      background: linear-gradient(180deg, rgba(139, 92, 246, 0.1) 0%, var(--surface) 100%);
-      border-color: rgba(139, 92, 246, 0.3);
+      background: linear-gradient(180deg, rgba(39, 211, 195, 0.1) 0%, var(--surface) 100%);
+      border-color: rgba(39, 211, 195, 0.3);
       margin-bottom: 16px;
     }
 
-    .council-card .card-header { border-color: rgba(139, 92, 246, 0.2); }
+    .council-card .card-header { border-color: rgba(39, 211, 195, 0.2); }
     .council-card .card-title svg { color: var(--accent-violet); }
 
     .council-synthesis {
@@ -1657,7 +1657,7 @@
       // F1: real Sector + Country allocation from the user's live holdings (SAR-weighted), honest concentration flags.
       // O4b: country/sector labels + warnings + empty state localised (re-renders on ac:langchange).
       function renderAllocations(holdings){
-        const PALETTE = ['#27D3C3','#D7B76A','#8B5CF6','#3B82F6','#EF4444','#10B981','#F59E0B','#6B7A8F','#EC4899','#14B8A6'];
+        const PALETTE = ['#27D3C3','#D7B76A','#27D3C3','#3B82F6','#EF4444','#10B981','#F59E0B','#6B7A8F','#EC4899','#14B8A6'];
         // exchange → i18n country key (label resolved at render time so it follows the language).
         const EXCH_COUNTRY_KEY = { TADAWUL:'port.country_saudi', DFM:'port.country_uae', ADX:'port.country_uae', ADSM:'port.country_uae', QSE:'port.country_qatar', KSE:'port.country_kuwait', BOURSA:'port.country_kuwait', MSM:'port.country_oman', BSE:'port.country_bahrain', BHB:'port.country_bahrain' };
         const OTHER = PT('port.other');
