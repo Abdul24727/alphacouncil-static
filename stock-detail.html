@@ -696,9 +696,9 @@
     'sd.ask_adviser':       { en: 'Ask Adviser', ar: 'اسأل المستشار' },
     // Signal banner
     'sd.why_signal':        { en: 'Why this signal?', ar: 'لماذا هذه الإشارة؟' },
-    'sd.buy':               { en: 'BUY', ar: 'شراء' },
-    'sd.hold':              { en: 'HOLD', ar: 'احتفظ' },
-    'sd.reduce':            { en: 'REDUCE', ar: 'بيع' },
+    'sd.buy':               { en: 'Positive', ar: 'إيجابية' },
+    'sd.hold':              { en: 'Neutral', ar: 'محايدة' },
+    'sd.reduce':            { en: 'Cautious', ar: 'حذرة' },
     'sd.constructive':      { en: 'Constructive', ar: 'بنّاء' },
     'sd.hold_neutral':      { en: 'Hold / Neutral', ar: 'احتفظ / محايد' },
     'sd.cautious':          { en: 'Cautious', ar: 'حذر' },
@@ -1135,9 +1135,9 @@
       if (raw == null || !isFinite(Number(raw)) || (scores && scores.score_stale)) { banner.style.display = 'none'; _signal = null; _signalScore = null; return; }
       const s = Number(raw);
       let sig, cls, title;
-      if (s >= 66) { sig = _t('sd.buy') || 'BUY'; cls = ''; title = _t('sd.constructive') || 'Constructive'; }
-      else if (s >= 40) { sig = _t('sd.hold') || 'HOLD'; cls = 'hold'; title = _t('sd.hold_neutral') || 'Hold / Neutral'; }
-      else { sig = _t('sd.reduce') || 'REDUCE'; cls = 'caution'; title = _t('sd.cautious') || 'Cautious'; }
+      if (s >= 66) { sig = _t('sd.buy') || 'Positive'; cls = ''; title = _t('sd.constructive') || 'Constructive'; }
+      else if (s >= 40) { sig = _t('sd.hold') || 'Neutral'; cls = 'hold'; title = _t('sd.hold_neutral') || 'Hold / Neutral'; }
+      else { sig = _t('sd.reduce') || 'Cautious'; cls = 'caution'; title = _t('sd.cautious') || 'Cautious'; }
       _signal = sig;
       _signalScore = Math.round(s);   // kept for ac:langchange re-render
       banner.style.display = '';
