@@ -1,0 +1,19 @@
+# AlphaCouncil — https://alphacouncil.tech
+User-agent: *
+Allow: /
+# Authenticated app + transactional pages: not for indexing
+Disallow: /dashboard.html
+Disallow: /portfolio.html
+Disallow: /markets-app.html
+Disallow: /settings.html
+Disallow: /alerts.html
+Disallow: /scenarios.html
+Disallow: /council-history.html
+Disallow: /onboarding.html
+Disallow: /checkout.html
+Disallow: /upgrade-success.html
+Disallow: /verify-email.html
+Disallow: /reset-password.html
+Disallow: /forgot-password.html
+
+Sitemap: https://alphacouncil.tech/sitemap.xml
