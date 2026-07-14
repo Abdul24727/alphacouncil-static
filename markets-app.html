@@ -463,6 +463,21 @@
     .change-cell.neutral { color: var(--fg-dim); }
 
     /* Sector Badge */
+    .stale-badge {
+      display: inline-block;
+      margin-inline-start: 6px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      background: var(--accent-gold-glow);
+      border: 1px solid var(--accent-gold);
+      vertical-align: middle;
+      cursor: help;
+    }
     .sector-badge {
       display: inline-flex;
       padding: 4px 10px;
@@ -1461,6 +1476,8 @@
         'mkt.loadMarket':       { en: 'Couldn’t load market data. Please try again.', ar: 'تعذّر تحميل بيانات السوق. يرجى المحاولة مرة أخرى.' },
         'mkt.noIndexData':      { en: 'No index data',                       ar: 'لا توجد بيانات مؤشر' },
         'mkt.avgLabel':         { en: 'Avg',                                 ar: 'متوسط' },
+        'mkt.stale':            { en: 'stale',                               ar: 'قديم' },
+        'mkt.staleTitle':       { en: 'Price data is out of date',           ar: 'بيانات السعر قديمة' },
         'mkt.stocksMeta':       { en: 'stocks',                              ar: 'سهم' },
 
         // MKT-12 — watchlist action toasts
@@ -1555,7 +1572,7 @@
           + '<div class="stock-info"><div class="stock-name">' + name + '</div>'
           + '<div class="stock-ticker">' + sym + (isHeld ? ' <span class="in-portfolio">' + esc(t('mkt.held', 'HELD')) + '</span>' : '') + '</div></div>'
           + '</div></td>'
-          + '<td class="num-cell">' + (r.last_price != null ? (fmtNum(r.last_price) + ' ' + esc(r.currency || '')) : '—') + '</td>'
+          + '<td class="num-cell">' + (r.last_price != null ? (fmtNum(r.last_price) + ' ' + esc(r.currency || '') + (r.price_stale ? ' <span class="stale-badge" title="' + esc(t('mkt.staleTitle', 'Price data is out of date') + (r.as_of_date ? ' — as of ' + r.as_of_date : '')) + '">' + esc(t('mkt.stale', 'stale')) + '</span>' : '')) : '—') + '</td>'
           + '<td class="num-cell change-cell ' + (up ? 'up' : 'down') + '">' + (r.day_change_pct != null ? ((up ? '+' : '') + fmtNum(r.day_change_pct) + '%') : '—') + '</td>'
           + '<td class="num-cell">' + fmtMcap(r.market_cap_raw, r.currency || '') + '</td>'
           + '<td class="num-cell">' + fmtNum(r.pe, 1) + '</td>'
