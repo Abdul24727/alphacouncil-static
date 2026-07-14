@@ -470,231 +470,9 @@
         <!-- Alerts List -->
         <div class="alerts-list" id="alertsList">
 
-          <!-- Alert 1 - High Priority Risk -->
-          <div class="alert-card high" data-alert-id="1">
-            <div class="alert-header">
-              <div class="alert-meta">
-                <span class="alert-time">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  2 hours ago
-                </span>
-                <span class="alert-badge risk">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  Risk Analyst
-                </span>
-                <span class="alert-severity high">High</span>
-              </div>
-            </div>
-            <div class="alert-tickers">
-              <span class="ticker-tag" onclick="viewStock('1120')">1120</span>
-              <span class="ticker-tag" onclick="viewStock('1010')">1010</span>
-              <span class="ticker-tag" onclick="viewStock('FAB')">FAB</span>
-            </div>
-            <p class="alert-message">
-              Data suggests <strong>reviewing portfolio concentration</strong> in banking sector (32.2%). This exceeds typical diversification guidelines. <span class="highlight">Stronger peer opportunity exists in UAE names</span> such as FAB, which shows lower correlation to your existing Saudi banking positions.
-            </p>
-            <div class="alert-actions">
-              <button class="alert-action primary" onclick="viewInCouncil('1')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                View in Council
-              </button>
-              <button class="alert-action" onclick="askAdviserAbout('concentration risk')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                Ask Adviser
-              </button>
-              <button class="alert-action muted" onclick="markAsRead('1')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                Mark as read
-              </button>
-              <button class="alert-action muted" onclick="createRule('concentration')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                Create rule
-              </button>
-            </div>
-          </div>
-
-          <!-- Alert 2 - High Priority Macro -->
-          <div class="alert-card high" data-alert-id="2">
-            <div class="alert-header">
-              <div class="alert-meta">
-                <span class="alert-time">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  4 hours ago
-                </span>
-                <span class="alert-badge macro">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                  Macro Analyst
-                </span>
-                <span class="alert-severity high">High</span>
-              </div>
-            </div>
-            <div class="alert-tickers">
-              <span class="ticker-tag" onclick="viewStock('2222')">2222</span>
-            </div>
-            <p class="alert-message">
-              <span class="caution">Oil price declined 4.2% this week</span>, which may impact Aramco (2222) dividend expectations. Current yield remains attractive at 5.2%, but <strong>data suggests monitoring</strong> for further commodity volatility given your 10.6% portfolio weight in this position.
-            </p>
-            <div class="alert-actions">
-              <button class="alert-action primary" onclick="viewInCouncil('2')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                View in Council
-              </button>
-              <button class="alert-action" onclick="askAdviserAbout('oil price impact')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                Ask Adviser
-              </button>
-              <button class="alert-action muted" onclick="snoozeAlert('2')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                Snooze
-              </button>
-              <button class="alert-action muted" onclick="dismissAlert('2')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                Dismiss
-              </button>
-            </div>
-          </div>
-
-          <!-- Alert 3 - Medium Priority Valuation -->
-          <div class="alert-card medium" data-alert-id="3">
-            <div class="alert-header">
-              <div class="alert-meta">
-                <span class="alert-time">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  6 hours ago
-                </span>
-                <span class="alert-badge valuation">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                  Valuation Analyst
-                </span>
-                <span class="alert-severity medium">Medium</span>
-              </div>
-            </div>
-            <div class="alert-tickers">
-              <span class="ticker-tag" onclick="viewStock('1120')">1120</span>
-            </div>
-            <p class="alert-message">
-              Al Rajhi Bank (1120) is now trading at <span class="caution">18.2x forward P/E</span>, above its 5-year average of 15.8x. While fundamentals remain strong, <strong>consider reviewing position sizing</strong> given elevated valuation multiples relative to regional peers.
-            </p>
-            <div class="alert-actions">
-              <button class="alert-action primary" onclick="viewInCouncil('3')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                View in Council
-              </button>
-              <button class="alert-action" onclick="askAdviserAbout('valuation')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                Ask Adviser
-              </button>
-              <button class="alert-action muted" onclick="markAsRead('3')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                Mark as read
-              </button>
-            </div>
-          </div>
-
-          <!-- Alert 4 - Medium Priority Momentum -->
-          <div class="alert-card medium" data-alert-id="4">
-            <div class="alert-header">
-              <div class="alert-meta">
-                <span class="alert-time">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  Yesterday
-                </span>
-                <span class="alert-badge momentum">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-                  Momentum Analyst
-                </span>
-                <span class="alert-severity medium">Medium</span>
-              </div>
-            </div>
-            <div class="alert-tickers">
-              <span class="ticker-tag" onclick="viewStock('7010')">7010</span>
-            </div>
-            <p class="alert-message">
-              stc (7010) showing <span class="highlight">strong relative momentum</span>, breaking above 50-day moving average with increased volume. Your current position is underweight at 5.6% — <strong>data suggests reviewing</strong> allocation given positive technical signals.
-            </p>
-            <div class="alert-actions">
-              <button class="alert-action primary" onclick="viewInCouncil('4')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                View in Council
-              </button>
-              <button class="alert-action" onclick="askAdviserAbout('momentum signals')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                Ask Adviser
-              </button>
-              <button class="alert-action muted" onclick="markAsRead('4')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                Mark as read
-              </button>
-            </div>
-          </div>
-
-          <!-- Alert 5 - Low Priority News -->
-          <div class="alert-card low read" data-alert-id="5">
-            <div class="alert-header">
-              <div class="alert-meta">
-                <span class="alert-time">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  2 days ago
-                </span>
-                <span class="alert-badge news">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1"/><path d="M18 14h-8M18 10h-8M18 6h-8"/></svg>
-                  News Analyst
-                </span>
-                <span class="alert-severity low">Low</span>
-              </div>
-            </div>
-            <div class="alert-tickers">
-              <span class="ticker-tag" onclick="viewStock('QNBK')">QNBK</span>
-            </div>
-            <p class="alert-message">
-              QNB Group announced Q2 results exceeding analyst expectations. Net profit grew 8.2% YoY. <span class="highlight">Positive sentiment</span> around regional expansion plans. Your position remains well-sized at 9.6% of portfolio.
-            </p>
-            <div class="alert-actions">
-              <button class="alert-action" onclick="viewInCouncil('5')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                View in Council
-              </button>
-              <button class="alert-action muted" onclick="dismissAlert('5')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                Dismiss
-              </button>
-            </div>
-          </div>
-
-          <!-- Alert 6 - Low Priority Income -->
-          <div class="alert-card low read" data-alert-id="6">
-            <div class="alert-header">
-              <div class="alert-meta">
-                <span class="alert-time">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  3 days ago
-                </span>
-                <span class="alert-badge income">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                  Income Analyst
-                </span>
-                <span class="alert-severity low">Low</span>
-              </div>
-            </div>
-            <div class="alert-tickers">
-              <span class="ticker-tag" onclick="viewStock('EMAAR')">EMAAR</span>
-            </div>
-            <p class="alert-message">
-              Emaar Properties (EMAAR) dividend yield now at 4.1% following recent price consolidation. <span class="highlight">Income stream remains sustainable</span> with 42% payout ratio. Consider for income-focused allocation review.
-            </p>
-            <div class="alert-actions">
-              <button class="alert-action" onclick="viewInCouncil('6')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                View in Council
-              </button>
-              <button class="alert-action muted" onclick="dismissAlert('6')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                Dismiss
-              </button>
-            </div>
-          </div>
-
-        </div>
+          <!-- Alerts render from /api/alerts at runtime (see start()/render()).
+               No static/demo alert cards ship in the HTML — they previously
+               contained fabricated holdings and advice copy. (LEGAL-05) -->
 
         <!-- Rules Panel -->
         <div class="rules-panel">
@@ -1165,11 +943,15 @@
     }
 
     function askAdviserAbout(topic) {
+      // Honest, generic explanations of each alert TYPE — no fabricated portfolio
+      // figures and no buy/sell/allocation advice. For real, data-grounded answers
+      // the user runs a question through the backed Adviser (which carries its own
+      // disclaimer). (LEGAL-04: was hardcoded fabricated holdings + advice.)
       const responses = {
-        'concentration risk': 'The concentration risk alert was triggered because your banking sector holdings (Al Rajhi, SNB, FAB) now represent 32.2% of your portfolio. Best practices suggest keeping any single sector below 25-30% to manage correlated risk. Consider reviewing allocation to achieve better diversification.',
-        'oil price impact': 'The oil price decline of 4.2% this week directly impacts Aramco (2222) as crude is their primary revenue driver. While the dividend remains well-covered, continued commodity weakness could pressure payout expectations. Your 10.6% weight means this is a material portfolio consideration.',
-        'valuation': 'Al Rajhi Bank is trading at 18.2x forward P/E compared to its 5-year average of 15.8x and regional peer average of 14.5x. The premium reflects strong fundamentals, but elevated multiples increase sensitivity to any earnings disappointment.',
-        'momentum signals': 'stc (7010) has broken above its 50-day moving average with volume 40% above average. This technical pattern often precedes continued upward movement. Your current 5.6% allocation may be underweight relative to the positive signals.'
+        'concentration risk': 'Concentration-risk alerts flag when one sector or holding grows to a large share of a portfolio. Ask the Adviser about your portfolio to see your actual sector weights and what they mean. This is analysis for your information, not a recommendation to buy or sell.',
+        'oil price impact': 'This alert flags a notable move in oil prices, which can affect energy-sector names. Ask the Adviser about a specific ticker to see how its fundamentals relate — for information only, not investment advice.',
+        'valuation': 'Valuation alerts flag when a holding’s multiples move notably versus its own history or peers. Ask the Adviser about the ticker for the current figures and context. This is analysis, not a recommendation.',
+        'momentum signals': 'Momentum alerts flag notable technical moves such as moving-average crossovers or volume spikes. Ask the Adviser about the ticker for the underlying data. Informational only, not advice.'
       };
 
       if (typeof AlphaCouncil !== 'undefined') {
