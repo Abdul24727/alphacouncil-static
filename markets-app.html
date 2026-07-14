@@ -1460,6 +1460,7 @@
         'mkt.loadNews':         { en: 'Couldn’t load market news.',          ar: 'تعذّر تحميل أخبار السوق.' },
         'mkt.loadMarket':       { en: 'Couldn’t load market data. Please try again.', ar: 'تعذّر تحميل بيانات السوق. يرجى المحاولة مرة أخرى.' },
         'mkt.noIndexData':      { en: 'No index data',                       ar: 'لا توجد بيانات مؤشر' },
+        'mkt.avgLabel':         { en: 'Avg',                                 ar: 'متوسط' },
         'mkt.stocksMeta':       { en: 'stocks',                              ar: 'سهم' },
 
         // MKT-12 — watchlist action toasts
@@ -1632,8 +1633,25 @@
         var m = card.querySelector('.index-card-meta'); if (m && meta != null) m.textContent = meta;
       }
       function populateIndices() {
-        var counts = {}; ALL.forEach(function (r) { counts[r.exchange] = (counts[r.exchange] || 0) + 1; });
-        ['TADAWUL', 'ADX', 'DFM', 'QSE', 'KSE', 'MSM', 'BSE'].forEach(function (ex) { setCard(ex, '—', t('mkt.noIndexData', 'No index data'), 'neutral', counts[ex] ? (counts[ex] + ' ' + t('mkt.stocksMeta', 'stocks')) : ''); });
+        var counts = {}, sum = {}, n = {};
+        ALL.forEach(function (r) {
+          var ex = r.exchange; if (!ex) return;
+          counts[ex] = (counts[ex] || 0) + 1;
+          var d = Number(r.day_change_pct);
+          if (isFinite(d)) { sum[ex] = (sum[ex] || 0) + d; n[ex] = (n[ex] || 0) + 1; }
+        });
+        ['TADAWUL', 'ADX', 'DFM', 'QSE', 'KSE', 'MSM', 'BSE'].forEach(function (ex) {
+          var meta = counts[ex] ? (counts[ex] + ' ' + t('mkt.stocksMeta', 'stocks')) : '';
+          if (n[ex]) {
+            // No official index feed for this market — show an equal-weighted AVERAGE
+            // daily change across its listed stocks, clearly labeled 'Avg' (not the index).
+            // Overridden below by the real index for markets that have a feed (TADAWUL/ADX/DFM).
+            var avg = sum[ex] / n[ex], up = avg >= 0;
+            setCard(ex, '—', t('mkt.avgLabel', 'Avg') + ' ' + (up ? '+' : '') + avg.toFixed(2) + '%', up ? 'up' : 'down', meta);
+          } else {
+            setCard(ex, '—', t('mkt.noIndexData', 'No index data'), 'neutral', meta);
+          }
+        });
         API.tickerTape().then(function (d) {
           (d && d.groups || []).forEach(function (g) {
             if (!g.index || g.index.price == null) return;
