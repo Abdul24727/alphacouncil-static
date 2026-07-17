@@ -296,7 +296,10 @@
     .checkbox-box {
       width: 18px;
       height: 18px;
-      border: 1px solid var(--border);
+      /* --border (8% white) is invisible on the dark card — use a teal-tinted border and faint fill
+         so the unchecked box is findable. rgba of --accent-primary #27D3C3. */
+      border: 1.5px solid rgba(39, 211, 195, 0.55);
+      background: rgba(39, 211, 195, 0.08);
       border-radius: 4px;
       display: flex;
       align-items: center;
@@ -304,6 +307,25 @@
       flex-shrink: 0;
       margin-top: 1px;
       transition: all 0.2s;
+    }
+
+    .checkbox-label:hover .checkbox-box {
+      border-color: var(--accent-primary);
+    }
+
+    /* Nudge played when the disabled Create-account button is clicked before accepting the terms. */
+    .checkbox-label.nudge .checkbox-box {
+      animation: checkbox-nudge 0.45s ease;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px var(--accent-primary-glow);
+    }
+
+    @keyframes checkbox-nudge {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-4px); }
+      40% { transform: translateX(4px); }
+      60% { transform: translateX(-3px); }
+      80% { transform: translateX(3px); }
     }
 
     .checkbox-label input:checked + .checkbox-box {
@@ -378,6 +400,9 @@
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
+      /* Let clicks fall through to the form so the terms-checkbox nudge can fire
+         (disabled buttons swallow events otherwise). */
+      pointer-events: none;
     }
 
     .btn-primary:disabled:hover {
@@ -620,6 +645,11 @@
       .form-input,
       .form-select {
         transition: none;
+      }
+
+      /* Keep the static highlight but skip the shake. */
+      .checkbox-label.nudge .checkbox-box {
+        animation: none;
       }
     }
 
@@ -1066,6 +1096,21 @@
       }
       cb.addEventListener('change', sync);
       sync(); // set initial state (disabled + helper visible)
+
+      // The disabled button has pointer-events: none, so clicks land on the form;
+      // hit-test the button's box and nudge the checkbox instead of failing silently.
+      const label = cb.closest('.checkbox-label');
+      const form = document.getElementById('signupForm');
+      if (!label || !form) return;
+      form.addEventListener('click', function (e) {
+        if (!btn.disabled || cb.checked) return;
+        const r = btn.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+        label.classList.remove('nudge');
+        void label.offsetWidth; // restart the animation on repeated clicks
+        label.classList.add('nudge');
+        setTimeout(function () { label.classList.remove('nudge'); }, 700);
+      });
     })();
 
     function showToast(type, title, text) {
