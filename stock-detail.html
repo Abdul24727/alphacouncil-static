@@ -696,11 +696,8 @@
     'sd.ask_adviser':       { en: 'Ask Adviser', ar: 'اسأل المستشار' },
     // Signal banner
     'sd.why_signal':        { en: 'Why this signal?', ar: 'لماذا هذه الإشارة؟' },
-    'sd.buy':               { en: 'BUY', ar: 'شراء' },
-    'sd.hold':              { en: 'HOLD', ar: 'احتفظ' },
-    'sd.reduce':            { en: 'REDUCE', ar: 'بيع' },
     'sd.constructive':      { en: 'Constructive', ar: 'بنّاء' },
-    'sd.hold_neutral':      { en: 'Hold / Neutral', ar: 'احتفظ / محايد' },
+    'sd.hold_neutral':      { en: 'Neutral', ar: 'محايد' },
     'sd.cautious':          { en: 'Cautious', ar: 'حذر' },
     'sd.signal_label':      { en: 'AlphaCouncil Signal: {title}', ar: 'إشارة AlphaCouncil: {title}' },
     'sd.signal_derived':    { en: 'Derived from AlphaCouncil’s composite score of {score}/100 — a blend of fundamentals, technicals and news flow. A model output, not investment advice.', ar: 'مُشتقّة من درجة AlphaCouncil المركّبة البالغة {score}/100 — مزيج من الأساسيات والمؤشرات الفنية وتدفّق الأخبار. مُخرَج نموذجي وليس نصيحة استثمارية.' },
@@ -1135,9 +1132,9 @@
       if (raw == null || !isFinite(Number(raw)) || (scores && scores.score_stale)) { banner.style.display = 'none'; _signal = null; _signalScore = null; return; }
       const s = Number(raw);
       let sig, cls, title;
-      if (s >= 66) { sig = _t('sd.buy') || 'BUY'; cls = ''; title = _t('sd.constructive') || 'Constructive'; }
-      else if (s >= 40) { sig = _t('sd.hold') || 'HOLD'; cls = 'hold'; title = _t('sd.hold_neutral') || 'Hold / Neutral'; }
-      else { sig = _t('sd.reduce') || 'REDUCE'; cls = 'caution'; title = _t('sd.cautious') || 'Cautious'; }
+      if (s >= 66) { sig = _t('sd.constructive') || 'Constructive'; cls = ''; title = _t('sd.constructive') || 'Constructive'; }
+      else if (s >= 40) { sig = _t('sd.hold_neutral') || 'Neutral'; cls = 'hold'; title = _t('sd.hold_neutral') || 'Neutral'; }
+      else { sig = _t('sd.cautious') || 'Cautious'; cls = 'caution'; title = _t('sd.cautious') || 'Cautious'; }
       _signal = sig;
       _signalScore = Math.round(s);   // kept for ac:langchange re-render
       banner.style.display = '';
