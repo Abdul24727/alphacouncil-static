@@ -1,0 +1,59 @@
+{
+  "suite_label": "Current Legal Documents",
+  "documents": {
+    "terms": {
+      "title": "Terms of Service",
+      "version": "1.0",
+      "effective_date": "2026-07-21",
+      "route": "/legal/terms",
+      "source": "AlphaCouncil-Terms-of-Service-FINAL.docx"
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "version": "1.0",
+      "effective_date": "2026-07-21",
+      "route": "/legal/privacy",
+      "source": "AlphaCouncil-Privacy-Policy-FINAL.docx"
+    },
+    "refunds": {
+      "title": "Refund and Cancellation Policy",
+      "version": "1.0",
+      "effective_date": "2026-07-21",
+      "route": "/legal/refunds",
+      "source": "AlphaCouncil-Refund-Cancellation-Policy-FINAL.docx"
+    },
+    "cookies": {
+      "title": "Cookie Policy",
+      "version": "1.0",
+      "effective_date": "2026-07-21",
+      "route": "/legal/cookies",
+      "source": "AlphaCouncil-Cookie-Policy-FINAL.docx"
+    },
+    "ai-financial-disclaimer": {
+      "title": "AI and Financial Disclaimer",
+      "version": "1.0",
+      "effective_date": "2026-07-21",
+      "route": "/legal/ai-financial-disclaimer",
+      "source": "AlphaCouncil-AI-Financial-Disclaimer-FINAL.docx"
+    }
+  },
+  "combined_suite": {
+    "title": "AlphaCouncil Legal Suite",
+    "version": "1.0",
+    "effective_date": "2026-07-21",
+    "route": "/legal",
+    "source": "AlphaCouncil-Legal-Suite-FINAL.docx"
+  },
+  "acceptance_keys": [
+    "terms",
+    "privacy",
+    "refunds",
+    "ai-financial-disclaimer"
+  ],
+  "acceptance_text": {
+    "checkout": {
+      "version": "1.0",
+      "text": "I agree to the Terms of Service and acknowledge the Privacy Policy, Refund and Cancellation Policy, and AI and Financial Disclaimer."
+    }
+  }
+}
