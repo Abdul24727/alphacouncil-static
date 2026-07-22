@@ -51,6 +51,10 @@
     "ai-financial-disclaimer"
   ],
   "acceptance_text": {
+    "registration": {
+      "version": "1.0",
+      "text": "I agree to the Terms of Service and acknowledge the Privacy Policy."
+    },
     "checkout": {
       "version": "1.0",
       "text": "I agree to the Terms of Service and acknowledge the Privacy Policy, Refund and Cancellation Policy, and AI and Financial Disclaimer."
