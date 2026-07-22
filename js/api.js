@@ -95,7 +95,8 @@
     logout: function () { return API.post('/api/auth/logout', {}); },
     updateProfile: function (fields) { return API.put('/api/account/profile', fields); },
     changePassword: function (current, next) { return API.post('/api/account/change-password', { current_password: current, new_password: next }); },
-    deleteAccount: function () { return API.del('/api/account'); },
+    deleteAccount: function (confirmCancel) { return API.del('/api/account' + (confirmCancel ? '?confirm_cancel_subscription=true' : '')); },
+    legalStatus: function () { return API.get('/api/account/legal-status'); },
     forgotPassword: function (email) { return API.post('/api/auth/forgot-password', { email: email }); },
     resetPassword: function (token, newPassword) { return API.post('/api/auth/reset-password', { token: token, new_password: newPassword }); },
 

@@ -1098,6 +1098,10 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Data & Export
           </a>
+          <a href="#legal" class="settings-nav-item" data-section="legal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span data-i18n="set.legal_nav">Legal &amp; Agreements</span>
+          </a>
         </nav>
 
         <!-- Settings Content -->
@@ -1653,11 +1657,31 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                   <h4 data-i18n="set.danger">Danger Zone</h4>
                 </div>
-                <p class="danger-zone-text" data-i18n="set.danger_text">Once you delete your account, there is no going back. This action will permanently remove all your data, portfolio information, Council history, and preferences. Please be certain.</p>
+                <p class="danger-zone-text" data-i18n="set.danger_text">Deleting your account cancels any active subscription, removes your saved payment card, and erases your personal data (profile, portfolio, Council history and preferences). Certain billing and legal-acceptance records are retained as required for accounting and compliance. This cannot be undone.</p>
                 <div style="display: flex; gap: 12px;">
                   <button class="btn btn-danger" onclick="requestDataExport()" data-i18n="set.req_export">Request Data Export</button>
                   <button class="btn btn-danger" onclick="deleteAccount()" data-i18n="set.delete_account">Delete Account</button>
                 </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Legal & Agreements Section (item 6) — current document versions + the user's
+               acceptance dates. Populated from GET /api/account/legal-status. Shows DATES and
+               VERSIONS only; never hashes, HMAC ids, or acceptance DB row ids. -->
+          <section class="settings-section hidden" id="legal">
+            <div class="section-header">
+              <div class="section-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              </div>
+              <div class="section-title-group">
+                <h2 data-i18n="set.legal_title">Legal &amp; Agreements</h2>
+                <p data-i18n="set.legal_sub">The documents in force and the agreements recorded on your account.</p>
+              </div>
+            </div>
+            <div class="section-body">
+              <div id="legalRoot" class="legal-root">
+                <p class="form-hint" data-i18n="set.legal_loading">Loading…</p>
               </div>
             </div>
           </section>
@@ -1880,7 +1904,7 @@
     'set.exp_council':      { en: 'Export Council History', ar: 'تصدير سجل المجلس' },
     'set.exp_council_d':    { en: 'Download all your past AI Analyst Council reviews and reports in a comprehensive format.', ar: 'نزّل جميع مراجعات وتقارير مجلس محللي الذكاء الاصطناعي السابقة بصيغة شاملة.' },
     'set.danger':           { en: 'Danger Zone', ar: 'منطقة الخطر' },
-    'set.danger_text':      { en: 'Once you delete your account, there is no going back. This action will permanently remove all your data, portfolio information, Council history, and preferences. Please be certain.', ar: 'بمجرد حذف حسابك، لا يمكن التراجع. سيؤدي هذا الإجراء إلى الإزالة الدائمة لجميع بياناتك ومعلومات محفظتك وسجل المجلس وتفضيلاتك. يرجى التأكد.' },
+    'set.danger_text':      { en: 'Deleting your account cancels any active subscription, removes your saved payment card, and erases your personal data (profile, portfolio, Council history and preferences). Certain billing and legal-acceptance records are retained as required for accounting and compliance. This cannot be undone.', ar: 'حذف حسابك يُلغي أي اشتراك نشط، ويزيل بطاقتك المحفوظة، ويمحو بياناتك الشخصية (الملف الشخصي والمحفظة وسجل المجلس والتفضيلات). تُحتفظ ببعض سجلات الفوترة والموافقات القانونية وفق ما يقتضيه القانون لأغراض المحاسبة والامتثال. لا يمكن التراجع عن هذا الإجراء.' },
     'set.req_export':       { en: 'Request Data Export', ar: 'طلب تصدير البيانات' },
     'set.delete_account':   { en: 'Delete Account', ar: 'حذف الحساب' },
     // Buttons
@@ -2079,8 +2103,11 @@
         var p=(s.plans||[]).filter(function(x){return x.id===plan;})[0]||{name:'Free'};
         confirmModal({ title: toFree?L('Cancel subscription','إلغاء الاشتراك'):L('Downgrade to ','تخفيض إلى ')+(p.name||plan),
           body:'<p>'+L('You keep your current plan until ','تحتفظ بخطتك الحالية حتى ')+'<strong>'+fmtDate(s.renews_on)+'</strong>'+
-               (toFree? L(', then your account moves to Free. No further charges.',' ثم ينتقل حسابك إلى المجاني. لا رسوم إضافية.')
-                       : L(', then you move to ',' ثم تنتقل إلى ')+esc(p.name)+L('. No access is lost before then.','. لا تفقد أي ميزة قبل ذلك.'))+'</p>',
+               (toFree? L(', then your account moves to Free. Automatic renewal stops now and there are no further charges.',' ثم ينتقل حسابك إلى المجاني. يتوقف التجديد التلقائي الآن ولا توجد أي رسوم إضافية.')
+                       : L(', then you move to ',' ثم تنتقل إلى ')+esc(p.name)+L('. No access is lost before then.','. لا تفقد أي ميزة قبل ذلك.'))+'</p>'+
+               (toFree? '<p class="form-hint" style="margin-top:8px;">'+
+                 (s.refund_eligible? L('You’re within your refund window — you can request a full refund of your last payment instead of simply cancelling. ','أنت ضمن فترة الاسترداد — يمكنك طلب استرداد كامل لآخر دفعة بدلًا من مجرد الإلغاء. '):'')+
+                 L('Cancelling does not delete your account or data — you keep paid access until the date above.','الإلغاء لا يحذف حسابك أو بياناتك — تحتفظ بالوصول المدفوع حتى التاريخ أعلاه.')+'</p>' : ''),
           confirm: toFree?L('Cancel plan','إلغاء الخطة'):L('Schedule downgrade','جدولة التخفيض') }).then(function(go){
           if(!go) return;
           var toFreePath = toFree? '/api/billing/cancel' : '/api/billing/change';
@@ -2176,6 +2203,45 @@
       });
     })();
 
+    // ── Legal & Agreements panel (item 6): documents in force + this account's acceptance
+    //    DATES. Renders only versions + dates from GET /api/account/legal-status — never a
+    //    content hash, HMAC id, or acceptance DB id (the server doesn't return those). ──
+    function _lglEsc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+    function _lglDate(iso){ if(!iso) return null; try { var d=new Date(iso); if(isNaN(d.getTime())) return iso; return d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}); } catch(e){ return iso; } }
+    var _legalLoaded=false;
+    async function loadLegal(force){
+      var root=document.getElementById('legalRoot'); if(!root) return;
+      if(_legalLoaded && !force) return; _legalLoaded=true;
+      var T=(window.AC_I18N&&AC_I18N.t)?function(k,f){var v=AC_I18N.t(k);return (v&&v!==k)?v:f;}:function(k,f){return f;};
+      root.innerHTML='<p class="form-hint">'+T('set.legal_loading','Loading…')+'</p>';
+      var data;
+      try { data=await API.legalStatus(); }
+      catch(e){ _legalLoaded=false; root.innerHTML='<p class="form-hint">'+T('set.legal_err','Could not load your legal status. Please refresh.')+'</p>'; return; }
+      var docs=(data&&data.documents)||[];
+      var docRows=docs.map(function(d){
+        return '<div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--border,rgba(255,255,255,0.08));">'
+          +'<div><div style="font-weight:600;">'+_lglEsc(d.title)+'</div>'
+          +'<div class="form-hint" style="margin:0;">'+T('set.legal_ver','Version')+' '+_lglEsc(d.version)+(d.effective_date?(' · '+T('set.legal_eff','effective')+' '+_lglEsc(d.effective_date)):'')+'</div></div>'
+          +'<a href="'+_lglEsc(d.route)+'" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;white-space:nowrap;">'+T('set.legal_view','View')+'</a></div>';
+      }).join('');
+      var reg=data&&data.registration_acceptance, chk=data&&data.checkout_acceptance;
+      var regLine=(reg&&reg.accepted_at)
+        ? T('set.legal_reg_on','Registration terms accepted on')+' <strong>'+_lglEsc(_lglDate(reg.accepted_at))+'</strong>.'
+        : T('set.legal_reg_none','No registration acceptance is recorded on this account.');
+      var chkLine=(chk&&chk.accepted_at)
+        ? T('set.legal_chk_on','Subscription terms accepted on')+' <strong>'+_lglEsc(_lglDate(chk.accepted_at))+'</strong>.'
+        : T('set.legal_chk_none','No paid-subscription acceptance is recorded yet.');
+      root.innerHTML=
+        '<h3 style="font-size:15px;margin:4px 0 6px;">'+T('set.legal_docs_h','Documents in force')+'</h3>'
+        +'<div>'+docRows+'</div>'
+        +'<p style="margin-top:10px;"><a href="'+_lglEsc((data&&data.combined_route)||'/legal')+'" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">'+T('set.legal_combined','View the full legal suite')+'</a></p>'
+        +'<h3 style="font-size:15px;margin:22px 0 6px;">'+T('set.legal_yours_h','Your agreements')+'</h3>'
+        +'<p class="form-hint" style="margin:0 0 4px;">'+regLine+'</p>'
+        +'<p class="form-hint" style="margin:0;">'+chkLine+'</p>';
+    }
+    window.loadLegal=loadLegal;
+    if ((location.hash||'').replace('#','') === 'legal') loadLegal();
+
     // Section Navigation
     document.querySelectorAll('.settings-nav-item').forEach(item => {
       item.addEventListener('click', (e) => {
@@ -2190,6 +2256,7 @@
         document.querySelectorAll('.settings-section').forEach(s => {
           s.classList.toggle('hidden', s.id !== section);
         });
+        if (section === 'legal') loadLegal();
 
         // Scroll to top on mobile
         if (window.innerWidth <= 768) {
@@ -2306,17 +2373,47 @@
       }
     }
     async function deleteAccount() {
-      if (!confirm('Delete your account? This permanently removes your profile, portfolio, watchlist and Council history. This cannot be undone.')) return;
-      var typed = prompt('To confirm, type DELETE:');
-      if ((typed || '').trim().toUpperCase() !== 'DELETE') { if (typeof showToast==='function') showToast('Cancelled','Your account was not deleted.','info'); return; }
-      try {
-        await API.deleteAccount();
+      var T=(window.AC_I18N&&AC_I18N.t)?function(k,f){var v=AC_I18N.t(k);return (v&&v!==k)?v:f;}:function(k,f){return f;};
+      function note(title, text, type){ if (typeof showToast==='function') showToast(title, text, type||'info'); else alert(title + (text?('\n\n'+text):'')); }
+      // Accurate, non-preselected consent. Copy matches the backend behaviour exactly:
+      // cancels active subscriptions, clears the saved card, removes PERSONAL data, RETAINS
+      // certain billing/legal-acceptance records for accounting/compliance, and does NOT
+      // complete if the subscription cancellation can't be confirmed.
+      var intro = T('set.del_confirm',
+        'Delete your account?\n\n'
+        + '• Any active subscription is cancelled and all future renewals stop.\n'
+        + '• Your saved payment card is removed so it can never be charged again.\n'
+        + '• Your personal data — profile, portfolio, watchlist, Council history and alerts — is deleted.\n'
+        + '• Certain billing and legal-acceptance records are kept, as the law requires, for accounting and dispute purposes.\n'
+        + '• If the subscription cancellation cannot be confirmed, deletion will NOT complete and you can retry.\n\n'
+        + 'This cannot be undone.');
+      if (!confirm(intro)) return;
+      var typed = prompt(T('set.del_type','To confirm, type DELETE:'));
+      if ((typed || '').trim().toUpperCase() !== 'DELETE') { note(T('set.del_cancelled_t','Cancelled'), T('set.del_cancelled','Your account was not deleted.'), 'info'); return; }
+
+      async function finish(res){
+        if (res && res.status === 'pending') {
+          // Provider cancellation unconfirmed -> deletion is PENDING, account NOT yet removed.
+          note(T('set.del_pending_t','Deletion pending'), (res && res.message) || T('set.del_pending','Your subscription was cancelled, but deletion is pending — please retry or contact support.'), 'info');
+          return;
+        }
         try { localStorage.removeItem('ac.auth.token'); } catch(e){}
         try { await API.logout(); } catch(e){}
-        alert('Your account has been deleted.');
+        alert(T('set.del_done','Your account has been deleted.'));
         window.location.href = 'index.html';
+      }
+
+      try {
+        await finish(await API.deleteAccount(false));
       } catch (e) {
-        if (typeof showToast === 'function') showToast('Could not delete account', (e && e.message) || 'Please try again.', 'error');
+        if (e && e.status === 409) {
+          // Live subscription — require a second, explicit consent to cancel it on deletion.
+          if (!confirm(((e && e.message) || T('set.del_sub_warn','Deleting your account will also cancel your active subscription and stop all future renewals.')) + '\n\n' + T('set.del_sub_ok','Cancel the subscription and delete the account?'))) return;
+          try { await finish(await API.deleteAccount(true)); }
+          catch (e2) { note(T('set.del_err_t','Could not delete account'), (e2 && e2.message) || T('set.del_retry','Please try again or contact support.'), 'error'); }
+          return;
+        }
+        note(T('set.del_err_t','Could not delete account'), (e && e.message) || T('set.del_retry','Please try again or contact support.'), 'error');
       }
     }
 
