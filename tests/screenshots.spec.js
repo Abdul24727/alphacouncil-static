@@ -71,7 +71,16 @@ function json(route, body, status = 200) { return route.fulfill({ status, conten
 test.beforeEach(async ({ page }) => { await page.route(/googleapis|gstatic|cloudflare|moyasar/, (r) => r.abort()); });
 test.afterAll(async () => {
   fs.writeFileSync(path.join(OUT, 'manifest.json'),
-    JSON.stringify({ commit: COMMIT, generated_by: 'playwright', screenshots: manifest }, null, 2));
+    JSON.stringify({
+      commits: {
+        backend: process.env.REVIEW_BACKEND_COMMIT || 'unknown',      // backend repo HEAD under test
+        application: process.env.REVIEW_APP_COMMIT || COMMIT,          // static frontend code screenshotted
+        test: process.env.REVIEW_TEST_COMMIT || COMMIT,               // commit of screenshots.spec.js
+        artifact: process.env.REVIEW_ARTIFACT_COMMIT || COMMIT,       // commit these PNGs are stored under
+      },
+      generated_by: 'playwright',
+      screenshots: manifest,
+    }, null, 2));
 });
 
 test('legal-index-desktop', async ({ page }) => {
