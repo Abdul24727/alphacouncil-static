@@ -1,9 +1,9 @@
 {
   "commits": {
-    "backend": "9f0e962",
+    "backend": "ff772de",
     "application": "89d11b7",
     "test": "89d11b7",
-    "artifact": "dc9a247"
+    "artifact": "PENDING"
   },
   "generated_by": "playwright",
   "screenshots": [
