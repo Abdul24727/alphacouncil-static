@@ -50,9 +50,10 @@ function json(route, body, status = 200) {
   return route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
 }
 
-// Block the external Moyasar CDN in every test (no network).
+// Fully offline: abort every external http(s) request (fonts, Turnstile, Moyasar CDN). Local
+// file:// resources and the file:///api/** stubs are untouched, so nothing hits the network.
 test.beforeEach(async ({ page }) => {
-  await page.route(/moyasar\.com/, (r) => r.abort());
+  await page.route(/^https?:\/\//, (r) => r.abort());
 });
 
 // ───────────────────────── Registration (item 1) ─────────────────────────
@@ -64,9 +65,9 @@ test.describe('signup acceptance', () => {
     await expect(box).not.toBeChecked();               // no preselection
     await expect(btn).toBeDisabled();                  // gated
     await expect(page.locator('#termsHelper')).toBeVisible();
-    await box.check();
+    await box.check({ force: true });                  // native input is visually-hidden custom checkbox
     await expect(btn).toBeEnabled();
-    await box.uncheck();
+    await box.uncheck({ force: true });
     await expect(btn).toBeDisabled();                  // re-gates
   });
 
@@ -84,7 +85,7 @@ test.describe('signup acceptance', () => {
     await page.goto(fileUrl('signup.html'));
     await page.fill('#email', 'stage.user@example.com');
     await page.fill('#password', 'password123');
-    await page.locator('#terms').check();
+    await page.locator('#terms').check({ force: true });
     await page.locator('#signupBtn').click();
     await expect.poll(() => body && body.accepted).toBe(true);
     expect(String(body.idempotency_key || '').length).toBeGreaterThan(8);
@@ -105,7 +106,7 @@ test.describe('signup acceptance', () => {
       await page.goto(fileUrl('signup.html'));
       await page.fill('#email', 'stage.user@example.com');
       await page.fill('#password', 'password123');
-      await page.locator('#terms').check();
+      await page.locator('#terms').check({ force: true });
       await page.locator('#signupBtn').click();
       await expect(page.locator('.toast, #toast, [role="alert"]').filter({ hasText: c.expect }).first()).toBeVisible({ timeout: 5000 });
       await page.unroute('**/api/auth/register');
@@ -132,7 +133,7 @@ test.describe('checkout acceptance + disclosures', () => {
     await expect(page.locator('#dRefund')).toHaveAttribute('href', '/legal/refunds');
     await expect(page.locator('#acceptBox')).not.toBeChecked();
     await expect(page.locator('#continueBtn')).toBeDisabled();
-    await page.locator('#acceptBox').check();
+    await page.locator('#acceptBox').check({ force: true });
     await expect(page.locator('#continueBtn')).toBeEnabled();
   });
 
@@ -144,7 +145,7 @@ test.describe('checkout acceptance + disclosures', () => {
       return json(r, { provider: 'moyasar', mode: 'embedded', publishable_key: 'pk_test_x', amount: 7900, currency: 'SAR', callback_url: '/api/billing/return', metadata: {}, acceptance_id: 42 });
     });
     await page.goto(fileUrl('checkout.html') + '?plan=pro');
-    await page.locator('#acceptBox').check();
+    await page.locator('#acceptBox').check({ force: true });
     await page.locator('#continueBtn').click();
     await expect.poll(() => body && body.accepted).toBe(true);
     expect(body.plan).toBe('pro');

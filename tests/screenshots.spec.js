@@ -61,7 +61,8 @@ const SUMMARY_PAID = {
 };
 function json(route, body, status = 200) { return route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) }); }
 
-test.beforeEach(async ({ page }) => { await page.route(/moyasar\.com/, (r) => r.abort()); });
+// Fully offline: abort every external http(s) request (fonts, Turnstile, Moyasar CDN).
+test.beforeEach(async ({ page }) => { await page.route(/^https?:\/\//, (r) => r.abort()); });
 test.afterAll(async () => {
   fs.writeFileSync(path.join(OUT, 'manifest.json'),
     JSON.stringify({ commit: COMMIT, generated_by: 'playwright', screenshots: manifest }, null, 2));
@@ -85,7 +86,7 @@ test('terms desktop + mobile', async ({ page }) => {
 test('registration desktop + mobile', async ({ page }) => {
   await page.setViewportSize(DESKTOP);
   await page.goto(fileUrl('signup.html'));
-  await page.locator('#terms').check();               // show the enabled/accepted state
+  await page.locator('#terms').check({ force: true }); // show the enabled/accepted state (hidden custom checkbox)
   await shot(page, 'registration-desktop', DESKTOP);
   await page.setViewportSize(MOBILE);
   await page.goto(fileUrl('signup.html'));
