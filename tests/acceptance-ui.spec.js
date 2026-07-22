@@ -10,11 +10,10 @@
 // server (never the browser), acceptance completes only server-side, and no legal
 // hash/id leaks into the account UI.
 const { test, expect } = require('@playwright/test');
-const path = require('path');
-const url = require('url');
 
-const ROOT = path.resolve(__dirname, '..');
-const fileUrl = (p) => url.pathToFileURL(path.join(ROOT, p)).href;
+// Paths are relative to baseURL (an HTTP origin from the config's webServer) so that the
+// pages' relative fetch('/api/...') calls are interceptable network requests.
+const fileUrl = (p) => '/' + String(p).replace(/^\//, '');
 
 // ---- staging fixtures (isolated; not real users/records) ----
 const DISCLOSURES = {
@@ -50,10 +49,10 @@ function json(route, body, status = 200) {
   return route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
 }
 
-// Fully offline: abort every external http(s) request (fonts, Turnstile, Moyasar CDN). Local
-// file:// resources and the file:///api/** stubs are untouched, so nothing hits the network.
+// Offline for external hosts only: abort fonts / Turnstile / Moyasar CDN, but never the local
+// baseURL origin (the served pages + their /api/** stubs must load).
 test.beforeEach(async ({ page }) => {
-  await page.route(/^https?:\/\//, (r) => r.abort());
+  await page.route(/googleapis|gstatic|cloudflare|moyasar/, (r) => r.abort());
 });
 
 // ───────────────────────── Registration (item 1) ─────────────────────────
@@ -65,9 +64,10 @@ test.describe('signup acceptance', () => {
     await expect(box).not.toBeChecked();               // no preselection
     await expect(btn).toBeDisabled();                  // gated
     await expect(page.locator('#termsHelper')).toBeVisible();
-    await box.check({ force: true });                  // native input is visually-hidden custom checkbox
+    // #terms is a visually-hidden custom checkbox below the fold — set state + fire change directly.
+    await box.evaluate((el) => { el.checked = true; el.dispatchEvent(new Event('change', { bubbles: true })); });
     await expect(btn).toBeEnabled();
-    await box.uncheck({ force: true });
+    await box.evaluate((el) => { el.checked = false; el.dispatchEvent(new Event('change', { bubbles: true })); });
     await expect(btn).toBeDisabled();                  // re-gates
   });
 
@@ -83,9 +83,11 @@ test.describe('signup acceptance', () => {
     await page.route('**/api/auth/login', (r) => json(r, { token: 't' }));
     await page.route('**/api/auth/me', (r) => json(r, { id: 1 }));
     await page.goto(fileUrl('signup.html'));
+    await page.fill('#firstName', 'Stage');            // required fields — else native validation blocks submit
+    await page.fill('#lastName', 'User');
     await page.fill('#email', 'stage.user@example.com');
     await page.fill('#password', 'password123');
-    await page.locator('#terms').check({ force: true });
+    await page.locator('#terms').evaluate((el) => { el.checked = true; el.dispatchEvent(new Event('change', { bubbles: true })); });
     await page.locator('#signupBtn').click();
     await expect.poll(() => body && body.accepted).toBe(true);
     expect(String(body.idempotency_key || '').length).toBeGreaterThan(8);
@@ -104,11 +106,13 @@ test.describe('signup acceptance', () => {
     for (const c of cases) {
       await page.route('**/api/auth/register', (r) => json(r, { detail: c.detail }, c.status));
       await page.goto(fileUrl('signup.html'));
+      await page.fill('#firstName', 'Stage');
+      await page.fill('#lastName', 'User');
       await page.fill('#email', 'stage.user@example.com');
       await page.fill('#password', 'password123');
-      await page.locator('#terms').check({ force: true });
+      await page.locator('#terms').evaluate((el) => { el.checked = true; el.dispatchEvent(new Event('change', { bubbles: true })); });
       await page.locator('#signupBtn').click();
-      await expect(page.locator('.toast, #toast, [role="alert"]').filter({ hasText: c.expect }).first()).toBeVisible({ timeout: 5000 });
+      await expect(page.locator('#toast.show, .toast.show, [role="alert"]').filter({ hasText: c.expect }).first()).toBeVisible({ timeout: 5000 });
       await page.unroute('**/api/auth/register');
     }
   });
@@ -170,10 +174,12 @@ test.describe('checkout acceptance + disclosures', () => {
 // ───────────────────────── Settings Legal panel (item 6) ─────────────────────────
 test.describe('settings legal panel', () => {
   test('shows versions + acceptance dates, no hash/id leak', async ({ page }) => {
+    // Register the catch-all FIRST so the specific stubs (registered after) take precedence —
+    // Playwright matches the most-recently-registered route first.
+    await page.route('**/api/**', (r) => json(r, {}));   // benign default for everything else
     await page.route('**/api/account/legal-status', (r) => json(r, LEGAL_STATUS));
     await page.route('**/api/auth/me', (r) => json(r, { id: 1, email: 'stage.user@example.com' }));
     await page.route('**/api/billing/summary', (r) => json(r, { plan: 'free', plan_name: 'Free', price_sar: 0, currency: 'SAR', interval: 'monthly', is_paid: false, status: 'free', plans: [] }));
-    await page.route('**/api/**', (r) => json(r, {}));   // benign default for everything else
     await page.goto(fileUrl('settings.html') + '#legal');
     await page.locator('.settings-nav-item[data-section="legal"]').click();
     const root = page.locator('#legalRoot');
