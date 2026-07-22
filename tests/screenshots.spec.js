@@ -72,12 +72,21 @@ test.beforeEach(async ({ page }) => { await page.route(/googleapis|gstatic|cloud
 test.afterAll(async () => {
   fs.writeFileSync(path.join(OUT, 'manifest.json'),
     JSON.stringify({
+      // Four DISTINCT provenance dimensions, each knowable AT GENERATION TIME. We deliberately do
+      // NOT stamp a self-referential "artifact"/"the commit these PNGs are stored under": that
+      // commit does not exist until the PNGs are committed, so any value baked in here is either the
+      // pre-commit HEAD (wrong once committed) or drifts to a later manifest-only edit (the exact
+      // inaccuracy an earlier build shipped). The authoritative byte-storage commit is instead
+      // COMPUTED from git — see png_bytes_commit_verify below.
       commits: {
-        backend: process.env.REVIEW_BACKEND_COMMIT || 'unknown',      // backend repo HEAD under test
-        application: process.env.REVIEW_APP_COMMIT || COMMIT,          // static frontend code screenshotted
-        test: process.env.REVIEW_TEST_COMMIT || COMMIT,               // commit of screenshots.spec.js
-        artifact: process.env.REVIEW_ARTIFACT_COMMIT || COMMIT,       // commit these PNGs are stored under
+        backend: process.env.REVIEW_BACKEND_COMMIT || 'unknown',        // backend repo HEAD under validation
+        frontend_source: process.env.REVIEW_FRONTEND_SOURCE_COMMIT
+                         || process.env.REVIEW_APP_COMMIT || COMMIT,     // last commit to the DEPICTED UI source
+        screenshot_test: process.env.REVIEW_TEST_COMMIT || COMMIT,       // commit of screenshots.spec.js + review config
+        generated_at_head: COMMIT,                                       // static repo HEAD when Playwright ran
       },
+      // The exact commit that stores these PNG BYTES is verifiable, not asserted:
+      png_bytes_commit_verify: "git -C <static-repo> log -1 --format=%H -- 'review-artifacts/*.png'",
       generated_by: 'playwright',
       screenshots: manifest,
     }, null, 2));
