@@ -80,7 +80,13 @@
         email: email, password: password,
         preferred_language: opts.lang || 'en',
         first_name: opts.firstName || '', last_name: opts.lastName || '', market: opts.market || '',
-        turnstile_token: opts.turnstileToken || ''
+        turnstile_token: opts.turnstileToken || '',
+        // Legal acceptance: the browser asserts the box was ticked; the server is authoritative
+        // (it re-checks and stamps the current registry versions/hashes — never trusted from here).
+        accepted: !!opts.accepted,
+        // Client-generated idempotency key so a retried submit is deduped server-side
+        // (the UNIQUE email constraint is the ultimate guard; this narrows the race window).
+        idempotency_key: opts.idempotencyKey || ''
       });
     },
     resendVerificationPublic: function (email) { return API.post('/api/auth/resend-verification-public', { email: email }); },

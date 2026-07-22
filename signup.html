@@ -718,7 +718,7 @@
           <span class="checkbox-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
           </span>
-          <span><span data-i18n="su.terms_agree">I agree to the</span> <a href="legal.html#terms" target="_blank" rel="noopener" data-i18n="su.terms_link">Terms of Service</a> <span data-i18n="su.terms_and">and</span> <a href="legal.html#privacy" target="_blank" rel="noopener" data-i18n="su.privacy_link">Privacy Policy</a><span data-i18n="su.terms_disclaimer">. I understand AlphaCouncil provides analysis, not financial advice.</span></span>
+          <span><span data-i18n="su.terms_agree">I agree to the</span> <a href="/legal/terms" target="_blank" rel="noopener" data-i18n="su.terms_link">Terms of Service</a> <span data-i18n="su.terms_and">and acknowledge the</span> <a href="/legal/privacy" target="_blank" rel="noopener" data-i18n="su.privacy_link">Privacy Policy</a><span data-i18n="su.terms_end">.</span></span>
         </label>
 
         <!-- Cloudflare Turnstile (bot protection). Renders only when a site key is
@@ -758,8 +758,8 @@
 
   <footer class="auth-footer">
     <a href="index.html" data-i18n="su.footer_home">Home</a>
-    <a href="legal.html#privacy" target="_blank" rel="noopener" data-i18n="su.footer_privacy">Privacy Policy</a>
-    <a href="legal.html#terms" target="_blank" rel="noopener" data-i18n="su.footer_terms">Terms of Service</a>
+    <a href="/legal/privacy" target="_blank" rel="noopener" data-i18n="su.footer_privacy">Privacy Policy</a>
+    <a href="/legal/terms" target="_blank" rel="noopener" data-i18n="su.footer_terms">Terms of Service</a>
     <a href="contact.html" data-i18n="su.footer_help">Help</a>
   </footer>
 
@@ -804,9 +804,9 @@
       'su.market_om':         { en: 'Oman (MSX)', ar: 'عُمان (بورصة مسقط)' },
       'su.terms_agree':       { en: 'I agree to the', ar: 'أوافق على' },
       'su.terms_link':        { en: 'Terms of Service', ar: 'شروط الخدمة' },
-      'su.terms_and':         { en: 'and', ar: 'و' },
+      'su.terms_and':         { en: 'and acknowledge the', ar: 'وأُقرّ بالاطّلاع على' },
       'su.privacy_link':      { en: 'Privacy Policy', ar: 'سياسة الخصوصية' },
-      'su.terms_disclaimer':  { en: '. I understand AlphaCouncil provides analysis, not financial advice.', ar: '. أدرك أن AlphaCouncil يقدّم تحليلات وليس نصائح مالية.' },
+      'su.terms_end':         { en: '.', ar: '.' },
       'su.create_account':    { en: 'Create account', ar: 'إنشاء حساب' },
       'su.terms_helper':      { en: 'Please accept the Terms of Service and Privacy Policy to continue.', ar: 'يرجى قبول شروط الخدمة وسياسة الخصوصية للمتابعة.' },
       'su.or_continue':       { en: 'or continue with', ar: 'أو تابع باستخدام' },
@@ -843,6 +843,9 @@
       'su.t_err_disposable':      { en: 'Please use a permanent email address — disposable email providers aren’t allowed.', ar: 'يرجى استخدام بريد إلكتروني دائم — لا يُسمح بمزوّدي البريد المؤقت.' },
       'su.t_err_captcha':         { en: 'Please complete the verification challenge and try again.', ar: 'يرجى إكمال اختبار التحقق ثم المحاولة مرة أخرى.' },
       'su.t_err_network':         { en: 'Network error — could not reach the server.', ar: 'خطأ في الشبكة — تعذّر الوصول إلى الخادم.' },
+      'su.t_err_locale':          { en: 'Registration in Arabic isn’t available yet — the legal documents are currently published in English only. Please continue in English.', ar: 'التسجيل بالعربية غير متاح بعد — الوثائق القانونية منشورة حاليًا بالإنجليزية فقط. يُرجى المتابعة بالإنجليزية.' },
+      'su.t_err_terms_srv':       { en: 'Please accept the Terms of Service and Privacy Policy to continue.', ar: 'يرجى قبول شروط الخدمة وسياسة الخصوصية للمتابعة.' },
+      'su.t_err_temp':            { en: 'We couldn’t complete sign-up right now. Please try again in a moment.', ar: 'تعذّر إكمال التسجيل الآن. يرجى المحاولة بعد قليل.' },
       'su.t_apple_title':         { en: 'Apple Sign In is coming soon', ar: 'تسجيل الدخول عبر Apple قريبًا' },
       'su.t_apple_text':          { en: 'We’re currently finalizing the integration. You can use Google or Microsoft to sign up for now.', ar: 'نعمل حاليًا على إنهاء التكامل. يمكنك استخدام Google أو Microsoft للتسجيل في الوقت الحالي.' },
       'su.t_social_soon':         { en: '{name} login will be available soon.', ar: 'سيتوفّر تسجيل الدخول عبر {name} قريبًا.' },
@@ -953,6 +956,19 @@
       document.head.appendChild(s);
     })();
 
+    // ── Registration idempotency key ───────────────────────────────────────
+    // One key per page load, reused across retries so a resubmit after a
+    // temporary failure can't create a second account. Cleared only when a fresh
+    // sign-up page is loaded. Never derived from user input.
+    var _regIdemKeyVal = null;
+    function _regIdemKey() {
+      if (!_regIdemKeyVal) {
+        try { _regIdemKeyVal = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : null; } catch (e) { _regIdemKeyVal = null; }
+        if (!_regIdemKeyVal) _regIdemKeyVal = 'reg-' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+      }
+      return _regIdemKeyVal;
+    }
+
     document.getElementById('signupForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
@@ -973,7 +989,7 @@
       btn.disabled = true;
 
       try {
-        await API.register(email, password, { firstName: firstName, lastName: lastName, market: market, lang: 'en', turnstileToken: getTurnstileToken() });
+        await API.register(email, password, { firstName: firstName, lastName: lastName, market: market, lang: 'en', turnstileToken: getTurnstileToken(), accepted: terms, idempotencyKey: _regIdemKey() });
         // Try to establish a session immediately (most deployments auto-login on register).
         try {
           await API.login(email, password);
@@ -988,11 +1004,14 @@
         btn.innerHTML = orig; btn.disabled = false; btn.classList.remove('is-loading');
         let msg = AC_I18N.t('su.t_err_generic');
         const d = ((err && (err.message || err.detail)) || '') + '';
-        if (err && err.status === 409) msg = AC_I18N.t('su.t_err_exists');
+        if (err && (err.status === 409 || (err.status === 400 && /already registered|already exists/i.test(d)))) msg = AC_I18N.t('su.t_err_exists');
         else if (err && err.status === 429) msg = AC_I18N.t('su.t_err_ratelimit');
+        else if (err && err.status === 400 && /english only|available in english/i.test(d)) msg = AC_I18N.t('su.t_err_locale');
+        else if (err && err.status === 400 && /accept the terms|must accept|terms of service and privacy/i.test(d)) msg = AC_I18N.t('su.t_err_terms_srv');
         else if (err && err.status === 400 && /disposable|permanent email/i.test(d)) msg = AC_I18N.t('su.t_err_disposable');
         else if (err && err.status === 400 && /captcha/i.test(d)) { msg = AC_I18N.t('su.t_err_captcha'); try { if (window.turnstile && _tsWidgetId !== null) turnstile.reset(_tsWidgetId); } catch (e) {} }
         else if (err && err.status === 400) msg = (err.message || AC_I18N.t('su.t_err_check'));
+        else if (err && (err.status === 500 || err.status === 502 || err.status === 503)) msg = AC_I18N.t('su.t_err_temp');
         else if (err && err.status === 0) msg = AC_I18N.t('su.t_err_network');
         else if (err && err.message) msg = err.message;
         showToast('error', AC_I18N.t('su.t_failed_title'), msg);

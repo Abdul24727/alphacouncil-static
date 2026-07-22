@@ -25,10 +25,27 @@
     .card{width:100%;max-width:460px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:30px 26px;box-shadow:0 24px 70px rgba(0,0,0,0.35);}
     h1{font-size:21px;font-weight:700;margin-bottom:6px;letter-spacing:-0.01em;}
     .sub{font-size:14px;color:var(--fg-muted);line-height:1.55;margin-bottom:18px;}
-    .plan-row{display:flex;align-items:baseline;justify-content:space-between;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;margin-bottom:18px;}
+    .plan-row{display:flex;align-items:baseline;justify-content:space-between;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;margin-bottom:14px;}
     .plan-name{font-weight:600;font-size:15px;color:var(--accent);}
     .plan-price{font-weight:700;font-size:18px;}
     .plan-price small{font-weight:400;font-size:12px;color:var(--fg-dim);}
+    /* Commercial-terms disclosure block, shown BEFORE the acceptance box + payment. */
+    .terms-box{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:4px 16px;margin-bottom:16px;}
+    .terms-box .row{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.45;}
+    .terms-box .row:last-child{border-bottom:none;}
+    .terms-box .k{color:var(--fg-dim);flex:0 0 auto;}
+    .terms-box .v{color:var(--fg-muted);text-align:right;}
+    .terms-box .v a{color:var(--accent);text-decoration:none;}
+    [dir="rtl"] .terms-box .v{text-align:left;}
+    /* Acceptance checkbox (native input — keyboard-focusable, unticked by default). */
+    .accept{display:flex;align-items:flex-start;gap:10px;margin:4px 0 8px;font-size:13px;line-height:1.5;color:var(--fg-muted);cursor:pointer;}
+    .accept input{width:18px;height:18px;margin-top:1px;flex:0 0 auto;accent-color:var(--accent);cursor:pointer;}
+    .accept .docs{display:block;margin-top:6px;font-size:12px;}
+    .accept .docs a{color:var(--accent);text-decoration:none;}
+    .btn:disabled{opacity:0.45;cursor:not-allowed;}
+    .accept-hint{font-size:12px;color:var(--fg-dim);margin-top:6px;text-align:center;}
+    .accept-hint.hide{display:none;}
+    .notice{background:rgba(39,211,195,0.08);border:1px solid rgba(39,211,195,0.25);color:var(--fg-muted);border-radius:10px;padding:14px;font-size:14px;line-height:1.55;margin-top:12px;}
     /* The mpf form renders on its own light surface so the card inputs are legible. */
     .form-wrap{background:#fff;border-radius:12px;padding:16px;}
     .mysr-form{min-height:210px;}
@@ -55,11 +72,44 @@
 
     <div id="st-form" class="hide">
       <h1 data-i18n="co.title">Complete your upgrade</h1>
-      <p class="sub" data-i18n="co.sub">Enter your card to start your monthly subscription. It renews automatically each month — you can cancel anytime.</p>
+      <p class="sub" data-i18n="co.sub">Review the subscription terms below, then enter your card to start your monthly subscription.</p>
       <div class="plan-row"><span class="plan-name" id="planName">—</span><span class="plan-price" id="planPrice">—</span></div>
-      <div class="form-wrap"><div class="mysr-form" id="mysrForm"></div></div>
-      <div class="secure"><span>🔒</span><span data-i18n="co.secure">Secured by Moyasar. Your card is saved only to renew this subscription — AlphaCouncil never sees or stores your card number.</span></div>
+
+      <!-- Commercial terms — every value is set by the server (see /api/billing/checkout-disclosures). -->
+      <div class="terms-box" id="termsBox">
+        <div class="row"><span class="k" data-i18n="co.lbl_period">Billing period</span><span class="v" id="dPeriod">—</span></div>
+        <div class="row"><span class="k" data-i18n="co.lbl_renewal">Renewal</span><span class="v" id="dRenewal">—</span></div>
+        <div class="row"><span class="k" data-i18n="co.lbl_cancel">Cancellation</span><span class="v" id="dCancel">—</span></div>
+        <div class="row"><span class="k" data-i18n="co.lbl_vat">Tax</span><span class="v" id="dVat">—</span></div>
+        <div class="row"><span class="k" data-i18n="co.lbl_refund">Refunds</span><span class="v"><a id="dRefund" href="/legal/refunds" target="_blank" rel="noopener" data-i18n="co.refund_link">Refund &amp; Cancellation Policy</a></span></div>
+      </div>
+
+      <!-- Affirmative, unticked acceptance. The sentence text is rendered verbatim from the
+           server (it is the exact versioned/hashed wording that gets recorded). -->
+      <label class="accept">
+        <input type="checkbox" id="acceptBox">
+        <span>
+          <span id="acceptText">I agree to the Terms of Service and acknowledge the Privacy Policy, Refund and Cancellation Policy, and AI and Financial Disclaimer.</span>
+          <span class="docs" id="acceptDocs"></span>
+        </span>
+      </label>
+
+      <!-- Payment is gated behind acceptance: the card form is not created until the user
+           clicks Continue, which first records the pending acceptance server-side. -->
+      <button type="button" class="btn" id="continueBtn" disabled data-i18n="co.continue">Continue to secure payment</button>
+      <p class="accept-hint" id="acceptHint" data-i18n="co.accept_hint">Please accept the terms above to continue.</p>
+
+      <div id="payWrap" class="hide">
+        <div class="form-wrap"><div class="mysr-form" id="mysrForm"></div></div>
+        <div class="secure"><span>🔒</span><span data-i18n="co.secure">Secured by Moyasar. Your card is saved only to renew this subscription — AlphaCouncil never sees or stores your card number.</span></div>
+      </div>
       <a class="btn ghost" href="settings.html#billing" data-i18n="co.cancel">Cancel</a>
+    </div>
+
+    <div id="st-unavailable" class="hide">
+      <h1 data-i18n="co.unavailable_title">Payments are temporarily unavailable</h1>
+      <div class="notice" data-i18n="co.unavailable_msg">Online checkout is paused for maintenance right now. No payment can be started. Please try again shortly — your plan is unchanged.</div>
+      <a class="btn" href="settings.html#billing" data-i18n="co.back">Back to settings</a>
     </div>
 
     <div id="st-error" class="hide">
@@ -78,18 +128,40 @@
     if (window.AC_I18N && AC_I18N.add) AC_I18N.add({
       'co.loading':      { en: 'Preparing secure checkout…', ar: 'جارٍ تجهيز الدفع الآمن…' },
       'co.title':        { en: 'Complete your upgrade', ar: 'أكمل ترقيتك' },
-      'co.sub':          { en: 'Enter your card to start your monthly subscription. It renews automatically each month — you can cancel anytime.', ar: 'أدخل بطاقتك لبدء اشتراكك الشهري. يتجدد تلقائيًا كل شهر — ويمكنك الإلغاء في أي وقت.' },
+      'co.sub':          { en: 'Review the subscription terms below, then enter your card to start your monthly subscription.', ar: 'راجِع شروط الاشتراك أدناه، ثم أدخل بطاقتك لبدء اشتراكك الشهري.' },
+      'co.lbl_period':   { en: 'Billing period', ar: 'دورة الفوترة' },
+      'co.lbl_renewal':  { en: 'Renewal', ar: 'التجديد' },
+      'co.lbl_cancel':   { en: 'Cancellation', ar: 'الإلغاء' },
+      'co.lbl_vat':      { en: 'Tax', ar: 'الضريبة' },
+      'co.lbl_refund':   { en: 'Refunds', ar: 'الاستردادات' },
+      'co.refund_link':  { en: 'Refund & Cancellation Policy', ar: 'سياسة الاسترداد والإلغاء' },
+      'co.continue':     { en: 'Continue to secure payment', ar: 'المتابعة إلى الدفع الآمن' },
+      'co.accept_hint':  { en: 'Please accept the terms above to continue.', ar: 'يرجى قبول الشروط أعلاه للمتابعة.' },
+      'co.docs_read':    { en: 'Read:', ar: 'اقرأ:' },
       'co.secure':       { en: 'Secured by Moyasar. Your card is saved only to renew this subscription — AlphaCouncil never sees or stores your card number.', ar: 'دفع آمن عبر ميسر. تُحفظ بطاقتك فقط لتجديد هذا الاشتراك — ولا تطّلع AlphaCouncil على رقم بطاقتك أو تخزّنه.' },
       'co.cancel':       { en: 'Cancel', ar: 'إلغاء' },
       'co.back':         { en: 'Back to settings', ar: 'العودة إلى الإعدادات' },
       'co.error_title':  { en: 'Checkout unavailable', ar: 'الدفع غير متاح' },
+      'co.unavailable_title': { en: 'Payments are temporarily unavailable', ar: 'المدفوعات غير متاحة مؤقتًا' },
+      'co.unavailable_msg':   { en: 'Online checkout is paused for maintenance right now. No payment can be started. Please try again shortly — your plan is unchanged.', ar: 'الدفع الإلكتروني متوقف مؤقتًا للصيانة الآن. لا يمكن بدء أي عملية دفع. يرجى المحاولة بعد قليل — لم يتغيّر اشتراكك.' },
       'co.support':      { en: 'Questions? Email', ar: 'لديك سؤال؟ راسلنا على' }
     });
     if (window.AC_I18N && AC_I18N.apply) AC_I18N.apply();
 
-    function show(id){ ['st-loading','st-form','st-error'].forEach(function(s){ document.getElementById(s).classList.toggle('hide', s !== id); }); }
+    function show(id){ ['st-loading','st-form','st-unavailable','st-error'].forEach(function(s){ document.getElementById(s).classList.toggle('hide', s !== id); }); }
     function showError(msg){ document.getElementById('errMsg').textContent = msg || 'Something went wrong. Please try again.'; show('st-error'); }
     var PLAN_NAMES = { pro: 'AlphaCouncil Pro', elite: 'AlphaCouncil Elite' };
+
+    // One checkout idempotency key per page load, reused across retries so a resubmit can't
+    // fork a second pending acceptance. (The server also dedupes to one pending record.)
+    var _coIdemVal = null;
+    function _coIdemKey(){
+      if (!_coIdemVal){
+        try { _coIdemVal = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : null; } catch (e) { _coIdemVal = null; }
+        if (!_coIdemVal) _coIdemVal = 'co-' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+      }
+      return _coIdemVal;
+    }
 
     (async function(){
       // 1) Must be signed in.
@@ -100,33 +172,95 @@
       var plan = (new URLSearchParams(window.location.search).get('plan') || '').toLowerCase();
       if (plan !== 'pro' && plan !== 'elite') { showError('No valid plan was selected.'); return; }
 
-      // 3) Server validates the upgrade and returns the SERVER-SET amount + metadata
-      //    (re-verified again on activation — the browser can't lower the price).
-      var cfg;
-      try { cfg = await API.post('/api/billing/checkout', { plan: plan }); }
-      catch (e) { showError((e && e.detail) || 'Could not start checkout. Please try again.'); return; }
-      if (!cfg || cfg.mode !== 'embedded' || !cfg.publishable_key) { showError('Online payment isn’t available yet.'); return; }
-
-      document.getElementById('planName').textContent = PLAN_NAMES[plan] || plan;
-      document.getElementById('planPrice').innerHTML = (cfg.amount / 100) + ' ' + (cfg.currency || 'SAR') + ' <small>/ month</small>';
-      show('st-form');  // the form container must be VISIBLE before Moyasar.init renders its iframes
-
-      try {
-        window.Moyasar.init({
-          element: '.mysr-form',
-          amount: cfg.amount,                       // halalas, server-set
-          currency: cfg.currency || 'SAR',
-          description: cfg.description || ('AlphaCouncil ' + plan),
-          publishable_api_key: cfg.publishable_key,
-          callback_url: cfg.callback_url,           // -> /api/billing/return?id=... -> verify, activate, capture token
-          methods: ['creditcard'],
-          supported_networks: ['mada', 'visa', 'mastercard'],
-          credit_card: { save_card: true },         // <-- save the card token for monthly auto-renewal
-          metadata: cfg.metadata || {}
-        });
-      } catch (err) {
-        showError('The payment form failed to load. Please refresh or try again.');
+      // 3) READ-ONLY disclosures — creates NO acceptance and NO payment. Every commercial value
+      //    (price, currency, period, renewal, cancellation, VAT, refund route, acceptance text)
+      //    is server-authoritative; the browser only renders them.
+      var disc;
+      try { disc = await API.get('/api/billing/checkout-disclosures?plan=' + encodeURIComponent(plan)); }
+      catch (e) {
+        var dd = ((e && (e.detail || e.message)) || '') + '';
+        if (e && e.status === 400) { showError(dd || 'This plan isn’t available for checkout.'); return; }
+        showError(dd || 'Could not load checkout. Please try again.'); return;
       }
+
+      // Payments disabled (acceptance system off / provider not live) -> temporary-unavailability
+      // state. No payment is started and there is NO hidden fallback route.
+      if (!disc || disc.payments_available === false) { show('st-unavailable'); return; }
+
+      // ── Render the server-sourced commercial terms ──
+      document.getElementById('planName').textContent = disc.plan_name || PLAN_NAMES[plan] || plan;
+      var per = disc.interval === 'monthly' ? 'month' : (disc.interval || 'month');
+      document.getElementById('planPrice').innerHTML = disc.price + ' ' + (disc.currency || 'SAR') + ' <small>/ ' + per + '</small>';
+      document.getElementById('dPeriod').textContent  = disc.period_label || (disc.interval || '');
+      document.getElementById('dRenewal').textContent = disc.renewal_disclosure || (disc.auto_renews ? 'Renews automatically until cancelled.' : 'Does not automatically renew.');
+      document.getElementById('dCancel').textContent  = disc.cancellation || '';
+      document.getElementById('dVat').textContent     = disc.vat_status || '';
+      if (disc.refund_route) document.getElementById('dRefund').href = disc.refund_route;
+
+      // Exact affirmative acceptance sentence — rendered VERBATIM from the server (this is the
+      // versioned/hashed wording that gets recorded), never composed in the browser.
+      if (disc.acceptance_text) document.getElementById('acceptText').textContent = disc.acceptance_text;
+      // Document links (separate from the sentence so the sentence stays byte-for-byte verbatim).
+      var routes = disc.document_routes || {};
+      var order = [['terms','Terms of Service'],['privacy','Privacy Policy'],
+                   ['refunds','Refund and Cancellation Policy'],['ai-financial-disclaimer','AI and Financial Disclaimer']];
+      var links = order.map(function(o){
+        var r = routes[o[0]]; var href = (r && r.route) ? r.route : ('/legal/' + o[0]);
+        var a = document.createElement('a'); a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.textContent = o[1];
+        return a.outerHTML;
+      });
+      var readLbl = (window.AC_I18N && AC_I18N.t) ? AC_I18N.t('co.docs_read') : 'Read:';
+      document.getElementById('acceptDocs').innerHTML = '<span>' + readLbl + '</span> ' + links.join(' · ');
+
+      show('st-form');
+
+      // ── Acceptance gate: Continue is enabled ONLY once the box (unticked by default) is ticked ──
+      var box  = document.getElementById('acceptBox');
+      var cont = document.getElementById('continueBtn');
+      var hint = document.getElementById('acceptHint');
+      function sync(){ cont.disabled = !box.checked; hint.classList.toggle('hide', box.checked); }
+      box.addEventListener('change', sync);
+      sync();  // initial: unticked -> disabled + hint visible
+
+      // ── Continue: record the pending acceptance server-side, THEN create the card form ──
+      cont.addEventListener('click', async function(){
+        if (!box.checked) return;                 // defence-in-depth (button is already disabled)
+        cont.disabled = true;
+        var cfg;
+        try {
+          cfg = await API.post('/api/billing/checkout', { plan: plan, accepted: true, idempotency_key: _coIdemKey() });
+        } catch (e) {
+          var d = ((e && (e.detail || e.message)) || '') + '';
+          // Acceptance system turned off between load and click -> unavailability, not a hard error.
+          if (e && e.status === 503 && /ACCEPTANCE_SYSTEM_DISABLED|unavailable/i.test(d)) { show('st-unavailable'); return; }
+          if (e && e.status === 409) { showError(d || 'The terms changed — please reload and review them again.'); return; }
+          cont.disabled = false;                  // recoverable: let the user retry
+          showError(d || 'Could not start checkout. Please try again.'); return;
+        }
+        if (!cfg || cfg.mode !== 'embedded' || !cfg.publishable_key) { showError('Online payment isn’t available yet.'); return; }
+
+        // Reveal the card form and init Moyasar. Amount/currency/metadata are all SERVER-set here
+        // and RE-VERIFIED server-side on activation (/return + webhook) — the browser can't lower them.
+        document.getElementById('payWrap').classList.remove('hide');
+        cont.classList.add('hide');
+        document.getElementById('acceptHint').classList.add('hide');
+        try {
+          window.Moyasar.init({
+            element: '.mysr-form',
+            amount: cfg.amount,                       // halalas, server-set
+            currency: cfg.currency || 'SAR',
+            description: cfg.description || ('AlphaCouncil ' + plan),
+            publishable_api_key: cfg.publishable_key,
+            callback_url: cfg.callback_url,           // -> /api/billing/return?id=... -> verify, activate, capture token
+            methods: ['creditcard'],
+            supported_networks: ['mada', 'visa', 'mastercard'],
+            credit_card: { save_card: true },         // save the card token for monthly auto-renewal
+            metadata: cfg.metadata || {}
+          });
+        } catch (err) {
+          showError('The payment form failed to load. Please refresh or try again.');
+        }
+      });
     })();
   </script>
 </body>
