@@ -2372,24 +2372,49 @@
         if (typeof showToast === 'function') showToast('Export failed', (e && e.message) || 'Please try again.', 'error');
       }
     }
+    // Explicit, screenshottable deletion confirmation (no native dialog, no preselected control).
+    // Resolves true only when the user types DELETE and confirms; false on cancel/overlay/Esc.
+    function _deletionModal(T){
+      return new Promise(function(resolve){
+        var ov = document.createElement('div'); ov.id = 'deleteModal';
+        ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-labelledby','delTitle');
+        ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:20px;';
+        ov.innerHTML =
+          '<div style="max-width:460px;width:100%;background:var(--surface,#111A2B);border:1px solid var(--border,rgba(255,255,255,0.08));border-radius:16px;padding:24px;box-shadow:0 24px 70px rgba(0,0,0,0.45);">'
+          + '<h3 id="delTitle" style="margin:0 0 6px;font-size:18px;color:var(--fg,#F8FAFC);">'+T('set.del_title','Delete your account')+'</h3>'
+          + '<p style="margin:0 0 12px;font-size:13px;color:var(--fg-muted,#AAB6C5);">'+T('set.del_lead','This is permanent and cannot be undone. Before you confirm:')+'</p>'
+          + '<ul style="margin:0 0 14px;padding-left:18px;font-size:13px;line-height:1.6;color:var(--fg-muted,#AAB6C5);">'
+          + '<li>'+T('set.del_b1','Any active subscription is cancelled and all future renewals stop.')+'</li>'
+          + '<li>'+T('set.del_b2','Your saved payment card is removed so it can never be charged again.')+'</li>'
+          + '<li>'+T('set.del_b3','Your personal data — profile, portfolio, watchlist, Council history and alerts — is deleted.')+'</li>'
+          + '<li>'+T('set.del_b4','Certain billing and legal-acceptance records are kept, as the law requires, for accounting and dispute purposes.')+'</li>'
+          + '<li>'+T('set.del_b5','If the subscription cancellation cannot be confirmed, deletion will not complete and you can retry.')+'</li>'
+          + '</ul>'
+          + '<label for="delConfirmInput" style="display:block;font-size:12px;color:var(--fg-dim,#6B7A8F);margin-bottom:6px;">'+T('set.del_type','To confirm, type DELETE:')+'</label>'
+          + '<input id="delConfirmInput" type="text" autocomplete="off" spellcheck="false" style="width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--border,rgba(255,255,255,0.12));background:var(--surface-2,#192536);color:var(--fg,#F8FAFC);font-size:14px;margin-bottom:16px;">'
+          + '<div style="display:flex;gap:10px;justify-content:flex-end;">'
+          + '<button id="delCancelBtn" type="button" style="padding:10px 16px;border-radius:9px;border:1px solid var(--border,rgba(255,255,255,0.12));background:transparent;color:var(--fg-muted,#AAB6C5);font-weight:600;cursor:pointer;">'+T('set.del_keep','Keep my account')+'</button>'
+          + '<button id="delConfirmBtn" type="button" disabled style="padding:10px 16px;border-radius:9px;border:none;background:#EF4444;color:#fff;font-weight:600;cursor:pointer;opacity:0.45;">'+T('set.del_go','Delete permanently')+'</button>'
+          + '</div></div>';
+        document.body.appendChild(ov);
+        var input = ov.querySelector('#delConfirmInput');
+        var go = ov.querySelector('#delConfirmBtn');
+        function close(v){ try{ document.body.removeChild(ov); }catch(e){} resolve(v); }
+        function sync(){ var ok = input.value.trim().toUpperCase() === 'DELETE'; go.disabled = !ok; go.style.opacity = ok ? '1' : '0.45'; }
+        input.addEventListener('input', sync);
+        ov.querySelector('#delCancelBtn').addEventListener('click', function(){ close(false); });
+        go.addEventListener('click', function(){ if (input.value.trim().toUpperCase()==='DELETE') close(true); });
+        ov.addEventListener('click', function(e){ if (e.target === ov) close(false); });
+        document.addEventListener('keydown', function esc(e){ if(e.key==='Escape'){ document.removeEventListener('keydown',esc); close(false); } });
+        setTimeout(function(){ try{ input.focus(); }catch(e){} }, 30);
+      });
+    }
+
     async function deleteAccount() {
       var T=(window.AC_I18N&&AC_I18N.t)?function(k,f){var v=AC_I18N.t(k);return (v&&v!==k)?v:f;}:function(k,f){return f;};
       function note(title, text, type){ if (typeof showToast==='function') showToast(title, text, type||'info'); else alert(title + (text?('\n\n'+text):'')); }
-      // Accurate, non-preselected consent. Copy matches the backend behaviour exactly:
-      // cancels active subscriptions, clears the saved card, removes PERSONAL data, RETAINS
-      // certain billing/legal-acceptance records for accounting/compliance, and does NOT
-      // complete if the subscription cancellation can't be confirmed.
-      var intro = T('set.del_confirm',
-        'Delete your account?\n\n'
-        + '• Any active subscription is cancelled and all future renewals stop.\n'
-        + '• Your saved payment card is removed so it can never be charged again.\n'
-        + '• Your personal data — profile, portfolio, watchlist, Council history and alerts — is deleted.\n'
-        + '• Certain billing and legal-acceptance records are kept, as the law requires, for accounting and dispute purposes.\n'
-        + '• If the subscription cancellation cannot be confirmed, deletion will NOT complete and you can retry.\n\n'
-        + 'This cannot be undone.');
-      if (!confirm(intro)) return;
-      var typed = prompt(T('set.del_type','To confirm, type DELETE:'));
-      if ((typed || '').trim().toUpperCase() !== 'DELETE') { note(T('set.del_cancelled_t','Cancelled'), T('set.del_cancelled','Your account was not deleted.'), 'info'); return; }
+      // Explicit DOM confirmation (accurate consequences, typed-DELETE gate, no preselected control).
+      if (!await _deletionModal(T)) { return; }
 
       async function finish(res){
         if (res && res.status === 'pending') {
