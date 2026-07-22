@@ -1,61 +1,116 @@
 {
-  "commit": "e7bb879",
+  "commit": "e83fb4e",
   "generated_by": "playwright",
   "screenshots": [
     {
       "name": "legal-index-desktop.png",
-      "width": 1280,
-      "height": 800
+      "route": "/legal/",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "timestamp": "2026-07-22T16:35:21.420Z",
+      "test_data": "static legal-suite index (no API)"
     },
     {
       "name": "terms-desktop.png",
-      "width": 1280,
-      "height": 800
+      "route": "/legal/terms/",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "timestamp": "2026-07-22T16:35:21.697Z",
+      "test_data": "static Terms of Service v1.0 (no API)"
     },
     {
       "name": "terms-mobile.png",
-      "width": 390,
-      "height": 844
+      "route": "/legal/terms/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "timestamp": "2026-07-22T16:35:21.817Z",
+      "test_data": "static Terms of Service v1.0 (no API)"
     },
     {
       "name": "registration-desktop.png",
-      "width": 1280,
-      "height": 800
+      "route": "/signup.html",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "timestamp": "2026-07-22T16:35:22.570Z",
+      "test_data": "acceptance box ticked -> button enabled"
     },
     {
       "name": "registration-mobile.png",
-      "width": 390,
-      "height": 844
+      "route": "/signup.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "timestamp": "2026-07-22T16:35:22.845Z",
+      "test_data": "default state, acceptance box unticked"
     },
     {
       "name": "checkout-desktop.png",
-      "width": 1280,
-      "height": 800
+      "route": "/checkout.html?plan=pro",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "timestamp": "2026-07-22T16:35:23.274Z",
+      "test_data": "stubbed disclosures: Pro 79 SAR/mo, payments_available=true"
     },
     {
       "name": "checkout-mobile.png",
-      "width": 390,
-      "height": 844
+      "route": "/checkout.html?plan=pro",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "timestamp": "2026-07-22T16:35:23.457Z",
+      "test_data": "stubbed disclosures: Pro 79 SAR/mo, payments_available=true"
     },
     {
       "name": "checkout-unavailable.png",
-      "width": 1280,
-      "height": 800
+      "route": "/checkout.html?plan=pro",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "timestamp": "2026-07-22T16:35:23.679Z",
+      "test_data": "stubbed payments_available=false"
     },
     {
       "name": "settings-legal.png",
-      "width": 1280,
-      "height": 800
+      "route": "/settings.html#legal",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "timestamp": "2026-07-22T16:35:24.232Z",
+      "test_data": "stubbed legal-status: v1.0 docs + acceptance dates"
     },
     {
       "name": "cancellation-confirmation.png",
-      "width": 1280,
-      "height": 800
+      "route": "/settings.html#billing",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "timestamp": "2026-07-22T16:35:25.247Z",
+      "test_data": "stubbed active Pro sub; cancel dialog open"
     },
     {
       "name": "deletion-confirmation.png",
-      "width": 1280,
-      "height": 800
+      "route": "/settings.html#export",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "timestamp": "2026-07-22T16:35:26.051Z",
+      "test_data": "deletion modal open (typed-DELETE gate)"
     }
   ]
 }
