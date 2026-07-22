@@ -1,0 +1,61 @@
+{
+  "commit": "e7bb879",
+  "generated_by": "playwright",
+  "screenshots": [
+    {
+      "name": "legal-index-desktop.png",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "terms-desktop.png",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "terms-mobile.png",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "name": "registration-desktop.png",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "registration-mobile.png",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "name": "checkout-desktop.png",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "checkout-mobile.png",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "name": "checkout-unavailable.png",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "settings-legal.png",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "cancellation-confirmation.png",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "deletion-confirmation.png",
+      "width": 1280,
+      "height": 800
+    }
+  ]
+}
