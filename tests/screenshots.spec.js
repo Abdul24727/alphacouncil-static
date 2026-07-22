@@ -7,13 +7,13 @@
 // Output: review-artifacts/<name>.png + review-artifacts/manifest.json
 const { test, expect } = require('@playwright/test');
 const path = require('path');
-const url = require('url');
 const fs = require('fs');
 
 const ROOT = path.resolve(__dirname, '..');
 const OUT = path.resolve(ROOT, 'review-artifacts');
 fs.mkdirSync(OUT, { recursive: true });
-const fileUrl = (p) => url.pathToFileURL(path.join(ROOT, p)).href;
+// Relative to baseURL (HTTP origin) so page fetch('/api/...') calls are interceptable.
+const fileUrl = (p) => '/' + String(p).replace(/^\//, '');
 const COMMIT = process.env.REVIEW_COMMIT || 'unknown';
 const DESKTOP = { width: 1280, height: 800 };
 const MOBILE = { width: 390, height: 844 };
@@ -61,8 +61,8 @@ const SUMMARY_PAID = {
 };
 function json(route, body, status = 200) { return route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) }); }
 
-// Fully offline: abort every external http(s) request (fonts, Turnstile, Moyasar CDN).
-test.beforeEach(async ({ page }) => { await page.route(/^https?:\/\//, (r) => r.abort()); });
+// Abort external hosts only (fonts / Turnstile / Moyasar CDN); never the local baseURL origin.
+test.beforeEach(async ({ page }) => { await page.route(/googleapis|gstatic|cloudflare|moyasar/, (r) => r.abort()); });
 test.afterAll(async () => {
   fs.writeFileSync(path.join(OUT, 'manifest.json'),
     JSON.stringify({ commit: COMMIT, generated_by: 'playwright', screenshots: manifest }, null, 2));
@@ -86,7 +86,7 @@ test('terms desktop + mobile', async ({ page }) => {
 test('registration desktop + mobile', async ({ page }) => {
   await page.setViewportSize(DESKTOP);
   await page.goto(fileUrl('signup.html'));
-  await page.locator('#terms').check({ force: true }); // show the enabled/accepted state (hidden custom checkbox)
+  await page.locator('#terms').evaluate((el) => { el.checked = true; el.dispatchEvent(new Event('change', { bubbles: true })); }); // enabled/accepted state
   await shot(page, 'registration-desktop', DESKTOP);
   await page.setViewportSize(MOBILE);
   await page.goto(fileUrl('signup.html'));
@@ -114,10 +114,10 @@ test('checkout desktop + mobile + unavailable', async ({ page }) => {
 });
 
 test('settings-legal', async ({ page }) => {
+  await page.route('**/api/**', (r) => json(r, {}));                 // catch-all first (lowest priority)
   await page.route('**/api/account/legal-status', (r) => json(r, LEGAL_STATUS));
   await page.route('**/api/auth/me', (r) => json(r, { id: 1, email: 'stage.user@example.com' }));
   await page.route('**/api/billing/summary', (r) => json(r, SUMMARY_PAID));
-  await page.route('**/api/**', (r) => json(r, {}));
   await page.setViewportSize(DESKTOP);
   await page.goto(fileUrl('settings.html') + '#legal');
   await page.locator('.settings-nav-item[data-section="legal"]').click();
@@ -126,22 +126,23 @@ test('settings-legal', async ({ page }) => {
 });
 
 test('cancellation-confirmation', async ({ page }) => {
+  await page.route('**/api/**', (r) => json(r, {}));                 // catch-all first (lowest priority)
   await page.route('**/api/auth/me', (r) => json(r, { id: 1, email: 'stage.user@example.com' }));
   await page.route('**/api/billing/summary', (r) => json(r, SUMMARY_PAID));
-  await page.route('**/api/**', (r) => json(r, {}));
   await page.setViewportSize(DESKTOP);
   await page.goto(fileUrl('settings.html') + '#billing');
   await page.locator('.settings-nav-item[data-section="billing"]').click();
-  // Open the cancel/downgrade-to-Free confirmation dialog.
+  // Wait for the billing panel to render, then open the cancel/downgrade-to-Free dialog.
+  await expect(page.locator('#billingRoot [data-down="free"]')).toBeVisible({ timeout: 15000 });
   await page.locator('[data-down="free"]').first().click();
   await expect(page.locator('text=/keep your current plan until/i')).toBeVisible();
   await shot(page, 'cancellation-confirmation', DESKTOP);
 });
 
 test('deletion-confirmation', async ({ page }) => {
+  await page.route('**/api/**', (r) => json(r, {}));                 // catch-all first (lowest priority)
   await page.route('**/api/auth/me', (r) => json(r, { id: 1, email: 'stage.user@example.com' }));
   await page.route('**/api/billing/summary', (r) => json(r, SUMMARY_PAID));
-  await page.route('**/api/**', (r) => json(r, {}));
   await page.setViewportSize(DESKTOP);
   await page.goto(fileUrl('settings.html') + '#export');
   await page.locator('.settings-nav-item[data-section="export"]').click();
