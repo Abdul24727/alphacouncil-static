@@ -19,10 +19,16 @@ const DESKTOP = { width: 1280, height: 800 };
 const MOBILE = { width: 390, height: 844 };
 
 const manifest = [];
-async function shot(page, name, viewport) {
+async function shot(page, name, viewport, route, testData) {
   const file = path.join(OUT, name + '.png');
   await page.screenshot({ path: file });
-  manifest.push({ name: name + '.png', width: viewport.width, height: viewport.height });
+  manifest.push({
+    name: name + '.png',
+    route: route,
+    viewport: { width: viewport.width, height: viewport.height },
+    timestamp: new Date().toISOString(),
+    test_data: testData,
+  });
 }
 
 // ---- stub fixtures (isolated staging data; not real users/records) ----
@@ -71,26 +77,26 @@ test.afterAll(async () => {
 test('legal-index-desktop', async ({ page }) => {
   await page.setViewportSize(DESKTOP);
   await page.goto(fileUrl('legal/index.html'));
-  await shot(page, 'legal-index-desktop', DESKTOP);
+  await shot(page, 'legal-index-desktop', DESKTOP, '/legal/', 'static legal-suite index (no API)');
 });
 
 test('terms desktop + mobile', async ({ page }) => {
   await page.setViewportSize(DESKTOP);
   await page.goto(fileUrl('legal/terms/index.html'));
-  await shot(page, 'terms-desktop', DESKTOP);
+  await shot(page, 'terms-desktop', DESKTOP, '/legal/terms/', 'static Terms of Service v1.0 (no API)');
   await page.setViewportSize(MOBILE);
   await page.goto(fileUrl('legal/terms/index.html'));
-  await shot(page, 'terms-mobile', MOBILE);
+  await shot(page, 'terms-mobile', MOBILE, '/legal/terms/', 'static Terms of Service v1.0 (no API)');
 });
 
 test('registration desktop + mobile', async ({ page }) => {
   await page.setViewportSize(DESKTOP);
   await page.goto(fileUrl('signup.html'));
   await page.locator('#terms').evaluate((el) => { el.checked = true; el.dispatchEvent(new Event('change', { bubbles: true })); }); // enabled/accepted state
-  await shot(page, 'registration-desktop', DESKTOP);
+  await shot(page, 'registration-desktop', DESKTOP, '/signup.html', 'acceptance box ticked -> button enabled');
   await page.setViewportSize(MOBILE);
   await page.goto(fileUrl('signup.html'));
-  await shot(page, 'registration-mobile', MOBILE);
+  await shot(page, 'registration-mobile', MOBILE, '/signup.html', 'default state, acceptance box unticked');
 });
 
 test('checkout desktop + mobile + unavailable', async ({ page }) => {
@@ -99,18 +105,18 @@ test('checkout desktop + mobile + unavailable', async ({ page }) => {
   await page.setViewportSize(DESKTOP);
   await page.goto(fileUrl('checkout.html') + '?plan=pro');
   await expect(page.locator('#dVat')).toContainText('VAT');
-  await shot(page, 'checkout-desktop', DESKTOP);
+  await shot(page, 'checkout-desktop', DESKTOP, '/checkout.html?plan=pro', 'stubbed disclosures: Pro 79 SAR/mo, payments_available=true');
   await page.setViewportSize(MOBILE);
   await page.goto(fileUrl('checkout.html') + '?plan=pro');
   await expect(page.locator('#dVat')).toContainText('VAT');
-  await shot(page, 'checkout-mobile', MOBILE);
+  await shot(page, 'checkout-mobile', MOBILE, '/checkout.html?plan=pro', 'stubbed disclosures: Pro 79 SAR/mo, payments_available=true');
   // unavailable state
   await page.unroute('**/api/billing/checkout-disclosures**');
   await page.route('**/api/billing/checkout-disclosures**', (r) => json(r, Object.assign({}, DISCLOSURES, { payments_available: false })));
   await page.setViewportSize(DESKTOP);
   await page.goto(fileUrl('checkout.html') + '?plan=pro');
   await expect(page.locator('#st-unavailable')).toBeVisible();
-  await shot(page, 'checkout-unavailable', DESKTOP);
+  await shot(page, 'checkout-unavailable', DESKTOP, '/checkout.html?plan=pro', 'stubbed payments_available=false');
 });
 
 test('settings-legal', async ({ page }) => {
@@ -122,7 +128,7 @@ test('settings-legal', async ({ page }) => {
   await page.goto(fileUrl('settings.html') + '#legal');
   await page.locator('.settings-nav-item[data-section="legal"]').click();
   await expect(page.locator('#legalRoot')).toContainText('AI and Financial Disclaimer');
-  await shot(page, 'settings-legal', DESKTOP);
+  await shot(page, 'settings-legal', DESKTOP, '/settings.html#legal', 'stubbed legal-status: v1.0 docs + acceptance dates');
 });
 
 test('cancellation-confirmation', async ({ page }) => {
@@ -136,7 +142,7 @@ test('cancellation-confirmation', async ({ page }) => {
   await expect(page.locator('#billingRoot [data-down="free"]')).toBeVisible({ timeout: 15000 });
   await page.locator('[data-down="free"]').first().click();
   await expect(page.locator('text=/keep your current plan until/i')).toBeVisible();
-  await shot(page, 'cancellation-confirmation', DESKTOP);
+  await shot(page, 'cancellation-confirmation', DESKTOP, '/settings.html#billing', 'stubbed active Pro sub; cancel dialog open');
 });
 
 test('deletion-confirmation', async ({ page }) => {
@@ -148,5 +154,5 @@ test('deletion-confirmation', async ({ page }) => {
   await page.locator('.settings-nav-item[data-section="export"]').click();
   await page.getByRole('button', { name: /delete account/i }).click();
   await expect(page.locator('#deleteModal')).toBeVisible();
-  await shot(page, 'deletion-confirmation', DESKTOP);
+  await shot(page, 'deletion-confirmation', DESKTOP, '/settings.html#export', 'deletion modal open (typed-DELETE gate)');
 });
