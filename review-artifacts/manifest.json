@@ -1,9 +1,9 @@
 {
   "commits": {
-    "backend": "2eb7980",
+    "backend": "1eb0ebe",
     "frontend_source": "39e6d1f",
-    "screenshot_test": "bdc2d6f",
-    "generated_at_head": "39e6d1f"
+    "screenshot_test": "14f5e64",
+    "generated_at_head": "14f5e64"
   },
   "png_bytes_commit_verify": "git -C <static-repo> log -1 --format=%H -- 'review-artifacts/*.png'",
   "generated_by": "playwright",
@@ -15,7 +15,7 @@
         "width": 1280,
         "height": 800
       },
-      "timestamp": "2026-07-23T20:35:18.579Z",
+      "timestamp": "2026-07-23T21:03:32.511Z",
       "test_data": "static legal-suite index (no API)",
       "sha256": "eec3ec43f66d68d3ba626c10fb50f5d7d8e6bb075032e682a16f192f684b7251"
     },
@@ -26,8 +26,8 @@
         "width": 1280,
         "height": 800
       },
-      "timestamp": "2026-07-23T20:35:18.799Z",
-      "test_data": "static Terms of Service v1.0 (no API)",
+      "timestamp": "2026-07-23T21:03:32.704Z",
+      "test_data": "static Terms of Service v1.1 (registry page, no API)",
       "sha256": "753501bce14ed9e3123509760b809abe83845934fd322cb648acb46058b6136d"
     },
     {
@@ -37,8 +37,8 @@
         "width": 390,
         "height": 844
       },
-      "timestamp": "2026-07-23T20:35:18.897Z",
-      "test_data": "static Terms of Service v1.0 (no API)",
+      "timestamp": "2026-07-23T21:03:32.792Z",
+      "test_data": "static Terms of Service v1.1 (registry page, no API)",
       "sha256": "0a1de60ef2a7686be64d2c1aead45cdd26275571a87fd9212405a590ccdfd408"
     },
     {
@@ -48,9 +48,9 @@
         "width": 1280,
         "height": 800
       },
-      "timestamp": "2026-07-23T20:35:19.223Z",
+      "timestamp": "2026-07-23T21:03:33.039Z",
       "test_data": "acceptance box ticked -> button enabled",
-      "sha256": "51af18cd2326960503f152bbdd0f9e61b408901363110c1a9862c8a5ab292740"
+      "sha256": "d0a67c9acb1f67f36c650052da059fa5b868020142eb07f4a8b58fec602e69c3"
     },
     {
       "name": "registration-mobile.png",
@@ -59,7 +59,7 @@
         "width": 390,
         "height": 844
       },
-      "timestamp": "2026-07-23T20:35:19.316Z",
+      "timestamp": "2026-07-23T21:03:33.132Z",
       "test_data": "default state, acceptance box unticked",
       "sha256": "6e495303a17f8e907f8bb8102e32dfc48ab685ab6c77459561fe7d5e5810517a"
     },
@@ -70,7 +70,7 @@
         "width": 1280,
         "height": 800
       },
-      "timestamp": "2026-07-23T20:35:19.602Z",
+      "timestamp": "2026-07-23T21:03:33.380Z",
       "test_data": "stubbed disclosures: Pro 79 SAR/mo, payments_available=true",
       "sha256": "2bc73f9d3da35a3cc760f432f8326b9a01d9e833fa07e733e6581470ad8fe9db"
     },
@@ -81,7 +81,7 @@
         "width": 390,
         "height": 844
       },
-      "timestamp": "2026-07-23T20:35:19.709Z",
+      "timestamp": "2026-07-23T21:03:33.495Z",
       "test_data": "stubbed disclosures: Pro 79 SAR/mo, payments_available=true",
       "sha256": "3a1588a8416437276799ee089c8d6b0e59cb3d7fdf3b5d36a6a914dfc955d4c2"
     },
@@ -92,7 +92,7 @@
         "width": 1280,
         "height": 800
       },
-      "timestamp": "2026-07-23T20:35:19.847Z",
+      "timestamp": "2026-07-23T21:03:33.655Z",
       "test_data": "stubbed payments_available=false",
       "sha256": "4f177105d5c528478a9d8a092500a7044285b3ce7e4db6b56bc243dab89ae3b5"
     },
@@ -103,9 +103,9 @@
         "width": 1280,
         "height": 800
       },
-      "timestamp": "2026-07-23T20:35:20.282Z",
-      "test_data": "stubbed legal-status: v1.0 docs + acceptance dates",
-      "sha256": "4cbb60472beb810d46e3414a0d9fcce38aa5668bd1312a52463d936ec3923918"
+      "timestamp": "2026-07-23T21:03:34.083Z",
+      "test_data": "stubbed legal-status: registry-version docs (terms/privacy/refunds v1.1) + acceptance dates",
+      "sha256": "735576072a0c9cec786240b24c69852ebbcda5465e79150b662e5f848ebeed70"
     },
     {
       "name": "checkout-nonrenewing.png",
@@ -114,7 +114,7 @@
         "width": 1280,
         "height": 800
       },
-      "timestamp": "2026-07-23T20:35:20.548Z",
+      "timestamp": "2026-07-23T21:03:34.348Z",
       "test_data": "stubbed non-renewing disclosures (auto_renews=false, v2.0): no auto-renewal promise",
       "sha256": "405d21687b82a971d7d2e88d3764e5a4f8161acbc11182b5e1e9d3fd6da0c793"
     },
@@ -125,9 +125,9 @@
         "width": 1280,
         "height": 800
       },
-      "timestamp": "2026-07-23T20:35:21.035Z",
+      "timestamp": "2026-07-23T21:03:34.818Z",
       "test_data": "stubbed manual_renewal=true (recurring disabled): neutral renew prompt + access-end date",
-      "sha256": "c938081c932bc37ac9247a4f672f49bf6b4cfa24844d2864b90f6ae8af5043d0"
+      "sha256": "425ce5f95acf8c06551bd7e0acdf7c122401e61d8b62aeea757c84dcdc90f320"
     },
     {
       "name": "settings-renewal-off.png",
@@ -136,9 +136,9 @@
         "width": 1280,
         "height": 800
       },
-      "timestamp": "2026-07-23T20:35:21.523Z",
+      "timestamp": "2026-07-23T21:03:35.234Z",
       "test_data": "stubbed renewal_token_missing=true: non-renewing banner + access-end date + renew/update-payment action",
-      "sha256": "a3e4d6ef7bca4a14016e8fea4058b2d6e2f663541bec628b57669eb1a6636400"
+      "sha256": "d5538df89f80ddc17a79ff5691649f620fadf02a301dd38db29d0a0fc089a6db"
     },
     {
       "name": "cancellation-confirmation.png",
@@ -147,9 +147,9 @@
         "width": 1280,
         "height": 800
       },
-      "timestamp": "2026-07-23T20:35:22.202Z",
+      "timestamp": "2026-07-23T21:03:35.932Z",
       "test_data": "stubbed active Pro sub; cancel dialog open",
-      "sha256": "a6cba5347073b7948eadef75ad4ef9a1f183e3ca29195fe6eca335cf71cbfb6d"
+      "sha256": "0199d6100d51b3e4133fdf4b60f61bed59d9cbe29a4e3033c7f8f1943e49d572"
     },
     {
       "name": "deletion-confirmation.png",
@@ -158,9 +158,9 @@
         "width": 1280,
         "height": 800
       },
-      "timestamp": "2026-07-23T20:35:22.766Z",
+      "timestamp": "2026-07-23T21:03:36.561Z",
       "test_data": "deletion modal open (typed-DELETE gate)",
-      "sha256": "994040c4b662cf8b509f03ca1f3fa2eb765397063f452715f499f2bdcc2994df"
+      "sha256": "ee84ba19f4c2a8feff3340975b7a42c944d466cf8e0263bd86689120a0de0c35"
     }
   ]
 }
