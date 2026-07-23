@@ -25,7 +25,10 @@ ACCEPTANCE_TEXT = {
                  "Refund and Cancellation Policy, and AI and Financial Disclaimer."),
 }
 # Document versions this hash-set is bound to (change the hash -> must change the version).
-VERSIONS = {k: "1.0" for k in DOCS}
+# v1.1 (2026-07-23): non-renewing-launch amendments to terms/privacy/refunds (Terms 10.2,
+# Refunds 5, Privacy payment-services bullet) — DRAFT pending counsel approval/renumbering.
+VERSIONS = {"terms": "1.1", "privacy": "1.1", "refunds": "1.1",
+            "cookies": "1.0", "ai-financial-disclaimer": "1.0"}
 
 
 # Presentation-only styles excluded from the CANONICAL content (they are rendered outside the

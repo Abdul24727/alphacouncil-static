@@ -269,9 +269,10 @@
             methods: ['creditcard'],
             supported_networks: ['mada', 'visa', 'mastercard'],
             // SERVER-decided: the card token is saved ONLY while recurring billing is enabled.
-            // In the non-renewing launch save_card is false — no card details are kept, because
-            // nothing may ever charge them automatically.
-            credit_card: { save_card: cfg.save_card !== false },
+            // STRICT equality — a missing/null/malformed save_card must mean FALSE (fail closed):
+            // in the non-renewing launch no card details may be kept, because nothing may ever
+            // charge them automatically.
+            credit_card: { save_card: cfg.save_card === true },
             metadata: cfg.metadata || {}
           };
           // Provider-side payment-creation idempotency: ONE server-minted UUID per checkout

@@ -2103,7 +2103,10 @@
         var p=(s.plans||[]).filter(function(x){return x.id===plan;})[0]||{name:'Free'};
         confirmModal({ title: toFree?L('Cancel subscription','إلغاء الاشتراك'):L('Downgrade to ','تخفيض إلى ')+(p.name||plan),
           body:'<p>'+L('You keep your current plan until ','تحتفظ بخطتك الحالية حتى ')+'<strong>'+fmtDate(s.renews_on)+'</strong>'+
-               (toFree? L(', then your account moves to Free. Automatic renewal stops now and there are no further charges.',' ثم ينتقل حسابك إلى المجاني. يتوقف التجديد التلقائي الآن ولا توجد أي رسوم إضافية.')
+               (toFree? (s.manual_renewal
+                         ? L(', then your account moves to Free. There are no automatic charges to stop — this simply confirms your access ends at the paid-through date. You can still buy another month any time before or after.',
+                             ' ثم ينتقل حسابك إلى المجاني. لا توجد رسوم تلقائية لإيقافها — هذا يؤكد فقط انتهاء وصولك عند نهاية الفترة المدفوعة. لا يزال بإمكانك شراء شهر آخر في أي وقت.')
+                         : L(', then your account moves to Free. Automatic renewal stops now and there are no further charges.',' ثم ينتقل حسابك إلى المجاني. يتوقف التجديد التلقائي الآن ولا توجد أي رسوم إضافية.'))
                        : L(', then you move to ',' ثم تنتقل إلى ')+esc(p.name)+L('. No access is lost before then.','. لا تفقد أي ميزة قبل ذلك.'))+'</p>'+
                (toFree? '<p class="form-hint" style="margin-top:8px;">'+
                  (s.refund_eligible? L('You’re within your refund window — you can request a full refund of your last payment instead of simply cancelling. ','أنت ضمن فترة الاسترداد — يمكنك طلب استرداد كامل لآخر دفعة بدلًا من مجرد الإلغاء. '):'')+
@@ -2192,7 +2195,9 @@
           var isCur=p.id===s.plan, act='';
           if(isCur){ act='<span class="bill-badge-cur">'+L('Current','الحالية')+'</span>'; }
           else if(p.rank>curRank){ act='<button class="btn btn-primary bill-act" data-up="'+p.id+'"'+(s.billing_configured?'':' disabled')+'>'+L('Upgrade','ترقية')+'</button>'; }
-          else { act='<button class="btn btn-ghost bill-act" data-down="'+p.id+'">'+(p.id==='free'?L('Cancel / move to Free','إلغاء / المجاني'):L('Downgrade','تخفيض'))+'</button>'; }
+          else { var freeLbl = s.manual_renewal ? L('End access at paid-through date','إنهاء الوصول عند نهاية الفترة المدفوعة')
+                                                : L('Cancel / move to Free','إلغاء / المجاني');
+                 act='<button class="btn btn-ghost bill-act" data-down="'+p.id+'">'+(p.id==='free'?freeLbl:L('Downgrade','تخفيض'))+'</button>'; }
           var isAr=(window.AC_I18N&&AC_I18N.lang==='ar');
           var feats=(isAr&&p.features_ar)?p.features_ar:(p.features||[]);
           var tag=(isAr&&p.tagline_ar)?p.tagline_ar:(p.tagline||'');

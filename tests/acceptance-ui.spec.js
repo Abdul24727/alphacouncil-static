@@ -181,6 +181,7 @@ test.describe('checkout acceptance + disclosures', () => {
       provider: 'moyasar', mode: 'embedded', publishable_key: 'pk_test_x', amount: 7900,
       currency: 'SAR', callback_url: '/api/billing/return', metadata: { intent: 'tok_x' },
       given_id: GIVEN, acceptance_id: 42,
+      save_card: 'yes',   // GATE A1: malformed TRUTHY value — strict === true must treat it as FALSE
     }));
     await page.goto(fileUrl('checkout.html') + '?plan=pro');
     await page.locator('#acceptBox').check({ force: true });
@@ -188,6 +189,9 @@ test.describe('checkout acceptance + disclosures', () => {
     await expect.poll(() => page.evaluate(() => window.__mysrInit && window.__mysrInit.given_id)).toBe(GIVEN);
     expect(await page.evaluate(() => window.__mysrInit.amount)).toBe(7900);        // server-set, untouched
     expect(await page.evaluate(() => window.__mysrInit.metadata.intent)).toBe('tok_x');
+    // GATE A1: save_card must be STRICT-equality gated — only literal true tokenizes; a missing,
+    // null or malformed value ('yes' here) must yield save_card:false (fail closed, no credential).
+    expect(await page.evaluate(() => window.__mysrInit.credit_card.save_card)).toBe(false);
   });
 });
 

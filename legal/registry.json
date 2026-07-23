@@ -3,22 +3,22 @@
   "documents": {
     "terms": {
       "title": "Terms of Service",
-      "version": "1.0",
-      "effective_date": "2026-07-21",
+      "version": "1.1",
+      "effective_date": "2026-07-23",
       "route": "/legal/terms",
       "source": "AlphaCouncil-Terms-of-Service-FINAL.docx"
     },
     "privacy": {
       "title": "Privacy Policy",
-      "version": "1.0",
-      "effective_date": "2026-07-21",
+      "version": "1.1",
+      "effective_date": "2026-07-23",
       "route": "/legal/privacy",
       "source": "AlphaCouncil-Privacy-Policy-FINAL.docx"
     },
     "refunds": {
       "title": "Refund and Cancellation Policy",
-      "version": "1.0",
-      "effective_date": "2026-07-21",
+      "version": "1.1",
+      "effective_date": "2026-07-23",
       "route": "/legal/refunds",
       "source": "AlphaCouncil-Refund-Cancellation-Policy-FINAL.docx"
     },
