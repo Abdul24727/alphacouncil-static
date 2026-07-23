@@ -54,14 +54,14 @@ const DISCLOSURES = {
 };
 const LEGAL_STATUS = {
   documents: [
-    { key: 'terms', title: 'Terms of Service', version: '1.0', effective_date: '2026-07-21', route: '/legal/terms' },
-    { key: 'privacy', title: 'Privacy Policy', version: '1.0', effective_date: '2026-07-21', route: '/legal/privacy' },
-    { key: 'refunds', title: 'Refund and Cancellation Policy', version: '1.0', effective_date: '2026-07-21', route: '/legal/refunds' },
+    { key: 'terms', title: 'Terms of Service', version: '1.1', effective_date: '2026-07-23', route: '/legal/terms' },
+    { key: 'privacy', title: 'Privacy Policy', version: '1.1', effective_date: '2026-07-23', route: '/legal/privacy' },
+    { key: 'refunds', title: 'Refund and Cancellation Policy', version: '1.1', effective_date: '2026-07-23', route: '/legal/refunds' },
     { key: 'ai-financial-disclaimer', title: 'AI and Financial Disclaimer', version: '1.0', effective_date: '2026-07-21', route: '/legal/ai-financial-disclaimer' },
   ],
   combined_route: '/legal',
-  registration_acceptance: { accepted_at: '2026-07-20T09:15:00+00:00', acceptance_text_version: '1.0', terms_version: '1.0', privacy_version: '1.0' },
-  checkout_acceptance: { accepted_at: '2026-07-21T12:30:00+00:00', acceptance_text_version: '1.0', terms_version: '1.0', privacy_version: '1.0', refunds_version: '1.0', ai_disclaimer_version: '1.0', status: 'completed' },
+  registration_acceptance: { accepted_at: '2026-07-20T09:15:00+00:00', acceptance_text_version: '1.0', terms_version: '1.1', privacy_version: '1.1' },
+  checkout_acceptance: { accepted_at: '2026-07-21T12:30:00+00:00', acceptance_text_version: '1.0', terms_version: '1.1', privacy_version: '1.1', refunds_version: '1.1', ai_disclaimer_version: '1.0', status: 'completed' },
 };
 const SUMMARY_PAID = {
   plan: 'pro', plan_name: 'Pro', price_sar: 79, currency: 'SAR', interval: 'monthly', is_paid: true,
@@ -106,10 +106,10 @@ test('legal-index-desktop', async ({ page }) => {
 test('terms desktop + mobile', async ({ page }) => {
   await page.setViewportSize(DESKTOP);
   await page.goto(fileUrl('legal/terms/index.html'));
-  await shot(page, 'terms-desktop', DESKTOP, '/legal/terms/', 'static Terms of Service v1.0 (no API)');
+  await shot(page, 'terms-desktop', DESKTOP, '/legal/terms/', 'static Terms of Service v1.1 (registry page, no API)');
   await page.setViewportSize(MOBILE);
   await page.goto(fileUrl('legal/terms/index.html'));
-  await shot(page, 'terms-mobile', MOBILE, '/legal/terms/', 'static Terms of Service v1.0 (no API)');
+  await shot(page, 'terms-mobile', MOBILE, '/legal/terms/', 'static Terms of Service v1.1 (registry page, no API)');
 });
 
 test('registration desktop + mobile', async ({ page }) => {
@@ -151,7 +151,7 @@ test('settings-legal', async ({ page }) => {
   await page.goto(fileUrl('settings.html') + '#legal');
   await page.locator('.settings-nav-item[data-section="legal"]').click();
   await expect(page.locator('#legalRoot')).toContainText('AI and Financial Disclaimer');
-  await shot(page, 'settings-legal', DESKTOP, '/settings.html#legal', 'stubbed legal-status: v1.0 docs + acceptance dates');
+  await shot(page, 'settings-legal', DESKTOP, '/settings.html#legal', 'stubbed legal-status: registry-version docs (terms/privacy/refunds v1.1) + acceptance dates');
 });
 
 test('checkout-nonrenewing', async ({ page }) => {
