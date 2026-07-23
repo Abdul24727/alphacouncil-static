@@ -2158,8 +2158,8 @@
                L('We could not save your card for automatic renewal, so your subscription will not renew by itself. Your access continues until ',
                  'تعذّر حفظ بطاقتك للتجديد التلقائي، لذا لن يتجدد اشتراكك تلقائيًا. يستمر وصولك حتى ')+
                '<strong>'+fmtDate(s.access_until||s.renews_on)+'</strong>. '+
-               L('Renew below to keep your plan — the new checkout saves your card again and your next month starts immediately.',
-                 'جدّد أدناه للاحتفاظ بخطتك — تحفظ عملية الدفع الجديدة بطاقتك مجددًا ويبدأ شهرك التالي فورًا.')+'</div>'+
+               L('Renew below to keep your plan — the new checkout saves your card again, and the new month is added AFTER your current paid period ends. No paid time is lost.',
+                 'جدّد أدناه للاحتفاظ بخطتك — تحفظ عملية الدفع الجديدة بطاقتك مجددًا، ويُضاف الشهر الجديد بعد نهاية فترتك المدفوعة الحالية. لا تفقد أي وقت مدفوع.')+'</div>'+
              '<button class="btn btn-primary bill-act" data-renewfix="'+esc(s.plan)+'"'+(s.billing_configured?'':' disabled')+'>'+L('Renew / update payment method','التجديد / تحديث طريقة الدفع')+'</button></div>';
         }
         if(!s.billing_configured){ h+='<p class="form-hint" style="margin-top:10px">'+L('Online payment is activating soon. To change your plan now, ','الدفع الإلكتروني قيد التفعيل. لتغيير خطتك الآن، ')+'<a href="contact.html">'+L('contact support','تواصل مع الدعم')+'</a>.</p>'; }
