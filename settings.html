@@ -2141,7 +2141,10 @@
         // Honest auto-renewal state: renewal_token_missing = the card token could NOT be saved,
         // so the paid period will NOT auto-renew (server set cancel_at_period_end). Shown FIRST —
         // it is more specific than the generic cancel state, and the customer must know.
+        // manual_renewal = the NON-RENEWING launch (recurring billing disabled server-side):
+        // neutral wording — nothing failed, renewing is simply a deliberate action.
         if(paid && s.renewal_token_missing){ status='<span class="bill-warn">'+L('Auto-renewal is OFF — access until ','التجديد التلقائي متوقف — الوصول حتى ')+fmtDate(s.access_until||s.renews_on)+'</span>'; }
+        else if(paid && s.manual_renewal){ status='<span class="bill-ok">'+L('Access until ','الوصول حتى ')+fmtDate(s.access_until||s.renews_on)+L(' · renews manually',' · تجديد يدوي')+'</span>'; }
         else if(paid && s.cancel_at_period_end){ status='<span class="bill-warn">'+L('Cancels — access until ','يُلغى — الوصول حتى ')+fmtDate(s.renews_on)+'</span>'; }
         else if(paid && s.pending_plan){ status='<span class="bill-warn">'+L('Changes to ','يتغير إلى ')+esc(planName(s,s.pending_plan))+L(' on ',' في ')+fmtDate(s.renews_on)+'</span>'; }
         else if(paid){ status='<span class="bill-ok">'+L('Renews ','يتجدد ')+fmtDate(s.renews_on)+'</span>'; }
@@ -2149,6 +2152,19 @@
         var h='<div class="bill-current"><div class="bill-cur-label">'+L('Current plan','خطتك الحالية')+'</div>'+
               '<div class="bill-cur-name">'+esc(s.plan_name)+' · '+esc(SAR(s.price_sar))+'<span class="bill-per">/'+L('mo','شهر')+'</span></div>'+
               '<div class="bill-cur-status">'+status+'</div></div>';
+        if(paid && s.manual_renewal){
+          // Non-renewing launch: a neutral renew prompt (no failure framing). The same-plan
+          // checkout is server-permitted and period-fair — the new month is added AFTER the
+          // current paid period.
+          h+='<div class="bill-renewfix" style="margin-top:12px;padding:12px 14px;background:rgba(39,211,195,0.06);border:1px solid var(--border,rgba(255,255,255,0.08));border-radius:10px;">'+
+             '<div style="font-size:12.5px;color:var(--fg-muted,#AAB6C5);line-height:1.55;margin-bottom:9px;">'+
+               L('Subscriptions do not renew automatically. Your access runs until ',
+                 'الاشتراكات لا تتجدد تلقائيًا. يستمر وصولك حتى ')+
+               '<strong>'+fmtDate(s.access_until||s.renews_on)+'</strong>. '+
+               L('Renew any time below — the new month is added after your current paid period, so no paid time is ever lost.',
+                 'جدّد في أي وقت أدناه — يُضاف الشهر الجديد بعد نهاية فترتك المدفوعة الحالية، فلا تفقد أي وقت مدفوع.')+'</div>'+
+             '<button class="btn btn-primary bill-act" data-renewfix="'+esc(s.plan)+'"'+(s.billing_configured?'':' disabled')+'>'+L('Renew for another month','التجديد لشهر إضافي')+'</button></div>';
+        }
         if(paid && s.renewal_token_missing){
           // Retry-payment-method flow: a fresh checkout of the SAME plan is allowed by the server
           // in exactly this state (renewal repair) — it saves a new card token and starts the next

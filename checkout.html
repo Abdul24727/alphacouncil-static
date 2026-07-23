@@ -268,7 +268,10 @@
             callback_url: cfg.callback_url,           // -> /api/billing/return?id=... -> verify, activate, capture token
             methods: ['creditcard'],
             supported_networks: ['mada', 'visa', 'mastercard'],
-            credit_card: { save_card: true },         // save the card token for monthly auto-renewal
+            // SERVER-decided: the card token is saved ONLY while recurring billing is enabled.
+            // In the non-renewing launch save_card is false — no card details are kept, because
+            // nothing may ever charge them automatically.
+            credit_card: { save_card: cfg.save_card !== false },
             metadata: cfg.metadata || {}
           };
           // Provider-side payment-creation idempotency: ONE server-minted UUID per checkout

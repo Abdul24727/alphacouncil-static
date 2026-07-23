@@ -154,6 +154,49 @@ test('settings-legal', async ({ page }) => {
   await shot(page, 'settings-legal', DESKTOP, '/settings.html#legal', 'stubbed legal-status: v1.0 docs + acceptance dates');
 });
 
+test('checkout-nonrenewing', async ({ page }) => {
+  // NON-RENEWING launch (Round-5 option A): the server serves auto_renews=false + the v2.0
+  // non-renewing disclosure. The checkout page must show it verbatim — no auto-renewal promise.
+  const DISCLOSURES_NONRENEW = Object.assign({}, DISCLOSURES, {
+    auto_renews: false,
+    renewal_disclosure: 'This subscription does NOT renew automatically. Your access ends on ' +
+      'your paid-through date unless you renew manually from Settings › Billing — a renewal adds ' +
+      'a new month AFTER your current paid period. No card details are kept for automatic charges.',
+    cancellation: 'Cancel anytime from Settings › Billing. There are no automatic charges to ' +
+      'stop; cancelling simply confirms your access ends at the paid-through date.',
+    autorenewal_disclosure_version: '2.0',
+  });
+  await page.route('**/api/**', (r) => json(r, {}));                 // catch-all first (lowest priority)
+  await page.route('**/api/auth/me', (r) => json(r, { id: 1, preferred_language: 'en' }));
+  await page.route('**/api/billing/checkout-disclosures**', (r) => json(r, DISCLOSURES_NONRENEW));
+  await page.setViewportSize(DESKTOP);
+  await page.goto(fileUrl('checkout.html') + '?plan=pro');
+  await expect(page.locator('#dRenewal')).toContainText('does NOT renew automatically');
+  await expect(page.locator('#dRenewal')).toContainText('No card details are kept');
+  await shot(page, 'checkout-nonrenewing', DESKTOP, '/checkout.html?plan=pro',
+             'stubbed non-renewing disclosures (auto_renews=false, v2.0): no auto-renewal promise');
+});
+
+test('settings-manual-renewal', async ({ page }) => {
+  // NON-RENEWING launch account state: neutral "renews manually" status + renew action
+  // (no failure framing — nothing went wrong, renewing is a deliberate purchase).
+  const SUMMARY_MANUAL = Object.assign({}, SUMMARY_PAID, {
+    recurring_enabled: false, auto_renew: false, manual_renewal: true,
+    cancel_at_period_end: true, access_until: '2026-08-21T00:00:00+00:00',
+  });
+  await page.route('**/api/**', (r) => json(r, {}));                 // catch-all first (lowest priority)
+  await page.route('**/api/auth/me', (r) => json(r, { id: 1, email: 'stage.user@example.com' }));
+  await page.route('**/api/billing/summary', (r) => json(r, SUMMARY_MANUAL));
+  await page.setViewportSize(DESKTOP);
+  await page.goto(fileUrl('settings.html') + '#billing');
+  await page.locator('.settings-nav-item[data-section="billing"]').click();
+  await expect(page.locator('#billingRoot')).toContainText('renews manually', { timeout: 15000 });
+  await expect(page.locator('#billingRoot')).toContainText('do not renew automatically');
+  await expect(page.locator('[data-renewfix]')).toBeVisible();
+  await shot(page, 'settings-manual-renewal', DESKTOP, '/settings.html#billing',
+             'stubbed manual_renewal=true (recurring disabled): neutral renew prompt + access-end date');
+});
+
 test('settings-renewal-off', async ({ page }) => {
   // Tokenization-failed state (Finding C): the sub is active but NON-renewing because no card
   // token was saved. The account must SHOW this + the access-end date + the renew/update-payment
