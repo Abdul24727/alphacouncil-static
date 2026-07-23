@@ -239,13 +239,27 @@
         }
         if (!cfg || cfg.mode !== 'embedded' || !cfg.publishable_key) { showError('Online payment isn’t available yet.'); return; }
 
+        // DOUBLE-SUBMISSION guard: if a payment form for this same checkout intent was already
+        // opened in this browser session (back button / reload / second tab), warn before opening
+        // another — a second completed form is a second REAL charge. (Server-side, the duplicate
+        // is detected and auto-voided/refunded; this guard avoids it ever being created.)
+        var payKey = 'ac_pay_intent_' + (cfg.acceptance_id || plan);
+        var alreadyOpened = false;
+        try { alreadyOpened = !!sessionStorage.getItem(payKey); } catch (_e) {}
+        if (alreadyOpened) {
+          if (!window.confirm('A payment form for this checkout was already opened. If you completed the payment, do NOT pay again — check Settings › Billing first.\n\nOpen the payment form anyway?')) {
+            cont.disabled = false; return;
+          }
+        }
+        try { sessionStorage.setItem(payKey, String(Date.now())); } catch (_e) {}
+
         // Reveal the card form and init Moyasar. Amount/currency/metadata are all SERVER-set here
         // and RE-VERIFIED server-side on activation (/return + webhook) — the browser can't lower them.
         document.getElementById('payWrap').classList.remove('hide');
         cont.classList.add('hide');
         document.getElementById('acceptHint').classList.add('hide');
         try {
-          window.Moyasar.init({
+          var initOpts = {
             element: '.mysr-form',
             amount: cfg.amount,                       // halalas, server-set
             currency: cfg.currency || 'SAR',
@@ -256,7 +270,14 @@
             supported_networks: ['mada', 'visa', 'mastercard'],
             credit_card: { save_card: true },         // save the card token for monthly auto-renewal
             metadata: cfg.metadata || {}
-          });
+          };
+          // Provider-side payment-creation idempotency: ONE server-minted UUID per checkout
+          // intent. If the form passes given_id through to the payment-create API, repeated
+          // submits collapse into ONE provider payment instead of a second charge (pass-through
+          // to be CONFIRMED with Moyasar at go-live; the server's duplicate ledger auto-voids/
+          // refunds any extra charge as the enforced backstop either way).
+          if (cfg.given_id) initOpts.given_id = cfg.given_id;
+          window.Moyasar.init(initOpts);
         } catch (err) {
           showError('The payment form failed to load. Please refresh or try again.');
         }

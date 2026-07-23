@@ -169,6 +169,26 @@ test.describe('checkout acceptance + disclosures', () => {
     await expect(page.locator('#st-form')).toBeHidden();
     expect(posted).toBe(false);
   });
+
+  test('server-minted given_id (payment-creation idempotency) reaches the payment form init', async ({ page }) => {
+    // The form is stubbed (no CDN offline); we capture the EXACT options handed to Moyasar.init
+    // and assert the server's given_id is passed through — one UUID per checkout intent, so
+    // repeated submits can collapse into ONE provider payment (pass-through confirmed at go-live).
+    await stubBase(page);
+    await page.addInitScript(() => { window.Moyasar = { init: (opts) => { window.__mysrInit = opts; } }; });
+    const GIVEN = '11111111-2222-4333-8444-555555555555';
+    await page.route('**/api/billing/checkout', (r) => json(r, {
+      provider: 'moyasar', mode: 'embedded', publishable_key: 'pk_test_x', amount: 7900,
+      currency: 'SAR', callback_url: '/api/billing/return', metadata: { intent: 'tok_x' },
+      given_id: GIVEN, acceptance_id: 42,
+    }));
+    await page.goto(fileUrl('checkout.html') + '?plan=pro');
+    await page.locator('#acceptBox').check({ force: true });
+    await page.locator('#continueBtn').click();
+    await expect.poll(() => page.evaluate(() => window.__mysrInit && window.__mysrInit.given_id)).toBe(GIVEN);
+    expect(await page.evaluate(() => window.__mysrInit.amount)).toBe(7900);        // server-set, untouched
+    expect(await page.evaluate(() => window.__mysrInit.metadata.intent)).toBe('tok_x');
+  });
 });
 
 // ───────────────────────── Settings Legal panel (item 6) ─────────────────────────

@@ -8,6 +8,7 @@
 const { test, expect } = require('@playwright/test');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const ROOT = path.resolve(__dirname, '..');
 const OUT = path.resolve(ROOT, 'review-artifacts');
@@ -28,6 +29,10 @@ async function shot(page, name, viewport, route, testData) {
     viewport: { width: viewport.width, height: viewport.height },
     timestamp: new Date().toISOString(),
     test_data: testData,
+    // Per-file provenance: the SHA-256 of the EXACT PNG bytes this run produced. A reviewer
+    // verifies each file independently (sha256sum <file>) — the manifest can't silently refer
+    // to different bytes than the ones on disk.
+    sha256: crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'),
   });
 }
 
@@ -147,6 +152,27 @@ test('settings-legal', async ({ page }) => {
   await page.locator('.settings-nav-item[data-section="legal"]').click();
   await expect(page.locator('#legalRoot')).toContainText('AI and Financial Disclaimer');
   await shot(page, 'settings-legal', DESKTOP, '/settings.html#legal', 'stubbed legal-status: v1.0 docs + acceptance dates');
+});
+
+test('settings-renewal-off', async ({ page }) => {
+  // Tokenization-failed state (Finding C): the sub is active but NON-renewing because no card
+  // token was saved. The account must SHOW this + the access-end date + the renew/update-payment
+  // flow (server permits a same-plan repair checkout in exactly this state).
+  const SUMMARY_NO_TOKEN = Object.assign({}, SUMMARY_PAID, {
+    cancel_at_period_end: true, auto_renew: false, renewal_token_missing: true,
+    access_until: '2026-08-21T00:00:00+00:00',
+  });
+  await page.route('**/api/**', (r) => json(r, {}));                 // catch-all first (lowest priority)
+  await page.route('**/api/auth/me', (r) => json(r, { id: 1, email: 'stage.user@example.com' }));
+  await page.route('**/api/billing/summary', (r) => json(r, SUMMARY_NO_TOKEN));
+  await page.setViewportSize(DESKTOP);
+  await page.goto(fileUrl('settings.html') + '#billing');
+  await page.locator('.settings-nav-item[data-section="billing"]').click();
+  await expect(page.locator('#billingRoot .bill-renewfix')).toBeVisible({ timeout: 15000 });
+  await expect(page.locator('#billingRoot')).toContainText('Auto-renewal is OFF');
+  await expect(page.locator('[data-renewfix]')).toBeVisible();
+  await shot(page, 'settings-renewal-off', DESKTOP, '/settings.html#billing',
+             'stubbed renewal_token_missing=true: non-renewing banner + access-end date + renew/update-payment action');
 });
 
 test('cancellation-confirmation', async ({ page }) => {
