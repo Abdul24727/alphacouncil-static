@@ -50,7 +50,7 @@ EOF
 echo "== switch and restart"
 ssh_ "ln -sfn $rel $BASE/current.new && mv -T $BASE/current.new $BASE/current && systemctl restart acp-api acp-web"
 sleep 4
-ssh_ "systemctl is-active acp-api acp-web; curl -fsS -o /dev/null -w 'api %{http_code}\n' http://127.0.0.1:8200/v1/health; curl -fsS -o /dev/null -w 'web %{http_code}\n' http://127.0.0.1:3200/home"
+ssh_ "systemctl is-active acp-api acp-web; curl -fsS -o /dev/null -w 'api %{http_code}\n' http://127.0.0.1:8200/v1/health; curl -fsS -o /dev/null -w 'web %{http_code}\n' http://localhost:3200/home"
 
 echo "== prune: keep the 3 newest releases"
 ssh_ "cd $BASE/releases && ls -1t | tail -n +4 | xargs -r rm -rf"
