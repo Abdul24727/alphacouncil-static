@@ -42,7 +42,7 @@ cd $rel/api
 python3 -m venv .venv
 .venv/bin/pip install --quiet --disable-pip-version-check -r requirements.txt
 cd $rel/web
-npm ci --no-audit --no-fund --loglevel=error
+npm ci --include=dev --no-audit --no-fund --loglevel=error
 NODE_ENV=production npx next build
 install -d -o alphacouncil -g alphacouncil .next/cache
 EOF
