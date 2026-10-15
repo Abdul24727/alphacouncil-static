@@ -274,6 +274,300 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/auth/signup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Signup */
+        post: operations["signup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Login */
+        post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Logout */
+        post: operations["logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Me */
+        get: operations["me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/me/prefs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Prefs */
+        get: operations["getPrefs"];
+        /** Put Prefs */
+        put: operations["putPrefs"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/portfolio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Portfolio */
+        get: operations["getPortfolio"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/portfolio/holdings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upsert Holding */
+        post: operations["upsertHolding"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/portfolio/holdings/{holding_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Holding */
+        delete: operations["deleteHolding"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/portfolio/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Alerts */
+        get: operations["listAlerts"];
+        put?: never;
+        /** Create Alert */
+        post: operations["createAlert"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/portfolio/alerts/{alert_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Alert */
+        delete: operations["deleteAlert"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/market/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Overview */
+        get: operations["marketOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/market/exchanges": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Exchanges */
+        get: operations["marketExchanges"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/screener": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Screener
+         * @description Every equity with the columns the Screener filters on. Missing values stay null.
+         */
+        get: operations["screener"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/templates/earnings-season": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Earnings Season */
+        get: operations["earningsSeason"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/templates/dividend-hunter": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dividend Hunter */
+        get: operations["dividendHunter"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/templates/sectors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sectors */
+        get: operations["listSectors"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/templates/sector-vs-sector": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sector Vs Sector */
+        get: operations["sectorVsSector"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/health": {
         parameters: {
             query?: never;
@@ -295,6 +589,34 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Alert */
+        Alert: {
+            /** Id */
+            id: number;
+            ticker: components["schemas"]["TickerRef"];
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "above" | "below";
+            /** Price */
+            price: number;
+            last: components["schemas"]["LastClose"];
+            /** Triggered */
+            triggered: boolean | null;
+        };
+        /** AlertIn */
+        AlertIn: {
+            /** Ticker */
+            ticker: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "above" | "below";
+            /** Price */
+            price: number;
+        };
         /** AttachedPanel */
         AttachedPanel: {
             /** Id */
@@ -322,6 +644,15 @@ export interface components {
             volume: number | null;
             /** Turnover */
             turnover?: number | null;
+        };
+        /** Breadth */
+        Breadth: {
+            /** Advancers */
+            advancers: number;
+            /** Decliners */
+            decliners: number;
+            /** Unchanged */
+            unchanged: number;
         };
         /** CapitalChange */
         CapitalChange: {
@@ -388,6 +719,21 @@ export interface components {
             as_of_date: string | null;
             freshness: components["schemas"]["Freshness"] | null;
         };
+        /** CurrencyGroup */
+        CurrencyGroup: {
+            /** Currency */
+            currency: string;
+            /** Market Value */
+            market_value: number;
+            /** Day Change Value */
+            day_change_value: number;
+            /** Sectors */
+            sectors: components["schemas"]["Slice"][];
+            /** Exchanges */
+            exchanges: components["schemas"]["Slice"][];
+            /** Holdings Count */
+            holdings_count: number;
+        };
         /** Dividend */
         Dividend: {
             /** Announce Date */
@@ -402,6 +748,56 @@ export interface components {
             amount_mn: number | null;
             /** Note */
             note: string | null;
+        };
+        /** DividendRow */
+        DividendRow: {
+            ticker: components["schemas"]["TickerRef"];
+            price: components["schemas"]["LastClose"];
+            /** Dividend Yield Pct */
+            dividend_yield_pct: number | null;
+            /** Payments 3Y */
+            payments_3y: number;
+            /** Last Dps */
+            last_dps: number | null;
+            /** Last Ex Date */
+            last_ex_date: string | null;
+            /** Next Ex Date */
+            next_ex_date: string | null;
+            /** Payout Pct */
+            payout_pct: number | null;
+        };
+        /** EarningsEvent */
+        EarningsEvent: {
+            ticker: components["schemas"]["TickerRef"];
+            /** Date */
+            date: string;
+            /** Title */
+            title: string;
+            /** Url */
+            url: string | null;
+            /** Upcoming */
+            upcoming: boolean;
+            price: components["schemas"]["LastClose"];
+        };
+        /** EarningsSeason */
+        EarningsSeason: {
+            /** Window Days */
+            window_days: number;
+            /** Events */
+            events: components["schemas"]["EarningsEvent"][];
+        };
+        /** ExchangeSummary */
+        ExchangeSummary: {
+            /** Exchange */
+            exchange: string;
+            /** Equities */
+            equities: number;
+            /** With Prices */
+            with_prices: number;
+            /** As Of */
+            as_of: string | null;
+            breadth: components["schemas"]["Breadth"];
+            index: components["schemas"]["Index"] | null;
         };
         /** Freshness */
         Freshness: {
@@ -464,6 +860,56 @@ export interface components {
             /** Universe As Of */
             universe_as_of: string | null;
         };
+        /** Holding */
+        Holding: {
+            /** Id */
+            id: number;
+            ticker: components["schemas"]["TickerRef"];
+            /** Quantity */
+            quantity: number;
+            /** Avg Cost */
+            avg_cost: number | null;
+            price: components["schemas"]["LastClose"];
+            /** Market Value */
+            market_value: number | null;
+            /** Day Change Value */
+            day_change_value: number | null;
+            /** Cost Value */
+            cost_value: number | null;
+            /** Pnl */
+            pnl: number | null;
+            /** Pnl Pct */
+            pnl_pct: number | null;
+            /** Weight Pct */
+            weight_pct: number | null;
+        };
+        /** HoldingIn */
+        HoldingIn: {
+            /** Ticker */
+            ticker: string;
+            /** Quantity */
+            quantity: number;
+            /** Avg Cost */
+            avg_cost?: number | null;
+        };
+        /** Index */
+        Index: {
+            /** Key */
+            key: string;
+            /** Exchange */
+            exchange: string;
+            /** Name En */
+            name_en: string | null;
+            /** Name Ar */
+            name_ar: string | null;
+            /** Level */
+            level: number | null;
+            /** Change */
+            change: number | null;
+            /** Change Pct */
+            change_pct: number | null;
+            freshness: components["schemas"]["Freshness"] | null;
+        };
         /** Insights */
         Insights: {
             /** Updated At */
@@ -484,6 +930,33 @@ export interface components {
             analysts: {
                 [key: string]: unknown;
             } | null;
+        };
+        /** LastClose */
+        LastClose: {
+            /** As Of */
+            as_of: string | null;
+            /** Close */
+            close: number | null;
+            /** Prev Close */
+            prev_close: number | null;
+            /** Change Pct */
+            change_pct: number | null;
+        };
+        /** LoginBody */
+        LoginBody: {
+            /** Email */
+            email: string;
+            /** Password */
+            password: string;
+        };
+        /** Me */
+        Me: {
+            user: components["schemas"]["User"] | null;
+        };
+        /** Mover */
+        Mover: {
+            ticker: components["schemas"]["TickerRef"];
+            price: components["schemas"]["LastClose"];
         };
         /** NewsItem */
         NewsItem: {
@@ -507,6 +980,29 @@ export interface components {
             summary_ar: string | null;
             /** Impact */
             impact: string | null;
+        };
+        /** NewsLine */
+        NewsLine: {
+            ticker: components["schemas"]["TickerRef"];
+            /** Date */
+            date: string | null;
+            /** Title */
+            title: string | null;
+            /** Url */
+            url: string | null;
+            /** Lang */
+            lang: string | null;
+        };
+        /** Overview */
+        Overview: {
+            /** Exchanges */
+            exchanges: components["schemas"]["ExchangeSummary"][];
+            /** Gainers */
+            gainers: components["schemas"]["Mover"][];
+            /** Losers */
+            losers: components["schemas"]["Mover"][];
+            /** News */
+            news: components["schemas"]["NewsLine"][];
         };
         /** PeerRow */
         PeerRow: {
@@ -534,6 +1030,27 @@ export interface components {
             sector_ar: string | null;
             /** Peers */
             peers: components["schemas"]["PeerRow"][];
+        };
+        /** Portfolio */
+        Portfolio: {
+            /** Holdings */
+            holdings: components["schemas"]["Holding"][];
+            /** Groups */
+            groups: components["schemas"]["CurrencyGroup"][];
+            /** Council */
+            council: components["schemas"]["SeatTally"][];
+            /** Unpriced */
+            unpriced: number;
+        };
+        /**
+         * Prefs
+         * @description Per-user UI settings: panes, chart, language, decimals, font size, controls on hover.
+         */
+        Prefs: {
+            /** Data */
+            data: {
+                [key: string]: unknown;
+            };
         };
         /** PriceHistory */
         PriceHistory: {
@@ -580,6 +1097,27 @@ export interface components {
             /** Max Drawdown */
             max_drawdown: number | null;
         };
+        /** ScreenerRow */
+        ScreenerRow: {
+            ticker: components["schemas"]["TickerRef"];
+            price: components["schemas"]["LastClose"];
+            /** Market Cap Mn */
+            market_cap_mn: number | null;
+            /** Pe */
+            pe: number | null;
+            /** Pb */
+            pb: number | null;
+            /** Dividend Yield Pct */
+            dividend_yield_pct: number | null;
+            /** Roe Pct */
+            roe_pct: number | null;
+            /** Return 12M */
+            return_12m: number | null;
+            /** Vol 1Y */
+            vol_1y: number | null;
+            /** Rsi 14 */
+            rsi_14: number | null;
+        };
         /** Seat */
         Seat: {
             /** Seat */
@@ -602,6 +1140,98 @@ export interface components {
             value: number | string | null;
             /** Unit */
             unit?: string | null;
+        };
+        /** SeatTally */
+        SeatTally: {
+            /** Seat */
+            seat: string;
+            /** Bullish */
+            bullish: number;
+            /** Neutral */
+            neutral: number;
+            /** Bearish */
+            bearish: number;
+            /** Abstain */
+            abstain: number;
+        };
+        /** SectorCompare */
+        SectorCompare: {
+            a: components["schemas"]["SectorStats"];
+            b: components["schemas"]["SectorStats"];
+            /** A Members */
+            a_members: components["schemas"]["SectorMember"][];
+            /** B Members */
+            b_members: components["schemas"]["SectorMember"][];
+        };
+        /** SectorListItem */
+        SectorListItem: {
+            /** Sector En */
+            sector_en: string;
+            /** Sector Ar */
+            sector_ar: string | null;
+            /** Equities */
+            equities: number;
+        };
+        /** SectorMember */
+        SectorMember: {
+            ticker: components["schemas"]["TickerRef"];
+            price: components["schemas"]["LastClose"];
+            /** Market Cap Mn */
+            market_cap_mn: number | null;
+            /** Pe */
+            pe: number | null;
+            /** Dividend Yield Pct */
+            dividend_yield_pct: number | null;
+            /** Return 12M */
+            return_12m: number | null;
+        };
+        /** SectorStats */
+        SectorStats: {
+            /** Sector En */
+            sector_en: string;
+            /** Sector Ar */
+            sector_ar: string | null;
+            /** Equities */
+            equities: number;
+            /** Median Pe */
+            median_pe: number | null;
+            /** Median Pb */
+            median_pb: number | null;
+            /** Median Yield Pct */
+            median_yield_pct: number | null;
+            /** Median Roe Pct */
+            median_roe_pct: number | null;
+            /** Median Return 12M */
+            median_return_12m: number | null;
+            /** With Value */
+            with_value: {
+                [key: string]: number;
+            };
+        };
+        /** SignupBody */
+        SignupBody: {
+            /** Email */
+            email: string;
+            /** Password */
+            password: string;
+            /** Display Name */
+            display_name?: string | null;
+            /**
+             * Locale
+             * @default en
+             */
+            locale: string;
+        };
+        /** Slice */
+        Slice: {
+            /** Label */
+            label: string;
+            /** Label Ar */
+            label_ar: string | null;
+            /** Value */
+            value: number;
+            /** Weight Pct */
+            weight_pct: number;
         };
         /** Statement */
         Statement: {
@@ -738,6 +1368,17 @@ export interface components {
             sector_ar: string | null;
             /** Has Prices */
             has_prices: boolean;
+        };
+        /** User */
+        User: {
+            /** Id */
+            id: number;
+            /** Email */
+            email: string;
+            /** Display Name */
+            display_name: string | null;
+            /** Locale */
+            locale: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -1224,6 +1865,519 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    signup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignupBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    getPrefs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Prefs"];
+                };
+            };
+        };
+    };
+    putPrefs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Prefs"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Prefs"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getPortfolio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Portfolio"];
+                };
+            };
+        };
+    };
+    upsertHolding: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HoldingIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Portfolio"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    deleteHolding: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                holding_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Portfolio"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listAlerts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Alert"][];
+                };
+            };
+        };
+    };
+    createAlert: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlertIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Alert"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    deleteAlert: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Alert"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    marketOverview: {
+        parameters: {
+            query?: {
+                movers?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Overview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    marketExchanges: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExchangeSummary"][];
+                };
+            };
+        };
+    };
+    screener: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScreenerRow"][];
+                };
+            };
+        };
+    };
+    earningsSeason: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EarningsSeason"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    dividendHunter: {
+        parameters: {
+            query?: {
+                min_yield?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DividendRow"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listSectors: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SectorListItem"][];
+                };
+            };
+        };
+    };
+    sectorVsSector: {
+        parameters: {
+            query: {
+                a: string;
+                b: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SectorCompare"];
+                };
             };
             /** @description Validation Error */
             422: {

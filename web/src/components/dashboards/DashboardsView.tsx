@@ -23,9 +23,9 @@ export function DashboardsView() {
   if (pinned.length === 0) {
     return (
       <div className="p-2.5">
-        <section className="rounded-panel border border-line bg-panel p-3">
+        <Panel id="dashboards.empty" title={t("title")}>
           <PanelUnavailable detail={t("empty")} />
-        </section>
+        </Panel>
       </div>
     );
   }

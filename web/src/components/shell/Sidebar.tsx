@@ -1,9 +1,10 @@
 "use client";
 
-import { DoubleArrowLeftIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { DoubleArrowLeftIcon, EnterIcon, ExitIcon, MagnifyingGlassIcon, PersonIcon } from "@radix-ui/react-icons";
 import { useLocale, useTranslations } from "next-intl";
 import { Tooltip } from "radix-ui";
 import { Link } from "@/i18n/navigation";
+import { useMe, useSignOut } from "@/lib/auth";
 import { useLayout } from "@/lib/layout-store";
 import { Kbd } from "./Kbd";
 import { isActive, MAIN_NAV, type NavItem, SETTINGS_NAV } from "./nav";
@@ -78,6 +79,7 @@ export function Sidebar() {
             />
           )}
         />
+        <AccountLink />
         <button
           type="button"
           onClick={toggleSidebar}
@@ -91,6 +93,43 @@ export function Sidebar() {
 
       <ResizeHandle pane="sidebar" className="end-[-3px] sidebar-collapsed:hidden" />
     </aside>
+  );
+}
+
+/** Signed in: who, and sign out. Signed out: a sign-in link. */
+function AccountLink() {
+  const t = useTranslations("auth");
+  const me = useMe();
+  const signOut = useSignOut();
+  const user = me.data;
+  if (me.isPending) return <div className="h-8" />;
+  if (!user) {
+    return (
+      <Link
+        href="/login"
+        className="flex h-8 items-center gap-2.5 rounded-panel px-2 text-muted hover:bg-panel-raised hover:text-text sidebar-collapsed:justify-center sidebar-collapsed:px-0"
+      >
+        <EnterIcon className="shrink-0" />
+        <span className="sidebar-collapsed:hidden">{t("signIn")}</span>
+      </Link>
+    );
+  }
+  return (
+    <div className="flex h-8 items-center gap-2 px-2 sidebar-collapsed:justify-center sidebar-collapsed:px-0">
+      <PersonIcon className="shrink-0 text-muted" />
+      <span className="min-w-0 flex-1 truncate text-text-soft sidebar-collapsed:hidden" title={t("signedInAs", { email: user.email })}>
+        {user.display_name || user.email}
+      </span>
+      <button
+        type="button"
+        onClick={() => signOut.mutate()}
+        aria-label={t("signOut")}
+        title={t("signOut")}
+        className="grid size-6 place-items-center rounded-panel text-muted hover:bg-panel-raised hover:text-text sidebar-collapsed:hidden"
+      >
+        <ExitIcon className="rtl:-scale-x-100" />
+      </button>
+    </div>
   );
 }
 

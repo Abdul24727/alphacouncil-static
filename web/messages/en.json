@@ -360,6 +360,185 @@
   "dashboards": {
     "empty": "Nothing pinned yet. Pin a table or chart from a Copilot answer and it appears here.",
     "unpin": "Remove from dashboard",
-    "pinnedAt": "Pinned {when}"
+    "pinnedAt": "Pinned {when}",
+    "title": "My dashboards"
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "signupTitle": "Create your account",
+    "name": "Name (optional)",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 10 characters.",
+    "loginCta": "Sign in",
+    "signupCta": "Create account",
+    "noAccount": "New to AlphaCouncil?",
+    "haveAccount": "Already have an account?",
+    "signupLink": "Create an account",
+    "loginLink": "Sign in",
+    "signOut": "Sign out",
+    "signIn": "Sign in",
+    "signedInAs": "Signed in as {email}",
+    "required": "Sign in to keep a portfolio, alerts and your settings.",
+    "errors": {
+      "credentials": "Email or password is incorrect.",
+      "exists": "An account with this email already exists. Sign in instead.",
+      "invalid": "Check the email address and use a password of at least 10 characters.",
+      "rate": "Too many attempts. Try again in 15 minutes.",
+      "generic": "Something went wrong. Try again."
+    }
+  },
+  "market": {
+    "markets": "Markets",
+    "exchange": "Exchange",
+    "index": "Index",
+    "change": "Chg",
+    "breadth": "Advancers / decliners",
+    "equities": "With prices",
+    "asOf": "As of",
+    "na": "n/a",
+    "noIndex": "No index level is collected for this exchange",
+    "gainers": "Top gainers",
+    "losers": "Top losers",
+    "news": "Latest news",
+    "noMovers": "No movers on the latest trading day",
+    "noNews": "No news in the database",
+    "browse": "{exchange}: {n} equities"
+  },
+  "screener": {
+    "title": "Screener",
+    "search": "Symbol or name",
+    "allSectors": "All sectors",
+    "peMax": "P/E max",
+    "yieldMin": "Yield min %",
+    "roeMin": "ROE min %",
+    "r12Min": "12M min %",
+    "mcapMin": "Mkt cap min (mn)",
+    "reset": "Reset",
+    "count": "{shown} of {total}",
+    "none": "No equity matches these filters",
+    "cols": {
+      "ticker": "Equity",
+      "exchange": "Exchange",
+      "sector": "Sector",
+      "price": "Price",
+      "change": "Chg",
+      "mcap": "Mkt cap",
+      "pe": "P/E",
+      "yield": "Yield",
+      "roe": "ROE",
+      "r12": "12M",
+      "rsi": "RSI"
+    }
+  },
+  "portfolio": {
+    "holdings": "Holdings",
+    "exposure": "Exposure",
+    "alerts": "Alerts",
+    "council": "Council on the portfolio",
+    "pickTicker": "Choose a ticker",
+    "quantity": "Quantity",
+    "avgCost": "Avg cost (optional)",
+    "add": "Add",
+    "remove": "Remove {symbol}",
+    "empty": "No holdings yet. Add the stocks you own above.",
+    "emptyShort": "Add holdings to see this.",
+    "noCost": "Add an average cost to see gain or loss",
+    "perCurrency": "There are no FX rates in our data, so exposure is shown per listing currency, never converted.",
+    "bySector": "By sector",
+    "byMarket": "By market",
+    "councilNote": "How each council seat votes across your holdings: bullish · neutral · bearish (abstaining).",
+    "when": "When",
+    "above": "Above",
+    "below": "Below",
+    "price": "Price",
+    "addAlert": "Add alert",
+    "removeAlert": "Remove alert",
+    "noAlerts": "No alerts. Alerts compare against the latest close in our data.",
+    "triggered": "Triggered",
+    "waiting": "Waiting",
+    "note": "Values use the latest close in our data; gain and loss use the average cost you enter.",
+    "errors": {
+      "input": "Choose a ticker and enter a quantity above zero."
+    },
+    "cols": {
+      "ticker": "Holding",
+      "quantity": "Qty",
+      "price": "Price",
+      "change": "Chg",
+      "value": "Value",
+      "weight": "Weight",
+      "pnl": "Gain / loss",
+      "asOf": "As of"
+    }
+  },
+  "templates": {
+    "title": "Templates",
+    "unknown": "There is no template with this name.",
+    "window": "Window",
+    "names": {
+      "tadawul-stock": "Tadawul Stock",
+      "earnings-season": "Earnings Season",
+      "dividend-hunter": "Dividend Hunter",
+      "sector-vs-sector": "Sector vs Sector"
+    },
+    "descriptions": {
+      "tadawul-stock": "One company across five pages: overview, financials, council, ownership and calendar. Every panel follows one ticker.",
+      "earnings-season": "Results disclosures across the market around today: what is due and what has just been published.",
+      "dividend-hunter": "Equities ranked by dividend yield, with payment consistency, the next ex-date and the payout ratio.",
+      "sector-vs-sector": "Two sectors side by side: median valuation, yield, profitability and return, then every member."
+    },
+    "cols": {
+      "date": "Date",
+      "ticker": "Equity",
+      "event": "Event",
+      "price": "Price",
+      "change": "Chg"
+    },
+    "earnings": {
+      "upcoming": "Upcoming results",
+      "recent": "Recent results",
+      "none": "No results disclosures in this window"
+    },
+    "dividends": {
+      "title": "Ranked by dividend yield",
+      "minYield": "Yield at least",
+      "yield": "Yield",
+      "payments": "Payments 3y",
+      "lastDps": "Last per share",
+      "lastEx": "Last ex-date",
+      "nextEx": "Next ex-date",
+      "payout": "Payout",
+      "none": "No equity meets this yield"
+    },
+    "sectors": {
+      "a": "First sector",
+      "b": "Second sector",
+      "compare": "Medians",
+      "equities": "Equities",
+      "medianPe": "Median P/E",
+      "medianPb": "Median P/B",
+      "medianYield": "Median dividend yield",
+      "medianRoe": "Median ROE",
+      "medianR12": "Median 12M return",
+      "mcap": "Mkt cap",
+      "note": "Medians over the members that report each figure; P/E ignores negative earnings."
+    }
+  },
+  "settings": {
+    "display": "Display",
+    "account": "Account",
+    "language": "Language",
+    "decimals": "Price decimals",
+    "decimalsAuto": "By currency",
+    "fontSize": "Font size",
+    "small": "Small",
+    "medium": "Medium",
+    "large": "Large",
+    "controls": "Panel controls",
+    "controlsAlways": "Always shown",
+    "controlsHover": "On hover",
+    "savedToAccount": "Saved to your account.",
+    "savedToBrowser": "Saved in this browser. Sign in to keep them on every device."
   }
 }

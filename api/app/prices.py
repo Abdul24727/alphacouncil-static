@@ -78,6 +78,25 @@ def parse(path: Path) -> list[Bar]:
     return [bars[k] for k in sorted(bars)]
 
 
+def tail_bars(path: Path, n: int = 2) -> list[Bar]:
+    """The last `n` bars from the end of a price file without parsing the whole file."""
+    with open(path, "rb") as f:
+        f.seek(0, 2)
+        size = f.tell()
+        chunk = min(size, 4096)
+        f.seek(size - chunk)
+        lines = f.read().decode("utf-8-sig", errors="replace").splitlines()
+    rows = [r for r in csv.reader(lines[1:] if chunk == size else lines[1:]) if len(r) >= len(COLUMNS)]
+    out: dict[str, Bar] = {}
+    for row in rows:
+        d, close = _date(row[0]), _num(row[1])
+        if d is None or close is None or close <= 0:
+            continue
+        out[d.isoformat()] = Bar(time=d.isoformat(), open=None, high=None, low=None, close=close,
+                                 volume=_num(row[4]), turnover=_num(row[5]))
+    return [out[k] for k in sorted(out)][-n:]
+
+
 class PriceStore:
     """Parsed series cached per file, refreshed when the pipeline rewrites the file."""
 
@@ -86,12 +105,26 @@ class PriceStore:
         self._cache: OrderedDict[str, tuple[float, list[Bar]]] = OrderedDict()
         self._capacity = capacity
         self._lock = threading.Lock()
+        self._tails: dict[str, tuple[float, list[Bar]]] = {}
 
     def path_for(self, ticker_key: str) -> Path | None:
         if self.root is None:
             return None
         p = self.root / ticker_key / FILE_NAME
         return p if p.is_file() else None
+
+    def latest(self, ticker_key: str) -> list[Bar]:
+        """The last two bars (close and previous close), cached per file version."""
+        path = self.path_for(ticker_key)
+        if path is None:
+            return []
+        mtime = path.stat().st_mtime
+        hit = self._tails.get(ticker_key)
+        if hit and hit[0] == mtime:
+            return hit[1]
+        bars = tail_bars(path, 2)
+        self._tails[ticker_key] = (mtime, bars)
+        return bars
 
     def bars(self, ticker_key: str) -> list[Bar] | None:
         """None when the ticker has no price file; otherwise its bars, oldest first."""

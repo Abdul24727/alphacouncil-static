@@ -110,13 +110,17 @@ def data_files(tmp_path):
                 ("2222_TADAWUL", "debt_equity", 0.2, "ok", "{}", 54.0),
                 ("2222_TADAWUL", "current_ratio", 2.0, "ok", "{}", 68.4),
                 ("2222_TADAWUL", "ev_ebitda", None, "na_sector", "{}", None),
+                ("2222_TADAWUL", "payout", 41.9, "ok", "{}", 63.5),
             ],
             "fundamentals_lineitems": [
                 ("EMAAR_DFM", "EMAAR", "DFM", 2024, "Income Statement", 0, "الايرادات", 35505.0),
                 ("EMAAR_DFM", "EMAAR", "DFM", 2025, "Income Statement", 0, "الايرادات", 49557.26),
                 ("EMAAR_DFM", "EMAAR", "DFM", 2025, "Balance Sheet", 0, "نقد وما يعادله", 71400.0),
             ],
-            "dividends": [("2222_TADAWUL", "2026-08-04", "2026-08-19", "2026-08-27", 82060.0, 0.34, "Q 2 _ 2026")],
+            "dividends": [
+                ("2222_TADAWUL", "2026-08-04", "2026-08-19", "2026-08-27", 82060.0, 0.34, "Q 2 _ 2026"),
+                ("2222_TADAWUL", "2030-01-01", "2030-01-10", "2030-01-20", 82060.0, 0.35, "Q 4 _ 2029"),
+            ],
             "capital_changes": [("2222_TADAWUL", "2023-05-08", "Bonus Shares", 75000.0, 220000.0, 90000.0, 242000.0, 20.0, "")],
             "ticker_insights": [
                 (
@@ -154,9 +158,18 @@ def data_files(tmp_path):
                 ("d1", "2222_TADAWUL", "disclosures", "2026-03-09T21:00:00", "Buyback", "https://www.argaam.com/en/a/2", None, "", None, None, None, "Summary", None),
                 ("e1", "2222_TADAWUL", "events", "2026-06-08T21:00:00", "cash dividend distribution", None, None, "", None, None, None, None, None),
                 ("x1", "2222_TADAWUL", "events", "unknown_date_3", "undated", None, None, "", None, None, None, None, None),
+                ("e2", "1120_TADAWUL", "events", f"{TODAY}T21:00:00", "financial results disclosure", None, None, "", None, None, None, None, None),
             ],
             "news_ai": [("https://www.argaam.com/en/a/1", "Aramco news", "Up", "صعود", "positive")],
         },
+    )
+
+    indices = tmp_path / "market_indices.sqlite"
+    _db(
+        indices,
+        ["CREATE TABLE market_indices (id INTEGER, market TEXT, name_en TEXT, name_ar TEXT, price REAL, change_ REAL,"
+         " change_pct REAL, volume REAL, source_url TEXT, fetched_at TEXT)"],
+        {"market_indices": [(1, "TASI", "Tadawul All-Share", "تداول", 10138.83, -179.3, -1.7378, None, None, datetime.now(UTC).isoformat())]},
     )
 
     names = tmp_path / "tickers_universe_corrected.csv"
@@ -193,6 +206,9 @@ def data_files(tmp_path):
     return Settings(
         _env_file=None,
         universe_root=prices,
+        market_indices_db=indices,
+        database_url=f"sqlite:///{(tmp_path / 'app.sqlite').as_posix()}",
+        allowed_origins="http://testserver",
         briefs_db=briefs,
         screening_db=screening,
         evidence_db=evidence,

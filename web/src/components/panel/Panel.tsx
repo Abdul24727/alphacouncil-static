@@ -113,7 +113,7 @@ export function Panel({
           <h2 className="headline min-w-0 truncate text-panel-title" title={title}>
             {title}
           </h2>
-          <div className="ms-auto flex shrink-0 items-center gap-0.5">
+          <div className="panel-controls ms-auto flex shrink-0 items-center gap-0.5">
             {actions}
             <HeaderButton
               label={attached ? t("removeFromCopilot") : t("addToCopilot")}

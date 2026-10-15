@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     screening_db: Path | None = None
     # News and disclosures (`items`, `news_ai`).
     evidence_db: Path | None = None
+    # Index levels (TASI, ADX, DFM) and their history.
+    market_indices_db: Path | None = None
     # Per-ticker daily OHLCV: <universe_root>/<ticker_key>/price_history_10y.csv
     universe_root: Path | None = None
     # True for a frozen snapshot copy; False for the live file the pipeline rewrites.
@@ -35,8 +37,12 @@ class Settings(BaseSettings):
     copilot_model: str = "claude-opus-5-5"
     copilot_effort: str = "medium"  # low | medium | high | xhigh | max
 
-    # Declared now so every environment has the same shape; used from Phase 4/5.
-    database_url: str | None = None
+    # App data (accounts, portfolios, alerts, preferences). SQLite locally, Postgres on servers.
+    database_url: str = "sqlite:///./dev-app.sqlite"
+    # Origins allowed to make cookie-authenticated writes (comma-separated).
+    allowed_origins: str = "http://localhost:3100,http://localhost:3201"
+    # True wherever the site is served over HTTPS.
+    cookie_secure: bool = False
     redis_url: str | None = None
 
 

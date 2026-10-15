@@ -139,7 +139,8 @@ def test_statements_by_year(client):
 
 def test_corporate(client):
     c = get(client, "/v1/tickers/2222/corporate")
-    assert c["dividends"][0]["dps"] == 0.34
+    # Newest first, including an announced future payment.
+    assert [d["dps"] for d in c["dividends"]] == [0.35, 0.34]
     assert c["capital_changes"][0]["change_type"] == "Bonus Shares"
 
 

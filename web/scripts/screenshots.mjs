@@ -52,6 +52,17 @@ const SHOTS = {
     ],
   ],
 };
+SHOTS["phase-5"] = [
+  ["home", "/home", waitForPanels],
+  ["screener", "/screener", waitForPanels],
+  ["markets", "/markets", waitForPanels],
+  ["templates", "/templates", waitForPanels],
+  ["earnings-season", "/templates/earnings-season", waitForPanels],
+  ["dividend-hunter", "/templates/dividend-hunter", waitForPanels],
+  ["sector-vs-sector", "/templates/sector-vs-sector", waitForPanels],
+  ["settings", "/settings", waitForPanels],
+  ["home-ar", "/ar/home", waitForPanels],
+];
 SHOTS.latest = Object.values(SHOTS).flat();
 SHOTS.staging = SHOTS.latest;
 

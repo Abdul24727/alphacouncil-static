@@ -7,6 +7,7 @@ cites them the same way. Every answer says it is a stand-in.
 """
 
 from collections.abc import AsyncIterator
+from datetime import date
 from typing import Any
 
 from fastapi import Request
@@ -34,6 +35,7 @@ T = {
         "no_yield": "There is no dividend yield for {name} in the attached panels or the database.",
         "last_div": "The latest recorded dividend is {cur} {dps} per share ({period}), ex-date {ex}, paid {pay} [DB].",
         "div_count": "{n} dividend payments are recorded; the table lists the latest {k}.",
+        "next_div": "Announced next: {cur} {dps} per share ({period}), ex-date {ex} [DB].",
         "no_divs": "No dividend payments are recorded for {name} in the database [DB].",
         "pe": "{name} trades at a P/E of {pe}x and a P/B of {pb}x {tag}.",
         "no_pe": "There is no P/E for {name} in the attached panels or the database.",
@@ -62,6 +64,7 @@ T = {
         "no_yield": "لا يوجد عائد توزيعات لسهم {name} في اللوحات المرفقة أو قاعدة البيانات.",
         "last_div": "آخر توزيع مسجل {dps} {cur} للسهم ({period})، تاريخ الاستحقاق {ex}، وتاريخ الصرف {pay} [DB].",
         "div_count": "سُجلت {n} دفعات توزيع، ويعرض الجدول آخر {k} منها.",
+        "next_div": "التوزيع القادم المعلن: {dps} {cur} للسهم ({period})، تاريخ الاستحقاق {ex} [DB].",
         "no_divs": "لا توجد توزيعات مسجلة لسهم {name} في قاعدة البيانات [DB].",
         "pe": "يتداول سهم {name} بمكرر ربحية {pe} ومكرر قيمة دفترية {pb} {tag}.",
         "no_pe": "لا يوجد مكرر ربحية لسهم {name} في اللوحات المرفقة أو قاعدة البيانات.",
@@ -176,7 +179,13 @@ async def standin_stream(request: Request, chat: ChatInput) -> AsyncIterator[str
                 value, tag = _find(overview, "valuation", "dividend_yield_pct"), "[DB]"
             lines.append(s["yield"].format(name=name, value=f"{value:.2f}", tag=tag) if value is not None else s["no_yield"].format(name=name))
             corp = await run.tool("get_dividends", {"ticker": ticker})
-            divs = corp.get("dividends", []) if isinstance(corp, dict) else []
+            all_divs = corp.get("dividends", []) if isinstance(corp, dict) else []
+            today = date.today().isoformat()
+            divs = [x for x in all_divs if (x.get("ex_date") or x.get("announce_date") or "") <= today]
+            upcoming = sorted((x for x in all_divs if (x.get("ex_date") or "") > today), key=lambda x: x["ex_date"])
+            if upcoming:
+                u = upcoming[0]
+                lines.append(s["next_div"].format(cur=cur, dps=u["dps"], period=_period(u.get("note")), ex=u["ex_date"]))
             if divs:
                 d = divs[0]
                 lines.append(s["last_div"].format(cur=cur, dps=d["dps"], period=_period(d.get("note")), ex=d.get("ex_date") or "—", pay=d.get("pay_date") or "—"))

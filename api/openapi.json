@@ -673,6 +673,686 @@
         }
       }
     },
+    "/v1/auth/signup": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Signup",
+        "operationId": "signup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logout",
+        "operationId": "logout",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Me",
+        "operationId": "me",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/me/prefs": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Get Prefs",
+        "operationId": "getPrefs",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Prefs"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Put Prefs",
+        "operationId": "putPrefs",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Prefs"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Prefs"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/portfolio": {
+      "get": {
+        "tags": [
+          "portfolio"
+        ],
+        "summary": "Get Portfolio",
+        "operationId": "getPortfolio",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Portfolio"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/portfolio/holdings": {
+      "post": {
+        "tags": [
+          "portfolio"
+        ],
+        "summary": "Upsert Holding",
+        "operationId": "upsertHolding",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HoldingIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Portfolio"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/portfolio/holdings/{holding_id}": {
+      "delete": {
+        "tags": [
+          "portfolio"
+        ],
+        "summary": "Delete Holding",
+        "operationId": "deleteHolding",
+        "parameters": [
+          {
+            "name": "holding_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Holding Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Portfolio"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/portfolio/alerts": {
+      "get": {
+        "tags": [
+          "portfolio"
+        ],
+        "summary": "List Alerts",
+        "operationId": "listAlerts",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Alert"
+                  },
+                  "type": "array",
+                  "title": "Response Listalerts"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "portfolio"
+        ],
+        "summary": "Create Alert",
+        "operationId": "createAlert",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Alert"
+                  },
+                  "type": "array",
+                  "title": "Response Createalert"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/portfolio/alerts/{alert_id}": {
+      "delete": {
+        "tags": [
+          "portfolio"
+        ],
+        "summary": "Delete Alert",
+        "operationId": "deleteAlert",
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Alert"
+                  },
+                  "title": "Response Deletealert"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/market/overview": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "summary": "Overview",
+        "operationId": "marketOverview",
+        "parameters": [
+          {
+            "name": "movers",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 6,
+              "title": "Movers"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Overview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/market/exchanges": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "summary": "Exchanges",
+        "operationId": "marketExchanges",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ExchangeSummary"
+                  },
+                  "type": "array",
+                  "title": "Response Marketexchanges"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/screener": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "summary": "Screener",
+        "description": "Every equity with the columns the Screener filters on. Missing values stay null.",
+        "operationId": "screener",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ScreenerRow"
+                  },
+                  "type": "array",
+                  "title": "Response Screener"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/templates/earnings-season": {
+      "get": {
+        "tags": [
+          "templates"
+        ],
+        "summary": "Earnings Season",
+        "operationId": "earningsSeason",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 120,
+              "minimum": 7,
+              "default": 30,
+              "title": "Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EarningsSeason"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/templates/dividend-hunter": {
+      "get": {
+        "tags": [
+          "templates"
+        ],
+        "summary": "Dividend Hunter",
+        "operationId": "dividendHunter",
+        "parameters": [
+          {
+            "name": "min_yield",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 50,
+              "minimum": 0,
+              "default": 0,
+              "title": "Min Yield"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 300,
+              "minimum": 1,
+              "default": 60,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DividendRow"
+                  },
+                  "title": "Response Dividendhunter"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/templates/sectors": {
+      "get": {
+        "tags": [
+          "templates"
+        ],
+        "summary": "Sectors",
+        "operationId": "listSectors",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SectorListItem"
+                  },
+                  "type": "array",
+                  "title": "Response Listsectors"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/templates/sector-vs-sector": {
+      "get": {
+        "tags": [
+          "templates"
+        ],
+        "summary": "Sector Vs Sector",
+        "operationId": "sectorVsSector",
+        "parameters": [
+          {
+            "name": "a",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "A"
+            }
+          },
+          {
+            "name": "b",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "B"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectorCompare"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/health": {
       "get": {
         "tags": [
@@ -697,6 +1377,84 @@
   },
   "components": {
     "schemas": {
+      "Alert": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "ticker": {
+            "$ref": "#/components/schemas/TickerRef"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "above",
+              "below"
+            ],
+            "title": "Kind"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price"
+          },
+          "last": {
+            "$ref": "#/components/schemas/LastClose"
+          },
+          "triggered": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Triggered"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ticker",
+          "kind",
+          "price",
+          "last",
+          "triggered"
+        ],
+        "title": "Alert"
+      },
+      "AlertIn": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Ticker"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "above",
+              "below"
+            ],
+            "title": "Kind"
+          },
+          "price": {
+            "type": "number",
+            "maximum": 1000000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Price"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "kind",
+          "price"
+        ],
+        "title": "AlertIn"
+      },
       "AttachedPanel": {
         "properties": {
           "id": {
@@ -805,6 +1563,29 @@
           "volume"
         ],
         "title": "Bar"
+      },
+      "Breadth": {
+        "properties": {
+          "advancers": {
+            "type": "integer",
+            "title": "Advancers"
+          },
+          "decliners": {
+            "type": "integer",
+            "title": "Decliners"
+          },
+          "unchanged": {
+            "type": "integer",
+            "title": "Unchanged"
+          }
+        },
+        "type": "object",
+        "required": [
+          "advancers",
+          "decliners",
+          "unchanged"
+        ],
+        "title": "Breadth"
       },
       "CapitalChange": {
         "properties": {
@@ -1040,6 +1821,50 @@
         ],
         "title": "Council"
       },
+      "CurrencyGroup": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "market_value": {
+            "type": "number",
+            "title": "Market Value"
+          },
+          "day_change_value": {
+            "type": "number",
+            "title": "Day Change Value"
+          },
+          "sectors": {
+            "items": {
+              "$ref": "#/components/schemas/Slice"
+            },
+            "type": "array",
+            "title": "Sectors"
+          },
+          "exchanges": {
+            "items": {
+              "$ref": "#/components/schemas/Slice"
+            },
+            "type": "array",
+            "title": "Exchanges"
+          },
+          "holdings_count": {
+            "type": "integer",
+            "title": "Holdings Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currency",
+          "market_value",
+          "day_change_value",
+          "sectors",
+          "exchanges",
+          "holdings_count"
+        ],
+        "title": "CurrencyGroup"
+      },
       "Dividend": {
         "properties": {
           "announce_date": {
@@ -1119,6 +1944,201 @@
           "note"
         ],
         "title": "Dividend"
+      },
+      "DividendRow": {
+        "properties": {
+          "ticker": {
+            "$ref": "#/components/schemas/TickerRef"
+          },
+          "price": {
+            "$ref": "#/components/schemas/LastClose"
+          },
+          "dividend_yield_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dividend Yield Pct"
+          },
+          "payments_3y": {
+            "type": "integer",
+            "title": "Payments 3Y"
+          },
+          "last_dps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Dps"
+          },
+          "last_ex_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Ex Date"
+          },
+          "next_ex_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Ex Date"
+          },
+          "payout_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payout Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "price",
+          "dividend_yield_pct",
+          "payments_3y",
+          "last_dps",
+          "last_ex_date",
+          "next_ex_date",
+          "payout_pct"
+        ],
+        "title": "DividendRow"
+      },
+      "EarningsEvent": {
+        "properties": {
+          "ticker": {
+            "$ref": "#/components/schemas/TickerRef"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "upcoming": {
+            "type": "boolean",
+            "title": "Upcoming"
+          },
+          "price": {
+            "$ref": "#/components/schemas/LastClose"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "date",
+          "title",
+          "url",
+          "upcoming",
+          "price"
+        ],
+        "title": "EarningsEvent"
+      },
+      "EarningsSeason": {
+        "properties": {
+          "window_days": {
+            "type": "integer",
+            "title": "Window Days"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/EarningsEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "window_days",
+          "events"
+        ],
+        "title": "EarningsSeason"
+      },
+      "ExchangeSummary": {
+        "properties": {
+          "exchange": {
+            "type": "string",
+            "title": "Exchange"
+          },
+          "equities": {
+            "type": "integer",
+            "title": "Equities"
+          },
+          "with_prices": {
+            "type": "integer",
+            "title": "With Prices"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "breadth": {
+            "$ref": "#/components/schemas/Breadth"
+          },
+          "index": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Index"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "exchange",
+          "equities",
+          "with_prices",
+          "as_of",
+          "breadth",
+          "index"
+        ],
+        "title": "ExchangeSummary"
       },
       "Freshness": {
         "properties": {
@@ -1353,6 +2373,240 @@
         ],
         "title": "Health"
       },
+      "Holding": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "ticker": {
+            "$ref": "#/components/schemas/TickerRef"
+          },
+          "quantity": {
+            "type": "number",
+            "title": "Quantity"
+          },
+          "avg_cost": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Cost"
+          },
+          "price": {
+            "$ref": "#/components/schemas/LastClose"
+          },
+          "market_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Market Value"
+          },
+          "day_change_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Day Change Value"
+          },
+          "cost_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Value"
+          },
+          "pnl": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pnl"
+          },
+          "pnl_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pnl Pct"
+          },
+          "weight_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ticker",
+          "quantity",
+          "avg_cost",
+          "price",
+          "market_value",
+          "day_change_value",
+          "cost_value",
+          "pnl",
+          "pnl_pct",
+          "weight_pct"
+        ],
+        "title": "Holding"
+      },
+      "HoldingIn": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Ticker"
+          },
+          "quantity": {
+            "type": "number",
+            "maximum": 1000000000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Quantity"
+          },
+          "avg_cost": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1000000000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Cost"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "quantity"
+        ],
+        "title": "HoldingIn"
+      },
+      "Index": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "exchange": {
+            "type": "string",
+            "title": "Exchange"
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
+          },
+          "name_ar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name Ar"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change"
+          },
+          "change_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Pct"
+          },
+          "freshness": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Freshness"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "exchange",
+          "name_en",
+          "name_ar",
+          "level",
+          "change",
+          "change_pct",
+          "freshness"
+        ],
+        "title": "Index"
+      },
       "Insights": {
         "properties": {
           "updated_at": {
@@ -1424,6 +2678,117 @@
           "analysts"
         ],
         "title": "Insights"
+      },
+      "LastClose": {
+        "properties": {
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "close": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Close"
+          },
+          "prev_close": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prev Close"
+          },
+          "change_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "as_of",
+          "close",
+          "prev_close",
+          "change_pct"
+        ],
+        "title": "LastClose"
+      },
+      "LoginBody": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginBody"
+      },
+      "Me": {
+        "properties": {
+          "user": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/User"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "user"
+        ],
+        "title": "Me"
+      },
+      "Mover": {
+        "properties": {
+          "ticker": {
+            "$ref": "#/components/schemas/TickerRef"
+          },
+          "price": {
+            "$ref": "#/components/schemas/LastClose"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "price"
+        ],
+        "title": "Mover"
       },
       "NewsItem": {
         "properties": {
@@ -1538,6 +2903,106 @@
           "impact"
         ],
         "title": "NewsItem"
+      },
+      "NewsLine": {
+        "properties": {
+          "ticker": {
+            "$ref": "#/components/schemas/TickerRef"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "lang": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lang"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "date",
+          "title",
+          "url",
+          "lang"
+        ],
+        "title": "NewsLine"
+      },
+      "Overview": {
+        "properties": {
+          "exchanges": {
+            "items": {
+              "$ref": "#/components/schemas/ExchangeSummary"
+            },
+            "type": "array",
+            "title": "Exchanges"
+          },
+          "gainers": {
+            "items": {
+              "$ref": "#/components/schemas/Mover"
+            },
+            "type": "array",
+            "title": "Gainers"
+          },
+          "losers": {
+            "items": {
+              "$ref": "#/components/schemas/Mover"
+            },
+            "type": "array",
+            "title": "Losers"
+          },
+          "news": {
+            "items": {
+              "$ref": "#/components/schemas/NewsLine"
+            },
+            "type": "array",
+            "title": "News"
+          }
+        },
+        "type": "object",
+        "required": [
+          "exchanges",
+          "gainers",
+          "losers",
+          "news"
+        ],
+        "title": "Overview"
       },
       "PeerRow": {
         "properties": {
@@ -1667,6 +3132,58 @@
           "peers"
         ],
         "title": "Peers"
+      },
+      "Portfolio": {
+        "properties": {
+          "holdings": {
+            "items": {
+              "$ref": "#/components/schemas/Holding"
+            },
+            "type": "array",
+            "title": "Holdings"
+          },
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/CurrencyGroup"
+            },
+            "type": "array",
+            "title": "Groups"
+          },
+          "council": {
+            "items": {
+              "$ref": "#/components/schemas/SeatTally"
+            },
+            "type": "array",
+            "title": "Council"
+          },
+          "unpriced": {
+            "type": "integer",
+            "title": "Unpriced"
+          }
+        },
+        "type": "object",
+        "required": [
+          "holdings",
+          "groups",
+          "council",
+          "unpriced"
+        ],
+        "title": "Portfolio"
+      },
+      "Prefs": {
+        "properties": {
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Prefs",
+        "description": "Per-user UI settings: panes, chart, language, decimals, font size, controls on hover."
       },
       "PriceHistory": {
         "properties": {
@@ -1893,6 +3410,118 @@
         ],
         "title": "Returns"
       },
+      "ScreenerRow": {
+        "properties": {
+          "ticker": {
+            "$ref": "#/components/schemas/TickerRef"
+          },
+          "price": {
+            "$ref": "#/components/schemas/LastClose"
+          },
+          "market_cap_mn": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Market Cap Mn"
+          },
+          "pe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pe"
+          },
+          "pb": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pb"
+          },
+          "dividend_yield_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dividend Yield Pct"
+          },
+          "roe_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roe Pct"
+          },
+          "return_12m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return 12M"
+          },
+          "vol_1y": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vol 1Y"
+          },
+          "rsi_14": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rsi 14"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "price",
+          "market_cap_mn",
+          "pe",
+          "pb",
+          "dividend_yield_pct",
+          "roe_pct",
+          "return_12m",
+          "vol_1y",
+          "rsi_14"
+        ],
+        "title": "ScreenerRow"
+      },
       "Seat": {
         "properties": {
           "seat": {
@@ -1968,6 +3597,338 @@
           "value"
         ],
         "title": "SeatInput"
+      },
+      "SeatTally": {
+        "properties": {
+          "seat": {
+            "type": "string",
+            "title": "Seat"
+          },
+          "bullish": {
+            "type": "integer",
+            "title": "Bullish"
+          },
+          "neutral": {
+            "type": "integer",
+            "title": "Neutral"
+          },
+          "bearish": {
+            "type": "integer",
+            "title": "Bearish"
+          },
+          "abstain": {
+            "type": "integer",
+            "title": "Abstain"
+          }
+        },
+        "type": "object",
+        "required": [
+          "seat",
+          "bullish",
+          "neutral",
+          "bearish",
+          "abstain"
+        ],
+        "title": "SeatTally"
+      },
+      "SectorCompare": {
+        "properties": {
+          "a": {
+            "$ref": "#/components/schemas/SectorStats"
+          },
+          "b": {
+            "$ref": "#/components/schemas/SectorStats"
+          },
+          "a_members": {
+            "items": {
+              "$ref": "#/components/schemas/SectorMember"
+            },
+            "type": "array",
+            "title": "A Members"
+          },
+          "b_members": {
+            "items": {
+              "$ref": "#/components/schemas/SectorMember"
+            },
+            "type": "array",
+            "title": "B Members"
+          }
+        },
+        "type": "object",
+        "required": [
+          "a",
+          "b",
+          "a_members",
+          "b_members"
+        ],
+        "title": "SectorCompare"
+      },
+      "SectorListItem": {
+        "properties": {
+          "sector_en": {
+            "type": "string",
+            "title": "Sector En"
+          },
+          "sector_ar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sector Ar"
+          },
+          "equities": {
+            "type": "integer",
+            "title": "Equities"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sector_en",
+          "sector_ar",
+          "equities"
+        ],
+        "title": "SectorListItem"
+      },
+      "SectorMember": {
+        "properties": {
+          "ticker": {
+            "$ref": "#/components/schemas/TickerRef"
+          },
+          "price": {
+            "$ref": "#/components/schemas/LastClose"
+          },
+          "market_cap_mn": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Market Cap Mn"
+          },
+          "pe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pe"
+          },
+          "dividend_yield_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dividend Yield Pct"
+          },
+          "return_12m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return 12M"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "price",
+          "market_cap_mn",
+          "pe",
+          "dividend_yield_pct",
+          "return_12m"
+        ],
+        "title": "SectorMember"
+      },
+      "SectorStats": {
+        "properties": {
+          "sector_en": {
+            "type": "string",
+            "title": "Sector En"
+          },
+          "sector_ar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sector Ar"
+          },
+          "equities": {
+            "type": "integer",
+            "title": "Equities"
+          },
+          "median_pe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median Pe"
+          },
+          "median_pb": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median Pb"
+          },
+          "median_yield_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median Yield Pct"
+          },
+          "median_roe_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median Roe Pct"
+          },
+          "median_return_12m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median Return 12M"
+          },
+          "with_value": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "With Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sector_en",
+          "sector_ar",
+          "equities",
+          "median_pe",
+          "median_pb",
+          "median_yield_pct",
+          "median_roe_pct",
+          "median_return_12m",
+          "with_value"
+        ],
+        "title": "SectorStats"
+      },
+      "SignupBody": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "minLength": 3,
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 10,
+            "title": "Password"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "locale": {
+            "type": "string",
+            "pattern": "^(en|ar)$",
+            "title": "Locale",
+            "default": "en"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "SignupBody"
+      },
+      "Slice": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "label_ar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label Ar"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "weight_pct": {
+            "type": "number",
+            "title": "Weight Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "label_ar",
+          "value",
+          "weight_pct"
+        ],
+        "title": "Slice"
       },
       "Statement": {
         "properties": {
@@ -2515,6 +4476,41 @@
           "has_prices"
         ],
         "title": "UniverseEntry"
+      },
+      "User": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "display_name",
+          "locale"
+        ],
+        "title": "User"
       },
       "ValidationError": {
         "properties": {

@@ -1,23 +1,27 @@
 import { Suspense } from "react";
-import { PlaceholderPage } from "@/components/PlaceholderPage";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import type { Locale } from "@/i18n/routing";
 import { WorkHeader } from "@/components/shell/WorkHeader";
+import { TemplateView } from "@/components/templates/TemplateViews";
 
+// The template name comes from the URL, so it streams in behind Suspense.
 export default function Page({ params }: PageProps<"/[locale]/templates/[name]">) {
   return (
     <Suspense fallback={<WorkHeader title="" />}>
-      <TemplatePage params={params} />
+      <Template params={params} />
     </Suspense>
   );
 }
 
-async function TemplatePage({ params }: Pick<PageProps<"/[locale]/templates/[name]">, "params">) {
+async function Template({ params }: Pick<PageProps<"/[locale]/templates/[name]">, "params">) {
   const { locale, name } = await params;
+  setRequestLocale(locale as Locale);
+  const t = await getTranslations("templates");
+  const key = decodeURIComponent(name);
   return (
-    <PlaceholderPage
-      locale={locale}
-      page="templates"
-      phase={5}
-      subtitle={<span className="label-caps text-muted">{decodeURIComponent(name)}</span>}
-    />
+    <>
+      <WorkHeader title={t.has(`names.${key}`) ? t(`names.${key}`) : key} />
+      <TemplateView name={key} />
+    </>
   );
 }

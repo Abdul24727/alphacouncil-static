@@ -73,8 +73,9 @@ export function applyLayoutToDocument(s: LayoutState) {
 
 /**
  * Runs in <head> before first paint and applies the saved pane sizes, so a
- * reload never flashes the default layout. Keep in sync with applyLayoutToDocument.
+ * reload never flashes the default layout or display settings. Keep in sync with
+ * applyLayoutToDocument and applySettingsToDocument.
  */
 export const LAYOUT_BOOT_SCRIPT = `(function(){try{var s=JSON.parse(localStorage.getItem(${JSON.stringify(
   STORAGE_KEY,
-)})||"null");s=s&&s.state;if(!s)return;var d=document.documentElement;if(s.sidebarWidth)d.style.setProperty("--sidebar-w",s.sidebarWidth+"px");if(s.copilotWidth)d.style.setProperty("--copilot-w",s.copilotWidth+"px");d.dataset.sidebar=s.sidebarCollapsed?"collapsed":"expanded";d.dataset.copilot=s.copilotOpen===false?"closed":"open";}catch(e){}})()`;
+)})||"null");s=s&&s.state;var d=document.documentElement;if(s){if(s.sidebarWidth)d.style.setProperty("--sidebar-w",s.sidebarWidth+"px");if(s.copilotWidth)d.style.setProperty("--copilot-w",s.copilotWidth+"px");d.dataset.sidebar=s.sidebarCollapsed?"collapsed":"expanded";d.dataset.copilot=s.copilotOpen===false?"closed":"open";}}catch(e){}try{var g=JSON.parse(localStorage.getItem("ac-settings")||"null");g=g&&g.state;if(g){var r=document.documentElement;if(g.fontSize)r.dataset.font=g.fontSize;r.dataset.controls=g.controlsOnHover?"hover":"always";}}catch(e){}})()`;

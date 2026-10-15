@@ -43,6 +43,27 @@
   --copilot-w: 340px;
 }
 
+/* Settings: font size scales the app body; "controls on hover" hides panel header buttons until needed. */
+html[data-font="sm"] {
+  --text-app: 12px;
+}
+html[data-font="lg"] {
+  --text-app: 14.5px;
+}
+html[data-controls="hover"] [data-panel] .panel-controls {
+  opacity: 0;
+  transition: opacity 120ms;
+}
+html[data-controls="hover"] [data-panel]:hover .panel-controls,
+html[data-controls="hover"] [data-panel]:focus-within .panel-controls {
+  opacity: 1;
+}
+@media (hover: none) {
+  html[data-controls="hover"] [data-panel] .panel-controls {
+    opacity: 1;
+  }
+}
+
 /* next/font sets these variables on <html>; Arabic glyphs fall through to Plex Arabic. */
 @theme inline {
   --font-sans: var(--font-archivo), var(--font-plex-arabic);

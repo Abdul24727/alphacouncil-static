@@ -3,9 +3,12 @@
 import { useTranslations } from "next-intl";
 import { PanelLoading, PanelUnavailable } from "@/components/panel/Panel";
 import { ApiError } from "@/lib/api/client";
+import { useSettings } from "@/lib/settings-store";
 
-/** KWD, BHD and OMR trade in fils / baisa, so prices need three decimals. */
+/** KWD, BHD and OMR trade in fils / baisa, so prices need three decimals ("auto"); Settings can fix 2 or 3. */
 export function priceDigits(currency: string | null | undefined) {
+  const pref = useSettings.getState().decimals;
+  if (pref !== "auto") return pref;
   return currency && ["KWD", "BHD", "OMR"].includes(currency) ? 3 : 2;
 }
 
@@ -48,6 +51,6 @@ export function QueryState({
 }
 
 /** Rows of [label, value] as tab-separated text for "Copy data". */
-export function toTsv(rows: (string | number | null | undefined)[][]): string {
+export function toTsv(rows: (string | number | boolean | null | undefined)[][]): string {
   return rows.map((r) => r.map((c) => (c == null ? "" : String(c))).join("\t")).join("\n");
 }

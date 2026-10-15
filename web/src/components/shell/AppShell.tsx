@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { useChartPrefs } from "@/lib/chart-prefs";
 import { applyLayoutToDocument, useLayout } from "@/lib/layout-store";
+import { usePrefsSync } from "@/lib/prefs-sync";
+import { applySettingsToDocument, useSettings } from "@/lib/settings-store";
 import { CopilotPane } from "./CopilotPane";
 import { MobileTabBar } from "./MobileTabBar";
 import { SearchDialog } from "./SearchDialog";
@@ -11,6 +13,7 @@ import { Sidebar } from "./Sidebar";
 /** Signed-in shell: sidebar · work area · Copilot, mirrored in Arabic. */
 export function AppShell({ children }: { children: React.ReactNode }) {
   useLayoutSync();
+  usePrefsSync();
   useShortcuts();
 
   return (
@@ -30,9 +33,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 function useLayoutSync() {
   useEffect(() => {
     const unsubscribe = useLayout.subscribe(applyLayoutToDocument);
+    const unsubSettings = useSettings.subscribe(applySettingsToDocument);
     void useLayout.persist.rehydrate();
     void useChartPrefs.persist.rehydrate();
-    return unsubscribe;
+    void useSettings.persist.rehydrate();
+    return () => {
+      unsubscribe();
+      unsubSettings();
+    };
   }, []);
 }
 

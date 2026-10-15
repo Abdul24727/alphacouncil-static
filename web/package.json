@@ -15,6 +15,7 @@
     "@ai-sdk/react": "^4.0.143",
     "@radix-ui/react-icons": "^1.3.2",
     "@tanstack/react-query": "^5.104.2",
+    "@tanstack/react-table": "^9.3.1",
     "ai": "^7.0.140",
     "lightweight-charts": "^5.2.1",
     "next": "16.4.1",
