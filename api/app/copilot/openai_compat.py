@@ -31,8 +31,15 @@ def _tool_defs() -> list[dict[str, Any]]:
     ]
 
 
+# Fewer round trips: each one costs a full model turn on OpenAI-compatible providers.
+SYSTEM_EXTRA = (
+    "\n\nSpeed. When you need several database tools, call them all together in one step. "
+    "Calling suggest_follow_ups ends your answer: call it last, after the final text."
+)
+
+
 def _history(chat: ChatInput) -> list[dict[str, Any]]:
-    msgs: list[dict[str, Any]] = [{"role": "system", "content": SYSTEM}]
+    msgs: list[dict[str, Any]] = [{"role": "system", "content": SYSTEM + SYSTEM_EXTRA}]
     msgs += [{"role": m.role, "content": m.text} for m in chat.history if m.text.strip()]
     parts = [panel_block(chat), f"Interface language: {chat.locale}. Page ticker: {chat.ticker or 'none'}.", chat.question]
     msgs.append({"role": "user", "content": "\n\n".join(p for p in parts if p)})
@@ -64,6 +71,7 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
                 messages=messages,
                 tools=_tool_defs(),
                 tool_choice={"type": "function", "function": {"name": "suggest_follow_ups"}} if nudged else "auto",
+                parallel_tool_calls=True,
                 max_tokens=8_000,
                 stream=True,
                 # The follow-up turn only needs a quick tool call.
@@ -164,7 +172,8 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
                 {"role": "tool", "tool_call_id": c["id"], "content": json.dumps(payload, ensure_ascii=False, default=str)[:TOOL_RESULT_CHARS]}
             )
         yield w.finish_step()
-        if nudged:
+        # Follow-ups close the answer: no further model turn after them.
+        if nudged or followed_up:
             break
 
     yield w.finish()

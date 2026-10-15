@@ -154,7 +154,8 @@ function CopilotBody() {
             title={standIn ? t("standInTip") : t("model", { name: modelStatus.data?.model ?? "" })}
             className={`label-caps rounded-chip border px-1 ${standIn ? "border-stale/50 text-stale" : "border-line text-muted"}`}
           >
-            {standIn ? t("standIn") : modelStatus.data?.model}
+            {/* A model id is a technical name: Latin in both languages. */}
+            {standIn ? t("standIn") : <span lang="en" dir="ltr">{modelStatus.data?.model}</span>}
           </span>
         )}
         <div className="ms-auto flex items-center gap-0.5">

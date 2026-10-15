@@ -48,9 +48,14 @@ await composer.fill("Is the dividend safe?");
 await composer.press("Enter");
 const answer = page.locator('[data-copilot-pane] [data-message="assistant"]').last();
 const citation = answer.locator('[data-citation="overview.metrics"]').first();
-await citation.waitFor({ timeout: 120000 });
+// User testing allows 3 minutes per task: the whole answer must finish within that.
+const asked = Date.now();
+await citation.waitFor({ timeout: 180000 });
 check(true, "answer cites the metrics panel");
-await page.waitForFunction(() => !document.querySelector('[data-copilot-pane] button[aria-label="Stop"]'), null, { timeout: 120000 });
+await page.waitForFunction(() => !document.querySelector('[data-copilot-pane] button[aria-label="Stop"]'), null, {
+  timeout: Math.max(1000, 180000 - (Date.now() - asked)),
+});
+check(true, `answer finished in ${Math.round((Date.now() - asked) / 1000)} s (limit 180 s)`);
 
 const summary = await answer.locator("summary").innerText().catch(() => "");
 // The label is styled in caps, so compare without case.

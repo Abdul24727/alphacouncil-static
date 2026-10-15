@@ -148,7 +148,6 @@ def test_openrouter_provider_runs_tools_and_streams_the_answer(client, monkeypat
             _chunk(tool=(0, "call_2", "suggest_follow_ups", '{"questions": ["Payout ratio?", "Yield vs peers?"]}')),
             _chunk(finish="tool_calls"),
         ],
-        [_chunk(finish="stop")],
     ]
     s = client.get("/v1/copilot/status").json()
     assert s["stand_in"] is False and s["sign_in_required"] is True
@@ -175,6 +174,7 @@ def test_openrouter_provider_runs_tools_and_streams_the_answer(client, monkeypat
     assert tool_msgs and tool_msgs[0]["tool_call_id"] == "call_1" and "2026-08-19" in tool_msgs[0]["content"]
     assert _FakeOpenAI.seen[0]["model"] == client.app.state.settings.copilot_model
     assert _FakeOpenAI.seen[0]["tools"][0]["type"] == "function"
+    assert len(_FakeOpenAI.seen) == 2  # the follow-ups close the answer: no third model turn
 
 
 def test_provider_follows_the_environment(client, monkeypatch):
