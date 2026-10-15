@@ -7,7 +7,7 @@ flag is frozen at pipeline time, so staleness is recomputed here at request
 time against the current clock.
 """
 
-from datetime import UTC, datetime, time, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 
 from pydantic import BaseModel
 

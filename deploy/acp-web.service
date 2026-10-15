@@ -7,7 +7,9 @@ User=alphacouncil
 Group=alphacouncil
 WorkingDirectory=/opt/alphacouncil-platform/current/web
 EnvironmentFile=/etc/alphacouncil-platform/web.env
-ExecStart=/usr/bin/node node_modules/next/dist/bin/next start -H 127.0.0.1 -p 3200
+# "localhost", not 127.0.0.1: Next normalises 127.0.0.1 to localhost inside middleware,
+# and a mismatch turns next-intl's internal rewrite into an external one that loops.
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start -H localhost -p 3200
 Restart=on-failure
 RestartSec=3
 NoNewPrivileges=yes
