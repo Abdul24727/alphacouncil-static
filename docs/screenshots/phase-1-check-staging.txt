@@ -1,0 +1,135 @@
+PASS  signed up and signed in
+PASS  en /home: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /home: no teal or purple
+PASS  en /home: drawn only in the brand faces (no Inter)
+PASS  en /portfolio: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /portfolio: no teal or purple
+PASS  en /portfolio: drawn only in the brand faces (no Inter)
+PASS  en /screener: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /screener: no teal or purple
+PASS  en /screener: drawn only in the brand faces (no Inter)
+PASS  en /markets: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /markets: no teal or purple
+PASS  en /markets: drawn only in the brand faces (no Inter)
+PASS  en /templates: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /templates: no teal or purple
+PASS  en /templates: drawn only in the brand faces (no Inter)
+PASS  en /templates/earnings-season: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /templates/earnings-season: no teal or purple
+PASS  en /templates/earnings-season: drawn only in the brand faces (no Inter)
+PASS  en /templates/dividend-hunter: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /templates/dividend-hunter: no teal or purple
+PASS  en /templates/dividend-hunter: drawn only in the brand faces (no Inter)
+PASS  en /templates/sector-vs-sector: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /templates/sector-vs-sector: no teal or purple
+PASS  en /templates/sector-vs-sector: drawn only in the brand faces (no Inter)
+PASS  en /dashboards: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /dashboards: no teal or purple
+PASS  en /dashboards: drawn only in the brand faces (no Inter)
+PASS  en /settings: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /settings: no teal or purple
+PASS  en /settings: drawn only in the brand faces (no Inter)
+PASS  en /t/2222: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /t/2222: no teal or purple
+PASS  en /t/2222: drawn only in the brand faces (no Inter)
+PASS  en /t/2222/financials: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /t/2222/financials: no teal or purple
+PASS  en /t/2222/financials: drawn only in the brand faces (no Inter)
+PASS  en /t/2222/council: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /t/2222/council: no teal or purple
+PASS  en /t/2222/council: drawn only in the brand faces (no Inter)
+PASS  en /t/2222/ownership: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /t/2222/ownership: no teal or purple
+PASS  en /t/2222/ownership: drawn only in the brand faces (no Inter)
+PASS  en /t/2222/calendar: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /t/2222/calendar: no teal or purple
+PASS  en /t/2222/calendar: drawn only in the brand faces (no Inter)
+PASS  en /: public page renders
+PASS  en /: no teal or purple
+PASS  en /: drawn only in the brand faces (no Inter)
+PASS  en /pricing: public page renders
+PASS  en /pricing: no teal or purple
+PASS  en /pricing: drawn only in the brand faces (no Inter)
+PASS  en /methodology: public page renders
+PASS  en /methodology: no teal or purple
+PASS  en /methodology: drawn only in the brand faces (no Inter)
+PASS  en /legal: public page renders
+PASS  en /legal: no teal or purple
+PASS  en /legal: drawn only in the brand faces (no Inter)
+PASS  en /legal/privacy: public page renders
+PASS  en /legal/privacy: no teal or purple
+PASS  en /legal/privacy: drawn only in the brand faces (no Inter)
+PASS  en /login: public page renders
+PASS  en /login: no teal or purple
+PASS  en /login: drawn only in the brand faces (no Inter)
+PASS  en /signup: public page renders
+PASS  en /signup: no teal or purple
+PASS  en /signup: drawn only in the brand faces (no Inter)
+PASS  ar /home: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /home: no teal or purple
+PASS  ar /home: drawn only in the brand faces (no Inter)
+PASS  ar /portfolio: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /portfolio: no teal or purple
+PASS  ar /portfolio: drawn only in the brand faces (no Inter)
+PASS  ar /screener: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /screener: no teal or purple
+PASS  ar /screener: drawn only in the brand faces (no Inter)
+PASS  ar /markets: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /markets: no teal or purple
+PASS  ar /markets: drawn only in the brand faces (no Inter)
+PASS  ar /templates: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /templates: no teal or purple
+PASS  ar /templates: drawn only in the brand faces (no Inter)
+PASS  ar /templates/earnings-season: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /templates/earnings-season: no teal or purple
+PASS  ar /templates/earnings-season: drawn only in the brand faces (no Inter)
+PASS  ar /templates/dividend-hunter: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /templates/dividend-hunter: no teal or purple
+PASS  ar /templates/dividend-hunter: drawn only in the brand faces (no Inter)
+PASS  ar /templates/sector-vs-sector: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /templates/sector-vs-sector: no teal or purple
+PASS  ar /templates/sector-vs-sector: drawn only in the brand faces (no Inter)
+PASS  ar /dashboards: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /dashboards: no teal or purple
+PASS  ar /dashboards: drawn only in the brand faces (no Inter)
+PASS  ar /settings: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /settings: no teal or purple
+PASS  ar /settings: drawn only in the brand faces (no Inter)
+PASS  ar /t/2222: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /t/2222: no teal or purple
+PASS  ar /t/2222: drawn only in the brand faces (no Inter)
+PASS  ar /t/2222/financials: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /t/2222/financials: no teal or purple
+PASS  ar /t/2222/financials: drawn only in the brand faces (no Inter)
+PASS  ar /t/2222/council: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /t/2222/council: no teal or purple
+PASS  ar /t/2222/council: drawn only in the brand faces (no Inter)
+PASS  ar /t/2222/ownership: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /t/2222/ownership: no teal or purple
+PASS  ar /t/2222/ownership: drawn only in the brand faces (no Inter)
+PASS  ar /t/2222/calendar: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /t/2222/calendar: no teal or purple
+PASS  ar /t/2222/calendar: drawn only in the brand faces (no Inter)
+PASS  ar /: public page renders
+PASS  ar /: no teal or purple
+PASS  ar /: drawn only in the brand faces (no Inter)
+PASS  ar /pricing: public page renders
+PASS  ar /pricing: no teal or purple
+PASS  ar /pricing: drawn only in the brand faces (no Inter)
+PASS  ar /methodology: public page renders
+PASS  ar /methodology: no teal or purple
+PASS  ar /methodology: drawn only in the brand faces (no Inter)
+PASS  ar /legal: public page renders
+PASS  ar /legal: no teal or purple
+PASS  ar /legal: drawn only in the brand faces (no Inter)
+PASS  ar /legal/privacy: public page renders
+PASS  ar /legal/privacy: no teal or purple
+PASS  ar /legal/privacy: drawn only in the brand faces (no Inter)
+PASS  ar /login: public page renders
+PASS  ar /login: no teal or purple
+PASS  ar /login: drawn only in the brand faces (no Inter)
+PASS  ar /signup: public page renders
+PASS  ar /signup: no teal or purple
+PASS  ar /signup: drawn only in the brand faces (no Inter)
+
+Phase 1 done-when: all checks passed

@@ -57,7 +57,7 @@ await page.getByLabel("Email").fill(email);
 await page.getByLabel("Password").fill("a long test password");
 await page.getByRole("checkbox").check(); // Terms and Privacy acceptance
 await page.getByRole("button", { name: "Create account" }).click();
-await page.waitForURL(/\/portfolio$/, { timeout: 30000 });
+await page.waitForURL((u) => u.pathname === "/portfolio", { timeout: 30000 }); // not /signup?next=/portfolio
 await page.locator("[data-add-holding]").waitFor();
 await page.waitForLoadState("networkidle");
 check(true, "sign-up lands on My Portfolio");
