@@ -86,12 +86,14 @@ def main(root: Path) -> None:
             old = blocks(page[page.index('<main id="content">') : page.index("</main>")])
             new = blocks(data["html"])
             assert new == old[len(old) - len(new) :], f"{rel}: copied text differs from the source"
-            (OUT / f"{doc}.{locale}.json").write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+            (OUT / f"{doc}.{locale}.json").write_text(
+                json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n"
+            )
             print(f"{doc}.{locale}: {data['title']} v{data['version']} ({data['blocks']} blocks)")
     for locale, rel in (("en", "terms/index.html"), ("ar", "terms/ar/index.html")):
         page = (root / rel).read_text(encoding="utf-8")
         (OUT / f"merchant.{locale}.json").write_text(
-            json.dumps(merchant(page, locale), ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
+            json.dumps(merchant(page, locale), ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n"
         )
 
 
