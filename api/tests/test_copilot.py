@@ -223,4 +223,24 @@ def test_openrouter_asks_for_follow_ups_when_the_model_skips_them(client, monkey
     assert follow == [["Payout ratio?", "Next ex-date?"]]
     assert _FakeOpenAI.seen[1]["tool_choice"] == {"type": "function", "function": {"name": "suggest_follow_ups"}}
     assert len(_FakeOpenAI.seen) == 2  # one nudge, then done
-    assert _FakeOpenAI.seen[0]["extra_body"] == {"reasoning": {"enabled": True}}
+    assert _FakeOpenAI.seen[0]["extra_body"] == {}  # reasoning off by default (COPILOT_REASONING)
+
+
+def test_keepalive_fills_silences_without_touching_parts():
+    import asyncio
+
+    from app.copilot.stream import KEEPALIVE, with_keepalive
+
+    a, b = "data: a\n\n", "data: b\n\n"
+
+    async def slow():
+        yield a
+        await asyncio.sleep(0.25)
+        yield b
+
+    async def collect():
+        return [c async for c in with_keepalive(slow(), every_s=0.1)]
+
+    out = asyncio.run(collect())
+    assert out[0] == a and out[-1] == b
+    assert KEEPALIVE in out and set(out) <= {a, b, KEEPALIVE}

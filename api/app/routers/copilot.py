@@ -10,7 +10,7 @@ from ..copilot.context import ChatRequest, to_input
 from ..copilot.engine import claude_stream
 from ..copilot.openai_compat import openai_stream
 from ..copilot.standin import standin_stream
-from ..copilot.stream import HEADERS
+from ..copilot.stream import HEADERS, with_keepalive
 from .ticker import settings_of
 
 router = APIRouter(prefix="/copilot", tags=["copilot"])
@@ -71,4 +71,4 @@ async def chat(
             stream = claude_stream(request, chat_input, s)
         case _:
             stream = standin_stream(request, chat_input)
-    return StreamingResponse(stream, media_type="text/event-stream", headers=HEADERS)
+    return StreamingResponse(with_keepalive(stream), media_type="text/event-stream", headers=HEADERS)

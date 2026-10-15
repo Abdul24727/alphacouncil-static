@@ -42,8 +42,9 @@ class Settings(BaseSettings):
     copilot_model: str = "claude-opus-5-5"
     # Any OpenAI-compatible endpoint can stand in for OpenRouter.
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
-    # Ask OpenRouter for the model's reasoning (shown as the collapsible steps).
-    copilot_reasoning: bool = True
+    # Ask OpenRouter for the model's reasoning (shown in the collapsible steps). Off by
+    # default: with DeepSeek v3.2 it roughly doubles each step's time.
+    copilot_reasoning: bool = False
     copilot_effort: str = "medium"  # low | medium | high | xhigh | max
     # Questions per hour per signed-in user (or per address for the stand-in).
     copilot_hourly_limit: int = 60

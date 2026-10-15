@@ -32,6 +32,11 @@ const SECURITY_HEADERS = [
 const nextConfig: NextConfig = {
   cacheComponents: true,
   poweredByHeader: false,
+  experimental: {
+    // The /api rewrite drops a proxied response that is silent this long (default 30 s).
+    // The Copilot stream also sends keep-alives every 10 s (api/app/copilot/stream.py).
+    proxyTimeout: 120_000,
+  },
   partialPrefetching: true,
   // The floating badge covers the sidebar's language switch; build errors still show as an overlay.
   devIndicators: false,

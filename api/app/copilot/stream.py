@@ -4,8 +4,10 @@ The web app's `useChat` reads this stream directly; see
 web/node_modules/ai/docs/04-ai-sdk-ui/50-stream-protocol.mdx for the parts.
 """
 
+import asyncio
 import json
 import uuid
+from collections.abc import AsyncIterator
 from typing import Any
 
 HEADERS = {
@@ -20,6 +22,36 @@ def part(obj: dict[str, Any]) -> str:
 
 
 DONE = "data: [DONE]\n\n"
+
+# An SSE comment line: the client's parser drops it, proxies see bytes flowing.
+KEEPALIVE = ": keepalive\n\n"
+
+
+async def with_keepalive(parts: AsyncIterator[str], every_s: float = 10.0) -> AsyncIterator[str]:
+    """Pass the parts through, adding a comment whenever nothing was sent for `every_s`.
+
+    A model can think for a while between parts (or between tool steps); the web app's
+    rewrite proxy drops a response that stays silent for 30 s.
+    """
+    it = aiter(parts)
+    pending: asyncio.Task | None = None
+    try:
+        while True:
+            if pending is None:
+                pending = asyncio.ensure_future(anext(it))
+            done, _ = await asyncio.wait({pending}, timeout=every_s)
+            if not done:
+                yield KEEPALIVE
+                continue
+            try:
+                chunk = pending.result()
+            except StopAsyncIteration:
+                return
+            pending = None
+            yield chunk
+    finally:
+        if pending is not None and not pending.done():
+            pending.cancel()
 
 
 def new_id(prefix: str) -> str:

@@ -66,7 +66,8 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
                 tool_choice={"type": "function", "function": {"name": "suggest_follow_ups"}} if nudged else "auto",
                 max_tokens=8_000,
                 stream=True,
-                extra_body=extra,
+                # The follow-up turn only needs a quick tool call.
+                extra_body={} if nudged else extra,
             )
             async for chunk in stream:
                 for choice in chunk.choices:
