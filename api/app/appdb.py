@@ -83,6 +83,19 @@ prefs = Table(
     Column("updated_at", DateTime(timezone=True), nullable=False, default=utcnow),
 )
 
+# What a user accepted and when: the versioned acceptance text and the document versions
+# it covered (app/legal.py). Removed with the account.
+consents = Table(
+    "consents",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("user_id", Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True),
+    Column("kind", String(20), nullable=False),  # "registration"
+    Column("text_version", String(10), nullable=False),
+    Column("documents", JSON, nullable=False),  # {"terms": "1.2", "privacy": "1.2"}
+    Column("accepted_at", DateTime(timezone=True), nullable=False, default=utcnow),
+)
+
 
 @lru_cache
 def engine_for(url: str) -> Engine:

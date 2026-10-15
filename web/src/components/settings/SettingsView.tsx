@@ -1,9 +1,11 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
 import { Panel } from "@/components/panel/Panel";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
-import { useMe, useSignOut } from "@/lib/auth";
+import { ApiError } from "@/lib/api/client";
+import { useDeleteAccount, useMe, useSignOut } from "@/lib/auth";
 import { type Decimals, type FontSize, useSettings } from "@/lib/settings-store";
 
 function Choice<T extends string | number>({
@@ -102,6 +104,7 @@ export function SettingsView() {
               <button type="button" onClick={() => signOut.mutate()} className="rounded-panel border border-line px-3 py-1.5 text-text hover:bg-panel-raised">
                 {ta("signOut")}
               </button>
+              <DeleteAccount />
             </div>
           ) : (
             <div className="flex flex-col items-start gap-3">
@@ -119,5 +122,53 @@ export function SettingsView() {
         </Panel>
       </div>
     </div>
+  );
+}
+
+/** Privacy Policy: deletion "through available settings". Asks for the password again. */
+function DeleteAccount() {
+  const t = useTranslations("settings");
+  const router = useRouter();
+  const del = useDeleteAccount();
+  const [error, setError] = useState<string | null>(null);
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    const password = String(new FormData(e.currentTarget).get("password") ?? "");
+    if (!password) return setError(t("deleteNeedsPassword"));
+    try {
+      await del.mutateAsync({ password });
+      router.replace("/");
+    } catch (err) {
+      setError(err instanceof ApiError && err.status === 401 ? t("deleteWrongPassword") : t("deleteFailed"));
+    }
+  };
+  return (
+    <form onSubmit={submit} className="mt-3 flex w-full flex-col gap-2 border-t border-line pt-3" data-delete-account>
+      <h3 className="text-text">{t("deleteTitle")}</h3>
+      <p className="text-[12px] text-muted">{t("deleteBody")}</p>
+      <label className="flex flex-col gap-1">
+        <span className="label-caps text-muted">{t("deletePassword")}</span>
+        <input
+          type="password"
+          name="password"
+          dir="ltr"
+          autoComplete="current-password"
+          className="h-9 w-full max-w-xs rounded-panel border border-line bg-bg px-3 text-text outline-none focus:border-muted"
+        />
+      </label>
+      {error && (
+        <p role="alert" className="text-loss">
+          {error}
+        </p>
+      )}
+      <button
+        type="submit"
+        disabled={del.isPending}
+        className="self-start rounded-panel border border-loss/60 px-3 py-1.5 text-loss hover:bg-panel-raised disabled:opacity-50"
+      >
+        {t("deleteCta")}
+      </button>
+    </form>
   );
 }

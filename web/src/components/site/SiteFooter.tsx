@@ -35,6 +35,9 @@ export async function SiteFooter() {
                 {t(`legal.short.${doc}`)}
               </Link>
             ))}
+            <Link href={{ pathname: "/legal", hash: "merchant" }} className="hover:text-text">
+              {t("legal.merchant")}
+            </Link>
           </nav>
         </div>
       </div>

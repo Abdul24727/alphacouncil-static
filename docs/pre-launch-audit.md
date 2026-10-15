@@ -11,34 +11,34 @@ Every issue found is listed here before anything is fixed (plan, Phase 7). Each 
 
 ## Summary
 
-| # | Area | Issue | Severity | Owner |
-|---|------|-------|----------|-------|
-| T1 | Testing | `beta.alphacouncil.tech` has no DNS record, so testers cannot reach staging (TLS is waiting on it too) | Blocks testing | You |
-| T2 | Testing | The Copilot runs as the labelled rule-based stand-in; a real model needs `ANTHROPIC_API_KEY` on the server | Decision (task 4 works with the stand-in) | You |
-| S1 | Security | No security headers: no Content-Security-Policy, no frame-ancestors / X-Frame-Options, no X-Content-Type-Options, no Referrer-Policy, no Permissions-Policy; `X-Powered-By: Next.js` is sent; HSTS to add once TLS is on | Before launch | Claude |
-| S2 | Security | `POST /v1/copilot/chat` needs no sign-in and has no rate limit: once a key is set, anyone can spend model tokens | Blocks a real Copilot key | Claude |
-| S3 | Security | Sign-up has no rate limit (sign-in has one, in memory per process) | Before launch | Claude |
-| S4 | Security | No password reset and no e-mail verification (needs a mail service; the domain has no mail records) | Before launch | You (mail), then Claude |
-| S5 | Security / legal | No way to delete an account in Settings, although the Privacy Policy says deletion can be requested "through available settings" | Before launch | Claude |
-| S6 | Correctness | Unknown tickers and templates (`/t/NOPE`, `/templates/nope`) show the not-found page with HTTP 200, not 404 | Later | Claude |
-| P1 | Payments | The new app has no checkout. The old site's Moyasar checkout and monthly renewals are still live (`billing_configured: true`). Existing accounts and subscriptions are not in the new app's database | Before launch | You (migration plan), then Claude |
-| P2 | Payments | Pro has no Pro-only features in the new app; /pricing shows a labelled placeholder | Before paid launch | You |
-| P3 | Payments | Prices live in two places until the old backend is retired (`api/app/pricing.py` mirrors the old `pricing.py`, same env names); they can drift | Before launch | Claude (check), You (cut-over) |
-| P4 | Payments | Open items from the plan: market-data redistribution licence; CMA licensing question | Before paid launch | You |
-| D1 | Data | 61 of 690 equities with price files have prices older than 4 days; some stop in 2018 (likely delisted or suspended but still in the universe). They show amber everywhere | Before launch | You (pipeline) |
-| D2 | Data | 26 of 716 equities have no price file at all (charts say "Data unavailable") | Later | You (pipeline) |
-| D3 | Data | Index levels exist only for TASI, ADX and DFM; QSE, Boursa Kuwait, BHB and MSX show "n/a" | Later | You (pipeline) |
-| D4 | Data | Ownership and analyst data are empty for every equity (Ownership tab is "Data unavailable"); no cash-flow statement | Later | You (pipeline) |
-| D5 | Data | Some sector labels in `briefs` look wrong (e.g. 1111 "Energy", 1201 "Hotels & Restaurants") | Later | You (pipeline) |
-| D6 | Data | Panels say the next update is 00:00 UTC (pipeline start); the databases are published around 05:00 UTC | Later | Claude |
-| D7 | Data | The landing and /templates screens are real but dated (taken 2026-10-15); retake before launch (`scripts/capture-screens.mjs`) | Before launch | Claude |
-| L1 | Legal | Every document gives support@ and privacy@alphacouncil.tech; the domain has no mail records, so they bounce | Before launch | You |
-| L2 | Legal | Documents link to `https://alphacouncil.tech/contact.html` (old site); the new site has no contact page, so the link breaks at cut-over | Before launch | You (text) / Claude (page) |
-| L3 | Legal | Cookie Policy says the session cookie is session-only unless "remember me"; the app always sets a 30-day cookie and has no "remember me". The language choice is a `NEXT_LOCALE` cookie, not local storage | Before launch | You (text) or Claude (behaviour) |
-| L4 | Legal | AI & Financial Disclaimer describes the old product ("Adviser interactions", "multi-model or Council responses", "final synthesis"); the council is now rule-based, the Copilot is the AI feature | Before launch | You |
-| L5 | Legal | Sign-up does not show or record acceptance of the Terms and Privacy Policy (the old site recorded the versioned registration text) | Before launch | Claude |
-| L6 | Legal | Merchant information is on the legal pages but not linked from the site footer (the old site linked it; payment providers expect it visible) | Before launch | Claude |
-| U1 | UX | The Copilot conversation is cleared when the language is switched (test task 5: the tester asks again in Arabic) | Later | Claude |
+| # | Area | Issue | Severity | Owner | Status |
+|---|------|-------|----------|-------|--------|
+| T1 | Testing | `beta.alphacouncil.tech` has no DNS record, so testers cannot reach staging (TLS is waiting on it too) | Blocks testing | You | Open |
+| T2 | Testing | The Copilot runs as the labelled rule-based stand-in; a real model needs `ANTHROPIC_API_KEY` on the server | Decision (task 4 works with the stand-in) | You | Open |
+| S1 | Security | No security headers: no Content-Security-Policy, no frame-ancestors / X-Frame-Options, no X-Content-Type-Options, no Referrer-Policy, no Permissions-Policy; `X-Powered-By: Next.js` was sent; HSTS to add once TLS is on | Before launch | Claude | Fixed (HSTS goes in with TLS) |
+| S2 | Security | `POST /v1/copilot/chat` needed no sign-in and had no rate limit: once a key is set, anyone could spend model tokens | Blocks a real Copilot key | Claude | Fixed: 60 questions an hour per user or address; sign-in required once a model is configured |
+| S3 | Security | The per-address part of the sign-in and sign-up limit read the first `X-Forwarded-For` entry, which the client writes, so a forged header got a fresh allowance each try (the per-email limit held). *Corrected: the first version of this report said sign-up had no limit; it shares the sign-in limit.* | Before launch | Claude | Fixed: uses nginx's `X-Real-IP` |
+| S4 | Security | No password reset and no e-mail verification (needs a mail service; the domain has no mail records) | Before launch | You (mail), then Claude | Open |
+| S5 | Security / legal | No way to delete an account in Settings, although the Privacy Policy says deletion can be requested "through available settings" | Before launch | Claude | Fixed: Settings › Delete account (password asked again) |
+| S6 | Correctness | Unknown tickers and templates (`/t/NOPE`, `/templates/nope`) answered HTTP 200 | Later | Claude | Templates now show the not-found page (noindex); unknown tickers still show the in-app "unknown ticker" message |
+| P1 | Payments | The new app has no checkout. The old site's Moyasar checkout and monthly renewals are still live (`billing_configured: true`). Existing accounts and subscriptions are not in the new app's database | Before launch | You (migration plan), then Claude | Open |
+| P2 | Payments | Pro has no Pro-only features in the new app; /pricing shows a labelled placeholder | Before paid launch | You | Open |
+| P3 | Payments | Prices live in two places until the old backend is retired (`api/app/pricing.py` mirrors the old `pricing.py`, same env names); they can drift | Before launch | Claude (check), You (cut-over) | Open |
+| P4 | Payments | Open items from the plan: market-data redistribution licence; CMA licensing question | Before paid launch | You | Open |
+| D1 | Data | 61 of 690 equities with price files have prices older than 4 days; some stop in 2018 (likely delisted or suspended but still in the universe). They show amber everywhere | Before launch | You (pipeline) | Open |
+| D2 | Data | 26 of 716 equities have no price file at all (charts say "Data unavailable") | Later | You (pipeline) | Open |
+| D3 | Data | Index levels exist only for TASI, ADX and DFM; QSE, Boursa Kuwait, BHB and MSX show "n/a" | Later | You (pipeline) | Open |
+| D4 | Data | Ownership and analyst data are empty for every equity (Ownership tab is "Data unavailable"); no cash-flow statement | Later | You (pipeline) | Open |
+| D5 | Data | Some sector labels in `briefs` look wrong (e.g. 1111 "Energy", 1201 "Hotels & Restaurants") | Later | You (pipeline) | Open |
+| D6 | Data | Panels said the next update is at 00:00 UTC (pipeline start); the databases are published around 02:30–05:00 UTC | Later | Claude | Fixed: the light now says "next run" |
+| D7 | Data | The landing and /templates screens are real but dated (taken 2026-10-15); retake before launch (`scripts/capture-screens.mjs`) | Before launch | Claude | Open |
+| L1 | Legal | Every document gives support@ and privacy@alphacouncil.tech; the domain has no mail records, so they bounce | Before launch | You | Open |
+| L2 | Legal | Documents link to `https://alphacouncil.tech/contact.html` (old site); the new site has no contact page, so the link breaks at cut-over | Before launch | You (text) / Claude (page) | Open |
+| L3 | Legal | Cookie Policy says the session cookie is session-only unless "remember me"; the app always sets a 30-day cookie and has no "remember me". The language choice is a `NEXT_LOCALE` cookie, not local storage | Before launch | You (text) or Claude (behaviour) | Open |
+| L4 | Legal | AI & Financial Disclaimer describes the old product ("Adviser interactions", "multi-model or Council responses", "final synthesis"); the council is now rule-based, the Copilot is the AI feature | Before launch | You | Open |
+| L5 | Legal | Sign-up did not show or record acceptance of the Terms and Privacy Policy (the old site recorded the versioned registration text) | Before launch | Claude | Fixed: the old site's wording, required, recorded with text and document versions |
+| L6 | Legal | Merchant information was on the legal pages but not linked from the site footer | Before launch | Claude | Fixed |
+| U1 | UX | The Copilot conversation was cleared when the language was switched (test task 5) | Later | Claude | Fixed: kept for the browser tab |
 
 ## What passed
 
@@ -51,6 +51,13 @@ Every issue found is listed here before anything is fixed (plan, Phase 7). Each 
 - **Legal pages**: the five documents (EN and AR) are the signed-off text, verbatim, with their content hashes (Phase 6 check).
 - **Data freshness right now** (staging, live databases, 2026-10-15 03:49 UTC): prices and technical indicators to 2026-10-13 for current equities; fundamentals 2026-10-14; disclosures 2026-10-09 (allowed 120 days); news to 2026-10-14.
 
-## What I propose to fix now (owner Claude)
+## Fixed after this report (owner Claude)
 
-S1, S2, S3, S5, S6, D6, L5, L6 and U1 are code changes on `rebuild` with no decision needed. S2 means the Copilot will ask testers to sign in first; L5 uses the old site's registration text and version verbatim. Everything marked You stays open for you.
+S1, S2, S3, S5, S6 (templates), D6, L5, L6 and U1, on `rebuild`. The Copilot stand-in still answers visitors who are not signed in; once a model key is set, it asks them to sign in. The sign-up acceptance uses the old site's registration text and versions verbatim (`api/app/legal.py`, checked against the documents by a test). Everything marked You stays open for you; D7 (retake the screens) waits until just before launch.
+
+## To start user testing
+
+1. **You**: add the DNS record `beta` → `72.60.91.24` in Cloudflare, DNS only (grey cloud). Then I issue the certificate (`certbot --nginx -d beta.alphacouncil.tech`, which touches only the beta site) and add HSTS.
+2. **You**: give the five testers the staging login (the existing staging password; I never handle it).
+3. **You, optional**: put `ANTHROPIC_API_KEY` in `/etc/alphacouncil-platform/api.env` for a real Copilot. Without it, task 4 runs on the labelled stand-in, which answers dividend questions from the database and cites the panel.
+4. The five tasks were walked by the checks: sign up and add three holdings (Phase 5 check), switch every panel from Aramco to Al Rajhi through the group chip (Phase 2 check), read when Aramco's price was updated (freshness light), ask about a holding's dividend and open the cited panel (Phase 4 check), switch to Arabic (Phase 7 sweep; the conversation now stays).

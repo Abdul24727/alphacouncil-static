@@ -36,6 +36,8 @@ class Settings(BaseSettings):
     copilot_provider: str = "auto"  # "auto" | "standin"
     copilot_model: str = "claude-opus-5-5"
     copilot_effort: str = "medium"  # low | medium | high | xhigh | max
+    # Questions per hour per signed-in user (or per address for the stand-in).
+    copilot_hourly_limit: int = 60
 
     # App data (accounts, portfolios, alerts, preferences). SQLite locally, Postgres on servers.
     database_url: str = "sqlite:///./dev-app.sqlite"

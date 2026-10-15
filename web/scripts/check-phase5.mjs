@@ -55,6 +55,7 @@ const email = `check-${Date.now()}@example.com`;
 await page.goto(`${BASE_URL}/signup?next=/portfolio`);
 await page.getByLabel("Email").fill(email);
 await page.getByLabel("Password").fill("a long test password");
+await page.getByRole("checkbox").check(); // Terms and Privacy acceptance
 await page.getByRole("button", { name: "Create account" }).click();
 await page.waitForURL(/\/portfolio$/, { timeout: 30000 });
 await page.locator("[data-add-holding]").waitFor();

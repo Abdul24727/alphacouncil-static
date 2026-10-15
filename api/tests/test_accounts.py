@@ -2,7 +2,8 @@ ORIGIN = {"Origin": "http://testserver"}
 
 
 def signup(client, email="tester@example.com", password="correct horse battery"):
-    return client.post("/v1/auth/signup", json={"email": email, "password": password}, headers=ORIGIN)
+    body = {"email": email, "password": password, "accept_terms": True}
+    return client.post("/v1/auth/signup", json=body, headers=ORIGIN)
 
 
 def test_signup_sets_session_and_me(client):
@@ -101,3 +102,55 @@ def test_sessions_are_per_user(client):
     other = TestClient(main.create_app())
     signup(other, "b@example.com")
     assert other.get("/v1/portfolio").json()["holdings"] == []
+
+
+def test_rate_limit_ignores_a_forged_forwarded_for(client):
+    # Each attempt claims a new address in X-Forwarded-For; the limit still counts them as one visitor.
+    codes = [
+        client.post(
+            "/v1/auth/login",
+            json={"email": f"x{i}@example.com", "password": "wrong password!"},
+            headers={**ORIGIN, "X-Forwarded-For": f"10.0.0.{i}"},
+        ).status_code
+        for i in range(12)
+    ]
+    assert codes[:10] == [401] * 10 and codes[10:] == [429, 429]
+    # nginx's X-Real-IP is the address that counts.
+    r = client.post("/v1/auth/login", json={"email": "y@example.com", "password": "wrong password!"}, headers={**ORIGIN, "X-Real-IP": "203.0.113.9"})
+    assert r.status_code == 401
+
+
+def test_signup_needs_and_records_acceptance(client):
+    from sqlalchemy import select
+
+    from app.appdb import consents, engine_for
+
+    r = client.post("/v1/auth/signup", json={"email": "c@example.com", "password": "correct horse battery"}, headers=ORIGIN)
+    assert r.status_code == 422 and "Terms of Service" in r.json()["detail"]
+    assert signup(client, email="c@example.com").status_code == 200
+    with engine_for(client.app.state.settings.database_url).connect() as conn:
+        row = conn.execute(select(consents)).one()
+    assert row.kind == "registration" and row.text_version == "1.0" and row.documents == {"terms": "1.2", "privacy": "1.2"}
+
+
+def test_registration_versions_match_the_documents_on_the_site():
+    import json
+    from pathlib import Path
+
+    from app.legal import REGISTRATION
+
+    content = Path(__file__).resolve().parents[2] / "web" / "src" / "content" / "legal"
+    for doc, version in REGISTRATION["documents"].items():
+        assert json.loads((content / f"{doc}.en.json").read_text(encoding="utf-8"))["version"] == version
+
+
+def test_delete_account_removes_everything(client):
+    signup(client)
+    client.post("/v1/portfolio/holdings", json={"ticker": "2222", "quantity": 10}, headers=ORIGIN)
+    assert client.post("/v1/me/delete", json={"password": "wrong password!"}, headers=ORIGIN).status_code == 401
+    r = client.post("/v1/me/delete", json={"password": "correct horse battery"}, headers=ORIGIN)
+    assert r.status_code == 200 and r.json() == {"user": None}
+    assert client.get("/v1/auth/me").json()["user"] is None
+    client.cookies.clear()
+    login = client.post("/v1/auth/login", json={"email": "tester@example.com", "password": "correct horse battery"}, headers=ORIGIN)
+    assert login.status_code == 401

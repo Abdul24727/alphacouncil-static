@@ -23,6 +23,8 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next?: stri
     const password = String(form.get("password") ?? "");
     const name = String(form.get("name") ?? "").trim();
     if (!email || !password) return setError(t("errors.invalid"));
+    const accepted = form.get("accept") === "on";
+    if (mode === "signup" && !accepted) return setError(t("errors.terms"));
     try {
       if (mode === "login") await signIn.mutateAsync({ email, password });
       else
@@ -31,6 +33,7 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next?: stri
           password,
           display_name: name || undefined,
           locale: document.documentElement.lang === "ar" ? "ar" : "en",
+          accept_terms: accepted,
         });
       router.replace(next && next.startsWith("/") && !next.startsWith("//") ? next : "/portfolio");
     } catch (err) {
@@ -84,6 +87,26 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next?: stri
         />
         {mode === "signup" && <span className="text-[12px] text-muted">{t("passwordHint")}</span>}
       </label>
+      {mode === "signup" && (
+        // The old site's registration acceptance, word for word (api/app/legal.py records its version).
+        <label className="flex items-start gap-2 text-text-soft">
+          <input type="checkbox" name="accept" className="mt-0.5 size-4 shrink-0 accent-signal" />
+          <span>
+            {t.rich("accept", {
+              terms: (c) => (
+                <Link href="/legal/terms" target="_blank" className="text-signal hover:underline">
+                  {c}
+                </Link>
+              ),
+              privacy: (c) => (
+                <Link href="/legal/privacy" target="_blank" className="text-signal hover:underline">
+                  {c}
+                </Link>
+              ),
+            })}
+          </span>
+        </label>
+      )}
       {error && (
         <p role="alert" className="text-loss">
           {error}

@@ -22,7 +22,8 @@ from sqlalchemy import delete, insert, select, update
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError
 
-from .appdb import engine_for, prefs, sessions, users, utcnow
+from .appdb import consents, engine_for, prefs, sessions, users, utcnow
+from .legal import REGISTRATION
 from .settings import Settings
 
 COOKIE = "acp_session"
@@ -132,9 +133,11 @@ def check_origin(request: Request) -> None:
         raise HTTPException(403, "Cross-site request refused.")
 
 
-def _client_ip(request: Request) -> str:
-    fwd = request.headers.get("x-forwarded-for", "")
-    return fwd.split(",")[0].strip() or (request.client.host if request.client else "?")
+def client_ip(request: Request) -> str:
+    """The visitor's address for rate limits. nginx sets X-Real-IP from the connection,
+    replacing anything the client sent, and the web app's rewrite passes it on. The first
+    X-Forwarded-For entry is not used: the client can write it."""
+    return request.headers.get("x-real-ip", "").strip() or (request.client.host if request.client else "?")
 
 
 # --- endpoints ----------------------------------------------------------------------------------
@@ -157,6 +160,12 @@ class Credentials(BaseModel):
 class SignupBody(Credentials):
     display_name: str | None = Field(default=None, max_length=80)
     locale: str = Field(default="en", pattern="^(en|ar)$")
+    # The registration acceptance (app/legal.py); an account needs it.
+    accept_terms: bool = False
+
+
+class DeleteBody(BaseModel):
+    password: str = Field(max_length=200)
 
 
 class LoginBody(BaseModel):
@@ -191,13 +200,15 @@ def _start_session(request: Request, response: Response, conn, user_id: int) -> 
 
 def _limited(request: Request, email: str) -> None:
     limit = login_limit(request)
-    if not (limit.hit(f"ip:{_client_ip(request)}") and limit.hit(f"email:{email.strip().lower()}")):
+    if not (limit.hit(f"ip:{client_ip(request)}") and limit.hit(f"email:{email.strip().lower()}")):
         raise HTTPException(429, "Too many attempts. Try again in 15 minutes.")
 
 
 @router.post("/signup", operation_id="signup", dependencies=[Depends(check_origin)])
 def signup(request: Request, response: Response, body: SignupBody) -> Me:
     _limited(request, body.email)
+    if not body.accept_terms:
+        raise HTTPException(422, "Please accept the Terms of Service and Privacy Policy to continue.")
     try:
         with db(request).begin() as conn:
             uid = conn.execute(
@@ -209,6 +220,15 @@ def signup(request: Request, response: Response, body: SignupBody) -> Me:
                     created_at=utcnow(),
                 )
             ).inserted_primary_key[0]
+            conn.execute(
+                insert(consents).values(
+                    user_id=uid,
+                    kind=REGISTRATION["kind"],
+                    text_version=REGISTRATION["text_version"],
+                    documents=REGISTRATION["documents"],
+                    accepted_at=utcnow(),
+                )
+            )
             _start_session(request, response, conn, uid)
     except IntegrityError as exc:
         raise HTTPException(409, "An account with this email already exists.") from exc
@@ -234,6 +254,21 @@ def logout(request: Request, response: Response) -> Me:
     if token:
         with db(request).begin() as conn:
             conn.execute(delete(sessions).where(sessions.c.token_hash == _token_hash(token)))
+    response.delete_cookie(COOKIE, path="/")
+    return Me(user=None)
+
+
+@me_router.post("/delete", operation_id="deleteAccount", dependencies=[Depends(check_origin)])
+def delete_account(
+    request: Request, response: Response, body: DeleteBody, user: Annotated[User, Depends(require_user)]
+) -> Me:
+    """Deletes the account and everything stored with it (sessions, holdings, alerts,
+    preferences, consents cascade). The password is asked again."""
+    with db(request).begin() as conn:
+        row = conn.execute(select(users.c.password_hash).where(users.c.id == user.id)).first()
+        if row is None or not verify_password(body.password, row.password_hash):
+            raise HTTPException(401, "Password is incorrect.")
+        conn.execute(delete(users).where(users.c.id == user.id))
     response.delete_cookie(COOKIE, path="/")
     return Me(user=None)
 

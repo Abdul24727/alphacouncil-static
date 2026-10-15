@@ -797,6 +797,48 @@
         }
       }
     },
+    "/v1/me/delete": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Delete Account",
+        "description": "Deletes the account and everything stored with it (sessions, holdings, alerts,\npreferences, consents cascade). The password is asked again.",
+        "operationId": "deleteAccount",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/me/prefs": {
       "get": {
         "tags": [
@@ -1771,12 +1813,17 @@
           "stand_in": {
             "type": "boolean",
             "title": "Stand In"
+          },
+          "sign_in_required": {
+            "type": "boolean",
+            "title": "Sign In Required"
           }
         },
         "type": "object",
         "required": [
           "model",
-          "stand_in"
+          "stand_in",
+          "sign_in_required"
         ],
         "title": "CopilotStatus"
       },
@@ -1906,6 +1953,20 @@
           "holdings_count"
         ],
         "title": "CurrencyGroup"
+      },
+      "DeleteBody": {
+        "properties": {
+          "password": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "password"
+        ],
+        "title": "DeleteBody"
       },
       "Dividend": {
         "properties": {
@@ -4157,6 +4218,11 @@
             "pattern": "^(en|ar)$",
             "title": "Locale",
             "default": "en"
+          },
+          "accept_terms": {
+            "type": "boolean",
+            "title": "Accept Terms",
+            "default": false
           }
         },
         "type": "object",

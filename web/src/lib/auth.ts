@@ -41,9 +41,15 @@ export function useSignIn() {
 }
 
 export function useSignUp() {
-  return useAuthMutation((body: { email: string; password: string; display_name?: string; locale: "en" | "ar" }) =>
-    api.POST("/v1/auth/signup", { body }).then(unwrap),
+  return useAuthMutation(
+    (body: { email: string; password: string; display_name?: string; locale: "en" | "ar"; accept_terms: boolean }) =>
+      api.POST("/v1/auth/signup", { body }).then(unwrap),
   );
+}
+
+/** Deletes the account and everything stored with it; asks for the password again. */
+export function useDeleteAccount() {
+  return useAuthMutation((body: { password: string }) => api.POST("/v1/me/delete", { body }).then(unwrap));
 }
 
 export function useSignOut() {

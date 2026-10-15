@@ -31,7 +31,7 @@ def data(parts, kind):
 def test_status_without_credentials_is_stand_in(client, monkeypatch):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     monkeypatch.delenv("ANTHROPIC_AUTH_TOKEN", raising=False)
-    assert client.get("/v1/copilot/status").json() == {"model": "stand-in", "stand_in": True}
+    assert client.get("/v1/copilot/status").json() == {"model": "stand-in", "stand_in": True, "sign_in_required": False}
 
 
 def test_dividend_answer_cites_the_attached_metrics_panel(client, monkeypatch):
@@ -72,3 +72,22 @@ def test_table_numbers_are_checked_against_what_was_read():
     rows = [["Q2 2026", "2026-08-19", 0.34], ["Q1 2026", "2026-06-01", 0.35]]
     # The second row was never read (period, date and amount): flagged; the first passes.
     assert unverified_cells(rows, seen) == [[1, 0], [1, 1], [1, 2]]
+
+
+def test_copilot_is_rate_limited(client):
+    from app.auth import RateLimit
+
+    client.app.state.copilot_limit = RateLimit(limit=2, window_s=3600)
+    body = {"messages": [{"id": "u1", "role": "user", "parts": [{"type": "text", "text": "hi"}]}], "panels": [], "locale": "en"}
+    codes = [client.post("/v1/copilot/chat", json=body).status_code for _ in range(3)]
+    assert codes == [200, 200, 429]
+
+
+def test_a_real_model_answers_signed_in_users_only(client, monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key-not-used")
+    s = client.get("/v1/copilot/status").json()
+    assert s["stand_in"] is False and s["sign_in_required"] is True
+    body = {"messages": [{"id": "u1", "role": "user", "parts": [{"type": "text", "text": "hi"}]}], "panels": [], "locale": "en"}
+    assert client.post("/v1/copilot/chat", json=body).status_code == 401
+    monkeypatch.delenv("ANTHROPIC_API_KEY")
+    assert client.get("/v1/copilot/status").json()["sign_in_required"] is False

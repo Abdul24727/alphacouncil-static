@@ -342,6 +342,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/me/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Delete Account
+         * @description Deletes the account and everything stored with it (sessions, holdings, alerts,
+         *     preferences, consents cascade). The password is asked again.
+         */
+        post: operations["deleteAccount"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/me/prefs": {
         parameters: {
             query?: never;
@@ -731,6 +752,8 @@ export interface components {
             model: string;
             /** Stand In */
             stand_in: boolean;
+            /** Sign In Required */
+            sign_in_required: boolean;
         };
         /** Corporate */
         Corporate: {
@@ -767,6 +790,11 @@ export interface components {
             exchanges: components["schemas"]["Slice"][];
             /** Holdings Count */
             holdings_count: number;
+        };
+        /** DeleteBody */
+        DeleteBody: {
+            /** Password */
+            password: string;
         };
         /** Dividend */
         Dividend: {
@@ -1340,6 +1368,11 @@ export interface components {
              * @default en
              */
             locale: string;
+            /**
+             * Accept Terms
+             * @default false
+             */
+            accept_terms: boolean;
         };
         /** Slice */
         Slice: {
@@ -2098,6 +2131,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    deleteAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeleteBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

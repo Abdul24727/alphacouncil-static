@@ -81,6 +81,19 @@ SHOTS["phase-6"] = [
   ["markets", "/markets", waitForPanels],
   ["council-2222", "/t/2222/council", waitForPanels],
 ];
+// Arabic everywhere and the phone width (Phase 7).
+SHOTS["phase-7"] = [
+  ["home-ar", "/ar/home", waitForPanels],
+  ["stock-ar", "/ar/t/2222", waitForPanels],
+  ["financials-ar", "/ar/t/2222/financials", waitForPanels],
+  ["screener-ar", "/ar/screener", waitForPanels],
+  ["portfolio-ar", "/ar/portfolio", waitForPanels],
+  ["sector-vs-sector-ar", "/ar/templates/sector-vs-sector", waitForPanels],
+  ["settings-ar", "/ar/settings", waitForPanels],
+  ["signup-ar", "/ar/signup", siteReady],
+  ["signup", "/signup", siteReady],
+  ["methodology-ar", "/ar/methodology", siteReady, full],
+];
 SHOTS.latest = Object.values(SHOTS).flat();
 SHOTS.staging = SHOTS.latest;
 

@@ -10,13 +10,16 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Composer } from "@/components/copilot/Composer";
 import { AssistantMessage, UserMessage } from "@/components/copilot/Message";
 import type { CopilotMessage } from "@/components/copilot/types";
+import { Link } from "@/i18n/navigation";
 import { api, unwrap } from "@/lib/api/client";
+import { useMe } from "@/lib/auth";
 import { attachedWithData, useCopilot } from "@/lib/copilot-store";
 import { useLayout } from "@/lib/layout-store";
 import { revealPanel } from "@/lib/panel-registry";
 import { useTickerGroups } from "@/lib/ticker-groups";
 import { Kbd } from "./Kbd";
 import { ResizeHandle } from "./ResizeHandle";
+import { WithPathname } from "./WithPathname";
 
 /**
  * Right-hand Copilot (left in Arabic). Answers use only attached panels and
@@ -51,6 +54,41 @@ export function CopilotPane() {
 
 const subscribeNever = () => () => {};
 
+const CONVERSATION_KEY = "ac-copilot-conversation";
+
+function loadConversation(): CopilotMessage[] {
+  try {
+    return JSON.parse(sessionStorage.getItem(CONVERSATION_KEY) ?? "[]") as CopilotMessage[];
+  } catch {
+    return [];
+  }
+}
+
+function saveConversation(messages: CopilotMessage[]) {
+  try {
+    sessionStorage.setItem(CONVERSATION_KEY, JSON.stringify(messages));
+  } catch {
+    // Storage full or blocked: the conversation just does not survive a reload.
+  }
+}
+
+/** The API's `detail` rather than its JSON envelope; known codes come back as a message key. */
+function errorDetail(error: Error): { code: "sign_in_required" | "rate_limited" } | { text: string } {
+  try {
+    const detail = (JSON.parse(error.message) as { detail?: unknown }).detail;
+    if (detail === "sign_in_required" || detail === "rate_limited") return { code: detail };
+    return { text: typeof detail === "string" ? detail : error.message };
+  } catch {
+    return { text: error.message };
+  }
+}
+
+function ErrorLine({ error }: { error: Error }) {
+  const t = useTranslations("copilot");
+  const d = errorDetail(error);
+  return <p className="text-loss">{"code" in d ? t(`errors.${d.code}`) : t("error", { message: d.text })}</p>;
+}
+
 function CopilotBody() {
   const t = useTranslations("copilot");
   const fullscreen = useLayout((s) => s.copilotFullscreen);
@@ -77,8 +115,14 @@ function CopilotBody() {
         }),
       }),
   );
-  const { messages, sendMessage, status, stop, setMessages, error } = useChat<CopilotMessage>({ transport });
+  // The conversation survives a language switch (which remounts the shell) for this tab.
+  const [saved] = useState(loadConversation);
+  const { messages, sendMessage, status, stop, setMessages, error } = useChat<CopilotMessage>({ transport, messages: saved });
   const busy = status === "submitted" || status === "streaming";
+  useEffect(() => {
+    if (status === "ready" || status === "error") saveConversation(messages);
+  }, [messages, status]);
+  const me = useMe();
 
   const modelStatus = useQuery({
     queryKey: ["copilot", "status"],
@@ -86,6 +130,7 @@ function CopilotBody() {
     staleTime: 5 * 60_000,
   });
   const standIn = modelStatus.data?.stand_in;
+  const needsSignIn = !!modelStatus.data?.sign_in_required && !me.isPending && !me.data;
 
   // Keep the newest content in view while an answer streams.
   const scroller = useRef<HTMLDivElement>(null);
@@ -175,10 +220,23 @@ function CopilotBody() {
             ),
           )
         )}
-        {error && <p className="text-loss">{t("error", { message: error.message })}</p>}
+        {error && <ErrorLine error={error} />}
       </div>
 
-      <Composer busy={busy} onSend={ask} onStop={() => void stop()} />
+      {needsSignIn ? (
+        <p className="shrink-0 border-t border-line p-3 text-text-soft" data-copilot-signin>
+          {t("signIn")}{" "}
+          <WithPathname
+            render={(pathname) => (
+              <Link href={`/login?next=${encodeURIComponent(pathname ?? "/home")}`} className="text-signal hover:underline">
+                {t("signInLink")}
+              </Link>
+            )}
+          />
+        </p>
+      ) : (
+        <Composer busy={busy} onSend={ask} onStop={() => void stop()} />
+      )}
     </>
   );
 }

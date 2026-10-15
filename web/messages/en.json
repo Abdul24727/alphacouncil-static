@@ -84,6 +84,12 @@
         "label": "/council",
         "prompt": "Explain each council seat's vote and the data behind it."
       }
+    },
+    "signIn": "Sign in to ask the Copilot: it runs on an AI model that answers account holders.",
+    "signInLink": "Sign in",
+    "errors": {
+      "sign_in_required": "Sign in to ask the Copilot.",
+      "rate_limited": "You have asked many questions in the last hour. Try again later."
     }
   },
   "placeholder": {
@@ -128,7 +134,7 @@
     "copied": "Copied",
     "refresh": "Refresh",
     "updated": "Updated",
-    "next": "next",
+    "next": "next run",
     "asOf": "data as of",
     "freshness": {
       "fresh": "Within its update window",
@@ -392,8 +398,10 @@
       "exists": "An account with this email already exists. Sign in instead.",
       "invalid": "Check the email address and use a password of at least 10 characters.",
       "rate": "Too many attempts. Try again in 15 minutes.",
-      "generic": "Something went wrong. Try again."
-    }
+      "generic": "Something went wrong. Try again.",
+      "terms": "Please accept the Terms of Service and Privacy Policy to continue."
+    },
+    "accept": "I agree to the <terms>Terms of Service</terms> and acknowledge the <privacy>Privacy Policy</privacy>."
   },
   "market": {
     "markets": "Markets",
@@ -552,7 +560,14 @@
     "controlsAlways": "Always shown",
     "controlsHover": "On hover",
     "savedToAccount": "Saved to your account.",
-    "savedToBrowser": "Saved in this browser. Sign in to keep them on every device."
+    "savedToBrowser": "Saved in this browser. Sign in to keep them on every device.",
+    "deleteTitle": "Delete account",
+    "deleteBody": "Deletes your account, portfolio, alerts and saved settings. This cannot be undone.",
+    "deletePassword": "Password",
+    "deleteCta": "Delete my account",
+    "deleteNeedsPassword": "Enter your password to delete the account.",
+    "deleteWrongPassword": "Password is incorrect.",
+    "deleteFailed": "The account could not be deleted. Try again."
   },
   "site": {
     "nav": {
