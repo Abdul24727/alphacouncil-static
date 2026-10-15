@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "search": "Search",
+    "home": "Home",
+    "portfolio": "My Portfolio",
+    "screener": "Screener",
+    "markets": "Markets",
+    "templates": "Templates",
+    "dashboards": "My dashboards",
+    "settings": "Settings",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar",
+    "language": "Language"
+  },
+  "search": {
+    "title": "Search tickers",
+    "placeholder": "Symbol or company name, English or Arabic",
+    "empty": "No ticker matches",
+    "hint": "Type a symbol like 2222 or a name like Aramco",
+    "error": "Search is unavailable: the API did not respond",
+    "loading": "Searching"
+  },
+  "copilot": {
+    "title": "Copilot",
+    "open": "Open Copilot",
+    "close": "Close Copilot",
+    "fullscreen": "Full screen",
+    "exitFullscreen": "Exit full screen",
+    "context": "Context",
+    "noContext": "No panels attached",
+    "placeholder": "Ask about attached panels. @ for panels, / for skills",
+    "comingSoon": "The Copilot is rebuilt in Phase 4. This pane is its frame."
+  },
+  "placeholder": {
+    "phase": "Built in Phase {phase}",
+    "unavailable": "Data unavailable",
+    "home": "Start page.",
+    "portfolio": "Holdings, exposure by sector and market, alerts, and the council on your portfolio.",
+    "screener": "Filterable table of every equity we cover. A row opens its stock template.",
+    "markets": "Tadawul, ADX, DFM, QSE, Boursa Kuwait, BHB and MSX.",
+    "templates": "Earnings Season, Dividend Hunter and Sector vs Sector.",
+    "dashboards": "Dashboards you build from pinned panels.",
+    "settings": "Language, decimals, font size, controls on hover.",
+    "stock": "Overview, Financials, Council, Ownership and Calendar pages in fixed layouts."
+  },
+  "exchanges": {
+    "TADAWUL": "Tadawul",
+    "ADX": "ADX",
+    "DFM": "DFM",
+    "QSE": "QSE",
+    "KSE": "Boursa Kuwait",
+    "BSE": "BHB",
+    "MSM": "MSX"
+  },
+  "pages": {
+    "home": "Home",
+    "portfolio": "My Portfolio",
+    "screener": "Screener",
+    "markets": "Markets",
+    "templates": "Templates",
+    "dashboards": "My dashboards",
+    "settings": "Settings",
+    "stock": "Tadawul Stock"
+  }
+}

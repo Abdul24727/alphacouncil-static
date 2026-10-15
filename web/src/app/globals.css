@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+/*
+ * BRAND.md tokens. The default Tailwind palette is removed so teal, purple
+ * and every other off-brand color cannot be used by accident.
+ */
+@theme {
+  --color-*: initial;
+  --color-bg: #0c0d10;
+  --color-panel: #14161b;
+  --color-panel-raised: #1d2028;
+  --color-line: #272b34;
+  --color-text: #eceef2;
+  --color-text-soft: #b8beca;
+  --color-muted: #9299a8;
+  --color-signal: #ff6a1a;
+  --color-signal-ink: #170800;
+  --color-gain: #3fd98a;
+  --color-loss: #ff4d5e;
+  --color-stale: #f2b134;
+  --color-neutral-seat: #4a505c;
+
+  --radius-panel: 6px;
+  --radius-chip: 4px;
+
+  --text-app: 13px;
+  --text-app--line-height: 1.45;
+  --text-panel-title: 22px;
+  --text-panel-title--line-height: 1.15;
+  --text-label: 10.5px;
+  --text-label--line-height: 1.3;
+
+  --shadow-*: initial;
+}
+
+/* Shell state lives on <html> (see lib/layout-store.ts), so CSS sizes the panes before React hydrates. */
+@custom-variant sidebar-collapsed (&:where(html[data-sidebar="collapsed"] *));
+@custom-variant copilot-closed (&:where(html[data-copilot="closed"] *));
+@custom-variant copilot-full (&:where(html[data-copilot="full"] *));
+
+:root {
+  --sidebar-w: 210px;
+  --copilot-w: 340px;
+}
+
+/* next/font sets these variables on <html>; Arabic glyphs fall through to Plex Arabic. */
+@theme inline {
+  --font-sans: var(--font-archivo), var(--font-plex-arabic);
+  --font-mono: var(--font-martian), var(--font-plex-arabic);
+}
+
+@layer base {
+  html {
+    background: var(--color-bg);
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-app);
+    line-height: var(--text-app--line-height);
+  }
+
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-line);
+  }
+
+  ::selection {
+    background: var(--color-signal);
+    color: var(--color-signal-ink);
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--color-signal);
+    outline-offset: 1px;
+  }
+}
+
+/* Condensed Archivo headline (BRAND.md: weight 700–800, stretch 80–85%). */
+@utility headline {
+  font-family: var(--font-sans);
+  font-weight: 750;
+  font-stretch: 82%;
+  letter-spacing: -0.01em;
+}
+
+/* Small caps label in Martian Mono (BRAND.md: letter-spacing 0.08em). */
+@utility label-caps {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Every number, ticker and timestamp. */
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  unicode-bidi: isolate;
+  direction: ltr;
+}

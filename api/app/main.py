@@ -1,0 +1,46 @@
+from fastapi import APIRouter, FastAPI
+from pydantic import BaseModel
+
+from .market_db import MarketDataUnavailable
+from .routers import tickers
+from .settings import get_settings
+from .universe import Universe
+
+
+def create_app() -> FastAPI:
+    app = FastAPI(
+        title="AlphaCouncil API",
+        version="0.1.0",
+        description="Market data, council and accounts for the AlphaCouncil web app.",
+    )
+    app.state.universe = Universe(get_settings())
+
+    v1 = APIRouter(prefix="/v1")
+    v1.include_router(tickers.router)
+
+    class Health(BaseModel):
+        status: str
+        market_data: str
+        universe_size: int
+        universe_as_of: str | None
+
+    @v1.get("/health", operation_id="health", tags=["health"])
+    def health() -> Health:
+        universe: Universe = app.state.universe
+        try:
+            universe.refresh()
+            market = "ok"
+        except MarketDataUnavailable as exc:
+            market = f"unavailable: {exc}"
+        return Health(
+            status="ok",
+            market_data=market,
+            universe_size=len(universe.tickers),
+            universe_as_of=universe.as_of,
+        )
+
+    app.include_router(v1)
+    return app
+
+
+app = create_app()

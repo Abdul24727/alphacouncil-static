@@ -1,0 +1,20 @@
+[project]
+name = "alphacouncil-api"
+version = "0.1.0"
+description = "AlphaCouncil API: market data, council and accounts for the rebuilt web app"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic-settings>=2.4",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "httpx2",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
