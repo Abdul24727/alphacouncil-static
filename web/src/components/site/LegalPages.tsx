@@ -51,7 +51,7 @@ export async function LegalDocPage({ locale, doc }: Props & { doc: LegalDoc }) {
             {t("title")}
           </Link>
           <span aria-hidden>·</span>
-          <Link href={`/legal/${doc}`} locale={locale === "ar" ? "en" : "ar"} className="hover:text-text">
+          <Link href={`/legal/${doc}`} locale={locale === "ar" ? "en" : "ar"} lang={locale === "ar" ? "en" : "ar"} className="hover:text-text">
             {t("otherLanguage")}
           </Link>
         </p>
@@ -104,7 +104,8 @@ export async function LegalDocPage({ locale, doc }: Props & { doc: LegalDoc }) {
 async function Merchant({ locale }: Props) {
   const t = await getTranslations({ locale, namespace: "site.legal" });
   return (
-    <section aria-label={t("merchant")} className="legal mt-12 border-t border-line pt-6 text-[13px]" id="merchant">
+    // Verbatim registration details: the short address and e-mail stay in Latin letters.
+    <section aria-label={t("merchant")} className="legal mt-12 border-t border-line pt-6 text-[13px]" id="merchant" data-latin-ok>
       {merchantInfo(locale).map((html) => (
         <p key={html} dangerouslySetInnerHTML={{ __html: html }} />
       ))}

@@ -14,7 +14,7 @@ function Choice<T extends string | number>({
 }: {
   label: string;
   value: T;
-  options: { value: T; label: string }[];
+  options: { value: T; label: string; lang?: string }[];
   onChange: (v: T) => void;
 }) {
   return (
@@ -28,6 +28,7 @@ function Choice<T extends string | number>({
             role="radio"
             aria-checked={value === o.value}
             onClick={() => onChange(o.value)}
+            lang={o.lang}
             className={`rounded-[3px] px-3 py-1 ${value === o.value ? "bg-panel-raised text-text" : "text-muted hover:text-text"}`}
           >
             {o.label}
@@ -56,8 +57,9 @@ export function SettingsView() {
             label={t("language")}
             value={locale}
             options={[
-              { value: "en", label: "English" },
-              { value: "ar", label: "العربية" },
+              // Each language is named in itself.
+              { value: "en", label: "English", lang: "en" },
+              { value: "ar", label: "العربية", lang: "ar" },
             ]}
             onChange={(v) => router.replace(pathname, { locale: v })}
           />

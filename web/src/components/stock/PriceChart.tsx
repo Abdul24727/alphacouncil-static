@@ -15,6 +15,7 @@ import {
   type Time,
   type UTCTimestamp,
 } from "lightweight-charts";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { components } from "@/lib/api/schema";
 import { fmtCompact, fmtNumber, fmtPct } from "@/lib/format";
@@ -85,6 +86,8 @@ export function PriceChart({
   const host = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const [legend, setLegend] = useState<Legend | null>(null);
+  const tl = useTranslations("stock.chart.legend");
+  const chartLocale = useLocale() === "ar" ? "ar-u-nu-latn" : "en-US";
 
   const series = useMemo(() => {
     const times = bars.map((b) => toTime(b.time));
@@ -131,7 +134,8 @@ export function PriceChart({
         vertLine: { color: c.muted, labelBackgroundColor: c.line, style: LineStyle.Dashed },
         horzLine: { color: c.muted, labelBackgroundColor: c.line, style: LineStyle.Dashed },
       },
-      localization: { locale: "en-US", priceFormatter: (p: number) => fmtNumber(p, digits) ?? "" },
+      // Month names follow the page language; digits stay Latin (BRAND.md: numbers left-to-right).
+      localization: { locale: chartLocale, priceFormatter: (p: number) => fmtNumber(p, digits) ?? "" },
     });
     chartRef.current = chart;
     const priceFormat = { type: "price" as const, precision: digits, minMove: 1 / 10 ** digits };
@@ -265,7 +269,7 @@ export function PriceChart({
       chart.remove();
       chartRef.current = null;
     };
-  }, [bars, series, mode, range, indicators, digits, height]);
+  }, [bars, series, mode, range, indicators, digits, height, chartLocale]);
 
   const shown = legend ?? lastLegend;
   return (
@@ -274,14 +278,14 @@ export function PriceChart({
       {shown && (
         <div className="pointer-events-none absolute start-2 top-1.5 z-10 flex flex-wrap gap-x-3 text-[10.5px]" dir="ltr">
           <span className="num text-muted">{shown.time}</span>
-          {shown.open != null && <LegendValue label="O" value={fmtNumber(shown.open, digits)} />}
-          {shown.high != null && <LegendValue label="H" value={fmtNumber(shown.high, digits)} />}
-          {shown.low != null && <LegendValue label="L" value={fmtNumber(shown.low, digits)} />}
-          <LegendValue label="C" value={fmtNumber(shown.close, digits)} />
+          {shown.open != null && <LegendValue label={tl("open")} value={fmtNumber(shown.open, digits)} />}
+          {shown.high != null && <LegendValue label={tl("high")} value={fmtNumber(shown.high, digits)} />}
+          {shown.low != null && <LegendValue label={tl("low")} value={fmtNumber(shown.low, digits)} />}
+          <LegendValue label={tl("close")} value={fmtNumber(shown.close, digits)} />
           {shown.change != null && (
             <span className={`num ${shown.change >= 0 ? "text-gain" : "text-loss"}`}>{fmtPct(shown.change, 2, true)}</span>
           )}
-          {shown.volume != null && <LegendValue label="V" value={fmtCompact(shown.volume)} />}
+          {shown.volume != null && <LegendValue label={tl("volume")} value={fmtCompact(shown.volume)} />}
         </div>
       )}
     </div>
@@ -290,9 +294,9 @@ export function PriceChart({
 
 function LegendValue({ label, value }: { label: string; value: string | null }) {
   return (
-    <span className="num">
+    <span>
       <span className="text-muted">{label} </span>
-      <span className="text-text">{value}</span>
+      <span className="num text-text">{value}</span>
     </span>
   );
 }

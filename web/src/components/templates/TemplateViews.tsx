@@ -262,7 +262,7 @@ function SectorVsSector() {
             </option>
           ))}
         </select>
-        <span className="label-caps text-muted">vs</span>
+        <span className="label-caps text-muted">{t("sectors.vs")}</span>
         <select className={select} value={sb ?? ""} onChange={(e) => setB(e.target.value)} aria-label={t("sectors.b")}>
           {list.map((s) => (
             <option key={s.sector_en} value={s.sector_en}>
@@ -327,9 +327,9 @@ function SectorVsSector() {
                     <Th>{t("cols.ticker")}</Th>
                     <Th end>{t("cols.price")}</Th>
                     <Th end>{t("sectors.mcap")}</Th>
-                    <Th end>P/E</Th>
+                    <Th end>{t("cols.pe")}</Th>
                     <Th end>{t("dividends.yield")}</Th>
-                    <Th end>12M</Th>
+                    <Th end>{t("cols.r12")}</Th>
                   </tr>
                 </thead>
                 <tbody>

@@ -351,6 +351,13 @@
         "bb20": "BB20",
         "rsi14": "RSI14",
         "macd": "MACD"
+      },
+      "legend": {
+        "open": "O",
+        "high": "H",
+        "low": "L",
+        "close": "C",
+        "volume": "V"
       }
     }
   },
@@ -494,7 +501,9 @@
       "ticker": "Equity",
       "event": "Event",
       "price": "Price",
-      "change": "Chg"
+      "change": "Chg",
+      "pe": "P/E",
+      "r12": "12M"
     },
     "earnings": {
       "upcoming": "Upcoming results",
@@ -523,7 +532,8 @@
       "medianRoe": "Median ROE",
       "medianR12": "Median 12M return",
       "mcap": "Mkt cap",
-      "note": "Medians over the members that report each figure; P/E ignores negative earnings."
+      "note": "Medians over the members that report each figure; P/E ignores negative earnings.",
+      "vs": "vs"
     },
     "screen": "Screen of the {name} template",
     "open": "Open"
