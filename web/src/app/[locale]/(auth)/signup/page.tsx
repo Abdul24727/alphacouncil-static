@@ -1,8 +1,13 @@
+import { setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
+import type { Locale } from "@/i18n/routing";
 
-export default function Page({ searchParams }: PageProps<"/[locale]/signup">) {
+export default async function Page({ params, searchParams }: PageProps<"/[locale]/signup">) {
+  const { locale } = await params;
+  setRequestLocale(locale as Locale);
   return (
+    // ?next= is request data: the form streams in with it behind Suspense.
     <Suspense fallback={<AuthForm mode="signup" />}>
       <WithNext searchParams={searchParams} />
     </Suspense>

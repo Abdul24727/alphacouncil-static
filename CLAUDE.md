@@ -25,7 +25,8 @@ The rebuilt AlphaCouncil: a dense research terminal for Gulf markets (Tadawul, A
 
 - Locale is in the URL (`[locale]` segment, `localePrefix: "as-needed"`): English keeps `/home`, Arabic is `/ar/home`. `src/proxy.ts` is the old `middleware`.
 - `cacheComponents` is on: request data (`params`, `cookies()`, `usePathname()`) must sit behind `<Suspense>`. Use `components/shell/WithPathname` for pathname-dependent UI, and wrap `await params` of dynamic routes in a Suspense child (see `t/[ticker]/page.tsx`).
-- Pane sizes persist in localStorage (`ac-layout`) and are applied before paint by `LAYOUT_BOOT_SCRIPT`; they move to per-user server preferences once `/api` has accounts.
+- Dev mode does not enforce the prerender rules: run `npx next build` before deploying. Every segment under `[locale]` calls `setRequestLocale(locale)`, or next-intl falls back to request headers and the build fails.
+- Pane sizes persist in localStorage (`ac-layout`) and are applied before paint by `LAYOUT_BOOT_SCRIPT`; signed-in users' panes, chart and display settings sync to `/v1/me/prefs` (lib/prefs-sync.ts).
 
 ## Standing rules
 
