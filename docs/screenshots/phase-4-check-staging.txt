@@ -2,7 +2,8 @@ Copilot model: deepseek/deepseek-v3.2
 PASS  signed in (the model requires an account)
 PASS  metrics panel shows as a context chip
 PASS  answer cites the metrics panel
-PASS  reasoning is collapsible (› REASONING · 5 STEPS)
+PASS  answer finished in 105 s (limit 180 s)
+PASS  reasoning is collapsible (› REASONING · 4 STEPS)
 PASS  3 follow-up questions
 PASS  citation scrolled the metrics panel into view (top -542 -> 108)
 PASS  the cited panel is highlighted
