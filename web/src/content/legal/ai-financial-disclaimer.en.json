@@ -1,0 +1,73 @@
+{
+ "title": "AI and Financial Disclaimer",
+ "version": "1.0",
+ "effective": "2026-07-21",
+ "updated": "2026-07-21",
+ "operator": "Operator: Insight Lane Establishment, a Saudi sole establishment, Unified National Number 7050149686, trading as AlphaCouncil.",
+ "translationNote": null,
+ "toc": [
+  {
+   "href": "#sec-1",
+   "label": "1. Scope of this Disclaimer"
+  },
+  {
+   "href": "#sec-2",
+   "label": "2. Information and education only"
+  },
+  {
+   "href": "#sec-3",
+   "label": "3. No advisory, fiduciary or client relationship"
+  },
+  {
+   "href": "#sec-4",
+   "label": "4. AI limitations and hallucinations"
+  },
+  {
+   "href": "#sec-5",
+   "label": "5. Multi-model and Council outputs"
+  },
+  {
+   "href": "#sec-6",
+   "label": "6. Market Data, timeliness and third-party information"
+  },
+  {
+   "href": "#sec-7",
+   "label": "7. Forecasts, scores and scenarios"
+  },
+  {
+   "href": "#sec-8",
+   "label": "8. Investment risk"
+  },
+  {
+   "href": "#sec-9",
+   "label": "9. Portfolio uploads and extraction"
+  },
+  {
+   "href": "#sec-10",
+   "label": "10. Tax, legal, Sharia and accounting matters"
+  },
+  {
+   "href": "#sec-11",
+   "label": "11. Jurisdiction and regulatory differences"
+  },
+  {
+   "href": "#sec-12",
+   "label": "12. Beta and experimental features"
+  },
+  {
+   "href": "#sec-13",
+   "label": "13. Required user verification"
+  },
+  {
+   "href": "#sec-14",
+   "label": "14. No warranties and limitation of liability"
+  },
+  {
+   "href": "#sec-15",
+   "label": "15. Contact"
+  }
+ ],
+ "canonicalHash": "2653541a093a38d36218f177e2f041938c99e06d65fe6d42f68cd444fe500e23",
+ "html": "<h2 class=\"sec\" id=\"sec-1\">1. Scope of this Disclaimer</h2>\n<p>This AI &amp; Financial Disclaimer applies to all Content and AI Output made available through AlphaCouncil, including dashboards, scores, screeners, portfolio analysis, Adviser interactions, multi-model or Council responses, summaries, comparisons, forecasts, news analysis, alerts and experimental features. It supplements the Terms of Service. If there is a conflict, mandatory law and the Terms of Service govern.</p>\n<h2 class=\"sec\" id=\"sec-2\">2. Information and education only</h2>\n<p>AlphaCouncil is a research and educational technology service. It is not a broker, dealer, exchange, investment fund, portfolio manager, custodian, bank, financial adviser, tax adviser, legal adviser or accounting adviser. AlphaCouncil does not execute, arrange, route or settle transactions; receive trade instructions; hold money or securities; manage assets; or monitor a brokerage account on your behalf.</p>\n<p>Nothing in the Service is an offer, solicitation, invitation, endorsement or recommendation to buy, sell, subscribe for, hold or otherwise transact in a security, fund, derivative, currency, commodity or other financial product. Nothing is a representation that a transaction, portfolio, strategy or security is appropriate or suitable for you.</p>\n<p>Use of portfolio information, risk preferences, time horizon or goals to organize an output does not convert the output into regulated advice or a suitability determination. Any wording that resembles a recommendation, target, action item or ranking must be treated as machine-generated educational commentary, not as a personalized instruction.</p>\n<h2 class=\"sec\" id=\"sec-3\">3. No advisory, fiduciary or client relationship</h2>\n<p>Your use of the Service does not create an adviser-client, fiduciary, brokerage, agency, trust, discretionary-management or other professional relationship. AlphaCouncil does not undertake a duty to monitor your investments, update prior outputs, warn you of losses, identify all relevant events, rebalance a portfolio or act in your best interests as a regulated adviser would.</p>\n<p>You remain solely responsible for your investment objectives, risk tolerance, liquidity needs, concentration limits, tax position, legal restrictions and decisions. Consider obtaining advice from a professional who is appropriately licensed and able to assess your complete circumstances.</p>\n<h2 class=\"sec\" id=\"sec-4\">4. AI limitations and hallucinations</h2>\n<p>AI systems generate outputs by predicting and transforming information. They do not understand facts, markets or your circumstances in the manner of a licensed professional. AI Output may:</p>\n<ul class=\"doc\">\n<li>state false or fabricated facts, citations, calculations, prices, dates, events, financial ratios or regulatory information;</li>\n<li>misread a prompt, portfolio, uploaded document, table, ticker, currency or corporate action;</li>\n<li>omit material risks, qualifications, conflicting evidence or recent developments;</li>\n<li>use stale, incomplete, estimated or incorrectly mapped Market Data;</li>\n<li>reflect bias, inconsistent reasoning or unsupported assumptions;</li>\n<li>produce different answers to the same or similar question;</li>\n<li>appear confident, precise or authoritative when the underlying answer is uncertain or wrong.</li>\n</ul>\n<p>You must verify important statements, calculations and sources independently. A citation, link, chart or source label generated by an AI system may be incorrect or may not support the claim for which it is cited. Do not assume that an output has been reviewed by a human.</p>\n<h2 class=\"sec\" id=\"sec-5\">5. Multi-model and Council outputs</h2>\n<p>A Council, ensemble or multi-model feature may obtain responses from multiple models or agents and synthesize them. Agreement among models does not establish accuracy, independence or consensus among qualified professionals. Models may share training data, repeat the same error, rely on the same Market Data, or be influenced by the same prompt or system context. A final synthesis may omit disagreement or introduce new errors.</p>\n<h2 class=\"sec\" id=\"sec-6\">6. Market Data, timeliness and third-party information</h2>\n<p>Market Data may originate from public, licensed or third-party sources and may be delayed, corrected, restated, estimated, incomplete or subject to different update schedules. AlphaCouncil does not operate an exchange and does not guarantee real-time data. A displayed price, valuation, financial statement item, dividend, ownership figure, news event or technical indicator may differ from an official exchange, issuer filing, broker or data terminal.</p>\n<p>Market conditions can change before or after an output is generated. AlphaCouncil is not obliged to update an output when data, prices, news, regulation or issuer circumstances change. An alert or absence of an alert is not a guarantee that a relevant event has or has not occurred.</p>\n<h2 class=\"sec\" id=\"sec-7\">7. Forecasts, scores and scenarios</h2>\n<p>Scores, ranks, targets, expected returns, risk labels, sentiment indicators, scenarios, technical signals, fundamental assessments and forecasts are analytical estimates. They depend on assumptions, methodologies, selected time periods and available data. They are not promises, guarantees, probabilities certified by a regulator, or statements of future fact.</p>\n<p>Historical performance, backtests, model accuracy and prior examples may not reflect live conditions, fees, taxes, liquidity, slippage, execution constraints, market impact or future performance. A strategy that appears successful in historical or simulated data may perform materially worse in practice.</p>\n<h2 class=\"sec\" id=\"sec-8\">8. Investment risk</h2>\n<p>All investing involves risk, including loss of principal. Securities may be volatile, illiquid, suspended, delisted or affected by currency movements, interest rates, political events, regulatory changes, issuer defaults, corporate actions and market closures. Smaller or emerging markets may involve additional liquidity, disclosure, governance and concentration risks.</p>\n<p>Diversification does not eliminate risk. Stop-losses, targets and alerts may not execute or protect against gaps. Past performance does not predict future results. You should not invest money you cannot afford to lose and should consider independent professional advice before acting.</p>\n<h2 class=\"sec\" id=\"sec-9\">9. Portfolio uploads and extraction</h2>\n<p>When the Service extracts holdings or transactions from an image, PDF or statement, recognition errors may occur. The system may confuse similar tickers, omit positions, reverse quantities, misread decimal places, use the wrong currency or date, or fail to account for corporate actions. You must compare extracted data against the original record and correct errors before relying on portfolio analysis.</p>\n<p>Do not upload documents you are not authorized to use. Redact unnecessary personal, account and third-party information. AlphaCouncil does not verify ownership of a portfolio or the accuracy of uploaded records.</p>\n<h2 class=\"sec\" id=\"sec-10\">10. Tax, legal, Sharia and accounting matters</h2>\n<p>The Service does not provide tax, legal, accounting, audit, zakat, estate-planning or Sharia-compliance advice. Labels or commentary relating to these matters may be incomplete or based on general information and should not be relied upon. Obtain advice from qualified professionals and consult official rules and issuer disclosures.</p>\n<h2 class=\"sec\" id=\"sec-11\">11. Jurisdiction and regulatory differences</h2>\n<p>Financial products, permitted activities, disclosure standards and investor protections differ by jurisdiction. Information suitable for one market or class of investor may be unlawful, unavailable or inappropriate elsewhere. You are responsible for compliance with laws and restrictions that apply to you, including securities, sanctions, tax and foreign-investment rules.</p>\n<h2 class=\"sec\" id=\"sec-12\">12. Beta and experimental features</h2>\n<p>Beta, preview, experimental and research features may be incomplete, unstable or based on untested models, prompts or data. They may be changed or withdrawn without notice and should not be used for material financial decisions. A label indicating that a feature is experimental is an additional warning and does not reduce the other limitations in this Disclaimer.</p>\n<h2 class=\"sec\" id=\"sec-13\">13. Required user verification</h2>\n<p>Before acting on any information from AlphaCouncil, you should, as appropriate:</p>\n<ul class=\"doc\">\n<li>check official exchange announcements, issuer filings and current market prices;</li>\n<li>confirm calculations, currencies, dates, corporate actions and assumptions;</li>\n<li>review the complete risk profile and terms of the relevant product;</li>\n<li>consider fees, taxes, liquidity, concentration and execution risks;</li>\n<li>seek advice from a professional licensed for your jurisdiction and circumstances.</li>\n</ul>\n<h2 class=\"sec\" id=\"sec-14\">14. No warranties and limitation of liability</h2>\n<p>AlphaCouncil does not warrant the accuracy, completeness, timeliness, reliability, availability or fitness of AI Output, Market Data or financial analysis. The Service is provided subject to the disclaimers and limitations of liability in the Terms of Service. Nothing in this Disclaimer excludes a non-waivable right or liability that applicable law does not permit to be excluded.</p>\n<h2 class=\"sec\" id=\"sec-15\">15. Contact</h2>\n<p><strong>Email: </strong><a href=\"mailto:support@alphacouncil.tech\">support@alphacouncil.tech</a></p>\n<p><strong>Contact page: </strong><a href=\"https://alphacouncil.tech/contact.html\">https://alphacouncil.tech/contact.html</a></p>\n<p><strong>Website: </strong><a href=\"https://alphacouncil.tech\">https://alphacouncil.tech</a></p>\n<p>Registered business address and current commercial registration details are displayed in the Merchant Information notice on the Site and on transaction records issued where required by applicable law.</p>\n<table class=\"doc\"><tr><th>Do not make an investment or financial decision solely on the basis of AlphaCouncil. The Service provides automated research and educational information only. It does not provide regulated investment advice, personalized financial advice, trade execution, asset management or custody.</th></tr></table>",
+ "blocks": 54
+}

@@ -63,6 +63,24 @@ SHOTS["phase-5"] = [
   ["settings", "/settings", waitForPanels],
   ["home-ar", "/ar/home", waitForPanels],
 ];
+// Public pages: whole page at both widths (4th entry: options).
+const siteReady = async (page) => {
+  await page.waitForLoadState("networkidle");
+  await page.waitForFunction(() => !document.querySelector("[data-coverage]") || document.querySelector("[data-coverage] [data-db]"));
+};
+const full = { fullPage: true };
+SHOTS["phase-6"] = [
+  ["landing", "/", siteReady, full],
+  ["landing-ar", "/ar", siteReady, full],
+  ["pricing", "/pricing", siteReady, full],
+  ["methodology", "/methodology", siteReady, full],
+  ["legal", "/legal", siteReady, full],
+  ["legal-refunds", "/legal/refunds", siteReady],
+  ["legal-privacy-ar", "/ar/legal/privacy", siteReady],
+  ["templates", "/templates", waitForPanels],
+  ["markets", "/markets", waitForPanels],
+  ["council-2222", "/t/2222/council", waitForPanels],
+];
 SHOTS.latest = Object.values(SHOTS).flat();
 SHOTS.staging = SHOTS.latest;
 
@@ -75,7 +93,7 @@ const browser = await chromium.launch({ channel: "chrome" });
 await mkdir(outDir, { recursive: true });
 
 for (const [label, viewport] of Object.entries(WIDTHS)) {
-  for (const [name, route, act] of shots) {
+  for (const [name, route, act, opts] of shots) {
     // Fresh context per shot: no locale cookie or saved pane sizes carry over.
     const context = await browser.newContext({
       viewport,
@@ -90,7 +108,7 @@ for (const [label, viewport] of Object.entries(WIDTHS)) {
     await page.waitForTimeout(400);
     if (act) await act(page);
     const file = path.join(outDir, `${name}-${viewport.width}.png`);
-    await page.screenshot({ path: file, fullPage: label === "phone" && !act?.name?.startsWith("open") });
+    await page.screenshot({ path: file, fullPage: opts?.fullPage || (label === "phone" && !act?.name?.startsWith("open")) });
     console.log(path.relative(process.cwd(), file));
     await context.close();
   }

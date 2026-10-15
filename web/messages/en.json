@@ -223,12 +223,12 @@
       "rule": "Rule",
       "method": "Each seat votes by a fixed rule on database values. A seat with no data abstains. There is no blended score.",
       "rules": {
-        "value": "P/E below 10 bullish, below 16 neutral, else bearish. No or negative earnings: abstains.",
-        "quality": "ROE above 20% bullish, above 12% neutral, else bearish.",
-        "income": "Dividend yield above 5% bullish, above 2.5% neutral, else bearish. No dividend: abstains.",
-        "momentum": "Trend regime above 65 with the 50-day average above the 200-day bullish, above 45 neutral, else bearish.",
-        "risk": "1-year volatility below 15% with a yield above 3% bullish, below 25% neutral, else bearish.",
-        "news": "Rated news of the last 30 days: a majority positive bullish, a majority negative bearish, otherwise neutral. No rated news: abstains."
+        "value": "P/E below {pe_bullish_below} bullish, below {pe_neutral_below} neutral, else bearish. No or negative earnings: abstains.",
+        "quality": "ROE above {roe_bullish_above}% bullish, above {roe_neutral_above}% neutral, else bearish.",
+        "income": "Dividend yield above {yield_bullish_above}% bullish, above {yield_neutral_above}% neutral, else bearish. No dividend: abstains.",
+        "momentum": "Trend regime above {regime_bullish_above} with the 50-day average above the 200-day bullish, above {regime_neutral_above} neutral, else bearish.",
+        "risk": "1-year volatility below {vol_bullish_below}% with a yield above {yield_bullish_above}% bullish, below {vol_neutral_below}% neutral, else bearish.",
+        "news": "Rated news of the last {window_days} days: a majority positive bullish, a majority negative bearish, otherwise neutral. No rated news: abstains."
       }
     },
     "peers": {
@@ -403,7 +403,8 @@
     "news": "Latest news",
     "noMovers": "No movers on the latest trading day",
     "noNews": "No news in the database",
-    "browse": "{exchange}: {n} equities"
+    "browse": "{exchange}: {n} equities",
+    "total": "<n>{equities}</n> equities on <n>{exchanges}</n> exchanges"
   },
   "screener": {
     "title": "Screener",
@@ -523,7 +524,9 @@
       "medianR12": "Median 12M return",
       "mcap": "Mkt cap",
       "note": "Medians over the members that report each figure; P/E ignores negative earnings."
-    }
+    },
+    "screen": "Screen of the {name} template",
+    "open": "Open"
   },
   "settings": {
     "display": "Display",
@@ -540,5 +543,170 @@
     "controlsHover": "On hover",
     "savedToAccount": "Saved to your account.",
     "savedToBrowser": "Saved in this browser. Sign in to keep them on every device."
+  },
+  "site": {
+    "nav": {
+      "primary": "Site",
+      "how": "How it works",
+      "templates": "Templates",
+      "markets": "Markets",
+      "pricing": "Pricing",
+      "methodology": "Methodology",
+      "signIn": "Sign in",
+      "open": "Open the terminal",
+      "language": "Language"
+    },
+    "currency": {
+      "SAR": "SAR"
+    },
+    "unavailable": "Data unavailable",
+    "hero": {
+      "title": "The research terminal for <em>Gulf markets.</em>",
+      "lead": "One screen for the Gulf stocks you own or watch: price, fundamentals, the news that touches your holdings, a council of rule-based seats that votes in the open, and a Copilot that cites the panel behind every answer. In English and Arabic.",
+      "start": "Start free",
+      "how": "See how it works",
+      "coverage": "<n>{exchanges}</n> exchanges · <n>{equities}</n> equities · EN / ع",
+      "shotAlt": "The AlphaCouncil terminal: Saudi Aramco's stock page with linked panels and the Copilot open",
+      "shotCaption": "A real screen from the app, with the data of the day it was taken. Not investment advice."
+    },
+    "how": {
+      "title": "Built like a terminal. Honest like a ledger.",
+      "groups": {
+        "title": "Ticker groups",
+        "lead": "Pick a stock once. Every panel follows.",
+        "body": "Panels that share a colour share a ticker. Switch one panel from Aramco to Al Rajhi and the chart, figures, news and council in its group move with it."
+      },
+      "receipts": {
+        "title": "Answers with receipts",
+        "lead": "The Copilot answers from what you can see.",
+        "body": "Add any panel to the conversation. Each figure in an answer links back to the panel it came from, and a table the Copilot builds pins to your dashboard in one click."
+      },
+      "age": {
+        "title": "Data that says its age",
+        "lead": "Green means fresh. Amber means check.",
+        "body": "Every panel shows when its data was last updated and when the next update runs. When data is missing, the panel says so instead of guessing."
+      }
+    },
+    "templates": {
+      "title": "Start from a template",
+      "lead": "Each template is a ready set of linked panels for one job.",
+      "open": "Open"
+    },
+    "markets": {
+      "title": "Gulf markets. One screen.",
+      "lead": "Names in English and Arabic, prices with their date, and a light that tells you when they are late.",
+      "market": "Market",
+      "exchange": "Exchange",
+      "equities": "Equities",
+      "countries": {
+        "TADAWUL": "Saudi Arabia",
+        "ADX": "UAE · Abu Dhabi",
+        "DFM": "UAE · Dubai",
+        "QSE": "Qatar",
+        "KSE": "Kuwait",
+        "BSE": "Bahrain",
+        "MSM": "Oman"
+      }
+    },
+    "cta": {
+      "title": "Convene the council.",
+      "start": "Start free",
+      "plans": "Free · Pro <n>{price}</n> {currency} a month"
+    },
+    "footer": {
+      "entity": "© Insight Lane Establishment, trading as AlphaCouncil",
+      "notAdvice": "AlphaCouncil is research software. Nothing on this site is investment advice.",
+      "product": "Product",
+      "legal": "Legal"
+    },
+    "legal": {
+      "title": "Legal",
+      "lead": "The documents that govern your use of AlphaCouncil.",
+      "version": "Version",
+      "effective": "Effective",
+      "updated": "Last updated",
+      "onThisPage": "On this page",
+      "merchant": "Merchant information",
+      "otherLanguage": "النسخة العربية",
+      "docs": {
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "refunds": "Refund and Cancellation Policy",
+        "cookies": "Cookie Policy",
+        "ai-financial-disclaimer": "AI and Financial Disclaimer"
+      },
+      "short": {
+        "terms": "Terms",
+        "privacy": "Privacy",
+        "refunds": "Refunds",
+        "cookies": "Cookies",
+        "ai-financial-disclaimer": "AI & financial disclaimer"
+      }
+    },
+    "pricing": {
+      "title": "Pricing",
+      "lead": "Two plans, priced in Saudi riyals. The prices below are read from the same plan configuration our payment provider, Moyasar, charges.",
+      "price": "<n>{price}</n> {currency} a month",
+      "free": {
+        "lead": "During the beta, everything in the terminal is free to use.",
+        "items": [
+          "Every panel, chart and template",
+          "The council on every equity",
+          "My Portfolio, exposure and alerts",
+          "The Copilot, with answers that cite their panels"
+        ]
+      },
+      "pro": {
+        "lead": "Everything in Free, plus:",
+        "placeholder": "[Pro features: to be decided before the paid launch]"
+      },
+      "checkoutClosed": "Checkout is not open on this site yet.",
+      "payments": "Payments are processed by Moyasar. AlphaCouncil is not currently charging VAT; any applicable tax will be shown before payment.",
+      "refunds": "Read the <link>refund and cancellation policy</link>.",
+      "start": "Start free"
+    },
+    "methodology": {
+      "title": "Methodology",
+      "lead": "How the council votes, where the data comes from and how we decide it is fresh. The rules and numbers on this page are read from the code and database the terminal runs on.",
+      "council": {
+        "title": "How the council votes",
+        "body": "Each seat applies one fixed rule to figures from our database and votes bullish, neutral or bearish. A seat without the data it needs abstains; nothing is estimated. There is no blended score: you see every seat, its inputs and the count of votes.",
+        "seat": "Seat",
+        "reads": "Reads",
+        "rule": "Rule"
+      },
+      "data": {
+        "title": "Where the data comes from",
+        "body": "Every night a pipeline collects prices, financial statements, ratios, dividends, disclosures and news for each listed equity from public market sources and writes them to our database. The terminal reads that database directly and never fills a gap with an estimate: missing data is labelled as missing.",
+        "run": "The nightly run starts at <n>{time}</n> UTC.",
+        "exchange": "Exchange",
+        "market": "Market",
+        "equities": "Equities",
+        "weekend": "Closed on",
+        "total": "<n>{equities}</n> equities in total."
+      },
+      "fresh": {
+        "title": "How we decide data is fresh",
+        "body": "Every dataset has an allowed age. A panel's light is green while its data is within that age, amber once it is older, and grey when we have no date for it. Prices, technical indicators and news age in trading days, so a weekend is never late; other datasets age in calendar days.",
+        "dataset": "Dataset",
+        "maxAge": "Allowed age",
+        "counted": "Counted in",
+        "tracked": "Equities tracked",
+        "tradingDays": "trading days",
+        "calendarDays": "calendar days",
+        "fallback": "An equity without a freshness record falls back to the price rule: <n>{days}</n> trading days.",
+        "categories": {
+          "prices": "Prices",
+          "technical": "Technical indicators",
+          "news": "News",
+          "fundamentals": "Fundamentals",
+          "disclosures": "Disclosures"
+        }
+      },
+      "limits": {
+        "title": "What AlphaCouncil is not",
+        "body": "AlphaCouncil is research software. It is not investment advice, not a broker and does not execute trades. Council votes and Copilot answers are rule outputs and summaries of our data, not recommendations. Read the <link>AI and financial disclaimer</link>."
+      }
+    }
   }
 }

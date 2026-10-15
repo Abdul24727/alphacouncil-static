@@ -17,7 +17,8 @@ The rebuilt AlphaCouncil: a dense research terminal for Gulf markets (Tadawul, A
 
 - Units: `market_cap_*`, statement lines and capital figures are millions of the listing currency; `briefs.return_*`, `vol_1y`, `max_drawdown` are fractions; yields, ROE and tech distances are percents. KWD, BHD, OMR prices need 3 decimals.
 - `briefs.pe` is null for every Tadawul row; P/E comes from `scraped_ratios`. Ownership/analyst data in `ticker_insights` is null everywhere (not collected yet). There is no cash-flow statement.
-- The council (`api/app/council.py`) is six deterministic seats over database values (thresholds from the old strategy lenses); no LLM, no blended score. Any change to the rules must also change /methodology.
+- The council (`api/app/council.py`) is six deterministic seats over database values (thresholds from the old strategy lenses); no LLM, no blended score. Every threshold lives in `THRESHOLDS`; the API returns them with each seat and on `/v1/methodology`, and the UI messages (`stock.council.rules.*`) take them as ICU arguments, so /methodology and the council panel cannot drift from the votes.
+- Plan prices: `api/app/pricing.py`, ported from the old backend with the same env variables (PRICE_PRO_SAR, ELITE_ENABLED) the Moyasar checkout uses. This app has no checkout yet (`checkout_open: false`).
 
 ## Next.js 16 patterns used here
 
@@ -26,6 +27,10 @@ The rebuilt AlphaCouncil: a dense research terminal for Gulf markets (Tadawul, A
 - Locale is in the URL (`[locale]` segment, `localePrefix: "as-needed"`): English keeps `/home`, Arabic is `/ar/home`. `src/proxy.ts` is the old `middleware`.
 - `cacheComponents` is on: request data (`params`, `cookies()`, `usePathname()`) must sit behind `<Suspense>`. Use `components/shell/WithPathname` for pathname-dependent UI, and wrap `await params` of dynamic routes in a Suspense child (see `t/[ticker]/page.tsx`).
 - Dev mode does not enforce the prerender rules: run `npx next build` before deploying. Every segment under `[locale]` calls `setRequestLocale(locale)`, or next-intl falls back to request headers and the build fails.
+- Public pages (`/`, `/pricing`, `/methodology`, `/legal/*`) are the `(site)` route group: server components that read the API through `lib/api/server.ts` (it calls `connection()` first, so callers sit behind `<Suspense>`). Every digit on them is wrapped in `<Db>` (`data-db`); `scripts/check-phase6.mjs` fails any other. /markets and /templates stay in the app shell (no sign-in needed) and are linked from the site.
+- Legal texts are copied verbatim from the old site by `scripts/import-legal.py` into `src/content/legal/`; never edit that JSON by hand.
+- Fonts: globals.css lists the bare faces first (`--face-*`, set in `[locale]/layout.tsx`), then next/font's variables. next/font's metric fallbacks are local Arial, which has Arabic letters: listed earlier, they draw every Arabic glyph in Arial.
+- Landing and /templates images are real app screens: `node scripts/capture-screens.mjs` (point BASE_URL at the staging tunnel for live data) writes `src/assets/screens/`.
 - Pane sizes persist in localStorage (`ac-layout`) and are applied before paint by `LAYOUT_BOOT_SCRIPT`; signed-in users' panes, chart and display settings sync to `/v1/me/prefs` (lib/prefs-sync.ts).
 
 ## Standing rules

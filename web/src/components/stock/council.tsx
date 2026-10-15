@@ -7,6 +7,7 @@ import { fmtNumber } from "@/lib/format";
 import { useTickerCouncil } from "@/lib/queries";
 import { useGroupTicker } from "@/lib/ticker-groups";
 import { Num, QueryState, toTsv } from "./common";
+import { ruleArgs } from "@/lib/council-rules";
 
 type Seat = components["schemas"]["Seat"];
 type Vote = Seat["vote"];
@@ -157,7 +158,7 @@ export function SeatsPanel({ className }: { className?: string }) {
                     </dl>
                     <p className="mt-1 text-[12px] text-muted">
                       <span className="label-caps me-1.5">{t("council.rule")}</span>
-                      {t.has(`council.rules.${s.seat}`) ? t(`council.rules.${s.seat}`) : s.rule}
+                      {t.has(`council.rules.${s.seat}`) ? t(`council.rules.${s.seat}`, ruleArgs(s.thresholds)) : s.rule}
                     </p>
                   </div>
                 </li>

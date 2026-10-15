@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from .market_db import MarketDataUnavailable
 from .prices import PriceStore
 from . import auth
-from .routers import copilot, market, portfolio, prices, templates, ticker, ticker_research, tickers
+from .routers import copilot, market, portfolio, prices, site, templates, ticker, ticker_research, tickers
 from .settings import get_settings
 from .universe import Universe
 
@@ -32,6 +32,7 @@ def create_app() -> FastAPI:
     v1.include_router(portfolio.router)
     v1.include_router(market.router)
     v1.include_router(templates.router)
+    v1.include_router(site.router)
 
     class Health(BaseModel):
         status: str

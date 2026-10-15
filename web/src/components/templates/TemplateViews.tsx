@@ -1,5 +1,15 @@
 "use client";
 
+import { ArrowRightIcon } from "@radix-ui/react-icons";
+import Image, { type StaticImageData } from "next/image";
+import dividendsAr from "@/assets/screens/dividend-hunter.ar.jpg";
+import dividendsEn from "@/assets/screens/dividend-hunter.en.jpg";
+import earningsAr from "@/assets/screens/earnings-season.ar.jpg";
+import earningsEn from "@/assets/screens/earnings-season.en.jpg";
+import sectorsAr from "@/assets/screens/sector-vs-sector.ar.jpg";
+import sectorsEn from "@/assets/screens/sector-vs-sector.en.jpg";
+import stockAr from "@/assets/screens/tadawul-stock.ar.jpg";
+import stockEn from "@/assets/screens/tadawul-stock.en.jpg";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { ChangeCell, PriceCell, TickerCell, TickerRow, Th } from "@/components/market/shared";
@@ -9,32 +19,45 @@ import { Link } from "@/i18n/navigation";
 import type { components } from "@/lib/api/schema";
 import { fmtCompact, fmtDate, fmtNumber, fmtPct, fmtRatioPct, signClass } from "@/lib/format";
 import { useDividendHunter, useEarningsSeason, useSectorCompare, useSectors } from "@/lib/queries-app";
+import { TEMPLATES, templateHref, type TemplateName } from "@/lib/templates";
 
-export const TEMPLATES = ["tadawul-stock", "earnings-season", "dividend-hunter", "sector-vs-sector"] as const;
-export type TemplateName = (typeof TEMPLATES)[number];
+const SCREENS: Record<"en" | "ar", Record<TemplateName, StaticImageData>> = {
+  en: { "tadawul-stock": stockEn, "earnings-season": earningsEn, "dividend-hunter": dividendsEn, "sector-vs-sector": sectorsEn },
+  ar: { "tadawul-stock": stockAr, "earnings-season": earningsAr, "dividend-hunter": dividendsAr, "sector-vs-sector": sectorsAr },
+};
 
 const GRID = "grid grid-cols-12 gap-2.5 p-2.5";
 
-/** Templates list: a plain table of what each template shows (no card grid). */
+/** Templates list: what each template shows, with a real screen of it (no card grid). */
 export function TemplatesList() {
   const t = useTranslations("templates");
+  const locale = useLocale() === "ar" ? "ar" : "en";
   return (
-    <div className="p-2.5">
+    <div className="@container min-h-0 flex-1 overflow-y-auto p-2.5">
       <Panel id="templates.list" title={t("title")} className="col-span-12" bodyClassName="p-0">
-        <table className="w-full">
-          <tbody>
-            {TEMPLATES.map((name) => (
-              <tr key={name} className="border-t border-line first:border-t-0">
-                <td className="w-56 px-3 py-3 align-top">
-                  <Link href={name === "tadawul-stock" ? "/t/2222" : `/templates/${name}`} className="headline text-[18px] text-text hover:text-signal">
-                    {t(`names.${name}`)}
-                  </Link>
-                </td>
-                <td className="px-3 py-3 text-text-soft">{t(`descriptions.${name}`)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <ul>
+          {TEMPLATES.map((name) => (
+            <li key={name} className="grid gap-4 border-t border-line p-3 first:border-t-0 @3xl:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] @3xl:gap-6">
+              <div className="flex flex-col items-start gap-2">
+                <Link href={templateHref(name)} className="headline text-[22px] text-text hover:text-signal">
+                  {t(`names.${name}`)}
+                </Link>
+                <p className="max-w-prose text-text-soft">{t(`descriptions.${name}`)}</p>
+                <Link href={templateHref(name)} className="label-caps flex items-center gap-1 text-signal hover:underline">
+                  {t("open")} <ArrowRightIcon aria-hidden className="rtl:-scale-x-100" />
+                </Link>
+              </div>
+              <Link href={templateHref(name)} className="block overflow-hidden rounded-panel border border-line" tabIndex={-1}>
+                <Image
+                  src={SCREENS[locale][name]}
+                  alt={t("screen", { name: t(`names.${name}`) })}
+                  sizes="(min-width: 1200px) 640px, 100vw"
+                  className="h-auto w-full"
+                />
+              </Link>
+            </li>
+          ))}
+        </ul>
       </Panel>
     </div>
   );

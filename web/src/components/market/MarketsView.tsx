@@ -27,6 +27,13 @@ export function MarketsView() {
           className="col-span-12"
         >
           <QueryState isPending={q.isPending} error={q.error} rows={7}>
+            <p className="mb-2 text-text-soft">
+              {t.rich("total", {
+                n: (c) => <span className="num text-text">{c}</span>,
+                equities: String(rows.reduce((n, e) => n + e.equities, 0)),
+                exchanges: String(rows.length),
+              })}
+            </p>
             <ExchangesTable rows={rows} />
             <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
               {rows.map((e) => (

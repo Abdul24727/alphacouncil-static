@@ -33,6 +33,17 @@ export const metadata: Metadata = {
   description: "Research terminal for Gulf markets",
 };
 
+// next/font gives each face a metric-matched fallback drawn from local Arial, listed right
+// after it. Arial has Arabic letters, so in "Archivo, Archivo Fallback, Plex Arabic" every
+// Arabic glyph would render in Arial. globals.css puts the bare faces first instead
+// (Archivo, Plex Arabic, then the fallbacks); these variables carry the bare family names.
+const face = (f: { style: { fontFamily: string } }) => f.style.fontFamily.split(",")[0].trim();
+const FACES = {
+  "--face-archivo": face(archivo),
+  "--face-martian": face(martian),
+  "--face-arabic": face(plexArabic),
+} as React.CSSProperties;
+
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
@@ -49,6 +60,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
       data-sidebar="expanded"
       data-copilot="open"
       className={`${archivo.variable} ${martian.variable} ${plexArabic.variable}`}
+      style={FACES}
       suppressHydrationWarning
     >
       <head>

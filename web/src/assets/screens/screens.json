@@ -1,0 +1,98 @@
+{
+  "app-desktop.en": {
+    "route": "/t/2222",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "takenAt": "2026-10-15T03:24:38.234Z"
+  },
+  "app-phone.en": {
+    "route": "/t/2222",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "takenAt": "2026-10-15T03:24:42.128Z"
+  },
+  "tadawul-stock.en": {
+    "route": "/t/2222",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "takenAt": "2026-10-15T03:24:46.529Z"
+  },
+  "earnings-season.en": {
+    "route": "/templates/earnings-season",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "takenAt": "2026-10-15T03:24:50.632Z"
+  },
+  "dividend-hunter.en": {
+    "route": "/templates/dividend-hunter",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "takenAt": "2026-10-15T03:24:54.634Z"
+  },
+  "sector-vs-sector.en": {
+    "route": "/templates/sector-vs-sector",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "takenAt": "2026-10-15T03:24:58.687Z"
+  },
+  "app-desktop.ar": {
+    "route": "/ar/t/2222",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "takenAt": "2026-10-15T03:25:04.076Z"
+  },
+  "app-phone.ar": {
+    "route": "/ar/t/2222",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "takenAt": "2026-10-15T03:25:08.005Z"
+  },
+  "tadawul-stock.ar": {
+    "route": "/ar/t/2222",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "takenAt": "2026-10-15T03:25:12.241Z"
+  },
+  "earnings-season.ar": {
+    "route": "/ar/templates/earnings-season",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "takenAt": "2026-10-15T03:25:16.130Z"
+  },
+  "dividend-hunter.ar": {
+    "route": "/ar/templates/dividend-hunter",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "takenAt": "2026-10-15T03:25:20.025Z"
+  },
+  "sector-vs-sector.ar": {
+    "route": "/ar/templates/sector-vs-sector",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "takenAt": "2026-10-15T03:25:23.953Z"
+  }
+}

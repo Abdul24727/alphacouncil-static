@@ -1353,6 +1353,48 @@
         }
       }
     },
+    "/v1/plans": {
+      "get": {
+        "tags": [
+          "site"
+        ],
+        "summary": "Plans",
+        "operationId": "plans",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plans"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/methodology": {
+      "get": {
+        "tags": [
+          "site"
+        ],
+        "summary": "Methodology",
+        "operationId": "methodology",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Methodology"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/health": {
       "get": {
         "tags": [
@@ -2090,6 +2132,32 @@
         ],
         "title": "EarningsSeason"
       },
+      "ExchangeCalendar": {
+        "properties": {
+          "exchange": {
+            "type": "string",
+            "title": "Exchange"
+          },
+          "equities": {
+            "type": "integer",
+            "title": "Equities"
+          },
+          "weekend": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Weekend"
+          }
+        },
+        "type": "object",
+        "required": [
+          "exchange",
+          "equities",
+          "weekend"
+        ],
+        "title": "ExchangeCalendar"
+      },
       "ExchangeSummary": {
         "properties": {
           "exchange": {
@@ -2212,6 +2280,41 @@
           "stale"
         ],
         "title": "Freshness"
+      },
+      "FreshnessRule": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "max_age_days": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Age Days"
+          },
+          "tickers": {
+            "type": "integer",
+            "title": "Tickers"
+          },
+          "trading_days": {
+            "type": "boolean",
+            "title": "Trading Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "max_age_days",
+          "tickers",
+          "trading_days"
+        ],
+        "title": "FreshnessRule"
       },
       "Fundamentals": {
         "properties": {
@@ -2774,6 +2877,53 @@
         ],
         "title": "Me"
       },
+      "Methodology": {
+        "properties": {
+          "seats": {
+            "items": {
+              "$ref": "#/components/schemas/SeatRule"
+            },
+            "type": "array",
+            "title": "Seats"
+          },
+          "freshness": {
+            "items": {
+              "$ref": "#/components/schemas/FreshnessRule"
+            },
+            "type": "array",
+            "title": "Freshness"
+          },
+          "price_max_age_days": {
+            "type": "integer",
+            "title": "Price Max Age Days"
+          },
+          "pipeline_run_utc": {
+            "type": "string",
+            "title": "Pipeline Run Utc"
+          },
+          "exchanges": {
+            "items": {
+              "$ref": "#/components/schemas/ExchangeCalendar"
+            },
+            "type": "array",
+            "title": "Exchanges"
+          },
+          "equities": {
+            "type": "integer",
+            "title": "Equities"
+          }
+        },
+        "type": "object",
+        "required": [
+          "seats",
+          "freshness",
+          "price_max_age_days",
+          "pipeline_run_utc",
+          "exchanges",
+          "equities"
+        ],
+        "title": "Methodology"
+      },
       "Mover": {
         "properties": {
           "ticker": {
@@ -3132,6 +3282,90 @@
           "peers"
         ],
         "title": "Peers"
+      },
+      "Plan": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "name_ar": {
+            "type": "string",
+            "title": "Name Ar"
+          },
+          "price_sar": {
+            "type": "integer",
+            "title": "Price Sar"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "interval": {
+            "type": "string",
+            "title": "Interval"
+          },
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "paid": {
+            "type": "boolean",
+            "title": "Paid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "name_ar",
+          "price_sar",
+          "currency",
+          "interval",
+          "rank",
+          "paid"
+        ],
+        "title": "Plan"
+      },
+      "Plans": {
+        "properties": {
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/Plan"
+            },
+            "type": "array",
+            "title": "Plans"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "interval": {
+            "type": "string",
+            "title": "Interval"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "checkout_open": {
+            "type": "boolean",
+            "title": "Checkout Open"
+          }
+        },
+        "type": "object",
+        "required": [
+          "plans",
+          "currency",
+          "interval",
+          "provider",
+          "checkout_open"
+        ],
+        "title": "Plans"
       },
       "Portfolio": {
         "properties": {
@@ -3548,6 +3782,14 @@
           "rule": {
             "type": "string",
             "title": "Rule"
+          },
+          "thresholds": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Thresholds",
+            "default": {}
           }
         },
         "type": "object",
@@ -3597,6 +3839,35 @@
           "value"
         ],
         "title": "SeatInput"
+      },
+      "SeatRule": {
+        "properties": {
+          "seat": {
+            "type": "string",
+            "title": "Seat"
+          },
+          "inputs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Inputs"
+          },
+          "thresholds": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Thresholds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "seat",
+          "inputs",
+          "thresholds"
+        ],
+        "title": "SeatRule"
       },
       "SeatTally": {
         "properties": {

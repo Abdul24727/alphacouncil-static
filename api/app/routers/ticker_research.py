@@ -51,8 +51,8 @@ def get_council(request: Request, ref: str) -> Council:
                 for r in conn.execute(
                     "SELECT n.impact FROM items i JOIN news_ai n ON n.url = i.url"
                     " WHERE i.ticker_key = ? AND i.section = 'news' AND n.impact IS NOT NULL"
-                    " AND i.date >= date('now', '-30 days')",
-                    (t.ticker_key,),
+                    " AND i.date >= date('now', ?)",
+                    (t.ticker_key, f"-{council.THRESHOLDS['news']['window_days']:g} days"),
                 )
             ]
     except MarketDataUnavailable as exc:

@@ -1,0 +1,49 @@
+{
+ "title": "Cookie Policy",
+ "version": "1.0",
+ "effective": "2026-07-21",
+ "updated": "2026-07-21",
+ "operator": "Operator: Insight Lane Establishment, a Saudi sole establishment, Unified National Number 7050149686, trading as AlphaCouncil.",
+ "translationNote": null,
+ "toc": [
+  {
+   "href": "#sec-1",
+   "label": "1. Scope"
+  },
+  {
+   "href": "#sec-2",
+   "label": "2. What cookies and local storage are"
+  },
+  {
+   "href": "#sec-3",
+   "label": "3. Essential technologies we use"
+  },
+  {
+   "href": "#sec-4",
+   "label": "4. Third-party sign-in and payment pages"
+  },
+  {
+   "href": "#sec-5",
+   "label": "5. No analytics or advertising cookies"
+  },
+  {
+   "href": "#sec-6",
+   "label": "6. Your controls"
+  },
+  {
+   "href": "#sec-7",
+   "label": "7. Retention and security"
+  },
+  {
+   "href": "#sec-8",
+   "label": "8. Changes to this Policy"
+  },
+  {
+   "href": "#sec-9",
+   "label": "9. Contact"
+  }
+ ],
+ "canonicalHash": "54c6313fb96395f2e7695d19ad40b98bf93b7a373e37675bb51f2e428cc2ee86",
+ "html": "<h2 class=\"sec\" id=\"sec-1\">1. Scope</h2>\n<p>This Cookie Policy explains how AlphaCouncil uses cookies, browser storage and similar technologies on the Service. It should be read with the Privacy Policy. Capitalized terms have the meanings given in the Terms of Service or Privacy Policy.</p>\n<h2 class=\"sec\" id=\"sec-2\">2. What cookies and local storage are</h2>\n<p>A cookie is a small text file or identifier stored by a browser when a website is used. Cookies may be session cookies, which expire when the browser session ends, or persistent cookies, which remain until their expiry or deletion. Local storage is a browser function that stores limited information on a device without automatically sending it with every request.</p>\n<p>Similar technologies may include session identifiers, anti-forgery tokens and security signals used to authenticate a User, preserve request integrity, prevent abuse or remember an essential preference. In this Policy, “essential technologies” refers collectively to those technologies.</p>\n<h2 class=\"sec\" id=\"sec-3\">3. Essential technologies we use</h2>\n<p>The exact name, format and duration of an essential identifier may change when we update security, authentication or infrastructure components. We will not use such a change to introduce a materially different purpose without updating this Policy and, where required, obtaining consent.</p>\n<h2 class=\"sec\" id=\"sec-4\">4. Third-party sign-in and payment pages</h2>\n<p>If you choose a third-party sign-in method, the authentication provider may use cookies on its own domain to complete login, prevent fraud and apply your provider settings. If a payment flow redirects to or embeds a payment provider’s secure interface, that provider may use technologies necessary to process and secure the transaction. Those technologies are controlled by the relevant provider and governed by its own privacy and cookie notices.</p>\n<p>We do not authorize authentication or payment providers to use AlphaCouncil transaction data for unrelated behavioral advertising through the Service.</p>\n<h2 class=\"sec\" id=\"sec-5\">5. No analytics or advertising cookies</h2>\n<p>AlphaCouncil does not currently deploy cookies for audience analytics, advertising measurement, retargeting, social-media tracking or cross-site behavioral profiling. We do not display third-party behavioral advertisements. If we introduce a non-essential category in the future, we will update this Policy and implement a consent or preference mechanism where required before activating it.</p>\n<h2 class=\"sec\" id=\"sec-6\">6. Your controls</h2>\n<p>Most browsers allow you to view, delete or block cookies and clear local storage. Blocking strictly necessary cookies may prevent Account creation, login, secure billing, preference storage or other core functions. Clearing cookies may sign you out. Clearing local storage may reset the selected language or interface settings.</p>\n<p>Because we currently use only essential technologies, the Service may not display a consent banner for optional cookies. This does not limit your browser controls or your rights under the Privacy Policy.</p>\n<h2 class=\"sec\" id=\"sec-7\">7. Retention and security</h2>\n<p>Essential identifiers are retained only for their stated purpose and expire, rotate or are deleted according to their function. Authentication and security identifiers are protected through measures such as secure transmission, restricted scope and browser security attributes where appropriate. Local-storage preferences remain on the device until changed or cleared.</p>\n<h2 class=\"sec\" id=\"sec-8\">8. Changes to this Policy</h2>\n<p>We may update this Policy when technologies, providers, law or the Service change. The revised version will state its effective date. We will provide notice and request consent before using a new non-essential technology where applicable law requires consent.</p>\n<h2 class=\"sec\" id=\"sec-9\">9. Contact</h2>\n<p><strong>Email: </strong><a href=\"mailto:privacy@alphacouncil.tech\">privacy@alphacouncil.tech</a></p>\n<p><strong>Contact page: </strong><a href=\"https://alphacouncil.tech/contact.html\">https://alphacouncil.tech/contact.html</a></p>\n<p><strong>Website: </strong><a href=\"https://alphacouncil.tech\">https://alphacouncil.tech</a></p>\n<p>Registered business address and current commercial registration details are displayed in the Merchant Information notice on the Site and on transaction records issued where required by applicable law.</p>\n<table class=\"doc\"><tr><th>AlphaCouncil currently uses only technologies that are strictly necessary to provide, secure and remember essential settings for the Service. We do not currently use advertising cookies, cross-site behavioral tracking or analytics cookies.</th></tr></table>\n<table class=\"doc\"><tr><th>Purpose</th><th>Technology</th><th>Typical duration</th><th>Why it is necessary</th></tr><tr><td>Authentication and session management</td><td>First-party session or authentication cookie.</td><td>Session-only by default; up to approximately 30 days when a “remember me” option is selected.</td><td>Keeps a User signed in, associates requests with the correct Account and supports secure logout.</td></tr><tr><td>Request integrity and security</td><td>First-party anti-forgery or CSRF cookie/token and related security identifiers.</td><td>Session or short-lived.</td><td>Helps confirm that requests originate from the legitimate session and reduces unauthorized actions.</td></tr><tr><td>Bot and abuse prevention</td><td>Security signals and, where technically necessary, short-lived identifiers used by our traffic-protection service.</td><td>Short-lived and risk-based.</td><td>Protects sign-up, login and other endpoints against bots, abuse and automated attacks.</td></tr><tr><td>Language and interface preference</td><td>Browser local storage.</td><td>Until changed or cleared by the User.</td><td>Remembers the selected language or essential interface preference on the device.</td></tr></table>",
+ "blocks": 45
+}

@@ -568,6 +568,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Plans */
+        get: operations["plans"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/methodology": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Methodology */
+        get: operations["methodology"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/health": {
         parameters: {
             query?: never;
@@ -786,6 +820,15 @@ export interface components {
             /** Events */
             events: components["schemas"]["EarningsEvent"][];
         };
+        /** ExchangeCalendar */
+        ExchangeCalendar: {
+            /** Exchange */
+            exchange: string;
+            /** Equities */
+            equities: number;
+            /** Weekend */
+            weekend: number[];
+        };
         /** ExchangeSummary */
         ExchangeSummary: {
             /** Exchange */
@@ -813,6 +856,17 @@ export interface components {
             max_age_days: number | null;
             /** Stale */
             stale: boolean | null;
+        };
+        /** FreshnessRule */
+        FreshnessRule: {
+            /** Category */
+            category: string;
+            /** Max Age Days */
+            max_age_days: number | null;
+            /** Tickers */
+            tickers: number;
+            /** Trading Days */
+            trading_days: boolean;
         };
         /** Fundamentals */
         Fundamentals: {
@@ -953,6 +1007,21 @@ export interface components {
         Me: {
             user: components["schemas"]["User"] | null;
         };
+        /** Methodology */
+        Methodology: {
+            /** Seats */
+            seats: components["schemas"]["SeatRule"][];
+            /** Freshness */
+            freshness: components["schemas"]["FreshnessRule"][];
+            /** Price Max Age Days */
+            price_max_age_days: number;
+            /** Pipeline Run Utc */
+            pipeline_run_utc: string;
+            /** Exchanges */
+            exchanges: components["schemas"]["ExchangeCalendar"][];
+            /** Equities */
+            equities: number;
+        };
         /** Mover */
         Mover: {
             ticker: components["schemas"]["TickerRef"];
@@ -1030,6 +1099,38 @@ export interface components {
             sector_ar: string | null;
             /** Peers */
             peers: components["schemas"]["PeerRow"][];
+        };
+        /** Plan */
+        Plan: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Name Ar */
+            name_ar: string;
+            /** Price Sar */
+            price_sar: number;
+            /** Currency */
+            currency: string;
+            /** Interval */
+            interval: string;
+            /** Rank */
+            rank: number;
+            /** Paid */
+            paid: boolean;
+        };
+        /** Plans */
+        Plans: {
+            /** Plans */
+            plans: components["schemas"]["Plan"][];
+            /** Currency */
+            currency: string;
+            /** Interval */
+            interval: string;
+            /** Provider */
+            provider: string;
+            /** Checkout Open */
+            checkout_open: boolean;
         };
         /** Portfolio */
         Portfolio: {
@@ -1131,6 +1232,13 @@ export interface components {
             inputs: components["schemas"]["SeatInput"][];
             /** Rule */
             rule: string;
+            /**
+             * Thresholds
+             * @default {}
+             */
+            thresholds: {
+                [key: string]: number;
+            };
         };
         /** SeatInput */
         SeatInput: {
@@ -1140,6 +1248,17 @@ export interface components {
             value: number | string | null;
             /** Unit */
             unit?: string | null;
+        };
+        /** SeatRule */
+        SeatRule: {
+            /** Seat */
+            seat: string;
+            /** Inputs */
+            inputs: string[];
+            /** Thresholds */
+            thresholds: {
+                [key: string]: number;
+            };
         };
         /** SeatTally */
         SeatTally: {
@@ -2386,6 +2505,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    plans: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Plans"];
+                };
+            };
+        };
+    };
+    methodology: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Methodology"];
                 };
             };
         };
