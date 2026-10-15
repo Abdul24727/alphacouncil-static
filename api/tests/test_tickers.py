@@ -4,6 +4,8 @@ from fastapi.testclient import TestClient
 from app import main
 from app.settings import Settings
 
+from .conftest import BRIEFS
+
 
 def search(client, q, **params):
     r = client.get("/v1/tickers/search", params={"q": q, **params})
@@ -61,5 +63,5 @@ def test_unconfigured_database_is_503(monkeypatch):
 def test_health_reports_universe(client):
     body = client.get("/v1/health").json()
     assert body["market_data"] == "ok"
-    assert body["universe_size"] == 6
-    assert body["universe_as_of"] == "2026-08-12"
+    assert body["universe_size"] == len(BRIEFS)
+    assert body["universe_as_of"] == max(b[7] for b in BRIEFS)

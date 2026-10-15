@@ -61,5 +61,221 @@
     "dashboards": "My dashboards",
     "settings": "Settings",
     "stock": "Tadawul Stock"
+  },
+  "panel": {
+    "group": "Ticker group {group}",
+    "addToCopilot": "Add to Copilot",
+    "removeFromCopilot": "Remove from Copilot",
+    "fullscreen": "Full screen",
+    "exitFullscreen": "Exit full screen",
+    "menu": "Panel menu",
+    "copyData": "Copy data",
+    "copied": "Copied",
+    "refresh": "Refresh",
+    "updated": "Updated",
+    "next": "next",
+    "asOf": "data as of",
+    "freshness": {
+      "fresh": "Within its update window",
+      "stale": "Older than its expected update",
+      "unknown": "Update time unknown"
+    }
+  },
+  "stock": {
+    "group1": "Ticker group 1: every panel on this page follows this ticker",
+    "noPrice": "No price",
+    "asOf": "As of",
+    "na": "n/a",
+    "tabs": {
+      "overview": "Overview",
+      "financials": "Financials",
+      "council": "Council",
+      "ownership": "Ownership",
+      "calendar": "Calendar"
+    },
+    "panels": {
+      "price": "Price",
+      "metrics": "Key metrics",
+      "council": "Council",
+      "peers": "Peers",
+      "news": "News",
+      "fundamentals": "Fundamentals",
+      "income": "Income statement",
+      "balance": "Balance sheet",
+      "seats": "Seats and their inputs",
+      "ownership": "Ownership",
+      "events": "Corporate calendar",
+      "dividends": "Dividends",
+      "capital": "Capital changes",
+      "seasonality": "Seasonality",
+      "performance": "Performance"
+    },
+    "price": {
+      "phase3": "The price chart (TradingView Lightweight Charts on our own daily prices) is built in Phase 3.",
+      "noHistory": "This ticker has no price history in our database."
+    },
+    "metrics": {
+      "market_cap": "Market cap",
+      "volume": "Volume",
+      "value_traded": "Value traded",
+      "pe": "P/E",
+      "pb": "P/B",
+      "dividend_yield": "Dividend yield",
+      "roe": "ROE",
+      "roa": "ROA",
+      "ev_ebitda": "EV/EBITDA",
+      "eps_ttm": "EPS (TTM)",
+      "book_value": "Book value / share",
+      "return_1m": "Return 1M",
+      "return_3m": "Return 3M",
+      "return_6m": "Return 6M",
+      "return_12m": "Return 12M",
+      "vol_1y": "Volatility 1Y",
+      "max_drawdown": "Max drawdown",
+      "rsi_14": "RSI 14",
+      "dist_to_52w_high": "From 52-week high",
+      "valuation": "Valuation",
+      "returns": "Returns and risk",
+      "trading": "Trading"
+    },
+    "council": {
+      "bullish": "Bullish",
+      "neutral": "Neutral",
+      "bearish": "Bearish",
+      "abstain": "Abstains",
+      "seats": {
+        "value": "Value",
+        "quality": "Quality",
+        "income": "Income",
+        "momentum": "Momentum",
+        "risk": "Risk",
+        "news": "News"
+      },
+      "inputs": {
+        "pe": "P/E",
+        "roe": "ROE",
+        "dividend_yield": "Dividend yield",
+        "regime_score": "Trend regime",
+        "golden_cross": "50-day above 200-day",
+        "volatility_1y": "Volatility 1Y",
+        "positive": "Positive news",
+        "negative": "Negative news",
+        "rated_items": "Rated news items"
+      },
+      "bullishSeats": "bullish seats",
+      "of": "of {n} voting",
+      "abstained": "{n} abstained",
+      "rule": "Rule",
+      "method": "Each seat votes by a fixed rule on database values. A seat with no data abstains. There is no blended score.",
+      "rules": {
+        "value": "P/E below 10 bullish, below 16 neutral, else bearish. No or negative earnings: abstains.",
+        "quality": "ROE above 20% bullish, above 12% neutral, else bearish.",
+        "income": "Dividend yield above 5% bullish, above 2.5% neutral, else bearish. No dividend: abstains.",
+        "momentum": "Trend regime above 65 with the 50-day average above the 200-day bullish, above 45 neutral, else bearish.",
+        "risk": "1-year volatility below 15% with a yield above 3% bullish, below 25% neutral, else bearish.",
+        "news": "Rated news of the last 30 days: a majority positive bullish, a majority negative bearish, otherwise neutral. No rated news: abstains."
+      }
+    },
+    "peers": {
+      "symbol": "Symbol",
+      "name": "Name",
+      "price": "Price",
+      "change": "Chg",
+      "pe": "P/E",
+      "mcap": "Mkt cap",
+      "basis_sector_exchange": "Same sector, same exchange",
+      "basis_sector_gcc": "Same sector across the GCC",
+      "none": "No peers in this sector",
+      "pick": "Open in this group"
+    },
+    "news": {
+      "news": "News",
+      "disclosures": "Disclosure",
+      "events": "Event",
+      "none": "No news or disclosures for this ticker",
+      "source": "Open source"
+    },
+    "fundamentals": {
+      "valuation": "Valuation",
+      "profitability": "Profitability",
+      "health": "Financial health",
+      "income": "Income",
+      "percentile": "Sector percentile",
+      "status": {
+        "ok": "Computed",
+        "published": "Published (Argaam, TTM)",
+        "missing_inputs": "Missing inputs",
+        "na_sector": "Not meaningful for this sector",
+        "undefined_nonpositive": "Undefined (non-positive base)"
+      },
+      "keys": {
+        "pe": "P/E",
+        "pb": "P/B",
+        "ev_ebitda": "EV/EBITDA",
+        "ps": "P/S",
+        "roe": "ROE",
+        "roa": "ROA",
+        "roic": "ROIC",
+        "net_margin": "Net margin",
+        "gross_margin": "Gross margin",
+        "debt_equity": "Debt / equity",
+        "current_ratio": "Current ratio",
+        "interest_coverage": "Interest coverage",
+        "fcf_yield": "FCF yield",
+        "div_yield": "Dividend yield",
+        "payout": "Payout ratio"
+      },
+      "noScore": "No sector percentile"
+    },
+    "statements": {
+      "unit": "Millions of {currency}",
+      "none": "No statement lines in our database for this ticker",
+      "item": "Line item"
+    },
+    "ownership": {
+      "none": "Ownership (major holders, foreign ownership) is not collected by the data pipeline yet."
+    },
+    "events": {
+      "none": "No corporate events recorded",
+      "upcoming": "Upcoming",
+      "past": "Past"
+    },
+    "dividends": {
+      "ex_date": "Ex-date",
+      "pay_date": "Paid",
+      "dps": "Per share",
+      "period": "Period",
+      "none": "No dividends recorded"
+    },
+    "capital": {
+      "date": "Date",
+      "type": "Type",
+      "before": "Capital before",
+      "after": "Capital after",
+      "change": "Change",
+      "none": "No capital changes recorded"
+    },
+    "seasonality": {
+      "average": "Average",
+      "none": "No seasonality data",
+      "months": {
+        "1": "Jan",
+        "2": "Feb",
+        "3": "Mar",
+        "4": "Apr",
+        "5": "May",
+        "6": "Jun",
+        "7": "Jul",
+        "8": "Aug",
+        "9": "Sep",
+        "10": "Oct",
+        "11": "Nov",
+        "12": "Dec"
+      },
+      "note": "Cumulative return from each year's first close, at each month end."
+    }
+  },
+  "ticker": {
+    "switch": "Change ticker for this group"
   }
 }

@@ -15,7 +15,13 @@ The rebuilt AlphaCouncil: a dense research terminal for Gulf markets (Tadawul, A
 - Freshness source for later phases: `ticker_freshness` in `screening.sqlite`. Daily OHLCV lives in per-ticker CSVs on the VPS, not in a database, and is not on this machine.
 - The local snapshot `briefs_index.sqlite` also holds real user and billing tables. Read only the ticker tables; never copy the file into this repo.
 
+- Units: `market_cap_*`, statement lines and capital figures are millions of the listing currency; `briefs.return_*`, `vol_1y`, `max_drawdown` are fractions; yields, ROE and tech distances are percents. KWD, BHD, OMR prices need 3 decimals.
+- `briefs.pe` is null for every Tadawul row; P/E comes from `scraped_ratios`. Ownership/analyst data in `ticker_insights` is null everywhere (not collected yet). There is no cash-flow statement.
+- The council (`api/app/council.py`) is six deterministic seats over database values (thresholds from the old strategy lenses); no LLM, no blended score. Any change to the rules must also change /methodology.
+
 ## Next.js 16 patterns used here
+
+- With Cache Components, Next keeps the previous route mounted but hidden (React `<Activity>`), so the DOM can hold two copies of a panel. Anything that finds panels (citations, tests) must pick the visible one (`:visible`, `checkVisibility()`).
 
 - Locale is in the URL (`[locale]` segment, `localePrefix: "as-needed"`): English keeps `/home`, Arabic is `/ar/home`. `src/proxy.ts` is the old `middleware`.
 - `cacheComponents` is on: request data (`params`, `cookies()`, `usePathname()`) must sit behind `<Suspense>`. Use `components/shell/WithPathname` for pathname-dependent UI, and wrap `await params` of dynamic routes in a Suspense child (see `t/[ticker]/page.tsx`).

@@ -16,6 +16,10 @@ class Settings(BaseSettings):
 
     # Universe table `briefs` (pipeline output). Never written by this API.
     briefs_db: Path | None = None
+    # Scores, fundamentals, freshness (`stocks`, `ticker_freshness`, ...).
+    screening_db: Path | None = None
+    # News and disclosures (`items`, `news_ai`).
+    evidence_db: Path | None = None
     # True for a frozen snapshot copy; False for the live file the pipeline rewrites.
     market_db_immutable: bool = False
 

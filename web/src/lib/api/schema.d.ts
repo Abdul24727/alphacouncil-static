@@ -21,6 +21,185 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/tickers/{ref}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Ticker */
+        get: operations["getTicker"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tickers/{ref}/freshness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Freshness */
+        get: operations["getTickerFreshness"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tickers/{ref}/peers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Peers
+         * @description Same sector on the same exchange, largest first; across the GCC if fewer than 3.
+         */
+        get: operations["getTickerPeers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tickers/{ref}/news": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get News
+         * @description Latest news and disclosures touching this ticker.
+         */
+        get: operations["getTickerNews"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tickers/{ref}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Events
+         * @description Corporate calendar: dividends, assemblies, results dates.
+         */
+        get: operations["getTickerEvents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tickers/{ref}/council": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Council */
+        get: operations["getTickerCouncil"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tickers/{ref}/fundamentals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Fundamentals */
+        get: operations["getTickerFundamentals"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tickers/{ref}/statements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Statements */
+        get: operations["getTickerStatements"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tickers/{ref}/corporate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Corporate */
+        get: operations["getTickerCorporate"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tickers/{ref}/insights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Insights */
+        get: operations["getTickerInsights"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/health": {
         parameters: {
             query?: never;
@@ -42,6 +221,102 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** CapitalChange */
+        CapitalChange: {
+            /** Date */
+            date: string | null;
+            /** Change Type */
+            change_type: string | null;
+            /** Capital Before Mn */
+            capital_before_mn: number | null;
+            /** Capital After Mn */
+            capital_after_mn: number | null;
+            /** Change Pct */
+            change_pct: number | null;
+            /** Note */
+            note: string | null;
+        };
+        /** Corporate */
+        Corporate: {
+            /** Currency */
+            currency: string | null;
+            /** Dividends */
+            dividends: components["schemas"]["Dividend"][];
+            /** Capital Changes */
+            capital_changes: components["schemas"]["CapitalChange"][];
+        };
+        /** Council */
+        Council: {
+            /** Seats */
+            seats: components["schemas"]["Seat"][];
+            /** Counts */
+            counts: {
+                [key: string]: number;
+            };
+            /** As Of Date */
+            as_of_date: string | null;
+            freshness: components["schemas"]["Freshness"] | null;
+        };
+        /** Dividend */
+        Dividend: {
+            /** Announce Date */
+            announce_date: string | null;
+            /** Ex Date */
+            ex_date: string | null;
+            /** Pay Date */
+            pay_date: string | null;
+            /** Dps */
+            dps: number | null;
+            /** Amount Mn */
+            amount_mn: number | null;
+            /** Note */
+            note: string | null;
+        };
+        /** Freshness */
+        Freshness: {
+            /** Category */
+            category: string;
+            /** As Of */
+            as_of: string | null;
+            /** Updated At */
+            updated_at: string | null;
+            /** Next At */
+            next_at: string | null;
+            /** Max Age Days */
+            max_age_days: number | null;
+            /** Stale */
+            stale: boolean | null;
+        };
+        /** Fundamentals */
+        Fundamentals: {
+            /** Groups */
+            groups: components["schemas"]["GaugeGroup"][];
+            freshness: components["schemas"]["Freshness"] | null;
+        };
+        /** GaugeGroup */
+        GaugeGroup: {
+            /** Group */
+            group: string;
+            /** Metrics */
+            metrics: components["schemas"]["GaugeMetric"][];
+            /** Score */
+            score: number | null;
+        };
+        /** GaugeMetric */
+        GaugeMetric: {
+            /** Key */
+            key: string;
+            /** Value */
+            value: number | null;
+            /** Unit */
+            unit: string;
+            /** Higher Is Better */
+            higher_is_better: boolean;
+            /** Status */
+            status: string;
+            /** Sector Percentile */
+            sector_percentile: number | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -58,8 +333,216 @@ export interface components {
             /** Universe As Of */
             universe_as_of: string | null;
         };
+        /** Insights */
+        Insights: {
+            /** Updated At */
+            updated_at: string | null;
+            /** Performance */
+            performance: {
+                [key: string]: unknown;
+            } | null;
+            /** Seasonality */
+            seasonality: {
+                [key: string]: unknown;
+            } | null;
+            /** Ownership */
+            ownership: {
+                [key: string]: unknown;
+            } | null;
+            /** Analysts */
+            analysts: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** NewsItem */
+        NewsItem: {
+            /** Id */
+            id: string;
+            /** Section */
+            section: string;
+            /** Date */
+            date: string | null;
+            /** Title */
+            title: string | null;
+            /** Url */
+            url: string | null;
+            /** Lang */
+            lang: string | null;
+            /** Snippet */
+            snippet: string | null;
+            /** Summary En */
+            summary_en: string | null;
+            /** Summary Ar */
+            summary_ar: string | null;
+            /** Impact */
+            impact: string | null;
+        };
+        /** PeerRow */
+        PeerRow: {
+            ticker: components["schemas"]["TickerRef"];
+            /** As Of Date */
+            as_of_date: string | null;
+            /** Last Price */
+            last_price: number | null;
+            /** Day Change Pct */
+            day_change_pct: number | null;
+            /** Market Cap Mn */
+            market_cap_mn: number | null;
+            /** Pe */
+            pe: number | null;
+            /** Dividend Yield Pct */
+            dividend_yield_pct: number | null;
+        };
+        /** Peers */
+        Peers: {
+            /** Basis */
+            basis: string;
+            /** Sector En */
+            sector_en: string | null;
+            /** Sector Ar */
+            sector_ar: string | null;
+            /** Peers */
+            peers: components["schemas"]["PeerRow"][];
+        };
+        /** Quote */
+        Quote: {
+            /** As Of Date */
+            as_of_date: string | null;
+            freshness: components["schemas"]["Freshness"] | null;
+            /** Last Price */
+            last_price: number | null;
+            /** Day Change Pct */
+            day_change_pct: number | null;
+            /** Volume */
+            volume: number | null;
+            /** Value Traded */
+            value_traded: number | null;
+            /** Market Cap Mn */
+            market_cap_mn: number | null;
+        };
+        /** Returns */
+        Returns: {
+            /** Return 1M */
+            return_1m: number | null;
+            /** Return 3M */
+            return_3m: number | null;
+            /** Return 6M */
+            return_6m: number | null;
+            /** Return 12M */
+            return_12m: number | null;
+            /** Vol 1Y */
+            vol_1y: number | null;
+            /** Max Drawdown */
+            max_drawdown: number | null;
+        };
+        /** Seat */
+        Seat: {
+            /** Seat */
+            seat: string;
+            /**
+             * Vote
+             * @enum {string}
+             */
+            vote: "bullish" | "neutral" | "bearish" | "abstain";
+            /** Inputs */
+            inputs: components["schemas"]["SeatInput"][];
+            /** Rule */
+            rule: string;
+        };
+        /** SeatInput */
+        SeatInput: {
+            /** Name */
+            name: string;
+            /** Value */
+            value: number | string | null;
+            /** Unit */
+            unit?: string | null;
+        };
+        /** Statement */
+        Statement: {
+            /** Section */
+            section: string;
+            /** Rows */
+            rows: components["schemas"]["StatementRow"][];
+        };
+        /** StatementRow */
+        StatementRow: {
+            /** Index */
+            index: number;
+            /** Label */
+            label: string;
+            /** Values */
+            values: {
+                [key: string]: number | null;
+            };
+        };
+        /** Statements */
+        Statements: {
+            /** Years */
+            years: number[];
+            /** Unit */
+            unit: string;
+            /** Currency */
+            currency: string | null;
+            /** Statements */
+            statements: components["schemas"]["Statement"][];
+        };
+        /** Technicals */
+        Technicals: {
+            /** As Of Date */
+            as_of_date: string | null;
+            /** Rsi 14 */
+            rsi_14: number | null;
+            /** Sma 50 */
+            sma_50: number | null;
+            /** Sma 200 */
+            sma_200: number | null;
+            /** Above 50D */
+            above_50d: boolean | null;
+            /** Above 200D */
+            above_200d: boolean | null;
+            /** Macd Bull */
+            macd_bull: boolean | null;
+            /** Dist To 52W High */
+            dist_to_52w_high: number | null;
+            /** Dist From 52W Low */
+            dist_from_52w_low: number | null;
+        };
+        /** TickerDetail */
+        TickerDetail: {
+            ticker: components["schemas"]["TickerRef"];
+            quote: components["schemas"]["Quote"];
+            valuation: components["schemas"]["Valuation"];
+            returns: components["schemas"]["Returns"];
+            technicals: components["schemas"]["Technicals"];
+            /** Has Price History */
+            has_price_history: boolean;
+            /** Freshness */
+            freshness: components["schemas"]["Freshness"][];
+        };
         /** TickerHit */
         TickerHit: {
+            /** Ticker Key */
+            ticker_key: string;
+            /** Symbol */
+            symbol: string;
+            /** Exchange */
+            exchange: string;
+            /** Currency */
+            currency: string | null;
+            /** Name En */
+            name_en: string | null;
+            /** Name Ar */
+            name_ar: string | null;
+            /** Sector En */
+            sector_en: string | null;
+            /** Sector Ar */
+            sector_ar: string | null;
+            /** Slug */
+            slug: string;
+        };
+        /** TickerRef */
+        TickerRef: {
             /** Ticker Key */
             ticker_key: string;
             /** Symbol */
@@ -103,6 +586,27 @@ export interface components {
             /** Context */
             ctx?: Record<string, never>;
         };
+        /** Valuation */
+        Valuation: {
+            /** Pe */
+            pe: number | null;
+            /** Pb */
+            pb: number | null;
+            /** Dividend Yield Pct */
+            dividend_yield_pct: number | null;
+            /** Roe Pct */
+            roe_pct: number | null;
+            /** Roa Pct */
+            roa_pct: number | null;
+            /** Ev Ebitda */
+            ev_ebitda: number | null;
+            /** Eps Ttm */
+            eps_ttm: number | null;
+            /** Book Value */
+            book_value: number | null;
+            /** Shares Out Mn */
+            shares_out_mn: number | null;
+        };
     };
     responses: never;
     parameters: never;
@@ -132,6 +636,325 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TickerSearchResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getTicker: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TickerDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getTickerFreshness: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Freshness"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getTickerPeers: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Peers"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getTickerNews: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NewsItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getTickerEvents: {
+        parameters: {
+            query?: {
+                limit?: number;
+                upcoming?: boolean;
+            };
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NewsItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getTickerCouncil: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Council"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getTickerFundamentals: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Fundamentals"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getTickerStatements: {
+        parameters: {
+            query?: {
+                years?: number;
+            };
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Statements"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getTickerCorporate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Corporate"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getTickerInsights: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Insights"];
                 };
             };
             /** @description Validation Error */

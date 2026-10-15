@@ -1,4 +1,6 @@
 import sqlite3
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 
 
@@ -19,3 +21,15 @@ def connect_ro(path: Path | None, *, immutable: bool) -> sqlite3.Connection:
     conn = sqlite3.connect(uri, uri=True, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
+
+
+@contextmanager
+def reader(path: Path | None, *, immutable: bool, name: str) -> Iterator[sqlite3.Connection]:
+    """Read-only connection for one request; `name` labels the error when unconfigured."""
+    if path is None:
+        raise MarketDataUnavailable(f"{name} is not set")
+    conn = connect_ro(path, immutable=immutable)
+    try:
+        yield conn
+    finally:
+        conn.close()

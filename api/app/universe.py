@@ -40,6 +40,7 @@ class Ticker:
     currency: str | None
     name_en: str | None
     name_ar: str | None
+    sector_id: str | None
     sector_en: str | None
     sector_ar: str | None
     slug: str
@@ -70,6 +71,8 @@ class Universe:
         self._lock = threading.Lock()
         self._stamp: tuple[float, ...] | None = None
         self.tickers: list[Ticker] = []
+        self.by_key: dict[str, Ticker] = {}
+        self._by_slug: dict[str, Ticker] = {}
         self.as_of: str | None = None
 
     def _file_stamp(self) -> tuple[float, ...]:
@@ -94,7 +97,7 @@ class Universe:
         conn = connect_ro(s.briefs_db, immutable=s.market_db_immutable)
         try:
             rows = conn.execute(
-                "SELECT ticker_key, ticker, exchange, currency, sector_en, sector_ar, as_of_date"
+                "SELECT ticker_key, ticker, exchange, currency, sector_id, sector_en, sector_ar, as_of_date"
                 " FROM briefs"
             ).fetchall()
         finally:
@@ -116,6 +119,7 @@ class Universe:
                     currency=r["currency"],
                     name_en=name_en,
                     name_ar=name_ar,
+                    sector_id=str(r["sector_id"]) if r["sector_id"] is not None else None,
                     sector_en=r["sector_en"],
                     sector_ar=r["sector_ar"],
                     # /t/2222 for Tadawul and for symbols unique across exchanges;
@@ -130,7 +134,15 @@ class Universe:
                 )
             )
         self.tickers = tickers
+        self.by_key = {t.ticker_key: t for t in tickers}
+        self._by_slug = {t.slug.upper(): t for t in tickers}
         self.as_of = max((r["as_of_date"] for r in rows if r["as_of_date"]), default=None)
+
+    def resolve(self, ref: str) -> Ticker | None:
+        """A URL slug ("2222", "2010_KSE"), a ticker_key, or a symbol unique to one exchange."""
+        self.refresh()
+        ref = normalize(ref).upper().replace(" ", "")
+        return self._by_slug.get(ref) or self.by_key.get(ref)
 
     def search(self, query: str, limit: int) -> list[Ticker]:
         self.refresh()

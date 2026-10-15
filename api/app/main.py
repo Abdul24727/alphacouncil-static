@@ -2,7 +2,7 @@ from fastapi import APIRouter, FastAPI
 from pydantic import BaseModel
 
 from .market_db import MarketDataUnavailable
-from .routers import tickers
+from .routers import ticker, ticker_research, tickers
 from .settings import get_settings
 from .universe import Universe
 
@@ -13,10 +13,14 @@ def create_app() -> FastAPI:
         version="0.1.0",
         description="Market data, council and accounts for the AlphaCouncil web app.",
     )
-    app.state.universe = Universe(get_settings())
+    settings = get_settings()
+    app.state.settings = settings
+    app.state.universe = Universe(settings)
 
     v1 = APIRouter(prefix="/v1")
     v1.include_router(tickers.router)
+    v1.include_router(ticker.router)
+    v1.include_router(ticker_research.router)
 
     class Health(BaseModel):
         status: str
