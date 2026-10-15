@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     screening_db: Path | None = None
     # News and disclosures (`items`, `news_ai`).
     evidence_db: Path | None = None
+    # Per-ticker daily OHLCV: <universe_root>/<ticker_key>/price_history_10y.csv
+    universe_root: Path | None = None
     # True for a frozen snapshot copy; False for the live file the pipeline rewrites.
     market_db_immutable: bool = False
 

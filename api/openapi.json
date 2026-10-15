@@ -6,6 +6,32 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/v1/tickers": {
+      "get": {
+        "tags": [
+          "tickers"
+        ],
+        "summary": "List Tickers",
+        "description": "The whole universe, Tadawul first. `has_prices`: a daily price file exists.",
+        "operationId": "listTickers",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UniverseEntry"
+                  },
+                  "type": "array",
+                  "title": "Response Listtickers"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/tickers/search": {
       "get": {
         "tags": [
@@ -549,6 +575,48 @@
         }
       }
     },
+    "/v1/tickers/{ref}/prices": {
+      "get": {
+        "tags": [
+          "ticker"
+        ],
+        "summary": "Get Prices",
+        "operationId": "getTickerPrices",
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PriceHistory"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/health": {
       "get": {
         "tags": [
@@ -573,6 +641,83 @@
   },
   "components": {
     "schemas": {
+      "Bar": {
+        "properties": {
+          "time": {
+            "type": "string",
+            "title": "Time"
+          },
+          "open": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Open"
+          },
+          "high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "High"
+          },
+          "low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Low"
+          },
+          "close": {
+            "type": "number",
+            "title": "Close"
+          },
+          "volume": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume"
+          },
+          "turnover": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turnover"
+          }
+        },
+        "type": "object",
+        "required": [
+          "time",
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume"
+        ],
+        "title": "Bar"
+      },
       "CapitalChange": {
         "properties": {
           "date": {
@@ -1364,6 +1509,55 @@
         ],
         "title": "Peers"
       },
+      "PriceHistory": {
+        "properties": {
+          "ticker_key": {
+            "type": "string",
+            "title": "Ticker Key"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "has_history": {
+            "type": "boolean",
+            "title": "Has History"
+          },
+          "bars": {
+            "items": {
+              "$ref": "#/components/schemas/Bar"
+            },
+            "type": "array",
+            "title": "Bars"
+          },
+          "freshness": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Freshness"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker_key",
+          "currency",
+          "has_history",
+          "bars",
+          "freshness"
+        ],
+        "title": "PriceHistory"
+      },
       "Quote": {
         "properties": {
           "as_of_date": {
@@ -1386,6 +1580,10 @@
                 "type": "null"
               }
             ]
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
           },
           "last_price": {
             "anyOf": [
@@ -1447,6 +1645,7 @@
         "required": [
           "as_of_date",
           "freshness",
+          "source",
           "last_price",
           "day_change_pct",
           "volume",
@@ -2076,6 +2275,87 @@
           "universe_as_of"
         ],
         "title": "TickerSearchResponse"
+      },
+      "UniverseEntry": {
+        "properties": {
+          "ticker_key": {
+            "type": "string",
+            "title": "Ticker Key"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "exchange": {
+            "type": "string",
+            "title": "Exchange"
+          },
+          "slug": {
+            "type": "string",
+            "title": "Slug"
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
+          },
+          "name_ar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name Ar"
+          },
+          "sector_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sector En"
+          },
+          "sector_ar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sector Ar"
+          },
+          "has_prices": {
+            "type": "boolean",
+            "title": "Has Prices"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker_key",
+          "symbol",
+          "exchange",
+          "slug",
+          "name_en",
+          "name_ar",
+          "sector_en",
+          "sector_ar",
+          "has_prices"
+        ],
+        "title": "UniverseEntry"
       },
       "ValidationError": {
         "properties": {

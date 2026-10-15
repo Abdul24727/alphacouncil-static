@@ -172,8 +172,27 @@ def data_files(tmp_path):
         w.writerow(["2010", "Saudi Basic Industries Corporation"])
         w.writerow(["2223", "Saudi Aramco Base Oil Company - Luberef"])
 
+    prices = tmp_path / "universe"
+    today = datetime.now(UTC).date()
+    english = [
+        "Date,Price,Change,Change (%),Volume,Turnover,Open,High,Low",
+        "11/12/2019,29.10,0.00,0.00 %,29540607,,29.10,29.10,29.10",
+        f"{(today - timedelta(days=1)):%d/%m/%Y},26.00,,,1000,26000,25.90,26.10,25.80",
+        f'{today:%d/%m/%Y},26.50,0.50,1.92 %,"9,327,140","248,170,145",26.00,26.60,25.95',
+    ]
+    arabic = [
+        "التاريخ,السعر,التغير,التغير (%),حجم التداول,قيمة التداول,الافتتاح,الأعلى,الأدنى",
+        '2026/10/12,18.52,(0.02),(0.11 %),"3,829,048","71,141,029",18.54,18.74,18.46',
+        '2026/10/13,18.86,0.34,1.84 %,"3,395,404","63,657,192",18.52,18.86,18.52',
+        "2026/10/14,18.90,,,,,19.50,18.95,18.80",
+    ]
+    for key, lines in (("2222_TADAWUL", english), ("FAB_ADX", arabic)):
+        (prices / key).mkdir(parents=True)
+        (prices / key / "price_history_10y.csv").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
     return Settings(
         _env_file=None,
+        universe_root=prices,
         briefs_db=briefs,
         screening_db=screening,
         evidence_db=evidence,

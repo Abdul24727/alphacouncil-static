@@ -21,6 +21,10 @@ WEEKENDS: dict[str, set[int]] = {
 }
 DEFAULT_WEEKEND = {4, 5}  # Tadawul, QSE, Boursa Kuwait, BHB, MSX: Friday, Saturday
 
+# The pipeline's own price threshold (old backend config PRICE_MAX_AGE_DAYS), used when a
+# ticker has no ticker_freshness row of its own.
+PRICE_MAX_AGE_DAYS = 2
+
 # Nightly pipeline start (root crontab on the VPS: 00:00 UTC every day).
 PIPELINE_RUN_UTC = time(0, 0)
 

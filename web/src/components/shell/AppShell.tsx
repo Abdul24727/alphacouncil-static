@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useChartPrefs } from "@/lib/chart-prefs";
 import { applyLayoutToDocument, useLayout } from "@/lib/layout-store";
 import { CopilotPane } from "./CopilotPane";
 import { MobileTabBar } from "./MobileTabBar";
@@ -30,6 +31,7 @@ function useLayoutSync() {
   useEffect(() => {
     const unsubscribe = useLayout.subscribe(applyLayoutToDocument);
     void useLayout.persist.rehydrate();
+    void useChartPrefs.persist.rehydrate();
     return unsubscribe;
   }, []);
 }

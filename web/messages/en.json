@@ -273,6 +273,30 @@
         "12": "Dec"
       },
       "note": "Cumulative return from each year's first close, at each month end."
+    },
+    "chart": {
+      "mode": "Chart type",
+      "range": "Range",
+      "line": "Line",
+      "candles": "Candles",
+      "indicators": {
+        "sma20": "SMA 20",
+        "sma50": "SMA 50",
+        "sma200": "SMA 200",
+        "ema20": "EMA 20",
+        "bb20": "Bollinger 20/2",
+        "rsi14": "RSI 14",
+        "macd": "MACD 12/26/9"
+      },
+      "short": {
+        "sma20": "SMA20",
+        "sma50": "SMA50",
+        "sma200": "SMA200",
+        "ema20": "EMA20",
+        "bb20": "BB20",
+        "rsi14": "RSI14",
+        "macd": "MACD"
+      }
     }
   },
   "ticker": {

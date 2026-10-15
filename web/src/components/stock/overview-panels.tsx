@@ -1,7 +1,8 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { Panel, PanelUnavailable } from "@/components/panel/Panel";
+import { useSyncExternalStore } from "react";
+import { Panel } from "@/components/panel/Panel";
 import { TickerNames } from "@/components/ticker/TickerPicker";
 import type { NewsItem, TickerDetail } from "@/lib/api/client";
 import {
@@ -12,20 +13,25 @@ import {
   fmtRatioPct,
   signClass,
 } from "@/lib/format";
-import { useTickerCouncil, useTickerDetail, useTickerNews, useTickerPeers } from "@/lib/queries";
+import { useChartPrefs } from "@/lib/chart-prefs";
+import { useTickerCouncil, useTickerDetail, useTickerNews, useTickerPeers, useTickerPrices } from "@/lib/queries";
 import { useGroupTicker, useTickerGroups } from "@/lib/ticker-groups";
 import { CouncilRing, VoteLabel } from "./council";
 import { Num, priceDigits, QueryState, toTsv } from "./common";
+import { INDICATORS, PriceChart, RANGES } from "./PriceChart";
 
 const GROUP = 1 as const;
 
-// --- Price (chart arrives in Phase 3) -------------------------------------------------------
+// --- Price ---------------------------------------------------------------------------------
 
 export function PricePanel({ className }: { className?: string }) {
   const t = useTranslations("stock");
   const slug = useGroupTicker(GROUP);
-  const detail = useTickerDetail(slug);
-  const prices = detail.data?.freshness.find((f) => f.category === "prices") ?? null;
+  const prices = useTickerPrices(slug);
+  const { mode, range, indicators, setMode, setRange, toggleIndicator } = useChartPrefs();
+  const p = prices.data;
+  const digits = priceDigits(p?.currency);
+  const bars = p?.bars ?? [];
 
   return (
     <Panel
@@ -33,14 +39,89 @@ export function PricePanel({ className }: { className?: string }) {
       title={t("panels.price")}
       group={GROUP}
       ticker={slug}
-      freshness={detail.data ? prices : undefined}
-      onRefresh={() => detail.refetch()}
+      freshness={p ? p.freshness : undefined}
+      onRefresh={() => prices.refetch()}
+      copyData={() =>
+        toTsv([["date", "open", "high", "low", "close", "volume"], ...bars.map((b) => [b.time, b.open, b.high, b.low, b.close, b.volume])])
+      }
+      copilotData={() => ({
+        ticker: p?.ticker_key,
+        currency: p?.currency,
+        range,
+        // The Copilot gets the visible window, not ten years of bars.
+        bars: bars.slice(-Math.min(bars.length, { "1M": 23, "3M": 66, "6M": 130, "1Y": 260, "5Y": 1300 }[range])),
+      })}
+      menuItems={INDICATORS.map((i) => ({
+        key: i,
+        label: t(`chart.indicators.${i}`),
+        checked: indicators.includes(i),
+        onSelect: () => toggleIndicator(i),
+      }))}
       className={className}
+      bodyClassName="flex flex-col"
     >
-      <QueryState isPending={detail.isPending} error={detail.error}>
-        <PanelUnavailable detail={detail.data?.has_price_history ? t("price.phase3") : t("price.noHistory")} />
+      <QueryState
+        isPending={prices.isPending}
+        error={prices.error}
+        empty={!!p && !p.has_history}
+        emptyText={t("price.noHistory")}
+      >
+        <div className="flex flex-wrap items-center gap-2 border-b border-line px-3 py-1.5">
+          <div role="radiogroup" aria-label={t("chart.mode")} className="flex rounded-chip border border-line p-0.5">
+            {(["line", "candles"] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                role="radio"
+                aria-checked={mode === m}
+                onClick={() => setMode(m)}
+                className={`rounded-[3px] px-2 py-0.5 ${mode === m ? "bg-panel-raised text-text" : "text-muted hover:text-text"}`}
+              >
+                {t(`chart.${m}`)}
+              </button>
+            ))}
+          </div>
+          <div role="radiogroup" aria-label={t("chart.range")} className="flex gap-0.5">
+            {RANGES.map((r) => (
+              <button
+                key={r}
+                type="button"
+                role="radio"
+                aria-checked={range === r}
+                data-range={r}
+                onClick={() => setRange(r)}
+                className={`num rounded-chip px-1.5 py-0.5 text-[11px] ${range === r ? "text-signal" : "text-muted hover:text-text"}`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+          {indicators.length > 0 && (
+            <span className="label-caps ms-auto truncate text-muted">
+              {indicators.map((i) => t(`chart.short.${i}`)).join(" · ")}
+            </span>
+          )}
+        </div>
+        <ChartArea bars={bars} mode={mode} range={range} indicators={indicators} digits={digits} />
       </QueryState>
     </Panel>
+  );
+}
+
+const subscribePhone = (cb: () => void) => {
+  const mq = window.matchMedia("(max-width: 767px)");
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+};
+
+/** Taller when RSI / MACD panes are on; shorter on phones. */
+function ChartArea(props: Omit<React.ComponentProps<typeof PriceChart>, "height">) {
+  const phone = useSyncExternalStore(subscribePhone, () => window.matchMedia("(max-width: 767px)").matches, () => false);
+  const panes = (props.indicators.includes("rsi14") ? 1 : 0) + (props.indicators.includes("macd") ? 1 : 0);
+  return (
+    <div className="px-1 pb-1">
+      <PriceChart {...props} height={phone ? 240 + panes * 70 : 340 + panes * 90} />
+    </div>
   );
 }
 

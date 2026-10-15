@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/v1/tickers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Tickers
+         * @description The whole universe, Tadawul first. `has_prices`: a daily price file exists.
+         */
+        get: operations["listTickers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/tickers/search": {
         parameters: {
             query?: never;
@@ -200,6 +220,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/tickers/{ref}/prices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Prices */
+        get: operations["getTickerPrices"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/health": {
         parameters: {
             query?: never;
@@ -221,6 +258,23 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Bar */
+        Bar: {
+            /** Time */
+            time: string;
+            /** Open */
+            open: number | null;
+            /** High */
+            high: number | null;
+            /** Low */
+            low: number | null;
+            /** Close */
+            close: number;
+            /** Volume */
+            volume: number | null;
+            /** Turnover */
+            turnover?: number | null;
+        };
         /** CapitalChange */
         CapitalChange: {
             /** Date */
@@ -404,11 +458,25 @@ export interface components {
             /** Peers */
             peers: components["schemas"]["PeerRow"][];
         };
+        /** PriceHistory */
+        PriceHistory: {
+            /** Ticker Key */
+            ticker_key: string;
+            /** Currency */
+            currency: string | null;
+            /** Has History */
+            has_history: boolean;
+            /** Bars */
+            bars: components["schemas"]["Bar"][];
+            freshness: components["schemas"]["Freshness"] | null;
+        };
         /** Quote */
         Quote: {
             /** As Of Date */
             as_of_date: string | null;
             freshness: components["schemas"]["Freshness"] | null;
+            /** Source */
+            source: string;
             /** Last Price */
             last_price: number | null;
             /** Day Change Pct */
@@ -573,6 +641,27 @@ export interface components {
             /** Universe As Of */
             universe_as_of: string | null;
         };
+        /** UniverseEntry */
+        UniverseEntry: {
+            /** Ticker Key */
+            ticker_key: string;
+            /** Symbol */
+            symbol: string;
+            /** Exchange */
+            exchange: string;
+            /** Slug */
+            slug: string;
+            /** Name En */
+            name_en: string | null;
+            /** Name Ar */
+            name_ar: string | null;
+            /** Sector En */
+            sector_en: string | null;
+            /** Sector Ar */
+            sector_ar: string | null;
+            /** Has Prices */
+            has_prices: boolean;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -616,6 +705,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    listTickers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UniverseEntry"][];
+                };
+            };
+        };
+    };
     searchTickers: {
         parameters: {
             query: {
@@ -955,6 +1064,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Insights"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getTickerPrices: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PriceHistory"];
                 };
             };
             /** @description Validation Error */

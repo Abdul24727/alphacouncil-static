@@ -31,8 +31,11 @@ def test_ticker_key_and_lowercase_resolve(client):
 
 
 def test_old_quote_is_stale_and_recent_fundamentals_are_fresh(client):
+    # 2223 has no price file, so its quote comes from an old briefs row.
+    old = get(client, "/v1/tickers/2223")["quote"]
+    assert old["source"] == "briefs" and old["freshness"]["stale"] is True
     d = get(client, "/v1/tickers/2222")
-    assert d["quote"]["freshness"]["stale"] is True
+    assert d["quote"]["freshness"]["stale"] is False  # today's price file
     by_cat = {f["category"]: f for f in d["freshness"]}
     assert by_cat["prices"]["stale"] is True
     assert by_cat["fundamentals"]["stale"] is False

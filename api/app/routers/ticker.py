@@ -6,7 +6,7 @@ import sqlite3
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
-from ..freshness import Freshness, assess
+from ..freshness import PRICE_MAX_AGE_DAYS, Freshness, assess
 from ..market_db import MarketDataUnavailable, reader
 from ..settings import Settings
 from ..universe import Ticker, Universe
@@ -28,8 +28,10 @@ class TickerRef(BaseModel):
 
 class Quote(BaseModel):
     as_of_date: str | None
-    # Freshness of these quote values themselves (briefs.as_of_date), judged by the prices window.
+    # Freshness of these quote values themselves, judged by the prices window.
     freshness: Freshness | None
+    # "prices_file" when the daily price file is newer than the briefs table, else "briefs".
+    source: str
     last_price: float | None
     day_change_pct: float | None
     volume: float | None
@@ -173,29 +175,49 @@ def get_ticker(request: Request, ref: str) -> TickerDetail:
     get = lambda row, k: row[k] if row and k in row.keys() else None  # noqa: E731
 
     prices = next((f for f in freshness if f.category == "prices"), None)
-    quote_freshness = (
-        assess(
-            category="prices",
-            as_of_utc=get(b, "as_of_date"),
-            last_success_utc=get(b, "source_run_ts"),
-            max_age_days=prices.max_age_days if prices else None,
-            exchange=t.exchange,
-        )
-        if get(b, "as_of_date")
-        else None
+    quote = Quote(
+        as_of_date=get(b, "as_of_date"),
+        source="briefs",
+        freshness=(
+            assess(
+                category="prices",
+                as_of_utc=get(b, "as_of_date"),
+                last_success_utc=get(b, "source_run_ts"),
+                max_age_days=prices.max_age_days if prices else PRICE_MAX_AGE_DAYS,
+                exchange=t.exchange,
+            )
+            if get(b, "as_of_date")
+            else None
+        ),
+        last_price=get(b, "last_price"),
+        day_change_pct=get(b, "day_change_pct"),
+        volume=get(b, "volume"),
+        value_traded=get(b, "value_traded"),
+        market_cap_mn=get(b, "market_cap_raw"),
     )
+
+    # The daily price file is refreshed every night; the briefs table can lag
+    # behind it. Quote the newest close we have, with the change against the
+    # previous close in the same file.
+    from .prices import bar_freshness, latest_bars  # local import: prices imports this module
+
+    bars = latest_bars(request, t.ticker_key)
+    if bars and len(bars) >= 2 and (quote.as_of_date is None or bars[-1].time > quote.as_of_date):
+        last, prev = bars[-1], bars[-2]
+        quote = Quote(
+            as_of_date=last.time,
+            source="prices_file",
+            freshness=bar_freshness(request, t.ticker_key, t.exchange, bars),
+            last_price=last.close,
+            day_change_pct=round((last.close / prev.close - 1) * 100, 2),
+            volume=last.volume,
+            value_traded=last.turnover,
+            market_cap_mn=get(b, "market_cap_raw"),
+        )
 
     return TickerDetail(
         ticker=ref_of(t),
-        quote=Quote(
-            as_of_date=get(b, "as_of_date"),
-            freshness=quote_freshness,
-            last_price=get(b, "last_price"),
-            day_change_pct=get(b, "day_change_pct"),
-            volume=get(b, "volume"),
-            value_traded=get(b, "value_traded"),
-            market_cap_mn=get(b, "market_cap_raw"),
-        ),
+        quote=quote,
         # briefs first (the nightly price-derived values), scraped ratios fill gaps.
         valuation=Valuation(
             pe=get(b, "pe") if get(b, "pe") is not None else get(sr, "pe"),

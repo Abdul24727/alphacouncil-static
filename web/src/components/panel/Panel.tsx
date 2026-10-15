@@ -33,12 +33,16 @@ type PanelProps = {
   /** What the Copilot receives when this panel is attached. */
   copilotData?: () => unknown;
   onRefresh?: () => void;
-  /** Extra header controls, e.g. the ticker switcher. */
+  /** Extra header controls. */
   actions?: React.ReactNode;
+  /** Panel-specific menu entries (checkbox entries when `checked` is set). */
+  menuItems?: PanelMenuItem[];
   className?: string;
   bodyClassName?: string;
   children: React.ReactNode;
 };
+
+export type PanelMenuItem = { key: string; label: string; checked?: boolean; onSelect: () => void };
 
 export function Panel({
   id,
@@ -51,6 +55,7 @@ export function Panel({
   copilotData,
   onRefresh,
   actions,
+  menuItems,
   className = "",
   bodyClassName = "p-3",
   children,
@@ -109,7 +114,7 @@ export function Panel({
             <HeaderButton label={full ? t("exitFullscreen") : t("fullscreen")} onClick={() => setFull(!full)}>
               {full ? <ExitFullScreenIcon /> : <EnterFullScreenIcon />}
             </HeaderButton>
-            <PanelMenu copyData={copyData} onRefresh={onRefresh} />
+            <PanelMenu copyData={copyData} onRefresh={onRefresh} items={menuItems} />
           </div>
         </header>
         <div className={`min-h-0 flex-1 ${full ? "overflow-auto" : ""} ${bodyClassName}`}>{children}</div>
@@ -202,7 +207,15 @@ function HeaderButton({
   );
 }
 
-function PanelMenu({ copyData, onRefresh }: { copyData?: () => string | null; onRefresh?: () => void }) {
+function PanelMenu({
+  copyData,
+  onRefresh,
+  items,
+}: {
+  copyData?: () => string | null;
+  onRefresh?: () => void;
+  items?: PanelMenuItem[];
+}) {
   const t = useTranslations("panel");
   const [copied, setCopied] = useState(false);
 
@@ -242,6 +255,31 @@ function PanelMenu({ copyData, onRefresh }: { copyData?: () => string | null; on
             <ReloadIcon />
             {t("refresh")}
           </DropdownMenu.Item>
+          {items && items.length > 0 && <DropdownMenu.Separator className="my-1 h-px bg-line" />}
+          {items?.map((it) =>
+            it.checked === undefined ? (
+              <DropdownMenu.Item key={it.key} className={item} onSelect={it.onSelect}>
+                <span className="size-[15px]" />
+                {it.label}
+              </DropdownMenu.Item>
+            ) : (
+              <DropdownMenu.CheckboxItem
+                key={it.key}
+                className={item}
+                checked={it.checked}
+                // Keep the menu open so several indicators can be toggled in a row.
+                onSelect={(e) => e.preventDefault()}
+                onCheckedChange={it.onSelect}
+              >
+                <span className="grid size-[15px] place-items-center rounded-[3px] border border-line">
+                  <DropdownMenu.ItemIndicator>
+                    <CheckIcon className="text-signal" />
+                  </DropdownMenu.ItemIndicator>
+                </span>
+                {it.label}
+              </DropdownMenu.CheckboxItem>
+            ),
+          )}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>

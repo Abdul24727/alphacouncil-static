@@ -91,3 +91,13 @@ export function useTickerInsights(slug: string | undefined) {
     enabled: !!slug,
   });
 }
+
+export function useTickerPrices(slug: string | undefined) {
+  return useQuery({
+    queryKey: ["ticker", slug, "prices"],
+    queryFn: async ({ signal }) =>
+      unwrap(await api.GET("/v1/tickers/{ref}/prices", { params: { path: { ref: slug! } }, signal })),
+    enabled: !!slug,
+    staleTime: 5 * 60_000,
+  });
+}
