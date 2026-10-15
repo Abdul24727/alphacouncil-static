@@ -18,11 +18,11 @@ from typing import Annotated, Any
 import bcrypt
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field, field_validator
-from sqlalchemy import delete, insert, select, update
+from sqlalchemy import delete, func, insert, select, update
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError
 
-from .appdb import consents, engine_for, prefs, sessions, users, utcnow
+from .appdb import consents, engine_for, prefs, rate_hits, sessions, users, utcnow
 from .legal import REGISTRATION
 from .settings import Settings
 
@@ -76,7 +76,29 @@ class RateLimit:
             return True
 
 
-def login_limit(request: Request) -> RateLimit:
+class DbRateLimit:
+    """The same sliding window, counted in the app database so that every API worker
+    (uvicorn --workers N) shares one count per key."""
+
+    def __init__(self, url: str, name: str, limit: int, window_s: int):
+        self.url, self.name, self.limit, self.window = url, name, limit, window_s
+
+    def hit(self, key: str) -> bool:
+        k, now = f"{self.name}:{key}", utcnow()
+        with engine_for(self.url).begin() as conn:
+            conn.execute(delete(rate_hits).where(rate_hits.c.at < now - timedelta(days=1)))
+            recent = conn.execute(
+                select(func.count())
+                .select_from(rate_hits)
+                .where(rate_hits.c.key == k, rate_hits.c.at >= now - timedelta(seconds=self.window))
+            ).scalar_one()
+            if recent >= self.limit:
+                return False
+            conn.execute(insert(rate_hits).values(key=k, at=now))
+            return True
+
+
+def login_limit(request: Request) -> RateLimit | DbRateLimit:
     """One limiter per app instance (created in main.create_app)."""
     return request.app.state.login_limit
 

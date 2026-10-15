@@ -1,18 +1,11 @@
 Copilot model: deepseek/deepseek-v3.2
 PASS  signed in (the model requires an account)
 PASS  metrics panel shows as a context chip
-node:internal/modules/run_main:107
-    triggerUncaughtException(
-    ^
+PASS  answer cites the metrics panel
+PASS  reasoning is collapsible (› REASONING · 4 STEPS)
+PASS  3 follow-up questions
+PASS  citation scrolled the metrics panel into view (top -542 -> 108)
+PASS  the cited panel is highlighted
+PASS  pinned table appears on My dashboards
 
-locator.waitFor: Timeout 120000ms exceeded.
-Call log:
-[2m  - waiting for locator('[data-copilot-pane] [data-message="assistant"]').last().locator('[data-citation="overview.metrics"]').first() to be visible[22m
-
-  log: [
-    `  - waiting for locator('[data-copilot-pane] [data-message="assistant"]').last().locator('[data-citation="overview.metrics"]').first() to be visible`
-  ],
-  name: 'TimeoutError'
-}
-
-Node.js v24.18.0
+Phase 4 done-when: all checks passed

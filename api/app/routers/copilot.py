@@ -3,6 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
+from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel
 
 from ..auth import User, check_origin, client_ip, current_user
@@ -57,7 +58,8 @@ async def chat(
     real = uses_model(request)
     if real and user is None:
         raise HTTPException(401, "sign_in_required")  # codes: the web pane words them per language
-    if not request.app.state.copilot_limit.hit(f"user:{user.id}" if user else f"ip:{client_ip(request)}"):
+    limit_key = f"user:{user.id}" if user else f"ip:{client_ip(request)}"
+    if not await run_in_threadpool(request.app.state.copilot_limit.hit, limit_key):
         raise HTTPException(429, "rate_limited")
     try:
         chat_input = to_input(body)

@@ -96,6 +96,15 @@ consents = Table(
     Column("accepted_at", DateTime(timezone=True), nullable=False, default=utcnow),
 )
 
+# Rate-limit hits, shared by every API worker (auth.DbRateLimit). Rows older than a day go.
+rate_hits = Table(
+    "rate_hits",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("key", String(300), nullable=False, index=True),
+    Column("at", DateTime(timezone=True), nullable=False, index=True),
+)
+
 
 @lru_cache
 def engine_for(url: str) -> Engine:

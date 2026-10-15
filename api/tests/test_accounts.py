@@ -154,3 +154,13 @@ def test_delete_account_removes_everything(client):
     client.cookies.clear()
     login = client.post("/v1/auth/login", json={"email": "tester@example.com", "password": "correct horse battery"}, headers=ORIGIN)
     assert login.status_code == 401
+
+
+def test_rate_limits_are_shared_between_workers(data_files):
+    from app.auth import DbRateLimit
+
+    # Two limiters on one database stand for two uvicorn workers.
+    a = DbRateLimit(data_files.database_url, "copilot", limit=3, window_s=3600)
+    b = DbRateLimit(data_files.database_url, "copilot", limit=3, window_s=3600)
+    assert [a.hit("user:1"), b.hit("user:1"), a.hit("user:1"), b.hit("user:1")] == [True, True, True, False]
+    assert b.hit("user:2") is True  # per key
