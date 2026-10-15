@@ -175,17 +175,14 @@ Copilot model: deepseek/deepseek-v3.2
 PASS  signed in (the model requires an account)
 PASS  metrics panel shows as a context chip
 PASS  answer cites the metrics panel
-node:internal/modules/run_main:107
-    triggerUncaughtException(
-    ^
+PASS  answer finished in 32 s (limit 180 s)
+PASS  reasoning is collapsible (› REASONING · 2 STEPS)
+PASS  3 follow-up questions
+PASS  citation scrolled the metrics panel into view (top -542 -> 108)
+PASS  the cited panel is highlighted
+note  this answer had no table to pin
 
-page.waitForFunction: Timeout 120000ms exceeded.
-    at C:\projects\alphacouncil-platform\web\scripts\check-phase4.mjs:53:12 {
-  log: [],
-  name: 'TimeoutError'
-}
-
-Node.js v24.18.0
+Phase 4 done-when: all checks passed
 
 === Phase 5 ===
 PASS  desktop: Home (/home) — 4 panel(s)
@@ -299,16 +296,13 @@ Phase 6 done-when: all checks passed
 
 === Phase 7 ===
 
-English left in Arabic pages (1):
-  deepseek/deepseek-v3.2 — span   [1440 /home, 1440 /portfolio, 1440 /screener, …]
-
-88 page views; 0 failure(s); 1 English string(s) in Arabic pages
+88 page views; 0 failure(s); 0 English string(s) in Arabic pages
 
 Summary
   Phase 1: PASS
   Phase 2: PASS
   Phase 3: PASS
-  Phase 4: FAIL
+  Phase 4: PASS
   Phase 5: PASS
   Phase 6: PASS
-  Phase 7: FAIL
+  Phase 7: PASS
