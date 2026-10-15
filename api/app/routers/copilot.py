@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from ..auth import User, check_origin, client_ip, current_user
 from ..copilot.context import ChatRequest, to_input
 from ..copilot.engine import claude_stream
+from ..copilot.openai_compat import openai_stream
 from ..copilot.standin import standin_stream
 from ..copilot.stream import HEADERS
 from .ticker import settings_of
@@ -15,13 +16,20 @@ from .ticker import settings_of
 router = APIRouter(prefix="/copilot", tags=["copilot"])
 
 
-def model_configured() -> bool:
-    """Claude runs when credentials exist; otherwise the labelled stand-in answers."""
-    return bool(os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN"))
+def provider(request: Request) -> str:
+    """"openrouter", "anthropic" or "standin", from COPILOT_PROVIDER and which keys exist."""
+    wanted = settings_of(request).copilot_provider
+    keys = {
+        "openrouter": bool(os.environ.get("OPENROUTER_API_KEY")),
+        "anthropic": bool(os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN")),
+    }
+    if wanted == "auto":
+        return next((p for p in ("openrouter", "anthropic") if keys[p]), "standin")
+    return wanted if keys.get(wanted) else "standin"
 
 
 def uses_model(request: Request) -> bool:
-    return model_configured() and settings_of(request).copilot_provider != "standin"
+    return provider(request) != "standin"
 
 
 class CopilotStatus(BaseModel):
@@ -56,8 +64,11 @@ async def chat(
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
     s = settings_of(request)
-    if real:
-        stream = claude_stream(request, chat_input, s)
-    else:
-        stream = standin_stream(request, chat_input)
+    match provider(request):
+        case "openrouter":
+            stream = openai_stream(request, chat_input, s)
+        case "anthropic":
+            stream = claude_stream(request, chat_input, s)
+        case _:
+            stream = standin_stream(request, chat_input)
     return StreamingResponse(stream, media_type="text/event-stream", headers=HEADERS)

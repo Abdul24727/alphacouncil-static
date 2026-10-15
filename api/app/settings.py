@@ -31,10 +31,17 @@ class Settings(BaseSettings):
     ticker_names_csv: Path | None = None
     saudi_en_names_csv: Path | None = None
 
-    # Copilot. Claude runs when ANTHROPIC_API_KEY (or ANTHROPIC_AUTH_TOKEN) is in the
-    # process environment; otherwise a labelled rule-based stand-in answers.
-    copilot_provider: str = "auto"  # "auto" | "standin"
+    # Copilot. Chosen by the environment only:
+    #   "auto": OpenRouter when OPENROUTER_API_KEY is set, else Claude when ANTHROPIC_API_KEY
+    #           (or ANTHROPIC_AUTH_TOKEN) is set, else the labelled rule-based stand-in;
+    #   "openrouter" | "anthropic": that provider (the stand-in if its key is missing);
+    #   "standin": always the stand-in.
+    # Keys stay in the process environment and never in settings or logs.
+    copilot_provider: str = "auto"
+    # The model id for the chosen provider, e.g. "claude-opus-5-5" or "deepseek/deepseek-v3.2".
     copilot_model: str = "claude-opus-5-5"
+    # Any OpenAI-compatible endpoint can stand in for OpenRouter.
+    openrouter_base_url: str = "https://openrouter.ai/api/v1"
     copilot_effort: str = "medium"  # low | medium | high | xhigh | max
     # Questions per hour per signed-in user (or per address for the stand-in).
     copilot_hourly_limit: int = 60

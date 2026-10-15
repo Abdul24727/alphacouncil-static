@@ -22,6 +22,17 @@ const check = (ok, label) => {
 const status = await (await context.request.get(`${BASE_URL}/api/v1/copilot/status`)).json();
 console.log(`Copilot model: ${status.model}${status.stand_in ? " (stand-in, no AI key configured)" : ""}`);
 
+// A real model answers signed-in users only.
+if (status.sign_in_required) {
+  await page.goto(`${BASE_URL}/signup?next=/home`);
+  await page.getByLabel("Email").fill(`phase4-${Date.now()}@example.com`);
+  await page.getByLabel("Password").fill("a long test password");
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", { name: "Create account" }).click();
+  await page.waitForURL((u) => u.pathname === "/home", { timeout: 30000 });
+  check(true, "signed in (the model requires an account)");
+}
+
 await page.goto(`${BASE_URL}/t/2222`);
 const metrics = page.locator('[data-panel="overview.metrics"]:visible');
 await metrics.locator("dl").first().waitFor({ timeout: 30000 });

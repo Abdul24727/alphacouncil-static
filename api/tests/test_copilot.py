@@ -91,3 +91,105 @@ def test_a_real_model_answers_signed_in_users_only(client, monkeypatch):
     assert client.post("/v1/copilot/chat", json=body).status_code == 401
     monkeypatch.delenv("ANTHROPIC_API_KEY")
     assert client.get("/v1/copilot/status").json()["sign_in_required"] is False
+
+
+# --- OpenAI-compatible provider (OpenRouter) ------------------------------------------------------
+
+
+class _Obj:
+    def __init__(self, **kw):
+        self.__dict__.update(kw)
+
+
+def _chunk(content=None, tool=None, finish=None):
+    calls = None
+    if tool:
+        i, cid, name, args = tool
+        calls = [_Obj(index=i, id=cid, function=_Obj(name=name, arguments=args))]
+    delta = _Obj(content=content, tool_calls=calls)
+    return _Obj(choices=[_Obj(delta=delta, finish_reason=finish)])
+
+
+class _FakeOpenAI:
+    """Scripted turns: a split-up tool call, then a cited answer with follow-ups."""
+
+    turns: list = []
+    seen: list = []
+
+    def __init__(self, **kw):
+        self.chat = _Obj(completions=_Obj(create=self._create))
+
+    async def _create(self, **body):
+        _FakeOpenAI.seen.append(body)
+        chunks = _FakeOpenAI.turns.pop(0)
+
+        async def gen():
+            for c in chunks:
+                yield c
+
+        return gen()
+
+
+def test_openrouter_provider_runs_tools_and_streams_the_answer(client, monkeypatch):
+    from app.copilot import openai_compat
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-used")
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.setattr(openai_compat.openai, "AsyncOpenAI", _FakeOpenAI)
+    _FakeOpenAI.seen = []
+    _FakeOpenAI.turns = [
+        [  # the dividend tool, its arguments split across chunks as models stream them
+            _chunk(tool=(0, "call_1", "get_dividends", '{"tick')),
+            _chunk(tool=(0, None, "", 'er": "2222"}')),
+            _chunk(finish="tool_calls"),
+        ],
+        [
+            _chunk(content="Saudi Aramco paid 0.34 per share in Q2 2026 [DB]."),
+            _chunk(tool=(0, "call_2", "suggest_follow_ups", '{"questions": ["Payout ratio?", "Yield vs peers?"]}')),
+            _chunk(finish="tool_calls"),
+        ],
+        [_chunk(finish="stop")],
+    ]
+    s = client.get("/v1/copilot/status").json()
+    assert s["stand_in"] is False and s["sign_in_required"] is True
+
+    signup = {"email": "or@example.com", "password": "correct horse battery", "accept_terms": True}
+    assert client.post("/v1/auth/signup", json=signup, headers={"Origin": "http://testserver"}).status_code == 200
+    parts = []
+    body = {"messages": [{"id": "u1", "role": "user", "parts": [{"type": "text", "text": "Aramco dividends?"}]}], "panels": [], "locale": "en"}
+    with client.stream("POST", "/v1/copilot/chat", json=body, headers={"Origin": "http://testserver"}) as r:
+        assert r.status_code == 200
+        for line in r.iter_lines():
+            if line.startswith("data: ") and line != "data: [DONE]":
+                parts.append(json.loads(line[6:]))
+
+    types = [p["type"] for p in parts]
+    assert "error" not in types
+    calls = [p for p in parts if p["type"] == "tool-input-available"]
+    assert calls[0]["toolName"] == "get_dividends" and calls[0]["input"] == {"ticker": "2222"}
+    text = "".join(p.get("delta", "") for p in parts if p["type"] == "text-delta")
+    assert "0.34" in text and "[DB]" in text
+    assert any(p["type"] == "data-followups" for p in parts)
+    # The second request carried the database result back to the model as a tool message.
+    tool_msgs = [m for m in _FakeOpenAI.seen[1]["messages"] if m["role"] == "tool"]
+    assert tool_msgs and tool_msgs[0]["tool_call_id"] == "call_1" and "2026-08-19" in tool_msgs[0]["content"]
+    assert _FakeOpenAI.seen[0]["model"] == client.app.state.settings.copilot_model
+    assert _FakeOpenAI.seen[0]["tools"][0]["type"] == "function"
+
+
+def test_provider_follows_the_environment(client, monkeypatch):
+    from app.routers.copilot import provider
+
+    req = type("R", (), {"app": client.app})()
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("ANTHROPIC_AUTH_TOKEN", raising=False)
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    assert provider(req) == "standin"
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "a")
+    assert provider(req) == "anthropic"
+    monkeypatch.setenv("OPENROUTER_API_KEY", "o")
+    assert provider(req) == "openrouter"
+    monkeypatch.setattr(client.app.state.settings, "copilot_provider", "anthropic")
+    assert provider(req) == "anthropic"
+    monkeypatch.setattr(client.app.state.settings, "copilot_provider", "standin")
+    assert provider(req) == "standin"
