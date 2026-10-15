@@ -1,0 +1,19 @@
+716 tickers, 690 with a price file
+… 50/716
+… 100/716
+… 150/716
+… 200/716
+… 250/716
+… 300/716
+… 350/716
+… 400/716
+… 450/716
+… 500/716
+… 550/716
+… 600/716
+… 650/716
+… 700/716
+charts drawn: 690/690 tickers with price history
+"Data unavailable": 26/26 tickers without history
+
+Phase 3 done-when: all checks passed

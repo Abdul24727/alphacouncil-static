@@ -26,6 +26,11 @@ def normalize(text: str) -> str:
     return " ".join(_PUNCT.sub(" ", t).split())
 
 
+def _slug_key(ref: str) -> str:
+    """Case, punctuation and spacing folded: "e nbd" -> "ENBD", "adav.ad" -> "ADAVAD"."""
+    return normalize(ref).upper().replace(" ", "")
+
+
 def _words(name: str) -> list[str]:
     words = name.split()
     # "الراجحي" should match a search for "راجحي".
@@ -73,6 +78,7 @@ class Universe:
         self.tickers: list[Ticker] = []
         self.by_key: dict[str, Ticker] = {}
         self._by_slug: dict[str, Ticker] = {}
+        self._by_key_norm: dict[str, Ticker] = {}
         self.as_of: str | None = None
 
     def _file_stamp(self) -> tuple[float, ...]:
@@ -135,14 +141,15 @@ class Universe:
             )
         self.tickers = tickers
         self.by_key = {t.ticker_key: t for t in tickers}
-        self._by_slug = {t.slug.upper(): t for t in tickers}
+        self._by_slug = {_slug_key(t.slug): t for t in tickers}
+        self._by_key_norm = {_slug_key(t.ticker_key): t for t in tickers}
         self.as_of = max((r["as_of_date"] for r in rows if r["as_of_date"]), default=None)
 
     def resolve(self, ref: str) -> Ticker | None:
         """A URL slug ("2222", "2010_KSE"), a ticker_key, or a symbol unique to one exchange."""
         self.refresh()
-        ref = normalize(ref).upper().replace(" ", "")
-        return self._by_slug.get(ref) or self.by_key.get(ref)
+        key = _slug_key(ref)
+        return self.by_key.get(ref) or self._by_slug.get(key) or self._by_key_norm.get(key)
 
     def search(self, query: str, limit: int) -> list[Ticker]:
         self.refresh()

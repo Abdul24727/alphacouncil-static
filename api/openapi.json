@@ -617,6 +617,62 @@
         }
       }
     },
+    "/v1/copilot/status": {
+      "get": {
+        "tags": [
+          "copilot"
+        ],
+        "summary": "Status",
+        "operationId": "copilotStatus",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopilotStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/copilot/chat": {
+      "post": {
+        "tags": [
+          "copilot"
+        ],
+        "summary": "Chat",
+        "description": "Streams one assistant message in the Vercel AI SDK UI message stream format.",
+        "operationId": "copilotChat",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/health": {
       "get": {
         "tags": [
@@ -641,6 +697,38 @@
   },
   "components": {
     "schemas": {
+      "AttachedPanel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "ticker": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ticker"
+          },
+          "data": {
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "AttachedPanel"
+      },
       "Bar": {
         "properties": {
           "time": {
@@ -797,6 +885,77 @@
           "note"
         ],
         "title": "CapitalChange"
+      },
+      "ChatRequest": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "messages": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Messages"
+          },
+          "panels": {
+            "items": {
+              "$ref": "#/components/schemas/AttachedPanel"
+            },
+            "type": "array",
+            "title": "Panels"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "en",
+              "ar"
+            ],
+            "title": "Locale",
+            "default": "en"
+          },
+          "ticker": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ticker"
+          }
+        },
+        "type": "object",
+        "title": "ChatRequest",
+        "description": "Body sent by the web app's DefaultChatTransport (prepareSendMessagesRequest)."
+      },
+      "CopilotStatus": {
+        "properties": {
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "stand_in": {
+            "type": "boolean",
+            "title": "Stand In"
+          }
+        },
+        "type": "object",
+        "required": [
+          "model",
+          "stand_in"
+        ],
+        "title": "CopilotStatus"
       },
       "Corporate": {
         "properties": {

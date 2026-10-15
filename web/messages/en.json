@@ -28,8 +28,63 @@
     "exitFullscreen": "Exit full screen",
     "context": "Context",
     "noContext": "No panels attached",
+    "attachHint": "Type @ to attach a panel",
+    "detach": "Remove {title}",
     "placeholder": "Ask about attached panels. @ for panels, / for skills",
-    "comingSoon": "The Copilot is rebuilt in Phase 4. This pane is its frame."
+    "send": "Send",
+    "stop": "Stop",
+    "clear": "New chat",
+    "standIn": "Stand-in",
+    "standInTip": "No AI model is configured. Answers are assembled by fixed rules from attached panels and the database.",
+    "model": "Model: {name}",
+    "intro": "Ask about the panels you attach. Answers use only attached panels and our database, and cite where each figure came from.",
+    "examples": [
+      "Is the dividend sustainable?",
+      "How does the valuation compare with peers?",
+      "What does the council say?"
+    ],
+    "reasoning": "Reasoning · {n, plural, one {# step} other {# steps}}",
+    "thinking": "Thinking",
+    "followUps": "Follow-up questions",
+    "pin": "Pin to dashboard",
+    "pinned": "Pinned",
+    "unverified": "Not found in the data the Copilot read",
+    "notOnPage": "That panel is not on this page",
+    "database": "Database",
+    "error": "The Copilot could not answer: {message}",
+    "mentionEmpty": "No panels on this page",
+    "skillsTitle": "Skills",
+    "tools": {
+      "search_tickers": "Searched tickers",
+      "get_ticker_overview": "Read the ticker overview",
+      "get_dividends": "Read dividend history",
+      "get_fundamentals": "Read fundamentals",
+      "get_council": "Read the council",
+      "get_news": "Read news",
+      "get_peers": "Read peers",
+      "get_price_summary": "Summarised prices",
+      "show_table": "Built a table",
+      "show_price_chart": "Drew a chart",
+      "suggest_follow_ups": "Suggested follow-ups"
+    },
+    "skills": {
+      "dividend": {
+        "label": "/dividend",
+        "prompt": "Is the dividend sustainable? Use the dividend history and the payout data."
+      },
+      "peers": {
+        "label": "/peers",
+        "prompt": "How does it compare with its peers on valuation and dividend yield?"
+      },
+      "news": {
+        "label": "/news",
+        "prompt": "Summarise the latest news and disclosures."
+      },
+      "council": {
+        "label": "/council",
+        "prompt": "Explain each council seat's vote and the data behind it."
+      }
+    }
   },
   "placeholder": {
     "phase": "Built in Phase {phase}",
@@ -301,5 +356,10 @@
   },
   "ticker": {
     "switch": "Change ticker for this group"
+  },
+  "dashboards": {
+    "empty": "Nothing pinned yet. Pin a table or chart from a Copilot answer and it appears here.",
+    "unpin": "Remove from dashboard",
+    "pinnedAt": "Pinned {when}"
   }
 }

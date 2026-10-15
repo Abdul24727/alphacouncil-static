@@ -29,6 +29,12 @@ class Settings(BaseSettings):
     ticker_names_csv: Path | None = None
     saudi_en_names_csv: Path | None = None
 
+    # Copilot. Claude runs when ANTHROPIC_API_KEY (or ANTHROPIC_AUTH_TOKEN) is in the
+    # process environment; otherwise a labelled rule-based stand-in answers.
+    copilot_provider: str = "auto"  # "auto" | "standin"
+    copilot_model: str = "claude-opus-5-5"
+    copilot_effort: str = "medium"  # low | medium | high | xhigh | max
+
     # Declared now so every environment has the same shape; used from Phase 4/5.
     database_url: str | None = None
     redis_url: str | None = None

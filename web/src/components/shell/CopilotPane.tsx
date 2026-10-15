@@ -1,44 +1,122 @@
 "use client";
 
-import { Cross2Icon, EnterFullScreenIcon, ExitFullScreenIcon, PaperPlaneIcon } from "@radix-ui/react-icons";
+import { useChat } from "@ai-sdk/react";
+import { Cross2Icon, EnterFullScreenIcon, ExitFullScreenIcon, PlusIcon } from "@radix-ui/react-icons";
+import { useQuery } from "@tanstack/react-query";
+import { DefaultChatTransport } from "ai";
 import { useTranslations } from "next-intl";
 import { Tooltip } from "radix-ui";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { Composer } from "@/components/copilot/Composer";
+import { AssistantMessage, UserMessage } from "@/components/copilot/Message";
+import type { CopilotMessage } from "@/components/copilot/types";
+import { api, unwrap } from "@/lib/api/client";
+import { attachedWithData, useCopilot } from "@/lib/copilot-store";
 import { useLayout } from "@/lib/layout-store";
+import { revealPanel } from "@/lib/panel-registry";
+import { useTickerGroups } from "@/lib/ticker-groups";
 import { Kbd } from "./Kbd";
 import { ResizeHandle } from "./ResizeHandle";
 
 /**
- * Right-hand Copilot frame (left in Arabic). Phase 4 fills it: context chips,
- * reasoning, answers citing panels, pin to dashboard, follow-ups.
+ * Right-hand Copilot (left in Arabic). Answers use only attached panels and
+ * database tools, cite the panel they used, and stream from /api/v1/copilot/chat.
  */
 export function CopilotPane() {
   const t = useTranslations("copilot");
-  const fullscreen = useLayout((s) => s.copilotFullscreen);
   const mobileOpen = useLayout((s) => s.mobileCopilotOpen);
+  // useChat creates random ids, which Cache Components forbids during prerender:
+  // the chat mounts in the browser only, behind a static frame with the same header.
+  const mounted = useSyncExternalStore(subscribeNever, () => true, () => false);
+
+  return (
+    <aside
+      aria-label={t("title")}
+      data-copilot-pane
+      className={`relative flex w-[var(--copilot-w)] shrink-0 flex-col border-s border-line bg-panel md:copilot-closed:hidden md:copilot-full:w-auto md:copilot-full:flex-1 ${
+        mobileOpen ? "max-md:fixed max-md:inset-0 max-md:z-40 max-md:w-full" : "max-md:hidden"
+      }`}
+    >
+      {mounted ? (
+        <CopilotBody />
+      ) : (
+        <header className="flex h-12 shrink-0 items-center border-b border-line ps-3">
+          <h2 className="headline text-[17px] leading-none">{t("title")}</h2>
+        </header>
+      )}
+      <ResizeHandle pane="copilot" className="start-[-3px] max-md:hidden copilot-full:hidden" />
+    </aside>
+  );
+}
+
+const subscribeNever = () => () => {};
+
+function CopilotBody() {
+  const t = useTranslations("copilot");
+  const fullscreen = useLayout((s) => s.copilotFullscreen);
   const toggleCopilot = useLayout((s) => s.toggleCopilot);
   const toggleFullscreen = useLayout((s) => s.toggleCopilotFullscreen);
   const setMobileOpen = useLayout((s) => s.setMobileCopilotOpen);
+  const attached = useCopilot((s) => s.attached);
+  const detach = useCopilot((s) => s.detach);
+
+  // The transport reads attached panels and the page ticker at send time.
+  const [transport] = useState(
+    () =>
+      new DefaultChatTransport<CopilotMessage>({
+        api: "/api/v1/copilot/chat",
+        prepareSendMessagesRequest: ({ id, messages }) => ({
+          body: {
+            id,
+            messages: messages.slice(-13),
+            panels: attachedWithData(),
+            // <html lang> follows the [locale] segment, so it is the UI language at send time.
+            locale: document.documentElement.lang === "ar" ? "ar" : "en",
+            ticker: useTickerGroups.getState().tickers[1] ?? null,
+          },
+        }),
+      }),
+  );
+  const { messages, sendMessage, status, stop, setMessages, error } = useChat<CopilotMessage>({ transport });
+  const busy = status === "submitted" || status === "streaming";
+
+  const modelStatus = useQuery({
+    queryKey: ["copilot", "status"],
+    queryFn: async () => unwrap(await api.GET("/v1/copilot/status")),
+    staleTime: 5 * 60_000,
+  });
+  const standIn = modelStatus.data?.stand_in;
+
+  // Keep the newest content in view while an answer streams.
+  const scroller = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = scroller.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages]);
 
   const close = () => {
     if (window.matchMedia("(max-width: 767px)").matches) setMobileOpen(false);
     else toggleCopilot();
   };
+  const ask = (text: string) => void sendMessage({ text });
 
   return (
-    <aside
-      aria-label={t("title")}
-      className={`relative flex w-[var(--copilot-w)] shrink-0 flex-col border-s border-line bg-panel md:copilot-closed:hidden md:copilot-full:w-auto md:copilot-full:flex-1 ${
-        mobileOpen ? "max-md:fixed max-md:inset-0 max-md:z-40 max-md:w-full" : "max-md:hidden"
-      }`}
-    >
-      <header className="flex h-12 shrink-0 items-center gap-1 border-b border-line ps-3 pe-2">
+    <>
+      <header className="flex h-12 shrink-0 items-center gap-2 border-b border-line ps-3 pe-2">
         <h2 className="headline text-[17px] leading-none">{t("title")}</h2>
-        <div className="ms-auto flex items-center gap-0.5">
-          <IconButton
-            label={fullscreen ? t("exitFullscreen") : t("fullscreen")}
-            onClick={toggleFullscreen}
-            className="max-md:hidden"
+        {standIn !== undefined && (
+          <span
+            title={standIn ? t("standInTip") : t("model", { name: modelStatus.data?.model ?? "" })}
+            className={`label-caps rounded-chip border px-1 ${standIn ? "border-stale/50 text-stale" : "border-line text-muted"}`}
           >
+            {standIn ? t("standIn") : modelStatus.data?.model}
+          </span>
+        )}
+        <div className="ms-auto flex items-center gap-0.5">
+          <IconButton label={t("clear")} onClick={() => setMessages([])}>
+            <PlusIcon />
+          </IconButton>
+          <IconButton label={fullscreen ? t("exitFullscreen") : t("fullscreen")} onClick={toggleFullscreen} className="max-md:hidden">
             {fullscreen ? <ExitFullScreenIcon /> : <EnterFullScreenIcon />}
           </IconButton>
           <IconButton label={t("close")} shortcut="L" onClick={close}>
@@ -47,39 +125,61 @@ export function CopilotPane() {
         </div>
       </header>
 
-      <section aria-label={t("context")} className="flex shrink-0 items-center gap-2 border-b border-line px-3 py-2">
+      <section aria-label={t("context")} className="flex shrink-0 flex-wrap items-center gap-1.5 border-b border-line px-3 py-2">
         <span className="label-caps text-muted">{t("context")}</span>
-        <span className="rounded-chip border border-dashed border-line px-1.5 py-0.5 text-muted">
-          {t("noContext")}
-        </span>
+        {attached.length === 0 ? (
+          <span className="text-muted">{t("noContext")} · {t("attachHint")}</span>
+        ) : (
+          attached.map((p) => (
+            <span key={p.id} data-context-chip={p.id} className="flex items-center gap-1 rounded-chip border border-line bg-panel-raised ps-1.5 pe-0.5">
+              <button type="button" onClick={() => revealPanel(p.id)} className="max-w-36 truncate text-text" title={p.title}>
+                {p.title}
+              </button>
+              {p.ticker && <span className="num text-[10.5px] text-muted">{p.ticker}</span>}
+              <button
+                type="button"
+                aria-label={t("detach", { title: p.title })}
+                onClick={() => detach(p.id)}
+                className="grid size-4 place-items-center rounded-[2px] text-muted hover:text-text"
+              >
+                <Cross2Icon className="size-3" />
+              </button>
+            </span>
+          ))
+        )}
       </section>
 
-      <div className="flex min-h-0 flex-1 flex-col justify-end overflow-y-auto p-3">
-        <p className="max-w-[36ch] text-muted">{t("comingSoon")}</p>
+      <div ref={scroller} className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-3" aria-live="polite">
+        {messages.length === 0 ? (
+          <div className="mt-auto flex flex-col gap-2">
+            <p className="max-w-[40ch] text-muted">{t("intro")}</p>
+            <div className="flex flex-col items-start gap-1">
+              {(t.raw("examples") as string[]).map((q) => (
+                <button
+                  key={q}
+                  type="button"
+                  onClick={() => ask(q)}
+                  className="rounded-chip border border-line px-2 py-1 text-start text-text-soft hover:border-signal/50 hover:text-text"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          messages.map((m, i) =>
+            m.role === "user" ? (
+              <UserMessage key={m.id} message={m} />
+            ) : (
+              <AssistantMessage key={m.id} message={m} streaming={busy && i === messages.length - 1} onFollowUp={ask} />
+            ),
+          )
+        )}
+        {error && <p className="text-loss">{t("error", { message: error.message })}</p>}
       </div>
 
-      <form className="shrink-0 border-t border-line p-2" onSubmit={(e) => e.preventDefault()}>
-        <div className="flex items-end gap-2 rounded-panel border border-line bg-bg p-2">
-          <textarea
-            rows={2}
-            disabled
-            placeholder={t("placeholder")}
-            aria-label={t("placeholder")}
-            className="min-h-10 flex-1 resize-none bg-transparent outline-none placeholder:text-muted disabled:cursor-not-allowed"
-          />
-          <button
-            type="submit"
-            disabled
-            aria-label="Send"
-            className="grid size-7 place-items-center rounded-panel bg-signal text-signal-ink disabled:opacity-40"
-          >
-            <PaperPlaneIcon className="rtl:-scale-x-100" />
-          </button>
-        </div>
-      </form>
-
-      <ResizeHandle pane="copilot" className="start-[-3px] max-md:hidden copilot-full:hidden" />
-    </aside>
+      <Composer busy={busy} onSend={ask} onStop={() => void stop()} />
+    </>
   );
 }
 
@@ -109,10 +209,7 @@ function IconButton({
         </button>
       </Tooltip.Trigger>
       <Tooltip.Portal>
-        <Tooltip.Content
-          sideOffset={6}
-          className="z-50 flex items-center gap-2 rounded-chip border border-line bg-panel-raised px-2 py-1 text-text"
-        >
+        <Tooltip.Content sideOffset={6} className="z-50 flex items-center gap-2 rounded-chip border border-line bg-panel-raised px-2 py-1 text-text">
           {label}
           {shortcut && <Kbd k={shortcut} />}
         </Tooltip.Content>

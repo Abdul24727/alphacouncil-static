@@ -7,6 +7,8 @@ import { chromium } from "playwright-core";
 const BASE_URL = process.env.BASE_URL ?? "http://localhost:3100";
 const limitArg = process.argv.indexOf("--limit");
 const limit = limitArg > 0 ? Number(process.argv[limitArg + 1]) : Infinity;
+const onlyArg = process.argv.indexOf("--only");
+const only = onlyArg > 0 ? new Set(process.argv[onlyArg + 1].split(",")) : null;
 const WORKERS = 4;
 
 const httpCredentials = process.env.STAGING_AUTH
@@ -16,7 +18,7 @@ const httpCredentials = process.env.STAGING_AUTH
 const browser = await chromium.launch({ channel: "chrome" });
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, httpCredentials });
 const list = await (await context.request.get(`${BASE_URL}/api/v1/tickers`)).json();
-const tickers = list.slice(0, limit);
+const tickers = list.filter((t) => !only || only.has(t.slug)).slice(0, limit);
 console.log(`${tickers.length} tickers, ${tickers.filter((t) => t.has_prices).length} with a price file`);
 
 const results = [];

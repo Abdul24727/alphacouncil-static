@@ -11,9 +11,10 @@ import {
 } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import { DropdownMenu, Tooltip } from "radix-ui";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Freshness } from "@/lib/api/client";
 import { useCopilot } from "@/lib/copilot-store";
+import { usePanelRegistry } from "@/lib/panel-registry";
 import { fmtDate, fmtStamp } from "@/lib/format";
 import { GROUP_COLOR, type GroupId } from "@/lib/ticker-groups";
 import { TickerSwitcher } from "@/components/ticker/TickerSwitcher";
@@ -73,8 +74,18 @@ export function Panel({
     return () => window.removeEventListener("keydown", onKey);
   }, [full]);
 
-  const toggleCopilot = () =>
-    attached ? detach(id) : attach({ id, title, ticker, data: copilotData?.() });
+  // Register with the Copilot so @-mentions can list this panel and attaching reads fresh data.
+  const getData = useRef(copilotData);
+  useEffect(() => {
+    getData.current = copilotData;
+  });
+  useEffect(() => {
+    const read = () => getData.current?.();
+    usePanelRegistry.getState().register({ id, title, ticker, getData: read });
+    return () => usePanelRegistry.getState().unregister(id, read);
+  }, [id, title, ticker]);
+
+  const toggleCopilot = () => (attached ? detach(id) : attach({ id, title, ticker }));
 
   return (
     <>
@@ -83,7 +94,7 @@ export function Panel({
         id={`panel-${id}`}
         aria-label={title}
         data-panel={id}
-        className={`flex min-w-0 scroll-mt-3 flex-col rounded-panel border border-line bg-panel ${
+        className={`flex min-w-0 scroll-mt-3 flex-col rounded-panel border border-line bg-panel transition-[border-color] duration-500 data-[flash]:border-signal ${
           full ? "fixed inset-3 z-50" : className
         }`}
       >

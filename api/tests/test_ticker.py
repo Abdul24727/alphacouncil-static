@@ -148,3 +148,10 @@ def test_seasonality_blanks_months_after_the_data(client):
     months = i["seasonality"]["years"][0]["monthly_pct"]
     assert months[:8] == [1.0] * 8 and months[8:] == [None] * 4
     assert i["ownership"] is None
+
+
+def test_slugs_with_dots_and_spaces_resolve(client):
+    from app.universe import _slug_key
+
+    assert _slug_key("E NBD") == _slug_key("e%20nbd".replace("%20", " ")) == "ENBD"
+    assert _slug_key("ADAV.AD") == "ADAVAD"
