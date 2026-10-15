@@ -84,6 +84,7 @@ export function TemplateView({ name }: { name: string }) {
 
 function EarningsSeason() {
   const t = useTranslations("templates");
+  const locale = useLocale();
   const [days, setDays] = useState(30);
   const q = useEarningsSeason(days);
   const events = q.data?.events ?? [];
@@ -104,7 +105,7 @@ function EarningsSeason() {
       <tbody>
         {rows.map((e, i) => (
           <TickerRow key={`${e.ticker.ticker_key}-${e.date}-${i}`} ticker={e.ticker}>
-            <td className="num py-1.5 text-[11.5px] text-muted">{fmtDate(e.date)}</td>
+            <td className="num py-1.5 text-[11.5px] text-muted">{fmtDate(e.date, locale)}</td>
             <td className="py-1.5 pe-2">
               <TickerCell ticker={e.ticker} />
             </td>

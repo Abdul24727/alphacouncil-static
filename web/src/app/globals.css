@@ -119,6 +119,17 @@ html[data-controls="hover"] [data-panel]:focus-within .panel-controls {
   line-height: var(--text-label--line-height);
   text-transform: uppercase;
   letter-spacing: 0.08em;
+
+  /*
+   * Arabic has no capitals, and Martian Mono has no Arabic: an Arabic label would get Plex
+   * Arabic letters between Martian Mono's wide spaces, pulled apart by the letter-spacing.
+   * Arabic labels use the sans stack, unspaced, a little larger.
+   */
+  &:lang(ar) {
+    font-family: var(--font-sans);
+    letter-spacing: 0;
+    font-size: 12px;
+  }
 }
 
 /* Every number, ticker and timestamp. */
@@ -127,6 +138,17 @@ html[data-controls="hover"] [data-panel]:focus-within .panel-controls {
   font-variant-numeric: tabular-nums;
   unicode-bidi: isolate;
   direction: ltr;
+}
+
+/*
+ * direction:ltr also flips start/end alignment on a .num block (a table cell): on an
+ * Arabic page "end" must stay on the left, where the column's header sits.
+ */
+html[dir="rtl"] .num.text-end {
+  text-align: left;
+}
+html[dir="rtl"] .num.text-start {
+  text-align: right;
 }
 
 /* Legal documents (src/content/legal): the old site's verbatim markup in brand type. */

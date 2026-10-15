@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { FreshnessLight } from "@/components/panel/Panel";
 import { CopilotOpenButton } from "@/components/shell/WorkHeader";
@@ -63,6 +63,7 @@ export function StockTemplate({ slug, children }: { slug: string; children: Reac
 
 function TickerHeader() {
   const t = useTranslations("stock");
+  const locale = useLocale();
   const tx = useTranslations("exchanges");
   const slug = useGroupTicker(1);
   const { data, isError, error } = useTickerDetail(slug);
@@ -102,7 +103,7 @@ function TickerHeader() {
         {change && <span className={`num text-[13px] ${signClass(q?.day_change_pct)}`}>{change}</span>}
         {q?.as_of_date && (
           <span className="hidden text-muted lg:inline">
-            {t("asOf")} <span className="num">{fmtDate(q.as_of_date)}</span>
+            {t("asOf")} <span className="num">{fmtDate(q.as_of_date, locale)}</span>
           </span>
         )}
       </div>

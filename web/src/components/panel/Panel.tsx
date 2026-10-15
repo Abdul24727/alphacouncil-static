@@ -9,7 +9,7 @@ import {
   ExitFullScreenIcon,
   ReloadIcon,
 } from "@radix-ui/react-icons";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { DropdownMenu, Tooltip } from "radix-ui";
 import { useEffect, useRef, useState } from "react";
 import type { Freshness } from "@/lib/api/client";
@@ -135,13 +135,14 @@ export function Panel({
 }
 
 export function FreshnessLight({ freshness }: { freshness: Freshness | null }) {
+  const locale = useLocale();
   const t = useTranslations("panel");
   const state = freshness?.stale == null ? "unknown" : freshness.stale ? "stale" : "fresh";
   const color = { fresh: "bg-gain", stale: "bg-stale", unknown: "bg-neutral-seat" }[state];
 
-  const updated = fmtStamp(freshness?.updated_at ?? freshness?.as_of);
-  const next = fmtStamp(freshness?.next_at);
-  const asOf = fmtDate(freshness?.as_of);
+  const updated = fmtStamp(freshness?.updated_at ?? freshness?.as_of, locale);
+  const next = fmtStamp(freshness?.next_at, locale);
+  const asOf = fmtDate(freshness?.as_of, locale);
 
   return (
     <Tooltip.Root>

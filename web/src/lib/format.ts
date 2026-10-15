@@ -41,25 +41,34 @@ export function signClass(v: number | null | undefined): string {
 const sameDay = (a: Date, b: Date) =>
   a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 
+/** Month names follow the page language; digits stay Latin (BRAND.md: numbers left-to-right). */
+const dateLocale = (locale?: string) => (locale === "ar" ? "ar-u-nu-latn" : "en-GB");
+
+/**
+ * An Arabic date ("13 أكتوبر 2026") often sits in a left-to-right number cell, where the
+ * bidi rules would show it as "13 2026 أكتوبر". A right-to-left isolate keeps its order.
+ */
+const isolate = (text: string, locale?: string) => (locale === "ar" ? `\u2067${text}\u2069` : text);
+
 /** "14:05" today, otherwise "12 Aug 14:05" (or "12 Aug 2025 14:05" in another year). */
-export function fmtStamp(iso: string | null | undefined, now = new Date()): string | null {
+export function fmtStamp(iso: string | null | undefined, locale?: string, now = new Date()): string | null {
   if (!iso) return null;
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return null;
   const time = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
   if (sameDay(d, now)) return time;
-  const date = d.toLocaleDateString("en-GB", {
+  const date = d.toLocaleDateString(dateLocale(locale), {
     day: "numeric",
     month: "short",
     ...(d.getFullYear() !== now.getFullYear() ? { year: "numeric" } : {}),
   });
-  return `${date} ${time}`;
+  return isolate(`${date} ${time}`, locale);
 }
 
-/** "12 Aug 2026" for date-only values such as a trading day. */
-export function fmtDate(iso: string | null | undefined): string | null {
+/** "12 Aug 2026" ("12 أغسطس 2026" in Arabic) for date-only values such as a trading day. */
+export function fmtDate(iso: string | null | undefined, locale?: string): string | null {
   if (!iso) return null;
   const d = new Date(iso.length === 10 ? `${iso}T00:00:00` : iso);
   if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  return isolate(d.toLocaleDateString(dateLocale(locale), { day: "numeric", month: "short", year: "numeric" }), locale);
 }

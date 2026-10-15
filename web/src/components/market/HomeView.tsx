@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { FreshnessLight, Panel } from "@/components/panel/Panel";
 import { QueryState, toTsv } from "@/components/stock/common";
 import { newsDate } from "@/components/stock/overview-panels";
@@ -30,6 +30,7 @@ export function Breadth({ b }: { b: Exchange["breadth"] }) {
 
 export function ExchangesTable({ rows }: { rows: Exchange[] }) {
   const t = useTranslations("market");
+  const locale = useLocale();
   const name = useExchangeName();
   return (
     <div className="overflow-x-auto">
@@ -69,7 +70,7 @@ export function ExchangesTable({ rows }: { rows: Exchange[] }) {
               <td className="num py-1.5 text-end text-text-soft">
                 {e.with_prices}/{e.equities}
               </td>
-              <td className="num py-1.5 text-end text-[11.5px] text-muted">{fmtDate(e.as_of) ?? "—"}</td>
+              <td className="num py-1.5 text-end text-[11.5px] text-muted">{fmtDate(e.as_of, locale) ?? "—"}</td>
             </tr>
           ))}
         </tbody>
@@ -80,6 +81,7 @@ export function ExchangesTable({ rows }: { rows: Exchange[] }) {
 
 export function HomeView() {
   const t = useTranslations("market");
+  const locale = useLocale();
   const q = useMarketOverview();
   const o = q.data;
 
@@ -144,7 +146,7 @@ export function HomeView() {
               {o?.news.map((n, i) => (
                 <li key={i} className="border-t border-line py-2 first:border-t-0 first:pt-0">
                   <div className="mb-0.5 flex items-center gap-2">
-                    <span className="num text-[11px] text-muted">{newsDate(n)}</span>
+                    <span className="num text-[11px] text-muted">{newsDate(n, locale)}</span>
                     <span className="num text-[11px] text-signal">{n.ticker.symbol}</span>
                   </div>
                   <a href={n.url ?? undefined} target="_blank" rel="noopener noreferrer" lang={n.lang ?? undefined} dir="auto" className="text-text hover:text-signal">

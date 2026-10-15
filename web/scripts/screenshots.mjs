@@ -87,7 +87,7 @@ SHOTS["phase-7"] = [
   ["stock-ar", "/ar/t/2222", waitForPanels],
   ["financials-ar", "/ar/t/2222/financials", waitForPanels],
   ["screener-ar", "/ar/screener", waitForPanels],
-  ["portfolio-ar", "/ar/portfolio", waitForPanels],
+  ["portfolio-ar", "/ar/portfolio", siteReady], // signed out: the sign-in prompt
   ["sector-vs-sector-ar", "/ar/templates/sector-vs-sector", waitForPanels],
   ["settings-ar", "/ar/settings", waitForPanels],
   ["signup-ar", "/ar/signup", siteReady],

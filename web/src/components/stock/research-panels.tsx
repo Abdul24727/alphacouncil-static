@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Panel } from "@/components/panel/Panel";
 import type { components } from "@/lib/api/schema";
 import { fmtNumber, fmtPct } from "@/lib/format";
@@ -211,6 +211,7 @@ export function OwnershipPanel({ className }: { className?: string }) {
 
 export function EventsPanel({ className }: { className?: string }) {
   const t = useTranslations("stock");
+  const locale = useLocale();
   const slug = useGroupTicker(GROUP);
   const q = useTickerEvents(slug, 20);
   const items = q.data ?? [];
@@ -222,7 +223,7 @@ export function EventsPanel({ className }: { className?: string }) {
       group={GROUP}
       ticker={slug}
       onRefresh={() => q.refetch()}
-      copyData={() => toTsv(items.map((i) => [newsDate(i), i.title]))}
+      copyData={() => toTsv(items.map((i) => [newsDate(i, locale), i.title]))}
       copilotData={() => items}
       className={className}
     >
@@ -230,7 +231,7 @@ export function EventsPanel({ className }: { className?: string }) {
         <ul className="flex flex-col">
           {items.map((i) => (
             <li key={i.id} className="flex items-baseline gap-3 border-t border-line py-1.5 first:border-t-0">
-              <span className="num w-24 shrink-0 text-[11.5px] text-muted">{newsDate(i)}</span>
+              <span className="num w-24 shrink-0 text-[11.5px] text-muted">{newsDate(i, locale)}</span>
               {i.url ? (
                 <a href={i.url} target="_blank" rel="noopener noreferrer" lang={i.lang ?? undefined} dir="auto" className="min-w-0 truncate capitalize text-text hover:text-signal">
                   {i.title}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { DataTable } from "@/components/copilot/Message";
 import { Panel, PanelUnavailable } from "@/components/panel/Panel";
@@ -52,6 +52,7 @@ function useUnpin(id: string) {
 
 function PinnedTablePanel({ item }: { item: PinnedTable }) {
   const t = useTranslations("dashboards");
+  const locale = useLocale();
   const tc = useTranslations("copilot");
   const menu = useUnpin(item.id);
   return (
@@ -65,7 +66,7 @@ function PinnedTablePanel({ item }: { item: PinnedTable }) {
       bodyClassName="p-0"
     >
       <p className="label-caps px-3 pt-2 text-muted">
-        {t("pinnedAt", { when: fmtStamp(item.pinnedAt) ?? "" })} · {item.source}
+        {t("pinnedAt", { when: fmtStamp(item.pinnedAt, locale) ?? "" })} · {item.source}
       </p>
       <div className="overflow-x-auto p-1">
         <DataTable table={item} flagged={new Set(item.unverified.map(([r, c]) => `${r}:${c}`))} unverifiedLabel={tc("unverified")} />

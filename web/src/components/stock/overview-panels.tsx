@@ -347,13 +347,13 @@ export function PeersPanel({ className }: { className?: string }) {
 // --- News ----------------------------------------------------------------------------------
 
 /** Disclosures and events are stamped 21:00 UTC = midnight in Riyadh of the next day. */
-export function newsDate(item: Pick<NewsItem, "date">): string | null {
+export function newsDate(item: Pick<NewsItem, "date">, locale?: string): string | null {
   if (!item.date) return null;
-  if (item.date.length === 10) return fmtDate(item.date);
+  if (item.date.length === 10) return fmtDate(item.date, locale);
   const d = new Date(item.date.endsWith("Z") || item.date.includes("+") ? item.date : `${item.date}Z`);
   if (Number.isNaN(d.getTime())) return null;
   const riyadh = new Date(d.getTime() + 3 * 3600_000);
-  return fmtDate(riyadh.toISOString().slice(0, 10));
+  return fmtDate(riyadh.toISOString().slice(0, 10), locale);
 }
 
 export function NewsPanel({ className }: { className?: string }) {
@@ -373,7 +373,7 @@ export function NewsPanel({ className }: { className?: string }) {
       ticker={slug}
       freshness={detail.data ? freshness : undefined}
       onRefresh={() => news.refetch()}
-      copyData={() => toTsv(items.map((i) => [newsDate(i), t(`news.${i.section}`), i.title, i.url]))}
+      copyData={() => toTsv(items.map((i) => [newsDate(i, locale), t(`news.${i.section}`), i.title, i.url]))}
       copilotData={() => items}
       className={className}
     >
@@ -384,7 +384,7 @@ export function NewsPanel({ className }: { className?: string }) {
             return (
               <li key={i.id} className="border-t border-line py-2 first:border-t-0 first:pt-0">
                 <div className="mb-0.5 flex items-center gap-2">
-                  <span className="num text-[11px] text-muted">{newsDate(i)}</span>
+                  <span className="num text-[11px] text-muted">{newsDate(i, locale)}</span>
                   <span className="label-caps rounded-chip border border-line px-1 text-muted">{t(`news.${i.section}`)}</span>
                 </div>
                 {i.url ? (

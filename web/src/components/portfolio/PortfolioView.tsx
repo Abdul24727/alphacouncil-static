@@ -128,6 +128,7 @@ function AddHolding() {
 
 function HoldingsPanel({ portfolio: p, isPending, error, refetch }: { portfolio?: Portfolio; isPending: boolean; error: unknown; refetch: () => void }) {
   const t = useTranslations("portfolio");
+  const locale = useLocale();
   const { remove } = usePortfolioMutations();
   const holdings = p?.holdings ?? [];
 
@@ -191,7 +192,7 @@ function HoldingsPanel({ portfolio: p, isPending, error, refetch }: { portfolio?
                       <span className="label-caps text-muted" title={t("noCost")}>—</span>
                     )}
                   </td>
-                  <td className="num py-1.5 text-end text-[11.5px] text-muted">{fmtDate(h.price.as_of) ?? "—"}</td>
+                  <td className="num py-1.5 text-end text-[11.5px] text-muted">{fmtDate(h.price.as_of, locale) ?? "—"}</td>
                   <td className="py-1.5 text-end">
                     <button
                       type="button"

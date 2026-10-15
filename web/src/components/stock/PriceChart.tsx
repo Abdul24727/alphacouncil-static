@@ -87,7 +87,8 @@ export function PriceChart({
   const chartRef = useRef<IChartApi | null>(null);
   const [legend, setLegend] = useState<Legend | null>(null);
   const tl = useTranslations("stock.chart.legend");
-  const chartLocale = useLocale() === "ar" ? "ar-u-nu-latn" : "en-US";
+  const ar = useLocale() === "ar";
+  const chartLocale = ar ? "ar-u-nu-latn" : "en-US";
 
   const series = useMemo(() => {
     const times = bars.map((b) => toTime(b.time));
@@ -276,7 +277,8 @@ export function PriceChart({
     <div className="relative" style={{ height }}>
       <div ref={host} className="absolute inset-0" data-chart="price" data-bars={bars.length} />
       {shown && (
-        <div className="pointer-events-none absolute start-2 top-1.5 z-10 flex flex-wrap gap-x-3 text-[10.5px]" dir="ltr">
+        // Between the left edge and the price scale in both languages; reads in the page's direction.
+        <div className="pointer-events-none absolute top-1.5 right-16 left-2 z-10 flex flex-wrap gap-x-3 text-[10.5px]" dir={ar ? "rtl" : "ltr"}>
           <span className="num text-muted">{shown.time}</span>
           {shown.open != null && <LegendValue label={tl("open")} value={fmtNumber(shown.open, digits)} />}
           {shown.high != null && <LegendValue label={tl("high")} value={fmtNumber(shown.high, digits)} />}
@@ -293,9 +295,10 @@ export function PriceChart({
 }
 
 function LegendValue({ label, value }: { label: string; value: string | null }) {
+  // A flex pair keeps each label beside its own number in either direction.
   return (
-    <span>
-      <span className="text-muted">{label} </span>
+    <span className="inline-flex items-baseline gap-1">
+      <span className="text-muted">{label}</span>
       <span className="num text-text">{value}</span>
     </span>
   );
