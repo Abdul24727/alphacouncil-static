@@ -13,9 +13,9 @@ Every issue found is listed here before anything is fixed (plan, Phase 7). Each 
 
 | # | Area | Issue | Severity | Owner | Status |
 |---|------|-------|----------|-------|--------|
-| T1 | Testing | `beta.alphacouncil.tech` has no DNS record, so testers cannot reach staging (TLS is waiting on it too) | Blocks testing | You | Open |
+| T1 | Testing | `beta.alphacouncil.tech` had no DNS record, so testers could not reach staging | Blocks testing | You | Done: record added; Let's Encrypt certificate (beta only, valid to 2027-01-13), HTTP redirects to HTTPS, HSTS, password required |
 | T2 | Testing | The Copilot ran as the labelled rule-based stand-in; a real model needed a key on the server | Decision | You | Done: OpenRouter with `deepseek/deepseek-v3.2` (tool calls verified first); the key was pasted in chat, so rotate it after testing |
-| S1 | Security | No security headers: no Content-Security-Policy, no frame-ancestors / X-Frame-Options, no X-Content-Type-Options, no Referrer-Policy, no Permissions-Policy; `X-Powered-By: Next.js` was sent; HSTS to add once TLS is on | Before launch | Claude | Fixed (HSTS goes in with TLS) |
+| S1 | Security | No security headers: no Content-Security-Policy, no frame-ancestors / X-Frame-Options, no X-Content-Type-Options, no Referrer-Policy, no Permissions-Policy; `X-Powered-By: Next.js` was sent; HSTS to add once TLS is on | Before launch | Claude | Fixed, HSTS included |
 | S2 | Security | `POST /v1/copilot/chat` needed no sign-in and had no rate limit: once a key is set, anyone could spend model tokens | Blocks a real Copilot key | Claude | Fixed: 60 questions an hour per user or address; sign-in required once a model is configured |
 | S3 | Security | The per-address part of the sign-in and sign-up limit read the first `X-Forwarded-For` entry, which the client writes, so a forged header got a fresh allowance each try (the per-email limit held). *Corrected: the first version of this report said sign-up had no limit; it shares the sign-in limit.* | Before launch | Claude | Fixed: uses nginx's `X-Real-IP`; limits are now counted in the app database, so the API's two workers share them (they were per process, doubling every limit) |
 | S4 | Security | No password reset and no e-mail verification (needs a mail service; the domain has no mail records) | Before launch | You (mail), then Claude | Open |
@@ -58,7 +58,7 @@ S1, S2, S3, S5, S6 (templates), D6, L5, L6 and U1, on `rebuild`. The Copilot sta
 
 ## To start user testing
 
-1. **You**: add the DNS record `beta` → `72.60.91.24` in Cloudflare, DNS only (grey cloud). Then I issue the certificate (`certbot --nginx -d beta.alphacouncil.tech`, which touches only the beta site) and add HSTS.
+1. Done: https://beta.alphacouncil.tech is live behind the staging password (DNS record, certificate, HTTPS redirect, HSTS).
 2. **You**: give the five testers the staging login (the existing staging password; I never handle it).
 3. Done: the Copilot runs on OpenRouter (`deepseek/deepseek-v3.2`); a dividend answer takes about 45–70 s and cites the panel it used (Phase 4 check). Testers must be signed in to ask (they are, after task 1).
 4. The five tasks were walked by the checks: sign up and add three holdings (Phase 5 check), switch every panel from Aramco to Al Rajhi through the group chip (Phase 2 check), read when Aramco's price was updated (freshness light), ask about a holding's dividend and open the cited panel (Phase 4 check), switch to Arabic (Phase 7 sweep; the conversation now stays).

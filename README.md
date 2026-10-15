@@ -31,7 +31,7 @@ cd web && npm run typecheck && npm run lint
 cd web && node scripts/screenshots.mjs phase-1
 ```
 
-Each phase's "Done when" has a check script (`web/scripts/check-phase2.mjs` … `check-phase7.mjs`); run one with `BASE_URL=http://localhost:3100 node scripts/check-phase6.mjs`, or against staging through the SSH tunnel with `BASE_URL=http://localhost:3201`. Content scripts: `capture-screens.mjs` retakes the real app screens used on the landing and /templates; `import-legal.py` copies the legal documents from the old site. The pre-launch audit is `docs/pre-launch-audit.md`.
+Each phase's "Done when" has a check script (`web/scripts/check-phase1.mjs` … `check-phase7.mjs`; `check-all.mjs` runs them all); run one with `BASE_URL=http://localhost:3100 node scripts/check-phase6.mjs`, or against staging through the SSH tunnel with `BASE_URL=http://localhost:3201`, or over HTTPS with `BASE_URL=https://beta.alphacouncil.tech STAGING_AUTH=user:password` (the basic-auth login). Content scripts: `capture-screens.mjs` retakes the real app screens used on the landing and /templates; `import-legal.py` copies the legal documents from the old site. The pre-launch audit is `docs/pre-launch-audit.md`.
 
 ## API contract
 

@@ -22,7 +22,7 @@ Market data is read live from the pipeline's files: `/var/lib/alphacouncil/{brie
 1. Owner adds the DNS record.
 2. Claude (`scripts/deploy-staging.sh --setup`): create `/opt/alphacouncil-platform`, upload the release, build web and API, install the two systemd units (not yet exposed).
 3. Claude: write the nginx site with basic auth, `nginx -t`, then `systemctl reload nginx` (a reload, so the live site keeps serving; a failed `nginx -t` stops here).
-4. Claude: `certbot --nginx -d beta.alphacouncil.tech` once the DNS record resolves, then add `add_header Strict-Transport-Security "max-age=31536000" always;` to the TLS server block certbot writes (`nginx -t`, reload). The app sends its other security headers itself (`web/next.config.ts`).
+4. Done 2026-10-15: `certbot --nginx --cert-name beta.alphacouncil.tech -d beta.alphacouncil.tech --redirect` (its own certificate; the live site's is untouched), then added `add_header Strict-Transport-Security "max-age=31536000" always;` to the TLS server block certbot writes (`nginx -t`, reload). The app sends its other security headers itself (`web/next.config.ts`).
 5. Phase 4–5: start the Postgres and Redis containers.
 
 ## Deploying a new version
