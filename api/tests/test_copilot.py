@@ -193,3 +193,34 @@ def test_provider_follows_the_environment(client, monkeypatch):
     assert provider(req) == "anthropic"
     monkeypatch.setattr(client.app.state.settings, "copilot_provider", "standin")
     assert provider(req) == "standin"
+
+
+def test_openrouter_asks_for_follow_ups_when_the_model_skips_them(client, monkeypatch):
+    from app.copilot import openai_compat
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-used")
+    monkeypatch.setattr(openai_compat.openai, "AsyncOpenAI", _FakeOpenAI)
+    _FakeOpenAI.seen = []
+    _FakeOpenAI.turns = [
+        [_chunk(content="The yield is 5.03% [P1]."), _chunk(finish="stop")],
+        [  # the nudge turn: a stray sentence (never shown) and the follow-ups
+            _chunk(content="Sure."),
+            _chunk(tool=(0, "call_9", "suggest_follow_ups", '{"questions": ["Payout ratio?", "Next ex-date?"]}')),
+            _chunk(finish="tool_calls"),
+        ],
+    ]
+    signup = {"email": "nudge@example.com", "password": "correct horse battery", "accept_terms": True}
+    client.post("/v1/auth/signup", json=signup, headers={"Origin": "http://testserver"})
+    body = {"messages": [{"id": "u1", "role": "user", "parts": [{"type": "text", "text": "Is the dividend safe?"}]}], "panels": [], "locale": "en"}
+    parts = []
+    with client.stream("POST", "/v1/copilot/chat", json=body, headers={"Origin": "http://testserver"}) as r:
+        for line in r.iter_lines():
+            if line.startswith("data: ") and line != "data: [DONE]":
+                parts.append(json.loads(line[6:]))
+    text = "".join(p.get("delta", "") for p in parts if p["type"] == "text-delta")
+    assert text == "The yield is 5.03% [P1]."
+    follow = [p["data"]["questions"] for p in parts if p["type"] == "data-followups"]
+    assert follow == [["Payout ratio?", "Next ex-date?"]]
+    assert _FakeOpenAI.seen[1]["tool_choice"] == {"type": "function", "function": {"name": "suggest_follow_ups"}}
+    assert len(_FakeOpenAI.seen) == 2  # one nudge, then done
+    assert _FakeOpenAI.seen[0]["extra_body"] == {"reasoning": {"enabled": True}}

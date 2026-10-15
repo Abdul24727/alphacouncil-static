@@ -21,6 +21,8 @@ from .context import ChatInput, numbers_in, panel_block, sources
 from .engine import MAX_STEPS, SYSTEM, TOOL_RESULT_CHARS, _client_view, _ui_tool
 from .stream import Writer
 
+FOLLOW_UP_NUDGE = "Now call suggest_follow_ups with two or three short follow-up questions in the language of my question."
+
 
 def _tool_defs() -> list[dict[str, Any]]:
     return [
@@ -50,8 +52,10 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
         default_headers={"X-Title": "AlphaCouncil"},
     )
     messages = _history(chat)
+    extra = {"reasoning": {"enabled": True}} if settings.copilot_reasoning else {}
+    followed_up = nudged = False
 
-    for _ in range(MAX_STEPS):
+    for step in range(MAX_STEPS):
         yield w.start_step()
         text, calls, finish = "", {}, None
         try:
@@ -59,9 +63,10 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
                 model=settings.copilot_model,
                 messages=messages,
                 tools=_tool_defs(),
-                tool_choice="auto",
+                tool_choice={"type": "function", "function": {"name": "suggest_follow_ups"}} if nudged else "auto",
                 max_tokens=8_000,
                 stream=True,
+                extra_body=extra,
             )
             async for chunk in stream:
                 for choice in chunk.choices:
@@ -69,11 +74,13 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
                     delta = choice.delta
                     # OpenRouter passes a model's reasoning as `reasoning` (not in the OpenAI schema).
                     reasoning = getattr(delta, "reasoning", None) or getattr(delta, "reasoning_content", None)
-                    if isinstance(reasoning, str) and reasoning:
+                    # The follow-up turn only renders its tool call; its text is not part of the answer.
+                    if isinstance(reasoning, str) and reasoning and not nudged:
                         yield w.reasoning(reasoning)
                     if delta.content:
                         text += delta.content
-                        yield w.text(delta.content)
+                        if not nudged:
+                            yield w.text(delta.content)
                     for tc in delta.tool_calls or []:
                         c = calls.setdefault(tc.index, {"id": "", "name": "", "arguments": ""})
                         c["id"] = tc.id or c["id"]
@@ -96,8 +103,18 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
         if finish == "length":
             yield w.error("The answer was cut off. Please ask a narrower question.")
             break
+        if nudged:
+            # Only the follow-ups are wanted from the nudge turn.
+            calls = {i: c for i, c in calls.items() if c["name"] == "suggest_follow_ups"}
         if not calls:
             yield w.finish_step()
+            # SYSTEM asks for follow-ups at the end of every answer; some models stop without
+            # them. One short extra turn that must call suggest_follow_ups.
+            if not followed_up and not nudged and text.strip() and step < MAX_STEPS - 1:
+                messages.append({"role": "assistant", "content": text})
+                messages.append({"role": "user", "content": FOLLOW_UP_NUDGE})
+                nudged = True
+                continue
             break
 
         ordered = [calls[i] for i in sorted(calls)]
@@ -131,6 +148,8 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
                 messages.append({"role": "tool", "tool_call_id": c["id"], "content": json.dumps({"INVALID_INPUT": str(exc)})})
                 continue
 
+            if c["name"] == "suggest_follow_ups":
+                followed_up = True
             if c["name"] in tools.UI_TOOL_NAMES:
                 output = await _ui_tool(request, w, c["name"], args, seen)
                 for part in output["parts"]:
@@ -144,5 +163,7 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
                 {"role": "tool", "tool_call_id": c["id"], "content": json.dumps(payload, ensure_ascii=False, default=str)[:TOOL_RESULT_CHARS]}
             )
         yield w.finish_step()
+        if nudged:
+            break
 
     yield w.finish()

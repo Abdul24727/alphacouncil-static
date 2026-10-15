@@ -49,7 +49,8 @@ EOF
 
 echo "== switch and restart"
 ssh_ "ln -sfn $rel $BASE/current.new && mv -T $BASE/current.new $BASE/current && systemctl restart acp-api acp-web"
-sleep 4
+# Both services take a few seconds to start: wait up to 30 s for each before reporting.
+ssh_ 'for u in http://127.0.0.1:8200/v1/health http://localhost:3200/home; do for i in $(seq 1 30); do curl -fsS -o /dev/null "$u" && break; sleep 1; done; done'
 ssh_ "systemctl is-active acp-api acp-web; curl -fsS -o /dev/null -w 'api %{http_code}\n' http://127.0.0.1:8200/v1/health; curl -fsS -o /dev/null -w 'web %{http_code}\n' http://localhost:3200/home"
 
 echo "== prune: keep the 3 newest releases"
