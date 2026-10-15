@@ -1,0 +1,23 @@
+[Unit]
+Description=AlphaCouncil platform web (staging, beta.alphacouncil.tech)
+After=network.target acp-api.service
+
+[Service]
+User=alphacouncil
+Group=alphacouncil
+WorkingDirectory=/opt/alphacouncil-platform/current/web
+EnvironmentFile=/etc/alphacouncil-platform/web.env
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start -H 127.0.0.1 -p 3200
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadOnlyPaths=/var/lib/alphacouncil /opt/alphacouncil
+# Next writes its runtime cache under .next/cache (created and chowned at deploy).
+ReadWritePaths=/opt/alphacouncil-platform/releases
+MemoryMax=1500M
+
+[Install]
+WantedBy=multi-user.target
