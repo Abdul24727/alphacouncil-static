@@ -27,8 +27,13 @@ if [[ "${1:-}" == "--setup" ]]; then
   ssh_ "test -f /etc/alphacouncil-platform/web.env || printf 'NODE_ENV=production\nAPI_ORIGIN=http://127.0.0.1:8200\nNEXT_TELEMETRY_DISABLED=1\n' | install -m 640 -o root -g alphacouncil /dev/stdin /etc/alphacouncil-platform/web.env"
   scp -q deploy/acp-api.service deploy/acp-web.service "$HOST:/etc/systemd/system/"
   ssh_ "systemctl daemon-reload && systemctl enable acp-api acp-web"
-  scp -q deploy/nginx-beta.conf "$HOST:/etc/nginx/sites-available/alphacouncil-beta"
-  ssh_ "ln -sfn /etc/nginx/sites-available/alphacouncil-beta /etc/nginx/sites-enabled/alphacouncil-beta && nginx -t && systemctl reload nginx"
+  # The site file is the template only until certbot adds TLS to it; never overwrite that.
+  if ssh_ "grep -q 'managed by Certbot' /etc/nginx/sites-available/alphacouncil-beta 2>/dev/null"; then
+    echo "nginx site has TLS (certbot): left as it is"
+  else
+    scp -q deploy/nginx-beta.conf "$HOST:/etc/nginx/sites-available/alphacouncil-beta"
+    ssh_ "ln -sfn /etc/nginx/sites-available/alphacouncil-beta /etc/nginx/sites-enabled/alphacouncil-beta && nginx -t && systemctl reload nginx"
+  fi
 fi
 
 echo "== upload $sha"
