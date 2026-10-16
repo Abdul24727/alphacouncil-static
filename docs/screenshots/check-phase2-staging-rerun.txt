@@ -1,0 +1,12 @@
+PASS  all 5 panels start on 2222
+PASS  after switching one panel, all 5 panels show 1120
+PASS  header follows the group (Al Rajhi Bank)
+PASS  metrics panel loaded 1120 data
+PASS  peers row click moved every panel to 1180
+PASS  metrics panel has a freshness light (fresh)
+PASS  stale light is amber #F2B134 (rgb(242, 177, 52))
+PASS  tooltip shows the real timestamp: "Updated 07:02 · next run 17 Oct 03:00"
+PASS  tooltip dates the data itself: "Older than its expected update · data as of 8 Aug 2018"
+metrics light colour: rgb(63, 217, 138)
+
+Phase 2 done-when: all checks passed
