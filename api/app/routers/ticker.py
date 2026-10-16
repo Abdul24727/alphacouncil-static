@@ -6,6 +6,7 @@ import sqlite3
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
+from .. import ratios
 from ..freshness import PRICE_MAX_AGE_DAYS, Freshness, assess
 from ..market_db import MarketDataUnavailable, reader
 from ..settings import Settings
@@ -30,7 +31,7 @@ class Quote(BaseModel):
     as_of_date: str | None
     # Freshness of these quote values themselves, judged by the prices window.
     freshness: Freshness | None
-    # "prices_file" when the daily price file is newer than the briefs table, else "briefs".
+    # "prices_file" whenever the ticker has a daily price file; "briefs" otherwise.
     source: str
     last_price: float | None
     day_change_pct: float | None
@@ -175,59 +176,64 @@ def get_ticker(request: Request, ref: str) -> TickerDetail:
     get = lambda row, k: row[k] if row and k in row.keys() else None  # noqa: E731
 
     prices = next((f for f in freshness if f.category == "prices"), None)
-    quote = Quote(
-        as_of_date=get(b, "as_of_date"),
-        source="briefs",
-        freshness=(
-            assess(
-                category="prices",
-                as_of_utc=get(b, "as_of_date"),
-                last_success_utc=get(b, "source_run_ts"),
-                max_age_days=prices.max_age_days if prices else PRICE_MAX_AGE_DAYS,
-                exchange=t.exchange,
-            )
-            if get(b, "as_of_date")
-            else None
-        ),
-        last_price=get(b, "last_price"),
-        day_change_pct=get(b, "day_change_pct"),
-        volume=get(b, "volume"),
-        value_traded=get(b, "value_traded"),
-        market_cap_mn=get(b, "market_cap_raw"),
-    )
-
-    # The daily price file is refreshed every night; the briefs table can lag
-    # behind it. Quote the newest close we have, with the change against the
-    # previous close in the same file.
     from .prices import bar_freshness, latest_bars  # local import: prices imports this module
 
+    # The daily price file is the record of prices: when it exists, the quote is its last
+    # close, dated by that bar (briefs stamps old prices with the run date). Without a file,
+    # the briefs price is dated only by the pipeline's own price record, never by the run date.
     bars = latest_bars(request, t.ticker_key)
-    if bars and len(bars) >= 2 and (quote.as_of_date is None or bars[-1].time > quote.as_of_date):
-        last, prev = bars[-1], bars[-2]
+    if bars:
+        last = bars[-1]
+        prev = bars[-2] if len(bars) >= 2 else None
         quote = Quote(
             as_of_date=last.time,
             source="prices_file",
             freshness=bar_freshness(request, t.ticker_key, t.exchange, bars),
             last_price=last.close,
-            day_change_pct=round((last.close / prev.close - 1) * 100, 2),
+            day_change_pct=round((last.close / prev.close - 1) * 100, 2) if prev else None,
             volume=last.volume,
             value_traded=last.turnover,
             market_cap_mn=get(b, "market_cap_raw"),
         )
+    else:
+        # An old briefs row proves the price is at least that old (stale); a recent one is
+        # only the run date, so without the pipeline's price record the age is unknown.
+        rec = prices if prices and prices.as_of else None
+        if rec is None and get(b, "as_of_date"):
+            from_briefs = assess(
+                category="prices",
+                as_of_utc=get(b, "as_of_date"),
+                last_success_utc=get(b, "source_run_ts"),
+                max_age_days=PRICE_MAX_AGE_DAYS,
+                exchange=t.exchange,
+            )
+            rec = from_briefs if from_briefs.stale else None
+        quote = Quote(
+            as_of_date=rec.as_of[:10] if rec else None,
+            source="briefs",
+            freshness=rec,
+            last_price=get(b, "last_price"),
+            day_change_pct=get(b, "day_change_pct"),
+            volume=get(b, "volume"),
+            value_traded=get(b, "value_traded"),
+            market_cap_mn=get(b, "market_cap_raw"),
+        )
+    try:
+        r = ratios.load(s, [t.ticker_key]).get(t.ticker_key)
+    except MarketDataUnavailable as exc:
+        raise HTTPException(503, f"Market data unavailable: {exc}") from exc
 
     return TickerDetail(
         ticker=ref_of(t),
         quote=quote,
-        # briefs first (the nightly price-derived values), scraped ratios fill gaps.
+        # The same values every other screen shows (app/ratios.py).
         valuation=Valuation(
-            pe=get(b, "pe") if get(b, "pe") is not None else get(sr, "pe"),
-            pb=get(b, "pb") if get(b, "pb") is not None else get(sr, "pb"),
-            dividend_yield_pct=(
-                get(b, "dividend_yield_pct") if get(b, "dividend_yield_pct") is not None else get(sr, "div_yield")
-            ),
-            roe_pct=get(b, "roe_pct") if get(b, "roe_pct") is not None else get(sr, "roe"),
-            roa_pct=get(sr, "roa"),
-            ev_ebitda=get(sr, "ev_ebitda"),
+            pe=r["pe"],
+            pb=r["pb"],
+            dividend_yield_pct=r["dividend_yield_pct"],
+            roe_pct=r["roe_pct"],
+            roa_pct=r["roa_pct"],
+            ev_ebitda=r["ev_ebitda"],
             eps_ttm=get(sr, "eps_ttm"),
             book_value=get(sr, "book_value"),
             shares_out_mn=get(sr, "shares_out_mn"),
@@ -251,7 +257,8 @@ def get_ticker(request: Request, ref: str) -> TickerDetail:
             dist_to_52w_high=get(tech, "dist_to_52w_high"),
             dist_from_52w_low=get(tech, "dist_from_52w_low"),
         ),
-        has_price_history=bool(get(b, "has_price_history")),
+        # Same rule as /prices: a chart needs at least two bars in the price file.
+        has_price_history=bool(bars) and len(bars) >= 2,
         freshness=freshness,
     )
 
@@ -293,17 +300,23 @@ def get_peers(request: Request, ref: str, limit: int = 8) -> Peers:
         return Peers(basis="sector_exchange", sector_en=None, sector_ar=None, peers=[])
 
     sql = (
-        "SELECT ticker_key, as_of_date, last_price, day_change_pct, market_cap_raw, pe, dividend_yield_pct"
+        "SELECT ticker_key, as_of_date, last_price, day_change_pct, market_cap_raw"
         " FROM briefs WHERE sector_en = ? AND ticker_key != ? {extra}"
-        " ORDER BY market_cap_raw IS NULL, market_cap_raw DESC LIMIT ?"
+        " ORDER BY market_cap_raw IS NULL, market_cap_raw DESC"
     )
+
+    def same_sector(found) -> list:
+        # The universe drops sector labels it knows are wrong (universe.py): those rows are not peers.
+        return [r for r in found if (p := universe.by_key.get(r["ticker_key"])) and p.sector_en == t.sector_en][:limit]
+
     try:
         with reader(s.briefs_db, immutable=s.market_db_immutable, name="BRIEFS_DB") as conn:
-            rows = conn.execute(sql.format(extra="AND exchange = ?"), (t.sector_en, t.ticker_key, t.exchange, limit)).fetchall()
+            rows = same_sector(conn.execute(sql.format(extra="AND exchange = ?"), (t.sector_en, t.ticker_key, t.exchange)).fetchall())
             basis = "sector_exchange"
             if len(rows) < 3:
-                rows = conn.execute(sql.format(extra=""), (t.sector_en, t.ticker_key, limit)).fetchall()
+                rows = same_sector(conn.execute(sql.format(extra=""), (t.sector_en, t.ticker_key)).fetchall())
                 basis = "sector_gcc"
+        rv = ratios.load(s, [r["ticker_key"] for r in rows])
     except MarketDataUnavailable as exc:
         raise HTTPException(503, f"Market data unavailable: {exc}") from exc
 
@@ -319,8 +332,8 @@ def get_peers(request: Request, ref: str, limit: int = 8) -> Peers:
                 last_price=r["last_price"],
                 day_change_pct=r["day_change_pct"],
                 market_cap_mn=r["market_cap_raw"],
-                pe=r["pe"],
-                dividend_yield_pct=r["dividend_yield_pct"],
+                pe=rv.get(r["ticker_key"])["pe"],
+                dividend_yield_pct=rv.get(r["ticker_key"])["dividend_yield_pct"],
             )
         )
     return Peers(basis=basis, sector_en=t.sector_en, sector_ar=t.sector_ar, peers=peers)

@@ -7,7 +7,7 @@ import json
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
-from .. import council
+from .. import council, ratios
 from ..freshness import Freshness, assess
 from ..market_db import MarketDataUnavailable, reader
 from .ticker import _flag, _row, load_freshness, resolve, settings_of
@@ -43,8 +43,7 @@ def get_council(request: Request, ref: str) -> Council:
                 " WHERE b.ticker_key = ?",
                 t.ticker_key,
             )
-        with reader(s.screening_db, immutable=s.market_db_immutable, name="SCREENING_DB") as conn:
-            sr = _row(conn, "SELECT pe, roe, div_yield FROM scraped_ratios WHERE ticker_key = ?", t.ticker_key)
+        r = ratios.load(s, [t.ticker_key]).get(t.ticker_key)
         with reader(s.evidence_db, immutable=s.market_db_immutable, name="EVIDENCE_DB") as conn:
             impacts = [
                 r["impact"]
@@ -58,12 +57,8 @@ def get_council(request: Request, ref: str) -> Council:
     except MarketDataUnavailable as exc:
         raise unavailable(exc) from exc
 
-    def first(*values):
-        return next((v for v in values if v is not None), None)
-
-    pe = first(b["pe"] if b else None, sr["pe"] if sr else None)
-    roe = first(b["roe_pct"] if b else None, sr["roe"] if sr else None)
-    yld = first(b["dividend_yield_pct"] if b else None, sr["div_yield"] if sr else None)
+    # The same ratios every screen shows (app/ratios.py).
+    pe, roe, yld = r["pe"], r["roe_pct"], r["dividend_yield_pct"]
     vol = b["vol_1y"] * 100 if b and b["vol_1y"] is not None else None
 
     seats = [
@@ -138,22 +133,19 @@ def get_fundamentals(request: Request, ref: str) -> Fundamentals:
                     (t.ticker_key,),
                 )
             }
-            sr = _row(conn, "SELECT pe, pb, roe, roa, div_yield FROM scraped_ratios WHERE ticker_key = ?", t.ticker_key)
-            st = _row(conn, "SELECT pb, roe_pct, roa_pct, dividend_yield_pct FROM stocks WHERE ticker_key = ?", t.ticker_key)
+        r = ratios.load(s, [t.ticker_key]).get(t.ticker_key)
         fresh = next((f for f in load_freshness(s, t) if f.category == "fundamentals"), None)
     except MarketDataUnavailable as exc:
         raise unavailable(exc) from exc
 
-    def first(*values):
-        return next((v for v in values if v is not None), None)
-
-    # Published ratios (computed `stocks` first, then Argaam TTM) for metrics with no gauge row.
+    # Ratios shown on Key metrics too: one value everywhere (app/ratios.py).
     published = {
-        "pe": sr["pe"] if sr else None,
-        "pb": first(st["pb"] if st else None, sr["pb"] if sr else None),
-        "roe": first(st["roe_pct"] if st else None, sr["roe"] if sr else None),
-        "roa": first(st["roa_pct"] if st else None, sr["roa"] if sr else None),
-        "div_yield": first(st["dividend_yield_pct"] if st else None, sr["div_yield"] if sr else None),
+        "pe": r["pe"],
+        "pb": r["pb"],
+        "roe": r["roe_pct"],
+        "roa": r["roa_pct"],
+        "div_yield": r["dividend_yield_pct"],
+        "ev_ebitda": r["ev_ebitda"],
     }
 
     groups = []
@@ -161,7 +153,9 @@ def get_fundamentals(request: Request, ref: str) -> Fundamentals:
         rows = []
         for key, unit, hib in metrics:
             g = gauges.get(key)
-            if g is not None:
+            # A computed gauge with a value wins (it carries the sector percentile); otherwise
+            # the shared published ratio, so Financials and Key metrics agree.
+            if g is not None and (g["status"] == "ok" or published.get(key) is None):
                 rows.append(
                     GaugeMetric(
                         key=key, value=g["value"], unit=unit, higher_is_better=hib,

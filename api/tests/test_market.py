@@ -15,7 +15,7 @@ def test_overview_indices_breadth_movers_news(client):
     assert tad["index"]["key"] == "TASI" and tad["index"]["freshness"]["stale"] is False
     adx = next(e for e in o["exchanges"] if e["exchange"] == "ADX")
     assert adx["index"] is None  # no ADX index row in this fixture: never invented
-    assert tad["breadth"]["advancers"] == 1  # 2222 up on the latest day
+    assert tad["breadth"]["advancers"] == 2  # 2222 and 2382 up on the latest day
     assert any(m["ticker"]["ticker_key"] == "2222_TADAWUL" for m in o["gainers"])
     assert o["news"][0]["title"] == "Aramco news"
 

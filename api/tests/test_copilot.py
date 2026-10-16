@@ -41,7 +41,8 @@ def test_dividend_answer_cites_the_attached_metrics_panel(client, monkeypatch):
     parts = stream(client, "Is the dividend safe?", [panel])
     text = text_of(parts)
     assert "Stand-in answer" in text
-    assert "5.03% [P1]" in text  # yield read from the attached panel, cited by its tag
+    # The yield is read from the attached panel and cited by its tag.
+    assert f"{detail['valuation']['dividend_yield_pct']}% [P1]" in text
     assert "0.34" in text and "[DB]" in text  # latest dividend from the database
     assert data(parts, "sources")[0]["P1"]["id"] == "overview.metrics"
     assert data(parts, "table")[0]["rows"][0][3] == 0.34

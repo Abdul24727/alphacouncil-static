@@ -36,6 +36,9 @@ BRIEFS = [
      10.37, 1.66, 4.02, 16.67, 0.1, 0.1, 0.1, 0.1, 0.29, -0.3, 70, 1, None),
     ("EMAAR_DFM", "EMAAR", "DFM", "AED", 9, "Real Estate", "العقارات", TODAY, 11.6, -3.0, 1e7, 1e8, 102000.0,
      None, None, None, None, None, None, None, None, None, None, None, 1, None),
+    # Like Saudi Tadawul Group: the pipeline's default bucket (sector_id 1) labelled "Energy".
+    ("1111_TADAWUL", "1111", "TADAWUL", "SAR", 1, "Energy", "الطاقة", TODAY, 160.0, 0.5, 1e5, 1.6e7, 999999.0,
+     None, None, None, None, None, None, None, None, None, None, None, 0, None),
 ]
 
 UNIVERSE_CSV = [
@@ -104,7 +107,11 @@ def data_files(tmp_path):
                 ("2222_TADAWUL", "prices", f"{LONG_AGO}T00:00:00", f"{LONG_AGO}T01:43:12+00:00", 2, 0, 1),
                 ("2222_TADAWUL", "fundamentals", yesterday, yesterday, 100, 0, 1),
             ],
-            "scraped_ratios": [("2222_TADAWUL", 14.47, 4.1, 5.01, 26.75, 15.86, 7.4, None, 6.49, 1.84, 6413000.0, 242000.0)],
+            "scraped_ratios": [
+                ("2222_TADAWUL", 14.47, 4.1, 5.01, 26.75, 15.86, 7.4, None, 6.49, 1.84, 6413000.0, 242000.0),
+                # Like METH.AD: negative earnings and negative book value.
+                ("FAB_ADX", 0.0, -0.13, None, 121.24, -2.0, None, None, -4.81, -2.52, None, None),
+            ],
             "stocks": [("2222_TADAWUL", None, None, None, None)],
             "fundamentals_gauges": [
                 ("2222_TADAWUL", "debt_equity", 0.2, "ok", "{}", 54.0),
@@ -199,7 +206,11 @@ def data_files(tmp_path):
         '2026/10/13,18.86,0.34,1.84 %,"3,395,404","63,657,192",18.52,18.86,18.52',
         "2026/10/14,18.90,,,,,19.50,18.95,18.80",
     ]
-    for key, lines in (("2222_TADAWUL", english), ("FAB_ADX", arabic)):
+    # Like BMEB.BH: the file stops in 2018 while briefs carries today's run date.
+    stopped = [english[0], "07/08/2018,0.05,,,100,5,0.05,0.05,0.05", "08/08/2018,0.04,,,100,4,0.04,0.04,0.04"]
+    # Like 4240: a current file while briefs says there is no price history.
+    current = [english[0], f"{(today - timedelta(days=1)):%d/%m/%Y},14.40,,,10,144,14.40,14.40,14.40", f"{today:%d/%m/%Y},14.54,,,10,145,14.50,14.60,14.50"]
+    for key, lines in (("2222_TADAWUL", english), ("FAB_ADX", arabic), ("2010_KSE", stopped), ("2382_TADAWUL", current)):
         (prices / key).mkdir(parents=True)
         (prices / key / "price_history_10y.csv").write_text("\n".join(lines) + "\n", encoding="utf-8")
 

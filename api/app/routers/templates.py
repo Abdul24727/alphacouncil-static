@@ -7,6 +7,7 @@ from datetime import UTC, datetime, timedelta
 from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel
 
+from .. import ratios
 from ..market_db import MarketDataUnavailable, reader
 from .market import _uni
 from .portfolio import LastClose, last_close
@@ -96,10 +97,8 @@ def dividend_hunter(request: Request, min_yield: float = Query(0, ge=0, le=50), 
     today = datetime.now(UTC).date().isoformat()
     three_years = (datetime.now(UTC).date() - timedelta(days=3 * 365)).isoformat()
     try:
-        with reader(s.briefs_db, immutable=s.market_db_immutable, name="BRIEFS_DB") as conn:
-            yields = {r["ticker_key"]: r["dividend_yield_pct"] for r in conn.execute("SELECT ticker_key, dividend_yield_pct FROM briefs")}
+        rv = ratios.load(s)
         with reader(s.screening_db, immutable=s.market_db_immutable, name="SCREENING_DB") as conn:
-            scraped = {r["ticker_key"]: r["div_yield"] for r in conn.execute("SELECT ticker_key, div_yield FROM scraped_ratios")}
             payout = {r["ticker_key"]: r["value"] for r in conn.execute("SELECT ticker_key, value FROM fundamentals_gauges WHERE gauge_key = 'payout' AND status = 'ok'")}
             divs: dict[str, list] = defaultdict(list)
             for r in conn.execute("SELECT ticker_key, ex_date, dps FROM dividends WHERE ex_date IS NOT NULL ORDER BY ex_date DESC"):
@@ -109,8 +108,7 @@ def dividend_hunter(request: Request, min_yield: float = Query(0, ge=0, le=50), 
 
     rows = []
     for t in uni.tickers:
-        y = yields.get(t.ticker_key)
-        y = y if y is not None else scraped.get(t.ticker_key)
+        y = rv.get(t.ticker_key)["dividend_yield_pct"]
         if y is None or y <= 0 or y < min_yield:
             continue
         ds = divs.get(t.ticker_key, [])
@@ -193,14 +191,10 @@ def sector_vs_sector(request: Request, a: str = Query(min_length=1), b: str = Qu
     s = settings_of(request)
     try:
         with reader(s.briefs_db, immutable=s.market_db_immutable, name="BRIEFS_DB") as conn:
-            rows = {r["ticker_key"]: r for r in conn.execute("SELECT ticker_key, market_cap_raw, pe, pb, dividend_yield_pct, roe_pct, return_12m FROM briefs")}
-        with reader(s.screening_db, immutable=s.market_db_immutable, name="SCREENING_DB") as conn:
-            ratios = {r["ticker_key"]: r for r in conn.execute("SELECT ticker_key, pe, pb, div_yield, roe FROM scraped_ratios")}
+            rows = {r["ticker_key"]: r for r in conn.execute("SELECT ticker_key, market_cap_raw, return_12m FROM briefs")}
+        rv = ratios.load(s)
     except MarketDataUnavailable as exc:
         raise _unavailable(exc) from exc
-
-    def first(*vals):
-        return next((v for v in vals if v is not None), None)
 
     def build(sector: str) -> tuple[SectorStats, list[SectorMember]]:
         members = [t for t in uni.tickers if t.sector_en == sector]
@@ -209,13 +203,10 @@ def sector_vs_sector(request: Request, a: str = Query(min_length=1), b: str = Qu
         vals = defaultdict(list)
         out = []
         for t in members:
-            b_, r_ = rows.get(t.ticker_key), ratios.get(t.ticker_key)
-            pe = first(b_["pe"] if b_ else None, r_["pe"] if r_ else None)
-            pb = first(b_["pb"] if b_ else None, r_["pb"] if r_ else None)
-            y = first(b_["dividend_yield_pct"] if b_ else None, r_["div_yield"] if r_ else None)
-            roe = first(b_["roe_pct"] if b_ else None, r_["roe"] if r_ else None)
+            b_, r_ = rows.get(t.ticker_key), rv.get(t.ticker_key)
+            pe, pb, y, roe = r_["pe"], r_["pb"], r_["dividend_yield_pct"], r_["roe_pct"]
             r12 = b_["return_12m"] if b_ else None
-            for k, v in (("pe", pe if pe and pe > 0 else None), ("pb", pb), ("yield", y), ("roe", roe), ("r12", r12)):
+            for k, v in (("pe", pe), ("pb", pb), ("yield", y), ("roe", roe), ("r12", r12)):
                 if v is not None:
                     vals[k].append(v)
             out.append(SectorMember(ticker=ref_of(t), price=last_close(request, t), market_cap_mn=b_["market_cap_raw"] if b_ else None, pe=pe, dividend_yield_pct=y, return_12m=r12))

@@ -56,8 +56,13 @@ def _date(raw: str) -> date | None:
         return None
 
 
-def parse(path: Path) -> list[Bar]:
-    bars: dict[str, Bar] = {}
+# One bar as stored in the cache: (time, open, high, low, close, volume, turnover).
+# A tuple costs about a quarter of a Bar model, and ten years of history is ~2,500 bars.
+Row = tuple[str, float | None, float | None, float | None, float, float | None, float | None]
+
+
+def _rows(path: Path) -> list[Row]:
+    rows: dict[str, Row] = {}
     with open(path, encoding="utf-8-sig", newline="") as f:
         reader = csv.reader(f)
         next(reader, None)  # header (English or Arabic)
@@ -72,10 +77,18 @@ def parse(path: Path) -> list[Bar]:
             # A bar whose range contradicts its close is kept as a close-only point.
             if None in (o, h, low) or not (low <= min(o, close) and max(o, close) <= h):
                 o = h = low = None
-            bars[d.isoformat()] = Bar(
-                time=d.isoformat(), open=o, high=h, low=low, close=close, volume=_num(row[4]), turnover=_num(row[5])
-            )
-    return [bars[k] for k in sorted(bars)]
+            t = d.isoformat()
+            rows[t] = (t, o, h, low, close, _num(row[4]), _num(row[5]))
+    return [rows[k] for k in sorted(rows)]
+
+
+def _bar(r: Row) -> Bar:
+    # Values were checked when the row was parsed; skip validation.
+    return Bar.model_construct(time=r[0], open=r[1], high=r[2], low=r[3], close=r[4], volume=r[5], turnover=r[6])
+
+
+def parse(path: Path) -> list[Bar]:
+    return [_bar(r) for r in _rows(path)]
 
 
 def tail_bars(path: Path, n: int = 2) -> list[Bar]:
@@ -98,11 +111,15 @@ def tail_bars(path: Path, n: int = 2) -> list[Bar]:
 
 
 class PriceStore:
-    """Parsed series cached per file, refreshed when the pipeline rewrites the file."""
+    """Parsed series cached per file, refreshed when the pipeline rewrites the file.
 
-    def __init__(self, root: Path | None, capacity: int = 128):
+    Each API worker holds its own cache, so it stays small: compact rows, and at most
+    `capacity` tickers (about 1.5 MB each for ten years).
+    """
+
+    def __init__(self, root: Path | None, capacity: int = 48):
         self.root = root
-        self._cache: OrderedDict[str, tuple[float, list[Bar]]] = OrderedDict()
+        self._cache: OrderedDict[str, tuple[float, list[Row]]] = OrderedDict()
         self._capacity = capacity
         self._lock = threading.Lock()
         self._tails: dict[str, tuple[float, list[Bar]]] = {}
@@ -136,11 +153,11 @@ class PriceStore:
             hit = self._cache.get(ticker_key)
             if hit and hit[0] == mtime:
                 self._cache.move_to_end(ticker_key)
-                return hit[1]
-        series = parse(path)
+                return [_bar(r) for r in hit[1]]
+        rows = _rows(path)
         with self._lock:
-            self._cache[ticker_key] = (mtime, series)
+            self._cache[ticker_key] = (mtime, rows)
             self._cache.move_to_end(ticker_key)
             while len(self._cache) > self._capacity:
                 self._cache.popitem(last=False)
-        return series
+        return [_bar(r) for r in rows]

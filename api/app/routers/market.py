@@ -5,6 +5,7 @@ from collections import defaultdict
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
+from .. import ratios
 from ..freshness import Freshness, assess
 from ..market_db import MarketDataUnavailable, reader
 from ..universe import EXCHANGE_ORDER, Universe
@@ -211,31 +212,27 @@ def screener(request: Request) -> list[ScreenerRow]:
             briefs = {
                 r["ticker_key"]: r
                 for r in conn.execute(
-                    "SELECT ticker_key, market_cap_raw, pe, pb, dividend_yield_pct, roe_pct, return_12m, vol_1y FROM briefs"
+                    "SELECT ticker_key, market_cap_raw, return_12m, vol_1y FROM briefs"
                 )
             }
             tech = {r["ticker_key"]: r["rsi_14"] for r in conn.execute("SELECT ticker_key, rsi_14 FROM ticker_tech_snapshot WHERE status = 'ok'")}
-        with reader(s.screening_db, immutable=s.market_db_immutable, name="SCREENING_DB") as conn:
-            ratios = {r["ticker_key"]: r for r in conn.execute("SELECT ticker_key, pe, pb, div_yield, roe FROM scraped_ratios")}
+        rv = ratios.load(s)
     except MarketDataUnavailable as exc:
         raise HTTPException(503, f"Market data unavailable: {exc}") from exc
-
-    def first(*vals):
-        return next((v for v in vals if v is not None), None)
 
     order = {ex: i for i, ex in enumerate(EXCHANGE_ORDER)}
     rows = []
     for t in sorted(uni.tickers, key=lambda t: (order.get(t.exchange, 99), t.symbol)):
-        b, r = briefs.get(t.ticker_key), ratios.get(t.ticker_key)
+        b, r = briefs.get(t.ticker_key), rv.get(t.ticker_key)
         rows.append(
             ScreenerRow(
                 ticker=ref_of(t),
                 price=last_close(request, t),
                 market_cap_mn=b["market_cap_raw"] if b else None,
-                pe=first(b["pe"] if b else None, r["pe"] if r else None),
-                pb=first(b["pb"] if b else None, r["pb"] if r else None),
-                dividend_yield_pct=first(b["dividend_yield_pct"] if b else None, r["div_yield"] if r else None),
-                roe_pct=first(b["roe_pct"] if b else None, r["roe"] if r else None),
+                pe=r["pe"],
+                pb=r["pb"],
+                dividend_yield_pct=r["dividend_yield_pct"],
+                roe_pct=r["roe_pct"],
                 return_12m=b["return_12m"] if b else None,
                 vol_1y=b["vol_1y"] if b else None,
                 rsi_14=tech.get(t.ticker_key),

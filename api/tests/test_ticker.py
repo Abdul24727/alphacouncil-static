@@ -156,3 +156,44 @@ def test_slugs_with_dots_and_spaces_resolve(client):
 
     assert _slug_key("E NBD") == _slug_key("e%20nbd".replace("%20", " ")) == "ENBD"
     assert _slug_key("ADAV.AD") == "ADAVAD"
+
+
+# --- QA findings (2026-10-16) -------------------------------------------------------------------
+
+
+def test_quote_is_dated_by_its_price_not_the_run_date(client):
+    # The price file stops in 2018; briefs carries today's run date.
+    q = get(client, "/v1/tickers/2010_kse")["quote"]
+    assert q["source"] == "prices_file" and q["as_of_date"] == "2018-08-08" and q["last_price"] == 0.04
+    assert q["freshness"]["stale"] is True
+
+
+def test_the_price_file_decides_price_history(client):
+    # briefs says no history, the file has two current bars: the header and the chart agree.
+    d = get(client, "/v1/tickers/2382")
+    assert d["has_price_history"] is True and d["quote"]["source"] == "prices_file"
+    assert d["quote"]["last_price"] == 14.54 and d["quote"]["freshness"]["stale"] is False
+    assert get(client, "/v1/tickers/2382/prices")["has_history"] is True
+
+
+def test_ratios_that_mean_nothing_are_null(client):
+    # Negative earnings: no P/E (not 0.00x). Negative book value: no P/B, no ROE.
+    v = get(client, "/v1/tickers/FAB")["valuation"]
+    assert v["pe"] is None and v["pb"] is None and v["roe_pct"] is None
+
+
+def test_every_screen_shows_the_same_ratios(client):
+    v = get(client, "/v1/tickers/2222")["valuation"]
+    f = {m["key"]: m["value"] for g in get(client, "/v1/tickers/2222/fundamentals")["groups"] for m in g["metrics"]}
+    row = next(r for r in get(client, "/v1/screener") if r["ticker"]["ticker_key"] == "2222_TADAWUL")
+    assert (v["pe"], v["pb"], v["dividend_yield_pct"], v["roe_pct"]) == (f["pe"], f["pb"], f["div_yield"], f["roe"])
+    assert (row["pe"], row["pb"], row["dividend_yield_pct"], row["roe_pct"]) == (v["pe"], v["pb"], v["dividend_yield_pct"], v["roe_pct"])
+    council = {s["seat"]: s["inputs"][0]["value"] for s in get(client, "/v1/tickers/2222/council")["seats"]}
+    assert council["value"] == v["pe"] and council["income"] == v["dividend_yield_pct"]
+
+
+def test_the_default_sector_bucket_is_not_a_sector(client):
+    # 1111 is labelled "Energy" through sector_id 1, the pipeline's unclassified bucket.
+    assert get(client, "/v1/tickers/1111")["ticker"]["sector_en"] is None
+    peers = [p["ticker"]["ticker_key"] for p in get(client, "/v1/tickers/2222/peers")["peers"]]
+    assert "1111_TADAWUL" not in peers and "2223_TADAWUL" in peers

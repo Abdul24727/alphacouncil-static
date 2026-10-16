@@ -19,6 +19,9 @@ _DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890
 _PUNCT = re.compile(r"[^\w\s&]")
 
 
+UNCLASSIFIED_TADAWUL_SECTOR = 1
+
+
 def normalize(text: str) -> str:
     """Case, Arabic letter variants, diacritics and Eastern digits folded for matching."""
     t = unicodedata.normalize("NFKC", text).lower().translate(_DIGITS)
@@ -116,6 +119,10 @@ class Universe:
         tickers = []
         for r in rows:
             n = names.get(r["ticker_key"], {})
+            # Tadawul sector_id 1 is the pipeline's default bucket for listings it could not
+            # classify (the exchange operator, schools, brokers, delivery apps…), all labelled
+            # "Energy". A wrong sector is worse than none: treat it as unknown.
+            unclassified = r["exchange"] == "TADAWUL" and r["sector_id"] == UNCLASSIFIED_TADAWUL_SECTOR
             name_en, name_ar = n.get("name_en"), n.get("name_ar")
             tickers.append(
                 Ticker(
@@ -125,9 +132,9 @@ class Universe:
                     currency=r["currency"],
                     name_en=name_en,
                     name_ar=name_ar,
-                    sector_id=str(r["sector_id"]) if r["sector_id"] is not None else None,
-                    sector_en=r["sector_en"],
-                    sector_ar=r["sector_ar"],
+                    sector_id=None if unclassified or r["sector_id"] is None else str(r["sector_id"]),
+                    sector_en=None if unclassified else r["sector_en"],
+                    sector_ar=None if unclassified else r["sector_ar"],
                     # /t/2222 for Tadawul and for symbols unique across exchanges;
                     # /t/<ticker_key> for the rest (2010 is SABIC on Tadawul, not 2010_KSE).
                     slug=(
