@@ -26,7 +26,7 @@ def test_login_logout(client):
     signup(client)
     client.cookies.clear()
     bad = client.post("/v1/auth/login", json={"email": "tester@example.com", "password": "wrong password!"}, headers=ORIGIN)
-    assert bad.status_code == 401
+    assert bad.status_code == 403
     ok = client.post("/v1/auth/login", json={"email": "Tester@Example.com ", "password": "correct horse battery"}, headers=ORIGIN)
     assert ok.status_code == 200
     assert client.get("/v1/auth/me").json()["user"] is not None
@@ -44,7 +44,7 @@ def test_cookie_writes_need_our_origin(client):
 
 
 def test_portfolio_requires_sign_in(client):
-    assert client.get("/v1/portfolio").status_code == 401
+    assert client.get("/v1/portfolio").status_code == 403  # never 401: see auth.AUTH_FAILED
 
 
 def test_holdings_value_exposure_and_council(client):
@@ -114,10 +114,10 @@ def test_rate_limit_ignores_a_forged_forwarded_for(client):
         ).status_code
         for i in range(12)
     ]
-    assert codes[:10] == [401] * 10 and codes[10:] == [429, 429]
+    assert codes[:10] == [403] * 10 and codes[10:] == [429, 429]
     # nginx's X-Real-IP is the address that counts.
     r = client.post("/v1/auth/login", json={"email": "y@example.com", "password": "wrong password!"}, headers={**ORIGIN, "X-Real-IP": "203.0.113.9"})
-    assert r.status_code == 401
+    assert r.status_code == 403
 
 
 def test_signup_needs_and_records_acceptance(client):
@@ -147,13 +147,13 @@ def test_registration_versions_match_the_documents_on_the_site():
 def test_delete_account_removes_everything(client):
     signup(client)
     client.post("/v1/portfolio/holdings", json={"ticker": "2222", "quantity": 10}, headers=ORIGIN)
-    assert client.post("/v1/me/delete", json={"password": "wrong password!"}, headers=ORIGIN).status_code == 401
+    assert client.post("/v1/me/delete", json={"password": "wrong password!"}, headers=ORIGIN).status_code == 403
     r = client.post("/v1/me/delete", json={"password": "correct horse battery"}, headers=ORIGIN)
     assert r.status_code == 200 and r.json() == {"user": None}
     assert client.get("/v1/auth/me").json()["user"] is None
     client.cookies.clear()
     login = client.post("/v1/auth/login", json={"email": "tester@example.com", "password": "correct horse battery"}, headers=ORIGIN)
-    assert login.status_code == 401
+    assert login.status_code == 403
 
 
 def test_rate_limits_are_shared_between_workers(data_files):
@@ -164,3 +164,49 @@ def test_rate_limits_are_shared_between_workers(data_files):
     b = DbRateLimit(data_files.database_url, "copilot", limit=3, window_s=3600)
     assert [a.hit("user:1"), b.hit("user:1"), a.hit("user:1"), b.hit("user:1")] == [True, True, True, False]
     assert b.hit("user:2") is True  # per key
+
+
+def test_pinned_items_are_saved_to_the_account(client):
+    signup(client)
+    pin = {"kind": "table", "id": "t1", "title": "2222 dividends", "columns": ["Period", "DPS"], "rows": [["Q2 2026", 0.34]],
+           "unverified": [], "source": "DB", "pinnedAt": "2026-10-16T12:00:00Z"}
+    r = client.put("/v1/me/prefs", json={"data": {"dashboards": [pin], "unknown": 1}}, headers=ORIGIN)
+    assert r.status_code == 200 and r.json()["data"] == {"dashboards": [pin]}
+    assert client.get("/v1/me/prefs").json()["data"]["dashboards"][0]["rows"] == [["Q2 2026", 0.34]]
+    huge = {"dashboards": [{**pin, "id": f"t{i}", "rows": [["x" * 1000]] * 30} for i in range(20)]}
+    assert client.put("/v1/me/prefs", json={"data": huge}, headers=ORIGIN).status_code == 413
+
+
+def test_one_account_cannot_change_anothers_holdings_or_alerts(client):
+    signup(client, email="qa1@example.com")
+    h = client.post("/v1/portfolio/holdings", json={"ticker": "2222", "quantity": 7, "avg_cost": 23.4567}, headers=ORIGIN)
+    holding_id = h.json()["holdings"][0]["id"]
+    a = client.post("/v1/portfolio/alerts", json={"ticker": "1120", "kind": "above", "price": 99.8765}, headers=ORIGIN)
+    alert_id = a.json()[0]["id"]
+    qa1_cookie = client.cookies.get("acp_session")
+
+    client.cookies.clear()
+    signup(client, email="qa2@example.com")
+    # qa2 deletes qa1's ids: nothing of qa2's matches, and qa1 keeps both.
+    assert client.delete(f"/v1/portfolio/holdings/{holding_id}", headers=ORIGIN).status_code == 200
+    assert client.delete(f"/v1/portfolio/alerts/{alert_id}", headers=ORIGIN).status_code == 200
+    assert client.get("/v1/portfolio").json()["holdings"] == []
+
+    client.cookies.clear()
+    client.cookies.set("acp_session", qa1_cookie)
+    assert [x["id"] for x in client.get("/v1/portfolio").json()["holdings"]] == [holding_id]
+    assert [x["id"] for x in client.get("/v1/portfolio/alerts").json()] == [alert_id]
+
+
+def test_signed_out_calls_never_answer_401(client):
+    # A 401 would drop the staging gate's Basic credentials in the browser (auth.AUTH_FAILED).
+    calls = [
+        ("get", "/v1/portfolio", None), ("get", "/v1/portfolio/alerts", None), ("get", "/v1/me/prefs", None),
+        ("put", "/v1/me/prefs", {"data": {}}), ("post", "/v1/portfolio/holdings", {"ticker": "2222", "quantity": 1}),
+        ("post", "/v1/portfolio/alerts", {"ticker": "2222", "kind": "above", "price": 1}),
+        ("delete", "/v1/portfolio/holdings/1", None), ("delete", "/v1/portfolio/alerts/1", None),
+        ("post", "/v1/me/delete", {"password": "x"}),
+    ]
+    for method, path, body in calls:
+        r = client.request(method.upper(), path, json=body, headers=ORIGIN)
+        assert r.status_code == 403, (method, path, r.status_code)

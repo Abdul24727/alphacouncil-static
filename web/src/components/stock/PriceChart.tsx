@@ -18,7 +18,7 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { components } from "@/lib/api/schema";
-import { fmtCompact, fmtNumber, fmtPct } from "@/lib/format";
+import { fmtCompact, fmtDate, fmtNumber, fmtPct } from "@/lib/format";
 import { bollinger, ema, macd, rsi, type Series, sma } from "@/lib/indicators";
 
 type Bar = components["schemas"]["Bar"];
@@ -29,6 +29,8 @@ export type Indicator = "sma20" | "sma50" | "sma200" | "ema20" | "rsi14" | "macd
 
 export const RANGES: ChartRange[] = ["1M", "3M", "6M", "1Y", "5Y"];
 export const INDICATORS: Indicator[] = ["sma20", "sma50", "sma200", "ema20", "bb20", "rsi14", "macd"];
+/** Bars an indicator needs before it has a first value (MACD: 26-day EMA plus a 9-day signal). */
+export const MIN_BARS: Record<Indicator, number> = { sma20: 20, sma50: 50, sma200: 200, ema20: 20, bb20: 20, rsi14: 15, macd: 34 };
 
 const RANGE_DAYS: Record<ChartRange, number> = { "1M": 31, "3M": 92, "6M": 183, "1Y": 366, "5Y": 1827 };
 
@@ -87,7 +89,9 @@ export function PriceChart({
   const chartRef = useRef<IChartApi | null>(null);
   const [legend, setLegend] = useState<Legend | null>(null);
   const tl = useTranslations("stock.chart.legend");
-  const ar = useLocale() === "ar";
+  const tc = useTranslations("stock.chart");
+  const locale = useLocale();
+  const ar = locale === "ar";
   const chartLocale = ar ? "ar-u-nu-latn" : "en-US";
 
   const series = useMemo(() => {
@@ -279,7 +283,7 @@ export function PriceChart({
       {shown && (
         // Between the left edge and the price scale in both languages; reads in the page's direction.
         <div className="pointer-events-none absolute top-1.5 right-16 left-2 z-10 flex flex-wrap gap-x-3 text-[10.5px]" dir={ar ? "rtl" : "ltr"}>
-          <span className="num text-muted">{shown.time}</span>
+          <span className="num text-muted">{fmtDate(shown.time, locale)}</span>
           {shown.open != null && <LegendValue label={tl("open")} value={fmtNumber(shown.open, digits)} />}
           {shown.high != null && <LegendValue label={tl("high")} value={fmtNumber(shown.high, digits)} />}
           {shown.low != null && <LegendValue label={tl("low")} value={fmtNumber(shown.low, digits)} />}
@@ -289,6 +293,15 @@ export function PriceChart({
           )}
           {shown.volume != null && <LegendValue label={tl("volume")} value={fmtCompact(shown.volume)} />}
         </div>
+      )}
+      {/* An indicator the history is too short for draws nothing: say so instead. */}
+      {indicators.some((i) => bars.length < MIN_BARS[i]) && (
+        <p className="pointer-events-none absolute right-16 bottom-7 left-2 z-10 text-[11px] text-stale" data-indicator-note>
+          {indicators
+            .filter((i) => bars.length < MIN_BARS[i])
+            .map((i) => tc("notEnough", { name: tc(`indicators.${i}`), need: String(MIN_BARS[i]), have: String(bars.length) }))
+            .join(" ")}
+        </p>
       )}
     </div>
   );

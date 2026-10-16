@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { PanelLoading, PanelUnavailable } from "@/components/panel/Panel";
+import { PanelLoading, PanelUnavailable, usePanelRefresh } from "@/components/panel/Panel";
 import { ApiError } from "@/lib/api/client";
 import { useSettings } from "@/lib/settings-store";
 
@@ -44,10 +44,21 @@ export function QueryState({
   rows?: number;
   children: React.ReactNode;
 }) {
+  const refresh = usePanelRefresh();
+  const errorText = useErrorText();
   if (isPending) return <PanelLoading rows={rows} />;
-  if (error) return <PanelUnavailable detail={error instanceof ApiError ? error.message : undefined} />;
+  // A failed load says why and offers the panel's refresh (requests time out after 30 s).
+  if (error) return <PanelUnavailable detail={errorText(error)} onRetry={refresh} />;
   if (empty) return <PanelUnavailable detail={emptyText} />;
   return <>{children}</>;
+}
+
+function useErrorText() {
+  const t = useTranslations("placeholder");
+  return (error: unknown) =>
+    error instanceof DOMException && error.name === "TimeoutError"
+      ? t("timedOut")
+      : t("failed", { status: error instanceof ApiError ? String(error.status) : "—" });
 }
 
 /** Rows of [label, value] as tab-separated text for "Copy data". */

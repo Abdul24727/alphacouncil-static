@@ -24,12 +24,13 @@ export function useTickerPeers(slug: string | undefined) {
   });
 }
 
-export function useTickerNews(slug: string | undefined, limit = 12) {
+export function useTickerNews(slug: string | undefined, limit = 12, lang?: "en" | "ar") {
   return useQuery({
-    queryKey: ["ticker", slug, "news", limit],
+    queryKey: ["ticker", slug, "news", limit, lang],
     queryFn: async ({ signal }) =>
       unwrap(
-        await api.GET("/v1/tickers/{ref}/news", { params: { path: { ref: slug! }, query: { limit } }, signal }),
+        // `lang` puts items in the page's language first (topped up with the other).
+        await api.GET("/v1/tickers/{ref}/news", { params: { path: { ref: slug! }, query: { limit, lang } }, signal }),
       ),
     enabled: !!slug,
   });

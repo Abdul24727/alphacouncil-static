@@ -2,8 +2,9 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { Panel } from "@/components/panel/Panel";
+import { dataLabel } from "@/lib/data-labels";
 import type { components } from "@/lib/api/schema";
-import { fmtNumber, fmtPct } from "@/lib/format";
+import { currencyLabel, fmtNumber, fmtPct } from "@/lib/format";
 import {
   useTickerCorporate,
   useTickerDetail,
@@ -13,7 +14,7 @@ import {
   useTickerStatements,
 } from "@/lib/queries";
 import { useGroupTicker } from "@/lib/ticker-groups";
-import { hasArabic, Num, priceDigits, QueryState, toTsv } from "./common";
+import { Num, priceDigits, QueryState, toTsv } from "./common";
 import { newsDate } from "./overview-panels";
 
 const GROUP = 1 as const;
@@ -113,6 +114,7 @@ function statementValue(v: number | null | undefined) {
 
 export function StatementPanel({ section, className }: { section: "Income Statement" | "Balance Sheet"; className?: string }) {
   const t = useTranslations("stock");
+  const locale = useLocale();
   const slug = useGroupTicker(GROUP);
   const q = useTickerStatements(slug);
   const s = q.data;
@@ -138,7 +140,7 @@ export function StatementPanel({ section, className }: { section: "Income Statem
         <QueryState isPending={q.isPending} error={q.error} empty={!!s && !statement} emptyText={t("statements.none")} rows={10}>
           {statement && (
             <>
-              <p className="label-caps mb-1.5 text-muted">{t("statements.unit", { currency: s?.currency ?? "" })}</p>
+              <p className="label-caps mb-1.5 text-muted">{t("statements.unit", { currency: currencyLabel(s?.currency, locale) })}</p>
               <div className="max-h-[560px] overflow-auto">
                 <table className="w-full min-w-[560px]">
                   <thead className="sticky top-0 bg-panel">
@@ -155,8 +157,8 @@ export function StatementPanel({ section, className }: { section: "Income Statem
                     {statement.rows.map((r) => (
                       <tr key={r.index} className="border-t border-line">
                         <td className="min-w-48 py-1 pe-3 text-start text-text-soft">
-                          {/* Labels are stored as published (often Arabic); bdi keeps their direction without breaking the column's alignment. */}
-                          <bdi lang={hasArabic(r.label) ? "ar" : "en"}>{r.label}</bdi>
+                          {/* Labels are stored in one language; shown in the page's when known (lib/data-labels). */}
+                          <bdi lang={dataLabel(r.label, locale).lang}>{dataLabel(r.label, locale).text}</bdi>
                         </td>
                         {years.map((y) => (
                           <td key={y} className="py-1 text-end">
@@ -233,12 +235,12 @@ export function EventsPanel({ className }: { className?: string }) {
             <li key={i.id} className="flex items-baseline gap-3 border-t border-line py-1.5 first:border-t-0">
               <span className="num w-24 shrink-0 text-[11.5px] text-muted">{newsDate(i, locale)}</span>
               {i.url ? (
-                <a href={i.url} target="_blank" rel="noopener noreferrer" lang={i.lang ?? undefined} dir="auto" className="min-w-0 truncate capitalize text-text hover:text-signal">
-                  {i.title}
+                <a href={i.url} target="_blank" rel="noopener noreferrer" lang={dataLabel(i.title, locale).lang} dir="auto" className="min-w-0 truncate text-text hover:text-signal">
+                  {dataLabel(i.title, locale).text}
                 </a>
               ) : (
-                <span dir="auto" className="min-w-0 truncate capitalize">
-                  {i.title}
+                <span dir="auto" lang={dataLabel(i.title, locale).lang} className="min-w-0 truncate">
+                  {dataLabel(i.title, locale).text}
                 </span>
               )}
             </li>
@@ -251,6 +253,7 @@ export function EventsPanel({ className }: { className?: string }) {
 
 export function DividendsPanel({ className }: { className?: string }) {
   const t = useTranslations("stock");
+  const locale = useLocale();
   const slug = useGroupTicker(GROUP);
   const q = useTickerCorporate(slug);
   const c = q.data;
@@ -278,7 +281,7 @@ export function DividendsPanel({ className }: { className?: string }) {
               <th className="py-1 text-start font-normal">{t("dividends.ex_date")}</th>
               <th className="hidden py-1 text-start font-normal sm:table-cell">{t("dividends.pay_date")}</th>
               <th className="py-1 text-end font-normal">
-                {t("dividends.dps")} {c?.currency}
+                {t("dividends.dps")} {currencyLabel(c?.currency, locale)}
               </th>
             </tr>
           </thead>
@@ -302,6 +305,7 @@ export function DividendsPanel({ className }: { className?: string }) {
 
 export function CapitalPanel({ className }: { className?: string }) {
   const t = useTranslations("stock");
+  const locale = useLocale();
   const slug = useGroupTicker(GROUP);
   const q = useTickerCorporate(slug);
   const c = q.data;
@@ -319,7 +323,7 @@ export function CapitalPanel({ className }: { className?: string }) {
       className={className}
     >
       <QueryState isPending={q.isPending} error={q.error} empty={!!c && rows.length === 0} emptyText={t("capital.none")}>
-        <p className="label-caps mb-1.5 text-muted">{t("statements.unit", { currency: c?.currency ?? "" })}</p>
+        <p className="label-caps mb-1.5 text-muted">{t("statements.unit", { currency: currencyLabel(c?.currency, locale) })}</p>
         <table className="w-full">
           <thead>
             <tr className="label-caps text-muted">
@@ -333,8 +337,8 @@ export function CapitalPanel({ className }: { className?: string }) {
             {rows.map((r, i) => (
               <tr key={i} className="border-t border-line" title={r.note ?? undefined}>
                 <td className="num py-1 text-[11.5px]">{r.date}</td>
-                <td className="py-1 text-text-soft" dir="auto">
-                  {r.change_type}
+                <td className="py-1 text-text-soft" dir="auto" lang={dataLabel(r.change_type, locale).lang}>
+                  {dataLabel(r.change_type, locale).text}
                 </td>
                 <td className="py-1 text-end">
                   <Num value={fmtNumber(r.capital_after_mn, 0)} />

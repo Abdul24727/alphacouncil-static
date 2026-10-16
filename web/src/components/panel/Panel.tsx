@@ -11,7 +11,7 @@ import {
 } from "@radix-ui/react-icons";
 import { useLocale, useTranslations } from "next-intl";
 import { DropdownMenu, Tooltip } from "radix-ui";
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { Freshness } from "@/lib/api/client";
 import { useCopilot } from "@/lib/copilot-store";
 import { usePanelRegistry } from "@/lib/panel-registry";
@@ -128,7 +128,9 @@ export function Panel({
             <PanelMenu copyData={copyData} onRefresh={onRefresh} items={menuItems} />
           </div>
         </header>
-        <div className={`min-h-0 flex-1 ${full ? "overflow-auto" : ""} ${bodyClassName}`}>{children}</div>
+        <div className={`min-h-0 flex-1 ${full ? "overflow-auto" : ""} ${bodyClassName}`}>
+          <PanelRefresh.Provider value={onRefresh}>{children}</PanelRefresh.Provider>
+        </div>
       </section>
     </>
   );
@@ -309,13 +311,22 @@ export function PanelLoading({ rows = 4 }: { rows?: number }) {
   );
 }
 
+/** The panel's refresh, so a failed load inside it can offer "Try again". */
+const PanelRefresh = createContext<(() => void) | undefined>(undefined);
+export const usePanelRefresh = () => useContext(PanelRefresh);
+
 /** BRAND.md: missing data is a labelled placeholder, never an estimate. */
-export function PanelUnavailable({ detail }: { detail?: string }) {
+export function PanelUnavailable({ detail, onRetry }: { detail?: string; onRetry?: () => void }) {
   const t = useTranslations("placeholder");
   return (
     <div className="flex h-full min-h-20 flex-col items-start justify-center gap-1">
       <span className="label-caps text-muted">{t("unavailable")}</span>
       {detail && <span className="text-muted">{detail}</span>}
+      {onRetry && (
+        <button type="button" onClick={onRetry} className="mt-1 rounded-chip border border-line px-2 py-0.5 text-text hover:bg-panel-raised">
+          {t("retry")}
+        </button>
+      )}
     </div>
   );
 }

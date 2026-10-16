@@ -30,7 +30,8 @@ type Dashboards = {
   isPinned: (id: string) => boolean;
 };
 
-/** Copilot results pinned as panels on My dashboards. Browser-local until accounts exist. */
+/** Copilot results pinned as panels on My dashboards. Kept in this browser, and in the
+ * account when signed in (lib/prefs-sync.ts). */
 export const useDashboards = create<Dashboards>()(
   persist(
     (set, get) => ({

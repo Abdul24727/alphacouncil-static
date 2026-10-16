@@ -12,7 +12,7 @@ import { Link } from "@/i18n/navigation";
 import { ApiError, type TickerHit } from "@/lib/api/client";
 import type { components } from "@/lib/api/schema";
 import { useMe } from "@/lib/auth";
-import { fmtDate, fmtNumber, fmtPct, signClass } from "@/lib/format";
+import { currencyLabel, fmtDate, fmtNumber, fmtPct, signClass, withCurrency } from "@/lib/format";
 import { useAlerts, usePortfolio, usePortfolioMutations } from "@/lib/queries-app";
 
 type Portfolio = components["schemas"]["Portfolio"];
@@ -178,7 +178,7 @@ function HoldingsPanel({ portfolio: p, isPending, error, refetch }: { portfolio?
                     <ChangeCell value={h.price.change_pct} />
                   </td>
                   <td className="py-1.5 text-end">
-                    <Num value={h.market_value != null ? `${fmtNumber(h.market_value, 0)} ${h.ticker.currency ?? ""}` : null} />
+                    <Num value={withCurrency(fmtNumber(h.market_value, 0), h.ticker.currency, locale)} />
                   </td>
                   <td className="py-1.5 text-end">
                     <Num value={fmtPct(h.weight_pct, 1)} />
@@ -251,7 +251,7 @@ function ExposurePanel({ portfolio: p, isPending, error }: { portfolio?: Portfol
           {groups.map((g) => (
             <section key={g.currency} aria-label={g.currency}>
               <header className="mb-2 flex items-baseline justify-between border-b border-line pb-1">
-                <span className="label-caps text-muted">{g.currency}</span>
+                <span className="label-caps text-muted">{currencyLabel(g.currency, locale)}</span>
                 <span className="num">
                   {fmtNumber(g.market_value, 0)} <span className={signClass(g.day_change_value)}>{g.day_change_value >= 0 ? "+" : ""}{fmtNumber(g.day_change_value, 0)}</span>
                 </span>

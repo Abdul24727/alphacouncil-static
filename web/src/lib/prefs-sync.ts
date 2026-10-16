@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { api } from "@/lib/api/client";
 import { useMe } from "@/lib/auth";
 import { useChartPrefs } from "@/lib/chart-prefs";
+import { type Pinned, useDashboards } from "@/lib/dashboards-store";
 import { useLayout } from "@/lib/layout-store";
 import { useSettings } from "@/lib/settings-store";
 
@@ -13,6 +14,7 @@ type Saved = {
   decimals?: "auto" | 2 | 3;
   fontSize?: "sm" | "md" | "lg";
   controlsOnHover?: boolean;
+  dashboards?: Pinned[];
 };
 
 function collect(): Saved {
@@ -25,11 +27,13 @@ function collect(): Saved {
     decimals: s.decimals,
     fontSize: s.fontSize,
     controlsOnHover: s.controlsOnHover,
+    dashboards: useDashboards.getState().pinned,
   };
 }
 
 function apply(saved: Saved) {
   if (saved.layout) useLayout.setState(saved.layout);
+  if (saved.dashboards) useDashboards.setState({ pinned: saved.dashboards });
   if (saved.chart) useChartPrefs.setState(saved.chart as Partial<ReturnType<typeof useChartPrefs.getState>>);
   const { decimals, fontSize, controlsOnHover } = saved;
   useSettings.setState({
@@ -40,7 +44,7 @@ function apply(saved: Saved) {
 }
 
 /**
- * Signed in: the account's saved panes, chart and display settings win over
+ * Signed in: the account's saved panes, chart, display settings and pinned items win over
  * this browser's, and every later change is saved back (debounced). A new
  * account starts from whatever this browser already had.
  */
@@ -63,11 +67,12 @@ export function usePrefsSync() {
       if (cancelled) return;
       const saved = (data?.data ?? {}) as Saved;
       if (Object.keys(saved).length) apply(saved);
-      else save();
       ready = true;
+      // A new account, or one saved before pins were kept: start from this browser's state.
+      if (!Object.keys(saved).length || (!saved.dashboards && useDashboards.getState().pinned.length)) save();
     });
 
-    const unsubs = [useLayout.subscribe(push), useChartPrefs.subscribe(push), useSettings.subscribe(push)];
+    const unsubs = [useLayout.subscribe(push), useChartPrefs.subscribe(push), useSettings.subscribe(push), useDashboards.subscribe(push)];
     return () => {
       cancelled = true;
       clearTimeout(timer);

@@ -39,7 +39,8 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next?: stri
     } catch (err) {
       const status = err instanceof ApiError ? err.status : 0;
       setError(
-        status === 401
+        // The API answers 403 (never 401) for a failed sign-in; see api/app/auth.py AUTH_FAILED.
+        status === 401 || status === 403
           ? t("errors.credentials")
           : status === 409
             ? t("errors.exists")

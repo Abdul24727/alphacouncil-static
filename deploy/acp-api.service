@@ -17,7 +17,8 @@ PrivateTmp=yes
 ProtectHome=yes
 ProtectSystem=strict
 ReadOnlyPaths=/var/lib/alphacouncil /opt/alphacouncil
-MemoryMax=1G
+# Each worker caches a few dozen parsed price histories (~1.35 MB each); 2 workers.
+MemoryMax=2G
 
 [Install]
 WantedBy=multi-user.target

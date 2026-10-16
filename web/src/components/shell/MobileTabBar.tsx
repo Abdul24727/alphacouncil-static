@@ -19,7 +19,7 @@ export function MobileTabBar() {
 
   return (
     <nav
-      aria-label="Tabs"
+      aria-label={t("tabs")}
       className="fixed inset-x-0 bottom-0 z-30 flex h-14 border-t border-line bg-bg pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       <WithPathname

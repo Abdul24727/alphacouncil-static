@@ -3,7 +3,7 @@ pipeline's databases; anything missing is returned as null, never estimated."""
 
 import sqlite3
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel
 
 from .. import ratios
@@ -344,6 +344,8 @@ class NewsItem(BaseModel):
     section: str  # news | disclosures | events
     date: str | None  # ISO; disclosures and events carry 21:00 UTC = midnight Riyadh
     title: str | None
+    # English headline written for a non-English item (news_ai), when there is one.
+    title_en: str | None = None
     url: str | None
     lang: str | None
     snippet: str | None
@@ -358,7 +360,22 @@ def _lang_of(url: str | None) -> str | None:
     return "ar" if "/ar/" in url else "en" if "/en/" in url else None
 
 
-def _items(request: Request, ref: str, sections: tuple[str, ...], limit: int, upcoming: bool = False) -> list[NewsItem]:
+def prefer_language(items: list, lang: str | None, limit: int, key=lambda i: i.lang) -> list:
+    """Items in `lang` first (newest first), topped up with the other language only when there
+    are not `limit` of them; the result stays in date order."""
+    if lang not in ("en", "ar"):
+        return items[:limit]
+    chosen = [i for i in items if key(i) == lang][:limit]
+    if len(chosen) < limit:
+        picked = {id(i) for i in chosen}
+        chosen += [i for i in items if id(i) not in picked][: limit - len(chosen)]
+    order = {id(i): n for n, i in enumerate(items)}
+    return sorted(chosen, key=lambda i: order[id(i)])
+
+
+def _items(
+    request: Request, ref: str, sections: tuple[str, ...], limit: int, upcoming: bool = False, lang: str | None = None
+) -> list[NewsItem]:
     t = resolve(request, ref)
     s = settings_of(request)
     limit = max(1, min(limit, 50))
@@ -374,16 +391,18 @@ def _items(request: Request, ref: str, sections: tuple[str, ...], limit: int, up
                 f" WHERE i.ticker_key = ? AND i.section IN ({marks})"
                 " AND i.date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*'"
                 f" {when} ORDER BY i.date {order} LIMIT ?",
-                (t.ticker_key, *sections, limit),
+                # Room to prefer the page's language among recent items.
+                (t.ticker_key, *sections, limit * 4 if lang else limit),
             ).fetchall()
     except MarketDataUnavailable as exc:
         raise HTTPException(503, f"Market data unavailable: {exc}") from exc
-    return [
+    items = [
         NewsItem(
             id=r["id"],
             section=r["section"],
             date=r["date"],
             title=r["title"],
+            title_en=r["headline_en"] if _lang_of(r["url"]) != "en" else None,
             url=r["url"],
             lang=_lang_of(r["url"]),
             snippet=r["snippet"] or None,
@@ -393,12 +412,13 @@ def _items(request: Request, ref: str, sections: tuple[str, ...], limit: int, up
         )
         for r in rows
     ]
+    return prefer_language(items, lang, limit)
 
 
 @router.get("/news", operation_id="getTickerNews")
-def get_news(request: Request, ref: str, limit: int = 12) -> list[NewsItem]:
-    """Latest news and disclosures touching this ticker."""
-    return _items(request, ref, ("news", "disclosures"), limit)
+def get_news(request: Request, ref: str, limit: int = 12, lang: str | None = Query(None, pattern="^(en|ar)$")) -> list[NewsItem]:
+    """Latest news and disclosures touching this ticker; `lang` puts the page's language first."""
+    return _items(request, ref, ("news", "disclosures"), limit, lang=lang)
 
 
 @router.get("/events", operation_id="getTickerEvents")

@@ -189,7 +189,7 @@ export function DataTable({
                   className={`px-2 py-1 ${isNum ? "num text-end" : ""} ${bad ? "text-stale underline decoration-dotted" : "text-text"}`}
                   dir={isNum ? "ltr" : "auto"}
                 >
-                  {cell == null ? "—" : isNum ? (fmtNumber(cell, Math.abs(cell) >= 100 ? 0 : cell % 1 ? 2 : 0) ?? String(cell)) : cell}
+                  {cell == null ? "—" : isNum ? (fmtNumber(cell, cellDigits(cell)) ?? String(cell)) : cell}
                 </td>
               );
             })}
@@ -223,4 +223,10 @@ export function CopilotChart({ chart }: { chart: ChartData }) {
       <PriceChart bars={p.bars} mode="line" range={chart.range} indicators={NO_INDICATORS} digits={priceDigits(p.currency)} height={170} />
     </figure>
   );
+}
+
+/** The decimals a number came with (at least two for a fraction, at most four): never rounded away. */
+function cellDigits(n: number): number {
+  const frac = String(n).split(".")[1]?.length ?? 0;
+  return frac === 0 ? 0 : Math.min(4, Math.max(2, frac));
 }

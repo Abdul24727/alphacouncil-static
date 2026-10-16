@@ -3,7 +3,16 @@ import type { components, paths } from "./schema";
 
 // Same-origin: next.config.ts rewrites /api/v1/* to the FastAPI service.
 // Regenerate the types with `npm run gen:api` after changing the API.
-export const api = createClient<paths>({ baseUrl: "/api" });
+// A data request that hangs ends after 30 s, so a panel shows an error with "Try again"
+// instead of loading forever. (The Copilot streams through its own transport.)
+const REQUEST_TIMEOUT_MS = 30_000;
+const fetchWithTimeout: typeof fetch = (input, init) => {
+  const timeout = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
+  const caller = init?.signal ?? (input instanceof Request ? input.signal : undefined);
+  return fetch(input, { ...init, signal: caller ? AbortSignal.any([caller, timeout]) : timeout });
+};
+
+export const api = createClient<paths>({ baseUrl: "/api", fetch: fetchWithTimeout });
 
 type S = components["schemas"];
 export type TickerHit = S["TickerHit"];

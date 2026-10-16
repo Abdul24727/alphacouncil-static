@@ -10,7 +10,11 @@
     "settings": "Settings",
     "collapse": "Collapse sidebar",
     "expand": "Expand sidebar",
-    "language": "Language"
+    "language": "Language",
+    "sidebar": "Sidebar",
+    "resizeSidebar": "Resize sidebar",
+    "resizeCopilot": "Resize Copilot",
+    "tabs": "Tabs"
   },
   "search": {
     "title": "Search tickers",
@@ -102,7 +106,10 @@
     "templates": "Earnings Season, Dividend Hunter and Sector vs Sector.",
     "dashboards": "Dashboards you build from pinned panels.",
     "settings": "Language, decimals, font size, controls on hover.",
-    "stock": "Overview, Financials, Council, Ownership and Calendar pages in fixed layouts."
+    "stock": "Overview, Financials, Council, Ownership and Calendar pages in fixed layouts.",
+    "retry": "Try again",
+    "failed": "The data could not be loaded (HTTP {status}).",
+    "timedOut": "The request took too long."
   },
   "exchanges": {
     "TADAWUL": "Tadawul",
@@ -235,7 +242,9 @@
         "momentum": "Trend regime above {regime_bullish_above} with the 50-day average above the 200-day bullish, above {regime_neutral_above} neutral, else bearish.",
         "risk": "1-year volatility below {vol_bullish_below}% with a yield above {yield_bullish_above}% bullish, below {vol_neutral_below}% neutral, else bearish.",
         "news": "Rated news of the last {window_days} days: a majority positive bullish, a majority negative bearish, otherwise neutral. No rated news: abstains."
-      }
+      },
+      "yes": "yes",
+      "no": "no"
     },
     "peers": {
       "symbol": "Symbol",
@@ -364,8 +373,17 @@
         "low": "L",
         "close": "C",
         "volume": "V"
-      }
-    }
+      },
+      "ranges": {
+        "1M": "1M",
+        "3M": "3M",
+        "6M": "6M",
+        "1Y": "1Y",
+        "5Y": "5Y"
+      },
+      "notEnough": "{name} needs {need} days of prices; this stock has {have}."
+    },
+    "pagesNav": "Pages"
   },
   "ticker": {
     "switch": "Change ticker for this group"

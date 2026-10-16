@@ -140,7 +140,7 @@ function DeleteAccount() {
       await del.mutateAsync({ password });
       router.replace("/");
     } catch (err) {
-      setError(err instanceof ApiError && err.status === 401 ? t("deleteWrongPassword") : t("deleteFailed"));
+      setError(err instanceof ApiError && (err.status === 401 || err.status === 403) ? t("deleteWrongPassword") : t("deleteFailed"));
     }
   };
   return (

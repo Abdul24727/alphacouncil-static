@@ -19,7 +19,7 @@ export function Sidebar() {
 
   return (
     <aside
-      aria-label="Sidebar"
+      aria-label={t("sidebar")}
       className="relative flex w-[var(--sidebar-w)] shrink-0 flex-col border-e border-line bg-bg max-md:hidden sidebar-collapsed:w-12"
     >
       <div className="flex h-12 items-center gap-2 border-b border-line px-3 sidebar-collapsed:justify-center sidebar-collapsed:px-0">

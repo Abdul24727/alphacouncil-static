@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel
 
 from .. import ratios
@@ -10,7 +10,7 @@ from ..freshness import Freshness, assess
 from ..market_db import MarketDataUnavailable, reader
 from ..universe import EXCHANGE_ORDER, Universe
 from .portfolio import LastClose, last_close
-from .ticker import TickerRef, ref_of, settings_of
+from .ticker import TickerRef, prefer_language, ref_of, settings_of
 
 router = APIRouter(tags=["market"])
 
@@ -94,6 +94,8 @@ class NewsLine(BaseModel):
     title: str | None
     url: str | None
     lang: str | None
+    # English headline written for a non-English item (news_ai), when there is one.
+    title_en: str | None = None
 
 
 class Overview(BaseModel):
@@ -141,7 +143,7 @@ def _lang(url: str | None) -> str | None:
 
 
 @router.get("/market/overview", operation_id="marketOverview")
-def overview(request: Request, movers: int = 6) -> Overview:
+def overview(request: Request, movers: int = 6, lang: str | None = Query(None, pattern="^(en|ar)$")) -> Overview:
     uni = _uni(request)
     closes = _closes(request, uni)
     summaries = _summaries(request, uni, closes)
@@ -160,18 +162,26 @@ def overview(request: Request, movers: int = 6) -> Overview:
     try:
         with reader(s.evidence_db, immutable=s.market_db_immutable, name="EVIDENCE_DB") as conn:
             rows = conn.execute(
-                "SELECT ticker_key, date, title, url FROM items WHERE section = 'news'"
-                " AND date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' ORDER BY date DESC LIMIT 40"
+                "SELECT i.ticker_key, i.date, i.title, i.url, n.headline_en FROM items i"
+                " LEFT JOIN news_ai n ON n.url = i.url WHERE i.section = 'news'"
+                " AND i.date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' ORDER BY i.date DESC LIMIT 200"
             ).fetchall()
         seen = set()
+        candidates: list[NewsLine] = []
         for r in rows:
             t = uni.by_key.get(r["ticker_key"])
             if t is None or r["title"] in seen:
                 continue
             seen.add(r["title"])
-            news.append(NewsLine(ticker=ref_of(t), date=r["date"], title=r["title"], url=r["url"], lang=_lang(r["url"])))
-            if len(news) >= 10:
-                break
+            lang_of = _lang(r["url"])
+            candidates.append(
+                NewsLine(
+                    ticker=ref_of(t), date=r["date"], title=r["title"], url=r["url"], lang=lang_of,
+                    title_en=r["headline_en"] if lang_of != "en" else None,
+                )
+            )
+        # The page's language first (an English headline counts for English pages).
+        news = prefer_language(candidates, lang, 10, key=lambda n: "en" if n.lang == "en" or n.title_en else n.lang)
     except MarketDataUnavailable:
         pass
 

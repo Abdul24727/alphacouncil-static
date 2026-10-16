@@ -12,6 +12,7 @@ import {
   fmtPct,
   fmtRatioPct,
   signClass,
+  withCurrency,
 } from "@/lib/format";
 import { useChartPrefs } from "@/lib/chart-prefs";
 import { useTickerCouncil, useTickerDetail, useTickerNews, useTickerPeers, useTickerPrices } from "@/lib/queries";
@@ -26,6 +27,7 @@ const GROUP = 1 as const;
 
 export function PricePanel({ className }: { className?: string }) {
   const t = useTranslations("stock");
+  const locale = useLocale();
   const slug = useGroupTicker(GROUP);
   const prices = useTickerPrices(slug);
   const { mode, range, indicators, setMode, setRange, toggleIndicator } = useChartPrefs();
@@ -90,9 +92,9 @@ export function PricePanel({ className }: { className?: string }) {
                 aria-checked={range === r}
                 data-range={r}
                 onClick={() => setRange(r)}
-                className={`num rounded-chip px-1.5 py-0.5 text-[11px] ${range === r ? "text-signal" : "text-muted hover:text-text"}`}
+                className={`rounded-chip px-1.5 py-0.5 text-[11px] ${locale === "ar" ? "" : "num"} ${range === r ? "text-signal" : "text-muted hover:text-text"}`}
               >
-                {r}
+                {t(`chart.ranges.${r}`)}
               </button>
             ))}
           </div>
@@ -129,7 +131,7 @@ function ChartArea(props: Omit<React.ComponentProps<typeof PriceChart>, "height"
 
 type MetricRow = [key: string, value: string | null, tone?: number | null];
 
-function metricRows(d: TickerDetail): { section: string; rows: MetricRow[] }[] {
+function metricRows(d: TickerDetail, locale: string): { section: string; rows: MetricRow[] }[] {
   const cur = d.ticker.currency ?? "";
   const q = d.quote;
   const v = d.valuation;
@@ -140,9 +142,9 @@ function metricRows(d: TickerDetail): { section: string; rows: MetricRow[] }[] {
     {
       section: "trading",
       rows: [
-        ["market_cap", mcap && `${mcap} ${cur}`],
+        ["market_cap", withCurrency(mcap, cur, locale)],
         ["volume", fmtCompact(q.volume)],
-        ["value_traded", q.value_traded != null ? `${fmtCompact(q.value_traded)} ${cur}` : null],
+        ["value_traded", withCurrency(fmtCompact(q.value_traded), cur, locale)],
       ],
     },
     {
@@ -176,11 +178,12 @@ function metricRows(d: TickerDetail): { section: string; rows: MetricRow[] }[] {
 
 export function MetricsPanel({ className }: { className?: string }) {
   const t = useTranslations("stock.metrics");
+  const locale = useLocale();
   const tp = useTranslations("stock.panels");
   const slug = useGroupTicker(GROUP);
   const detail = useTickerDetail(slug);
   const d = detail.data;
-  const sections = d ? metricRows(d) : [];
+  const sections = d ? metricRows(d, locale) : [];
   const fundamentals = d?.freshness.find((f) => f.category === "fundamentals") ?? null;
 
   return (
@@ -360,7 +363,7 @@ export function NewsPanel({ className }: { className?: string }) {
   const t = useTranslations("stock");
   const locale = useLocale();
   const slug = useGroupTicker(GROUP);
-  const news = useTickerNews(slug, 10);
+  const news = useTickerNews(slug, 10, locale === "ar" ? "ar" : "en");
   const detail = useTickerDetail(slug);
   const freshness = detail.data?.freshness.find((f) => f.category === "news") ?? null;
   const items = news.data ?? [];
@@ -380,7 +383,12 @@ export function NewsPanel({ className }: { className?: string }) {
       <QueryState isPending={news.isPending} error={news.error} empty={items.length === 0} emptyText={t("news.none")}>
         <ul className="flex flex-col">
           {items.map((i) => {
-            const summary = locale === "ar" ? (i.summary_ar ?? i.summary_en) : (i.summary_en ?? i.summary_ar);
+            // The page's language only: an Arabic summary under an English headline (or the
+            // reverse) reads as a mistake. English pages use the English headline when one exists.
+            const summary = locale === "ar" ? i.summary_ar : i.summary_en;
+            const english = locale !== "ar" && i.lang !== "en" && i.title_en;
+            const title = english ? i.title_en : i.title;
+            const titleLang = english ? "en" : (i.lang ?? undefined);
             return (
               <li key={i.id} className="border-t border-line py-2 first:border-t-0 first:pt-0">
                 <div className="mb-0.5 flex items-center gap-2">
@@ -392,15 +400,15 @@ export function NewsPanel({ className }: { className?: string }) {
                     href={i.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    lang={i.lang ?? undefined}
+                    lang={titleLang}
                     dir="auto"
                     className="block text-text hover:text-signal"
                   >
-                    {i.title}
+                    {title}
                   </a>
                 ) : (
-                  <span lang={i.lang ?? undefined} dir="auto" className="block text-text">
-                    {i.title}
+                  <span lang={titleLang} dir="auto" className="block text-text">
+                    {title}
                   </span>
                 )}
                 {summary && (

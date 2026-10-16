@@ -82,7 +82,7 @@ export function ExchangesTable({ rows }: { rows: Exchange[] }) {
 export function HomeView() {
   const t = useTranslations("market");
   const locale = useLocale();
-  const q = useMarketOverview();
+  const q = useMarketOverview(locale === "ar" ? "ar" : "en");
   const o = q.data;
 
   return (
@@ -149,8 +149,16 @@ export function HomeView() {
                     <span className="num text-[11px] text-muted">{newsDate(n, locale)}</span>
                     <span className="num text-[11px] text-signal">{n.ticker.symbol}</span>
                   </div>
-                  <a href={n.url ?? undefined} target="_blank" rel="noopener noreferrer" lang={n.lang ?? undefined} dir="auto" className="text-text hover:text-signal">
-                    {n.title}
+                  {/* English pages use the English headline written for an Arabic item, when there is one. */}
+                  <a
+                    href={n.url ?? undefined}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    lang={locale !== "ar" && n.lang !== "en" && n.title_en ? "en" : (n.lang ?? undefined)}
+                    dir="auto"
+                    className="text-text hover:text-signal"
+                  >
+                    {locale !== "ar" && n.lang !== "en" && n.title_en ? n.title_en : n.title}
                   </a>
                 </li>
               ))}

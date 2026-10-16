@@ -197,3 +197,14 @@ def test_the_default_sector_bucket_is_not_a_sector(client):
     assert get(client, "/v1/tickers/1111")["ticker"]["sector_en"] is None
     peers = [p["ticker"]["ticker_key"] for p in get(client, "/v1/tickers/2222/peers")["peers"]]
     assert "1111_TADAWUL" not in peers and "2223_TADAWUL" in peers
+
+
+def test_news_prefers_the_page_language_and_keeps_date_order():
+    from types import SimpleNamespace as N
+
+    from app.routers.ticker import prefer_language
+
+    items = [N(id=1, lang="ar"), N(id=2, lang="en"), N(id=3, lang="ar"), N(id=4, lang="en"), N(id=5, lang="ar")]
+    assert [i.id for i in prefer_language(items, "en", 3)] == [1, 2, 4]  # both English, topped up by the newest
+    assert [i.id for i in prefer_language(items, "ar", 3)] == [1, 3, 5]
+    assert [i.id for i in prefer_language(items, None, 2)] == [1, 2]

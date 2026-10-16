@@ -6,7 +6,7 @@ import { FreshnessLight } from "@/components/panel/Panel";
 import { CopilotOpenButton } from "@/components/shell/WorkHeader";
 import { TickerNames } from "@/components/ticker/TickerPicker";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
-import { fmtDate, fmtNumber, fmtPct, signClass } from "@/lib/format";
+import { currencyLabel, fmtDate, fmtNumber, fmtPct, signClass } from "@/lib/format";
 import { useTickerDetail } from "@/lib/queries";
 import { GROUP_COLOR, useGroupTicker, useTickerGroups } from "@/lib/ticker-groups";
 
@@ -99,7 +99,7 @@ function TickerHeader() {
           </span>
         )}
         <span className="num text-[20px] text-text">{price ?? t("noPrice")}</span>
-        {ref?.currency && price && <span className="label-caps text-muted">{ref.currency}</span>}
+        {ref?.currency && price && <span className="label-caps text-muted">{currencyLabel(ref.currency, locale)}</span>}
         {change && <span className={`num text-[13px] ${signClass(q?.day_change_pct)}`}>{change}</span>}
         {q?.as_of_date && (
           <span className="hidden text-muted lg:inline">
@@ -114,10 +114,11 @@ function TickerHeader() {
 
 function StockTabs({ active }: { active: StockTab }) {
   const t = useTranslations("stock.tabs");
+  const ts = useTranslations("stock");
   const slug = useGroupTicker(1);
   if (!slug) return null;
   return (
-    <nav aria-label="Pages" className="flex h-10 shrink-0 items-stretch gap-1 overflow-x-auto border-b border-line px-2">
+    <nav aria-label={ts("pagesNav")} className="flex h-10 shrink-0 items-stretch gap-1 overflow-x-auto border-b border-line px-2">
       {STOCK_TABS.map((tab) => (
         <Link
           key={tab}

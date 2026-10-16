@@ -8,6 +8,7 @@
 
 import base64
 import hashlib
+import json
 import secrets
 import threading
 import time
@@ -27,6 +28,10 @@ from .legal import REGISTRATION
 from .settings import Settings
 
 COOKIE = "acp_session"
+# Sign-in failures answer 403, not 401: a 401 without a WWW-Authenticate challenge (cookie
+# sessions have none) makes browsers drop cached HTTP Basic credentials, which logged
+# testers out of the staging gate after any signed-out API call.
+AUTH_FAILED = 403
 SESSION_DAYS = 30
 UNSAFE = {"POST", "PUT", "PATCH", "DELETE"}
 
@@ -141,7 +146,7 @@ def current_user(request: Request) -> User | None:
 
 def require_user(user: Annotated[User | None, Depends(current_user)]) -> User:
     if user is None:
-        raise HTTPException(401, "Sign in to use this.")
+        raise HTTPException(AUTH_FAILED, "Sign in to use this.")
     return user
 
 
@@ -265,7 +270,7 @@ def login(request: Request, response: Response, body: LoginBody) -> Me:
         row = conn.execute(select(users).where(users.c.email == email)).first()
         # Same error for unknown email and wrong password.
         if row is None or not verify_password(body.password, row.password_hash):
-            raise HTTPException(401, "Email or password is incorrect.")
+            raise HTTPException(AUTH_FAILED, "Email or password is incorrect.")
         _start_session(request, response, conn, row.id)
     return Me(user=User(id=row.id, email=row.email, display_name=row.display_name, locale=row.locale))
 
@@ -289,7 +294,7 @@ def delete_account(
     with db(request).begin() as conn:
         row = conn.execute(select(users.c.password_hash).where(users.c.id == user.id)).first()
         if row is None or not verify_password(body.password, row.password_hash):
-            raise HTTPException(401, "Password is incorrect.")
+            raise HTTPException(AUTH_FAILED, "Password is incorrect.")
         conn.execute(delete(users).where(users.c.id == user.id))
     response.delete_cookie(COOKIE, path="/")
     return Me(user=None)
@@ -304,7 +309,8 @@ def me(user: Annotated[User | None, Depends(current_user)]) -> Me:
 
 
 class Prefs(BaseModel):
-    """Per-user UI settings: panes, chart, language, decimals, font size, controls on hover."""
+    """Per-user UI settings: panes, chart, language, decimals, font size, controls on hover,
+    and the Copilot results pinned to My dashboards."""
 
     data: dict[str, Any]
 
@@ -319,6 +325,8 @@ def get_prefs(request: Request, user: Annotated[User, Depends(require_user)]) ->
 @me_router.put("/prefs", operation_id="putPrefs", dependencies=[Depends(check_origin)])
 def put_prefs(request: Request, body: Prefs, user: Annotated[User, Depends(require_user)]) -> Prefs:
     data = {k: v for k, v in body.data.items() if k in PREF_KEYS}
+    if len(json.dumps(data, default=str)) > PREFS_MAX_BYTES:
+        raise HTTPException(413, "Too much saved. Unpin something from My dashboards.")
     with db(request).begin() as conn:
         updated = conn.execute(
             update(prefs).where(prefs.c.user_id == user.id).values(data=data, updated_at=utcnow())
@@ -330,4 +338,6 @@ def put_prefs(request: Request, body: Prefs, user: Annotated[User, Depends(requi
     return Prefs(data=data)
 
 
-PREF_KEYS = {"layout", "chart", "locale", "decimals", "fontSize", "controlsOnHover"}
+PREF_KEYS = {"layout", "chart", "locale", "decimals", "fontSize", "controlsOnHover", "dashboards"}
+# Pinned tables carry their rows; a few dozen fit comfortably.
+PREFS_MAX_BYTES = 512_000

@@ -151,7 +151,7 @@ export function SeatsPanel({ className }: { className?: string }) {
                         <div key={i.name} className="flex items-baseline gap-2">
                           <dt className="text-text-soft">{t(`council.inputs.${i.name}`)}</dt>
                           <dd>
-                            <Num value={inputValue(i.name, i.value)} />
+                            <Num value={i.value === "yes" || i.value === "no" ? t(`council.${i.value}`) : inputValue(i.name, i.value)} />
                           </dd>
                         </div>
                       ))}

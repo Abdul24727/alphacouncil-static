@@ -5,10 +5,11 @@ import { api, unwrap } from "@/lib/api/client";
 
 // Market-wide views
 
-export function useMarketOverview() {
+export function useMarketOverview(lang?: "en" | "ar") {
   return useQuery({
-    queryKey: ["market", "overview"],
-    queryFn: async ({ signal }) => unwrap(await api.GET("/v1/market/overview", { signal })),
+    queryKey: ["market", "overview", lang],
+    // `lang` puts news in the page's language first.
+    queryFn: async ({ signal }) => unwrap(await api.GET("/v1/market/overview", { params: { query: { lang } }, signal })),
   });
 }
 

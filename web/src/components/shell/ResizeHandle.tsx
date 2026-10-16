@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { COPILOT, SIDEBAR, useLayout } from "@/lib/layout-store";
 
 type Pane = "sidebar" | "copilot";
@@ -9,6 +10,7 @@ type Pane = "sidebar" | "copilot";
  * the work area and the Copilot grows away from it, mirrored in RTL.
  */
 export function ResizeHandle({ pane, className = "" }: { pane: Pane; className?: string }) {
+  const t = useTranslations("nav");
   const width = useLayout((s) => (pane === "sidebar" ? s.sidebarWidth : s.copilotWidth));
   const range = pane === "sidebar" ? SIDEBAR : COPILOT;
 
@@ -54,7 +56,7 @@ export function ResizeHandle({ pane, className = "" }: { pane: Pane; className?:
     <div
       role="separator"
       aria-orientation="vertical"
-      aria-label={pane === "sidebar" ? "Resize sidebar" : "Resize Copilot"}
+      aria-label={t(pane === "sidebar" ? "resizeSidebar" : "resizeCopilot")}
       aria-valuemin={range.min}
       aria-valuemax={range.max}
       aria-valuenow={width}

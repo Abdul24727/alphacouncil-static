@@ -72,3 +72,22 @@ export function fmtDate(iso: string | null | undefined, locale?: string): string
   if (Number.isNaN(d.getTime())) return null;
   return isolate(d.toLocaleDateString(dateLocale(locale), { day: "numeric", month: "short", year: "numeric" }), locale);
 }
+
+/** Arabic pages name currencies the way Gulf readers do; English pages keep the ISO code. */
+const CURRENCY_AR: Record<string, string> = { SAR: "ر.س", AED: "د.إ", QAR: "ر.ق", KWD: "د.ك", BHD: "د.ب", OMR: "ر.ع" };
+
+export function currencyLabel(code: string | null | undefined, locale: string): string {
+  if (!code) return "";
+  return locale === "ar" ? (CURRENCY_AR[code] ?? code) : code;
+}
+
+/**
+ * An amount with its currency, for a left-to-right number cell. On Arabic pages the
+ * currency goes first in the string so that, read right to left, the amount comes first.
+ */
+export function withCurrency(value: string | null | undefined, code: string | null | undefined, locale: string): string | null {
+  if (value == null) return null;
+  const cur = currencyLabel(code, locale);
+  if (!cur) return value;
+  return locale === "ar" ? `${cur} ${value}` : `${value} ${cur}`;
+}

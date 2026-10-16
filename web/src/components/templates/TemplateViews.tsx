@@ -17,8 +17,9 @@ import { Panel } from "@/components/panel/Panel";
 import { Num, priceDigits, QueryState, toTsv } from "@/components/stock/common";
 import { Link } from "@/i18n/navigation";
 import type { components } from "@/lib/api/schema";
-import { fmtCompact, fmtDate, fmtNumber, fmtPct, fmtRatioPct, signClass } from "@/lib/format";
+import { fmtCompact, fmtDate, fmtNumber, fmtPct, fmtRatioPct, signClass, withCurrency } from "@/lib/format";
 import { useDividendHunter, useEarningsSeason, useSectorCompare, useSectors } from "@/lib/queries-app";
+import { dataLabel } from "@/lib/data-labels";
 import { TEMPLATES, templateHref, type TemplateName } from "@/lib/templates";
 
 const SCREENS: Record<"en" | "ar", Record<TemplateName, StaticImageData>> = {
@@ -109,7 +110,9 @@ function EarningsSeason() {
             <td className="py-1.5 pe-2">
               <TickerCell ticker={e.ticker} />
             </td>
-            <td className="py-1.5 capitalize text-text-soft" dir="auto">{e.title}</td>
+            <td className="py-1.5 text-text-soft" dir="auto" lang={dataLabel(e.title, locale).lang}>
+              {dataLabel(e.title, locale).text}
+            </td>
             <td className="py-1.5 text-end">
               <PriceCell price={e.price} currency={e.ticker.currency} />
             </td>
@@ -338,7 +341,7 @@ function SectorVsSector() {
                     <TickerRow key={m.ticker.ticker_key} ticker={m.ticker}>
                       <td className="py-1.5 pe-2"><TickerCell ticker={m.ticker} /></td>
                       <td className="py-1.5 text-end"><PriceCell price={m.price} currency={m.ticker.currency} /></td>
-                      <td className="py-1.5 text-end"><Num value={m.market_cap_mn != null ? `${fmtCompact(m.market_cap_mn * 1e6)} ${m.ticker.currency ?? ""}` : null} /></td>
+                      <td className="py-1.5 text-end"><Num value={m.market_cap_mn != null ? withCurrency(fmtCompact(m.market_cap_mn * 1e6), m.ticker.currency, locale) : null} /></td>
                       <td className="py-1.5 text-end"><Num value={m.pe != null ? fmtNumber(m.pe, 1) : null} /></td>
                       <td className="py-1.5 text-end"><Num value={fmtPct(m.dividend_yield_pct, 2)} /></td>
                       <td className="py-1.5 text-end"><Num value={fmtRatioPct(m.return_12m, 1, true)} className={signClass(m.return_12m)} /></td>

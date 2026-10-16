@@ -89,7 +89,7 @@ def test_a_real_model_answers_signed_in_users_only(client, monkeypatch):
     s = client.get("/v1/copilot/status").json()
     assert s["stand_in"] is False and s["sign_in_required"] is True
     body = {"messages": [{"id": "u1", "role": "user", "parts": [{"type": "text", "text": "hi"}]}], "panels": [], "locale": "en"}
-    assert client.post("/v1/copilot/chat", json=body).status_code == 401
+    assert client.post("/v1/copilot/chat", json=body).status_code == 403
     monkeypatch.delenv("ANTHROPIC_API_KEY")
     assert client.get("/v1/copilot/status").json()["sign_in_required"] is False
 

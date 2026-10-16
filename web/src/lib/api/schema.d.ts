@@ -104,7 +104,7 @@ export interface paths {
         };
         /**
          * Get News
-         * @description Latest news and disclosures touching this ticker.
+         * @description Latest news and disclosures touching this ticker; `lang` puts the page's language first.
          */
         get: operations["getTickerNews"];
         put?: never;
@@ -1065,6 +1065,8 @@ export interface components {
             date: string | null;
             /** Title */
             title: string | null;
+            /** Title En */
+            title_en?: string | null;
             /** Url */
             url: string | null;
             /** Lang */
@@ -1089,6 +1091,8 @@ export interface components {
             url: string | null;
             /** Lang */
             lang: string | null;
+            /** Title En */
+            title_en?: string | null;
         };
         /** Overview */
         Overview: {
@@ -1173,7 +1177,8 @@ export interface components {
         };
         /**
          * Prefs
-         * @description Per-user UI settings: panes, chart, language, decimals, font size, controls on hover.
+         * @description Per-user UI settings: panes, chart, language, decimals, font size, controls on hover,
+         *     and the Copilot results pinned to My dashboards.
          */
         Prefs: {
             /** Data */
@@ -1727,6 +1732,7 @@ export interface operations {
         parameters: {
             query?: {
                 limit?: number;
+                lang?: string | null;
             };
             header?: never;
             path: {
@@ -2393,6 +2399,7 @@ export interface operations {
         parameters: {
             query?: {
                 movers?: number;
+                lang?: string | null;
             };
             header?: never;
             path?: never;

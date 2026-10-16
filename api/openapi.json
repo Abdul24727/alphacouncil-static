@@ -237,7 +237,7 @@
           "ticker"
         ],
         "summary": "Get News",
-        "description": "Latest news and disclosures touching this ticker.",
+        "description": "Latest news and disclosures touching this ticker; `lang` puts the page's language first.",
         "operationId": "getTickerNews",
         "parameters": [
           {
@@ -257,6 +257,23 @@
               "type": "integer",
               "default": 12,
               "title": "Limit"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(en|ar)$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lang"
             }
           }
         ],
@@ -1133,6 +1150,23 @@
               "type": "integer",
               "default": 6,
               "title": "Movers"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(en|ar)$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lang"
             }
           }
         ],
@@ -3033,6 +3067,17 @@
             ],
             "title": "Title"
           },
+          "title_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title En"
+          },
           "url": {
             "anyOf": [
               {
@@ -3163,6 +3208,17 @@
               }
             ],
             "title": "Lang"
+          },
+          "title_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title En"
           }
         },
         "type": "object",
@@ -3478,7 +3534,7 @@
           "data"
         ],
         "title": "Prefs",
-        "description": "Per-user UI settings: panes, chart, language, decimals, font size, controls on hover."
+        "description": "Per-user UI settings: panes, chart, language, decimals, font size, controls on hover,\nand the Copilot results pinned to My dashboards."
       },
       "PriceHistory": {
         "properties": {
