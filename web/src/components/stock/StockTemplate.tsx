@@ -94,7 +94,7 @@ function TickerHeader() {
 
       <div className="ms-auto flex shrink-0 items-baseline gap-3">
         {q?.freshness !== undefined && (
-          <span className="self-center">
+          <span className="flex self-center">
             <FreshnessLight freshness={q?.freshness ?? null} />
           </span>
         )}
@@ -102,7 +102,8 @@ function TickerHeader() {
         {ref?.currency && price && <span className="label-caps text-muted">{currencyLabel(ref.currency, locale)}</span>}
         {change && <span className={`num text-[13px] ${signClass(q?.day_change_pct)}`}>{change}</span>}
         {q?.as_of_date && (
-          <span className="hidden text-muted lg:inline">
+          // A stale price always shows its date; a current one only where there is room.
+          <span className={q.freshness?.stale ? "text-stale" : "hidden text-muted lg:inline"}>
             {t("asOf")} <span className="num">{fmtDate(q.as_of_date, locale)}</span>
           </span>
         )}
