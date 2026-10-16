@@ -64,21 +64,28 @@ await page.waitForURL(new RegExp(`/t/${peerSlug}$`), { timeout: 20000 });
 await waitForPanels(peerSlug);
 check(true, `peers row click moved every panel to ${peerSlug}`);
 
-// Stale panel: amber light with the real timestamp in its tooltip.
+// Freshness light on the metrics panel; then a stale panel: amber light with the real timestamp in its tooltip.
 await page.goto(`${BASE_URL}/t/2222`);
 await waitForPanels("2222");
 const light = page.locator('[data-panel="overview.metrics"]:visible [data-freshness]');
 const state = await light.getAttribute("data-freshness");
 const color = await light.evaluate((el) => getComputedStyle(el).backgroundColor);
 check(state === "stale" || state === "fresh", `metrics panel has a freshness light (${state})`);
+// Every panel on 2222 can be fresh, so the stale light is checked on a stock whose prices
+// really are old: BMEB.BH (last trade 8 Aug 2018).
+await page.goto(`${BASE_URL}/t/BMEB.BH`);
 const stalePanel = page.locator('[data-freshness="stale"]:visible').first();
+await stalePanel.waitFor({ timeout: 20000 });
 await stalePanel.hover();
 const tip = page.getByText(/Updated .* · next /);
 await tip.waitFor({ timeout: 5000 });
 const tipText = await tip.innerText();
 const staleColor = await stalePanel.evaluate((el) => getComputedStyle(el).backgroundColor);
 check(staleColor === "rgb(242, 177, 52)", `stale light is amber #F2B134 (${staleColor})`);
-check(/Updated \d{1,2} \w{3}( \d{4})? \d{2}:\d{2} · next/.test(tipText), `tooltip shows the real timestamp: "${tipText}"`);
+// Today's runs show the time only ("Updated 07:02"); older ones add the date.
+check(/Updated (\d{1,2} \w{3}( \d{4})? )?\d{2}:\d{2} · next/.test(tipText), `tooltip shows the real timestamp: "${tipText}"`);
+const asOfText = await page.getByText(/data as of/).innerText();
+check(/data as of 8 Aug 2018/.test(asOfText), `tooltip dates the data itself: "${asOfText}"`);
 console.log(`metrics light colour: ${color}`);
 
 await browser.close();
