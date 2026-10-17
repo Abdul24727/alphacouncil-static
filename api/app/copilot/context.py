@@ -112,6 +112,8 @@ TAG = re.compile(r"\[(?:P\d+|DB)\]")
 # A sentence ends at . ! ? ؟ followed by a space or the end (not inside "4.81"), or at a line end.
 SENTENCE = re.compile(r"[^\n]+?(?:[.!?؟](?=\s|$)|$)", re.M)
 FIGURE = re.compile(r"[-−]?\d[\d,]*(?:\.\d+)?")
+LEADING_TAGS = re.compile(r"^(?:\s*\[(?:P\d+|DB)\])+")
+TRAILING_TAG = re.compile(r"[ \t]*\[(?:P\d+|DB)\]")
 
 
 def _figures(sentence: str) -> set[str]:
@@ -134,8 +136,10 @@ def missing_citations(answer: str, panels: dict[str, set[str]], db: set[str]) ->
     in no source gets no tag: nothing is attributed that the data does not show."""
     out = []
     for m in SENTENCE.finditer(answer):
-        sentence = m.group(0).strip()
-        if not sentence or TAG.search(sentence):
+        # Models also put the tag after the full stop ("... in Q2. [DB] Next sentence"): a tag
+        # right after a sentence is its own, and not part of the next one.
+        sentence = LEADING_TAGS.sub("", m.group(0)).strip()
+        if not sentence or TAG.search(sentence) or TRAILING_TAG.match(answer, m.end()):
             continue
         tags: list[str] = []
         for f in sorted(_figures(sentence)):

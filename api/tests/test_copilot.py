@@ -332,3 +332,17 @@ def test_openrouter_reads_the_page_tickers_core_data_before_its_first_turn(clien
     first_text = types.index("text-start")
     assert types.index("tool-input-available") < types.index("finish-step") < first_text
     assert [p["data"] for p in parts if p["type"] == "data-autocite"] == []  # the answer was tagged
+
+
+def test_a_tag_after_the_full_stop_belongs_to_its_sentence():
+    from app.copilot.context import missing_citations
+
+    answer = (
+        "The yield is 5.27%. [P1] [DB] It paid 0.34 per share. [DB]\n\n"
+        "ROE is 26.75%. Nothing else here."
+    )
+    # Only the last figure is untagged; the leading "[P1] [DB]" is not credited to "It paid...".
+    assert missing_citations(answer, {"P1": {"5.27", "26.75"}}, {"0.34"}) == [{"sentence": "ROE is 26.75%.", "tags": ["P1"]}]
+    assert missing_citations("It paid 0.34 per share. Then 0.35. [DB]", {}, {"0.34", "0.35"}) == [
+        {"sentence": "It paid 0.34 per share.", "tags": ["DB"]}
+    ]
