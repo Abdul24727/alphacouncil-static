@@ -1,7 +1,10 @@
 // Real screens of the app for the landing page and /templates (src/assets/screens/).
 //
 //   node scripts/capture-screens.mjs        # API + web dev servers running (BASE_URL, default :3100)
+//   BASE_URL=http://localhost:3201 node scripts/capture-screens.mjs   # beta, through the tunnel
 //
+// When a real AI model answers, the Copilot needs an account: the script signs up a
+// throwaway one (run it against beta or a dev server, never production).
 // Every number in these images comes from our database on the day they are taken; re-run
 // after a data refresh or a UI change and commit the new files. Uses the local Chrome.
 import { mkdir, writeFile } from "node:fs/promises";
@@ -24,13 +27,32 @@ async function settle(page) {
   await page.waitForTimeout(1200); // charts draw on the next frames
 }
 
+// A real model answers signed-in users only; the stand-in answers anyone.
+async function signInIfNeeded(context, locale) {
+  const status = await (await context.request.get(`${BASE_URL}/api/v1/copilot/status`)).json();
+  if (!status.sign_in_required) return;
+  const page = await context.newPage();
+  // Wait for hydration: an early click would submit the form natively.
+  await page.goto(`${BASE_URL}${locale === "ar" ? "/ar" : ""}/signup?next=/home`, { waitUntil: "networkidle" });
+  // A display name, so the sidebar shows it rather than the throwaway address.
+  await page.locator("input[name=name]:visible").fill(locale === "ar" ? "حساب تجريبي" : "Demo account");
+  await page.locator("input[type=email]:visible").fill(`screens-${locale}-${Date.now()}@example.com`);
+  await page.locator("input[type=password]:visible").fill("a long test password");
+  await page.locator("input[type=checkbox]:visible").check();
+  await page.locator("form:visible button[type=submit]").click();
+  await page.waitForURL((u) => u.pathname.endsWith("/home"), { timeout: 30000 });
+  await page.close();
+}
+
 const askCopilot = (locale) => async (page) => {
+  await signInIfNeeded(page.context(), locale);
+  await page.reload({ waitUntil: "networkidle" });
   await settle(page);
   const box = page.locator("[data-copilot-pane] textarea:visible");
   await box.fill(QUESTION[locale]);
   await box.press("Enter");
-  await page.locator('[data-copilot-pane] [data-message="assistant"]:visible').first().waitFor({ timeout: 30000 });
-  await page.waitForFunction(() => !document.querySelector("[data-copilot-pane] button[aria-label='Stop'], [data-copilot-pane] button[aria-label='إيقاف']"));
+  await page.locator('[data-copilot-pane] [data-message="assistant"]:visible').first().waitFor({ timeout: 60000 });
+  await page.waitForFunction(() => !document.querySelector("[data-copilot-pane] button[aria-label='Stop'], [data-copilot-pane] button[aria-label='إيقاف']"), null, { timeout: 180000 });
   await page.waitForTimeout(800);
 };
 

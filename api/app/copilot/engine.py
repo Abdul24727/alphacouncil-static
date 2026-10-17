@@ -30,7 +30,7 @@ Language. Answer in the language of the user's question (Arabic or English). Kee
 
 Order. Gather the data first: write nothing before or between tool calls, then write the answer once.
 
-Shape. Lead with the direct answer in one to three sentences, then the supporting figures. Describe missing or unavailable values in plain words; never quote field names, null or status codes. Use show_table when a small table of database values helps, and show_price_chart when a chart helps. End every answer by calling suggest_follow_ups with two or three short questions in the user's language."""
+Shape. Lead with the direct answer in one to three sentences, then the supporting figures. Describe missing or unavailable values in plain words; never quote field names, null or status codes. Write sentences and "-" lists only: tables go in show_table, never as Markdown tables, and write no HTML or tags. Use show_table when a small table of database values helps, and show_price_chart when a chart helps. End every answer by calling suggest_follow_ups with two or three short questions in the user's language."""
 
 
 def _tool_defs() -> list[dict[str, Any]]:

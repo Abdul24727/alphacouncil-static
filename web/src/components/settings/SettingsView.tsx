@@ -144,7 +144,8 @@ function DeleteAccount() {
     }
   };
   return (
-    <form onSubmit={submit} className="mt-3 flex w-full flex-col gap-2 border-t border-line pt-3" data-delete-account>
+    // method="post": a submit before hydration must not put the password in the URL.
+    <form method="post" onSubmit={submit} className="mt-3 flex w-full flex-col gap-2 border-t border-line pt-3" data-delete-account>
       <h3 className="text-text">{t("deleteTitle")}</h3>
       <p className="text-[12px] text-muted">{t("deleteBody")}</p>
       <label className="flex flex-col gap-1">

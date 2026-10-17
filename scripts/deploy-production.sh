@@ -17,7 +17,7 @@ cd "$ROOT"
 
 branch="$(git rev-parse --abbrev-ref HEAD)"
 [[ "$branch" == "rebuild" ]] || { echo "refusing: on branch '$branch', expected 'rebuild'" >&2; exit 1; }
-[[ -z "$(git status --porcelain)" ]] || { echo "refusing: uncommitted changes" >&2; exit 1; }
+[[ -z "$(git status --porcelain --untracked-files=no)" ]] || { echo "refusing: uncommitted changes" >&2; exit 1; }
 sha="$(git rev-parse --short=10 HEAD)"
 rel="$BASE/releases/$sha"
 ssh_() { ssh -o BatchMode=yes "$HOST" "$@"; }

@@ -56,7 +56,8 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next?: stri
   const field = "h-10 w-full rounded-panel border border-line bg-bg px-3 text-[14px] text-text outline-none focus:border-muted";
 
   return (
-    <form onSubmit={submit} className="flex w-full flex-col gap-3" noValidate>
+    // method="post": a submit before the page has hydrated must not put the password in the URL.
+    <form method="post" onSubmit={submit} className="flex w-full flex-col gap-3" noValidate>
       <h1 className="headline text-[28px] leading-none">{t(mode === "login" ? "loginTitle" : "signupTitle")}</h1>
       {mode === "signup" && (
         <label className="flex flex-col gap-1">
