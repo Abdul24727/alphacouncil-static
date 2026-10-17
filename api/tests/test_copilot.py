@@ -224,7 +224,8 @@ def test_openrouter_asks_for_follow_ups_when_the_model_skips_them(client, monkey
     assert follow == [["Payout ratio?", "Next ex-date?"]]
     assert _FakeOpenAI.seen[1]["tool_choice"] == {"type": "function", "function": {"name": "suggest_follow_ups"}}
     assert len(_FakeOpenAI.seen) == 2  # one nudge, then done
-    assert _FakeOpenAI.seen[0]["extra_body"] == {}  # reasoning off by default (COPILOT_REASONING)
+    # Reasoning off by default (COPILOT_REASONING); hosts sorted by latency (COPILOT_PROVIDER_SORT).
+    assert _FakeOpenAI.seen[0]["extra_body"] == {"provider": {"sort": "latency"}}
 
 
 def test_keepalive_fills_silences_without_touching_parts():
@@ -245,3 +246,52 @@ def test_keepalive_fills_silences_without_touching_parts():
     out = asyncio.run(collect())
     assert out[0] == a and out[-1] == b
     assert KEEPALIVE in out and set(out) <= {a, b, KEEPALIVE}
+
+
+def test_sentences_quoting_figures_without_a_tag_get_their_source():
+    from app.copilot.context import missing_citations
+
+    panels = {"P1": {"4.81", "2.52"}, "P2": {"230.00"}}
+    db = {"9.52", "2.52"}
+    answer = (
+        "Book value per share is −4.81 and EPS is -2.52. The last close was 230.00 AED [P2]. "
+        "It rose 9.52% on the day. The 1-month return is not available."
+    )
+    assert missing_citations(answer, panels, db) == [
+        {"sentence": "Book value per share is −4.81 and EPS is -2.52.", "tags": ["P1"]},
+        {"sentence": "It rose 9.52% on the day.", "tags": ["DB"]},
+    ]
+    # A figure no source shows is never attributed.
+    assert missing_citations("The P/E is 13.8x.", panels, db) == []
+
+
+def test_openrouter_narration_is_not_the_answer_and_untagged_figures_are_cited(client, monkeypatch):
+    from app.copilot import openai_compat
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-used")
+    monkeypatch.setattr(openai_compat.openai, "AsyncOpenAI", _FakeOpenAI)
+    _FakeOpenAI.seen = []
+    _FakeOpenAI.turns = [
+        [  # narration, then the database call in the same step
+            _chunk(content="Let me check the dividend history:"),
+            _chunk(tool=(0, "call_1", "get_dividends", '{"ticker": "2222"}')),
+            _chunk(finish="tool_calls"),
+        ],
+        [  # the answer, with a figure but no tag, then the follow-ups
+            _chunk(content="Saudi Aramco paid 0.34 per share in Q2 2026."),
+            _chunk(tool=(0, "call_2", "suggest_follow_ups", '{"questions": ["Payout ratio?", "Yield vs peers?"]}')),
+            _chunk(finish="tool_calls"),
+        ],
+    ]
+    signup = {"email": "cite@example.com", "password": "correct horse battery", "accept_terms": True}
+    client.post("/v1/auth/signup", json=signup, headers={"Origin": "http://testserver"})
+    body = {"messages": [{"id": "u1", "role": "user", "parts": [{"type": "text", "text": "Aramco dividends?"}]}], "panels": [], "locale": "en"}
+    parts = []
+    with client.stream("POST", "/v1/copilot/chat", json=body, headers={"Origin": "http://testserver"}) as r:
+        for line in r.iter_lines():
+            if line.startswith("data: ") and line != "data: [DONE]":
+                parts.append(json.loads(line[6:]))
+    cites = [p["data"] for p in parts if p["type"] == "data-autocite"]
+    # Only the answer is checked (not the narration), and 0.34 was read from the database.
+    assert cites == [[{"sentence": "Saudi Aramco paid 0.34 per share in Q2 2026.", "tags": ["DB"]}]]
+    assert "Write nothing before or between database tool calls" in _FakeOpenAI.seen[0]["messages"][0]["content"]

@@ -24,5 +24,6 @@ export type CopilotMessage = UIMessage<
     followups: { questions: string[] };
     model: { name: string; stand_in: boolean };
     sources: Sources;
+    autocite: { sentence: string; tags: string[] }[];
   }
 >;

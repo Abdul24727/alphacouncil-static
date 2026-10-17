@@ -4,6 +4,7 @@ import { CheckIcon, DrawingPinIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import { priceDigits } from "@/components/stock/common";
 import { PriceChart } from "@/components/stock/PriceChart";
+import { addCitations, splitAnswer, type Autocite } from "@/lib/copilot-answer";
 import { useDashboards } from "@/lib/dashboards-store";
 import { fmtNumber } from "@/lib/format";
 import { useTickerPrices } from "@/lib/queries";
@@ -49,11 +50,12 @@ export function AssistantMessage({
   const t = useTranslations("copilot");
   const parts = message.parts;
   const sources: Sources = (parts.find((p) => p.type === "data-sources") as { data: Sources } | undefined)?.data ?? {};
-  const steps = parts.filter((p) => p.type === "reasoning" || isTool(p));
-  const text = parts
-    .map((p) => (p.type === "text" ? p.text : ""))
-    .join("")
-    .trim();
+  // Narration written before a database lookup goes to the steps list (lib/copilot-answer);
+  // figures the model left untagged get the tag of where they were read.
+  const { answer, narration } = splitAnswer(parts, !streaming);
+  const cites = parts.flatMap((p) => (p.type === "data-autocite" ? (p.data as Autocite[]) : []));
+  const text = addCitations(answer, cites);
+  const steps = parts.filter((p) => p.type === "reasoning" || isTool(p) || narration.has(p));
   const tables = parts.flatMap((p) => (p.type === "data-table" ? [p.data as TableData] : []));
   const charts = parts.flatMap((p) => (p.type === "data-chart" ? [p.data as ChartData] : []));
   const followUps = parts.flatMap((p) => (p.type === "data-followups" ? (p.data as { questions: string[] }).questions : []));
@@ -69,7 +71,7 @@ export function AssistantMessage({
           </summary>
           <ol className="flex flex-col gap-1.5 border-t border-line px-2 py-2 text-[12px]">
             {steps.map((p, i) =>
-              p.type === "reasoning" ? (
+              p.type === "reasoning" || p.type === "text" ? (
                 <li key={i} className="whitespace-pre-wrap text-muted" dir="auto">
                   {p.text}
                 </li>

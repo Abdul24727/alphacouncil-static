@@ -45,6 +45,10 @@ class Settings(BaseSettings):
     # Ask OpenRouter for the model's reasoning (shown in the collapsible steps). Off by
     # default: with DeepSeek v3.2 it roughly doubles each step's time.
     copilot_reasoning: bool = False
+    # How OpenRouter picks among the hosts serving the model: "latency" (fastest first token;
+    # measured 0.25 s against 1.7 s on the default pick), "throughput", "price", or "" for
+    # OpenRouter's default. Sent only to openrouter.ai.
+    copilot_provider_sort: str = "latency"
     copilot_effort: str = "medium"  # low | medium | high | xhigh | max
     # Questions per hour per signed-in user (or per address for the stand-in).
     copilot_hourly_limit: int = 60

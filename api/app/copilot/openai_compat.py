@@ -17,7 +17,7 @@ from starlette.concurrency import run_in_threadpool
 
 from ..settings import Settings
 from . import tools
-from .context import ChatInput, numbers_in, panel_block, sources
+from .context import AnswerTrace, ChatInput, numbers_in, panel_block, sources
 from .engine import MAX_STEPS, SYSTEM, TOOL_RESULT_CHARS, _client_view, _ui_tool
 from .stream import Writer
 
@@ -34,7 +34,8 @@ def _tool_defs() -> list[dict[str, Any]]:
 # Fewer round trips: each one costs a full model turn on OpenAI-compatible providers.
 SYSTEM_EXTRA = (
     "\n\nSpeed. When you need several database tools, call them all together in one step. "
-    "Calling suggest_follow_ups ends your answer: call it last, after the final text."
+    "Calling suggest_follow_ups ends your answer: call it last, after the final text. "
+    "Write nothing before or between database tool calls: write the answer once, after the last result."
 )
 
 
@@ -52,6 +53,7 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
     yield w.data("model", {"name": settings.copilot_model, "stand_in": False})
     yield w.data("sources", sources(chat))
     seen = numbers_in([p.data for p in chat.panels])
+    trace = AnswerTrace(chat)
 
     client = openai.AsyncOpenAI(
         base_url=settings.openrouter_base_url,
@@ -59,7 +61,10 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
         default_headers={"X-Title": "AlphaCouncil"},
     )
     messages = _history(chat)
-    extra = {"reasoning": {"enabled": True}} if settings.copilot_reasoning else {}
+    extra: dict[str, Any] = {"reasoning": {"enabled": True}} if settings.copilot_reasoning else {}
+    # OpenRouter serves a model from several hosts; the default pick can be several times slower.
+    sort = settings.copilot_provider_sort if "openrouter.ai" in settings.openrouter_base_url else ""
+    routing: dict[str, Any] = {"provider": {"sort": sort}} if sort else {}
     followed_up = nudged = False
 
     for step in range(MAX_STEPS):
@@ -75,7 +80,7 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
                 max_tokens=8_000,
                 stream=True,
                 # The follow-up turn only needs a quick tool call.
-                extra_body={} if nudged else extra,
+                extra_body=routing if nudged else {**extra, **routing},
             )
             async for chunk in stream:
                 for choice in chunk.choices:
@@ -115,6 +120,8 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
         if nudged:
             # Only the follow-ups are wanted from the nudge turn.
             calls = {i: c for i, c in calls.items() if c["name"] == "suggest_follow_ups"}
+        if not nudged:
+            trace.step(text, called_database=any(c["name"] not in tools.UI_TOOL_NAMES for c in calls.values()))
         if not calls:
             yield w.finish_step()
             # SYSTEM asks for follow-ups at the end of every answer; some models stop without
@@ -167,6 +174,7 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
             else:
                 payload = await run_in_threadpool(tools.run, request, c["name"], args)
                 numbers_in(payload, seen)
+                numbers_in(payload, trace.db)
             yield w.tool_result(c["id"], _client_view(payload))
             messages.append(
                 {"role": "tool", "tool_call_id": c["id"], "content": json.dumps(payload, ensure_ascii=False, default=str)[:TOOL_RESULT_CHARS]}
@@ -176,4 +184,8 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
         if nudged or followed_up:
             break
 
+    # Sentences that quote a figure without its tag get the tag of where the figure was read.
+    cites = trace.citations()
+    if cites:
+        yield w.data("autocite", cites)
     yield w.finish()

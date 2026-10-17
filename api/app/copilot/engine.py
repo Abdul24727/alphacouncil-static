@@ -10,7 +10,7 @@ from starlette.concurrency import run_in_threadpool
 
 from ..settings import Settings
 from . import tools
-from .context import ChatInput, numbers_in, panel_block, sources, unverified_cells
+from .context import AnswerTrace, ChatInput, numbers_in, panel_block, sources, unverified_cells
 from .stream import Writer, new_id
 
 MAX_STEPS = 6
@@ -27,6 +27,8 @@ Numbers. Quote values as the source gives them, with units and the listing curre
 Scope. Explain what the data shows. Do not tell the user to buy, sell or hold anything and do not give personalised investment advice; if asked, say you can only describe the data.
 
 Language. Answer in the language of the user's question (Arabic or English). Keep company names as the data gives them.
+
+Order. Gather the data first: write nothing before or between tool calls, then write the answer once.
 
 Shape. Lead with the direct answer in one to three sentences, then the supporting figures. Use show_table when a small table of database values helps, and show_price_chart when a chart helps. End every answer by calling suggest_follow_ups with two or three short questions in the user's language."""
 
@@ -64,6 +66,7 @@ async def claude_stream(request: Request, chat: ChatInput, settings: Settings) -
     yield w.data("sources", sources(chat))
     # Every number the Copilot reads, to check tables it builds (see unverified_cells).
     seen = numbers_in([p.data for p in chat.panels])
+    trace = AnswerTrace(chat)
 
     client = anthropic.AsyncAnthropic()
     messages = _history(chat)
@@ -71,6 +74,7 @@ async def claude_stream(request: Request, chat: ChatInput, settings: Settings) -
 
     for _ in range(MAX_STEPS):
         yield w.start_step()
+        step_text = ""
         try:
             async with client.beta.messages.stream(
                 model=settings.copilot_model,
@@ -89,6 +93,7 @@ async def claude_stream(request: Request, chat: ChatInput, settings: Settings) -
                         if event.delta.type == "thinking_delta" and event.delta.thinking:
                             yield w.reasoning(event.delta.thinking)
                         elif event.delta.type == "text_delta":
+                            step_text += event.delta.text
                             yield w.text(event.delta.text)
                 response = await stream.get_final_message()
             json_retries = 0
@@ -125,6 +130,7 @@ async def claude_stream(request: Request, chat: ChatInput, settings: Settings) -
             continue
 
         tool_uses = [b for b in response.content if b.type == "tool_use"]
+        trace.step(step_text, called_database=any(b.name not in tools.UI_TOOL_NAMES for b in tool_uses))
         if not tool_uses:
             yield w.finish_step()
             break
@@ -151,12 +157,16 @@ async def claude_stream(request: Request, chat: ChatInput, settings: Settings) -
             else:
                 payload = await run_in_threadpool(tools.run, request, block.name, args)
                 numbers_in(payload, seen)
+                numbers_in(payload, trace.db)
             yield w.tool_result(block.id, _client_view(payload))
             results.append({"type": "tool_result", "tool_use_id": block.id,
                             "content": json.dumps(payload, ensure_ascii=False, default=str)[:TOOL_RESULT_CHARS]})
         messages.append({"role": "user", "content": results})
         yield w.finish_step()
 
+    cites = trace.citations()
+    if cites:
+        yield w.data("autocite", cites)
     yield w.finish()
 
 

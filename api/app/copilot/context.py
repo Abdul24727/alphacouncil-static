@@ -108,6 +108,64 @@ def numbers_in(value: Any, out: set[str] | None = None) -> set[str]:
     return out
 
 
+TAG = re.compile(r"\[(?:P\d+|DB)\]")
+# A sentence ends at . ! ? ؟ followed by a space or the end (not inside "4.81"), or at a line end.
+SENTENCE = re.compile(r"[^\n]+?(?:[.!?؟](?=\s|$)|$)", re.M)
+FIGURE = re.compile(r"[-−]?\d[\d,]*(?:\.\d+)?")
+
+
+def _figures(sentence: str) -> set[str]:
+    """Figures worth a citation: decimals, grouped thousands, or 10 and above ("1-month" is not one)."""
+    out = set()
+    for m in FIGURE.findall(sentence):
+        raw = m.replace("−", "-").replace(",", "")
+        try:
+            v = abs(float(raw))
+        except ValueError:
+            continue
+        if "." in raw or "," in m or v >= 10:
+            out.add(f"{v:.2f}")
+    return out
+
+
+def missing_citations(answer: str, panels: dict[str, set[str]], db: set[str]) -> list[dict[str, Any]]:
+    """Sentences that quote figures but carry no citation tag, with the tags of the sources
+    those figures were read from (attached panels first, then the database). A figure found
+    in no source gets no tag: nothing is attributed that the data does not show."""
+    out = []
+    for m in SENTENCE.finditer(answer):
+        sentence = m.group(0).strip()
+        if not sentence or TAG.search(sentence):
+            continue
+        tags: list[str] = []
+        for f in sorted(_figures(sentence)):
+            tag = next((t for t, nums in panels.items() if f in nums), None) or ("DB" if f in db else None)
+            if tag and tag not in tags:
+                tags.append(tag)
+        if tags:
+            out.append({"sentence": sentence, "tags": sorted(tags, key=lambda t: (t == "DB", t))})
+    return out
+
+
+class AnswerTrace:
+    """What one answer read and wrote, for missing_citations: the numbers in each attached
+    panel and in database tool results, and the answer's text. Text written in a step that
+    called a database tool is narration ("Let me check..."), not part of the answer; the web
+    app moves it into the steps list the same way."""
+
+    def __init__(self, chat: ChatInput) -> None:
+        self.panels = {tag: numbers_in(p.data) for tag, p in chat.tags.items()}
+        self.db: set[str] = set()
+        self.answer = ""
+
+    def step(self, text: str, called_database: bool) -> None:
+        if not called_database:
+            self.answer += text
+
+    def citations(self) -> list[dict[str, Any]]:
+        return missing_citations(self.answer, self.panels, self.db)
+
+
 def unverified_cells(rows: list[list[Any]], seen: set[str]) -> list[list[int]]:
     """[row, col] of numeric cells whose value appears nowhere in the data the Copilot read."""
     bad = []
