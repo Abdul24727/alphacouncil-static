@@ -67,6 +67,11 @@ hour, and a reset ends every session of the account. Email goes over SMTP with t
 `SMTP_HOST` the pages still answer the same and the API logs `email is not configured`
 (`journalctl -u acp-prod-api`). Check the flow with `web/scripts/check-reset.mjs`.
 
+Live since release `2ed8823d96` (checks in `screenshots/password-reset-check-{beta,production}.txt`).
+Both `api.env` files carry the old backend's MailerSend SMTP lines, copied on the server with the
+owner's approval (the files before that are kept as `api.env.bak-<time>`); the old backend's own
+`.env` was not changed. MailerSend's free plan is shared with the old backend, which still runs.
+
 ## Not in production yet
 
 - Checkout (Moyasar) and Pro billing: until it opens, every account gets the Pro features
