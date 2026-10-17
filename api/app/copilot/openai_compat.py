@@ -6,6 +6,7 @@ come from the environment (COPILOT_PROVIDER, OPENROUTER_BASE_URL, COPILOT_MODEL)
 key is OPENROUTER_API_KEY and never leaves the process.
 """
 
+import asyncio
 import json
 import os
 from collections.abc import AsyncIterator
@@ -35,8 +36,14 @@ def _tool_defs() -> list[dict[str, Any]]:
 SYSTEM_EXTRA = (
     "\n\nSpeed. When you need several database tools, call them all together in one step. "
     "Calling suggest_follow_ups ends your answer: call it last, after the final text. "
-    "Write nothing before or between database tool calls: write the answer once, after the last result."
+    "Write nothing before or between database tool calls: write the answer once, after the last result. "
+    "The page ticker's overview, dividends and fundamentals are already fetched below; call tools only for anything else."
 )
+
+# The page ticker's core data, fetched before the model's first turn. Measured on DeepSeek v3.2:
+# models answer from the attached panel first, then look these up and answer again, which
+# costs a full turn or two. About 7 KB (2,500 tokens) of input for 2222.
+PREFETCH = ("get_ticker_overview", "get_dividends", "get_fundamentals")
 
 
 def _history(chat: ChatInput) -> list[dict[str, Any]]:
@@ -61,6 +68,9 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
         default_headers={"X-Title": "AlphaCouncil"},
     )
     messages = _history(chat)
+    if chat.ticker:
+        async for part in _prefetch(request, w, chat.ticker, messages, seen, trace):
+            yield part
     extra: dict[str, Any] = {"reasoning": {"enabled": True}} if settings.copilot_reasoning else {}
     # OpenRouter serves a model from several hosts; the default pick can be several times slower.
     sort = settings.copilot_provider_sort if "openrouter.ai" in settings.openrouter_base_url else ""
@@ -189,3 +199,26 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
     if cites:
         yield w.data("autocite", cites)
     yield w.finish()
+
+
+async def _prefetch(request: Request, w: Writer, ticker: str, messages: list, seen: set[str], trace: AnswerTrace) -> AsyncIterator[str]:
+    """Run PREFETCH for the page ticker as one step the model reads as its own tool calls."""
+    calls = [{"id": f"prefetch_{name}", "name": name, "args": {"ticker": ticker}} for name in PREFETCH]
+    payloads = await asyncio.gather(*(run_in_threadpool(tools.run, request, c["name"], c["args"]) for c in calls))
+    yield w.start_step()
+    messages.append(
+        {
+            "role": "assistant",
+            "content": None,
+            "tool_calls": [
+                {"id": c["id"], "type": "function", "function": {"name": c["name"], "arguments": json.dumps(c["args"])}} for c in calls
+            ],
+        }
+    )
+    for c, payload in zip(calls, payloads, strict=True):
+        numbers_in(payload, seen)
+        numbers_in(payload, trace.db)
+        yield w.tool_call(c["id"], c["name"], c["args"])
+        yield w.tool_result(c["id"], _client_view(payload))
+        messages.append({"role": "tool", "tool_call_id": c["id"], "content": json.dumps(payload, ensure_ascii=False, default=str)[:TOOL_RESULT_CHARS]})
+    yield w.finish_step()

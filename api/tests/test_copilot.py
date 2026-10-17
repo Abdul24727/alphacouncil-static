@@ -295,3 +295,40 @@ def test_openrouter_narration_is_not_the_answer_and_untagged_figures_are_cited(c
     # Only the answer is checked (not the narration), and 0.34 was read from the database.
     assert cites == [[{"sentence": "Saudi Aramco paid 0.34 per share in Q2 2026.", "tags": ["DB"]}]]
     assert "Write nothing before or between database tool calls" in _FakeOpenAI.seen[0]["messages"][0]["content"]
+
+
+def test_openrouter_reads_the_page_tickers_core_data_before_its_first_turn(client, monkeypatch):
+    from app.copilot import openai_compat
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-used")
+    monkeypatch.setattr(openai_compat.openai, "AsyncOpenAI", _FakeOpenAI)
+    _FakeOpenAI.seen = []
+    _FakeOpenAI.turns = [
+        [
+            _chunk(content="Saudi Aramco paid 0.34 per share in Q2 2026 [DB]."),
+            _chunk(tool=(0, "call_1", "suggest_follow_ups", '{"questions": ["Payout ratio?", "Yield vs peers?"]}')),
+            _chunk(finish="tool_calls"),
+        ],
+    ]
+    signup = {"email": "prefetch@example.com", "password": "correct horse battery", "accept_terms": True}
+    client.post("/v1/auth/signup", json=signup, headers={"Origin": "http://testserver"})
+    body = {"messages": [{"id": "u1", "role": "user", "parts": [{"type": "text", "text": "Is the dividend safe?"}]}], "panels": [], "locale": "en", "ticker": "2222"}
+    parts = []
+    with client.stream("POST", "/v1/copilot/chat", json=body, headers={"Origin": "http://testserver"}) as r:
+        for line in r.iter_lines():
+            if line.startswith("data: ") and line != "data: [DONE]":
+                parts.append(json.loads(line[6:]))
+    # One model turn: the data was already in the conversation.
+    assert len(_FakeOpenAI.seen) == 1
+    msgs = _FakeOpenAI.seen[0]["messages"]  # the engine's own list (it grows after the call)
+    i = next(n for n, m in enumerate(msgs) if m["role"] == "assistant" and m.get("tool_calls"))
+    assert msgs[i - 1]["role"] == "user"  # right after the question
+    assert [c["function"]["name"] for c in msgs[i]["tool_calls"]] == ["get_ticker_overview", "get_dividends", "get_fundamentals"]
+    results = msgs[i + 1 : i + 4]
+    assert [m["tool_call_id"] for m in results] == ["prefetch_get_ticker_overview", "prefetch_get_dividends", "prefetch_get_fundamentals"]
+    assert "2026-08-19" in results[1]["content"]
+    # The browser sees the lookups as their own first step, before any text.
+    types = [p["type"] for p in parts]
+    first_text = types.index("text-start")
+    assert types.index("tool-input-available") < types.index("finish-step") < first_text
+    assert [p["data"] for p in parts if p["type"] == "data-autocite"] == []  # the answer was tagged
