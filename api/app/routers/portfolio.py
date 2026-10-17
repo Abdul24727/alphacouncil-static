@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import delete, insert, select, update
 
 from ..auth import User, check_origin, db, require_user
-from ..appdb import alerts, holdings, utcnow
+from ..appdb import alerts, holdings, random_id, utcnow
 from ..market_db import MarketDataUnavailable
 from ..prices import PriceStore
 from ..universe import Ticker, Universe
@@ -109,7 +109,7 @@ def _slices(pairs: list[tuple[str, str | None, float]], total: float) -> list[Sl
 def get_portfolio(request: Request, user: Authed) -> Portfolio:
     uni = _universe(request)
     with db(request).connect() as conn:
-        rows = conn.execute(select(holdings).where(holdings.c.user_id == user.id).order_by(holdings.c.id)).fetchall()
+        rows = conn.execute(select(holdings).where(holdings.c.user_id == user.id).order_by(holdings.c.created_at, holdings.c.id)).fetchall()
 
     items: list[Holding] = []
     for r in rows:
@@ -192,7 +192,7 @@ def upsert_holding(request: Request, body: HoldingIn, user: Authed) -> Portfolio
             count = len(conn.execute(select(holdings.c.id).where(holdings.c.user_id == user.id)).fetchall())
             if count >= 200:
                 raise HTTPException(400, "A portfolio holds up to 200 positions.")
-            conn.execute(insert(holdings).values(user_id=user.id, ticker_key=t.ticker_key, quantity=body.quantity, avg_cost=body.avg_cost, created_at=utcnow()))
+            conn.execute(insert(holdings).values(id=random_id(conn, holdings), user_id=user.id, ticker_key=t.ticker_key, quantity=body.quantity, avg_cost=body.avg_cost, created_at=utcnow()))
     return get_portfolio(request, user)
 
 
@@ -225,7 +225,7 @@ class AlertIn(BaseModel):
 def list_alerts(request: Request, user: Authed) -> list[Alert]:
     uni = _universe(request)
     with db(request).connect() as conn:
-        rows = conn.execute(select(alerts).where(alerts.c.user_id == user.id).order_by(alerts.c.id)).fetchall()
+        rows = conn.execute(select(alerts).where(alerts.c.user_id == user.id).order_by(alerts.c.created_at, alerts.c.id)).fetchall()
     out = []
     for r in rows:
         t = uni.by_key.get(r.ticker_key)
@@ -245,7 +245,7 @@ def create_alert(request: Request, body: AlertIn, user: Authed) -> list[Alert]:
     with db(request).begin() as conn:
         if len(conn.execute(select(alerts.c.id).where(alerts.c.user_id == user.id)).fetchall()) >= 100:
             raise HTTPException(400, "Up to 100 alerts.")
-        conn.execute(insert(alerts).values(user_id=user.id, ticker_key=t.ticker_key, kind=body.kind, price=body.price, created_at=utcnow()))
+        conn.execute(insert(alerts).values(id=random_id(conn, alerts), user_id=user.id, ticker_key=t.ticker_key, kind=body.kind, price=body.price, created_at=utcnow()))
     return list_alerts(request, user)
 
 

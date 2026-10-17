@@ -23,7 +23,7 @@ from sqlalchemy import delete, func, insert, select, update
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError
 
-from .appdb import consents, engine_for, prefs, rate_hits, sessions, users, utcnow
+from .appdb import consents, engine_for, prefs, random_id, rate_hits, sessions, users, utcnow
 from .legal import REGISTRATION
 from .settings import Settings
 
@@ -240,6 +240,7 @@ def signup(request: Request, response: Response, body: SignupBody) -> Me:
         with db(request).begin() as conn:
             uid = conn.execute(
                 insert(users).values(
+                    id=random_id(conn, users),
                     email=body.email,
                     password_hash=hash_password(body.password),
                     display_name=(body.display_name or "").strip() or None,

@@ -210,3 +210,20 @@ def test_signed_out_calls_never_answer_401(client):
     for method, path, body in calls:
         r = client.request(method.upper(), path, json=body, headers=ORIGIN)
         assert r.status_code == 403, (method, path, r.status_code)
+
+
+def test_ids_are_random_and_lists_keep_creation_order(client):
+    signup(client, email="ids@example.com")
+    me = client.get("/v1/auth/me").json()["user"]["id"]
+    for t in ("2222", "1120", "2010"):
+        client.post("/v1/portfolio/holdings", json={"ticker": t, "quantity": 1}, headers=ORIGIN)
+        client.post("/v1/portfolio/alerts", json={"ticker": t, "kind": "above", "price": 1}, headers=ORIGIN)
+    holdings = client.get("/v1/portfolio").json()["holdings"]
+    alerts = client.get("/v1/portfolio/alerts").json()
+    # Listed in the order they were added, whatever their ids.
+    assert [h["ticker"]["symbol"] for h in holdings] == ["2222", "1120", "2010"]
+    assert [a["ticker"]["symbol"] for a in alerts] == ["2222", "1120", "2010"]
+    ids = [me] + [h["id"] for h in holdings] + [a["id"] for a in alerts]
+    # No running count: no two ids are neighbours (a chance of about 1 in 10^8 if random).
+    assert all(abs(a - b) > 1 for i, a in enumerate(ids) for b in ids[i + 1 :])
+    assert all(0 < i < 2**31 for i in ids)

@@ -5,6 +5,7 @@ and tests; SQLAlchemy Core keeps one schema for both. Market data never lives
 here: it stays in the pipeline's files.
 """
 
+import secrets
 from datetime import UTC, datetime
 from functools import lru_cache
 
@@ -22,6 +23,7 @@ from sqlalchemy import (
     UniqueConstraint,
     create_engine,
     event,
+    select,
 )
 
 metadata = MetaData()
@@ -104,6 +106,18 @@ rate_hits = Table(
     Column("key", String(300), nullable=False, index=True),
     Column("at", DateTime(timezone=True), nullable=False, index=True),
 )
+
+
+# Ids the browser sees (accounts, holdings, alerts) are random, not a running count: they say
+# nothing about other accounts and cannot be guessed. Ownership is still checked on every request.
+ID_MAX = 2**31 - 1  # the id columns are 32-bit integers
+
+
+def random_id(conn, table: Table) -> int:  # noqa: ANN001
+    while True:
+        candidate = secrets.randbelow(ID_MAX) + 1
+        if conn.execute(select(table.c.id).where(table.c.id == candidate)).first() is None:
+            return candidate
 
 
 @lru_cache
