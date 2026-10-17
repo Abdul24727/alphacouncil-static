@@ -143,22 +143,12 @@ PASS  header follows the group (Al Rajhi Bank)
 PASS  metrics panel loaded 1120 data
 PASS  peers row click moved every panel to 1180
 PASS  metrics panel has a freshness light (fresh)
-node:internal/modules/run_main:107
-    triggerUncaughtException(
-    ^
+PASS  stale light is amber #F2B134 (rgb(242, 177, 52))
+PASS  tooltip shows the real timestamp: "Updated 16 Oct 07:02 · next run 18 Oct 03:00"
+PASS  tooltip dates the data itself: "Older than its expected update · data as of 8 Aug 2018"
+metrics light colour: rgb(63, 217, 138)
 
-locator.hover: Timeout 30000ms exceeded.
-Call log:
-[2m  - waiting for locator('[data-freshness="stale"]:visible').first()[22m
-
-    at C:\projects\alphacouncil-platform\web\scripts\check-phase2.mjs:75:18 {
-  log: [
-    `  - waiting for locator('[data-freshness="stale"]:visible').first()`
-  ],
-  name: 'TimeoutError'
-}
-
-Node.js v24.18.0
+Phase 2 done-when: all checks passed
 
 === Phase 3 ===
 716 tickers, 691 with a price file
@@ -186,7 +176,7 @@ Copilot model: deepseek/deepseek-v3.2
 PASS  signed in (the model requires an account)
 PASS  metrics panel shows as a context chip
 PASS  answer cites the metrics panel
-PASS  answer finished in 85 s (limit 180 s)
+PASS  answer finished in 24 s (limit 180 s)
 PASS  reasoning is collapsible (› REASONING · 5 STEPS)
 PASS  3 follow-up questions
 PASS  citation scrolled the metrics panel into view (top -541 -> 108)
@@ -311,7 +301,7 @@ Phase 6 done-when: all checks passed
 
 Summary
   Phase 1: PASS
-  Phase 2: FAIL
+  Phase 2: PASS
   Phase 3: PASS
   Phase 4: PASS
   Phase 5: PASS

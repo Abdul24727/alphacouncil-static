@@ -1,0 +1,16 @@
+=== Phase 4 (61e6d35) ===
+Copilot model: deepseek/deepseek-v3.2
+PASS  signed in (the model requires an account)
+PASS  metrics panel shows as a context chip
+PASS  answer cites the metrics panel
+PASS  answer finished in 32 s (limit 180 s)
+PASS  reasoning is collapsible (› REASONING · 5 STEPS)
+PASS  3 follow-up questions
+PASS  citation scrolled the metrics panel into view (top -541 -> 108)
+PASS  the cited panel is highlighted
+PASS  pinned table appears on My dashboards
+
+Phase 4 done-when: all checks passed
+=== Phase 7 (61e6d35) ===
+
+88 page views; 0 failure(s); 0 English string(s) in Arabic pages
