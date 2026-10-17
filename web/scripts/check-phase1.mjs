@@ -19,7 +19,7 @@ const APP = [
   "/templates/dividend-hunter", "/templates/sector-vs-sector", "/dashboards", "/settings",
   "/t/2222", "/t/2222/financials", "/t/2222/council", "/t/2222/ownership", "/t/2222/calendar",
 ];
-const SITE = ["/", "/pricing", "/methodology", "/legal", "/legal/privacy", "/login", "/signup"];
+const SITE = ["/", "/pricing", "/methodology", "/legal", "/legal/privacy", "/login", "/signup", "/forgot-password", "/reset-password"];
 const ALLOWED_FONTS = ["Archivo", "Martian Mono", "IBM Plex Sans Arabic"];
 
 const failures = [];

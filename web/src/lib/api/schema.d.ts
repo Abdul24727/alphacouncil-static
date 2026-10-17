@@ -325,6 +325,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/auth/forgot-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Forgot Password
+         * @description Emails a link to choose a new password. The answer never says whether an account has
+         *     this email, and the email goes out after the answer, so its timing does not say it either.
+         */
+        post: operations["forgotPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/reset-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset Password
+         * @description Sets a new password with the emailed link's token, once and within the hour. Every
+         *     session of the account ends (one opened with the old password too) and this browser is
+         *     signed in with a new one.
+         */
+        post: operations["resetPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/auth/me": {
         parameters: {
             query?: never;
@@ -644,6 +687,18 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * Accepted
+         * @description The same answer whether or not an account has the email.
+         */
+        Accepted: {
+            /**
+             * Status
+             * @default ok
+             * @constant
+             */
+            status: "ok";
+        };
         /** Alert */
         Alert: {
             /** Id */
@@ -869,6 +924,16 @@ export interface components {
             as_of: string | null;
             breadth: components["schemas"]["Breadth"];
             index: components["schemas"]["Index"] | null;
+        };
+        /** ForgotBody */
+        ForgotBody: {
+            /** Email */
+            email: string;
+            /**
+             * Locale
+             * @default en
+             */
+            locale: string;
         };
         /** Freshness */
         Freshness: {
@@ -1219,6 +1284,13 @@ export interface components {
             value_traded: number | null;
             /** Market Cap Mn */
             market_cap_mn: number | null;
+        };
+        /** ResetBody */
+        ResetBody: {
+            /** Token */
+            token: string;
+            /** Password */
+            password: string;
         };
         /** Returns */
         Returns: {
@@ -2121,6 +2193,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    forgotPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ForgotBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Accepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resetPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResetBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

@@ -55,3 +55,20 @@ export function useDeleteAccount() {
 export function useSignOut() {
   return useAuthMutation<void>(() => api.POST("/v1/auth/logout").then(unwrap));
 }
+
+/** Asks for a "Forgot password?" email. The API answers the same whether or not an account
+ *  has the address, so this only ever says "sent if it exists". */
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (body: { email: string; locale: "en" | "ar" }) =>
+      api.POST("/v1/auth/forgot-password", { body }).then(unwrap),
+  });
+}
+
+/** Sets a new password with the emailed link's token. The account's other sessions end and
+ *  this browser is signed in. */
+export function useResetPassword() {
+  return useAuthMutation((body: { token: string; password: string }) =>
+    api.POST("/v1/auth/reset-password", { body }).then(unwrap),
+  );
+}

@@ -21,6 +21,7 @@ def create_app() -> FastAPI:
     app.state.prices = PriceStore(settings.universe_root)
     # Counted in the app database: every uvicorn worker shares the same limits.
     app.state.login_limit = auth.DbRateLimit(settings.database_url, "login", limit=10, window_s=15 * 60)
+    app.state.reset_limit = auth.DbRateLimit(settings.database_url, "reset", limit=5, window_s=15 * 60)
     app.state.copilot_limit = auth.DbRateLimit(settings.database_url, "copilot", limit=settings.copilot_hourly_limit, window_s=60 * 60)
 
     v1 = APIRouter(prefix="/v1")

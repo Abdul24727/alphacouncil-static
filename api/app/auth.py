@@ -4,6 +4,8 @@
 - Sessions: a random token in the cookie; only its SHA-256 is stored.
 - Writes with a session cookie must come from an allowed Origin (CSRF).
 - Login and signup are rate limited per IP and per email.
+- Forgot password: an emailed link (token stored as its SHA-256) sets a new password once,
+  within an hour, and ends the account's other sessions.
 """
 
 import base64
@@ -14,16 +16,17 @@ import threading
 import time
 from collections import defaultdict, deque
 from datetime import UTC, datetime, timedelta
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 import bcrypt
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import delete, func, insert, select, update
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError
 
-from .appdb import consents, engine_for, prefs, random_id, rate_hits, sessions, users, utcnow
+from . import mail
+from .appdb import consents, engine_for, password_resets, prefs, random_id, rate_hits, sessions, users, utcnow
 from .legal import REGISTRATION
 from .settings import Settings
 
@@ -33,6 +36,7 @@ COOKIE = "acp_session"
 # testers out of the staging gate after any signed-out API call.
 AUTH_FAILED = 403
 SESSION_DAYS = 30
+RESET_MINUTES = 60
 UNSAFE = {"POST", "PUT", "PATCH", "DELETE"}
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -106,6 +110,11 @@ class DbRateLimit:
 def login_limit(request: Request) -> RateLimit | DbRateLimit:
     """One limiter per app instance (created in main.create_app)."""
     return request.app.state.login_limit
+
+
+def reset_limit(request: Request) -> RateLimit | DbRateLimit:
+    """Forgot-password requests and new-password attempts (created in main.create_app)."""
+    return request.app.state.reset_limit
 
 
 # --- dependencies -------------------------------------------------------------------------------
@@ -284,6 +293,95 @@ def logout(request: Request, response: Response) -> Me:
             conn.execute(delete(sessions).where(sessions.c.token_hash == _token_hash(token)))
     response.delete_cookie(COOKIE, path="/")
     return Me(user=None)
+
+
+# --- forgot password ----------------------------------------------------------------------------
+
+
+class ForgotBody(BaseModel):
+    email: str = Field(max_length=254)
+    # The language of the page that asked: the email and the link's page use it.
+    locale: str = Field(default="en", pattern="^(en|ar)$")
+
+
+class ResetBody(BaseModel):
+    token: str = Field(max_length=200)
+    password: str = Field(min_length=10, max_length=200)
+
+
+class Accepted(BaseModel):
+    """The same answer whether or not an account has the email."""
+
+    status: Literal["ok"] = "ok"
+
+
+def site_url(settings: Settings) -> str:
+    """Where emailed links point: SITE_URL, else our first allowed origin. Never the
+    request's Host header, which the client writes."""
+    first = next((o.strip() for o in settings.allowed_origins.split(",") if o.strip()), "")
+    return (settings.site_url or first).rstrip("/")
+
+
+@router.post("/forgot-password", operation_id="forgotPassword", dependencies=[Depends(check_origin)])
+def forgot_password(request: Request, body: ForgotBody, background: BackgroundTasks) -> Accepted:
+    """Emails a link to choose a new password. The answer never says whether an account has
+    this email, and the email goes out after the answer, so its timing does not say it either."""
+    email = body.email.strip().lower()
+    limit = reset_limit(request)
+    if not (limit.hit(f"ip:{client_ip(request)}") and limit.hit(f"email:{email}")):
+        raise HTTPException(429, "Too many attempts. Try again in 15 minutes.")
+    settings, now = settings_of(request), utcnow()
+    token = secrets.token_urlsafe(32)
+    with db(request).begin() as conn:
+        conn.execute(delete(password_resets).where(password_resets.c.expires_at < now))
+        row = conn.execute(select(users.c.id, users.c.email).where(users.c.email == email)).first()
+        if row is not None:
+            conn.execute(
+                insert(password_resets).values(
+                    token_hash=_token_hash(token),
+                    user_id=row.id,
+                    created_at=now,
+                    expires_at=now + timedelta(minutes=RESET_MINUTES),
+                )
+            )
+    if row is not None:
+        # In the fragment, not the query: browsers never send it, so no server or proxy logs it.
+        link = f"{site_url(settings)}{'/ar' if body.locale == 'ar' else ''}/reset-password#token={token}"
+        background.add_task(mail.send_password_reset, settings, row.email, link, body.locale)
+    return Accepted()
+
+
+@router.post("/reset-password", operation_id="resetPassword", dependencies=[Depends(check_origin)])
+def reset_password(request: Request, response: Response, body: ResetBody) -> Me:
+    """Sets a new password with the emailed link's token, once and within the hour. Every
+    session of the account ends (one opened with the old password too) and this browser is
+    signed in with a new one."""
+    if not reset_limit(request).hit(f"set:ip:{client_ip(request)}"):
+        raise HTTPException(429, "Too many attempts. Try again in 15 minutes.")
+    now = utcnow()
+    with db(request).begin() as conn:
+        # Claimed in one statement: two requests with the same token cannot both succeed.
+        claimed = conn.execute(
+            update(password_resets)
+            .where(
+                password_resets.c.token_hash == _token_hash(body.token),
+                password_resets.c.used_at.is_(None),
+                password_resets.c.expires_at > now,
+            )
+            .values(used_at=now)
+            .returning(password_resets.c.user_id)
+        ).first()
+        if claimed is None:
+            raise HTTPException(AUTH_FAILED, "This link has expired or was already used. Ask for a new one.")
+        uid = claimed.user_id
+        conn.execute(update(users).where(users.c.id == uid).values(password_hash=hash_password(body.password)))
+        conn.execute(delete(sessions).where(sessions.c.user_id == uid))
+        conn.execute(delete(password_resets).where(password_resets.c.user_id == uid, password_resets.c.used_at.is_(None)))
+        _start_session(request, response, conn, uid)
+        row = conn.execute(
+            select(users.c.id, users.c.email, users.c.display_name, users.c.locale).where(users.c.id == uid)
+        ).one()
+    return Me(user=User(id=row.id, email=row.email, display_name=row.display_name, locale=row.locale))
 
 
 @me_router.post("/delete", operation_id="deleteAccount", dependencies=[Depends(check_origin)])

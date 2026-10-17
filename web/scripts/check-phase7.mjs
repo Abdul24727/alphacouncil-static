@@ -14,12 +14,12 @@ const httpCredentials = process.env.STAGING_AUTH
   : undefined;
 
 const ROUTES = [
-  "/", "/pricing", "/methodology", "/legal", "/legal/terms", "/login", "/signup",
+  "/", "/pricing", "/methodology", "/legal", "/legal/terms", "/login", "/signup", "/forgot-password", "/reset-password",
   "/home", "/portfolio", "/screener", "/markets", "/templates", "/templates/earnings-season",
   "/templates/dividend-hunter", "/templates/sector-vs-sector", "/dashboards", "/settings",
   "/t/2222", "/t/2222/financials", "/t/2222/council", "/t/2222/ownership", "/t/2222/calendar",
 ].filter((r) => !filter || r.includes(filter));
-const SITE = new Set(["/", "/pricing", "/methodology", "/legal", "/legal/terms", "/login", "/signup"]);
+const SITE = new Set(["/", "/pricing", "/methodology", "/legal", "/legal/terms", "/login", "/signup", "/forgot-password", "/reset-password"]);
 const ALLOWED_FONTS = ["Archivo", "Martian Mono", "IBM Plex Sans Arabic"];
 // Latin that belongs in an Arabic page: the brand, currency and exchange codes, keys, the EN switch.
 const LATIN_OK = new Set(["AlphaCouncil", "EN", "SAR", "AED", "QAR", "KWD", "BHD", "OMR", "TASI", "ADX", "DFM", "QSE", "MSX", "BHB", "Ctrl", "DB", "EV/EBITDA", "Moyasar"]);

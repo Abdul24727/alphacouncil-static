@@ -6,6 +6,9 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { ApiError } from "@/lib/api/client";
 import { useSignIn, useSignUp } from "@/lib/auth";
 
+export const fieldClass =
+  "h-10 w-full rounded-panel border border-line bg-bg px-3 text-[14px] text-text outline-none focus:border-muted";
+
 export function AuthForm({ mode, next }: { mode: "login" | "signup"; next?: string }) {
   const t = useTranslations("auth");
   const router = useRouter();
@@ -53,7 +56,7 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next?: stri
     }
   };
 
-  const field = "h-10 w-full rounded-panel border border-line bg-bg px-3 text-[14px] text-text outline-none focus:border-muted";
+  const field = fieldClass;
 
   return (
     // method="post": a submit before the page has hydrated must not put the password in the URL.
@@ -89,6 +92,11 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next?: stri
         />
         {mode === "signup" && <span className="text-[12px] text-muted">{t("passwordHint")}</span>}
       </label>
+      {mode === "login" && (
+        <Link href="/forgot-password" className="-mt-1 self-end text-[13px] text-signal hover:underline">
+          {t("forgotLink")}
+        </Link>
+      )}
       {mode === "signup" && (
         // The old site's registration acceptance, word for word (api/app/legal.py records its version).
         <label className="flex items-start gap-2 text-text-soft">

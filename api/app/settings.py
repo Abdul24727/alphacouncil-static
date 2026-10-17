@@ -61,6 +61,17 @@ class Settings(BaseSettings):
     cookie_secure: bool = False
     redis_url: str | None = None
 
+    # The site's address for links in emails (password reset). Never taken from the
+    # request's Host header; unset, the first ALLOWED_ORIGINS entry is used.
+    site_url: str | None = None
+    # Email over SMTP (app/mail.py): the variables the old site's backend used with
+    # MailerSend. No SMTP_HOST = email is not configured; the password (SMTP_PASS) stays in
+    # the process environment and never in settings or logs.
+    smtp_host: str | None = None
+    smtp_port: int = 587
+    smtp_user: str | None = None
+    smtp_from: str = "AlphaCouncil <no-reply@alphacouncil.tech>"
+
 
 @lru_cache
 def get_settings() -> Settings:

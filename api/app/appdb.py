@@ -54,6 +54,18 @@ sessions = Table(
     Column("expires_at", DateTime(timezone=True), nullable=False),
 )
 
+# "Forgot password?" links (auth.forgot_password). Like sessions, only the SHA-256 of the
+# token in the emailed link is stored. A link works once, within an hour.
+password_resets = Table(
+    "password_resets",
+    metadata,
+    Column("token_hash", String(64), primary_key=True),
+    Column("user_id", Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True),
+    Column("created_at", DateTime(timezone=True), nullable=False, default=utcnow),
+    Column("expires_at", DateTime(timezone=True), nullable=False),
+    Column("used_at", DateTime(timezone=True)),
+)
+
 holdings = Table(
     "holdings",
     metadata,
