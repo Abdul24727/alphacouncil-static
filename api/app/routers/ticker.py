@@ -377,7 +377,9 @@ def reads_in(item, lang: str | None) -> bool:
 
 
 def readable_first(items: list, lang: str | None, limit: int) -> list:
-    """prefer_language, where an item with a headline or summary in the page's language counts."""
+    """prefer_language, where an item with a headline or summary in the page's language counts
+    (the market-wide feed: a reader gains nothing from the newest items in a language they do
+    not read when the archive has readable ones)."""
     return prefer_language(items, lang, limit, key=lambda i: lang if reads_in(i, lang) else i.lang)
 
 
@@ -421,16 +423,11 @@ def _items(
         with reader(s.evidence_db, immutable=s.market_db_immutable, name="EVIDENCE_DB") as conn:
             rows = conn.execute(
                 f"{select} {when} ORDER BY i.date {order} LIMIT ?",
-                # Room to prefer the page's language among recent items.
+                # Room to prefer the page's language among recent items (a story published in both
+                # languages shows once). A company's latest items are never dropped for older ones
+                # that merely have a summary in the page's language: the web app shows that summary.
                 (t.ticker_key, *sections, limit * 4 if lang else limit),
             ).fetchall()
-            if lang:
-                # The newest items readable in the page's language, however far back they are.
-                readable = conn.execute(
-                    f"{select} AND {READABLE_SQL[lang]} {when} ORDER BY i.date {order} LIMIT ?",
-                    (t.ticker_key, *sections, limit),
-                ).fetchall()
-                rows = merge_by_date(rows, readable, key=lambda r: r["id"], newest_first=not upcoming)
     except MarketDataUnavailable as exc:
         raise HTTPException(503, f"Market data unavailable: {exc}") from exc
     items = [
@@ -449,7 +446,7 @@ def _items(
         )
         for r in rows
     ]
-    return readable_first(items, lang, limit)
+    return prefer_language(items, lang, limit)
 
 
 @router.get("/news", operation_id="getTickerNews")
