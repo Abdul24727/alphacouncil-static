@@ -1,0 +1,24 @@
+[Unit]
+Description=AlphaCouncil platform API (production, alphacouncil.tech)
+After=network.target
+
+[Service]
+# Runs as the pipeline's user only to read its 0600 database files; systemd
+# mounts the live data and the old code tree read-only for this service.
+User=alphacouncil
+Group=alphacouncil
+WorkingDirectory=/opt/alphacouncil-platform/prod/current/api
+EnvironmentFile=/etc/alphacouncil-platform/prod/api.env
+ExecStart=/opt/alphacouncil-platform/prod/current/api/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8300 --workers 2
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadOnlyPaths=/var/lib/alphacouncil /opt/alphacouncil
+# Each worker caches a few dozen parsed price histories (~1.35 MB each); 2 workers.
+MemoryMax=2G
+
+[Install]
+WantedBy=multi-user.target

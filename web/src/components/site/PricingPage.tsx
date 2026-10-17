@@ -61,6 +61,7 @@ async function PlanColumns({ plans, locale }: { plans: Plans | null | undefined;
     return p ? (ar ? p.name_ar : p.name) : id === "free" ? (ar ? "مجاني" : "Free") : ar ? "برو" : "Pro";
   };
   const freeItems = t.raw("pricing.free.items") as string[];
+  const proItems = t.raw("pricing.pro.items") as string[];
 
   return (
     <>
@@ -81,11 +82,16 @@ async function PlanColumns({ plans, locale }: { plans: Plans | null | undefined;
           <h2 className="headline text-[36px] leading-none">{name("pro")}</h2>
           {price("pro")}
           <p className="text-[16px] text-text">{t("pricing.pro.lead")}</p>
-          <p className="rounded-chip border border-dashed border-line px-3 py-2.5 font-mono text-[12px] text-muted">
-            {t("pricing.pro.placeholder")}
-          </p>
+          <ul className="flex flex-col text-[15px] text-text-soft">
+            {proItems.map((item) => (
+              <li key={item} className="border-t border-line py-2.5">
+                {item}
+              </li>
+            ))}
+          </ul>
         </section>
       </div>
+      {/* Until the checkout opens, every account has the Pro features (early access). */}
       {plans && !plans.checkout_open && (
         <p className="border-y border-line py-3 text-[15px] text-text" data-checkout-closed>
           {t("pricing.checkoutClosed")}

@@ -712,19 +712,25 @@
       "lead": "Two plans, priced in Saudi riyals. The prices below are read from the same plan configuration our payment provider, Moyasar, charges.",
       "price": "<n>{price}</n> {currency} a month",
       "free": {
-        "lead": "During the beta, everything in the terminal is free to use.",
+        "lead": "Market data and research for every GCC investor.",
         "items": [
-          "Every panel, chart and template",
-          "The council on every equity",
-          "My Portfolio, exposure and alerts",
-          "The Copilot, with answers that cite their panels"
+          "Markets overview, screener and templates",
+          "Every stock page: price chart, key metrics, peers and news",
+          "My Portfolio with up to 20 holdings and 5 price alerts",
+          "The Copilot: 10 questions a day, with answers that cite their sources"
         ]
       },
       "pro": {
         "lead": "Everything in Free, plus:",
-        "placeholder": "[Pro features: to be decided before the paid launch]"
+        "items": [
+          "Full financial statements, ownership, dividends and the corporate calendar",
+          "The council's vote and each seat's reasoning on every equity",
+          "Technical indicators on charts: moving averages, Bollinger Bands, RSI and MACD",
+          "The Copilot: up to 60 questions an hour, with tables and charts you can pin to My dashboards",
+          "Up to 200 holdings and 100 price alerts"
+        ]
       },
-      "checkoutClosed": "Checkout is not open on this site yet.",
+      "checkoutClosed": "Early access: every account gets the Pro features free until paid plans open. We will tell you before anything changes, and subscribing will be your choice.",
       "payments": "Payments are processed by Moyasar. AlphaCouncil is not currently charging VAT; any applicable tax will be shown before payment.",
       "refunds": "Read the <link>refund and cancellation policy</link>.",
       "start": "Start free"

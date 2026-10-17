@@ -1,0 +1,25 @@
+[Unit]
+Description=AlphaCouncil platform web (production, alphacouncil.tech)
+After=network.target acp-prod-api.service
+
+[Service]
+User=alphacouncil
+Group=alphacouncil
+WorkingDirectory=/opt/alphacouncil-platform/prod/current/web
+EnvironmentFile=/etc/alphacouncil-platform/prod/web.env
+# "localhost", not 127.0.0.1: Next normalises 127.0.0.1 to localhost inside middleware,
+# and a mismatch turns next-intl's internal rewrite into an external one that loops.
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start -H localhost -p 3300
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadOnlyPaths=/var/lib/alphacouncil /opt/alphacouncil
+# Next writes its runtime cache under .next/cache (created and chowned at deploy).
+ReadWritePaths=/opt/alphacouncil-platform/prod/releases
+MemoryMax=1500M
+
+[Install]
+WantedBy=multi-user.target
