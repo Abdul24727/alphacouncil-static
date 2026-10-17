@@ -263,7 +263,11 @@
       "disclosures": "Disclosure",
       "events": "Event",
       "none": "No news or disclosures for this ticker",
-      "source": "Open source"
+      "source": "Open source",
+      "in": {
+        "en": "In English",
+        "ar": "In Arabic"
+      }
     },
     "fundamentals": {
       "valuation": "Valuation",
@@ -303,7 +307,22 @@
       "item": "Line item"
     },
     "ownership": {
-      "none": "Ownership (major holders, foreign ownership) is not collected by the data pipeline yet."
+      "none": "No ownership data in our database for this ticker",
+      "foreign": "Foreign ownership",
+      "foreignNow": "Owned by foreign investors",
+      "foreignLimit": "Foreign ownership limit",
+      "trend": "Foreign ownership by day",
+      "holders": "Major holders",
+      "holder": "Holder",
+      "stake": "Stake",
+      "asOf": "As of",
+      "changes": "Recent changes",
+      "date": "Date",
+      "fromTo": "From → to",
+      "change": "Change",
+      "noForeign": "Foreign ownership is not in our database for this ticker",
+      "noHolders": "No major holders recorded",
+      "noChanges": "No changes recorded"
     },
     "events": {
       "none": "No corporate events recorded",
@@ -381,9 +400,11 @@
         "1Y": "1Y",
         "5Y": "5Y"
       },
-      "notEnough": "{name} needs {need} days of prices; this stock has {have}."
+      "notEnough": "{name} needs {need} days of prices; this stock has {have}.",
+      "attribution": "Charting by TradingView"
     },
-    "pagesNav": "Pages"
+    "pagesNav": "Pages",
+    "priceDateUnknown": "Price date unknown"
   },
   "ticker": {
     "switch": "Change ticker for this group"
@@ -670,7 +691,7 @@
       "updated": "Last updated",
       "onThisPage": "On this page",
       "merchant": "Merchant information",
-      "otherLanguage": "النسخة العربية",
+      "otherLanguage": "Arabic version",
       "docs": {
         "terms": "Terms of Service",
         "privacy": "Privacy Policy",

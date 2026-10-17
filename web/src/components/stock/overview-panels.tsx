@@ -15,6 +15,7 @@ import {
   withCurrency,
 } from "@/lib/format";
 import { useChartPrefs } from "@/lib/chart-prefs";
+import { newsText } from "@/lib/news-text";
 import { useTickerCouncil, useTickerDetail, useTickerNews, useTickerPeers, useTickerPrices } from "@/lib/queries";
 import { useGroupTicker, useTickerGroups } from "@/lib/ticker-groups";
 import { CouncilRing, VoteLabel } from "./council";
@@ -383,17 +384,15 @@ export function NewsPanel({ className }: { className?: string }) {
       <QueryState isPending={news.isPending} error={news.error} empty={items.length === 0} emptyText={t("news.none")}>
         <ul className="flex flex-col">
           {items.map((i) => {
-            // The page's language only: an Arabic summary under an English headline (or the
-            // reverse) reads as a mistake. English pages use the English headline when one exists.
-            const summary = locale === "ar" ? i.summary_ar : i.summary_en;
-            const english = locale !== "ar" && i.lang !== "en" && i.title_en;
-            const title = english ? i.title_en : i.title;
-            const titleLang = english ? "en" : (i.lang ?? undefined);
+            // The page's language wherever the database has it (lib/news-text).
+            const { title, lang: titleLang, summary, long, foreign } = newsText(i, locale);
+            const titleClass = `block text-text ${long ? "line-clamp-3" : ""}`;
             return (
               <li key={i.id} className="border-t border-line py-2 first:border-t-0 first:pt-0">
                 <div className="mb-0.5 flex items-center gap-2">
                   <span className="num text-[11px] text-muted">{newsDate(i, locale)}</span>
                   <span className="label-caps rounded-chip border border-line px-1 text-muted">{t(`news.${i.section}`)}</span>
+                  {foreign && <span className="label-caps text-muted">{t(`news.in.${foreign}`)}</span>}
                 </div>
                 {i.url ? (
                   <a
@@ -402,12 +401,12 @@ export function NewsPanel({ className }: { className?: string }) {
                     rel="noopener noreferrer"
                     lang={titleLang}
                     dir="auto"
-                    className="block text-text hover:text-signal"
+                    className={`${titleClass} hover:text-signal`}
                   >
                     {title}
                   </a>
                 ) : (
-                  <span lang={titleLang} dir="auto" className="block text-text">
+                  <span lang={titleLang} dir="auto" className={titleClass}>
                     {title}
                   </span>
                 )}

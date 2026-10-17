@@ -330,6 +330,22 @@ def get_insights(request: Request, ref: str) -> Insights:
         updated_at=r["updated_at"] if r else None,
         performance=performance,
         seasonality=seasonality,
-        ownership=data.get("ownership"),
+        ownership=_ownership(data.get("ownership")),
         analysts=data.get("analysts"),
     )
+
+
+def _ownership(o: dict | None) -> dict | None:
+    """The pipeline's ownership block, with one foreign-ownership point per day (it can repeat
+    a day; the later entry wins) and holder rows without a name dropped (some are "0.00 %")."""
+    if not o:
+        return o
+    o = dict(o)
+    if o.get("foreign_series"):
+        by_date = {p["date"]: p for p in o["foreign_series"] if p.get("date")}
+        o["foreign_series"] = [by_date[d] for d in sorted(by_date)]
+    named = lambda h: any(ch.isalpha() for ch in str(h.get("name") or ""))  # noqa: E731
+    for key in ("major_holders", "recent_changes"):
+        if o.get(key):
+            o[key] = [h for h in o[key] if named(h)]
+    return o

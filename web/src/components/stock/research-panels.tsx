@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Panel } from "@/components/panel/Panel";
 import { dataLabel } from "@/lib/data-labels";
 import type { components } from "@/lib/api/schema";
-import { currencyLabel, fmtNumber, fmtPct } from "@/lib/format";
+import { currencyLabel, fmtDate, fmtNumber, fmtPct, signClass } from "@/lib/format";
 import {
   useTickerCorporate,
   useTickerDetail,
@@ -186,11 +186,22 @@ export function StatementPanel({ section, className }: { section: "Income Statem
 
 // --- Ownership ------------------------------------------------------------------------------
 
+type Ownership = {
+  foreign_series?: { date: string; pct: number | null }[] | null;
+  foreign_current_pct?: number | null;
+  foreign_as_of?: string | null;
+  foreign_limit_pct?: number | null;
+  major_holders?: { name: string; pct: number | null; as_of?: string | null }[] | null;
+  recent_changes?: { date: string | null; name: string; from_pct: number | null; to_pct: number | null; change: number | null }[] | null;
+};
+
 export function OwnershipPanel({ className }: { className?: string }) {
   const t = useTranslations("stock");
   const slug = useGroupTicker(GROUP);
   const q = useTickerInsights(slug);
-  const ownership = q.data?.ownership;
+  const o = (q.data?.ownership ?? null) as Ownership | null;
+  const holders = o?.major_holders ?? [];
+  const changes = o?.recent_changes ?? [];
 
   return (
     <Panel
@@ -199,13 +210,165 @@ export function OwnershipPanel({ className }: { className?: string }) {
       group={GROUP}
       ticker={slug}
       onRefresh={() => q.refetch()}
-      copilotData={() => ownership ?? null}
+      copyData={() =>
+        toTsv([
+          [t("ownership.holder"), t("ownership.stake"), t("ownership.asOf")],
+          ...holders.map((h) => [h.name, h.pct, h.as_of ?? ""]),
+        ])
+      }
+      copilotData={() => o}
       className={className}
     >
-      <QueryState isPending={q.isPending} error={q.error} empty={!ownership} emptyText={t("ownership.none")}>
-        <pre className="num overflow-auto text-[11px] text-text-soft">{JSON.stringify(ownership, null, 2)}</pre>
+      <QueryState isPending={q.isPending} error={q.error} empty={!o} emptyText={t("ownership.none")}>
+        {o && (
+          <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-3">
+            <ForeignOwnership o={o} />
+            <OwnershipSection title={t("ownership.holders")} empty={holders.length === 0} emptyText={t("ownership.noHolders")}>
+              <HoldersTable holders={holders} />
+            </OwnershipSection>
+            <OwnershipSection title={t("ownership.changes")} empty={changes.length === 0} emptyText={t("ownership.noChanges")}>
+              <ChangesTable changes={changes} />
+            </OwnershipSection>
+          </div>
+        )}
       </QueryState>
     </Panel>
+  );
+}
+
+function OwnershipSection({ title, empty, emptyText, children }: { title: string; empty: boolean; emptyText: string; children: React.ReactNode }) {
+  return (
+    <section aria-label={title} className="min-w-0">
+      <h3 className="headline mb-2 border-b border-line pb-1.5 text-[17px]">{title}</h3>
+      {empty ? <p className="text-muted">{emptyText}</p> : children}
+    </section>
+  );
+}
+
+function ForeignOwnership({ o }: { o: Ownership }) {
+  const t = useTranslations("stock");
+  const locale = useLocale();
+  const series = (o.foreign_series ?? []).filter((p): p is { date: string; pct: number } => p.pct != null);
+  const has = o.foreign_current_pct != null || o.foreign_limit_pct != null || series.length > 0;
+  const first = series[0];
+  const last = series.at(-1);
+
+  return (
+    <OwnershipSection title={t("ownership.foreign")} empty={!has} emptyText={t("ownership.noForeign")}>
+      <dl className="flex flex-col gap-1.5">
+        <div className="flex items-baseline justify-between gap-2">
+          <dt className="text-text-soft">{t("ownership.foreignNow")}</dt>
+          <dd>
+            <Num value={fmtPct(o.foreign_current_pct, 2)} />
+          </dd>
+        </div>
+        <div className="flex items-baseline justify-between gap-2">
+          <dt className="text-text-soft">{t("ownership.foreignLimit")}</dt>
+          <dd>
+            <Num value={fmtPct(o.foreign_limit_pct, 2)} />
+          </dd>
+        </div>
+        {o.foreign_as_of && (
+          <div className="flex items-baseline justify-between gap-2 text-[11.5px] text-muted">
+            <dt>{t("ownership.asOf")}</dt>
+            <dd className="num">{fmtDate(o.foreign_as_of, locale)}</dd>
+          </div>
+        )}
+      </dl>
+      {first && last && series.length > 1 && (
+        <figure className="mt-3" aria-label={t("ownership.trend")}>
+          <Sparkline values={series.map((p) => p.pct)} />
+          <figcaption className="mt-1 flex justify-between gap-2 text-[11px] text-muted" dir="ltr">
+            <span className="num">
+              {fmtDate(first.date, locale)} · {fmtPct(first.pct, 2)}
+            </span>
+            <span className="num">
+              {fmtDate(last.date, locale)} · {fmtPct(last.pct, 2)}
+            </span>
+          </figcaption>
+        </figure>
+      )}
+    </OwnershipSection>
+  );
+}
+
+/** A small line of the stored daily values, oldest on the left in both languages (like the charts). */
+function Sparkline({ values }: { values: number[] }) {
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const span = max - min || 1;
+  const points = values
+    .map((v, i) => `${(i / (values.length - 1)) * 100},${max === min ? 20 : 36 - ((v - min) / span) * 32}`)
+    .join(" ");
+  return (
+    <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="h-10 w-full text-text-soft" aria-hidden>
+      <polyline points={points} fill="none" stroke="currentColor" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
+    </svg>
+  );
+}
+
+function HoldersTable({ holders }: { holders: NonNullable<Ownership["major_holders"]> }) {
+  const t = useTranslations("stock");
+  const locale = useLocale();
+  return (
+    <table className="w-full">
+      <thead>
+        <tr className="label-caps text-muted">
+          <th className="py-1 text-start font-normal">{t("ownership.holder")}</th>
+          <th className="py-1 text-end font-normal">{t("ownership.stake")}</th>
+          <th className="hidden py-1 text-end font-normal sm:table-cell">{t("ownership.asOf")}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {holders.map((h, i) => (
+          <tr key={i} className="border-t border-line">
+            {/* Holder names are stored in one language; known institutions are shown in the page's (lib/data-labels). */}
+            <td className="py-1 pe-2 text-text-soft" dir="auto" lang={dataLabel(h.name, locale).lang}>
+              {dataLabel(h.name, locale).text}
+            </td>
+            <td className="py-1 text-end">
+              <Num value={fmtPct(h.pct, 2)} />
+            </td>
+            <td className="num hidden py-1 text-end text-[11.5px] text-muted sm:table-cell">{fmtDate(h.as_of, locale) ?? "—"}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function ChangesTable({ changes }: { changes: NonNullable<Ownership["recent_changes"]> }) {
+  const t = useTranslations("stock");
+  const locale = useLocale();
+  // From -> to, in reading order (the numbers stay left-to-right).
+  const arrow = locale === "ar" ? "←" : "→";
+  return (
+    <table className="w-full">
+      <thead>
+        <tr className="label-caps text-muted">
+          <th className="py-1 text-start font-normal">{t("ownership.date")}</th>
+          <th className="py-1 text-start font-normal">{t("ownership.holder")}</th>
+          <th className="hidden py-1 text-end font-normal sm:table-cell">{t("ownership.fromTo")}</th>
+          <th className="py-1 text-end font-normal">{t("ownership.change")}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {changes.map((c, i) => (
+          <tr key={i} className="border-t border-line">
+            <td className="num py-1 pe-2 text-[11.5px] whitespace-nowrap">{fmtDate(c.date, locale) ?? "—"}</td>
+            <td className="py-1 pe-2 text-text-soft" dir="auto" lang={dataLabel(c.name, locale).lang}>
+              {dataLabel(c.name, locale).text}
+            </td>
+            <td className="hidden py-1 text-end text-[11.5px] whitespace-nowrap text-muted sm:table-cell">
+              <Num value={fmtPct(c.from_pct, 2)} /> {arrow} <Num value={fmtPct(c.to_pct, 2)} />
+            </td>
+            <td className="py-1 text-end">
+              <Num value={fmtPct(c.change, 2, true)} className={signClass(c.change)} />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
 

@@ -10,7 +10,7 @@ from ..freshness import Freshness, assess
 from ..market_db import MarketDataUnavailable, reader
 from ..universe import EXCHANGE_ORDER, Universe
 from .portfolio import LastClose, last_close
-from .ticker import TickerRef, prefer_language, ref_of, settings_of
+from .ticker import READABLE_SQL, TickerRef, merge_by_date, readable_first, ref_of, settings_of
 
 router = APIRouter(tags=["market"])
 
@@ -96,6 +96,8 @@ class NewsLine(BaseModel):
     lang: str | None
     # English headline written for a non-English item (news_ai), when there is one.
     title_en: str | None = None
+    summary_en: str | None = None
+    summary_ar: str | None = None
 
 
 class Overview(BaseModel):
@@ -160,12 +162,19 @@ def overview(request: Request, movers: int = 6, lang: str | None = Query(None, p
     s = settings_of(request)
     news: list[NewsLine] = []
     try:
+        select = (
+            "SELECT i.id, i.ticker_key, i.date, i.title, i.url, n.headline_en,"
+            " coalesce(nullif(i.ai_summary_en, ''), n.summary_en) AS summary_en,"
+            " coalesce(nullif(i.ai_summary_ar, ''), n.summary_ar) AS summary_ar"
+            " FROM items i LEFT JOIN news_ai n ON n.url = i.url WHERE i.section = 'news'"
+            " AND i.date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*'"
+        )
         with reader(s.evidence_db, immutable=s.market_db_immutable, name="EVIDENCE_DB") as conn:
-            rows = conn.execute(
-                "SELECT i.ticker_key, i.date, i.title, i.url, n.headline_en FROM items i"
-                " LEFT JOIN news_ai n ON n.url = i.url WHERE i.section = 'news'"
-                " AND i.date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' ORDER BY i.date DESC LIMIT 200"
-            ).fetchall()
+            rows = conn.execute(f"{select} ORDER BY i.date DESC LIMIT 200").fetchall()
+            if lang in READABLE_SQL:
+                # The newest items readable in the page's language, however far back they are.
+                readable = conn.execute(f"{select} AND {READABLE_SQL[lang]} ORDER BY i.date DESC LIMIT 30").fetchall()
+                rows = merge_by_date(rows, readable, key=lambda r: r["id"])
         seen = set()
         candidates: list[NewsLine] = []
         for r in rows:
@@ -178,10 +187,12 @@ def overview(request: Request, movers: int = 6, lang: str | None = Query(None, p
                 NewsLine(
                     ticker=ref_of(t), date=r["date"], title=r["title"], url=r["url"], lang=lang_of,
                     title_en=r["headline_en"] if lang_of != "en" else None,
+                    summary_en=r["summary_en"] or None,
+                    summary_ar=r["summary_ar"] or None,
                 )
             )
-        # The page's language first (an English headline counts for English pages).
-        news = prefer_language(candidates, lang, 10, key=lambda n: "en" if n.lang == "en" or n.title_en else n.lang)
+        # The page's language first (a headline or summary in it counts).
+        news = readable_first(candidates, lang, 10)
     except MarketDataUnavailable:
         pass
 

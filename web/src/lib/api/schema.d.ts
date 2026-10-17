@@ -1093,6 +1093,10 @@ export interface components {
             lang: string | null;
             /** Title En */
             title_en?: string | null;
+            /** Summary En */
+            summary_en?: string | null;
+            /** Summary Ar */
+            summary_ar?: string | null;
         };
         /** Overview */
         Overview: {

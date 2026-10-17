@@ -51,7 +51,7 @@ export async function LegalDocPage({ locale, doc }: Props & { doc: LegalDoc }) {
             {t("title")}
           </Link>
           <span aria-hidden>·</span>
-          <Link href={`/legal/${doc}`} locale={locale === "ar" ? "en" : "ar"} lang={locale === "ar" ? "en" : "ar"} className="hover:text-text">
+          <Link href={`/legal/${doc}`} locale={locale === "ar" ? "en" : "ar"} hrefLang={locale === "ar" ? "en" : "ar"} className="hover:text-text">
             {t("otherLanguage")}
           </Link>
         </p>

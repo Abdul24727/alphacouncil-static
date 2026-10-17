@@ -6,6 +6,7 @@ import { QueryState, toTsv } from "@/components/stock/common";
 import { newsDate } from "@/components/stock/overview-panels";
 import type { components } from "@/lib/api/schema";
 import { fmtDate, fmtNumber, fmtPct, signClass } from "@/lib/format";
+import { newsText } from "@/lib/news-text";
 import { useMarketOverview } from "@/lib/queries-app";
 import { ChangeCell, PriceCell, TickerCell, TickerRow, Th, useExchangeName } from "./shared";
 
@@ -81,6 +82,7 @@ export function ExchangesTable({ rows }: { rows: Exchange[] }) {
 
 export function HomeView() {
   const t = useTranslations("market");
+  const ts = useTranslations("stock");
   const locale = useLocale();
   const q = useMarketOverview(locale === "ar" ? "ar" : "en");
   const o = q.data;
@@ -143,25 +145,29 @@ export function HomeView() {
         >
           <QueryState isPending={q.isPending} error={q.error} empty={!!o && o.news.length === 0} emptyText={t("noNews")}>
             <ul className="flex flex-col">
-              {o?.news.map((n, i) => (
-                <li key={i} className="border-t border-line py-2 first:border-t-0 first:pt-0">
-                  <div className="mb-0.5 flex items-center gap-2">
-                    <span className="num text-[11px] text-muted">{newsDate(n, locale)}</span>
-                    <span className="num text-[11px] text-signal">{n.ticker.symbol}</span>
-                  </div>
-                  {/* English pages use the English headline written for an Arabic item, when there is one. */}
-                  <a
-                    href={n.url ?? undefined}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    lang={locale !== "ar" && n.lang !== "en" && n.title_en ? "en" : (n.lang ?? undefined)}
-                    dir="auto"
-                    className="text-text hover:text-signal"
-                  >
-                    {locale !== "ar" && n.lang !== "en" && n.title_en ? n.title_en : n.title}
-                  </a>
-                </li>
-              ))}
+              {o?.news.map((n, i) => {
+                // The page's language wherever the database has it (lib/news-text).
+                const text = newsText(n, locale);
+                return (
+                  <li key={i} className="border-t border-line py-2 first:border-t-0 first:pt-0">
+                    <div className="mb-0.5 flex items-center gap-2">
+                      <span className="num text-[11px] text-muted">{newsDate(n, locale)}</span>
+                      <span className="num text-[11px] text-signal">{n.ticker.symbol}</span>
+                      {text.foreign && <span className="label-caps text-muted">{ts(`news.in.${text.foreign}`)}</span>}
+                    </div>
+                    <a
+                      href={n.url ?? undefined}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      lang={text.lang}
+                      dir="auto"
+                      className={`text-text hover:text-signal ${text.long ? "line-clamp-3" : ""}`}
+                    >
+                      {text.title}
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </QueryState>
         </Panel>

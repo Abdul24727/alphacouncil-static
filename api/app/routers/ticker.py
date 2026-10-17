@@ -360,6 +360,34 @@ def _lang_of(url: str | None) -> str | None:
     return "ar" if "/ar/" in url else "en" if "/en/" in url else None
 
 
+# An item reads in a language when it is written in it, or carries a headline or summary in it
+# (news_ai / the pipeline's summaries). SQL form for `items i LEFT JOIN news_ai n`.
+READABLE_SQL = {
+    "en": "(i.url LIKE '%/en/%' OR n.headline_en IS NOT NULL OR length(i.ai_summary_en) > 0 OR length(n.summary_en) > 0)",
+    "ar": "(i.url LIKE '%/ar/%' OR length(i.ai_summary_ar) > 0 OR length(n.summary_ar) > 0)",
+}
+
+
+def reads_in(item, lang: str | None) -> bool:
+    if item.lang == lang:
+        return True
+    if lang == "en":
+        return bool(item.title_en or item.summary_en)
+    return lang == "ar" and bool(item.summary_ar)
+
+
+def readable_first(items: list, lang: str | None, limit: int) -> list:
+    """prefer_language, where an item with a headline or summary in the page's language counts."""
+    return prefer_language(items, lang, limit, key=lambda i: lang if reads_in(i, lang) else i.lang)
+
+
+def merge_by_date(first: list, more: list, key, newest_first: bool = True) -> list:
+    """Two row sets from the same table, without repeats, in date order."""
+    seen = {key(r) for r in first}
+    rows = list(first) + [r for r in more if key(r) not in seen]
+    return sorted(rows, key=lambda r: r["date"] or "", reverse=newest_first)
+
+
 def prefer_language(items: list, lang: str | None, limit: int, key=lambda i: i.lang) -> list:
     """Items in `lang` first (newest first), topped up with the other language only when there
     are not `limit` of them; the result stays in date order."""
@@ -382,18 +410,27 @@ def _items(
     marks = ",".join("?" for _ in sections)
     order = "ASC" if upcoming else "DESC"
     when = "AND i.date >= date('now', '-1 day')" if upcoming else ""
+    select = (
+        "SELECT i.id, i.section, i.date, i.title, i.url, i.snippet, i.ai_summary_en, i.ai_summary_ar,"
+        " n.headline_en, n.summary_en AS n_summary_en, n.summary_ar AS n_summary_ar, n.impact"
+        " FROM items i LEFT JOIN news_ai n ON n.url = i.url"
+        f" WHERE i.ticker_key = ? AND i.section IN ({marks})"
+        " AND i.date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*'"
+    )
     try:
         with reader(s.evidence_db, immutable=s.market_db_immutable, name="EVIDENCE_DB") as conn:
             rows = conn.execute(
-                "SELECT i.id, i.section, i.date, i.title, i.url, i.snippet, i.ai_summary_en, i.ai_summary_ar,"
-                " n.headline_en, n.summary_en AS n_summary_en, n.summary_ar AS n_summary_ar, n.impact"
-                " FROM items i LEFT JOIN news_ai n ON n.url = i.url"
-                f" WHERE i.ticker_key = ? AND i.section IN ({marks})"
-                " AND i.date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*'"
-                f" {when} ORDER BY i.date {order} LIMIT ?",
+                f"{select} {when} ORDER BY i.date {order} LIMIT ?",
                 # Room to prefer the page's language among recent items.
                 (t.ticker_key, *sections, limit * 4 if lang else limit),
             ).fetchall()
+            if lang:
+                # The newest items readable in the page's language, however far back they are.
+                readable = conn.execute(
+                    f"{select} AND {READABLE_SQL[lang]} {when} ORDER BY i.date {order} LIMIT ?",
+                    (t.ticker_key, *sections, limit),
+                ).fetchall()
+                rows = merge_by_date(rows, readable, key=lambda r: r["id"], newest_first=not upcoming)
     except MarketDataUnavailable as exc:
         raise HTTPException(503, f"Market data unavailable: {exc}") from exc
     items = [
@@ -412,7 +449,7 @@ def _items(
         )
         for r in rows
     ]
-    return prefer_language(items, lang, limit)
+    return readable_first(items, lang, limit)
 
 
 @router.get("/news", operation_id="getTickerNews")

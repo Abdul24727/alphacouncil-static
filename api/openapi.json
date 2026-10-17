@@ -3219,6 +3219,28 @@
               }
             ],
             "title": "Title En"
+          },
+          "summary_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary En"
+          },
+          "summary_ar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary Ar"
           }
         },
         "type": "object",

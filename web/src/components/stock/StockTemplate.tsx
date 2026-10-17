@@ -107,6 +107,8 @@ function TickerHeader() {
             {t("asOf")} <span className="num">{fmtDate(q.as_of_date, locale)}</span>
           </span>
         )}
+        {/* A price whose date the database does not record says so, at every width. */}
+        {price && q && !q.as_of_date && <span className="text-muted">{t("priceDateUnknown")}</span>}
       </div>
       <CopilotOpenButton />
     </header>

@@ -143,6 +143,8 @@ export function PriceChart({
       localization: { locale: chartLocale, priceFormatter: (p: number) => fmtNumber(p, digits) ?? "" },
     });
     chartRef.current = chart;
+    // The attribution link stays; only its tooltip follows the page language.
+    host.current.querySelector("a[href*='tradingview.com']")?.setAttribute("title", tc("attribution"));
     const priceFormat = { type: "price" as const, precision: digits, minMove: 1 / 10 ** digits };
 
     // Price: candles where the bar has a full range, otherwise a stepped line.
@@ -274,7 +276,7 @@ export function PriceChart({
       chart.remove();
       chartRef.current = null;
     };
-  }, [bars, series, mode, range, indicators, digits, height, chartLocale]);
+  }, [bars, series, mode, range, indicators, digits, height, chartLocale, tc]);
 
   const shown = legend ?? lastLegend;
   return (

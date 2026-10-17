@@ -151,6 +151,21 @@ def test_seasonality_blanks_months_after_the_data(client):
     assert i["ownership"] is None
 
 
+def test_ownership_keeps_one_point_per_day_and_named_holders():
+    from app.routers.ticker_research import _ownership
+
+    o = _ownership(
+        {
+            "foreign_series": [{"date": "2026-10-11", "pct": 0.71}, {"date": "2026-10-08", "pct": 0.72}, {"date": "2026-10-11", "pct": 0.72}],
+            "major_holders": [{"name": "Kingdom of Saudi Arabia", "pct": 81.48}, {"name": "0.00 %", "pct": 0.0}],
+            "recent_changes": [{"name": "", "change": 1.0}],
+        }
+    )
+    assert o["foreign_series"] == [{"date": "2026-10-08", "pct": 0.72}, {"date": "2026-10-11", "pct": 0.72}]
+    assert [h["name"] for h in o["major_holders"]] == ["Kingdom of Saudi Arabia"]
+    assert o["recent_changes"] == []
+
+
 def test_slugs_with_dots_and_spaces_resolve(client):
     from app.universe import _slug_key
 
@@ -208,3 +223,17 @@ def test_news_prefers_the_page_language_and_keeps_date_order():
     assert [i.id for i in prefer_language(items, "en", 3)] == [1, 2, 4]  # both English, topped up by the newest
     assert [i.id for i in prefer_language(items, "ar", 3)] == [1, 3, 5]
     assert [i.id for i in prefer_language(items, None, 2)] == [1, 2]
+
+
+def test_an_item_with_a_summary_in_the_page_language_counts_as_readable():
+    from types import SimpleNamespace as N
+
+    from app.routers.ticker import readable_first
+
+    def item(id, lang, title_en=None, summary_en=None, summary_ar=None):
+        return N(id=id, lang=lang, title_en=title_en, summary_en=summary_en, summary_ar=summary_ar)
+
+    items = [item(1, "ar"), item(2, "en"), item(3, "ar", summary_en="Up"), item(4, "ar", title_en="Headline"), item(5, "en", summary_ar="صعود")]
+    assert [i.id for i in readable_first(items, "en", 3)] == [2, 3, 4]
+    assert [i.id for i in readable_first(items, "ar", 3)] == [1, 3, 4]  # the Arabic items lead; no others needed
+    assert [i.id for i in readable_first(items, "ar", 4)] == [1, 3, 4, 5]

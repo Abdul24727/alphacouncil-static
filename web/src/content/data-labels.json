@@ -1,5 +1,5 @@
 {
-  "_about": "Labels that come from the database in one language (statement lines, event names, capital-change types), with their translation. lib/data-labels.ts shows each in the page's language; anything not listed is shown as stored, tagged with its own language.",
+  "_about": "Labels that come from the database in one language (statement lines, event names, capital-change types, institutional holders), with their translation. lib/data-labels.ts shows each in the page's language; anything not listed is shown as stored, tagged with its own language.",
   "pairs": [
     ["Total Assets", "مجموع الموجودات"],
     ["Retained earnings", "أرباح مبقاة"],
@@ -271,9 +271,20 @@
     ["Rights issue (deferred)", "أسهم حقوق أولوية (مؤجلة)"],
     ["Secondary offering", "طرح ثانوي"],
     ["Stock split", "تجزئة الأسهم"],
-    ["Stock split (cancelled)", "تجزئة الأسهم (ملغاة)"]
+    ["Stock split (cancelled)", "تجزئة الأسهم (ملغاة)"],
+    ["Kingdom of Saudi Arabia", "المملكة العربية السعودية"],
+    ["Public Investment Fund", "صندوق الاستثمارات العامة"],
+    ["General Organization for Social Insurance", "المؤسسة العامة للتأمينات الاجتماعية"],
+    ["General Organization for Social Insurance", "المؤسسه العامه للتامينات الاجتماعية"],
+    ["Public Pension Agency", "المؤسسة العامة للتقاعد"],
+    ["Qatar Investment Authority", "جهاز قطر للاستثمار"],
+    ["Qatar Holding", "شركة قطر القابضة"],
+    ["Kuwait Investment Authority", "الهيئة العامة للاستثمار الكويتية"],
+    ["Emirates NBD", "بنك الامارات دبي الوطني"],
+    ["Abu Dhabi National Oil Company", "شركة بترول أبوظبي الوطنية"]
   ],
   "aliases": {
+    "Public Investment Fund.": "Public Investment Fund",
     "Bonus Shares": "Bonus shares",
     "Bonus SharesCancelled": "Bonus shares (cancelled)",
     "Employee Bonuses": "Employee bonuses",
