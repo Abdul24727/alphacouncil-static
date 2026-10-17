@@ -386,7 +386,8 @@ export function NewsPanel({ className }: { className?: string }) {
           {items.map((i) => {
             // The page's language wherever the database has it (lib/news-text).
             const { title, lang: titleLang, summary, long, foreign } = newsText(i, locale);
-            const titleClass = `block text-text ${long ? "line-clamp-3" : ""}`;
+            // line-clamp brings its own display; "block" would undo the clamp.
+            const titleClass = `text-text ${long ? "line-clamp-3" : "block"}`;
             return (
               <li key={i.id} className="border-t border-line py-2 first:border-t-0 first:pt-0">
                 <div className="mb-0.5 flex items-center gap-2">

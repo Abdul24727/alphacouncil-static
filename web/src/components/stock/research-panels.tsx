@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { useLocale, useTranslations } from "next-intl";
 import { Panel } from "@/components/panel/Panel";
 import { dataLabel } from "@/lib/data-labels";
@@ -221,14 +222,19 @@ export function OwnershipPanel({ className }: { className?: string }) {
     >
       <QueryState isPending={q.isPending} error={q.error} empty={!o} emptyText={t("ownership.none")}>
         {o && (
-          <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-3">
-            <ForeignOwnership o={o} />
-            <OwnershipSection title={t("ownership.holders")} empty={holders.length === 0} emptyText={t("ownership.noHolders")}>
-              <HoldersTable holders={holders} />
-            </OwnershipSection>
-            <OwnershipSection title={t("ownership.changes")} empty={changes.length === 0} emptyText={t("ownership.noChanges")}>
-              <ChangesTable changes={changes} />
-            </OwnershipSection>
+          // Sized by the panel's own width (the Copilot and sidebar can take room from it).
+          <div className="@container">
+            <div className="grid grid-cols-1 gap-x-8 gap-y-5 @3xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+              <div className="flex min-w-0 flex-col gap-5">
+                <ForeignOwnership o={o} />
+                <OwnershipSection title={t("ownership.holders")} empty={holders.length === 0} emptyText={t("ownership.noHolders")}>
+                  <HoldersTable holders={holders} />
+                </OwnershipSection>
+              </div>
+              <OwnershipSection title={t("ownership.changes")} empty={changes.length === 0} emptyText={t("ownership.noChanges")}>
+                <ChangesTable changes={changes} />
+              </OwnershipSection>
+            </div>
           </div>
         )}
       </QueryState>
@@ -278,12 +284,16 @@ function ForeignOwnership({ o }: { o: Ownership }) {
       {first && last && series.length > 1 && (
         <figure className="mt-3" aria-label={t("ownership.trend")}>
           <Sparkline values={series.map((p) => p.pct)} />
+          {/* Oldest on the left, like the line; date and value on their own lines so the
+              Arabic dates keep their reading order. */}
           <figcaption className="mt-1 flex justify-between gap-2 text-[11px] text-muted" dir="ltr">
-            <span className="num">
-              {fmtDate(first.date, locale)} · {fmtPct(first.pct, 2)}
+            <span className="flex flex-col items-start">
+              <span className="num">{fmtDate(first.date, locale)}</span>
+              <span className="num text-text-soft">{fmtPct(first.pct, 2)}</span>
             </span>
-            <span className="num">
-              {fmtDate(last.date, locale)} · {fmtPct(last.pct, 2)}
+            <span className="flex flex-col items-end">
+              <span className="num">{fmtDate(last.date, locale)}</span>
+              <span className="num text-text-soft">{fmtPct(last.pct, 2)}</span>
             </span>
           </figcaption>
         </figure>
@@ -316,7 +326,7 @@ function HoldersTable({ holders }: { holders: NonNullable<Ownership["major_holde
         <tr className="label-caps text-muted">
           <th className="py-1 text-start font-normal">{t("ownership.holder")}</th>
           <th className="py-1 text-end font-normal">{t("ownership.stake")}</th>
-          <th className="hidden py-1 text-end font-normal sm:table-cell">{t("ownership.asOf")}</th>
+          <th className="hidden py-1 text-end font-normal @sm:table-cell">{t("ownership.asOf")}</th>
         </tr>
       </thead>
       <tbody>
@@ -329,7 +339,7 @@ function HoldersTable({ holders }: { holders: NonNullable<Ownership["major_holde
             <td className="py-1 text-end">
               <Num value={fmtPct(h.pct, 2)} />
             </td>
-            <td className="num hidden py-1 text-end text-[11.5px] text-muted sm:table-cell">{fmtDate(h.as_of, locale) ?? "—"}</td>
+            <td className="num hidden py-1 text-end text-[11.5px] whitespace-nowrap text-muted @sm:table-cell">{fmtDate(h.as_of, locale) ?? "—"}</td>
           </tr>
         ))}
       </tbody>
@@ -340,27 +350,30 @@ function HoldersTable({ holders }: { holders: NonNullable<Ownership["major_holde
 function ChangesTable({ changes }: { changes: NonNullable<Ownership["recent_changes"]> }) {
   const t = useTranslations("stock");
   const locale = useLocale();
-  // From -> to, in reading order (the numbers stay left-to-right).
-  const arrow = locale === "ar" ? "←" : "→";
   return (
     <table className="w-full">
       <thead>
         <tr className="label-caps text-muted">
           <th className="py-1 text-start font-normal">{t("ownership.date")}</th>
           <th className="py-1 text-start font-normal">{t("ownership.holder")}</th>
-          <th className="hidden py-1 text-end font-normal sm:table-cell">{t("ownership.fromTo")}</th>
+          <th className="hidden py-1 text-end font-normal @md:table-cell">{t("ownership.fromTo")}</th>
           <th className="py-1 text-end font-normal">{t("ownership.change")}</th>
         </tr>
       </thead>
       <tbody>
         {changes.map((c, i) => (
           <tr key={i} className="border-t border-line">
-            <td className="num py-1 pe-2 text-[11.5px] whitespace-nowrap">{fmtDate(c.date, locale) ?? "—"}</td>
-            <td className="py-1 pe-2 text-text-soft" dir="auto" lang={dataLabel(c.name, locale).lang}>
+            <td className="num py-1 pe-3 text-[11.5px] whitespace-nowrap">{fmtDate(c.date, locale) ?? "—"}</td>
+            <td className="py-1 pe-3 text-text-soft" dir="auto" lang={dataLabel(c.name, locale).lang}>
               {dataLabel(c.name, locale).text}
             </td>
-            <td className="hidden py-1 text-end text-[11.5px] whitespace-nowrap text-muted sm:table-cell">
-              <Num value={fmtPct(c.from_pct, 2)} /> {arrow} <Num value={fmtPct(c.to_pct, 2)} />
+            <td className="hidden py-1 pe-3 text-end text-[11.5px] whitespace-nowrap text-muted @md:table-cell">
+              {/* From -> to in reading order; an icon, since the brand fonts have no arrow glyph. */}
+              <span className="inline-flex items-center gap-1">
+                <Num value={fmtPct(c.from_pct, 2)} />
+                <ArrowRightIcon aria-hidden className="size-3 shrink-0 rtl:-scale-x-100" />
+                <Num value={fmtPct(c.to_pct, 2)} />
+              </span>
             </td>
             <td className="py-1 text-end">
               <Num value={fmtPct(c.change, 2, true)} className={signClass(c.change)} />
