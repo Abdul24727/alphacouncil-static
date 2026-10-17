@@ -363,7 +363,10 @@ function ChangesTable({ changes }: { changes: NonNullable<Ownership["recent_chan
       <tbody>
         {changes.map((c, i) => (
           <tr key={i} className="border-t border-line">
-            <td className="num py-1 pe-3 text-[11.5px] whitespace-nowrap">{fmtDate(c.date, locale) ?? "—"}</td>
+            {/* .num makes a cell left-to-right, which would put its end padding on the outer side in Arabic. */}
+            <td className="py-1 pe-3 text-[11.5px] whitespace-nowrap">
+              <span className="num">{fmtDate(c.date, locale) ?? "—"}</span>
+            </td>
             <td className="py-1 pe-3 text-text-soft" dir="auto" lang={dataLabel(c.name, locale).lang}>
               {dataLabel(c.name, locale).text}
             </td>

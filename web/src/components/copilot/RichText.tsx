@@ -5,7 +5,7 @@ import { Fragment, useState } from "react";
 import { revealPanel } from "@/lib/panel-registry";
 import type { Sources } from "./types";
 
-const TOKEN = /(\[(?:P\d+|DB)\]|\*\*[^*]+\*\*)/g;
+const TOKEN = /(\[(?:P\d+|DB)\]|\*\*[^*]+\*\*|`[^`]+`)/g;
 
 /** A citation tag rendered as a chip; panel chips scroll to and flash that panel. */
 export function CitationChip({ tag, sources }: { tag: string; sources: Sources }) {
@@ -41,6 +41,7 @@ function Inline({ text, sources }: { text: string; sources: Sources }) {
       {text.split(TOKEN).map((piece, i) => {
         if (/^\[(P\d+|DB)\]$/.test(piece)) return <CitationChip key={i} tag={piece.slice(1, -1)} sources={sources} />;
         if (/^\*\*[^*]+\*\*$/.test(piece)) return <strong key={i} className="font-semibold text-text">{piece.slice(2, -2)}</strong>;
+        if (/^`[^`]+`$/.test(piece)) return <code key={i} className="num text-[0.92em] text-text-soft">{piece.slice(1, -1)}</code>;
         return <Fragment key={i}>{piece}</Fragment>;
       })}
     </>
@@ -48,7 +49,7 @@ function Inline({ text, sources }: { text: string; sources: Sources }) {
 }
 
 /**
- * Just enough Markdown for chat answers: paragraphs, "-" lists, **bold**, and
+ * Just enough Markdown for chat answers: paragraphs, "-" lists, **bold**, `code`, and
  * citation tags as chips. Tables come through show_table, not Markdown.
  */
 export function RichText({ text, sources }: { text: string; sources: Sources }) {
