@@ -1,6 +1,7 @@
 # Production: alphacouncil.tech
 
-The rebuilt app serves alphacouncil.tech. beta.alphacouncil.tech stays the password-protected
+The rebuilt app serves alphacouncil.tech (switched 2026-10-17; release `e11327b`; checks after the switch in
+`screenshots/production/check-live-after-switch.txt`). beta.alphacouncil.tech stays the password-protected
 staging copy: every release goes there first, and production only takes what beta runs.
 
 | | Staging (beta.alphacouncil.tech) | Production (alphacouncil.tech) |

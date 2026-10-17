@@ -1,0 +1,105 @@
+=== Phase 2 (alphacouncil.tech, e11327b)
+PASS  all 5 panels start on 2222
+PASS  after switching one panel, all 5 panels show 1120
+PASS  header follows the group (Al Rajhi Bank)
+PASS  metrics panel loaded 1120 data
+PASS  peers row click moved every panel to 1180
+PASS  metrics panel has a freshness light (fresh)
+PASS  stale light is amber #F2B134 (rgb(242, 177, 52))
+PASS  tooltip shows the real timestamp: "Updated 04:51 · next run 18 Oct 03:00"
+PASS  tooltip dates the data itself: "Older than its expected update · data as of 8 Aug 2018"
+metrics light colour: rgb(63, 217, 138)
+
+Phase 2 done-when: all checks passed
+=== Phase 6 (alphacouncil.tech, e11327b)
+PASS  landing en 1440px: no teal or purple
+PASS  landing en 1440px: only BRAND.md colours
+PASS  landing en 1440px: no gradient text or background
+PASS  landing en 1440px: no glow effects (shadows, blurs)
+PASS  landing en 1440px: no emoji or flag emoji
+PASS  landing en 1440px: no icon-in-a-rounded-box
+PASS  landing en 1440px: no grid of identical feature cards
+PASS  landing en 1440px: no small uppercase eyebrow above a heading
+PASS  landing en 1440px: no fake browser dots
+PASS  landing en 1440px: no repeated stat-chip rows
+PASS  landing en 1440px: rendered fonts are Archivo SemiBold, IBM Plex Sans Arabic, Martian Mono SemiExpanded
+PASS  landing en 1440px: every number on screen sits in a database value (10 found)
+PASS  landing en 1440px: those values equal the API (7 exchanges, 716 equities, Pro 79)
+PASS  landing en 1440px: no sideways scroll
+PASS  landing en 1440px: no page errors
+PASS  landing en 390px: no teal or purple
+PASS  landing en 390px: only BRAND.md colours
+PASS  landing en 390px: no gradient text or background
+PASS  landing en 390px: no glow effects (shadows, blurs)
+PASS  landing en 390px: no emoji or flag emoji
+PASS  landing en 390px: no icon-in-a-rounded-box
+PASS  landing en 390px: no grid of identical feature cards
+PASS  landing en 390px: no small uppercase eyebrow above a heading
+PASS  landing en 390px: no fake browser dots
+PASS  landing en 390px: no repeated stat-chip rows
+PASS  landing en 390px: rendered fonts are Archivo SemiBold, IBM Plex Sans Arabic, Martian Mono SemiExpanded
+PASS  landing en 390px: every number on screen sits in a database value (10 found)
+PASS  landing en 390px: those values equal the API (7 exchanges, 716 equities, Pro 79)
+PASS  landing en 390px: no sideways scroll
+PASS  landing en 390px: no page errors
+PASS  landing ar 1440px: no teal or purple
+PASS  landing ar 1440px: only BRAND.md colours
+PASS  landing ar 1440px: no gradient text or background
+PASS  landing ar 1440px: no glow effects (shadows, blurs)
+PASS  landing ar 1440px: no emoji or flag emoji
+PASS  landing ar 1440px: no icon-in-a-rounded-box
+PASS  landing ar 1440px: no grid of identical feature cards
+PASS  landing ar 1440px: no small uppercase eyebrow above a heading
+PASS  landing ar 1440px: no fake browser dots
+PASS  landing ar 1440px: no repeated stat-chip rows
+PASS  landing ar 1440px: rendered fonts are Archivo SemiBold, IBM Plex Sans Arabic, IBM Plex Sans Arabic SemiBold, Martian Mono SemiExpanded, IBM Plex Sans Arabic Medium
+PASS  landing ar 1440px: every number on screen sits in a database value (10 found)
+PASS  landing ar 1440px: those values equal the API (7 exchanges, 716 equities, Pro 79)
+PASS  landing ar 1440px: no sideways scroll
+PASS  landing ar 1440px: no page errors
+PASS  landing ar 390px: no teal or purple
+PASS  landing ar 390px: only BRAND.md colours
+PASS  landing ar 390px: no gradient text or background
+PASS  landing ar 390px: no glow effects (shadows, blurs)
+PASS  landing ar 390px: no emoji or flag emoji
+PASS  landing ar 390px: no icon-in-a-rounded-box
+PASS  landing ar 390px: no grid of identical feature cards
+PASS  landing ar 390px: no small uppercase eyebrow above a heading
+PASS  landing ar 390px: no fake browser dots
+PASS  landing ar 390px: no repeated stat-chip rows
+PASS  landing ar 390px: rendered fonts are Archivo SemiBold, IBM Plex Sans Arabic, IBM Plex Sans Arabic SemiBold, Martian Mono SemiExpanded, IBM Plex Sans Arabic Medium
+PASS  landing ar 390px: every number on screen sits in a database value (10 found)
+PASS  landing ar 390px: those values equal the API (7 exchanges, 716 equities, Pro 79)
+PASS  landing ar 390px: no sideways scroll
+PASS  landing ar 390px: no page errors
+PASS  page / → 200
+PASS  page /pricing → 200
+PASS  page /methodology → 200
+PASS  page /legal → 200
+PASS  page /legal/terms → 200
+PASS  page /legal/privacy → 200
+PASS  page /legal/refunds → 200
+PASS  page /legal/cookies → 200
+PASS  page /legal/ai-financial-disclaimer → 200
+PASS  page /ar → 200
+PASS  page /ar/pricing → 200
+PASS  page /ar/methodology → 200
+PASS  page /ar/legal → 200
+PASS  page /ar/legal/terms → 200
+PASS  page /ar/legal/privacy → 200
+PASS  page /ar/legal/refunds → 200
+PASS  page /ar/legal/cookies → 200
+PASS  page /ar/legal/ai-financial-disclaimer → 200
+PASS  all 45 internal links on the public pages resolve
+PASS  legal en terms: full text (4825 words), hash a54c4b0a7d65…
+PASS  legal ar terms: full text (4776 words)
+PASS  legal en privacy: full text (2941 words), hash b7a3e655b520…
+PASS  legal ar privacy: full text (2784 words)
+PASS  legal en refunds: full text (1285 words), hash 774a5290d51b…
+PASS  legal ar refunds: full text (1243 words)
+PASS  legal en cookies: full text (705 words), hash 54c6313fb963…
+PASS  legal ar cookies: full text (710 words)
+PASS  legal en ai-financial-disclaimer: full text (1307 words), hash 2653541a093a…
+PASS  legal ar ai-financial-disclaimer: full text (1428 words)
+
+Phase 6 done-when: all checks passed
