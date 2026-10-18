@@ -137,6 +137,65 @@ languages. No live payment was made by these checks.
 To close billing again (everyone back to Pro, checkout closed): delete the `BILLING_OPEN` line, then
 `systemctl restart acp-prod-api`.
 
+## Backups
+
+Every night at 01:30 UTC, `acp-db-backup.timer` runs `/usr/local/sbin/acp-db-backup`
+(`deploy/acp-db-backup.sh`). It writes a `pg_dump -Fc` of `acp_prod` and of `acp` from the
+`acp-postgres` container, plus the roles with their password hashes (`pg_dumpall --globals-only`).
+A dump only counts once `pg_restore --list` can read it.
+
+- **Where**: `/var/backups/alphacouncil-platform/` on the server, outside the Postgres data directory.
+  `daily/` keeps the newest 14 dumps per database (and 14 `globals-*.sql`). `weekly/` keeps the first
+  dump of each ISO week as a hard link, the newest 8 per database. Directories are 0700 and files
+  0600, root only.
+- **Contents**: personal data and Moyasar's saved-card token ids. Never print a dump, and copy one only
+  to the off-server destination.
+- **Off the server**: nothing yet. A disk failure would lose these copies too, so the owner picks the
+  destination and puts its credentials on the server themselves.
+- **Install or update**: run `scripts/install-backups.sh` once. It copies the two scripts and the units
+  and starts the timer; add `--run` to take a backup right away. It does not depend on releases.
+- **Status (2026-10-18)**: the timer is not installed yet. It waits for the owner to run
+  `scripts/install-backups.sh --run`. One backup was taken by hand that day and its restore was checked
+  (`screenshots/backup-restore-check-production.txt`).
+
+Check the last run:
+
+```bash
+systemctl list-timers acp-db-backup.timer          # last and next run
+systemctl status acp-db-backup.service             # result of the last run
+journalctl -u acp-db-backup.service -n 20 -o cat   # its output: sizes and file names only
+cat /var/backups/alphacouncil-platform/LAST_OK     # time and files of the last complete run
+```
+
+Check that a backup restores: `acp-db-restore-check` (newest `acp_prod` dump), `acp-db-restore-check acp`
+(beta), or `acp-db-restore-check acp_prod <file>`. It restores the dump into a throwaway database
+`acp_restorecheck_<time>` in the same container, compares every table's row count with the live
+database, and drops the throwaway. It prints counts only. Run it right after
+`systemctl start acp-db-backup` for an exact match. Before the install, run the repo copy instead:
+`ssh root@alphacouncil.tech 'bash -s' < deploy/acp-db-restore-check.sh`.
+
+Restore production from a dump (the damaged database is kept under another name):
+
+```bash
+systemctl stop acp-prod-billing.timer acp-prod-billing.service acp-prod-api
+f=$(ls -1t /var/backups/alphacouncil-platform/daily/acp_prod-*.dump | head -1)   # or an older or weekly one
+docker exec acp-postgres psql -U acp -d acp -c "ALTER DATABASE acp_prod RENAME TO acp_prod_damaged_$(date -u +%Y%m%d%H%M)"
+docker exec acp-postgres psql -U acp -d acp -c "CREATE DATABASE acp_prod OWNER acp_prod" -c "REVOKE ALL ON DATABASE acp_prod FROM PUBLIC"
+docker exec -i acp-postgres pg_restore -U acp -d acp_prod --exit-on-error < "$f"
+systemctl start acp-prod-api acp-prod-billing.timer
+```
+
+Anything written after the dump is gone. Look in Moyasar's dashboard for payments made after the
+dump's time, and restore those members' Pro by hand (`app.billing grant`, see Pro billing). If the
+container or its data directory is lost, follow these steps:
+
+1. Recreate the container with the `docker run` line of `scripts/staging-appdb.sh`. Give it the `acp`
+   password from beta's `api.env` (`DATABASE_URL`), not a new one.
+2. Load the roles: `docker exec -i acp-postgres psql -U acp -d postgres < daily/globals-<time>.sql`.
+   "role acp already exists" is expected. Both roles keep their passwords, so both `api.env` files
+   still work.
+3. Create each database with its owner, as above, and `pg_restore` into it.
+
 ## Not in production yet
 
 - `www.alphacouncil.tech` has no DNS record; when one is added, add `www` to the certificate.

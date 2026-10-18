@@ -1,0 +1,15 @@
+[Unit]
+Description=AlphaCouncil database backup (acp_prod and acp, acp-postgres container)
+Requires=docker.service
+After=docker.service
+
+[Service]
+# One dump of each database into /var/backups/alphacouncil-platform (acp-db-backup.sh), started
+# nightly by acp-db-backup.timer. Runs as root: it needs docker, and the dumps are root-only.
+Type=oneshot
+ExecStart=/usr/local/sbin/acp-db-backup
+TimeoutStartSec=30min
+Nice=10
+IOSchedulingClass=idle
+PrivateTmp=yes
+ProtectHome=yes

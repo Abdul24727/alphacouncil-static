@@ -1,0 +1,36 @@
+Backup and restore check on alphacouncil.tech, 2026-10-18 (UTC).
+deploy/acp-db-backup.sh and deploy/acp-db-restore-check.sh run once over ssh (`bash -s`), before the
+timer was installed. Table names and row counts only; no row was printed.
+
+== backup
+acp_prod: 30422 bytes -> /var/backups/alphacouncil-platform/daily/acp_prod-20261018T090705Z.dump
+acp: 44399 bytes -> /var/backups/alphacouncil-platform/daily/acp-20261018T090705Z.dump
+backup ok: 3 files, 172K in /var/backups/alphacouncil-platform
+(directories drwx------ root:root, files -rw------- root:root)
+
+== acp-db-restore-check (acp_prod, the dump above)
+restoring /var/backups/alphacouncil-platform/daily/acp_prod-20261018T090705Z.dump (30422 bytes, 2026-10-18T09:07:05Z) into acp_restorecheck_20261018090707
+table                                          live   restored
+public.alerts                                     0          0
+public.billing_payments                           0          0
+public.consents                                   1          1
+public.email_verifications                        0          0
+public.holdings                                   0          0
+public.oauth_identities                           0          0
+public.oauth_states                               2          2
+public.password_resets                            1          1
+public.prefs                                      1          1
+public.rate_hits                                143        143
+public.sessions                                   1          1
+public.subscriptions                              0          0
+public.users                                      3          3
+13 tables, every row count matches
+dropped acp_restorecheck_20261018090707
+
+== acp-db-restore-check acp (beta)
+public.users                                     78         78
+13 tables, every row count matches
+dropped acp_restorecheck_20261018090722
+
+== afterwards
+databases in acp-postgres: acp, acp_prod, postgres, template0, template1 (no throwaway left)
