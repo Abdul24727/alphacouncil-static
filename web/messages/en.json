@@ -362,7 +362,13 @@
       "dist_to_52w_high": "From 52-week high",
       "valuation": "Valuation",
       "returns": "Returns and risk",
-      "trading": "Trading"
+      "trading": "Trading",
+      "reasons": {
+        "not_in_price_file": "Not in our price data",
+        "not_in_price_file_detail": "This stock's daily price file does not record value traded.",
+        "unit_unconfirmed": "Unit not confirmed",
+        "unit_unconfirmed_detail": "EPS is shown only when EPS × P/E gives the price, which confirms its unit."
+      }
     },
     "council": {
       "bullish": "Bullish",
@@ -562,7 +568,8 @@
       "attribution": "Charting by TradingView"
     },
     "pagesNav": "Pages",
-    "priceDateUnknown": "Price date unknown"
+    "priceDateUnknown": "Price date unknown",
+    "currencyUnconfirmed": "Currency not confirmed"
   },
   "ticker": {
     "switch": "Change ticker for this group"
@@ -971,7 +978,7 @@
       },
       "fresh": {
         "title": "How we decide data is fresh",
-        "body": "Every dataset has an allowed age. A panel's light is green while its data is within that age, amber once it is older, and grey when we have no date for it. Prices, technical indicators and news age in trading days, so a weekend is never late; other datasets age in calendar days.",
+        "body": "Every dataset has an allowed age. A panel's light is green while its data is within that age, amber once it is older, and grey when we have no date for it. Prices and technical indicators age in trading days, so a weekend is never late. News and disclosures age from the date of their newest item, and also turn amber when the nightly fetch is late. Datasets other than prices and technical indicators age in calendar days.",
         "dataset": "Dataset",
         "maxAge": "Allowed age",
         "counted": "Counted in",

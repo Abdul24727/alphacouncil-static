@@ -8,6 +8,7 @@ import { TickerNames } from "@/components/ticker/TickerPicker";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { currencyLabel, fmtDate, fmtNumber, fmtPct, signClass } from "@/lib/format";
 import { useTickerDetail } from "@/lib/queries";
+import { priceDigits } from "./common";
 import { GROUP_COLOR, useGroupTicker, useTickerGroups } from "@/lib/ticker-groups";
 
 export const STOCK_TABS = ["overview", "financials", "council", "advisors", "ownership", "calendar"] as const;
@@ -69,7 +70,8 @@ function TickerHeader() {
   const { data, isError, error } = useTickerDetail(slug);
   const q = data?.quote;
   const ref = data?.ticker;
-  const price = fmtNumber(q?.last_price);
+  // The price's own decimals: 0.815 KWD or 2.345 QAR keep their third (components/stock/common).
+  const price = fmtNumber(q?.last_price, priceDigits(ref?.currency, q?.last_price));
   const change = fmtPct(q?.day_change_pct, 2, true);
 
   return (
@@ -100,6 +102,8 @@ function TickerHeader() {
         )}
         <span className="num text-[20px] text-text">{price ?? t("noPrice")}</span>
         {ref?.currency && price && <span className="label-caps text-muted">{currencyLabel(ref.currency, locale)}</span>}
+        {/* A listing whose currency the data gets wrong (api/app/universe.py) says so, at every width. */}
+        {ref && !ref.currency && price && <span className="text-muted">{t("currencyUnconfirmed")}</span>}
         {change && <span className={`num text-[13px] ${signClass(q?.day_change_pct)}`}>{change}</span>}
         {q?.as_of_date && (
           // A stale price always shows its date; a current one only where there is room.

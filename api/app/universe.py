@@ -21,6 +21,20 @@ _PUNCT = re.compile(r"[^\w\s&]")
 
 UNCLASSIFIED_TADAWUL_SECTOR = 1
 
+# Currencies each exchange trades equities in (Bahrain also lists some in US dollars). The
+# pipeline gives some cross-listings their company's home currency instead (KWD on DFM, ADX
+# and Bahrain, OMR on ADX), and nothing in our data records the listing's own currency, so such
+# a label is dropped: the price shows with "currency not confirmed", never in the wrong one.
+EXCHANGE_CURRENCIES: dict[str, set[str]] = {
+    "TADAWUL": {"SAR"},
+    "ADX": {"AED"},
+    "DFM": {"AED"},
+    "QSE": {"QAR"},
+    "KSE": {"KWD"},
+    "BSE": {"BHD", "USD"},
+    "MSM": {"OMR"},
+}
+
 
 def normalize(text: str) -> str:
     """Case, Arabic letter variants, diacritics and Eastern digits folded for matching."""
@@ -45,7 +59,10 @@ class Ticker:
     ticker_key: str
     symbol: str
     exchange: str
+    # The listing's currency, or None when the pipeline's is one the exchange does not trade in.
     currency: str | None
+    # The pipeline's value as written: the unit its ratios are in (ratios.eps_in_price_unit).
+    data_currency: str | None
     name_en: str | None
     name_ar: str | None
     sector_id: str | None
@@ -129,7 +146,8 @@ class Universe:
                     ticker_key=r["ticker_key"],
                     symbol=r["ticker"],
                     exchange=r["exchange"],
-                    currency=r["currency"],
+                    currency=r["currency"] if r["currency"] in EXCHANGE_CURRENCIES.get(r["exchange"], {r["currency"]}) else None,
+                    data_currency=r["currency"],
                     name_en=name_en,
                     name_ar=name_ar,
                     sector_id=None if unclassified or r["sector_id"] is None else str(r["sector_id"]),

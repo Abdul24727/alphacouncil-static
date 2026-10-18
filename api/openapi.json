@@ -4816,6 +4816,17 @@
             ],
             "title": "Value Traded"
           },
+          "value_traded_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value Traded Reason"
+          },
           "market_cap_mn": {
             "anyOf": [
               {
@@ -6454,6 +6465,17 @@
               }
             ],
             "title": "Eps Ttm"
+          },
+          "eps_ttm_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eps Ttm Reason"
           },
           "book_value": {
             "anyOf": [

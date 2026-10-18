@@ -1733,6 +1733,8 @@ export interface components {
             volume: number | null;
             /** Value Traded */
             value_traded: number | null;
+            /** Value Traded Reason */
+            value_traded_reason?: string | null;
             /** Market Cap Mn */
             market_cap_mn: number | null;
         };
@@ -2193,6 +2195,8 @@ export interface components {
             ev_ebitda: number | null;
             /** Eps Ttm */
             eps_ttm: number | null;
+            /** Eps Ttm Reason */
+            eps_ttm_reason?: string | null;
             /** Book Value */
             book_value: number | null;
             /** Shares Out Mn */

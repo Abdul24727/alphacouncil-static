@@ -2,14 +2,23 @@
 
 Both come from the code and databases that do the work (pricing.py is the checkout's
 configuration, council.THRESHOLDS are the votes' thresholds, ticker_freshness holds
-each category's allowed age), so the public pages cannot drift from the product.
+each category's allowed age, freshness.py the news window), so the public pages cannot
+drift from the product.
 """
 
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 from .. import billing, council, pricing
-from ..freshness import DEFAULT_WEEKEND, MARKET_CATEGORIES, PIPELINE_RUN_UTC, PRICE_MAX_AGE_DAYS, WEEKENDS
+from ..freshness import (
+    DEFAULT_WEEKEND,
+    ITEM_SECTIONS,
+    MARKET_CATEGORIES,
+    NEWS_MAX_AGE_DAYS,
+    PIPELINE_RUN_UTC,
+    PRICE_MAX_AGE_DAYS,
+    WEEKENDS,
+)
 from ..market_db import MarketDataUnavailable, reader
 from .market import _uni
 from .ticker import settings_of
@@ -77,6 +86,27 @@ class Methodology(BaseModel):
     equities: int
 
 
+def freshness_rules(rows) -> list[FreshnessRule]:
+    """One rule per category and window, as the lights apply them: news ages from its newest item
+    in calendar days (freshness.NEWS_MAX_AGE_DAYS), whatever window the pipeline gives its fetch."""
+    rules: dict[tuple[str, float | None], FreshnessRule] = {}
+    for r in rows:
+        cat, window = r["category"], r["max_age_days"]
+        if cat == "news":
+            window = NEWS_MAX_AGE_DAYS
+        key = (cat, window)
+        if key in rules:
+            rules[key].tickers += r["n"]
+        else:
+            rules[key] = FreshnessRule(
+                category=cat,
+                max_age_days=window,
+                tickers=r["n"],
+                trading_days=cat in MARKET_CATEGORIES and cat not in ITEM_SECTIONS,
+            )
+    return list(rules.values())
+
+
 @router.get("/methodology", operation_id="methodology")
 def methodology(request: Request) -> Methodology:
     s = settings_of(request)
@@ -99,15 +129,7 @@ def methodology(request: Request) -> Methodology:
             SeatRule(seat=seat, inputs=list(council.INPUTS[seat]), thresholds=council.THRESHOLDS[seat])
             for seat in council.SEATS
         ],
-        freshness=[
-            FreshnessRule(
-                category=r["category"],
-                max_age_days=r["max_age_days"],
-                tickers=r["n"],
-                trading_days=r["category"] in MARKET_CATEGORIES,
-            )
-            for r in rows
-        ],
+        freshness=freshness_rules(rows),
         price_max_age_days=PRICE_MAX_AGE_DAYS,
         pipeline_run_utc=PIPELINE_RUN_UTC.strftime("%H:%M"),
         exchanges=[

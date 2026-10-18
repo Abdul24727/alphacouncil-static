@@ -384,6 +384,14 @@ after a crash, and the URL never in the output.
 - Not done here: submitting the sitemap in Google Search Console / Bing Webmaster Tools needs the
   owner's accounts (verify the domain, then add `https://alphacouncil.tech/sitemap.xml`).
 
+**Status (2026-10-18)**: live since release `cde2b0e629` (owner's approval). `check-seo.mjs` passes 62/62 on
+beta (through the tunnel) and on https://alphacouncil.tech; robots.txt and sitemap.xml (1,464 URLs: 16 pages
+and 716 stock pages, each in both languages) answer 200; beta still answers 401 with `X-Robots-Tag: noindex,
+nofollow`. The full phase checks passed on beta at `e72fe62` (`screenshots/seo-check-all-beta.txt`); the
+one app change after it (next-intl's Link header off) was rechecked on beta with `check-seo.mjs` and Phase 6,
+and Phase 6 passed on production after the release. Results and screenshots (1440/390 px): `screenshots/seo-check-*.txt`,
+`screenshots/seo-{beta,production}/`.
+
 ## Advisors' room (Pro)
 
 The stock page's Advisors tab (`/t/<slug>/advisors`; the Council tab links to it): a Pro member asks a

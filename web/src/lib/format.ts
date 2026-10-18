@@ -10,6 +10,16 @@ export function fmtNumber(v: number | null | undefined, digits = 2): string | nu
   return nf({ minimumFractionDigits: digits, maximumFractionDigits: digits }).format(v);
 }
 
+/**
+ * Decimals for a price: KWD, BHD and OMR trade in fils / baisa, so always 3. Other prices show
+ * 2, or 3 when the value has a third decimal (QSE ticks in 0.001): never a decimal the
+ * database does not have, and never one rounded away.
+ */
+export function autoPriceDigits(currency: string | null | undefined, value?: number | null): 2 | 3 {
+  if (currency && ["KWD", "BHD", "OMR"].includes(currency)) return 3;
+  return value != null && Number.isFinite(value) && Math.abs(Math.round(value * 100) - value * 100) > 1e-6 ? 3 : 2;
+}
+
 export function fmtInt(v: number | null | undefined): string | null {
   if (v == null || !Number.isFinite(v)) return null;
   return nf({ maximumFractionDigits: 0 }).format(v);
