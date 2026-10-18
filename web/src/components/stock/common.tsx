@@ -61,7 +61,7 @@ export function QueryState({
 export function ProLocked({ compact = false }: { compact?: boolean }) {
   const t = useTranslations("plan");
   return (
-    <div className={`flex h-full flex-col items-start justify-center gap-1.5 ${compact ? "" : "min-h-24"}`} data-pro-locked>
+    <div className={`flex flex-col items-start justify-start gap-1.5 pt-1 ${compact ? "" : "min-h-24"}`} data-pro-locked>
       <span className="label-caps rounded-chip border border-signal/50 px-1.5 text-signal">{t("pro")}</span>
       <span className="text-text-soft">{t("lockedLead")}</span>
       <Link href="/pricing" className="text-signal hover:underline">

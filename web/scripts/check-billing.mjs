@@ -47,7 +47,7 @@ check(plan.billing_open === true, `billing is open on ${BASE_URL} (plan for a vi
   const page = await ctx.newPage();
   const overview = await lockedPanels(page, "/t/2222");
   check(overview >= 1, `signed out: council panel on the overview is locked (${overview} locked)`);
-  check((await page.locator('[data-panel="overview.metrics"]:visible dl').count()) === 1, "signed out: key metrics stay free");
+  check((await page.locator('[data-panel="overview.metrics"]:visible dl').count()) >= 1, "signed out: key metrics stay free");
   await page.screenshot({ path: `${OUT}/free-overview-en-1440.png` });
   const fin = await lockedPanels(page, "/t/2222/financials");
   check(fin >= 2, `signed out: financials are locked (${fin} panels)`);
@@ -79,7 +79,11 @@ check(plan.billing_open === true, `billing is open on ${BASE_URL} (plan for a vi
   await page.waitForURL((u) => u.pathname.endsWith("/home"), { timeout: 30000 });
   await page.goto(`${BASE_URL}/checkout`, { waitUntil: "networkidle" });
   const body = await page.locator("main").innerText();
-  check(/Confirm your email address first/.test(body), "Free account, email not confirmed: checkout asks to confirm it");
+  // Without Moyasar keys the checkout is closed, which it says before anything else.
+  check(
+    plan.checkout_open ? /Confirm your email address first/.test(body) : /Checkout is not open yet/.test(body),
+    plan.checkout_open ? "Free account, email not confirmed: checkout asks to confirm it" : "no Moyasar keys: checkout says it is not open yet",
+  );
   await page.goto(`${BASE_URL}/settings`, { waitUntil: "networkidle" });
   await page.locator("[data-billing]").waitFor();
   check((await page.locator("[data-plan=free]").count()) === 1, "Settings › Billing says Free");

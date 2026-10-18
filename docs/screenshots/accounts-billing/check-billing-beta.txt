@@ -1,0 +1,13 @@
+PASS  billing is open on http://localhost:3201 (plan for a visitor: free)
+PASS  signed out: council panel on the overview is locked (1 locked)
+PASS  signed out: key metrics stay free
+PASS  signed out: financials are locked (3 panels)
+PASS  signed out: checkout asks to sign in first
+PASS  Arabic, 390 px: ownership locked (1)
+PASS  no Moyasar keys: checkout says it is not open yet
+PASS  Settings › Billing says Free
+PASS  Pro: nothing locked on the overview
+PASS  Pro: financials unlocked
+PASS  Settings › Billing says Pro
+
+Billing checks: all passed
