@@ -63,8 +63,9 @@ data.
 The engine has counted the votes: each option's average score and each advisor's top option are given to you. Do not
 change or recompute them. Write:
 
-- a headline of the room's assessment in one line, naming the best-supported option as a reading of the data (never
-  "buy", "sell", "hold" or any instruction, and no price target);
+- a headline of the room's assessment in one line of at most 16 words and without figures, naming the
+  best-supported option as a reading of the data (never "buy", "sell", "hold" or any instruction, and no price
+  target);
 - a summary of two or three sentences;
 - the three to five points that carried the vote, each credited to the advisor who made it;
 - the strongest objection still standing ("watch out"), credited to its advisor;

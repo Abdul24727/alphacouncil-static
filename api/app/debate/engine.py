@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from ..settings import Settings
+from ..copilot.context import TAG, numbers_in
 from .checks import Checked, advice_in
 from .llm import SeatError, Usage
 from .pack import Pack
@@ -124,7 +125,11 @@ class Debate:
 
     def system(self, seat: Seat) -> str:
         # Everything up to the data pack is the same for every seat, so the host can reuse it.
-        roster = "The advisors: " + "; ".join(f"{a.name} (id {a.id})" for a in self.ctx.advisors) + ". A neutral Chair runs the rounds."
+        roster = (
+            "The advisors: "
+            + "; ".join(f"{a.name} / {a.info.name_ar} (id {a.id})" for a in self.ctx.advisors)
+            + ". A neutral Chair (رئيس الجلسة) runs the rounds. In Arabic, write the advisors' names in Arabic as given here."
+        )
         head = "\n\n".join([RULES.replace("{language}", LANGUAGE[self.ctx.locale]), roster, self.ctx.pack.prompt()])
         if seat.info.role == "chair":
             you = "YOUR SEAT: the Chair.\n\n" + seat.sections["Who the Chair is"] + "\n\nVoice: " + seat.sections["Voice"]
@@ -273,9 +278,10 @@ class Debate:
         return {"data": {"scores": scores, "top": top, "reason": c.text(raw.get("reason"), 600)}, "flags": c.flags()}
 
     def check_verdict(self, raw: dict[str, Any]) -> dict[str, Any]:
-        c = Checked(self.numbers, self.seen)
+        # The vote count is the engine's own arithmetic: the Chair may quote it (6.75, "3 of 4").
+        c = Checked(self.numbers, self.seen | numbers_in(self.state.result or {}))
         ids = {a.id for a in self.ctx.advisors}
-        headline = c.text(raw.get("headline"), 200)
+        headline = TAG.sub("", c.text(raw.get("headline"), 200)).strip()
         if not headline or advice_in(headline, short=True):
             raise ValueError("the headline must state the room's assessment of the data, never buy, sell or hold")
 
@@ -421,7 +427,7 @@ class Debate:
         self.stage("verdict")
         s.verdict = await self.chair_turn(
             "verdict",
-            '{"headline": "the room\'s assessment of the data in one line", "summary": "two or three sentences", '
+            '{"headline": "the room\'s assessment of the data, at most 16 words, no figures", "summary": "two or three sentences", '
             '"why": [{"seat": "advisor id", "point": "one sentence"}], "watch_out": {"seat": "advisor id", "point": "one sentence"}, '
             '"disagreements": ["one sentence each"], "gaps": ["what the data does not show, one sentence each"]}',
             self.check_verdict,

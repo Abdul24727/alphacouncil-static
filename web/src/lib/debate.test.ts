@@ -5,6 +5,7 @@ import {
   EMPTY_ROOM,
   applyEvent,
   fmtElapsed,
+  firstSentence,
   fmtScore,
   leanOf,
   parseSse,
@@ -118,9 +119,13 @@ test("text pieces: citation tags and unverified figures are marked, other digits
 });
 
 test("scores and times", () => {
-  assert.equal(fmtScore(6.25), "6.3");
-  assert.equal(fmtScore(13 / 3), "4.3");
+  assert.equal(fmtScore(6.25), "6.25");
+  assert.equal(fmtScore(2.75), "2.75");
+  assert.equal(fmtScore(6.5), "6.5");
+  assert.equal(fmtScore(13 / 3), "4.33");
   assert.equal(fmtScore(7), "7.0");
+  assert.equal(firstSentence("ROE is 26.75% [P1]. Debt is low."), "ROE is 26.75% [P1].");
+  assert.equal(firstSentence("No full stop"), "No full stop");
   assert.equal(fmtScore(null), null);
   assert.equal(fmtElapsed(65.4), "1:05");
   assert.equal(fmtElapsed(null), null);

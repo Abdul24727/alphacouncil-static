@@ -239,9 +239,17 @@ export function reached(room: Room): Set<Stage> {
   return out;
 }
 
-/** An average score as the screen shows it: one decimal ("6.3"), or null. */
+/** An average score as computed, two decimals at most ("6.75", "6.5", "8.0"), or null. With four
+ *  advisors every average is exact at two decimals, so the screen and the Chair quote the same figure. */
 export function fmtScore(v: number | null | undefined): string | null {
-  return v == null || !Number.isFinite(v) ? null : (Math.round(v * 10) / 10).toFixed(1);
+  if (v == null || !Number.isFinite(v)) return null;
+  return (Math.round(v * 100) / 100).toFixed(2).replace(/(\.\d)0$/, "$1");
+}
+
+/** The first sentence of a seat's text, for the key points. */
+export function firstSentence(text: string): string {
+  const m = text.match(/^[\s\S]+?[.!?؟](?=\s|$)/);
+  return (m ? m[0] : text).trim();
 }
 
 /** "1:05" from seconds. */

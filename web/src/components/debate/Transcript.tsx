@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import {
   briefOf,
+  firstSentence,
   fmtElapsed,
   fmtScore,
   isAbsent,
@@ -373,21 +374,25 @@ export function KeyPoints({ room, onPick }: { room: Room; onPick: (stage: Stage)
         <ul className="flex flex-col gap-1 text-[12.5px]">{items}</ul>
       </div>
     );
-  const line = (key: string, who: string, text: string, tail?: string) => (
+  // Seats' words keep their citation chips here too (and any figure the checks could not find).
+  const line = (key: string, who: string, text: string, tail?: string, flags?: Turn["flags"]) => (
     <li key={key} className="leading-snug" dir="auto">
       <span className="font-semibold text-text">{who}</span>
-      {tail && <span className="num ms-1.5 text-[11px] text-muted">{tail}</span>} <span className="text-text-soft">{text}</span>
+      {tail && <span className="num ms-1.5 text-[11px] text-muted">{tail}</span>}{" "}
+      <DebateText text={text} flags={flags} sources={s?.sources} className="inline text-text-soft [&>p]:inline" />
     </li>
   );
   const speeches = (stage: Stage, round: number | null) =>
     turnsOf(room, stage, round).map((x) => {
       const d = x.data as unknown as Reply;
       const who = short(x.seat) + (d.responds_to ? ` → ${short(d.responds_to)}` : "");
-      return isAbsent(x.data) ? line(x.seat, who, t("noAnswerShort")) : line(x.seat, who, d.headline || d.text.slice(0, 120), d.lean);
+      return isAbsent(x.data) ? line(x.seat, who, t("noAnswerShort")) : line(x.seat, who, d.headline || d.text.slice(0, 120), d.lean, x.flags);
     });
 
   const debateRounds = [...new Set(turnsOf(room, "debate").map((x) => x.round))];
   const faults = turnsOf(room, "faultlines")[0];
+  const briefFlags = turnsOf(room, "brief")[0]?.flags;
+  const verdictFlags = turnsOf(room, "verdict")[0]?.flags;
 
   return (
     <aside className={`${PANEL} flex flex-col gap-2 self-start @3xl:sticky @3xl:top-2.5`} aria-label={t("keyPoints")} data-key-points>
@@ -396,13 +401,13 @@ export function KeyPoints({ room, onPick }: { room: Room; onPick: (stage: Stage)
         <p className="text-muted">{t("kpEmpty")}</p>
       ) : (
         <div className="flex flex-col gap-2">
-          {brief && section("brief", t("kp.brief"), [...brief.focus.map((f, i) => line(`f${i}`, "", f)), ...(brief.note ? [line("note", "", brief.note)] : [])])}
+          {brief && section("brief", t("kp.brief"), [...brief.focus.map((f, i) => line(`f${i}`, "", f, undefined, briefFlags)), ...(brief.note ? [line("note", "", brief.note, undefined, briefFlags)] : [])])}
           {section("openings", t("kp.openings", { n: 1 }), speeches("openings", 1))}
           {faults &&
             section(
               "faultlines",
               t("kp.faultlines"),
-              (faults.data as unknown as FaultLines).lines.map((f, i) => line(`fl${i}`, f.between.map((x) => short(x)).join(t("versus")), f.title)),
+              (faults.data as unknown as FaultLines).lines.map((f, i) => line(`fl${i}`, f.between.map((x) => short(x)).join(t("versus")), f.title, undefined, faults.flags)),
             )}
           {debateRounds.map((r) => section("debate", t("kp.debate", { n: r ?? 2 }), speeches("debate", r)))}
           {section(
@@ -410,10 +415,10 @@ export function KeyPoints({ room, onPick }: { room: Room; onPick: (stage: Stage)
             t("kp.vote", { n: s.rounds }),
             turnsOf(room, "vote").map((x) => {
               const d = x.data as unknown as Vote;
-              return isAbsent(x.data) ? line(x.seat, short(x.seat), t("noAnswerShort")) : line(x.seat, short(x.seat), d.reason, `${d.top} · ${d.scores[d.top]}`);
+              return isAbsent(x.data) ? line(x.seat, short(x.seat), t("noAnswerShort")) : line(x.seat, short(x.seat), firstSentence(d.reason), `${d.top} · ${d.scores[d.top]}`, x.flags);
             }),
           )}
-          {verdict && section("verdict", t("kp.verdict"), [line("v", "", verdict.headline)])}
+          {verdict && section("verdict", t("kp.verdict"), [line("v", "", verdict.headline, undefined, verdictFlags)])}
         </div>
       )}
     </aside>
