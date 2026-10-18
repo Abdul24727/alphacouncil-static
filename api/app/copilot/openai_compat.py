@@ -46,6 +46,21 @@ SYSTEM_EXTRA = (
 PREFETCH = ("get_ticker_overview", "get_dividends", "get_fundamentals")
 
 
+def make_client(settings: Settings) -> openai.AsyncOpenAI:
+    """The OpenRouter (or OpenAI-compatible) client; the advisors' debate room uses it too."""
+    return openai.AsyncOpenAI(
+        base_url=settings.openrouter_base_url,
+        api_key=os.environ.get("OPENROUTER_API_KEY", ""),
+        default_headers={"X-Title": "AlphaCouncil"},
+    )
+
+
+def host_routing(settings: Settings) -> dict[str, Any]:
+    """OpenRouter serves a model from several hosts; the default pick can be several times slower."""
+    sort = settings.copilot_provider_sort if "openrouter.ai" in settings.openrouter_base_url else ""
+    return {"provider": {"sort": sort}} if sort else {}
+
+
 def _history(chat: ChatInput) -> list[dict[str, Any]]:
     msgs: list[dict[str, Any]] = [{"role": "system", "content": SYSTEM + SYSTEM_EXTRA}]
     msgs += [{"role": m.role, "content": m.text} for m in chat.history if m.text.strip()]
@@ -62,19 +77,13 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
     seen = numbers_in([p.data for p in chat.panels])
     trace = AnswerTrace(chat)
 
-    client = openai.AsyncOpenAI(
-        base_url=settings.openrouter_base_url,
-        api_key=os.environ.get("OPENROUTER_API_KEY", ""),
-        default_headers={"X-Title": "AlphaCouncil"},
-    )
+    client = make_client(settings)
     messages = _history(chat)
     if chat.ticker:
         async for part in _prefetch(request, w, chat.ticker, messages, seen, trace):
             yield part
     extra: dict[str, Any] = {"reasoning": {"enabled": True}} if settings.copilot_reasoning else {}
-    # OpenRouter serves a model from several hosts; the default pick can be several times slower.
-    sort = settings.copilot_provider_sort if "openrouter.ai" in settings.openrouter_base_url else ""
-    routing: dict[str, Any] = {"provider": {"sort": sort}} if sort else {}
+    routing = host_routing(settings)
     followed_up = nudged = False
 
     for step in range(MAX_STEPS):

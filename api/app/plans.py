@@ -18,11 +18,12 @@ Plan = Literal["free", "pro"]
 
 # The /pricing lists, as numbers. None = no limit of that kind.
 LIMITS: dict[str, dict[str, int | None]] = {
-    "free": {"holdings": 20, "alerts": 5, "copilot_per_day": 10, "copilot_per_hour": None},
-    "pro": {"holdings": 200, "alerts": 100, "copilot_per_day": None, "copilot_per_hour": 60},
+    "free": {"holdings": 20, "alerts": 5, "copilot_per_day": 10, "copilot_per_hour": None, "debates_per_month": 0},
+    # 20 advisors' sessions a month, like the old site's 20 council reviews.
+    "pro": {"holdings": 200, "alerts": 100, "copilot_per_day": None, "copilot_per_hour": 60, "debates_per_month": 20},
 }
 # Data and tools only Pro has (the web app locks their panels; the API refuses them).
-PRO_ONLY = ("council", "financials", "ownership", "calendar", "indicators", "pins")
+PRO_ONLY = ("council", "financials", "ownership", "calendar", "indicators", "pins", "advisors")
 
 # A failed renewal is retried for this long; Pro stays on meanwhile.
 GRACE = timedelta(days=3)

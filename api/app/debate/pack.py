@@ -1,0 +1,118 @@
+"""The data every seat reads: the Copilot's database tools for one ticker, run once per session.
+
+Each dataset gets a citation tag (P1, P2, …), like an attached panel in the Copilot, so the
+Copilot's checks attribute every figure to the dataset it was read from. Nothing here computes
+a market figure; the only change is the one documented for returns below.
+"""
+
+import asyncio
+import json
+from datetime import UTC, datetime
+from typing import Any
+
+from fastapi import Request
+from pydantic import BaseModel
+from starlette.concurrency import run_in_threadpool
+
+from ..copilot import tools
+from ..copilot.context import numbers_in
+from ..universe import Ticker
+
+DATASET_CHARS = 12_000  # per dataset, after JSON encoding (the Copilot's PANEL_CHARS)
+
+# tag, tool, arguments, title (en, ar)
+DATASETS: tuple[tuple[str, str, dict[str, Any], str, str], ...] = (
+    ("P1", "get_ticker_overview", {}, "Quote, valuation, returns and technicals", "السعر والتقييم والعوائد والمؤشرات الفنية"),
+    ("P2", "get_fundamentals", {}, "Fundamentals with sector percentiles", "الأساسيات ومقارنتها بالقطاع"),
+    ("P3", "get_dividends", {}, "Dividends and capital changes", "التوزيعات وتغيرات رأس المال"),
+    ("P4", "get_council", {}, "Council seats (rule-based votes)", "مقاعد المجلس (تصويت بالقواعد)"),
+    ("P5", "get_peers", {}, "Sector peers", "الشركات المماثلة في القطاع"),
+    ("P6", "get_news", {"limit": 8}, "Latest news and disclosures", "آخر الأخبار والإفصاحات"),
+    ("P7", "get_price_summary", {"range": "1Y"}, "Price summary, 1 year", "ملخص السعر، سنة"),
+    ("P8", "get_price_summary", {"range": "5Y"}, "Price summary, 5 years", "ملخص السعر، خمس سنوات"),
+)
+
+# briefs.return_*, vol_1y and max_drawdown are fractions (0.155). Seats talk in percents, so the
+# overview carries them as percents too (x100, nothing rounded but float noise), and only those:
+# a seat quoting "15.5%" then matches the data, and "0.155" is not on offer to be misread.
+FRACTIONS = ("return_1m", "return_3m", "return_6m", "return_12m", "vol_1y", "max_drawdown")
+
+
+class Source(BaseModel):
+    title_en: str
+    title_ar: str
+    ok: bool  # False when the tool answered with an error (for example Pro-only data on Free)
+
+
+class Pack(BaseModel):
+    ticker_key: str
+    slug: str
+    header: str
+    fetched_at: str
+    data: dict[str, Any]  # tag -> tool result
+    sources: dict[str, Source]
+
+    def numbers(self) -> dict[str, set[str]]:
+        """Tag -> every number in that dataset (context.numbers_in), for missing_citations."""
+        return {tag: numbers_in(value) for tag, value in self.data.items()}
+
+    def seen(self) -> set[str]:
+        return numbers_in(list(self.data.values()))
+
+    def prompt(self) -> str:
+        lines = [self.header]
+        for tag, value in self.data.items():
+            text = json.dumps(value, ensure_ascii=False, default=str)
+            if len(text) > DATASET_CHARS:
+                text = text[:DATASET_CHARS] + " …[truncated]"
+            lines.append(f"[{tag}] {self.sources[tag].title_en}: {text}")
+        return "\n".join(lines)
+
+
+def _percent_returns(overview: Any) -> Any:
+    if not isinstance(overview, dict) or not isinstance(overview.get("returns"), dict):
+        return overview
+    r = overview["returns"]
+    overview["returns"] = {
+        f"{k}_pct" if k in FRACTIONS else k: (round(v * 100, 10) if k in FRACTIONS and isinstance(v, (int, float)) else v)
+        for k, v in r.items()
+    }
+    return overview
+
+
+def header_of(t: Ticker, fetched_at: str) -> str:
+    name = t.name_en or t.name_ar or t.symbol
+    return (
+        f"DATA PACK. Company: {name}"
+        + (f" / {t.name_ar}" if t.name_ar and t.name_ar != name else "")
+        + f". Symbol {t.symbol} on {t.exchange}, listing currency {t.currency or 'unknown'}, sector {t.sector_en or 'unknown'}."
+        f" Fetched {fetched_at} from AlphaCouncil's database."
+        " Units: market_cap_mn and statement lines are millions of the listing currency; fields ending in _pct are percents."
+        " A dataset holding an error has no data for this company."
+    )
+
+
+def _news(items: Any, locale: str) -> Any:
+    """News without links and ids, with the summary in the session's language (the other if missing)."""
+    if not isinstance(items, list):
+        return items
+    first, other = ("summary_ar", "summary_en") if locale == "ar" else ("summary_en", "summary_ar")
+    keep = ("date", "section", "title", "title_en", "impact")
+    return [{**{k: i.get(k) for k in keep}, "summary": i.get(first) or i.get(other)} for i in items if isinstance(i, dict)]
+
+
+async def build(request: Request, t: Ticker, locale: str = "en") -> Pack:
+    """Every dataset for one ticker, read in parallel through the Copilot's tools."""
+    calls = [(tag, name, {"ticker": t.ticker_key, **args}) for tag, name, args, _, _ in DATASETS]
+    results = await asyncio.gather(*(run_in_threadpool(tools.run, request, name, args) for _, name, args in calls))
+    data: dict[str, Any] = {}
+    sources: dict[str, Source] = {}
+    for (tag, name, _), result, (_, _, _, en, ar) in zip(calls, results, DATASETS, strict=True):
+        if name == "get_ticker_overview":
+            result = _percent_returns(result)
+        if name == "get_news":
+            result = _news(result, locale)
+        data[tag] = result
+        sources[tag] = Source(title_en=en, title_ar=ar, ok=not (isinstance(result, dict) and "error" in result))
+    fetched = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
+    return Pack(ticker_key=t.ticker_key, slug=t.slug, header=header_of(t, fetched), fetched_at=fetched, data=data, sources=sources)

@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from .market_db import MarketDataUnavailable
 from .prices import PriceStore
 from . import auth, billing, oauth
-from .routers import copilot, market, portfolio, prices, site, templates, ticker, ticker_research, tickers
+from .routers import copilot, debate, market, portfolio, prices, site, templates, ticker, ticker_research, tickers
 from .settings import get_settings
 from .universe import Universe
 
@@ -25,6 +25,8 @@ def create_app() -> FastAPI:
     app.state.copilot_limit = auth.DbRateLimit(settings.database_url, "copilot", limit=settings.copilot_hourly_limit, window_s=60 * 60)
     # The Free plan's Copilot allowance (plans.LIMITS), once BILLING_OPEN ends early access.
     app.state.copilot_day_limit = auth.DbRateLimit(settings.database_url, "copilot-day", limit=10, window_s=24 * 60 * 60)
+    # One advisors' session started per account every few seconds (a double click starts one).
+    app.state.debate_start_limit = auth.DbRateLimit(settings.database_url, "debate-start", limit=1, window_s=5)
 
     v1 = APIRouter(prefix="/v1")
     v1.include_router(tickers.router)
@@ -32,6 +34,7 @@ def create_app() -> FastAPI:
     v1.include_router(ticker_research.router)
     v1.include_router(prices.router)
     v1.include_router(copilot.router)
+    v1.include_router(debate.router)
     v1.include_router(auth.router)
     v1.include_router(auth.me_router)
     v1.include_router(oauth.router)

@@ -53,6 +53,18 @@ class Settings(BaseSettings):
     # Questions per hour per signed-in user (or per address for the stand-in).
     copilot_hourly_limit: int = 60
 
+    # Advisors' debate room (app/debate). Same OpenRouter client, key and host sorting as the
+    # Copilot; one model for every advisor and a different one for the Chair. Without
+    # OPENROUTER_API_KEY the room runs the labelled stand-in (app/debate/standin.py).
+    debate_advisor_model: str = "deepseek/deepseek-v4-pro"
+    debate_chair_model: str = "anthropic/claude-sonnet-5.5"
+    # The advisors, in seat order: app/advisors/<id>.md each (2 to 6).
+    debate_advisors: str = "buffett,lynch,dalio,marks"
+    # Debate rounds between the openings and the vote (1 or 2).
+    debate_rounds: int = 1
+    # Ask OpenRouter for the models' reasoning. Off: each seat answers in one pass (faster).
+    debate_reasoning: bool = False
+
     # App data (accounts, portfolios, alerts, preferences). SQLite locally, Postgres on servers.
     database_url: str = "sqlite:///./dev-app.sqlite"
     # Origins allowed to make cookie-authenticated writes (comma-separated).

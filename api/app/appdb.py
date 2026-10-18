@@ -186,6 +186,52 @@ consents = Table(
     Column("accepted_at", DateTime(timezone=True), nullable=False, default=utcnow),
 )
 
+# Advisors' debate room (app/debate): one row per session a member convened, with the seats and
+# models it was held with. A failed session stays on record but does not count against the month's
+# allowance. Removed with the account.
+debate_sessions = Table(
+    "debate_sessions",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("user_id", Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True),
+    Column("ticker_key", String(40), nullable=False),
+    Column("question", String(400), nullable=False),
+    Column("locale", String(5), nullable=False),
+    Column("status", String(10), nullable=False),  # running | done | failed
+    Column("seats", JSON, nullable=False),  # [{id, name_en, name_ar, ...}] as they were
+    Column("models", JSON, nullable=False),  # {"advisors": ..., "chair": ...}
+    Column("rounds", Integer, nullable=False),  # openings + debate rounds + vote
+    Column("sources", JSON),  # citation tag -> dataset
+    Column("result", JSON),  # the vote count (engine.count_votes)
+    Column("error", String(200)),
+    Column("seconds", Float),
+    Column("cost_usd", Float),  # OpenRouter's own figure for every call, summed
+    Column("prompt_tokens", Integer),
+    Column("completion_tokens", Integer),
+    Column("created_at", DateTime(timezone=True), nullable=False, default=utcnow),
+    Column("finished_at", DateTime(timezone=True)),
+)
+
+# Each step of a session: the Chair's brief, fault lines and verdict, every advisor's opening,
+# replies and vote. Written as each one lands, so a reload (or another API worker) can follow along.
+debate_turns = Table(
+    "debate_turns",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("session_id", Integer, ForeignKey("debate_sessions.id", ondelete="CASCADE"), nullable=False, index=True),
+    Column("stage", String(12), nullable=False),  # brief | openings | faultlines | debate | vote | verdict
+    Column("round", Integer),
+    Column("seat", String(32), nullable=False),
+    Column("data", JSON, nullable=False),
+    Column("flags", JSON),  # figures not found in the data, citations added, sentences removed
+    Column("model", String(80)),
+    Column("seconds", Float),
+    Column("prompt_tokens", Integer),
+    Column("completion_tokens", Integer),
+    Column("cost_usd", Float),
+    Column("created_at", DateTime(timezone=True), nullable=False, default=utcnow),
+)
+
 # Rate-limit hits, shared by every API worker (auth.DbRateLimit). Rows older than a day go.
 rate_hits = Table(
     "rate_hits",
