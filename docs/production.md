@@ -278,15 +278,23 @@ Not `DynamicUser=`: dbus-daemon drops dynamic users, and `systemctl show` needs 
   read by the script and never printed or logged. The recipient is `ALERT_TO` in
   `/etc/alphacouncil-platform/prod/monitor.env` (root:alphacouncil 0640; several addresses:
   comma-separated). To change it, run the installer with the new address.
-- **What it cannot see**: it runs on the server it watches. If the whole server, its network or
-  MailerSend is down, no email goes out. An outside uptime check would cover that; there is none yet.
+- **What it cannot see**: it runs on the server it watches, so if the whole server, its network or
+  MailerSend is down, it cannot email. The outside check (below) covers that: Healthchecks.io emails
+  when the rounds stop pinging, or when a round had an alert it could not send. Still not covered: the
+  site unreachable from elsewhere while the server and its outgoing connections work (a provider
+  firewall, DNS seen from other networks), because the monitor's own fetch of `/home` starts on the
+  server. An outside HTTP check would add that; UptimeRobot's free plan is for non-commercial use only,
+  so there is none.
 
 Install or update (copies the script and units, enables the timer, runs one round, prints the checks):
 
 ```bash
 scripts/install-monitoring.sh owner@address --test   # first time: recipient, and one test alert
 scripts/install-monitoring.sh                        # later updates: same recipient
+scripts/install-monitoring.sh --ping                 # asks for the outside check's ping URL (below)
 ```
+
+A new address or ping URL replaces only its own line in `monitor.env`.
 
 On the server:
 
@@ -304,6 +312,50 @@ chose (kept in `monitor.env`, not in git). The test alert went out at 09:19 UTC 
 inbox. From 09:25 the timer's rounds pass all 13 checks as `acp-monitor`. The first install used
 `DynamicUser=`, so the `systemctl` checks could not run, and one false alert went out at 09:20
 ("Problem: acp-prod-api check (+3 more)"). "Recovered" followed at 09:22, after the switch to `acp-monitor`.
+
+### Outside check (Healthchecks.io)
+
+A free [Healthchecks.io](https://healthchecks.io) check watches the monitor from outside (a dead-man's
+switch). When `PING_URL` is in `prod/monitor.env`, every round ends with a ping:
+
+| The round | Ping | Healthchecks.io emails |
+|---|---|---|
+| ran, and emailed everything it found (or found nothing new) | `PING_URL` | nothing, or "up" after a "down" |
+| had an alert it could not email (MailerSend refused, or the 8-a-day or 60-a-month limit) | `PING_URL/fail`, with the round's summary and the unsent subject | "down" at once |
+| did not run or did not finish: server off, network down, timer stopped, settings unreadable, crash | none | "down" 15 minutes after the last ping (period 5 + grace 10) |
+
+- Healthchecks.io emails only when the check's state changes (down, then up), from its own servers, so
+  these emails do not count against the MailerSend budget. The free plan (20 checks, email alerts) is
+  enough.
+- The URL is the check's key: it is kept in `monitor.env` (root:alphacouncil 0640), not in git, and
+  is never printed or logged. A ping that fails only logs `outside check not pinged: …` in the round's
+  journal; the next round pings again 5 minutes later, inside the grace time.
+
+Setting it up (the owner, once; Claude does not create accounts or handle the URL):
+
+1. Sign up at healthchecks.io (free). Add a check named `alphacouncil.tech monitor`, schedule "Simple",
+   period 5 minutes, grace time 10 minutes. Its email integration goes to the account's address;
+   choose an address that is not hosted on this server.
+2. Copy the check's ping URL (`https://hc-ping.com/…`).
+3. In the repository, on `rebuild`: `scripts/install-monitoring.sh --ping`, then paste the URL at the
+   prompt (hidden, and not in the shell history). This also installs the current script. It runs one
+   round, so the check turns "up" on Healthchecks.io within a minute, and `status` ends with
+   `outside check: PING_URL is set…`.
+
+Test (once, after setting it up): stop the rounds until the "down" email arrives, then start them again:
+
+```bash
+ssh root@alphacouncil.tech systemctl stop acp-prod-monitor.timer                            # "down" email about 15 minutes after the last ping
+ssh root@alphacouncil.tech systemctl start acp-prod-monitor.timer acp-prod-monitor.service  # pings at once: "up" email
+```
+
+Nothing is monitored while the timer is stopped, so start it again as soon as the email arrives. To
+retire the outside check, pause it on Healthchecks.io first (otherwise it emails "down"), then delete
+the `PING_URL` line from `monitor.env`.
+
+**Status (2026-10-18)**: in `scripts/prod-monitor.py` and the installer, tested locally (fake ping server:
+plain ping, `/fail` when the mail fails or a limit is reached, no ping after a crash, the URL never in the
+output). Not on the server yet: it waits for the owner's Healthchecks.io check, step 3 above and the test.
 
 ## Search engines and link previews
 
