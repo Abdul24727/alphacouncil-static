@@ -427,6 +427,8 @@ of the data. Code: `api/app/debate/`, `api/app/routers/debate.py`, `web/src/comp
   advisor being answered gets a dashed tag, and the line types out (`web/src/components/debate/Player.tsx`;
   speed 1, 1.5 or 2×, "Skip ahead"; a saved session opens on its last line with "Play the debate"). The full
   text with citations stays in the stage view below. Reduced-motion settings turn the typing and movement off.
+  Live on alphacouncil.tech since `d356a3c` (2026-10-19, owner's go-ahead); a real session there played all seven
+  seats in turn (60.9 s, $0.2006; `screenshots/advisors-turns-production/`, beta: `screenshots/advisors-turns/`).
 - **Allowance**: 20 sessions per calendar month (UTC) on Pro (`plans.LIMITS`), shown under the question
   box; a failed session does not count. One session at a time per account. Free and signed-out visitors
   see the room locked.

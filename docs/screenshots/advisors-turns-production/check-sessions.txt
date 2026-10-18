@@ -1,0 +1,16 @@
+PASS  en idle: no sideways scroll (0px)
+PASS  en idle: disclaimer on screen
+PASS  en idle: citation chips name a dataset (0)
+PASS  en: lines played in turn (chair, alwaleed, alrajhi, lynch, buffett, dalio, marks)
+PASS  en: the verdict arrived (62 s on screen)
+PASS  en: saw the stages live (brief, openings, faultlines, debate, vote)
+PASS  en verdict 1440: no sideways scroll (0px)
+PASS  en verdict 1440: disclaimer on screen
+PASS  en verdict 1440: citation chips name a dataset (51)
+PASS  en: verdict headline is an assessment, not advice ("Dividend looks covered on trailing earnings, but lasting safety cannot be confirmed from this data")
+INFO  en: figures marked as not found in the data: 3
+INFO  en: Took 1:00
+PASS  en 390: no sideways scroll (0px)
+PASS  en 390: disclaimer on screen
+PASS  en 390: citation chips name a dataset (51)
+PASS  en 390: "Play the debate" replays it in turn (chair, then alwaleed; 132 characters typed)
