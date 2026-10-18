@@ -33,6 +33,7 @@ The rebuilt AlphaCouncil: a dense research terminal for Gulf markets (Tadawul, A
 - `next.config.ts` sends a Content-Security-Policy (no nonces, so shells stay prerendered) and the usual hardening headers. Anything loaded from another origin needs a CSP change first.
 - Legal texts are copied verbatim from the old site by `scripts/import-legal.py` into `src/content/legal/`; never edit that JSON by hand.
 - Fonts: globals.css lists the bare faces first (`--face-*`, set in `[locale]/layout.tsx`), then next/font's variables. next/font's metric fallbacks are local Arial, which has Arabic letters: listed earlier, they draw every Arabic glyph in Arial.
+- Metadata: every page's `generateMetadata` goes through `lib/seo.ts` (`localizedMetadata`, `privateMetadata`), which sets the canonical, hreflang and cards on https://alphacouncil.tech. Next replaces `openGraph`/`twitter` per segment instead of merging, so never set them partially. robots.txt, sitemap.xml and the cards: docs/production.md, "Search engines and link previews".
 - Landing and /templates images are real app screens: `node scripts/capture-screens.mjs` (point BASE_URL at the staging tunnel for live data) writes `src/assets/screens/`.
 - Pane sizes persist in localStorage (`ac-layout`) and are applied before paint by `LAYOUT_BOOT_SCRIPT`; signed-in users' panes, chart and display settings sync to `/v1/me/prefs` (lib/prefs-sync.ts).
 

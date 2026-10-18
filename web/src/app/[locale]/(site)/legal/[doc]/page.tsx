@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { LegalDocPage } from "@/components/site/LegalPages";
 import { isLegalDoc, LEGAL_DOCS, legalDocument } from "@/content/legal";
 import type { Locale } from "@/i18n/routing";
+import { localizedMetadata, titled } from "@/lib/seo";
 
 export function generateStaticParams() {
   return LEGAL_DOCS.map((doc) => ({ doc }));
@@ -13,7 +14,8 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/[locale]/legal/[doc]">): Promise<Metadata> {
   const { locale, doc } = await params;
   if (!isLegalDoc(doc)) return {};
-  return { title: `${legalDocument(locale, doc).title} · AlphaCouncil` };
+  const t = await getTranslations({ locale, namespace: "site.legal" });
+  return localizedMetadata(locale, `/legal/${doc}`, titled(legalDocument(locale, doc).title), t("lead"));
 }
 
 export default function Page({ params }: PageProps<"/[locale]/legal/[doc]">) {

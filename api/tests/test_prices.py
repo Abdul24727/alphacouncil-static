@@ -42,3 +42,9 @@ def test_list_marks_tickers_with_prices(client):
     has = {r["ticker_key"]: r["has_prices"] for r in rows}
     assert has["2222_TADAWUL"] and has["FAB_ADX"] and not has["EMAAR_DFM"]
     assert rows[0]["exchange"] == "TADAWUL"
+
+
+def test_list_dates_tickers_by_their_last_price_bar(client):
+    rows = {r["ticker_key"]: r for r in client.get("/v1/tickers").json()}
+    assert rows["FAB_ADX"]["prices_as_of"] == "2026-10-14"
+    assert rows["EMAAR_DFM"]["prices_as_of"] is None

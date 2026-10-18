@@ -301,6 +301,30 @@ To pause it: `systemctl disable --now acp-prod-monitor.timer`.
 
 **Status (2026-10-18)**: in the repo, not installed yet; it waits for the owner's alert address.
 
+## Search engines and link previews
+
+- `/robots.txt` (`web/src/app/robots.ts`): the site is open; account pages (`/portfolio`, `/settings`,
+  `/dashboards`, `/checkout`, `/billing/`, `/verify-email`, `/reset-password`, and their `/ar` twins) and
+  `/api/` are disallowed. Same file on every host; beta stays out of search engines by its password and
+  nginx's `X-Robots-Tag: noindex, nofollow`.
+- `/sitemap.xml` (`web/src/app/sitemap.ts`), built per request: the public pages in English and Arabic,
+  each with en/ar/x-default alternates, then every stock page `/t/<slug>` from `/v1/tickers`. A stock's
+  `lastmod` is the last bar of its daily price file (`prices_as_of`), a legal page's its "updated" date;
+  other pages have none. If the API cannot answer, the site pages are still listed.
+- Every page's `<head>` comes from `web/src/lib/seo.ts`: title and description in the page's language,
+  canonical and hreflang on `https://alphacouncil.tech` whatever host served it, Open Graph and Twitter
+  cards with `public/og/{en,ar}.png`. Stock pages: "Saudi Aramco (2222) · Tadawul" from the API; every
+  tab and every other address of a stock has the canonical `/t/<slug>`; an unknown ticker and the account
+  pages are `noindex`. No price or other figure goes into metadata.
+- Stock-page metadata depends on the ticker, so ordinary visitors get it streamed; crawlers on Next's
+  list plus Googlebot (`htmlLimitedBots` in `next.config.ts`) get it in `<head>`.
+- The preview cards are drawn by `node scripts/capture-og.mjs` (web dev server running) from
+  `messages/*.json`; re-run it after changing the hero title or the exchange names.
+- Check: `BASE_URL=… SHOTS_DIR=… node scripts/check-seo.mjs` (robots, sitemap against the API's ticker
+  list, a sample of heads in both languages, the cards, screenshots at 1440 and 390 px).
+- Not done here: submitting the sitemap in Google Search Console / Bing Webmaster Tools needs the
+  owner's accounts (verify the domain, then add `https://alphacouncil.tech/sitemap.xml`).
+
 ## Not in production yet
 
 - `www.alphacouncil.tech` has no DNS record; when one is added, add `www` to the certificate.

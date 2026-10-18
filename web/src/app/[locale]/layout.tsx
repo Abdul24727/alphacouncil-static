@@ -6,6 +6,7 @@ import { setRequestLocale } from "next-intl/server";
 import { Providers } from "@/components/Providers";
 import { LAYOUT_BOOT_SCRIPT } from "@/lib/layout-store";
 import { dirFor, routing } from "@/i18n/routing";
+import { SITE_NAME, SITE_URL } from "@/lib/seo";
 import "../globals.css";
 
 const archivo = Archivo({
@@ -28,9 +29,12 @@ const plexArabic = IBM_Plex_Sans_Arabic({
   weight: ["400", "500", "600", "700"],
 });
 
+// Pages set their own title, canonical and cards (lib/seo.ts); URLs resolve on alphacouncil.tech.
 export const metadata: Metadata = {
-  title: "AlphaCouncil",
+  metadataBase: new URL(SITE_URL),
+  title: SITE_NAME,
   description: "Research terminal for Gulf markets",
+  applicationName: SITE_NAME,
 };
 
 // next/font gives each face a metric-matched fallback drawn from local Arial, listed right
