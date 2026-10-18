@@ -690,6 +690,128 @@
         }
       }
     },
+    "/v1/debate/status": {
+      "get": {
+        "tags": [
+          "debate"
+        ],
+        "summary": "Status",
+        "operationId": "debateStatus",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DebateStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/debate/sessions": {
+      "get": {
+        "tags": [
+          "debate"
+        ],
+        "summary": "List Sessions",
+        "description": "The account's sessions, newest first (also after Pro ends: they are the member's own).",
+        "operationId": "listDebates",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DebateSummary"
+                  },
+                  "type": "array",
+                  "title": "Response Listdebates"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "debate"
+        ],
+        "summary": "Start",
+        "description": "Convene the advisors on one question about one stock. Streams the session as SSE events\n(`data: {...}` lines): session, stage, writing, turn, result, error, done.",
+        "operationId": "startDebate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/debate/sessions/{session_id}": {
+      "get": {
+        "tags": [
+          "debate"
+        ],
+        "summary": "Get Session",
+        "operationId": "getDebate",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DebateSession"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/auth/signup": {
       "post": {
         "tags": [
@@ -2558,6 +2680,367 @@
           "holdings_count"
         ],
         "title": "CurrencyGroup"
+      },
+      "DebateSession": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "ticker": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TickerRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ticker_key": {
+            "type": "string",
+            "title": "Ticker Key"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seconds"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "seats": {
+            "items": {
+              "$ref": "#/components/schemas/SeatInfo"
+            },
+            "type": "array",
+            "title": "Seats"
+          },
+          "models": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Models"
+          },
+          "rounds": {
+            "type": "integer",
+            "title": "Rounds"
+          },
+          "sources": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/Source"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sources"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "turns": {
+            "items": {
+              "$ref": "#/components/schemas/DebateTurn"
+            },
+            "type": "array",
+            "title": "Turns"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ticker",
+          "ticker_key",
+          "question",
+          "locale",
+          "status",
+          "created_at",
+          "seconds",
+          "result",
+          "seats",
+          "models",
+          "rounds",
+          "sources",
+          "error",
+          "finished_at",
+          "turns"
+        ],
+        "title": "DebateSession"
+      },
+      "DebateStatus": {
+        "properties": {
+          "plan": {
+            "type": "string",
+            "enum": [
+              "free",
+              "pro"
+            ],
+            "title": "Plan"
+          },
+          "signed_in": {
+            "type": "boolean",
+            "title": "Signed In"
+          },
+          "stand_in": {
+            "type": "boolean",
+            "title": "Stand In"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "used": {
+            "type": "integer",
+            "title": "Used"
+          },
+          "resets_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Resets At"
+          },
+          "pro_limit": {
+            "type": "integer",
+            "title": "Pro Limit"
+          },
+          "running": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Running"
+          },
+          "seats": {
+            "items": {
+              "$ref": "#/components/schemas/SeatInfo"
+            },
+            "type": "array",
+            "title": "Seats"
+          },
+          "rounds": {
+            "type": "integer",
+            "title": "Rounds"
+          },
+          "models": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Models"
+          }
+        },
+        "type": "object",
+        "required": [
+          "plan",
+          "signed_in",
+          "stand_in",
+          "limit",
+          "used",
+          "resets_at",
+          "pro_limit",
+          "running",
+          "seats",
+          "rounds",
+          "models"
+        ],
+        "title": "DebateStatus"
+      },
+      "DebateSummary": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "ticker": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TickerRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ticker_key": {
+            "type": "string",
+            "title": "Ticker Key"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seconds"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ticker",
+          "ticker_key",
+          "question",
+          "locale",
+          "status",
+          "created_at",
+          "seconds",
+          "result"
+        ],
+        "title": "DebateSummary"
+      },
+      "DebateTurn": {
+        "properties": {
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "round": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Round"
+          },
+          "seat": {
+            "type": "string",
+            "title": "Seat"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data"
+          },
+          "flags": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flags"
+          },
+          "seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seconds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stage",
+          "round",
+          "seat",
+          "data",
+          "flags",
+          "seconds"
+        ],
+        "title": "DebateTurn"
       },
       "DeleteBody": {
         "properties": {
@@ -4649,6 +5132,66 @@
         ],
         "title": "Seat"
       },
+      "SeatInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "advisor",
+              "chair"
+            ],
+            "title": "Role"
+          },
+          "name_en": {
+            "type": "string",
+            "title": "Name En"
+          },
+          "name_ar": {
+            "type": "string",
+            "title": "Name Ar"
+          },
+          "initials": {
+            "type": "string",
+            "title": "Initials"
+          },
+          "lens_en": {
+            "type": "string",
+            "title": "Lens En"
+          },
+          "lens_ar": {
+            "type": "string",
+            "title": "Lens Ar"
+          },
+          "portrait": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Portrait"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "name_en",
+          "name_ar",
+          "initials",
+          "lens_en",
+          "lens_ar",
+          "portrait"
+        ],
+        "title": "SeatInfo",
+        "description": "What the screen shows of a seat (and what a session keeps of it)."
+      },
       "SeatInput": {
         "properties": {
           "name": {
@@ -5053,6 +5596,60 @@
           "weight_pct"
         ],
         "title": "Slice"
+      },
+      "Source": {
+        "properties": {
+          "title_en": {
+            "type": "string",
+            "title": "Title En"
+          },
+          "title_ar": {
+            "type": "string",
+            "title": "Title Ar"
+          },
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title_en",
+          "title_ar",
+          "ok"
+        ],
+        "title": "Source"
+      },
+      "StartBody": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Ticker"
+          },
+          "question": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Question"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "en",
+              "ar"
+            ],
+            "title": "Locale",
+            "default": "en"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "question"
+        ],
+        "title": "StartBody"
       },
       "Statement": {
         "properties": {

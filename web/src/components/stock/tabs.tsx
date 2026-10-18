@@ -1,6 +1,7 @@
 "use client";
 
-import { SeatsPanel } from "./council";
+import { DebateRoom } from "@/components/debate/DebateRoom";
+import { AdvisorsCallout, SeatsPanel } from "./council";
 import { CouncilPanel, MetricsPanel, NewsPanel, PeersPanel, PricePanel } from "./overview-panels";
 import {
   CapitalPanel,
@@ -49,10 +50,16 @@ export function FinancialsTab() {
 export function CouncilTab() {
   return (
     <div className={GRID}>
+      <AdvisorsCallout className={span.full} />
       <CouncilPanel large className="col-span-12 @4xl:col-span-5" />
       <SeatsPanel className="col-span-12 @4xl:col-span-7" />
     </div>
   );
+}
+
+/** Advisors' debate room (components/debate): the whole tab. */
+export function AdvisorsTab() {
+  return <DebateRoom />;
 }
 
 export function OwnershipTab() {

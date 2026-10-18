@@ -97,6 +97,162 @@
       "rate_limited_free": "The Free plan includes 10 questions a day. Pro allows up to 60 an hour."
     }
   },
+  "debate": {
+    "title": "Advisors' room",
+    "stagesNav": "Stages of the session",
+    "stages": {
+      "brief": "Brief",
+      "openings": "Openings",
+      "faultlines": "Fault lines",
+      "debate": "Debate",
+      "vote": "Vote",
+      "verdict": "Verdict"
+    },
+    "past": "Past sessions",
+    "pastEmpty": "No sessions yet. Your sessions are saved here.",
+    "newQuestion": "New question",
+    "standIn": "Stand-in",
+    "standInTip": "No AI model is configured. The seats answer with fixed sentences around database values.",
+    "pro": "Pro",
+    "chair": "Chair",
+    "writing": "Writing",
+    "seatsLabel": "The advisors and the Chair",
+    "leaning": "Leaning",
+    "topVote": "Top option and its score",
+    "onTable": "On the table",
+    "youAsked": "You asked: {question}",
+    "options": "Options",
+    "averageScore": "Average score, 0 to 10",
+    "roundOf": "Round {n} of {m}",
+    "chairStep": "The Chair",
+    "progress": "Progress",
+    "loading": "Loading the session…",
+    "inProgress": "Still writing…",
+    "notYet": "Nothing here yet.",
+    "weighing": "<b>{name}</b> is weighing: {what}",
+    "state": {
+      "done": "Session complete",
+      "failed": "Session stopped"
+    },
+    "happening": {
+      "brief": "The Chair is reading your question and framing the options.",
+      "openings": "The advisors are writing their opening positions.",
+      "faultlines": "The Chair is naming where the advisors disagree.",
+      "debate": "The advisors are reading each other's openings and answering back.",
+      "vote": "Each advisor is scoring every option from 0 to 10.",
+      "verdict": "The Chair is counting the votes and writing the verdict.",
+      "done": "The verdict is in.",
+      "failed": "The session stopped: {error}"
+    },
+    "detail": {
+      "brief": "Every seat reads the same data from our database, and nothing else.",
+      "openings": "They write at the same time and do not see each other's work. Each opening appears as soon as it is in.",
+      "faultlines": "It names the disagreements and the figures they turn on, without taking a side.",
+      "debate": "Each advisor answers, by name, the argument they disagree with most, and may change their lean.",
+      "vote": "A score is the advisor's judgement of how well the data supports an option; the room averages them.",
+      "verdict": "The verdict is an assessment of the data, never advice."
+    },
+    "answers": "answering {other}",
+    "leans": "leans {option}",
+    "changed": "now leans {option}",
+    "noAnswer": "No answer this round ({reason}).",
+    "noAnswerShort": "no answer this round",
+    "versus": " vs ",
+    "and": " and ",
+    "focus": "What the room must weigh",
+    "whoWeighs": "What each advisor weighs first",
+    "unverified": "Not found in the data the advisors read",
+    "unverifiedNote": "Not found in the data the advisors read, so possibly rounded or wrong: {figures}",
+    "removedNote": "{n, plural, one {One sentence that read as advice was removed.} other {# sentences that read as advice were removed.}}",
+    "advisor": "Advisor",
+    "why": "Why",
+    "average": "Room average",
+    "scoresNote": "Scores (0 to 10) are the advisors' judgement of how well the data supports each option, averaged by the room. They are not market data.",
+    "verdictLabel": "The room's assessment",
+    "scores": "Scores",
+    "agreement": "{n} of {m} advisors scored option {option} highest.",
+    "tie": "Tied: {options}.",
+    "watchOut": "Watch out",
+    "disagree": "Where they still disagree",
+    "gaps": "What the data does not show",
+    "howScored": "How each advisor scored it",
+    "notAdvice": "An assessment of AlphaCouncil data by simulated advisors. Not advice to buy, sell or hold, and not personal advice.",
+    "dataRead": "Data read:",
+    "took": "Took {time}",
+    "models": "Advisors: {advisors} · Chair: {chair}",
+    "keyPoints": "Key points",
+    "kpEmpty": "Key points appear here as each step lands.",
+    "kp": {
+      "brief": "Chair: reading your question",
+      "openings": "Round {n}: opening positions",
+      "faultlines": "Chair: where they disagree",
+      "debate": "Round {n}: the debate",
+      "vote": "Round {n}: the vote",
+      "verdict": "Chair: the verdict"
+    },
+    "status": {
+      "running": "Running",
+      "done": "Done",
+      "failed": "Stopped"
+    },
+    "form": {
+      "label": "Your question about {company}",
+      "placeholder": "For example: is the dividend covered by earnings?",
+      "suggestions": [
+        "Is the dividend covered by earnings?",
+        "Is the valuation stretched against its peers?",
+        "What does the price history say about the risk?"
+      ],
+      "convene": "Convene the advisors",
+      "convening": "Convening…",
+      "allowance": "<n>{used}</n> of <n>{limit}</n> sessions used this month",
+      "resets": "the count restarts {date}",
+      "time": "A session takes a few minutes. You can leave the page: it carries on and is saved under Past sessions."
+    },
+    "limitReached": "You have used this month's {limit} sessions. The count restarts {date}.",
+    "locked": {
+      "lead": "The advisors' room is part of Pro: {limit} sessions a month.",
+      "seePro": "See what Pro includes",
+      "signIn": "Sign in to convene the advisors.",
+      "signInLink": "Sign in"
+    },
+    "errors": {
+      "credentials": "the AI service refused our credentials",
+      "busy": "the AI service is busy; try again in a minute",
+      "timeout": "a seat took too long to answer",
+      "unreachable": "the AI service could not be reached",
+      "bad_output": "a seat's answer could not be read",
+      "cut_off": "a seat's answer was cut off",
+      "too_few": "too few advisors answered",
+      "internal": "an error on our side",
+      "interrupted": "the server restarted during the session",
+      "debate_limit": "You have used this month's sessions.",
+      "debate_running": "A session of yours is still running.",
+      "pro_required": "The advisors' room is part of Pro.",
+      "advisors_unavailable": "The advisors' room is not available right now.",
+      "question_too_short": "Ask a question of a few words at least.",
+      "unknown": "Something went wrong ({code})."
+    },
+    "how": {
+      "title": "How it works",
+      "steps": {
+        "brief": "The Chair restates your question and frames two to four options: readings of the data, never actions.",
+        "openings": "The advisors write their opening positions at the same time, each from their own principles and only from our data.",
+        "faultlines": "The Chair names where they disagree and the figures the disagreement turns on.",
+        "debate": "Each advisor answers, by name, the argument they disagree with most.",
+        "vote": "Each advisor scores every option from 0 to 10; the room averages the scores.",
+        "verdict": "The Chair writes the verdict: a scored assessment of the data, never advice to buy, sell or hold."
+      },
+      "data": "Every figure comes from AlphaCouncil's database and carries the tag of the dataset it was read from. Figures the checks cannot find in the data are marked."
+    },
+    "disclaimer": "Simulated advisors built from each person's publicly documented principles and drawn as caricatures. They are not the people and do not speak for them. The room assesses AlphaCouncil data; it does not give investment advice.",
+    "disclaimerLink": "AI & financial disclaimer",
+    "callout": {
+      "title": "Advisors' room",
+      "body": "Put a question about this stock to simulated advisors. They debate it in rounds and score the options against our data.",
+      "cta": "Convene the advisors"
+    }
+  },
   "placeholder": {
     "phase": "Built in Phase {phase}",
     "unavailable": "Data unavailable",
@@ -159,6 +315,7 @@
       "overview": "Overview",
       "financials": "Financials",
       "council": "Council",
+      "advisors": "Advisors",
       "ownership": "Ownership",
       "calendar": "Calendar"
     },
@@ -780,6 +937,7 @@
         "items": [
           "Full financial statements, ownership, dividends and the corporate calendar",
           "The council's vote and each seat's reasoning on every equity",
+          "The advisors' room: 20 sessions a month in which simulated advisors debate your question about a stock and score the options against our data",
           "Technical indicators on charts: moving averages, Bollinger Bands, RSI and MACD",
           "The Copilot: up to 60 questions an hour, with tables and charts you can pin to My dashboards",
           "Up to 200 holdings and 100 price alerts"

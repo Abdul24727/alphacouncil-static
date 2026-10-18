@@ -10,7 +10,7 @@ import { currencyLabel, fmtDate, fmtNumber, fmtPct, signClass } from "@/lib/form
 import { useTickerDetail } from "@/lib/queries";
 import { GROUP_COLOR, useGroupTicker, useTickerGroups } from "@/lib/ticker-groups";
 
-export const STOCK_TABS = ["overview", "financials", "council", "ownership", "calendar"] as const;
+export const STOCK_TABS = ["overview", "financials", "council", "advisors", "ownership", "calendar"] as const;
 export type StockTab = (typeof STOCK_TABS)[number];
 
 function tabOf(pathname: string): StockTab {

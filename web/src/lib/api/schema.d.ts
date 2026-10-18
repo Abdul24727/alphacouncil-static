@@ -274,6 +274,65 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/debate/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Status */
+        get: operations["debateStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/debate/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Sessions
+         * @description The account's sessions, newest first (also after Pro ends: they are the member's own).
+         */
+        get: operations["listDebates"];
+        put?: never;
+        /**
+         * Start
+         * @description Convene the advisors on one question about one stock. Streams the session as SSE events
+         *     (`data: {...}` lines): session, stage, writing, turn, result, error, done.
+         */
+        post: operations["startDebate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/debate/sessions/{session_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Session */
+        get: operations["getDebate"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/auth/signup": {
         parameters: {
             query?: never;
@@ -1087,6 +1146,126 @@ export interface components {
             /** Holdings Count */
             holdings_count: number;
         };
+        /** DebateSession */
+        DebateSession: {
+            /** Id */
+            id: number;
+            ticker: components["schemas"]["TickerRef"] | null;
+            /** Ticker Key */
+            ticker_key: string;
+            /** Question */
+            question: string;
+            /** Locale */
+            locale: string;
+            /** Status */
+            status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Seconds */
+            seconds: number | null;
+            /** Result */
+            result: {
+                [key: string]: unknown;
+            } | null;
+            /** Seats */
+            seats: components["schemas"]["SeatInfo"][];
+            /** Models */
+            models: {
+                [key: string]: string;
+            };
+            /** Rounds */
+            rounds: number;
+            /** Sources */
+            sources: {
+                [key: string]: components["schemas"]["Source"];
+            } | null;
+            /** Error */
+            error: string | null;
+            /** Finished At */
+            finished_at: string | null;
+            /** Turns */
+            turns: components["schemas"]["DebateTurn"][];
+        };
+        /** DebateStatus */
+        DebateStatus: {
+            /**
+             * Plan
+             * @enum {string}
+             */
+            plan: "free" | "pro";
+            /** Signed In */
+            signed_in: boolean;
+            /** Stand In */
+            stand_in: boolean;
+            /** Limit */
+            limit: number;
+            /** Used */
+            used: number;
+            /**
+             * Resets At
+             * Format: date-time
+             */
+            resets_at: string;
+            /** Pro Limit */
+            pro_limit: number;
+            /** Running */
+            running: number | null;
+            /** Seats */
+            seats: components["schemas"]["SeatInfo"][];
+            /** Rounds */
+            rounds: number;
+            /** Models */
+            models: {
+                [key: string]: string;
+            };
+        };
+        /** DebateSummary */
+        DebateSummary: {
+            /** Id */
+            id: number;
+            ticker: components["schemas"]["TickerRef"] | null;
+            /** Ticker Key */
+            ticker_key: string;
+            /** Question */
+            question: string;
+            /** Locale */
+            locale: string;
+            /** Status */
+            status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Seconds */
+            seconds: number | null;
+            /** Result */
+            result: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** DebateTurn */
+        DebateTurn: {
+            /** Stage */
+            stage: string;
+            /** Round */
+            round: number | null;
+            /** Seat */
+            seat: string;
+            /** Data */
+            data: {
+                [key: string]: unknown;
+            };
+            /** Flags */
+            flags: {
+                [key: string]: unknown;
+            } | null;
+            /** Seconds */
+            seconds: number | null;
+        };
         /** DeleteBody */
         DeleteBody: {
             /**
@@ -1639,6 +1818,31 @@ export interface components {
                 [key: string]: number;
             };
         };
+        /**
+         * SeatInfo
+         * @description What the screen shows of a seat (and what a session keeps of it).
+         */
+        SeatInfo: {
+            /** Id */
+            id: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "advisor" | "chair";
+            /** Name En */
+            name_en: string;
+            /** Name Ar */
+            name_ar: string;
+            /** Initials */
+            initials: string;
+            /** Lens En */
+            lens_en: string;
+            /** Lens Ar */
+            lens_ar: string;
+            /** Portrait */
+            portrait: string | null;
+        };
         /** SeatInput */
         SeatInput: {
             /** Name */
@@ -1755,6 +1959,28 @@ export interface components {
             value: number;
             /** Weight Pct */
             weight_pct: number;
+        };
+        /** Source */
+        Source: {
+            /** Title En */
+            title_en: string;
+            /** Title Ar */
+            title_ar: string;
+            /** Ok */
+            ok: boolean;
+        };
+        /** StartBody */
+        StartBody: {
+            /** Ticker */
+            ticker: string;
+            /** Question */
+            question: string;
+            /**
+             * Locale
+             * @default en
+             * @enum {string}
+             */
+            locale: "en" | "ar";
         };
         /** Statement */
         Statement: {
@@ -2426,6 +2652,108 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    debateStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DebateStatus"];
+                };
+            };
+        };
+    };
+    listDebates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DebateSummary"][];
+                };
+            };
+        };
+    };
+    startDebate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getDebate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DebateSession"];
+                };
             };
             /** @description Validation Error */
             422: {

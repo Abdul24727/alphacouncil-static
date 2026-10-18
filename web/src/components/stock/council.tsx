@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Panel } from "@/components/panel/Panel";
+import { Link } from "@/i18n/navigation";
 import type { components } from "@/lib/api/schema";
 import { fmtNumber } from "@/lib/format";
 import { useTickerCouncil } from "@/lib/queries";
@@ -168,5 +169,30 @@ export function SeatsPanel({ className }: { className?: string }) {
         )}
       </QueryState>
     </Panel>
+  );
+}
+
+/** Council tab: the way into the advisors' debate room (the Advisors tab) for this stock. */
+export function AdvisorsCallout({ className = "" }: { className?: string }) {
+  const t = useTranslations("debate.callout");
+  const slug = useGroupTicker(1);
+  if (!slug) return null;
+  return (
+    <section
+      className={`flex flex-wrap items-center gap-x-4 gap-y-2 rounded-panel border border-line bg-panel px-3 py-2.5 ${className}`}
+      data-advisors-callout
+    >
+      <div className="min-w-0 flex-1">
+        <h2 className="headline text-[17px] leading-tight">{t("title")}</h2>
+        <p className="text-text-soft">{t("body")}</p>
+      </div>
+      <Link
+        href={`/t/${encodeURIComponent(slug)}/advisors`}
+        scroll={false}
+        className="shrink-0 rounded-panel bg-signal px-3 py-1.5 font-semibold text-signal-ink hover:opacity-90"
+      >
+        {t("cta")}
+      </Link>
+    </section>
   );
 }

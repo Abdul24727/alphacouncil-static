@@ -41,8 +41,14 @@ def _sentence(pack: Pack, seat: Seat, ar: bool) -> str:
     en_label, ar_label, value, unit = _value(pack, seat.id)
     if value is None:
         return f"لا تُظهر البيانات {ar_label}." if ar else f"The data shows no {en_label}."
-    shown = f"{value}{'' if unit == 'x' else unit}"
+    # Two decimals at most, as the rules allow the models (the checks compare at two decimals).
+    number = f"{value:.2f}" if isinstance(value, float) and round(value, 2) != value else f"{value}"
+    shown = f"{number}{'' if unit == 'x' else unit}"
     return f"{ar_label} {shown} [P1]." if ar else f"The {en_label} is {shown} [P1]."
+
+
+def _short(seat: Seat, ar: bool) -> str:
+    return (seat.info.name_ar if ar else seat.info.name_en).split()[-1]
 
 
 def _lean(seat_id: str, options: list[str]) -> str:
@@ -75,7 +81,7 @@ def make_asker(pack: Pack, advisors: list[Seat], locale: str):
                 "lines": [{
                     "title": ("الأرقام التي تهم أكثر" if ar else "Which figures matter most"),
                     "between": [a.id, b.id],
-                    "text": (f"{a.surname} و{b.surname} يقرآن أرقاماً مختلفة." if ar else f"{a.surname} and {b.surname} read different figures."),
+                    "text": (f"{_short(a, ar)} و{_short(b, ar)} يقرآن أرقاماً مختلفة." if ar else f"{_short(a, ar)} and {_short(b, ar)} read different figures."),
                 }],
                 "summary": "",
             }
@@ -85,8 +91,8 @@ def make_asker(pack: Pack, advisors: list[Seat], locale: str):
             raw = {
                 "responds_to": to.id,
                 "lean": state.lean(seat.id) or opts[0],
-                "headline": (f"ردّ على {to.surname}." if ar else f"A reply to {to.surname}."),
-                "text": _sentence(pack, seat, ar) + (f" لا أرى ما يراه {to.surname}." if ar else f" I do not read it the way {to.surname} does."),
+                "headline": (f"ردّ على {_short(to, ar)}." if ar else f"A reply to {_short(to, ar)}."),
+                "text": _sentence(pack, seat, ar) + (f" لا أرى ما يراه {_short(to, ar)}." if ar else f" I do not read it the way {_short(to, ar)} does."),
             }
         elif stage == "vote":
             lean = state.lean(seat.id) or opts[0]

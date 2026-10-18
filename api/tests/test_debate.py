@@ -149,6 +149,12 @@ def test_a_stand_in_session_runs_every_stage_and_is_saved(room):
     assert full["seats"][0]["name_en"] == "Warren Buffett" and full["rounds"] == 3
     assert room.get("/v1/debate/status").json()["used"] == 1
 
+    from app.debate import store
+
+    stats = store.stats(room.app.state.settings.database_url)
+    assert stats["done"] == 1 and stats["failed"] == 0 and stats["seconds_median"] is not None
+    assert stats["models"] == ["stand-in / stand-in"]
+
 
 def test_arabic_sessions_answer_in_arabic(room):
     signup(room)

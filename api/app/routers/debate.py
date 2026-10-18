@@ -27,7 +27,9 @@ from ..debate.pack import Source, build
 from ..plans import LIMITS, PRO_REQUIRED, Plan, plan_of
 from .ticker import TickerRef, ref_of, resolve, settings_of
 
-log = logging.getLogger(__name__)
+# Under uvicorn's handler, so each session's time and cost line reaches the service log
+# (journalctl -u acp-prod-api); app loggers have no handler of their own.
+log = logging.getLogger("uvicorn.error.debate")
 router = APIRouter(prefix="/debate", tags=["debate"])
 
 # Sessions run as tasks of their own (see the module docstring); kept here so none is collected mid-run.
@@ -69,6 +71,7 @@ class DebateStatus(BaseModel):
     limit: int
     used: int
     resets_at: datetime
+    pro_limit: int  # what Pro allows, for the locked preview's "N sessions a month"
     running: int | None  # a session of this account still in progress
     seats: list[roster.SeatInfo]  # the advisors in seat order, then the Chair
     rounds: int  # openings + debate rounds + vote
@@ -167,6 +170,7 @@ def status(request: Request, user: Annotated[User | None, Depends(current_user)]
         limit=LIMITS[plan]["debates_per_month"] or 0,
         used=used or 0,
         resets_at=store.next_month(datetime.now(UTC)),
+        pro_limit=LIMITS["pro"]["debates_per_month"] or 0,
         running=running,
         seats=[a.info for a in advisors] + [chair.info],
         rounds=debate_rounds(request) + 2,
