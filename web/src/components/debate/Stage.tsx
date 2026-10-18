@@ -19,7 +19,18 @@ import { OptionId, SeatDisc, WritingMark, seatLens, seatShort, useSeats } from "
  * as round a table seen from the front. Logical positions (inset-inline-start), so the order
  * runs right to left in Arabic.
  */
-export function SeatArc({ seats, room }: { seats: SeatInfo[]; room: Room | null }) {
+export function SeatArc({
+  seats,
+  room,
+  speaking = null,
+  addressee = null,
+}: {
+  seats: SeatInfo[];
+  room: Room | null;
+  /** The seat whose line is on the floor (Player.tsx), and the advisor it answers. */
+  speaking?: string | null;
+  addressee?: string | null;
+}) {
   const t = useTranslations("debate");
   const locale = useLocale();
   const advisors = seats.filter((s) => s.role === "advisor");
@@ -39,6 +50,8 @@ export function SeatArc({ seats, room }: { seats: SeatInfo[]; room: Room | null 
         const x = (from: number) => `${(from + (100 - 2 * from) * step).toFixed(2)}%`;
         const lift = -Math.sin(angle); // 0 at the ends, 1 at the head
         const writing = !!room?.writing.includes(s.id);
+        const speaks = speaking === s.id;
+        const addressed = addressee === s.id;
         const lean = room ? leanOf(room, s.id) : null;
         const vote = room ? voteOf(room, s.id) : null;
         return (
@@ -47,19 +60,26 @@ export function SeatArc({ seats, room }: { seats: SeatInfo[]; room: Room | null 
             role="listitem"
             data-seat={s.id}
             data-writing={writing || undefined}
-            className={`absolute flex -translate-x-1/2 flex-col items-center gap-1 [inset-inline-start:var(--x-sm)] rtl:translate-x-1/2 @3xl:[inset-inline-start:var(--x-lg)] ${
+            data-speaking={speaks || undefined}
+            className={`absolute flex -translate-x-1/2 flex-col items-center gap-1 transition-opacity duration-300 [inset-inline-start:var(--x-sm)] rtl:translate-x-1/2 @3xl:[inset-inline-start:var(--x-lg)] ${
               crowded ? "w-[58px] @3xl:w-[104px]" : "w-[84px] @3xl:w-[120px]"
-            }`}
+            } ${speaking && !speaks && !addressed && !writing ? "opacity-60" : ""}`}
             style={{ "--x-sm": x(crowded ? 8 : 13), "--x-lg": x(8), top: `${Math.round(78 - 64 * lift)}px` } as React.CSSProperties}
           >
-            <WritingMark on={writing} />
-            <span className="@3xl:hidden">
-              <SeatDisc seat={s} size={crowded ? (s.role === "chair" ? 36 : 42) : s.role === "chair" ? 46 : 52} active={writing} />
+            {speaks ? <SpeakingBars /> : <WritingMark on={writing} />}
+            <span className={`transition-transform duration-300 motion-reduce:transition-none ${speaks ? "-translate-y-1 scale-110" : ""}`}>
+              <span className="@3xl:hidden">
+                <SeatDisc seat={s} size={crowded ? (s.role === "chair" ? 36 : 42) : s.role === "chair" ? 46 : 52} active={writing || speaks} />
+              </span>
+              <span className="hidden @3xl:block">
+                <SeatDisc seat={s} size={crowded ? (s.role === "chair" ? 50 : 58) : s.role === "chair" ? 56 : 66} active={writing || speaks} />
+              </span>
             </span>
-            <span className="hidden @3xl:block">
-              <SeatDisc seat={s} size={crowded ? (s.role === "chair" ? 50 : 58) : s.role === "chair" ? 56 : 66} active={writing} />
-            </span>
-            <span className={`max-w-full truncate rounded-chip border border-line bg-panel py-px text-text ${crowded ? "px-1 text-[11px]" : "px-1.5 text-[12px]"}`}>
+            <span
+              className={`max-w-full truncate rounded-chip border py-px ${crowded ? "px-1 text-[11px]" : "px-1.5 text-[12px]"} ${
+                speaks ? "border-signal bg-signal text-signal-ink" : addressed ? "border-dashed border-signal/70 bg-panel text-text" : "border-line bg-panel text-text"
+              }`}
+            >
               {s.role === "chair" ? t(crowded ? "chairShort" : "chair") : seatShort(s, locale)}
             </span>
             <span className="hidden max-w-full truncate text-center text-[11px] leading-tight text-muted @3xl:block">{seatLens(s, locale)}</span>
@@ -72,6 +92,23 @@ export function SeatArc({ seats, room }: { seats: SeatInfo[]; room: Room | null 
         );
       })}
     </div>
+  );
+}
+
+/** Level bars over the seat that has the floor (still bars with reduced motion). */
+function SpeakingBars() {
+  const t = useTranslations("debate.player");
+  return (
+    <span className="flex h-4 items-end gap-[2px] px-1" title={t("speaking")} data-speaking-bars>
+      {[0, 180, 90].map((delay) => (
+        <span
+          key={delay}
+          aria-hidden
+          className="h-3 w-[3px] origin-bottom rounded-[1px] bg-signal animate-speak motion-reduce:animate-none"
+          style={{ animationDelay: `${delay}ms` }}
+        />
+      ))}
+    </span>
   );
 }
 

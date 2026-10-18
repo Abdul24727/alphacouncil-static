@@ -22,6 +22,7 @@ import { fmtDate, fmtStamp } from "@/lib/format";
 import { useTickerDetail } from "@/lib/queries";
 import { useGroupTicker } from "@/lib/ticker-groups";
 import { seatName } from "./parts";
+import { SpeechBubble, useTurnPlayer } from "./Player";
 import { OnTheTable, RoundCard, SeatArc, errKey } from "./Stage";
 import { KeyPoints, StageView } from "./Transcript";
 
@@ -156,18 +157,22 @@ export function DebateRoom() {
         <div className="@container flex min-w-0 flex-col gap-2.5">
           {room.session && <OnTheTable room={room} />}
           <section className={`${PANEL} flex flex-col gap-3`} data-stage>
-            <SeatArc seats={seats} room={room.session ? room : null} />
-            {sittingOut.length > 0 && (
-              <p className="text-center text-[12px] text-muted" data-sits-out>
-                {t("sitsOut", { names: sittingOut.map((s) => seatName(s, locale)).join(t("and")), n: sittingOut.length })}
-              </p>
-            )}
             {room.session ? (
-              <RoundCard room={room} />
-            ) : shownId != null ? (
-              <p className="animate-pulse text-center text-muted">{t("loading")}</p>
+              <SessionStage key={room.session.id} room={room} />
             ) : (
-              <QuestionForm onConvene={convene} error={startError} />
+              <>
+                <SeatArc seats={seats} room={null} />
+                {sittingOut.length > 0 && (
+                  <p className="text-center text-[12px] text-muted" data-sits-out>
+                    {t("sitsOut", { names: sittingOut.map((s) => seatName(s, locale)).join(t("and")), n: sittingOut.length })}
+                  </p>
+                )}
+                {shownId != null ? (
+                  <p className="animate-pulse text-center text-muted">{t("loading")}</p>
+                ) : (
+                  <QuestionForm onConvene={convene} error={startError} />
+                )}
+              </>
             )}
           </section>
           {room.session && view && <StageView room={room} stage={view} />}
@@ -178,6 +183,22 @@ export function DebateRoom() {
 
       <Disclaimer />
     </div>
+  );
+}
+
+/**
+ * A session on the stage: the seats, the line that has the floor (each answer spoken in turn) and the
+ * round card. A session that is running when this mounts plays as answers land; a saved one opens on
+ * its last line.
+ */
+function SessionStage({ room }: { room: Room }) {
+  const player = useTurnPlayer(room, room.status === "running");
+  return (
+    <>
+      <SeatArc seats={room.session!.seats} room={room} speaking={player.line?.seat ?? null} addressee={player.line?.to ?? null} />
+      <SpeechBubble room={room} player={player} />
+      <RoundCard room={room} />
+    </>
   );
 }
 

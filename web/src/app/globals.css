@@ -31,6 +31,18 @@
   --text-label--line-height: 1.3;
 
   --shadow-*: initial;
+
+  /* Advisors' room: the level bars over the seat that has the floor. */
+  --animate-speak: speak 0.9s ease-in-out infinite;
+  @keyframes speak {
+    0%,
+    100% {
+      transform: scaleY(0.35);
+    }
+    50% {
+      transform: scaleY(1);
+    }
+  }
 }
 
 /* Shell state lives on <html> (see lib/layout-store.ts), so CSS sizes the panes before React hydrates. */

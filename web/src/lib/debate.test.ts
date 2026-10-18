@@ -4,6 +4,9 @@ import { test } from "node:test";
 import {
   EMPTY_ROOM,
   applyEvent,
+  clip,
+  lineMs,
+  lineOf,
   fmtElapsed,
   firstSentence,
   fmtScore,
@@ -129,4 +132,25 @@ test("scores and times", () => {
   assert.equal(fmtScore(null), null);
   assert.equal(fmtElapsed(65.4), "1:05");
   assert.equal(fmtElapsed(null), null);
+});
+
+test("spoken lines: tags out, cut at a sentence, one line per turn", () => {
+  assert.equal(clip("ROE is 26.75% [P1]. Debt is low [P2]."), "ROE is 26.75%. Debt is low.");
+  const long = "One sentence here. " + "word ".repeat(80);
+  assert.equal(clip(long, 60), "One sentence here. word word word word word word word word…");
+  assert.equal(clip("First part ends here. Second part runs on and on and on.", 40), "First part ends here.");
+  const reply = lineOf({ stage: "debate", round: 2, seat: "alwaleed", flags: null, data: { responds_to: "buffett", lean: "B", headline: "Not so.", text: "Debt is 0.20 [P2].", changed: false } });
+  assert.deepEqual(reply, { seat: "alwaleed", stage: "debate", kind: "answers", to: "buffett", lean: "B", score: null, text: "Not so. Debt is 0.20." });
+  const vote = lineOf({ stage: "vote", round: 3, seat: "marks", flags: null, data: { scores: { A: 3, B: 8 }, top: "B", reason: "Because." } });
+  assert.equal(vote.kind, "votes");
+  assert.equal(vote.score, 8);
+  assert.equal(lineOf({ stage: "openings", round: 1, seat: "lynch", flags: null, data: { absent: true, error: "busy" } }).kind, "absent");
+  assert.equal(lineOf({ stage: "faultlines", round: null, seat: "chair", flags: null, data: { lines: [{ title: "Payout?" }, { title: "Cycle" }], summary: "" } }).text, "Payout. Cycle.");
+});
+
+test("a line holds the floor longer for more text, shorter at higher speed", () => {
+  assert.equal(lineMs(110, 1), 3_400);
+  assert.equal(lineMs(110, 2), 1_700);
+  assert.ok(lineMs(300, 1) > lineMs(100, 1));
+  assert.equal(lineMs(0, 1), lineMs(20, 1));
 });

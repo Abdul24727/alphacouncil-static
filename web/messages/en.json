@@ -253,7 +253,22 @@
       "cta": "Convene the advisors"
     },
     "sitsOut": "{names} {n, plural, one {sits} other {sit}} out for this company: the person chairs it or its group.",
-    "chairShort": "Chair"
+    "chairShort": "Chair",
+    "player": {
+      "chair": "Chair",
+      "speaking": "Speaking",
+      "frames": "frames the question",
+      "opens": "opening · leans {option}",
+      "answers": "answers {name} · leans {option}",
+      "faults": "names the fault lines",
+      "votes": "votes {option} · {score}",
+      "verdict": "the verdict",
+      "absent": "no answer this round",
+      "upNext": "{n, plural, =0 {Up to date} one {# line up next} other {# lines up next}}",
+      "speed": "Playback speed",
+      "skip": "Skip ahead",
+      "replay": "Play the debate"
+    }
   },
   "placeholder": {
     "phase": "Built in Phase {phase}",

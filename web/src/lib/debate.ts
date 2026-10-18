@@ -307,3 +307,62 @@ export function splitText(text: string, unverified: string[] = []): Piece[] {
   }
   return out;
 }
+
+// --- The speaker on the floor ------------------------------------------------------------------------
+// Answers arrive several at a time (the advisors write at once); the screen plays them one at a time, as
+// lines spoken in turn, while the full text stays in the stage view.
+
+export const SPEEDS = [1, 1.5, 2] as const;
+
+export type Line = {
+  seat: string;
+  stage: Stage;
+  kind: "frames" | "opens" | "answers" | "faults" | "votes" | "verdict" | "absent";
+  /** The advisor answered, in a debate reply. */
+  to: string | null;
+  lean: string | null;
+  score: number | null;
+  text: string;
+};
+
+const TAGS = /\s*\[(?:P\d+|DB)\]/g;
+
+/** Text for a spoken line: citation tags out (the stage view keeps them), cut at a sentence end near `max`. */
+export function clip(text: string, max = 300): string {
+  const plain = text.replace(TAGS, "").replace(/\s+/g, " ").trim();
+  if (plain.length <= max) return plain;
+  const cut = plain.slice(0, max);
+  const stop = Math.max(cut.lastIndexOf(". "), cut.lastIndexOf("؟ "), cut.lastIndexOf("? "), cut.lastIndexOf("! "));
+  return stop >= max * 0.4 ? cut.slice(0, stop + 1) : `${cut.slice(0, cut.lastIndexOf(" "))}…`;
+}
+
+/** What one turn says when it takes the floor. */
+export function lineOf(turn: Turn): Line {
+  const d = turn.data as Record<string, unknown>;
+  const base = { seat: turn.seat, stage: turn.stage, to: null, lean: null, score: null };
+  if (isAbsent(d)) return { ...base, kind: "absent", text: "" };
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  switch (turn.stage) {
+    case "brief":
+      return { ...base, kind: "frames", text: clip(str(d.question)) };
+    case "openings":
+      return { ...base, kind: "opens", lean: str(d.lean), text: clip(`${str(d.headline)} ${str(d.text)}`) };
+    case "faultlines": {
+      const lines = (d.lines as { title: string }[] | undefined) ?? [];
+      return { ...base, kind: "faults", text: clip(lines.map((l) => l.title.replace(/[.?؟]$/, "")).join(". ") + ".") };
+    }
+    case "debate":
+      return { ...base, kind: "answers", to: (d.responds_to as string | null) ?? null, lean: str(d.lean), text: clip(`${str(d.headline)} ${str(d.text)}`) };
+    case "vote": {
+      const v = d as unknown as Vote;
+      return { ...base, kind: "votes", lean: v.top, score: v.scores?.[v.top] ?? null, text: clip(str(d.reason)) };
+    }
+    case "verdict":
+      return { ...base, kind: "verdict", text: clip(`${str(d.headline)}. ${str(d.summary)}`.replace(/\.\.\s/, ". ")) };
+  }
+}
+
+/** How long a line holds the floor: typed at about 55 characters a second, then a pause; shorter at higher speeds. */
+export function lineMs(chars: number, speed: number): number {
+  return Math.round((1_400 + (Math.max(chars, 20) / 55) * 1_000) / speed);
+}

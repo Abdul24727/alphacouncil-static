@@ -116,13 +116,20 @@ async function convene(locale) {
 
   // Follow the session: one screenshot as each stage starts (seats writing), until the verdict lands.
   const seen = new Set();
+  const speakers = new Set(); // seats that took the floor (Player.tsx), one line at a time
   while (Date.now() - started < 8 * 60_000) {
     const state = await page.evaluate(() => ({
       live: document.querySelector("[data-stage-tab][aria-current=step]")?.getAttribute("data-stage-tab") ?? null,
       done: !!document.querySelector("[data-verdict]"),
       failed: /stopped|توقفت/i.test(document.querySelector("[data-round-card]")?.textContent ?? ""),
       writing: document.querySelectorAll("[data-seat][data-writing]").length,
+      speaking: [...document.querySelectorAll("[data-seat][data-speaking]")].map((e) => e.getAttribute("data-seat")),
     }));
+    if (state.speaking.length > 1) check(false, `${locale}: one speaker at a time (${state.speaking.join(", ")})`);
+    for (const s of state.speaking) {
+      if (s !== "chair" && !speakers.size) await shot(page, `speaking-${locale}-1440`);
+      speakers.add(s);
+    }
     if (state.failed) break;
     if (state.live && !seen.has(state.live) && state.live !== "verdict") {
       seen.add(state.live);
@@ -133,6 +140,7 @@ async function convene(locale) {
     await page.waitForTimeout(700);
   }
   const seconds = (Date.now() - started) / 1000;
+  check(speakers.size >= 3, `${locale}: lines played in turn (${[...speakers].join(", ")})`);
   const verdict = page.locator("[data-verdict]");
   check((await verdict.count()) === 1, `${locale}: the verdict arrived (${seconds.toFixed(0)} s on screen)`);
   check(seen.size >= 4, `${locale}: saw the stages live (${[...seen].join(", ")})`);
@@ -170,6 +178,15 @@ async function replayPhone(locale, state) {
   await page.locator("[data-verdict]").waitFor({ timeout: 30000 });
   await page.waitForTimeout(800);
   await screenChecks(page, `${locale} 390`);
+  // A saved session opens on its last line; "Play the debate" plays it again from the Chair's brief.
+  await page.locator("[data-replay]").click();
+  await page.waitForTimeout(400);
+  const first = await page.locator("[data-seat][data-speaking]").getAttribute("data-seat");
+  await page.waitForTimeout(3600);
+  const next = await page.locator("[data-seat][data-speaking]").getAttribute("data-seat");
+  const typed = (await page.locator("[data-speech-text]").textContent())?.length ?? 0;
+  check(first === "chair" && next !== "chair" && typed > 0, `${locale} 390: "Play the debate" replays it in turn (${first}, then ${next}; ${typed} characters typed)`);
+  await shot(page, `replay-${locale}-390`);
   for (const stage of STAGES) {
     await page.locator(`[data-stage-tab=${stage}]`).click();
     await page.locator(`[data-stage-view=${stage}]`).waitFor();

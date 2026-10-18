@@ -422,6 +422,11 @@ of the data. Code: `api/app/debate/`, `api/app/routers/debate.py`, `web/src/comp
 - **Models** (settings in each `api.env`, see `deploy/api.env.example`): advisors `DEBATE_ADVISOR_MODEL`,
   Chair `DEBATE_CHAIR_MODEL`, through OpenRouter with the Copilot's key and host order. Without
   `OPENROUTER_API_KEY` the room runs a labelled stand-in.
+- **On screen**: answers arrive several at a time (the advisors write at once) and are played one at a time
+  under the seats, as lines spoken in turn: the speaker's seat lifts with level bars and a filled name tag, the
+  advisor being answered gets a dashed tag, and the line types out (`web/src/components/debate/Player.tsx`;
+  speed 1, 1.5 or 2×, "Skip ahead"; a saved session opens on its last line with "Play the debate"). The full
+  text with citations stays in the stage view below. Reduced-motion settings turn the typing and movement off.
 - **Allowance**: 20 sessions per calendar month (UTC) on Pro (`plans.LIMITS`), shown under the question
   box; a failed session does not count. One session at a time per account. Free and signed-out visitors
   see the room locked.
