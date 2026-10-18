@@ -7,6 +7,7 @@ from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel
 
 from ..auth import AUTH_FAILED, User, check_origin, client_ip, current_user
+from ..plans import plan_of
 from ..copilot.context import ChatRequest, to_input
 from ..copilot.engine import claude_stream
 from ..copilot.openai_compat import openai_stream
@@ -59,8 +60,12 @@ async def chat(
     if real and user is None:
         raise HTTPException(AUTH_FAILED, "sign_in_required")  # codes: the web pane words them per language
     limit_key = f"user:{user.id}" if user else f"ip:{client_ip(request)}"
-    if not await run_in_threadpool(request.app.state.copilot_limit.hit, limit_key):
-        raise HTTPException(429, "rate_limited")
+    # Free: 10 questions a day and no Pro-only tools; Pro: 60 an hour (plans.LIMITS).
+    plan = await run_in_threadpool(plan_of, request, user)
+    request.state.plan = plan
+    limiter = request.app.state.copilot_day_limit if plan == "free" else request.app.state.copilot_limit
+    if not await run_in_threadpool(limiter.hit, limit_key):
+        raise HTTPException(429, "rate_limited_free" if plan == "free" else "rate_limited")
     try:
         chat_input = to_input(body)
     except ValueError as exc:

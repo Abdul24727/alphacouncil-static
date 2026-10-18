@@ -7,6 +7,8 @@
 - Forgot password: an emailed link (token stored as its SHA-256) sets a new password once,
   within an hour, and ends the account's other sessions. An account without a registration
   acceptance (brought over from the old site, app/import_old.py) accepts there.
+- Email confirmation: sign-up emails a link (same scheme, 48 hours); following it, or a
+  password reset link, or Google saying so, marks the address confirmed. Buying Pro needs it.
 """
 
 import base64
@@ -27,7 +29,18 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError
 
 from . import mail
-from .appdb import consents, engine_for, password_resets, prefs, random_id, rate_hits, sessions, users, utcnow
+from .appdb import (
+    consents,
+    email_verifications,
+    engine_for,
+    password_resets,
+    prefs,
+    random_id,
+    rate_hits,
+    sessions,
+    users,
+    utcnow,
+)
 from .legal import REGISTRATION
 from .settings import Settings
 
@@ -38,6 +51,7 @@ COOKIE = "acp_session"
 AUTH_FAILED = 403
 SESSION_DAYS = 30
 RESET_MINUTES = 60
+VERIFY_HOURS = 48
 UNSAFE = {"POST", "PUT", "PATCH", "DELETE"}
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -134,6 +148,22 @@ class User(BaseModel):
     email: str
     display_name: str | None
     locale: str
+    # The owner proved the address (emailed link, reset link or Google).
+    email_verified: bool = False
+    # False for an account made with Google that has not set a password.
+    has_password: bool = True
+
+
+def user_of(row) -> User:  # noqa: ANN001
+    """A users row (with email_verified_at and has_password) as the API's User."""
+    return User(
+        id=row.id,
+        email=row.email,
+        display_name=row.display_name,
+        locale=row.locale,
+        email_verified=row.email_verified_at is not None,
+        has_password=row.has_password is not False,
+    )
 
 
 def current_user(request: Request) -> User | None:
@@ -142,7 +172,7 @@ def current_user(request: Request) -> User | None:
         return None
     with db(request).connect() as conn:
         row = conn.execute(
-            select(users.c.id, users.c.email, users.c.display_name, users.c.locale, sessions.c.expires_at)
+            select(*USER_COLUMNS, sessions.c.expires_at)
             .join(sessions, sessions.c.user_id == users.c.id)
             .where(sessions.c.token_hash == _token_hash(token))
         ).first()
@@ -151,7 +181,17 @@ def current_user(request: Request) -> User | None:
     expires = row.expires_at if row.expires_at.tzinfo else row.expires_at.replace(tzinfo=UTC)
     if expires < datetime.now(UTC):
         return None
-    return User(id=row.id, email=row.email, display_name=row.display_name, locale=row.locale)
+    return user_of(row)
+
+
+USER_COLUMNS = (
+    users.c.id,
+    users.c.email,
+    users.c.display_name,
+    users.c.locale,
+    users.c.email_verified_at,
+    users.c.has_password,
+)
 
 
 def require_user(user: Annotated[User | None, Depends(current_user)]) -> User:
@@ -202,7 +242,9 @@ class SignupBody(Credentials):
 
 
 class DeleteBody(BaseModel):
-    password: str = Field(max_length=200)
+    password: str = Field(default="", max_length=200)
+    # An account without a password (made with Google) confirms with its email address.
+    confirm_email: str = Field(default="", max_length=254)
 
 
 class LoginBody(BaseModel):
@@ -263,7 +305,7 @@ def _limited(request: Request, email: str) -> None:
 
 
 @router.post("/signup", operation_id="signup", dependencies=[Depends(check_origin)])
-def signup(request: Request, response: Response, body: SignupBody) -> Me:
+def signup(request: Request, response: Response, body: SignupBody, background: BackgroundTasks) -> Me:
     _limited(request, body.email)
     if not body.accept_terms:
         raise HTTPException(422, "Please accept the Terms of Service and Privacy Policy to continue.")
@@ -277,12 +319,15 @@ def signup(request: Request, response: Response, body: SignupBody) -> Me:
                     display_name=(body.display_name or "").strip() or None,
                     locale=body.locale,
                     created_at=utcnow(),
+                    has_password=True,
                 )
             ).inserted_primary_key[0]
             _record_registration(conn, uid)
             _start_session(request, response, conn, uid)
+            token = issue_verification(conn, uid)
     except IntegrityError as exc:
         raise HTTPException(409, "An account with this email already exists.") from exc
+    send_verification_later(background, settings_of(request), body.email, token, body.locale)
     return Me(user=User(id=uid, email=body.email, display_name=body.display_name, locale=body.locale))
 
 
@@ -296,7 +341,7 @@ def login(request: Request, response: Response, body: LoginBody) -> Me:
         if row is None or not verify_password(body.password, row.password_hash):
             raise HTTPException(AUTH_FAILED, "Email or password is incorrect.")
         _start_session(request, response, conn, row.id)
-    return Me(user=User(id=row.id, email=row.email, display_name=row.display_name, locale=row.locale))
+    return Me(user=user_of(row))
 
 
 @router.post("/logout", operation_id="logout", dependencies=[Depends(check_origin)])
@@ -429,14 +474,89 @@ def reset_password(request: Request, response: Response, body: ResetBody) -> Me:
                 # so the claim rolls back and the link still works.
                 raise HTTPException(409, "Please accept the Terms of Service and Privacy Policy to continue.")
             _record_registration(conn, uid)
-        conn.execute(update(users).where(users.c.id == uid).values(password_hash=hash_password(body.password)))
+        # The emailed link proves the address too; the account now has a password.
+        conn.execute(
+            update(users)
+            .where(users.c.id == uid)
+            .values(
+                password_hash=hash_password(body.password),
+                has_password=True,
+                email_verified_at=func.coalesce(users.c.email_verified_at, now),
+            )
+        )
         conn.execute(delete(sessions).where(sessions.c.user_id == uid))
         conn.execute(delete(password_resets).where(password_resets.c.user_id == uid, password_resets.c.used_at.is_(None)))
         _start_session(request, response, conn, uid)
-        row = conn.execute(
-            select(users.c.id, users.c.email, users.c.display_name, users.c.locale).where(users.c.id == uid)
-        ).one()
-    return Me(user=User(id=row.id, email=row.email, display_name=row.display_name, locale=row.locale))
+        row = conn.execute(select(*USER_COLUMNS).where(users.c.id == uid)).one()
+    return Me(user=user_of(row))
+
+
+# --- email confirmation ---------------------------------------------------------------------------
+
+
+def issue_verification(conn, user_id: int) -> str:  # noqa: ANN001
+    """A new confirmation token for the account (earlier unused ones stop working)."""
+    now, token = utcnow(), secrets.token_urlsafe(32)
+    conn.execute(delete(email_verifications).where(email_verifications.c.user_id == user_id, email_verifications.c.used_at.is_(None)))
+    conn.execute(
+        insert(email_verifications).values(
+            token_hash=_token_hash(token), user_id=user_id, created_at=now, expires_at=now + timedelta(hours=VERIFY_HOURS)
+        )
+    )
+    return token
+
+
+def send_verification_later(background: BackgroundTasks, settings: Settings, email: str, token: str, locale: str) -> None:
+    # In the fragment, like the reset link: no server or proxy ever logs it.
+    link = f"{site_url(settings)}{'/ar' if locale == 'ar' else ''}/verify-email#token={token}"
+    background.add_task(mail.send_verification, settings, email, link, locale)
+
+
+class VerifyBody(BaseModel):
+    token: str = Field(max_length=200)
+
+
+VERIFY_EXPIRED = "This link has expired or was already used. Sign in and ask for a new one."
+
+
+@router.post("/verify-email", operation_id="verifyEmail", dependencies=[Depends(check_origin)])
+def verify_email(request: Request, body: VerifyBody) -> Accepted:
+    """Confirms the address with the emailed link's token. Needs no session: the link may be
+    opened in another browser or on a phone."""
+    if not reset_limit(request).hit(f"verify:ip:{client_ip(request)}"):
+        raise HTTPException(429, "Too many attempts. Try again in 15 minutes.")
+    now = utcnow()
+    with db(request).begin() as conn:
+        claimed = conn.execute(
+            update(email_verifications)
+            .where(
+                email_verifications.c.token_hash == _token_hash(body.token),
+                email_verifications.c.used_at.is_(None),
+                email_verifications.c.expires_at > now,
+            )
+            .values(used_at=now)
+            .returning(email_verifications.c.user_id)
+        ).first()
+        if claimed is None:
+            raise HTTPException(AUTH_FAILED, VERIFY_EXPIRED)
+        conn.execute(
+            update(users)
+            .where(users.c.id == claimed.user_id)
+            .values(email_verified_at=func.coalesce(users.c.email_verified_at, now))
+        )
+    return Accepted()
+
+
+@router.post("/resend-verification", operation_id="resendVerification", dependencies=[Depends(check_origin)])
+def resend_verification(request: Request, background: BackgroundTasks, user: Annotated[User, Depends(require_user)]) -> Accepted:
+    if user.email_verified:
+        return Accepted()
+    if not reset_limit(request).hit(f"verify:user:{user.id}"):
+        raise HTTPException(429, "Too many attempts. Try again in 15 minutes.")
+    with db(request).begin() as conn:
+        token = issue_verification(conn, user.id)
+    send_verification_later(background, settings_of(request), user.email, token, user.locale)
+    return Accepted()
 
 
 @me_router.post("/delete", operation_id="deleteAccount", dependencies=[Depends(check_origin)])
@@ -444,11 +564,22 @@ def delete_account(
     request: Request, response: Response, body: DeleteBody, user: Annotated[User, Depends(require_user)]
 ) -> Me:
     """Deletes the account and everything stored with it (sessions, holdings, alerts,
-    preferences, consents cascade). The password is asked again."""
+    preferences, consents, subscription cascade). The password is asked again; an account made
+    with Google that never set one types its email address instead. A saved card is deleted at
+    Moyasar first, so nothing can be charged afterwards."""
+    from . import billing
+
     with db(request).begin() as conn:
-        row = conn.execute(select(users.c.password_hash).where(users.c.id == user.id)).first()
-        if row is None or not verify_password(body.password, row.password_hash):
+        row = conn.execute(select(users.c.password_hash, users.c.has_password, users.c.email).where(users.c.id == user.id)).first()
+        if row is None:
             raise HTTPException(AUTH_FAILED, "Password is incorrect.")
+        if row.has_password is False:
+            if body.confirm_email.strip().lower() != row.email:
+                raise HTTPException(AUTH_FAILED, "Type your email address to confirm.")
+        elif not verify_password(body.password, row.password_hash):
+            raise HTTPException(AUTH_FAILED, "Password is incorrect.")
+    billing.forget_card(request, user.id)
+    with db(request).begin() as conn:
         conn.execute(delete(users).where(users.c.id == user.id))
     response.delete_cookie(COOKIE, path="/")
     return Me(user=None)

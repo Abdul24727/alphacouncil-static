@@ -8,7 +8,7 @@ each category's allowed age), so the public pages cannot drift from the product.
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
-from .. import council, pricing
+from .. import billing, council, pricing
 from ..freshness import DEFAULT_WEEKEND, MARKET_CATEGORIES, PIPELINE_RUN_UTC, PRICE_MAX_AGE_DAYS, WEEKENDS
 from ..market_db import MarketDataUnavailable, reader
 from .market import _uni
@@ -33,18 +33,18 @@ class Plans(BaseModel):
     currency: str
     interval: str
     provider: str
-    # This app has no checkout yet; payments still run through the old site's Moyasar flow.
+    # Pro can be bought here (BILLING_OPEN and Moyasar's keys set; app/billing.py).
     checkout_open: bool
 
 
 @router.get("/plans", operation_id="plans")
-def plans() -> Plans:
+def plans(request: Request) -> Plans:
     return Plans(
         plans=[Plan(**p) for p in pricing.public_plans()],
         currency=pricing.CURRENCY,
         interval=pricing.INTERVAL,
         provider=pricing.PROVIDER,
-        checkout_open=False,
+        checkout_open=billing.checkout_open(settings_of(request)),
     )
 
 

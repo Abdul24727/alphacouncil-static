@@ -6,7 +6,8 @@ const API_ORIGIN = process.env.API_ORIGIN ?? "http://127.0.0.1:8000";
 
 // Content Security Policy without nonces: nonces would make every page render per request
 // and lose the prerendered shells. Everything is served from this origin (fonts are
-// self-hosted by next/font, the API sits behind /api). HSTS is set by nginx with TLS.
+// self-hosted by next/font, the API sits behind /api), except card details on /checkout,
+// which Moyasar's form sends to api.moyasar.com. HSTS is set by nginx with TLS.
 const isDev = process.env.NODE_ENV === "development";
 const CSP = [
   "default-src 'self'",
@@ -14,7 +15,8 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' blob: data:",
   "font-src 'self'",
-  "connect-src 'self'",
+  // Moyasar's payment form sends card details straight to Moyasar (never through our server).
+  "connect-src 'self' https://api.moyasar.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

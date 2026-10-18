@@ -25,8 +25,8 @@ if [[ "${1:-}" == "--setup" ]]; then
   scp -q deploy/api.env.example "$HOST:/tmp/acp-api.env"
   ssh_ "test -f /etc/alphacouncil-platform/api.env || install -m 640 -o root -g alphacouncil /tmp/acp-api.env /etc/alphacouncil-platform/api.env; rm -f /tmp/acp-api.env"
   ssh_ "test -f /etc/alphacouncil-platform/web.env || printf 'NODE_ENV=production\nAPI_ORIGIN=http://127.0.0.1:8200\nNEXT_TELEMETRY_DISABLED=1\n' | install -m 640 -o root -g alphacouncil /dev/stdin /etc/alphacouncil-platform/web.env"
-  scp -q deploy/acp-api.service deploy/acp-web.service "$HOST:/etc/systemd/system/"
-  ssh_ "systemctl daemon-reload && systemctl enable acp-api acp-web"
+  scp -q deploy/acp-api.service deploy/acp-web.service deploy/acp-billing.service deploy/acp-billing.timer "$HOST:/etc/systemd/system/"
+  ssh_ "systemctl daemon-reload && systemctl enable acp-api acp-web && systemctl enable --now acp-billing.timer"
   # The site file is the template only until certbot adds TLS to it; never overwrite that.
   if ssh_ "grep -q 'managed by Certbot' /etc/nginx/sites-available/alphacouncil-beta 2>/dev/null"; then
     echo "nginx site has TLS (certbot): left as it is"

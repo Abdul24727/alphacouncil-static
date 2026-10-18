@@ -47,9 +47,30 @@ export function useSignUp() {
   );
 }
 
-/** Deletes the account and everything stored with it; asks for the password again. */
+/** Deletes the account and everything stored with it; asks for the password again (an account
+ *  made with Google that has no password types its email address instead). */
 export function useDeleteAccount() {
-  return useAuthMutation((body: { password: string }) => api.POST("/v1/me/delete", { body }).then(unwrap));
+  return useAuthMutation((body: { password?: string; confirm_email?: string }) =>
+    api.POST("/v1/me/delete", { body: { password: body.password ?? "", confirm_email: body.confirm_email ?? "" } }).then(unwrap),
+  );
+}
+
+/** Confirms the email address with the emailed link's token (needs no session). */
+export function useVerifyEmail() {
+  return useAuthMutation((token: string) => api.POST("/v1/auth/verify-email", { body: { token } }).then(unwrap));
+}
+
+/** Emails a new confirmation link to the signed-in account. */
+export function useResendVerification() {
+  return useMutation({ mutationFn: () => api.POST("/v1/auth/resend-verification").then(unwrap) });
+}
+
+/** Where "Continue with Google" goes: the API sends the browser on to Google. accept: the
+ *  terms were ticked on the sign-up page (a new account needs it). */
+export function googleStartUrl(opts: { next?: string; locale: string; accept?: boolean }) {
+  const q = new URLSearchParams({ next: opts.next ?? "/portfolio", locale: opts.locale === "ar" ? "ar" : "en" });
+  if (opts.accept) q.set("accept", "true");
+  return `/api/v1/auth/google/start?${q}`;
 }
 
 export function useSignOut() {

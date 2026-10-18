@@ -27,7 +27,7 @@ staged="$(ssh_ 'basename "$(readlink -f /opt/alphacouncil-platform/current)"')"
 
 if [[ "${1:-}" == "--setup" ]]; then
   echo "== one-time setup"
-  scp -q deploy/acp-prod-api.service deploy/acp-prod-web.service "$HOST:/etc/systemd/system/"
+  scp -q deploy/acp-prod-api.service deploy/acp-prod-web.service deploy/acp-prod-billing.service deploy/acp-prod-billing.timer "$HOST:/etc/systemd/system/"
   ssh_ 'bash -s' <<'REMOTE'
 set -euo pipefail
 ENVDIR=/etc/alphacouncil-platform/prod
@@ -61,7 +61,7 @@ if [[ ! -f "$ENVDIR/web.env" ]]; then
   chown root:alphacouncil "$ENVDIR/web.env" && chmod 640 "$ENVDIR/web.env"
 fi
 grep -oE '^[A-Z_]+=' "$ENVDIR/api.env" | tr '\n' ' '; echo
-systemctl daemon-reload && systemctl enable acp-prod-api acp-prod-web
+systemctl daemon-reload && systemctl enable acp-prod-api acp-prod-web && systemctl enable --now acp-prod-billing.timer
 REMOTE
 fi
 

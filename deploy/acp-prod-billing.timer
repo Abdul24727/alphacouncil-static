@@ -1,0 +1,11 @@
+[Unit]
+Description=Hourly Pro renewals and reminders (production, alphacouncil.tech)
+
+[Timer]
+OnCalendar=hourly
+RandomizedDelaySec=120
+# A pass missed while the server was down runs at boot.
+Persistent=true
+
+[Install]
+WantedBy=timers.target

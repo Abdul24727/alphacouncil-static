@@ -12,3 +12,11 @@ REGISTRATION = {
     "text": "I agree to the Terms of Service and acknowledge the Privacy Policy.",
     "documents": {"terms": "1.2", "privacy": "1.2"},
 }
+
+# Ticked before paying for Pro (app/billing.py), from the same registry ("checkout").
+CHECKOUT = {
+    "kind": "checkout",
+    "text_version": "1.0",
+    "text": "I agree to the Terms of Service and acknowledge the Privacy Policy, Refund and Cancellation Policy, and AI and Financial Disclaimer.",
+    "documents": {"terms": "1.2", "privacy": "1.2", "refunds": "1.2", "ai-financial-disclaimer": "1.0"},
+}

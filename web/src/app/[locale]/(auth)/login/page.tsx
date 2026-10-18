@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { googleNotice } from "@/lib/auth-notices";
 import type { Locale } from "@/i18n/routing";
 
 export default async function Page({ params, searchParams }: PageProps<"/[locale]/login">) {
@@ -15,6 +16,8 @@ export default async function Page({ params, searchParams }: PageProps<"/[locale
 }
 
 async function WithNext({ searchParams }: Pick<PageProps<"/[locale]/login">, "searchParams">) {
-  const next = (await searchParams).next;
-  return <AuthForm mode="login" next={typeof next === "string" ? next : undefined} />;
+  const { next, error } = await searchParams;
+  // Google sign-in comes back with ?error= (api/app/oauth.py); only known values are shown.
+  const notice = googleNotice(error);
+  return <AuthForm mode="login" next={typeof next === "string" ? next : undefined} notice={notice} />;
 }

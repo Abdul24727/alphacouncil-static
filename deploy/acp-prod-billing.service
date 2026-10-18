@@ -1,0 +1,17 @@
+[Unit]
+Description=AlphaCouncil Pro renewals and reminders (production, alphacouncil.tech)
+After=network-online.target
+
+[Service]
+# One pass over the subscriptions (app/billing.py run_renewals), started hourly by acp-prod-billing.timer.
+Type=oneshot
+User=alphacouncil
+Group=alphacouncil
+WorkingDirectory=/opt/alphacouncil-platform/prod/current/api
+EnvironmentFile=/etc/alphacouncil-platform/prod/api.env
+ExecStart=/opt/alphacouncil-platform/prod/current/api/.venv/bin/python -m app.billing renew
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadOnlyPaths=/var/lib/alphacouncil /opt/alphacouncil

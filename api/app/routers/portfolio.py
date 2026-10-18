@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import delete, insert, select, update
 
 from ..auth import User, check_origin, db, require_user
+from ..plans import limit, plan_of
 from ..appdb import alerts, holdings, random_id, utcnow
 from ..market_db import MarketDataUnavailable
 from ..prices import PriceStore
@@ -190,8 +191,9 @@ def upsert_holding(request: Request, body: HoldingIn, user: Authed) -> Portfolio
             conn.execute(update(holdings).where(holdings.c.id == existing.id).values(quantity=body.quantity, avg_cost=body.avg_cost))
         else:
             count = len(conn.execute(select(holdings.c.id).where(holdings.c.user_id == user.id)).fetchall())
-            if count >= 200:
-                raise HTTPException(400, "A portfolio holds up to 200 positions.")
+            most = limit(request, user, "holdings") or 200
+            if count >= most:
+                raise HTTPException(400, f"Your plan holds up to {most} positions." + (" Pro holds 200." if plan_of(request, user) == "free" else ""))
             conn.execute(insert(holdings).values(id=random_id(conn, holdings), user_id=user.id, ticker_key=t.ticker_key, quantity=body.quantity, avg_cost=body.avg_cost, created_at=utcnow()))
     return get_portfolio(request, user)
 
@@ -243,8 +245,9 @@ def create_alert(request: Request, body: AlertIn, user: Authed) -> list[Alert]:
     if t is None:
         raise HTTPException(404, f"Unknown ticker: {body.ticker}")
     with db(request).begin() as conn:
-        if len(conn.execute(select(alerts.c.id).where(alerts.c.user_id == user.id)).fetchall()) >= 100:
-            raise HTTPException(400, "Up to 100 alerts.")
+        most = limit(request, user, "alerts") or 100
+        if len(conn.execute(select(alerts.c.id).where(alerts.c.user_id == user.id)).fetchall()) >= most:
+            raise HTTPException(400, f"Your plan has up to {most} alerts." + (" Pro has 100." if plan_of(request, user) == "free" else ""))
         conn.execute(insert(alerts).values(id=random_id(conn, alerts), user_id=user.id, ticker_key=t.ticker_key, kind=body.kind, price=body.price, created_at=utcnow()))
     return list_alerts(request, user)
 

@@ -3,12 +3,13 @@ pipeline's databases; anything missing is returned as null, never estimated."""
 
 import sqlite3
 
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
 from .. import ratios
 from ..freshness import PRICE_MAX_AGE_DAYS, Freshness, assess
 from ..market_db import MarketDataUnavailable, reader
+from ..plans import require_pro
 from ..settings import Settings
 from ..universe import Ticker, Universe
 
@@ -455,7 +456,7 @@ def get_news(request: Request, ref: str, limit: int = 12, lang: str | None = Que
     return _items(request, ref, ("news", "disclosures"), limit, lang=lang)
 
 
-@router.get("/events", operation_id="getTickerEvents")
+@router.get("/events", operation_id="getTickerEvents", dependencies=[Depends(require_pro)])
 def get_events(request: Request, ref: str, limit: int = 20, upcoming: bool = False) -> list[NewsItem]:
     """Corporate calendar: dividends, assemblies, results dates."""
     return _items(request, ref, ("events",), limit, upcoming=upcoming)

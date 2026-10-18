@@ -4,6 +4,8 @@ import { CheckIcon, DrawingPinIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import { priceDigits } from "@/components/stock/common";
 import { PriceChart } from "@/components/stock/PriceChart";
+import { Link } from "@/i18n/navigation";
+import { useIsFree } from "@/lib/billing";
 import { addCitations, splitAnswer, type Autocite } from "@/lib/copilot-answer";
 import { useDashboards } from "@/lib/dashboards-store";
 import { fmtNumber } from "@/lib/format";
@@ -120,6 +122,16 @@ export function AssistantMessage({
 
 function PinButton({ pinned, onPin }: { pinned: boolean; onPin: () => void }) {
   const t = useTranslations("copilot");
+  const tp = useTranslations("plan");
+  // Pinning to My dashboards is Pro (plans.PRO_ONLY).
+  const free = useIsFree();
+  if (free && !pinned)
+    return (
+      <Link href="/pricing" className="flex items-center gap-1 rounded-chip px-1.5 py-0.5 text-[11px] text-muted hover:text-signal">
+        <DrawingPinIcon />
+        {t("pin")} · {tp("pro")}
+      </Link>
+    );
   return (
     <button
       type="button"

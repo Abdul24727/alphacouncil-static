@@ -82,6 +82,11 @@ async function PlanColumns({ plans, locale }: { plans: Plans | null | undefined;
           <h2 className="headline text-[36px] leading-none">{name("pro")}</h2>
           {price("pro")}
           <p className="text-[16px] text-text">{t("pricing.pro.lead")}</p>
+          {plans?.checkout_open && (
+            <ButtonLink href="/checkout">
+              {t("pricing.getPro")}
+            </ButtonLink>
+          )}
           <ul className="flex flex-col text-[15px] text-text-soft">
             {proItems.map((item) => (
               <li key={item} className="border-t border-line py-2.5">

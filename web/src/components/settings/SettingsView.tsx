@@ -6,6 +6,7 @@ import { Panel } from "@/components/panel/Panel";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { ApiError } from "@/lib/api/client";
 import { useDeleteAccount, useMe, useSignOut } from "@/lib/auth";
+import { BillingPanel } from "./BillingPanel";
 import { type Decimals, type FontSize, useSettings } from "@/lib/settings-store";
 
 function Choice<T extends string | number>({
@@ -120,27 +121,37 @@ export function SettingsView() {
             </div>
           )}
         </Panel>
+        <BillingPanel className="col-span-12 @4xl:col-span-7" />
       </div>
     </div>
   );
 }
 
-/** Privacy Policy: deletion "through available settings". Asks for the password again. */
+/** Privacy Policy: deletion "through available settings". Asks for the password again; an
+ *  account made with Google that never set one types its email address instead. */
 function DeleteAccount() {
   const t = useTranslations("settings");
   const router = useRouter();
+  const me = useMe();
   const del = useDeleteAccount();
   const [error, setError] = useState<string | null>(null);
+  const noPassword = me.data?.has_password === false;
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    const password = String(new FormData(e.currentTarget).get("password") ?? "");
-    if (!password) return setError(t("deleteNeedsPassword"));
+    const value = String(new FormData(e.currentTarget).get("confirm") ?? "");
+    if (!value) return setError(noPassword ? t("deleteNeedsEmail") : t("deleteNeedsPassword"));
     try {
-      await del.mutateAsync({ password });
+      await del.mutateAsync(noPassword ? { confirm_email: value } : { password: value });
       router.replace("/");
     } catch (err) {
-      setError(err instanceof ApiError && (err.status === 401 || err.status === 403) ? t("deleteWrongPassword") : t("deleteFailed"));
+      setError(
+        err instanceof ApiError && (err.status === 401 || err.status === 403)
+          ? noPassword
+            ? t("deleteWrongEmail")
+            : t("deleteWrongPassword")
+          : t("deleteFailed"),
+      );
     }
   };
   return (
@@ -149,12 +160,12 @@ function DeleteAccount() {
       <h3 className="text-text">{t("deleteTitle")}</h3>
       <p className="text-[12px] text-muted">{t("deleteBody")}</p>
       <label className="flex flex-col gap-1">
-        <span className="label-caps text-muted">{t("deletePassword")}</span>
+        <span className="label-caps text-muted">{noPassword ? t("deleteEmail") : t("deletePassword")}</span>
         <input
-          type="password"
-          name="password"
+          type={noPassword ? "email" : "password"}
+          name="confirm"
           dir="ltr"
-          autoComplete="current-password"
+          autoComplete={noPassword ? "off" : "current-password"}
           className="h-9 w-full max-w-xs rounded-panel border border-line bg-bg px-3 text-text outline-none focus:border-muted"
         />
       </label>

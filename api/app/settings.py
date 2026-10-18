@@ -72,6 +72,19 @@ class Settings(BaseSettings):
     smtp_user: str | None = None
     smtp_from: str = "AlphaCouncil <no-reply@alphacouncil.tech>"
 
+    # Sign in with Google (app/oauth.py), the old site's Google web client. The secret
+    # (GOOGLE_CLIENT_SECRET) stays in the process environment. Google sends people back to
+    # <site>/auth/google/callback, the address registered for that client.
+    google_client_id: str | None = None
+
+    # Pro billing (app/billing.py, app/plans.py). BILLING_OPEN turns on the checkout and,
+    # with it, the Free plan's limits: while it is off every account has Pro (early access).
+    # The publishable key is public (it is sent to the browser); MOYASAR_SECRET_KEY and
+    # MOYASAR_WEBHOOK_SECRET stay in the process environment.
+    billing_open: bool = False
+    moyasar_publishable_key: str | None = None
+    moyasar_api: str = "https://api.moyasar.com/v1"
+
 
 @lru_cache
 def get_settings() -> Settings:

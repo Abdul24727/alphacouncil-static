@@ -5,16 +5,18 @@ import { useState } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { ApiError } from "@/lib/api/client";
 import { useSignIn, useSignUp } from "@/lib/auth";
+import type { GoogleNotice } from "@/lib/auth-notices";
+import { GoogleButton } from "./GoogleButton";
 
 export const fieldClass =
   "h-10 w-full rounded-panel border border-line bg-bg px-3 text-[14px] text-text outline-none focus:border-muted";
 
-export function AuthForm({ mode, next }: { mode: "login" | "signup"; next?: string }) {
+export function AuthForm({ mode, next, notice }: { mode: "login" | "signup"; next?: string; notice?: GoogleNotice }) {
   const t = useTranslations("auth");
   const router = useRouter();
   const signIn = useSignIn();
   const signUp = useSignUp();
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(notice && notice !== "google_terms" ? t(`googleErrors.${notice}`) : null);
   const busy = signIn.isPending || signUp.isPending;
 
   // Uncontrolled fields read on submit: anything typed before the page hydrates is kept.
@@ -62,6 +64,17 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next?: stri
     // method="post": a submit before the page has hydrated must not put the password in the URL.
     <form method="post" onSubmit={submit} className="flex w-full flex-col gap-3" noValidate>
       <h1 className="headline text-[28px] leading-none">{t(mode === "login" ? "loginTitle" : "signupTitle")}</h1>
+      {notice === "google_terms" && (
+        <p role="status" className="rounded-panel border border-signal/40 px-3 py-2 text-text">
+          {t("googleErrors.google_terms")}
+        </p>
+      )}
+      <GoogleButton mode={mode} next={next} onTermsMissing={() => setError(t("errors.terms"))} />
+      <p className="flex items-center gap-3 text-[12px] text-muted" aria-hidden>
+        <span className="h-px flex-1 bg-line" />
+        {t("or")}
+        <span className="h-px flex-1 bg-line" />
+      </p>
       {mode === "signup" && (
         <label className="flex flex-col gap-1">
           <span className="label-caps text-muted">{t("name")}</span>

@@ -14,6 +14,7 @@ import {
   signClass,
   withCurrency,
 } from "@/lib/format";
+import { useIsFree } from "@/lib/billing";
 import { useChartPrefs } from "@/lib/chart-prefs";
 import { newsText } from "@/lib/news-text";
 import { useTickerCouncil, useTickerDetail, useTickerNews, useTickerPeers, useTickerPrices } from "@/lib/queries";
@@ -31,7 +32,11 @@ export function PricePanel({ className }: { className?: string }) {
   const locale = useLocale();
   const slug = useGroupTicker(GROUP);
   const prices = useTickerPrices(slug);
-  const { mode, range, indicators, setMode, setRange, toggleIndicator } = useChartPrefs();
+  const { mode, range, indicators: chosen, setMode, setRange, toggleIndicator } = useChartPrefs();
+  const tp = useTranslations("plan");
+  // Technical indicators are Pro (plans.PRO_ONLY): on Free they are listed but locked.
+  const free = useIsFree();
+  const indicators = free ? [] : chosen;
   const p = prices.data;
   const digits = priceDigits(p?.currency);
   const bars = p?.bars ?? [];
@@ -56,8 +61,9 @@ export function PricePanel({ className }: { className?: string }) {
       })}
       menuItems={INDICATORS.map((i) => ({
         key: i,
-        label: t(`chart.indicators.${i}`),
+        label: free ? `${t(`chart.indicators.${i}`)} · ${tp("pro")}` : t(`chart.indicators.${i}`),
         checked: indicators.includes(i),
+        disabled: free,
         onSelect: () => toggleIndicator(i),
       }))}
       className={className}

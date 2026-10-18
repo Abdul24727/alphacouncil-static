@@ -163,8 +163,14 @@ def price_summary(request: Request, ticker: str, range_: str) -> dict[str, Any]:
     }
 
 
+# Data only Pro has (plans.PRO_ONLY): on the Free plan the model is told so and says it.
+PRO_TOOLS = {"get_dividends", "get_fundamentals", "get_council"}
+
+
 def run(request: Request, name: str, args: dict[str, Any]) -> Any:
     """Execute a database tool. Errors come back as data so the model can say what is missing."""
+    if name in PRO_TOOLS and getattr(request.state, "plan", "pro") == "free":
+        return {"error": "This data is part of AlphaCouncil Pro; the user is on the Free plan. Say so and suggest Pro."}
     try:
         match name:
             case "search_tickers":

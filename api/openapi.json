@@ -919,6 +919,69 @@
         }
       }
     },
+    "/v1/auth/verify-email": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Verify Email",
+        "description": "Confirms the address with the emailed link's token. Needs no session: the link may be\nopened in another browser or on a phone.",
+        "operationId": "verifyEmail",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Accepted"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/resend-verification": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Resend Verification",
+        "operationId": "resendVerification",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Accepted"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/auth/me": {
       "get": {
         "tags": [
@@ -946,7 +1009,7 @@
           "auth"
         ],
         "summary": "Delete Account",
-        "description": "Deletes the account and everything stored with it (sessions, holdings, alerts,\npreferences, consents cascade). The password is asked again.",
+        "description": "Deletes the account and everything stored with it (sessions, holdings, alerts,\npreferences, consents, subscription cascade). The password is asked again; an account made\nwith Google that never set one types its email address instead. A saved card is deleted at\nMoyasar first, so nothing can be charged afterwards.",
         "operationId": "deleteAccount",
         "requestBody": {
           "content": {
@@ -1035,6 +1098,301 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/google/start": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Google Start",
+        "operationId": "googleStart",
+        "parameters": [
+          {
+            "name": "next",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 300,
+              "default": "/home",
+              "title": "Next"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(en|ar)$",
+              "default": "en",
+              "title": "Locale"
+            }
+          },
+          {
+            "name": "accept",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Accept"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/google/callback": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Google Callback",
+        "operationId": "googleCallback",
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "default": "",
+              "title": "State"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 2000,
+              "default": "",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "error",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "default": "",
+              "title": "Error"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/plan": {
+      "get": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Get Plan",
+        "operationId": "billingPlan",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing": {
+      "get": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Get Summary",
+        "operationId": "billingSummary",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Summary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/checkout": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Start Checkout",
+        "operationId": "startCheckout",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckoutForm"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/confirm": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Confirm Payment",
+        "description": "The return page's check. Moyasar's answer decides, never the redirect's query string.",
+        "operationId": "confirmPayment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Summary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/cancel": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Cancel Renewal",
+        "description": "Stops renewals. Pro stays on until the paid period ends.",
+        "operationId": "cancelRenewal",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Summary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/resume": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Resume Renewal",
+        "operationId": "resumeRenewal",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Summary"
                 }
               }
             }
@@ -1977,6 +2335,80 @@
         "title": "ChatRequest",
         "description": "Body sent by the web app's DefaultChatTransport (prepareSendMessagesRequest)."
       },
+      "CheckoutBody": {
+        "properties": {
+          "accept_terms": {
+            "type": "boolean",
+            "title": "Accept Terms",
+            "default": false
+          },
+          "locale": {
+            "type": "string",
+            "pattern": "^(en|ar)$",
+            "title": "Locale",
+            "default": "en"
+          }
+        },
+        "type": "object",
+        "title": "CheckoutBody"
+      },
+      "CheckoutForm": {
+        "properties": {
+          "publishable_key": {
+            "type": "string",
+            "title": "Publishable Key"
+          },
+          "amount": {
+            "type": "integer",
+            "title": "Amount"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "callback_url": {
+            "type": "string",
+            "title": "Callback Url"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "publishable_key",
+          "amount",
+          "currency",
+          "description",
+          "callback_url",
+          "metadata"
+        ],
+        "title": "CheckoutForm",
+        "description": "What Moyasar's payment form is started with. The amount is checked again on confirm."
+      },
+      "ConfirmBody": {
+        "properties": {
+          "payment_id": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "title": "Payment Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payment_id"
+        ],
+        "title": "ConfirmBody"
+      },
       "CopilotStatus": {
         "properties": {
           "model": {
@@ -2132,13 +2564,17 @@
           "password": {
             "type": "string",
             "maxLength": 200,
-            "title": "Password"
+            "title": "Password",
+            "default": ""
+          },
+          "confirm_email": {
+            "type": "string",
+            "maxLength": 254,
+            "title": "Confirm Email",
+            "default": ""
           }
         },
         "type": "object",
-        "required": [
-          "password"
-        ],
         "title": "DeleteBody"
       },
       "Dividend": {
@@ -3629,6 +4065,66 @@
         ],
         "title": "Plan"
       },
+      "PlanInfo": {
+        "properties": {
+          "plan": {
+            "type": "string",
+            "enum": [
+              "free",
+              "pro"
+            ],
+            "title": "Plan"
+          },
+          "billing_open": {
+            "type": "boolean",
+            "title": "Billing Open"
+          },
+          "checkout_open": {
+            "type": "boolean",
+            "title": "Checkout Open"
+          },
+          "price_sar": {
+            "type": "integer",
+            "title": "Price Sar"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "limits": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Limits"
+          },
+          "pro_only": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pro Only"
+          }
+        },
+        "type": "object",
+        "required": [
+          "plan",
+          "billing_open",
+          "checkout_open",
+          "price_sar",
+          "currency",
+          "limits",
+          "pro_only"
+        ],
+        "title": "PlanInfo"
+      },
       "Plans": {
         "properties": {
           "plans": {
@@ -4653,6 +5149,87 @@
         ],
         "title": "Statements"
       },
+      "Summary": {
+        "properties": {
+          "plan": {
+            "type": "string",
+            "enum": [
+              "free",
+              "pro"
+            ],
+            "title": "Plan"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "paid_through": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paid Through"
+          },
+          "renews": {
+            "type": "boolean",
+            "title": "Renews"
+          },
+          "card_brand": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Brand"
+          },
+          "card_last4": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Last4"
+          },
+          "checkout_open": {
+            "type": "boolean",
+            "title": "Checkout Open"
+          },
+          "email_verified": {
+            "type": "boolean",
+            "title": "Email Verified"
+          }
+        },
+        "type": "object",
+        "required": [
+          "plan",
+          "status",
+          "paid_through",
+          "renews",
+          "card_brand",
+          "card_last4",
+          "checkout_open",
+          "email_verified"
+        ],
+        "title": "Summary"
+      },
       "Technicals": {
         "properties": {
           "as_of_date": {
@@ -5129,6 +5706,16 @@
           "locale": {
             "type": "string",
             "title": "Locale"
+          },
+          "email_verified": {
+            "type": "boolean",
+            "title": "Email Verified",
+            "default": false
+          },
+          "has_password": {
+            "type": "boolean",
+            "title": "Has Password",
+            "default": true
           }
         },
         "type": "object",
@@ -5295,6 +5882,20 @@
           "shares_out_mn"
         ],
         "title": "Valuation"
+      },
+      "VerifyBody": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "VerifyBody"
       }
     }
   }

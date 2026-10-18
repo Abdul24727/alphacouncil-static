@@ -73,10 +73,10 @@ function saveConversation(messages: CopilotMessage[]) {
 }
 
 /** The API's `detail` rather than its JSON envelope; known codes come back as a message key. */
-function errorDetail(error: Error): { code: "sign_in_required" | "rate_limited" } | { text: string } {
+function errorDetail(error: Error): { code: "sign_in_required" | "rate_limited" | "rate_limited_free" } | { text: string } {
   try {
     const detail = (JSON.parse(error.message) as { detail?: unknown }).detail;
-    if (detail === "sign_in_required" || detail === "rate_limited") return { code: detail };
+    if (detail === "sign_in_required" || detail === "rate_limited" || detail === "rate_limited_free") return { code: detail };
     return { text: typeof detail === "string" ? detail : error.message };
   } catch {
     return { text: error.message };

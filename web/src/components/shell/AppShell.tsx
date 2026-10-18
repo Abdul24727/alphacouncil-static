@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { VerifyEmailBanner } from "@/components/auth/VerifyEmailView";
 import { useChartPrefs } from "@/lib/chart-prefs";
 import { applyLayoutToDocument, useLayout } from "@/lib/layout-store";
 import { usePrefsSync } from "@/lib/prefs-sync";
@@ -20,6 +21,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="flex h-dvh overflow-hidden">
       <Sidebar />
       <main className="flex min-w-0 flex-1 flex-col overflow-hidden max-md:pb-14 md:copilot-full:hidden">
+        <VerifyEmailBanner />
         {children}
       </main>
       <CopilotPane />

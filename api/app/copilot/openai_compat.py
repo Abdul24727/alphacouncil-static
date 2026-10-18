@@ -203,7 +203,8 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
 
 async def _prefetch(request: Request, w: Writer, ticker: str, messages: list, seen: set[str], trace: AnswerTrace) -> AsyncIterator[str]:
     """Run PREFETCH for the page ticker as one step the model reads as its own tool calls."""
-    calls = [{"id": f"prefetch_{name}", "name": name, "args": {"ticker": ticker}} for name in PREFETCH]
+    names = [n for n in PREFETCH if not (n in tools.PRO_TOOLS and getattr(request.state, "plan", "pro") == "free")]
+    calls = [{"id": f"prefetch_{name}", "name": name, "args": {"ticker": ticker}} for name in names]
     payloads = await asyncio.gather(*(run_in_threadpool(tools.run, request, c["name"], c["args"]) for c in calls))
     yield w.start_step()
     messages.append(

@@ -2,7 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import { PanelLoading, PanelUnavailable, usePanelRefresh } from "@/components/panel/Panel";
+import { Link } from "@/i18n/navigation";
 import { ApiError } from "@/lib/api/client";
+import { isProRequired } from "@/lib/billing";
 import { useSettings } from "@/lib/settings-store";
 
 /** KWD, BHD and OMR trade in fils / baisa, so prices need three decimals ("auto"); Settings can fix 2 or 3. */
@@ -47,10 +49,26 @@ export function QueryState({
   const refresh = usePanelRefresh();
   const errorText = useErrorText();
   if (isPending) return <PanelLoading rows={rows} />;
+  // Pro-only data on the Free plan: say what it is and where Pro is, not "unavailable".
+  if (isProRequired(error)) return <ProLocked />;
   // A failed load says why and offers the panel's refresh (requests time out after 30 s).
   if (error) return <PanelUnavailable detail={errorText(error)} onRetry={refresh} />;
   if (empty) return <PanelUnavailable detail={emptyText} />;
   return <>{children}</>;
+}
+
+/** What a Pro-only panel shows on the Free plan. */
+export function ProLocked({ compact = false }: { compact?: boolean }) {
+  const t = useTranslations("plan");
+  return (
+    <div className={`flex h-full flex-col items-start justify-center gap-1.5 ${compact ? "" : "min-h-24"}`} data-pro-locked>
+      <span className="label-caps rounded-chip border border-signal/50 px-1.5 text-signal">{t("pro")}</span>
+      <span className="text-text-soft">{t("lockedLead")}</span>
+      <Link href="/pricing" className="text-signal hover:underline">
+        {t("seePro")}
+      </Link>
+    </div>
+  );
 }
 
 function useErrorText() {

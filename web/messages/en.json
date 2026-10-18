@@ -93,7 +93,8 @@
     "signInLink": "Sign in",
     "errors": {
       "sign_in_required": "Sign in to ask the Copilot.",
-      "rate_limited": "You have asked many questions in the last hour. Try again later."
+      "rate_limited": "You have asked many questions in the last hour. Try again later.",
+      "rate_limited_free": "The Free plan includes 10 questions a day. Pro allows up to 60 an hour."
     }
   },
   "placeholder": {
@@ -467,6 +468,30 @@
       "doneTitle": "Password changed",
       "done": "You are signed in. Every other session of your account was signed out.",
       "continue": "Go to my portfolio"
+    },
+    "google": "Continue with Google",
+    "or": "or",
+    "googleErrors": {
+      "google_terms": "To create your account with Google, tick the box below to accept the Terms of Service and Privacy Policy, then choose Continue with Google again.",
+      "google_expired": "That Google sign-in took too long or was opened in another browser. Try again.",
+      "google_cancelled": "Google sign-in was cancelled.",
+      "google_failed": "Google sign-in did not work. Try again, or use your email and password.",
+      "google_unverified": "Google has not confirmed this email address yet, so it cannot be used to sign in.",
+      "google_unavailable": "Google sign-in is not available right now. Use your email and password."
+    },
+    "verify": {
+      "title": "Confirm your email",
+      "working": "Confirming your email…",
+      "doneTitle": "Email confirmed",
+      "done": "Thank you. Receipts and renewal reminders will come to this address.",
+      "continue": "Go to my portfolio",
+      "signIn": "Sign in",
+      "expired": "This link has expired or was already used.",
+      "missing": "This link is incomplete. Open it again from the email.",
+      "resend": "Send a new link",
+      "sent": "A new link is on its way. It works once, within 48 hours.",
+      "signInForLink": "Sign in to get a new link",
+      "banner": "Confirm your email address: we sent a link to <email></email>."
     }
   },
   "market": {
@@ -633,7 +658,10 @@
     "deleteCta": "Delete my account",
     "deleteNeedsPassword": "Enter your password to delete the account.",
     "deleteWrongPassword": "Password is incorrect.",
-    "deleteFailed": "The account could not be deleted. Try again."
+    "deleteFailed": "The account could not be deleted. Try again.",
+    "deleteEmail": "Type your email address to confirm",
+    "deleteNeedsEmail": "Type your account's email address to confirm.",
+    "deleteWrongEmail": "That is not this account's email address."
   },
   "site": {
     "nav": {
@@ -760,7 +788,8 @@
       "checkoutClosed": "Early access: every account gets the Pro features free until paid plans open. We will tell you before anything changes, and subscribing will be your choice.",
       "payments": "Payments are processed by Moyasar. AlphaCouncil is not currently charging VAT; any applicable tax will be shown before payment.",
       "refunds": "Read the <link>refund and cancellation policy</link>.",
-      "start": "Start free"
+      "start": "Start free",
+      "getPro": "Get Pro"
     },
     "methodology": {
       "title": "Methodology",
@@ -804,6 +833,59 @@
         "title": "What AlphaCouncil is not",
         "body": "AlphaCouncil is research software. It is not investment advice, not a broker and does not execute trades. Council votes and Copilot answers are rule outputs and summaries of our data, not recommendations. Read the <link>AI and financial disclaimer</link>."
       }
+    }
+  },
+  "plan": {
+    "pro": "Pro",
+    "lockedLead": "This is part of AlphaCouncil Pro.",
+    "seePro": "See what Pro includes"
+  },
+  "billing": {
+    "title": "Plan and billing",
+    "earlyAccess": "Early access: every account has the Pro features free until paid plans open.",
+    "signIn": "Sign in to see your plan.",
+    "plan": "Your plan:",
+    "pro": "Pro",
+    "free": "Free",
+    "renews": "Renews on {date}, charged to {card}.",
+    "ends": "Pro ends on {date}. It will not renew.",
+    "pastDue": "Your last renewal did not go through. We will try again; Pro stays on until {date}.",
+    "cancel": "Cancel renewal",
+    "resume": "Keep renewing",
+    "upgrade": "Get Pro: {price} SAR a month",
+    "newCard": "Pay with another card",
+    "cancelNote": "Cancelling stops the next charge; Pro stays on until the paid month ends."
+  },
+  "checkout": {
+    "title": "AlphaCouncil Pro",
+    "pro": "Pro, monthly",
+    "price": "{price} SAR a month",
+    "renewal": "Renews automatically every month on the same day, at the same price, until you cancel.",
+    "cancelAnytime": "Cancel any time in Settings; Pro stays on until the end of the month you paid for.",
+    "guarantee": "Your first payment is covered by a 14-day money-back guarantee (<link>refund policy</link>).",
+    "vat": "Prices are in Saudi riyals. AlphaCouncil is not currently charging VAT.",
+    "accept": "I agree to the <terms>Terms of Service</terms> and acknowledge the <privacy>Privacy Policy</privacy>, <refunds>Refund and Cancellation Policy</refunds>, and <disclaimer>AI and Financial Disclaimer</disclaimer>.",
+    "needsTerms": "Please tick the box to accept the terms first.",
+    "continue": "Continue to payment",
+    "secure": "Card details go straight to Moyasar, our payment provider; AlphaCouncil never sees them. Your card is saved with Moyasar for the monthly renewal.",
+    "failed": "Something went wrong. Try again.",
+    "signInFirst": "Sign in or create an account first: Pro belongs to your account.",
+    "signIn": "Sign in",
+    "closed": "Checkout is not open yet. During early access every account has the Pro features free.",
+    "pricing": "See the plans",
+    "already": "You already have Pro, and it renews each month.",
+    "manage": "Manage your plan",
+    "confirmFirst": "Confirm your email address first: receipts and renewal reminders go to {email}. Open the link we sent, or ask for a new one.",
+    "return": {
+      "working": "Confirming your payment with Moyasar…",
+      "doneTitle": "Welcome to Pro",
+      "done": "Your payment went through. Pro is paid through {date} and renews monthly; a receipt is on its way.",
+      "continue": "Go to the terminal",
+      "manage": "Manage your plan",
+      "failedTitle": "Payment not completed",
+      "failed": "We could not confirm the payment. If you were charged, Pro starts as soon as Moyasar confirms.",
+      "missing": "This page needs a payment from Moyasar's form.",
+      "again": "Try again"
     }
   }
 }

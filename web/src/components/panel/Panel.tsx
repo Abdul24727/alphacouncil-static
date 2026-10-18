@@ -43,7 +43,7 @@ type PanelProps = {
   children: React.ReactNode;
 };
 
-export type PanelMenuItem = { key: string; label: string; checked?: boolean; onSelect: () => void };
+export type PanelMenuItem = { key: string; label: string; checked?: boolean; disabled?: boolean; onSelect: () => void };
 
 export function Panel({
   id,
@@ -272,7 +272,7 @@ function PanelMenu({
           {items && items.length > 0 && <DropdownMenu.Separator className="my-1 h-px bg-line" />}
           {items?.map((it) =>
             it.checked === undefined ? (
-              <DropdownMenu.Item key={it.key} className={item} onSelect={it.onSelect}>
+              <DropdownMenu.Item key={it.key} className={item} disabled={it.disabled} onSelect={it.onSelect}>
                 <span className="size-[15px]" />
                 {it.label}
               </DropdownMenu.Item>
@@ -281,6 +281,7 @@ function PanelMenu({
                 key={it.key}
                 className={item}
                 checked={it.checked}
+                disabled={it.disabled}
                 // Keep the menu open so several indicators can be toggled in a row.
                 onSelect={(e) => e.preventDefault()}
                 onCheckedChange={it.onSelect}

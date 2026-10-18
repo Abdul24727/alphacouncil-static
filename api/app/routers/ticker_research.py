@@ -4,12 +4,13 @@ pipeline's databases, missing data is null, nothing is estimated."""
 
 import json
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
 from .. import council, ratios
 from ..freshness import Freshness, assess
 from ..market_db import MarketDataUnavailable, reader
+from ..plans import require_pro
 from .ticker import _flag, _row, load_freshness, resolve, settings_of
 
 router = APIRouter(prefix="/tickers/{ref}", tags=["ticker"])
@@ -29,7 +30,7 @@ class Council(BaseModel):
     freshness: Freshness | None
 
 
-@router.get("/council", operation_id="getTickerCouncil")
+@router.get("/council", operation_id="getTickerCouncil", dependencies=[Depends(require_pro)])
 def get_council(request: Request, ref: str) -> Council:
     t = resolve(request, ref)
     s = settings_of(request)
@@ -120,7 +121,7 @@ class Fundamentals(BaseModel):
     freshness: Freshness | None
 
 
-@router.get("/fundamentals", operation_id="getTickerFundamentals")
+@router.get("/fundamentals", operation_id="getTickerFundamentals", dependencies=[Depends(require_pro)])
 def get_fundamentals(request: Request, ref: str) -> Fundamentals:
     t = resolve(request, ref)
     s = settings_of(request)
@@ -199,7 +200,7 @@ class Statements(BaseModel):
 STATEMENT_ORDER = ["Income Statement", "Balance Sheet"]
 
 
-@router.get("/statements", operation_id="getTickerStatements")
+@router.get("/statements", operation_id="getTickerStatements", dependencies=[Depends(require_pro)])
 def get_statements(request: Request, ref: str, years: int = 5) -> Statements:
     t = resolve(request, ref)
     s = settings_of(request)
@@ -268,7 +269,7 @@ class Corporate(BaseModel):
     capital_changes: list[CapitalChange]
 
 
-@router.get("/corporate", operation_id="getTickerCorporate")
+@router.get("/corporate", operation_id="getTickerCorporate", dependencies=[Depends(require_pro)])
 def get_corporate(request: Request, ref: str) -> Corporate:
     t = resolve(request, ref)
     s = settings_of(request)
@@ -306,7 +307,7 @@ class Insights(BaseModel):
     analysts: dict | None
 
 
-@router.get("/insights", operation_id="getTickerInsights")
+@router.get("/insights", operation_id="getTickerInsights", dependencies=[Depends(require_pro)])
 def get_insights(request: Request, ref: str) -> Insights:
     t = resolve(request, ref)
     s = settings_of(request)
