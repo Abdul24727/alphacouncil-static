@@ -136,7 +136,8 @@ function ChartArea(props: Omit<React.ComponentProps<typeof PriceChart>, "height"
 
 // --- Key metrics ---------------------------------------------------------------------------
 
-type MetricRow = [key: string, value: string | null, tone?: number | null];
+// `reason`: why the value is missing, when the API says (stock.metrics.reasons).
+type MetricRow = [key: string, value: string | null, tone?: number | null, reason?: string | null];
 
 function metricRows(d: TickerDetail, locale: string): { section: string; rows: MetricRow[] }[] {
   const cur = d.ticker.currency ?? "";
@@ -151,7 +152,7 @@ function metricRows(d: TickerDetail, locale: string): { section: string; rows: M
       rows: [
         ["market_cap", withCurrency(mcap, cur, locale)],
         ["volume", fmtCompact(q.volume)],
-        ["value_traded", withCurrency(fmtCompact(q.value_traded), cur, locale)],
+        ["value_traded", withCurrency(fmtCompact(q.value_traded), cur, locale), undefined, q.value_traded_reason],
       ],
     },
     {
@@ -163,8 +164,9 @@ function metricRows(d: TickerDetail, locale: string): { section: string; rows: M
         ["dividend_yield", fmtPct(v.dividend_yield_pct)],
         ["roe", fmtPct(v.roe_pct)],
         ["roa", fmtPct(v.roa_pct)],
-        ["eps_ttm", v.eps_ttm != null ? `${fmtNumber(v.eps_ttm, priceDigits(cur))} ${cur}` : null],
-        ["book_value", v.book_value != null ? `${fmtNumber(v.book_value, priceDigits(cur))} ${cur}` : null],
+        // EPS comes in the price's unit, or not at all (api/app/ratios.py eps_in_price_unit).
+        ["eps_ttm", withCurrency(fmtNumber(v.eps_ttm, priceDigits(cur)), cur, locale), undefined, v.eps_ttm_reason],
+        ["book_value", withCurrency(fmtNumber(v.book_value, priceDigits(cur)), cur, locale)],
       ],
     },
     {
@@ -210,11 +212,16 @@ export function MetricsPanel({ className }: { className?: string }) {
         {sections.map((s) => (
           <dl key={s.section} className="mt-2 grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-1">
             <dt className="label-caps col-span-2 mb-0.5 text-muted">{t(s.section)}</dt>
-            {s.rows.map(([k, val, tone]) => (
+            {s.rows.map(([k, val, tone, reason]) => (
               <div key={k} className="contents">
                 <dt className="truncate text-text-soft">{t(k)}</dt>
                 <dd className="text-end">
-                  <Num value={val} className={tone !== undefined ? signClass(tone) : ""} />
+                  <Num
+                    value={val}
+                    className={tone !== undefined ? signClass(tone) : ""}
+                    reason={reason && t.has(`reasons.${reason}`) ? t(`reasons.${reason}`) : null}
+                    detail={reason && t.has(`reasons.${reason}_detail`) ? t(`reasons.${reason}_detail`) : undefined}
+                  />
                 </dd>
               </div>
             ))}
@@ -337,7 +344,7 @@ export function PeersPanel({ className }: { className?: string }) {
                         <TickerNames nameEn={r.ticker.name_en} nameAr={r.ticker.name_ar} single />
                       </td>
                       <td className="py-1.5 text-end">
-                        <Num value={fmtNumber(r.last_price, priceDigits(r.ticker.currency))} />
+                        <Num value={fmtNumber(r.last_price, priceDigits(r.ticker.currency, r.last_price))} />
                       </td>
                       <td className="py-1.5 text-end">
                         <Num value={fmtPct(r.day_change_pct, 2, true)} className={signClass(r.day_change_pct)} />

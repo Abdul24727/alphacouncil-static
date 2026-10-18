@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
 from .. import ratios
-from ..freshness import PRICE_MAX_AGE_DAYS, Freshness, assess
+from ..freshness import ITEM_SECTIONS, PRICE_MAX_AGE_DAYS, Freshness, assess, assess_items
 from ..market_db import MarketDataUnavailable, reader
 from ..plans import require_pro
 from ..settings import Settings
@@ -38,6 +38,9 @@ class Quote(BaseModel):
     day_change_pct: float | None
     volume: float | None
     value_traded: float | None
+    # Why value_traded is null, when the data says why: "not_in_price_file" = no bar of the
+    # ticker's price file records turnover (all of Tadawul's files, 2026-10).
+    value_traded_reason: str | None = None
     market_cap_mn: float | None
 
 
@@ -48,7 +51,10 @@ class Valuation(BaseModel):
     roe_pct: float | None
     roa_pct: float | None
     ev_ebitda: float | None
+    # In the price's unit, or null when its unit is not confirmed (ratios.eps_in_price_unit).
     eps_ttm: float | None
+    # "unit_unconfirmed" when the database has an EPS whose unit could not be confirmed.
+    eps_ttm_reason: str | None = None
     book_value: float | None
     shares_out_mn: float | None
 
@@ -121,6 +127,29 @@ def _flag(v) -> bool | None:
     return None if v is None else bool(v)
 
 
+def newest_items(s: Settings, ticker_key: str) -> dict[str, str]:
+    """Date of the newest dated item per freshness category (freshness.ITEM_SECTIONS). Items dated
+    in the future prove nothing. Empty when evidence.sqlite cannot be read: the age is then
+    unknown, never the fetch time."""
+    try:
+        with reader(s.evidence_db, immutable=s.market_db_immutable, name="EVIDENCE_DB") as conn:
+            by_section = {
+                r["section"]: r["newest"]
+                for r in conn.execute(
+                    "SELECT section, max(date) AS newest FROM items WHERE ticker_key = ?"
+                    " AND section IN ('news', 'disclosures')"
+                    " AND date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*'"
+                    " AND substr(date, 1, 10) <= date('now', '+1 day') GROUP BY section",
+                    (ticker_key,),
+                )
+            }
+    except (MarketDataUnavailable, sqlite3.Error):
+        return {}
+    newest = {cat: max((by_section[x] for x in sections if by_section.get(x)), default=None)
+              for cat, sections in ITEM_SECTIONS.items()}
+    return {cat: d for cat, d in newest.items() if d}
+
+
 def load_freshness(s: Settings, t: Ticker) -> list[Freshness]:
     with reader(s.screening_db, immutable=s.market_db_immutable, name="SCREENING_DB") as conn:
         rows = conn.execute(
@@ -128,8 +157,18 @@ def load_freshness(s: Settings, t: Ticker) -> list[Freshness]:
             " WHERE ticker_key = ? ORDER BY category",
             (t.ticker_key,),
         ).fetchall()
+    # News and disclosures are dated by their newest item, not by the fetch (freshness.py).
+    newest = newest_items(s, t.ticker_key) if any(r["category"] in ITEM_SECTIONS for r in rows) else {}
     return [
-        assess(
+        assess_items(
+            category=r["category"],
+            newest_item=newest.get(r["category"]),
+            last_success_utc=r["last_success_utc"],
+            max_age_days=r["max_age_days"],
+            exchange=t.exchange,
+        )
+        if r["category"] in ITEM_SECTIONS
+        else assess(
             category=r["category"],
             as_of_utc=r["as_of_utc"],
             last_success_utc=r["last_success_utc"],
@@ -194,6 +233,9 @@ def get_ticker(request: Request, ref: str) -> TickerDetail:
             day_change_pct=round((last.close / prev.close - 1) * 100, 2) if prev else None,
             volume=last.volume,
             value_traded=last.turnover,
+            value_traded_reason=(
+                "not_in_price_file" if all(x.turnover is None for x in bars) else None
+            ),
             market_cap_mn=get(b, "market_cap_raw"),
         )
     else:
@@ -223,6 +265,8 @@ def get_ticker(request: Request, ref: str) -> TickerDetail:
         r = ratios.load(s, [t.ticker_key]).get(t.ticker_key)
     except MarketDataUnavailable as exc:
         raise HTTPException(503, f"Market data unavailable: {exc}") from exc
+    eps_raw = get(sr, "eps_ttm")
+    eps = ratios.eps_in_price_unit(eps_raw, r["pe"], quote.last_price, [t.currency, t.data_currency])
 
     return TickerDetail(
         ticker=ref_of(t),
@@ -235,7 +279,8 @@ def get_ticker(request: Request, ref: str) -> TickerDetail:
             roe_pct=r["roe_pct"],
             roa_pct=r["roa_pct"],
             ev_ebitda=r["ev_ebitda"],
-            eps_ttm=get(sr, "eps_ttm"),
+            eps_ttm=eps,
+            eps_ttm_reason="unit_unconfirmed" if eps_raw is not None and eps is None else None,
             book_value=get(sr, "book_value"),
             shares_out_mn=get(sr, "shares_out_mn"),
         ),

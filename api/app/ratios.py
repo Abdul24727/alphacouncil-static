@@ -20,6 +20,17 @@ from .settings import Settings
 
 NOT_APPLICABLE = {"na_sector", "undefined_nonpositive"}
 
+# EPS (`scraped_ratios.eps_ttm`) is not stored in one unit. Measured on 2026-10-18 (EPS x P/E
+# against the price, 716 equities): Boursa Kuwait, Bahrain and Muscat mostly in fils / baisa
+# (1/1000 of KWD, BHD, OMR); ADX, DFM and Tadawul mostly in the price's unit, but 27 in fils /
+# halala (1/100) and 7 at 10,000x; a few at 100,000x. So no exchange has a unit to assume, and
+# each ticker's is confirmed against its P/E (which is right: price / P/E): EPS shows only when
+# EPS x P/E gives the price directly, or after dividing by the sub-unit of the listing's currency.
+# This checks an order of magnitude, not accuracy, hence 20%: the wrong scales in the data are
+# at least 3x from an allowed one. No P/E to check against (losses, missing): not confirmed.
+SUBUNITS = {"SAR": 100, "AED": 100, "QAR": 100, "USD": 100, "KWD": 1000, "BHD": 1000, "OMR": 1000}
+EPS_UNIT_TOLERANCE = 0.20
+
 
 def _get(row: Any, key: str) -> Any:
     return row[key] if row is not None and key in row.keys() else None
@@ -52,6 +63,17 @@ class RatioSources:
             "roa_pct": _first(_get(st, "roa_pct"), _get(sc, "roa")),
             "ev_ebitda": None if self.ev_gauge.get(ticker_key) in NOT_APPLICABLE else ev_ebitda,
         }
+
+
+def eps_in_price_unit(eps: float | None, pe: float | None, price: float | None, currencies: Iterable[str | None]) -> float | None:
+    """EPS in the price's unit when its unit is confirmed (see SUBUNITS), else None. `pe` is the
+    meaningful P/E (RatioSources.get); `currencies` are the ones our data gives the listing."""
+    if eps is None or not pe or pe <= 0 or not price or price <= 0:
+        return None
+    for factor in dict.fromkeys([1, *(SUBUNITS.get(c) for c in currencies if c)]):
+        if factor and abs(eps / factor * pe / price - 1) <= EPS_UNIT_TOLERANCE:
+            return round(eps / factor, 6)
+    return None
 
 
 def load(s: Settings, ticker_keys: Iterable[str] | None = None) -> RatioSources:

@@ -4,22 +4,44 @@ import { useTranslations } from "next-intl";
 import { PanelLoading, PanelUnavailable, usePanelRefresh } from "@/components/panel/Panel";
 import { Link } from "@/i18n/navigation";
 import { ApiError } from "@/lib/api/client";
+import { autoPriceDigits } from "@/lib/format";
 import { isProRequired } from "@/lib/billing";
 import { useSettings } from "@/lib/settings-store";
 
-/** KWD, BHD and OMR trade in fils / baisa, so prices need three decimals ("auto"); Settings can fix 2 or 3. */
-export function priceDigits(currency: string | null | undefined) {
+/** Price decimals: "auto" follows the currency and, given a price, its own decimals (lib/format); Settings can fix 2 or 3. */
+export function priceDigits(currency: string | null | undefined, value?: number | null) {
   const pref = useSettings.getState().decimals;
   if (pref !== "auto") return pref;
-  return currency && ["KWD", "BHD", "OMR"].includes(currency) ? 3 : 2;
+  return autoPriceDigits(currency, value);
 }
 
 export const hasArabic = (s: string | null | undefined) => !!s && /[؀-ۿ]/.test(s);
 
-/** A formatted number, or a labelled "n/a" when the database has no value. */
-export function Num({ value, className = "" }: { value: string | null | undefined; className?: string }) {
+/**
+ * A formatted number, or a labelled "n/a" when the database has no value. With `reason` (what
+ * the data says about the gap, e.g. "Not in our price data") the reason is shown instead,
+ * and `detail` explains it on hover.
+ */
+export function Num({
+  value,
+  className = "",
+  reason,
+  detail,
+}: {
+  value: string | null | undefined;
+  className?: string;
+  reason?: string | null;
+  detail?: string;
+}) {
   const t = useTranslations("stock");
   const tp = useTranslations("placeholder");
+  if (value == null && reason) {
+    return (
+      <span className="text-[12px] text-muted" title={detail ?? tp("unavailable")} data-unavailable-reason>
+        {reason}
+      </span>
+    );
+  }
   if (value == null) {
     return (
       <span className="label-caps text-muted" title={tp("unavailable")}>

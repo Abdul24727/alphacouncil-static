@@ -28,6 +28,16 @@ PRICE_MAX_AGE_DAYS = 2
 # Nightly pipeline start (root crontab on the VPS: 00:00 UTC every day).
 PIPELINE_RUN_UTC = time(0, 0)
 
+# News and disclosures: the pipeline stamps `as_of_utc` with the time of its fetch, so a light
+# judged on it says only that the fetch ran. These categories are dated by their newest item
+# instead (the sections each one covers, in evidence.sqlite `items`). A listed company files
+# something at least monthly (results, board meetings, dividends): on 2026-10-18, 440 of the 447
+# non-Tadawul equities had an item from the last 30 days. So the news light (news and
+# disclosures, as its panel shows them) allows 30 calendar days; disclosures keep the pipeline's
+# own window. Either is also stale when the fetch itself is late.
+NEWS_MAX_AGE_DAYS = 30
+ITEM_SECTIONS: dict[str, tuple[str, ...]] = {"news": ("news", "disclosures"), "disclosures": ("disclosures",)}
+
 
 class Freshness(BaseModel):
     category: str
@@ -100,5 +110,35 @@ def assess(
         updated_at=updated.isoformat() if updated else None,
         next_at=next_run(now).isoformat(),
         max_age_days=max_age_days,
+        stale=stale,
+    )
+
+
+def assess_items(
+    *,
+    category: str,
+    newest_item: str | None,
+    last_success_utc: str | None,
+    max_age_days: float | None,
+    exchange: str,
+    now: datetime | None = None,
+) -> Freshness:
+    """News or disclosures, dated by the newest item. `max_age_days` is the pipeline's window
+    for the fetch; the items' own window is NEWS_MAX_AGE_DAYS for news, the same for disclosures.
+    No item at all leaves the age unknown, unless the fetch is late."""
+    now = now or datetime.now(UTC)
+    fetch = assess(category=category, as_of_utc=last_success_utc, last_success_utc=last_success_utc,
+                   max_age_days=max_age_days, exchange=exchange, now=now)
+    window = NEWS_MAX_AGE_DAYS if category == "news" else max_age_days
+    newest = parse_utc(newest_item)
+    stale: bool | None = True if fetch.stale else None
+    if newest is not None and window is not None:
+        stale = bool(fetch.stale) or (now - newest).total_seconds() / 86400 > window
+    return Freshness(
+        category=category,
+        as_of=newest.isoformat() if newest else None,
+        updated_at=fetch.updated_at,
+        next_at=fetch.next_at,
+        max_age_days=window,
         stale=stale,
     )

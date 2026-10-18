@@ -106,6 +106,11 @@ def data_files(tmp_path):
             "ticker_freshness": [
                 ("2222_TADAWUL", "prices", f"{LONG_AGO}T00:00:00", f"{LONG_AGO}T01:43:12+00:00", 2, 0, 1),
                 ("2222_TADAWUL", "fundamentals", yesterday, yesterday, 100, 0, 1),
+                # News rows carry the fetch time as as_of, whatever the newest item's date.
+                ("2222_TADAWUL", "news", yesterday, yesterday, 2, 0, 1),
+                ("1120_TADAWUL", "news", yesterday, yesterday, 2, 0, 1),
+                ("1120_TADAWUL", "disclosures", yesterday, yesterday, 120, 0, 1),
+                ("2223_TADAWUL", "news", yesterday, yesterday, 2, 0, 0),
             ],
             "scraped_ratios": [
                 ("2222_TADAWUL", 14.47, 4.1, 5.01, 26.75, 15.86, 7.4, None, 6.49, 1.84, 6413000.0, 242000.0),
@@ -166,6 +171,7 @@ def data_files(tmp_path):
                 ("e1", "2222_TADAWUL", "events", "2026-06-08T21:00:00", "cash dividend distribution", None, None, "", None, None, None, None, None),
                 ("x1", "2222_TADAWUL", "events", "unknown_date_3", "undated", None, None, "", None, None, None, None, None),
                 ("e2", "1120_TADAWUL", "events", f"{TODAY}T21:00:00", "financial results disclosure", None, None, "", None, None, None, None, None),
+                ("d2", "1120_TADAWUL", "disclosures", "2026-01-05T21:00:00", "Board meeting", "https://www.argaam.com/en/a/3", None, "", None, None, None, None, None),
             ],
             "news_ai": [("https://www.argaam.com/en/a/1", "Aramco news", "Up", "صعود", "positive")],
         },

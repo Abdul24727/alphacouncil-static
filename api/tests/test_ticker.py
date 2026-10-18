@@ -237,3 +237,100 @@ def test_an_item_with_a_summary_in_the_page_language_counts_as_readable():
     assert [i.id for i in readable_first(items, "en", 3)] == [2, 3, 4]
     assert [i.id for i in readable_first(items, "ar", 3)] == [1, 3, 4]  # the Arabic items lead; no others needed
     assert [i.id for i in readable_first(items, "ar", 4)] == [1, 3, 4, 5]
+
+
+# --- data fixes (audit 2026-10-18) ----------------------------------------------------------------
+
+
+def test_news_light_follows_the_newest_item_not_the_fetch(client):
+    # All three were fetched yesterday. 2222 has a news item today: fresh. 1120's newest
+    # disclosure is from January (its event today is not news): stale. 2223 has none: unknown.
+    def news(ref):
+        return next(f for f in get(client, f"/v1/tickers/{ref}")["freshness"] if f["category"] == "news")
+
+    fresh, old, none = news("2222"), news("1120"), news("2223")
+    assert fresh["stale"] is False and fresh["max_age_days"] == 30
+    assert old["stale"] is True and old["as_of"].startswith("2026-01-05")
+    assert old["updated_at"] is not None  # the fetch time stays visible as "updated"
+    assert none["stale"] is None and none["as_of"] is None
+    disclosures = next(f for f in get(client, "/v1/tickers/1120")["freshness"] if f["category"] == "disclosures")
+    assert disclosures["stale"] is True and disclosures["max_age_days"] == 120
+
+
+def test_a_late_news_fetch_is_stale_even_with_a_recent_item():
+    from app.freshness import assess_items
+
+    now = datetime(2026, 10, 18, 9, tzinfo=UTC)
+    late = assess_items(category="news", newest_item="2026-10-15T21:00:00", last_success_utc="2026-07-25T00:06:15+00:00",
+                        max_age_days=2, exchange="TADAWUL", now=now)
+    assert late.stale is True
+    ok = assess_items(category="news", newest_item="2026-10-15T21:00:00", last_success_utc="2026-10-18T00:07:00+00:00",
+                      max_age_days=2, exchange="TADAWUL", now=now)
+    assert ok.stale is False and ok.as_of.startswith("2026-10-15")
+    gone = assess_items(category="news", newest_item=None, last_success_utc="2026-07-25T00:06:15+00:00",
+                        max_age_days=2, exchange="TADAWUL", now=now)
+    assert gone.stale is True
+
+
+def test_methodology_states_the_news_window(client):
+    rules = {r["category"]: r for r in get(client, "/v1/methodology")["freshness"]}
+    assert rules["news"]["max_age_days"] == 30 and rules["news"]["trading_days"] is False
+    assert rules["prices"]["trading_days"] is True
+
+
+def test_value_traded_says_when_the_price_file_never_records_it(client, data_files):
+    # Like every Tadawul file: a turnover column that is empty on every bar.
+    path = data_files.universe_root / "1111_TADAWUL" / "price_history_10y.csv"
+    path.parent.mkdir(parents=True)
+    path.write_text("Date,Price,Change,Change (%),Volume,Turnover,Open,High,Low\n"
+                    "2026/10/14,160.00,,,1000,,159.0,161.0,158.0\n2026/10/15,161.00,,,1200,,160.0,162.0,159.5\n",
+                    encoding="utf-8")
+    q = get(client, "/v1/tickers/1111")["quote"]
+    assert q["value_traded"] is None and q["value_traded_reason"] == "not_in_price_file"
+    # FAB's last bar lacks turnover but earlier bars have it: plainly unavailable, no reason.
+    q = get(client, "/v1/tickers/FAB")["quote"]
+    assert q["value_traded"] is None and q["value_traded_reason"] is None
+    assert get(client, "/v1/tickers/2222")["quote"]["value_traded_reason"] is None
+
+
+def test_eps_shows_only_in_a_confirmed_unit():
+    from app.ratios import eps_in_price_unit
+
+    # Values as the pipeline stores them (2026-10-18): EPS, P/E, price.
+    assert eps_in_price_unit(1.84, 14.47, 26.5, ["SAR"]) == 1.84  # Aramco: the price's unit
+    assert eps_in_price_unit(63.74, 12.79, 0.815, ["KWD"]) == 0.06374  # NBK: fils
+    assert eps_in_price_unit(27.73, 17.85, 0.495, ["BHD"]) == 0.02773  # BMMI: fils
+    assert eps_in_price_unit(28.51, 13.33, 3.8, ["AED"]) == 0.2851  # ADNOCDIST: fils (1/100 AED)
+    assert eps_in_price_unit(0.03, 33.24, 0.94, ["BHD"]) == 0.03  # ARIG: already in the price's unit
+    assert eps_in_price_unit(3349.32, 16.43, 5.5, ["AED"]) is None  # ADNOCDRILL: 10,000x, no unit
+    assert eps_in_price_unit(2901.85, 6.89, 0.2, ["KWD"]) is None  # 811: 100,000x
+    assert eps_in_price_unit(32.18, 23.54, 2.47, ["KWD"]) is None  # KFH Bahrain: fils of KWD, price in USD
+    assert eps_in_price_unit(75.78, 11.42, 0.87, ["AED"]) is None  # Mazaya on DFM: 1000x is not an AED unit
+    assert eps_in_price_unit(-6.23, None, 0.39, ["KWD"]) is None  # a loss: no P/E to check against
+    assert eps_in_price_unit(-1.06, 98.73, 80.05, ["SAR"]) is None  # 4144: EPS contradicts its P/E
+
+
+def test_detail_gives_eps_in_the_price_unit_or_says_why_not(client):
+    v = get(client, "/v1/tickers/2222")["valuation"]
+    assert v["eps_ttm"] == 1.84 and v["eps_ttm_reason"] is None
+    v = get(client, "/v1/tickers/FAB")["valuation"]  # negative earnings: no P/E to confirm the unit
+    assert v["eps_ttm"] is None and v["eps_ttm_reason"] == "unit_unconfirmed"
+    v = get(client, "/v1/tickers/1120")["valuation"]  # no EPS in the database: nothing to explain
+    assert v["eps_ttm"] is None and v["eps_ttm_reason"] is None
+
+
+def test_a_currency_the_exchange_does_not_trade_in_is_not_shown(client, data_files):
+    import sqlite3
+
+    # Like National Industries on DFM: the pipeline gives it KWD, DFM trades in AED.
+    row = ("NIND_DFM", "NIND", "DFM", "KWD", 3, "Industrials", "الصناعة", datetime.now(UTC).date().isoformat(), 3.37, 0.0, 1e4, None, 8527.58,
+           14.26, None, None, None, None, None, None, None, None, None, None, 0, None)
+    with sqlite3.connect(data_files.briefs_db) as conn:
+        conn.execute(f"INSERT INTO briefs VALUES ({','.join('?' * len(row))})", row)
+    with sqlite3.connect(data_files.screening_db) as conn:
+        conn.execute("INSERT INTO scraped_ratios VALUES ('NIND_DFM', 14.26, 1.24, NULL, NULL, NULL, NULL, NULL, 2.75, 236.21, NULL, 2530.44)")
+    d = get(client, "/v1/tickers/NIND")
+    assert d["ticker"]["currency"] is None
+    # Its EPS is in fils of the pipeline's currency: confirmed by the P/E, so shown in the price's unit.
+    assert d["valuation"]["eps_ttm"] == 0.23621
+    assert get(client, "/v1/tickers/FAB")["ticker"]["currency"] == "AED"

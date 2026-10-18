@@ -34,7 +34,7 @@ export function TickerCell({ ticker }: { ticker: TickerRef }) {
 }
 
 export function PriceCell({ price, currency }: { price: LastClose; currency: string | null | undefined }) {
-  return <Num value={fmtNumber(price.close, priceDigits(currency))} />;
+  return <Num value={fmtNumber(price.close, priceDigits(currency, price.close))} />;
 }
 
 export function ChangeCell({ value }: { value: number | null | undefined }) {
