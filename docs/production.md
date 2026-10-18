@@ -196,6 +196,62 @@ container or its data directory is lost, follow these steps:
    still work.
 3. Create each database with its owner, as above, and `pg_restore` into it.
 
+## Monitoring
+
+Every 5 minutes `acp-prod-monitor.timer` runs `/usr/local/lib/acp-monitor/prod-monitor.py check`
+(`scripts/prod-monitor.py`, Python standard library only, outside the releases so a broken deploy
+cannot break it). It runs as a throwaway system user (`DynamicUser`) in the groups `alphacouncil`
+(to read the SMTP lines of `prod/api.env` and `prod/monitor.env`) and `systemd-journal` (to read the
+services' logs), and keeps its state in `/var/lib/acp-monitor/state.json`.
+
+| Check | A problem when | Emailed |
+|---|---|---|
+| `https://alphacouncil.tech/home` | not HTTP 200 within 20 s (TLS verified) | after 2 rounds in a row |
+| `https://alphacouncil.tech/api/v1/health` | not 200 with `status: "ok"` | after 2 rounds |
+| market data | the health answer's `market_data` is not `ok` | after 2 rounds |
+| `acp-prod-api`, `acp-prod-web` | not active, or 3+ automatic restarts in 15 minutes | after 2 rounds |
+| Pro renewals job (`acp-prod-billing.service`) | the last run did not exit 0 (timeout, crash) | after 2 rounds |
+| Pro renewals timer | `acp-prod-billing.timer` not active | after 2 rounds |
+| Moyasar for renewals | a run's output has `unreachable=` above 0 | at the first such run |
+| renewal declined, plan ended | a run's output has `failed=` or `ended=` above 0 | at that run (an event, not a state) |
+| database backup (`acp-db-backup`) | the last run did not exit 0, or its timer stopped; skipped until installed | after 2 rounds |
+| every disk (ext4, xfs, …) | more than 85% used; fixed again at 83% | after 2 rounds |
+| certificate alphacouncil.tech serves | invalid, or expires within 14 days | after 2 rounds |
+
+- **Only changes are emailed**: a problem once when it starts and once when it clears ("Recovered"),
+  nothing in between. Everything that changed in a round goes in one email; problems with a service
+  or a job include its last 15 log lines with every secret of `api.env` replaced by `[redacted]`.
+- **Mail budget**: at most 8 alerts in 24 hours and 60 in 30 days, because MailerSend's free plan
+  (about 500 a month) is shared with the old backend and the app's own emails. Over a limit, or when
+  the mail server refuses, nothing is lost: the round leaves its state as it was and the next round
+  tries again (`systemctl --failed` shows the monitor while SMTP fails).
+- **Mail settings**: `SMTP_*` from `/etc/alphacouncil-platform/prod/api.env`, the same as the API's;
+  read by the script and never printed or logged. The recipient is `ALERT_TO` in
+  `/etc/alphacouncil-platform/prod/monitor.env` (root:alphacouncil 0640; several addresses:
+  comma-separated). To change it, run the installer with the new address.
+- **What it cannot see**: it runs on the server it watches. If the whole server, its network or
+  MailerSend is down, no email goes out. An outside uptime check would cover that; there is none yet.
+
+Install or update (copies the script and units, enables the timer, runs one round, prints the checks):
+
+```bash
+scripts/install-monitoring.sh owner@address --test   # first time: recipient, and one test alert
+scripts/install-monitoring.sh                        # later updates: same recipient
+```
+
+On the server:
+
+```bash
+python3 -I /usr/local/lib/acp-monitor/prod-monitor.py status   # every check now; sends nothing
+systemctl list-timers acp-prod-monitor.timer                    # last and next round
+journalctl -u acp-prod-monitor -n 20 -o cat                     # one line per round, plus alerts sent
+python3 -I /usr/local/lib/acp-monitor/prod-monitor.py test     # one test alert to ALERT_TO
+```
+
+To pause it: `systemctl disable --now acp-prod-monitor.timer`.
+
+**Status (2026-10-18)**: in the repo, not installed yet; it waits for the owner's alert address.
+
 ## Not in production yet
 
 - `www.alphacouncil.tech` has no DNS record; when one is added, add `www` to the certificate.

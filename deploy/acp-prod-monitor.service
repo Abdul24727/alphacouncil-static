@@ -1,0 +1,25 @@
+[Unit]
+Description=AlphaCouncil production monitor (alphacouncil.tech): emails the owner on problems and recoveries
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# One round of checks (scripts/prod-monitor.py check), started every 5 minutes by
+# acp-prod-monitor.timer. Installed outside the releases (scripts/install-monitoring.sh), so a
+# broken deploy cannot break it. Its own throwaway user: group alphacouncil to read the SMTP lines
+# of prod/api.env and monitor.env, group systemd-journal to read the services' logs.
+Type=oneshot
+DynamicUser=yes
+SupplementaryGroups=alphacouncil systemd-journal
+StateDirectory=acp-monitor
+ExecStart=/usr/bin/python3 -I /usr/local/lib/acp-monitor/prod-monitor.py check
+TimeoutStartSec=4min
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
