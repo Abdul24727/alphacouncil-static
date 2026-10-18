@@ -150,10 +150,11 @@ A dump only counts once `pg_restore --list` can read it.
   0600, root only.
 - **Contents**: personal data and Moyasar's saved-card token ids. Never print a dump, and copy one only
   to the off-server destination.
-- **Off the server**: nothing yet. A disk failure would lose these copies too, so the owner picks the
-  destination and puts its credentials on the server themselves.
-- **Install or update**: run `scripts/install-backups.sh` once. It copies the two scripts and the units
-  and starts the timer; add `--run` to take a backup right away. It does not depend on releases.
+- **Off the server**: an encrypted copy goes to the owner's S3-compatible bucket (see "Off-server copy"
+  below).
+- **Install or update**: run `scripts/install-backups.sh`. It copies the three scripts and the units,
+  installs rclone if it is missing, and starts the timer. Add `--run` to take a backup right away. It
+  does not depend on releases.
 - **Status**: installed 2026-10-18 with the owner's approval. The timer is enabled, and its first run
   through systemd (09:15 UTC) succeeded. The restore check passed that day for `acp_prod` and `acp`
   (`screenshots/backup-restore-check-production.txt`).
@@ -165,6 +166,7 @@ systemctl list-timers acp-db-backup.timer          # last and next run
 systemctl status acp-db-backup.service             # result of the last run
 journalctl -u acp-db-backup.service -n 20 -o cat   # its output: sizes and file names only
 cat /var/backups/alphacouncil-platform/LAST_OK     # time and files of the last complete run
+cat /var/backups/alphacouncil-platform/LAST_OFFSITE_OK   # time of the last complete upload to the bucket
 ```
 
 Check that a backup restores: `acp-db-restore-check` (newest `acp_prod` dump), `acp-db-restore-check acp`
@@ -195,6 +197,52 @@ container or its data directory is lost, follow these steps:
    "role acp already exists" is expected. Both roles keep their passwords, so both `api.env` files
    still work.
 3. Create each database with its owner, as above, and `pg_restore` into it.
+
+### Off-server copy (S3-compatible bucket)
+
+Once `/etc/alphacouncil-platform/backup-offsite.env` exists, `acp-db-backup` runs
+`/usr/local/sbin/acp-db-offsite` (`deploy/acp-db-offsite.sh`) after each backup. It encrypts every new
+dump with gpg (AES-256, the owner's passphrase) and uploads it with rclone to
+`<bucket>/alphacouncil-platform/{daily,weekly}/<file>.gpg`. The bucket keeps daily copies for 15 days and
+weekly copies for 60 days, counted from upload, so an emptied local directory does not empty the
+bucket. If the upload fails, the backup run fails, and the monitoring emails about it.
+
+The owner creates the bucket and writes the file. Claude never writes or reads it.
+
+```bash
+install -m 600 -o root -g root /dev/null /etc/alphacouncil-platform/backup-offsite.env
+nano /etc/alphacouncil-platform/backup-offsite.env
+```
+
+```bash
+# The provider's S3 endpoint, e.g. https://<account id>.r2.cloudflarestorage.com,
+# https://s3.eu-central-003.backblazeb2.com, https://s3.me-central-1.amazonaws.com
+S3_ENDPOINT=
+# The bucket's region as the provider names it (Cloudflare R2: auto)
+S3_REGION=
+S3_BUCKET=
+# A key limited to this one bucket, allowed to list, read, write and delete
+S3_ACCESS_KEY_ID=
+S3_SECRET_ACCESS_KEY=
+# Long and random (e.g. openssl rand -base64 33); also kept in the owner's password manager
+BACKUP_PASSPHRASE=
+```
+
+Keep each value right after `=` with comments on their own lines. The script refuses a file that is not
+root-owned 0600 or that lacks a value. **Without the passphrase the bucket copies cannot be decrypted**,
+and a disk failure would take the server's copy of it too, so it must also be kept off the server.
+
+Check it: `acp-db-offsite --check` fetches the newest `acp_prod` copy back from the bucket, decrypts it
+and compares it byte for byte with the local dump. `acp-db-offsite` alone uploads whatever is missing.
+
+Restore from the bucket when the server is gone: download a `.gpg` file (from the provider's web console,
+or with rclone), run `gpg --decrypt -o acp_prod.dump acp_prod-<time>.dump.gpg` (it asks for the
+passphrase; on Windows use Gpg4win), then restore as above.
+
+Status (2026-10-18): installed, and waiting for the owner's bucket and settings file. It was tested on the
+server against a local directory standing in for the bucket: 13 files were encrypted and uploaded, a
+second run sent nothing, the round trip matched byte for byte, and a group-readable file or a missing
+value was refused.
 
 ## Monitoring
 

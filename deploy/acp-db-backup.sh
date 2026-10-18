@@ -51,3 +51,11 @@ made+=("$DIR/daily/globals-$stamp.sql")
 
 printf '%s\n' "$(date -u +%FT%TZ)" "${made[@]}" > "$DIR/LAST_OK"
 echo "backup ok: ${#made[@]} files, $(du -sh "$DIR" | cut -f1) in $DIR"
+
+# Off-server copy (acp-db-offsite), once the owner has put the bucket's settings on the server.
+# If it fails, this run fails too, so the monitoring emails about it.
+if [[ -f /etc/alphacouncil-platform/backup-offsite.env ]]; then
+  /usr/local/sbin/acp-db-offsite
+else
+  echo "off-server copy not configured: no /etc/alphacouncil-platform/backup-offsite.env"
+fi
