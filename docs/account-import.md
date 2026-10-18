@@ -61,10 +61,17 @@ cd web && BASE_URL=http://localhost:3201 STAGING_AUTH=… IMPORTED=imported-chec
 scripts/old-accounts.sh beta forget imported-check-     # remove the made-up accounts
 ```
 
-## Done
+## Done (2026-10-18)
+
+The old site had 3 accounts. None had a registration acceptance on record: its 7 acceptance rows all
+belong to accounts deleted earlier. All three are asked to accept when they set a password.
 
 | | Beta (`acp`) | Production (`acp_prod`) |
 |---|---|---|
-| Release | | |
-| Made-up check | | |
-| Old accounts imported | | |
+| Release | `5c36f7b335` | `5c36f7b335` |
+| Made-up check (`check-imported.mjs`) | 24/24, `screenshots/account-import-check-beta.txt` | 24/24, `screenshots/account-import-check-production.txt` |
+| Forgot password (`check-reset.mjs`) | 24/24 with a real reset on a test account | 20/20, unknown addresses only |
+| Old accounts imported | 3 | 2; the third already had an account here (signed up after the switch), left as it is |
+
+The made-up accounts were removed afterwards on both. The old file was only read: its size and time
+did not change, and the old backend kept running.

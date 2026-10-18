@@ -1,0 +1,28 @@
+PASS  en 1440px: /login says "Had an account on the old AlphaCouncil site? Choose “Forgot password?” once to set a new password for it."
+PASS  en 1440px: the imported account has no password that signs in
+PASS  en 1440px: the new-password page asks for the acceptance, refuses without it, then saves
+PASS  en 1440px: signed in as the account, with its old name and language; the new password works
+PASS  en 1440px: no page errors
+PASS  en 390px: /login says "Had an account on the old AlphaCouncil site? Choose “Forgot password?” once to set a new password for it."
+PASS  en 390px: the imported account has no password that signs in
+PASS  en 390px: the new-password page asks for the acceptance, refuses without it, then saves
+PASS  en 390px: signed in as the account, with its old name and language; the new password works
+PASS  en 390px: no page errors
+PASS  ar 1440px: /login says "هل كان لديك حساب في موقع AlphaCouncil السابق؟ اختر «نسيت كلمة المرور؟» مرة واحدة لتعيين كلمة مرور جديدة له."
+PASS  ar 1440px: the imported account has no password that signs in
+PASS  ar 1440px: the new-password page asks for the acceptance, refuses without it, then saves
+PASS  ar 1440px: signed in as the account, with its old name and language; the new password works
+PASS  ar 1440px: no page errors
+PASS  ar 390px: /login says "هل كان لديك حساب في موقع AlphaCouncil السابق؟ اختر «نسيت كلمة المرور؟» مرة واحدة لتعيين كلمة مرور جديدة له."
+PASS  ar 390px: the imported account has no password that signs in
+PASS  ar 390px: the new-password page asks for the acceptance, refuses without it, then saves
+PASS  ar 390px: signed in as the account, with its old name and language; the new password works
+PASS  ar 390px: no page errors
+PASS  en 1440px (old acceptance): the imported account has no password that signs in
+PASS  en 1440px (old acceptance): the new-password page does not ask for the acceptance again; the password saves
+PASS  en 1440px (old acceptance): signed in as the account, with its old name and language; the new password works
+PASS  en 1440px (old acceptance): no page errors
+
+screenshots: ..\docs\screenshots\account-import-production
+
+Imported accounts: all checks passed
