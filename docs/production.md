@@ -384,9 +384,10 @@ after a crash, and the URL never in the output.
 - Google Search Console (owner's Google account): Domain property `alphacouncil.tech`, verified
   2026-10-18 by the "domain name provider" method (a `google-site-verification` TXT record at
   Cloudflare; never remove it). `https://alphacouncil.tech/sitemap.xml` submitted the same day; Googlebot
-  fetched it at 18:16 UTC (200, `crawl-66-249-66-164.googlebot.com` in nginx's access log) while Search
-  Console still showed "Couldn't fetch", which it does until it processes a new sitemap. Bing Webmaster
-  Tools: not set up yet (it can import the site from Search Console).
+  fetched it at 18:16 UTC (200, `crawl-66-249-66-164.googlebot.com` in nginx's access log). Search Console
+  first showed "Couldn't fetch" (what it shows until it processes a new sitemap), then the same day: type
+  Sitemap, status Success, 1,464 discovered pages. Bing Webmaster Tools: not set up yet (it can import the
+  site from Search Console).
 
 **Status (2026-10-18)**: live since release `cde2b0e629` (owner's approval). `check-seo.mjs` passes 62/62 on
 beta (through the tunnel) and on https://alphacouncil.tech; robots.txt and sitemap.xml (1,464 URLs: 16 pages
