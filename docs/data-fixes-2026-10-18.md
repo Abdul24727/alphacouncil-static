@@ -165,3 +165,11 @@ The other markets keep the pipeline's sector labels. The audit found only scatte
 - API tests: 156 pass. Web tests: 23 pass.
 - `web/scripts/check-currency-header.mjs` checks the five listings in both languages, the header with the quote held back for 4 seconds, and "No price" after loading.
 - The local run passed 22 of 22 (`screenshots/currency-header-local/`).
+
+**Released** as `16dba3a`, through beta, then production, with the owner's go-ahead. The release also carried the advisors' room's six seats. All checks were run on alphacouncil.tech over HTTPS:
+- `check-currency-header.mjs`: 22 of 22 (`screenshots/currency-header-check-production.txt`, `currency-header-production/`).
+- `check-sectors.mjs`: 19 of 19.
+- `check-data-fixes.mjs` with the sweep: 46 of 46.
+  - 501 EPS figures are shown, each consistent with its P/E and price; GFH.DU is newly shown.
+  - 180 read "Unit not confirmed".
+  - No green news light sits on an item older than 30 days.

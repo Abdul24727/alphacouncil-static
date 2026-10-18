@@ -1,0 +1,24 @@
+PASS  ABC.BH: API trading currency USD
+PASS  ABC.BH en 1440: header in USD
+PASS  ABC.BH ar 1440: header in دولار
+PASS  ARIG.BH: API trading currency USD
+PASS  ARIG.BH en 1440: header in USD
+PASS  ARIG.BH en 390: header in USD
+PASS  ARIG.BH ar 1440: header in دولار
+PASS  ARIG.BH ar 390: header in دولار
+PASS  GFH.DU: API trading currency USD
+PASS  GFH.DU en 1440: header in USD
+PASS  GFH.DU ar 1440: header in دولار
+PASS  INOVEST: API trading currency USD
+PASS  INOVEST en 1440: header in USD
+PASS  INOVEST ar 1440: header in دولار
+PASS  ITHMR.BH: API trading currency USD
+PASS  ITHMR.BH en 1440: header in USD
+PASS  ITHMR.BH ar 1440: header in دولار
+PASS  2222 en 1440: no "No price" while loading
+PASS  2222 en 390: no "No price" while loading
+PASS  2222 ar 1440: no "لا يوجد سعر" while loading
+PASS  2222 ar 390: no "لا يوجد سعر" while loading
+PASS  SAGA: "No price" once loaded
+
+all passed
