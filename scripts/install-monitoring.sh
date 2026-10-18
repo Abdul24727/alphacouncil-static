@@ -5,9 +5,10 @@
 #   scripts/install-monitoring.sh                            # update the script and units, same recipient
 #   scripts/install-monitoring.sh [owner@example.org] --test # and send one test alert
 #
-# Puts scripts/prod-monitor.py in /usr/local/lib/acp-monitor (outside the releases, so a deploy
-# never changes or breaks it), the units in /etc/systemd/system, the recipient in
-# /etc/alphacouncil-platform/prod/monitor.env; then runs one round and prints what it sees.
+# Creates the system user acp-monitor (no login, no home) if missing, puts scripts/prod-monitor.py
+# in /usr/local/lib/acp-monitor (outside the releases, so a deploy never changes or breaks it),
+# the units in /etc/systemd/system, the recipient in /etc/alphacouncil-platform/prod/monitor.env;
+# then runs one round and prints what it sees.
 set -euo pipefail
 
 HOST="${PROD_HOST:-root@alphacouncil.tech}"
@@ -32,6 +33,7 @@ git diff --quiet HEAD -- "${files[@]}" || { echo "refusing: commit the monitor f
 ssh_() { ssh -o BatchMode=yes "$HOST" "$@"; }
 
 echo "== install $(git rev-parse --short=10 HEAD)"
+ssh_ "id -u acp-monitor >/dev/null 2>&1 || useradd --system --no-create-home --home-dir /nonexistent --shell /usr/sbin/nologin acp-monitor"
 ssh_ "install -d -m 755 $LIB && install -m 644 /dev/stdin $LIB/prod-monitor.py" < scripts/prod-monitor.py
 scp -q deploy/acp-prod-monitor.service deploy/acp-prod-monitor.timer "$HOST:/etc/systemd/system/"
 if [[ -n "$to" ]]; then

@@ -200,9 +200,10 @@ container or its data directory is lost, follow these steps:
 
 Every 5 minutes `acp-prod-monitor.timer` runs `/usr/local/lib/acp-monitor/prod-monitor.py check`
 (`scripts/prod-monitor.py`, Python standard library only, outside the releases so a broken deploy
-cannot break it). It runs as a throwaway system user (`DynamicUser`) in the groups `alphacouncil`
-(to read the SMTP lines of `prod/api.env` and `prod/monitor.env`) and `systemd-journal` (to read the
-services' logs), and keeps its state in `/var/lib/acp-monitor/state.json`.
+cannot break it). It runs as the system user `acp-monitor` (no login, no home; the installer creates
+it) in the groups `alphacouncil` (to read the SMTP lines of `prod/api.env` and `prod/monitor.env`) and
+`systemd-journal` (to read the services' logs), and keeps its state in `/var/lib/acp-monitor/state.json`.
+Not `DynamicUser=`: dbus-daemon drops dynamic users, and `systemctl show` needs the bus.
 
 | Check | A problem when | Emailed |
 |---|---|---|

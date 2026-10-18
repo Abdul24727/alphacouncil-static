@@ -72,6 +72,7 @@ API_ENV = os.environ.get("ACP_API_ENV", "/etc/alphacouncil-platform/prod/api.env
 MONITOR_ENV = os.environ.get("ACP_MONITOR_ENV", "/etc/alphacouncil-platform/prod/monitor.env")
 STATE_FILE = os.path.join(os.environ.get("STATE_DIRECTORY", "/var/lib/acp-monitor"), "state.json")
 
+UNCHANGED = "unchanged"  # gather(): the billing check did not run, keep the journal position
 RIYADH = timezone(timedelta(hours=3))
 COUNTS = re.compile(r"\breminded=(\d+) renewed=(\d+) failed=(\d+) ended=(\d+) unreachable=(\d+)\b")
 COUNT_NAMES = ("reminded", "renewed", "failed", "ended", "unreachable")
@@ -217,8 +218,8 @@ def check_service(unit: str, state: dict, now: float) -> Result:
 def billing_runs(state: dict) -> tuple[list[tuple[float, dict[str, int]]], str | None]:
     """The renewal runs logged since the last round, and the journal position after them. The
     first round only notes where the journal ends: past runs are not news."""
-    first = "billing_cursor" not in state
     cursor = state.get("billing_cursor")
+    first = not cursor
     args = ["journalctl", "-u", f"{BILLING}.service", "-o", "json", "--no-pager"]
     if first:
         args += ["-n", "1"]
@@ -323,9 +324,10 @@ def check_cert() -> Result:
 
 
 def gather(state: dict, now: float) -> tuple[dict[str, Result], list[tuple[str, str]], str | None]:
+    """All checks. The journal position comes back as UNCHANGED when the billing check could not run."""
     results: dict[str, Result] = {}
     events: list[tuple[str, str]] = []
-    cursor = state.get("billing_cursor")
+    cursor = UNCHANGED
 
     def guarded(group: str, fn):
         # A check that cannot run is itself a problem (alerted like any other), never a crash.
@@ -478,7 +480,8 @@ def check() -> int:
             keys[key].update(alerted=True, alerted_at=now)
         for key, _, _ in recovered:
             keys[key].update(alerted=False, alerted_at=None)
-        state["billing_cursor"] = cursor
+        if cursor is not UNCHANGED:
+            state["billing_cursor"] = cursor
     # Not sent: the alert flags and the journal position stay, so the next round tries again.
     for key in [key for key, k in keys.items() if not k["alerted"] and not k["fails"]
                 and (key.startswith("check:") or key not in results)]:
