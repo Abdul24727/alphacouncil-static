@@ -405,10 +405,13 @@ The stock page's Advisors tab (`/t/<slug>/advisors`; the Council tab links to it
 question about the stock, four simulated advisors debate it and a neutral Chair returns a scored assessment
 of the data. Code: `api/app/debate/`, `api/app/routers/debate.py`, `web/src/components/debate/`.
 
-- **Seats**: one markdown file each in `api/app/advisors/` (Buffett, Lynch, Dalio, Marks and the Chair);
-  the README there says how to swap an advisor (`DEBATE_ADVISORS`). The Chair's file holds the stage
-  instructions and the scoring scale. Portraits: initials on a graphite disc until the owner's caricatures
-  go into `web/public/advisors/` (README there) and are named in the seat files.
+- **Seats**: one markdown file each in `api/app/advisors/`: Buffett, Lynch, Dalio, Marks, Prince Alwaleed
+  bin Talal, Abdullah bin Sulaiman Al-Rajhi and the Chair; the README there says how to swap an advisor
+  (`DEBATE_ADVISORS`). A seat sits out sessions about companies its person chairs (`recuse`): Alwaleed for
+  Kingdom Holding (4280); Al-Rajhi for Al Rajhi Bank (1120), Al Rajhi Takaful (8230) and Al Rajhi REIT (4340).
+  The Chair's file holds the stage instructions and the scoring scale. Portraits: initials on a graphite disc
+  until the owner's caricatures go into `web/public/advisors/` (README there) and are named in the seat files;
+  `docs/advisors-portraits-brief.md` is the brief for the illustrator.
 - **Stages**: Brief (Chair) → Openings (advisors at once) → Fault lines (Chair) → Debate (`DEBATE_ROUNDS`,
   advisors at once) → Vote (advisors score each option 0–10) → Verdict (Chair). The averages are computed by
   the API, never by a model. Every seat reads the same data pack: the Copilot's database tools for the
@@ -447,6 +450,12 @@ and replayed at 1440 and 390 px, both languages) and in visitor mode on producti
 (`screenshots/advisors-free-local/`). Claude Sonnet 5.5 refuses requests with reasoning switched off, so the
 Chair runs at low reasoning effort. The number check flags figures the advisors work out themselves (an
 annualised dividend, a payout percentage): they show underlined as not found in the data.
+
+**Six advisors (2026-10-18, release `0db360c`, beta only until the owner's go-ahead)**: Prince Alwaleed and
+Abdullah Al-Rajhi joined at the owner's request; their seats go to the lawyer with the rest before the room is
+advertised. Two real sessions on beta (2222): English 32.5 s, $0.1742 (207,786 tokens in, 5,522 out); Arabic
+35.8 s, $0.2104 (231,956 in, 6,957 out); 21 turns each. `check-advisors.mjs` passed in both languages at 1440
+and 390 px (`screenshots/advisors-six/`).
 
 ## Not in production yet
 
