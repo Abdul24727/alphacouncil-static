@@ -148,7 +148,15 @@ def get_portfolio(request: Request, user: Authed) -> Portfolio:
                 currency=cur,
                 market_value=round(total, 2),
                 day_change_value=round(sum(h.day_change_value or 0 for h in hs), 2),
-                sectors=_slices([(h.ticker.sector_en or "Other", h.ticker.sector_ar, h.market_value or 0) for h in hs], total),
+                sectors=_slices(
+                    [
+                        (h.ticker.sector_en, h.ticker.sector_ar, h.market_value or 0)
+                        if h.ticker.sector_en
+                        else ("Sector unknown", "القطاع غير معروف", h.market_value or 0)
+                        for h in hs
+                    ],
+                    total,
+                ),
                 exchanges=_slices([(h.ticker.exchange, None, h.market_value or 0) for h in hs], total),
                 holdings_count=len(hs),
             )

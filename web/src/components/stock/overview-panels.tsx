@@ -313,7 +313,8 @@ export function PeersPanel({ className }: { className?: string }) {
           isPending={peers.isPending}
           error={peers.error}
           empty={!!p && p.peers.length === 0}
-          emptyText={t("peers.none")}
+          // No sector (unclassified, or a label known to be wrong) means no peers, not an empty sector.
+          emptyText={p && !p.sector_en ? t("peers.sectorUnknown") : t("peers.none")}
           rows={6}
         >
           {p && (

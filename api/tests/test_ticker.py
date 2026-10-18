@@ -334,3 +334,19 @@ def test_a_currency_the_exchange_does_not_trade_in_is_not_shown(client, data_fil
     # Its EPS is in fils of the pipeline's currency: confirmed by the P/E, so shown in the price's unit.
     assert d["valuation"]["eps_ttm"] == 0.23621
     assert get(client, "/v1/tickers/FAB")["ticker"]["currency"] == "AED"
+
+
+def test_a_mislabelled_tadawul_sector_is_not_shown(client, data_files):
+    import sqlite3
+
+    # Like 2280 Almarai: sector_id 8, which the pipeline names "Transportation" (food producers).
+    row = ("2280_TADAWUL", "2280", "TADAWUL", "SAR", 8, "Transportation", "النقل", datetime.now(UTC).date().isoformat(),
+           50.0, 0.0, 1e5, None, 50000.0, None, None, None, None, None, None, None, None, None, None, None, 0, None)
+    with sqlite3.connect(data_files.briefs_db) as conn:
+        conn.execute(f"INSERT INTO briefs VALUES ({','.join('?' * len(row))})", row)
+    assert get(client, "/v1/tickers/2280")["ticker"]["sector_en"] is None
+    p = get(client, "/v1/tickers/2280/peers")
+    assert p["sector_en"] is None and p["peers"] == []
+    assert "Transportation" not in {s["sector_en"] for s in get(client, "/v1/templates/sectors")}
+    # A right label on another id stays (fixture rows without an id keep theirs).
+    assert get(client, "/v1/tickers/1120")["ticker"]["sector_en"] == "Banks"

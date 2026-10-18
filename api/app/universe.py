@@ -20,6 +20,12 @@ _PUNCT = re.compile(r"[^\w\s&]")
 
 
 UNCLASSIFIED_TADAWUL_SECTOR = 1
+# Tadawul sector ids whose pipeline label names another group: each holds one real group under
+# the wrong name (8 "Transportation" = food producers, 38 "Hotels & Restaurants" = materials,
+# 37 "Entertainment" = capital goods, 35, 27, 34, 40, 13, and 7 = 1832 only). 98 companies on
+# 2026-10-18 (docs/data-fixes-2026-10-18.md, P1). Hidden by the owner's choice until the
+# official classification replaces them.
+MISLABELLED_TADAWUL_SECTORS = {7, 8, 13, 27, 34, 35, 37, 38, 40}
 
 # Currencies each exchange trades equities in (Bahrain also lists some in US dollars). The
 # pipeline gives some cross-listings their company's home currency instead (KWD on DFM, ADX
@@ -138,8 +144,11 @@ class Universe:
             n = names.get(r["ticker_key"], {})
             # Tadawul sector_id 1 is the pipeline's default bucket for listings it could not
             # classify (the exchange operator, schools, brokers, delivery apps…), all labelled
-            # "Energy". A wrong sector is worse than none: treat it as unknown.
-            unclassified = r["exchange"] == "TADAWUL" and r["sector_id"] == UNCLASSIFIED_TADAWUL_SECTOR
+            # "Energy"; the mislabelled ids carry another group's name. A wrong sector is worse
+            # than none: treat it as unknown.
+            unclassified = r["exchange"] == "TADAWUL" and r["sector_id"] in (
+                {UNCLASSIFIED_TADAWUL_SECTOR} | MISLABELLED_TADAWUL_SECTORS
+            )
             name_en, name_ar = n.get("name_en"), n.get("name_ar")
             tickers.append(
                 Ticker(

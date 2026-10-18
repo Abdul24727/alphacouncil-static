@@ -420,6 +420,7 @@
       "basis_sector_exchange": "Same sector, same exchange",
       "basis_sector_gcc": "Same sector across the GCC",
       "none": "No peers in this sector",
+      "sectorUnknown": "Sector unknown, so no peers are listed",
       "pick": "Open in this group"
     },
     "news": {
@@ -680,6 +681,7 @@
     "title": "Screener",
     "search": "Symbol or name",
     "allSectors": "All sectors",
+    "sectorUnknown": "Sector unknown",
     "peMax": "P/E max",
     "yieldMin": "Yield min %",
     "roeMin": "ROE min %",

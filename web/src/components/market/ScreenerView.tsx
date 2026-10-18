@@ -78,7 +78,7 @@ export function ScreenerView({ initialExchange }: { initialExchange?: string }) 
       col.columns([
         col.accessor((r) => r.ticker.symbol, { id: "ticker", header: t("cols.ticker"), cell: (c) => <TickerCell ticker={c.row.original.ticker} /> }),
         col.accessor((r) => r.ticker.exchange, { id: "exchange", header: t("cols.exchange"), cell: (c) => <span className="label-caps text-muted">{exName(c.getValue())}</span> }),
-        col.accessor((r) => (locale === "ar" ? r.ticker.sector_ar : r.ticker.sector_en) ?? "", { id: "sector", header: t("cols.sector"), cell: (c) => <span className="truncate text-text-soft">{c.getValue()}</span> }),
+        col.accessor((r) => (locale === "ar" ? r.ticker.sector_ar : r.ticker.sector_en) ?? "", { id: "sector", header: t("cols.sector"), cell: (c) => c.getValue() ? <span className="truncate text-text-soft">{c.getValue()}</span> : <span className="truncate text-muted">{t("sectorUnknown")}</span> }),
         col.accessor((r) => r.price.close ?? undefined, { id: "price", header: t("cols.price"), sortUndefined: "last", meta: { end: true }, cell: (c) => <PriceCell price={c.row.original.price} currency={c.row.original.ticker.currency} /> }),
         col.accessor((r) => r.price.change_pct ?? undefined, { id: "change", header: t("cols.change"), sortUndefined: "last", meta: { end: true }, cell: (c) => <ChangeCell value={c.getValue()} /> }),
         col.accessor((r) => r.market_cap_mn ?? undefined, { id: "mcap", header: t("cols.mcap"), sortUndefined: "last", meta: { end: true }, cell: (c) => <Num value={c.getValue() != null ? fmtCompact(c.getValue()! * 1e6) : null} /> }),
