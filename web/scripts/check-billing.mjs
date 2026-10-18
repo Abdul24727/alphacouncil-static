@@ -121,6 +121,8 @@ if (process.env.CHECKOUT_EMAIL) {
       const form = page.locator("[data-moyasar-form]");
       await form.locator("input").first().waitFor({ timeout: 30000 });
       await page.screenshot({ path: `${OUT}/checkout-form-${outcome}-en-1440.png` });
+      const pay = await form.locator("button[type=submit]").evaluate((b) => [getComputedStyle(b).backgroundColor, getComputedStyle(b).fontFamily.split(",")[0]]);
+      check(pay[0] === "rgb(255, 106, 26)" && !/system-ui|ui-sans-serif/.test(pay[1]), `Moyasar's Pay button in the brand (${pay.join(", ")})`);
       // Typed key by key: Moyasar's form formats the number and the expiry as they are typed.
       await form.locator("#mysr-cc-name").pressSequentially("Test Card");
       await form.locator("#mysr-cc-number").pressSequentially(card);
@@ -140,8 +142,8 @@ if (process.env.CHECKOUT_EMAIL) {
         await page.locator("[data-pro-started]").waitFor({ timeout: 60000 });
         check(true, "test card 4111…1111: paid, Pro started");
       } else {
-        await page.getByRole("alert").waitFor({ timeout: 60000 });
-        check(true, `test card 4123…0000: declined (${(await page.getByRole("alert").innerText()).slice(0, 80)})`);
+        await page.getByRole("heading", { name: "Payment not completed" }).waitFor({ timeout: 60000 });
+        check(true, `test card 4123…0000: declined (${(await page.locator("main p[role=alert]").innerText()).slice(0, 90)})`);
       }
       await page.screenshot({ path: `${OUT}/return-${outcome}-en-1440.png` });
     }

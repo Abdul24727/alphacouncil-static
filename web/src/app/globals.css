@@ -217,3 +217,27 @@ html[dir="rtl"] .num.text-start {
     text-decoration: underline;
   }
 }
+
+/*
+ * Moyasar's payment form (/checkout, components/billing/CheckoutView.tsx) in the brand. Its
+ * stylesheet brings a periwinkle "primary" and system fonts, both banned by BRAND.md; its rules
+ * are div#mysr ... !important, so these are too, one attribute more specific.
+ */
+[data-moyasar-form] div#mysr,
+[data-moyasar-form] div#mysr * {
+  font-family: var(--font-sans) !important;
+}
+[data-moyasar-form] div#mysr .bg-primary {
+  background-color: var(--color-signal) !important;
+  color: var(--color-signal-ink) !important;
+}
+[data-moyasar-form] div#mysr .bg-primary * {
+  color: inherit !important;
+}
+[data-moyasar-form] div#mysr [class*="text-primary"] {
+  color: var(--color-text-soft) !important;
+}
+[data-moyasar-form] div#mysr label,
+[data-moyasar-form] div#mysr .text-black {
+  color: var(--color-muted) !important;
+}
