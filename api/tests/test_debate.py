@@ -36,6 +36,8 @@ def room(client, monkeypatch):
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     client.app.state.debate_start_limit = RateLimit(limit=100, window_s=1)
+    # The four original seats keep these tests' arithmetic simple; test_six_seats... covers the default roster.
+    monkeypatch.setattr(client.app.state.settings, "debate_advisors", "buffett,lynch,dalio,marks")
     return client
 
 
@@ -54,6 +56,34 @@ def test_every_seat_file_has_its_sections_and_says_it_is_simulated():
         assert a.info.name_ar and a.info.lens_ar and len(a.info.initials) == 2 and a.info.portrait is None
     chair = roster.chair()
     assert set(roster.CHAIR_SECTIONS) <= set(chair.sections) and chair.info.role == "chair"
+
+
+def test_six_seats_and_seats_tied_to_a_company_sit_out(room, monkeypatch):
+    from app.debate import roster
+    from app.settings import Settings
+
+    default = Settings.model_fields["debate_advisors"].default
+    assert default == "buffett,lynch,dalio,marks,alwaleed,alrajhi"
+    seats = roster.advisors(default)
+    alwaleed, alrajhi = roster.load("alwaleed").info, roster.load("alrajhi").info
+    assert (alwaleed.short_en, alwaleed.short_ar, alwaleed.recuse) == ("Alwaleed", "الوليد", ["4280_TADAWUL"])
+    assert alrajhi.recuse == ["1120_TADAWUL", "8230_TADAWUL", "4340_TADAWUL"] and alrajhi.short_en == "Al-Rajhi"
+    assert roster.load("buffett").info.short_en == "Buffett"
+    assert [a.id for a in roster.sitting(seats, "1120_TADAWUL")] == ["buffett", "lynch", "dalio", "marks", "alwaleed"]
+
+    monkeypatch.setattr(room.app.state.settings, "debate_advisors", default)
+    assert [x["id"] for x in room.get("/v1/debate/status").json()["seats"]] == [*default.split(","), "chair"]
+    signup(room)
+    # Al Rajhi Bank: Al-Rajhi's seat sits out, and the session's roster says so.
+    events = convene(room, ticker="1120")
+    session = events[0]["session"]
+    assert "alrajhi" not in [x["id"] for x in session["seats"]] and len(session["seats"]) == 6
+    openings = [e["turn"]["seat"] for e in events if e["type"] == "turn" and e["turn"]["stage"] == "openings"]
+    assert sorted(openings) == ["alwaleed", "buffett", "dalio", "lynch", "marks"]
+    # Aramco: all six.
+    events = convene(room, ticker="2222")
+    assert len([e for e in events if e["type"] == "turn" and e["turn"]["stage"] == "vote"]) == 6
+    assert events[-1]["status"] == "done"
 
 
 def test_the_roster_setting_is_checked():

@@ -7,7 +7,8 @@ import { splitText, type Flags, type SeatInfo, type Source } from "@/lib/debate"
 
 export const seatName = (s: SeatInfo | undefined, locale: string) => (s ? (locale === "ar" ? s.name_ar : s.name_en) : "");
 /** Surname for tags and "X answers Y": the last word of the name in the page's language. */
-export const seatShort = (s: SeatInfo | undefined, locale: string) => seatName(s, locale).split(" ").slice(-1)[0] ?? "";
+export const seatShort = (s: SeatInfo | undefined, locale: string) =>
+  (s && (locale === "ar" ? s.short_ar : s.short_en)) || (seatName(s, locale).split(" ").slice(-1)[0] ?? "");
 export const seatLens = (s: SeatInfo | undefined, locale: string) => (s ? (locale === "ar" ? s.lens_ar : s.lens_en) : "");
 
 export function useSeats(seats: SeatInfo[] | undefined) {

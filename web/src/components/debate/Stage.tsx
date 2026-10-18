@@ -27,13 +27,16 @@ export function SeatArc({ seats, room }: { seats: SeatInfo[]; room: Room | null 
   const order = [...advisors];
   if (chair) order.splice(Math.floor(advisors.length / 2), 0, chair);
   const n = order.length;
+  // Five or more advisors and the Chair: narrower seats, spread evenly, so name tags do not touch on a phone.
+  const crowded = n > 5;
 
   return (
     <div className="relative h-[200px] overflow-x-clip @3xl:h-[232px]" role="list" aria-label={t("seatsLabel")}>
       {order.map((s, i) => {
-        const angle = Math.PI * (1.1 + (0.8 * i) / Math.max(n - 1, 1));
-        // Narrower spread on phones, so the end seats' name tags stay on screen.
-        const x = (r: number) => `${(50 + r * Math.cos(angle)).toFixed(2)}%`;
+        const step = i / Math.max(n - 1, 1);
+        const angle = Math.PI * (1.1 + 0.8 * step);
+        // Even steps across; a narrower spread on phones keeps the end seats' tags on screen.
+        const x = (from: number) => `${(from + (100 - 2 * from) * step).toFixed(2)}%`;
         const lift = -Math.sin(angle); // 0 at the ends, 1 at the head
         const writing = !!room?.writing.includes(s.id);
         const lean = room ? leanOf(room, s.id) : null;
@@ -44,18 +47,20 @@ export function SeatArc({ seats, room }: { seats: SeatInfo[]; room: Room | null 
             role="listitem"
             data-seat={s.id}
             data-writing={writing || undefined}
-            className="absolute flex w-[84px] -translate-x-1/2 flex-col items-center gap-1 [inset-inline-start:var(--x-sm)] rtl:translate-x-1/2 @3xl:w-[120px] @3xl:[inset-inline-start:var(--x-lg)]"
-            style={{ "--x-sm": x(37), "--x-lg": x(42), top: `${Math.round(78 - 64 * lift)}px` } as React.CSSProperties}
+            className={`absolute flex -translate-x-1/2 flex-col items-center gap-1 [inset-inline-start:var(--x-sm)] rtl:translate-x-1/2 @3xl:[inset-inline-start:var(--x-lg)] ${
+              crowded ? "w-[58px] @3xl:w-[104px]" : "w-[84px] @3xl:w-[120px]"
+            }`}
+            style={{ "--x-sm": x(crowded ? 8 : 13), "--x-lg": x(8), top: `${Math.round(78 - 64 * lift)}px` } as React.CSSProperties}
           >
             <WritingMark on={writing} />
             <span className="@3xl:hidden">
-              <SeatDisc seat={s} size={s.role === "chair" ? 46 : 52} active={writing} />
+              <SeatDisc seat={s} size={crowded ? (s.role === "chair" ? 36 : 42) : s.role === "chair" ? 46 : 52} active={writing} />
             </span>
             <span className="hidden @3xl:block">
-              <SeatDisc seat={s} size={s.role === "chair" ? 56 : 66} active={writing} />
+              <SeatDisc seat={s} size={crowded ? (s.role === "chair" ? 50 : 58) : s.role === "chair" ? 56 : 66} active={writing} />
             </span>
-            <span className="max-w-full truncate rounded-chip border border-line bg-panel px-1.5 py-px text-[12px] text-text">
-              {s.role === "chair" ? t("chair") : seatShort(s, locale)}
+            <span className={`max-w-full truncate rounded-chip border border-line bg-panel py-px text-text ${crowded ? "px-1 text-[11px]" : "px-1.5 text-[12px]"}`}>
+              {s.role === "chair" ? t(crowded ? "chairShort" : "chair") : seatShort(s, locale)}
             </span>
             <span className="hidden max-w-full truncate text-center text-[11px] leading-tight text-muted @3xl:block">{seatLens(s, locale)}</span>
             {s.role === "advisor" && (vote || lean) && (

@@ -14,6 +14,11 @@ export type SeatInfo = {
   lens_en: string;
   lens_ar: string;
   portrait: string | null;
+  /** The name on the tag and in the debate ("Alwaleed"); older sessions lack it. */
+  short_en?: string;
+  short_ar?: string;
+  /** Ticker keys of companies the person is tied to: the seat sits out sessions about them. */
+  recuse?: string[];
 };
 
 export type Flags = { unverified: string[]; cited: number; removed: number };

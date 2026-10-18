@@ -127,7 +127,7 @@ class Debate:
         # Everything up to the data pack is the same for every seat, so the host can reuse it.
         roster = (
             "The advisors: "
-            + "; ".join(f"{a.name} / {a.info.name_ar} (id {a.id})" for a in self.ctx.advisors)
+            + "; ".join(f"{a.name} / {a.info.name_ar}, called {a.surname} / {a.info.short_ar} (id {a.id})" for a in self.ctx.advisors)
             + ". A neutral Chair (رئيس الجلسة) runs the rounds. In Arabic, write the advisors' names in Arabic as given here."
         )
         head = "\n\n".join([RULES.replace("{language}", LANGUAGE[self.ctx.locale]), roster, self.ctx.pack.prompt()])

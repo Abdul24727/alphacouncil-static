@@ -5191,6 +5191,24 @@
               }
             ],
             "title": "Portrait"
+          },
+          "short_en": {
+            "type": "string",
+            "title": "Short En",
+            "default": ""
+          },
+          "short_ar": {
+            "type": "string",
+            "title": "Short Ar",
+            "default": ""
+          },
+          "recuse": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recuse",
+            "default": []
           }
         },
         "type": "object",

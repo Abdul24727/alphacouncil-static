@@ -21,6 +21,7 @@ import { DEBATE_KEY, streamDebate, useDebateSession, useDebateSessions, useDebat
 import { fmtDate, fmtStamp } from "@/lib/format";
 import { useTickerDetail } from "@/lib/queries";
 import { useGroupTicker } from "@/lib/ticker-groups";
+import { seatName } from "./parts";
 import { OnTheTable, RoundCard, SeatArc, errKey } from "./Stage";
 import { KeyPoints, StageView } from "./Transcript";
 
@@ -37,6 +38,8 @@ export function DebateRoom() {
   const qc = useQueryClient();
   const slug = useGroupTicker(1);
   const status = useDebateStatus();
+  const locale = useLocale();
+  const detail = useTickerDetail(slug);
   // The session streaming into this page, if any. Otherwise the room shows a saved session.
   const [live, setLive] = useState<Room | null>(null);
   const [picked, setPicked] = useState<Stage | null>(null); // a tab the member opened; null follows the session
@@ -113,7 +116,11 @@ export function DebateRoom() {
     requestAnimationFrame(() => document.querySelector("[data-stage-view]")?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
 
-  const seats: SeatInfo[] = room.session?.seats ?? ((status.data?.seats as SeatInfo[] | undefined) ?? []);
+  // Before a session: the roster, less any seat tied to this company (it sits out, as the API seats it).
+  const tickerKey = detail.data?.ticker.ticker_key;
+  const roster = (status.data?.seats as SeatInfo[] | undefined) ?? [];
+  const sittingOut = room.session ? [] : roster.filter((s) => tickerKey && s.recuse?.includes(tickerKey));
+  const seats: SeatInfo[] = room.session?.seats ?? roster.filter((s) => !sittingOut.includes(s));
   const view: Stage | null = picked ?? (room.status === "done" ? "verdict" : room.stage);
   const signedIn = !!status.data?.signed_in;
 
@@ -150,6 +157,11 @@ export function DebateRoom() {
           {room.session && <OnTheTable room={room} />}
           <section className={`${PANEL} flex flex-col gap-3`} data-stage>
             <SeatArc seats={seats} room={room.session ? room : null} />
+            {sittingOut.length > 0 && (
+              <p className="text-center text-[12px] text-muted" data-sits-out>
+                {t("sitsOut", { names: sittingOut.map((s) => seatName(s, locale)).join(t("and")), n: sittingOut.length })}
+              </p>
+            )}
             {room.session ? (
               <RoundCard room={room} />
             ) : shownId != null ? (

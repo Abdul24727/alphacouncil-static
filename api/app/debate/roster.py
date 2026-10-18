@@ -34,6 +34,10 @@ CHAIR_SECTIONS = (
     "Voice",
 )
 FIELDS = ("id", "name_en", "name_ar", "initials", "lens_en", "lens_ar", "portrait")
+# Optional: short_en / short_ar (the name in tags and in the debate; default the last word of the name) and
+# recuse (ticker keys of companies the person is tied to: the seat sits out sessions about them).
+OPTIONAL = ("short_en", "short_ar", "recuse")
+TICKER_KEY = re.compile(r"^[A-Z0-9.]{1,12}_[A-Z]{2,10}$")
 SEAT_ID = re.compile(r"^[a-z][a-z0-9_-]{1,30}$")
 MIN_ADVISORS, MAX_ADVISORS = 2, 6
 
@@ -54,6 +58,10 @@ class SeatInfo(BaseModel):
     lens_ar: str
     # Served from web/public/advisors; None until the owner provides the art (initials are drawn).
     portrait: str | None
+    short_en: str = ""
+    short_ar: str = ""
+    # Companies the person is tied to (ticker keys): the seat sits out sessions about them.
+    recuse: list[str] = []
 
 
 class Seat(BaseModel):
@@ -71,7 +79,7 @@ class Seat(BaseModel):
 
     @property
     def surname(self) -> str:
-        return self.info.name_en.split()[-1]
+        return self.info.short_en
 
 
 def parse(text: str) -> tuple[dict[str, str], str]:
@@ -113,6 +121,9 @@ def load(seat_id: str) -> Seat:
     absent = [s for s in wanted if not sections.get(s)]
     if absent:
         raise RosterError(f"{path.name}: missing sections {', '.join(absent)}")
+    recuse = [k.strip() for k in meta.get("recuse", "").split(",") if k.strip()]
+    if any(not TICKER_KEY.match(k) for k in recuse):
+        raise RosterError(f"{path.name}: recuse lists ticker keys like 1120_TADAWUL")
     portrait = meta["portrait"] or None
     if portrait and not re.match(r"^[a-z0-9_-]+\.(webp|png|jpg)$", portrait):
         raise RosterError(f"{path.name}: portrait must be a file name in web/public/advisors")
@@ -125,6 +136,9 @@ def load(seat_id: str) -> Seat:
         lens_en=meta["lens_en"],
         lens_ar=meta["lens_ar"],
         portrait=f"/advisors/{portrait}" if portrait else None,
+        short_en=meta.get("short_en") or meta["name_en"].split()[-1],
+        short_ar=meta.get("short_ar") or meta["name_ar"].split()[-1],
+        recuse=recuse,
     )
     return Seat(info=info, body=body, sections=sections)
 
@@ -139,3 +153,8 @@ def advisors(setting: str) -> list[Seat]:
 
 def chair() -> Seat:
     return load("chair")
+
+
+def sitting(seats: list[Seat], ticker_key: str) -> list[Seat]:
+    """The advisors who sit for this company: those tied to it sit out."""
+    return [a for a in seats if ticker_key not in a.info.recuse]

@@ -211,6 +211,10 @@ async def start(request: Request, body: StartBody, user: Annotated[User, Depends
         raise HTTPException(422, "question_too_short")
     t = resolve(request, body.ticker)
     advisors, chair = seats(request)
+    # A seat tied to this company (its chairman's group, say) sits out.
+    advisors = roster.sitting(advisors, t.ticker_key)
+    if len(advisors) < roster.MIN_ADVISORS:
+        raise HTTPException(503, "advisors_unavailable")
 
     await run_in_threadpool(store.expire_stale, url)
     # Two clicks at once: only the first gets through.

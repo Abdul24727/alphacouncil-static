@@ -251,7 +251,9 @@
       "title": "Advisors' room",
       "body": "Put a question about this stock to simulated advisors. They debate it in rounds and score the options against our data.",
       "cta": "Convene the advisors"
-    }
+    },
+    "sitsOut": "{names} {n, plural, one {sits} other {sit}} out for this company: the person chairs it or its group.",
+    "chairShort": "Chair"
   },
   "placeholder": {
     "phase": "Built in Phase {phase}",

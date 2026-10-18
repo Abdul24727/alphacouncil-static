@@ -1846,6 +1846,21 @@ export interface components {
             lens_ar: string;
             /** Portrait */
             portrait: string | null;
+            /**
+             * Short En
+             * @default
+             */
+            short_en: string;
+            /**
+             * Short Ar
+             * @default
+             */
+            short_ar: string;
+            /**
+             * Recuse
+             * @default []
+             */
+            recuse: string[];
         };
         /** SeatInput */
         SeatInput: {
