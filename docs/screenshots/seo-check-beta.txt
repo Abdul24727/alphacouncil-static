@@ -1,0 +1,70 @@
+PASS  robots.txt answers as text
+PASS  robots.txt allows the site
+PASS  robots.txt points at the sitemap on alphacouncil.tech
+PASS  robots.txt disallows the account pages and /api/ in both languages
+PASS  robots.txt leaves markets, screener, templates and stock pages open
+PASS  sitemap.xml answers as XML
+      sitemap: 1464 URLs, API universe: 716 tickers
+PASS  every sitemap URL is on https://alphacouncil.tech
+PASS  every sitemap URL lists en, ar and x-default alternates on alphacouncil.tech
+PASS  sitemap lists the public pages in English and Arabic
+PASS  sitemap lists no account page
+PASS  sitemap lists every stock page in both languages (716 × 2)
+PASS  stock lastmod is the date of the last price bar, and absent without one
+PASS  /                            AlphaCouncil · Research terminal for Gulf markets
+PASS  /pricing                     Pricing · AlphaCouncil
+PASS  /methodology                 Methodology · AlphaCouncil
+PASS  /legal/terms                 Terms of Service · AlphaCouncil
+PASS  /markets                     Markets · AlphaCouncil
+PASS  /screener                    Screener · AlphaCouncil
+PASS  /templates                   Templates · AlphaCouncil
+PASS  /templates/dividend-hunter   Dividend Hunter · AlphaCouncil
+PASS  /login                       Sign in · AlphaCouncil
+PASS  /t/2222                      Saudi Aramco (2222) · Tadawul · AlphaCouncil
+PASS  /t/1120                      Al Rajhi Bank (1120) · Tadawul · AlphaCouncil
+PASS  /t/2POINTZERO                Two Point Zero Group (2POINTZERO) · ADX · AlphaCouncil
+PASS  /ar                          AlphaCouncil · منصة البحث لأسواق الخليج
+PASS  /ar/pricing                  الأسعار · AlphaCouncil
+PASS  /ar/methodology              المنهجية · AlphaCouncil
+PASS  /ar/legal/terms              شروط الخدمة · AlphaCouncil
+PASS  /ar/markets                  الأسواق · AlphaCouncil
+PASS  /ar/screener                 فرز الأسهم · AlphaCouncil
+PASS  /ar/templates                القوالب · AlphaCouncil
+PASS  /ar/templates/dividend-hunter صائد التوزيعات · AlphaCouncil
+PASS  /ar/login                    تسجيل الدخول · AlphaCouncil
+PASS  /ar/t/2222                   أرامكو السعودية (2222) · تداول · AlphaCouncil
+PASS  /ar/t/1120                   الراجحي (1120) · تداول · AlphaCouncil
+PASS  /ar/t/2POINTZERO             مجموعة تو بوينت زيرو ش م ع (2POINTZERO) · سوق أبوظبي · AlphaCouncil
+PASS  link-preview bot reads the card in <head> on /t/2222
+PASS  link-preview bot reads the card in <head> on /ar/t/2222
+PASS  /t/2222_TADAWUL canonical is /t/2222
+PASS  /t/2222/financials canonical is /t/2222
+PASS  /ar/t/2222/council canonical is /ar/t/2222
+PASS  /t/NO-SUCH-TICKER is noindex
+PASS  /portfolio is noindex
+PASS  /ar/settings is noindex
+PASS  /checkout is noindex
+PASS  /verify-email is noindex
+PASS  /ar/reset-password is noindex
+PASS  /billing/return is noindex
+PASS  /og/en.png is a 1200x630 PNG
+PASS  /og/ar.png is a 1200x630 PNG
+PASS  browser tab title on / at 1440px: AlphaCouncil · Research terminal for Gulf markets
+PASS  browser tab title on / at 390px: AlphaCouncil · Research terminal for Gulf markets
+PASS  browser tab title on /ar at 1440px: AlphaCouncil · منصة البحث لأسواق الخليج
+PASS  browser tab title on /ar at 390px: AlphaCouncil · منصة البحث لأسواق الخليج
+PASS  browser tab title on /t/2222 at 1440px: Saudi Aramco (2222) · Tadawul · AlphaCouncil
+PASS  browser tab title on /t/2222 at 390px: Saudi Aramco (2222) · Tadawul · AlphaCouncil
+PASS  browser tab title on /ar/t/2222 at 1440px: أرامكو السعودية (2222) · تداول · AlphaCouncil
+PASS  browser tab title on /ar/t/2222 at 390px: أرامكو السعودية (2222) · تداول · AlphaCouncil
+PASS  browser tab title on /markets at 1440px: Markets · AlphaCouncil
+PASS  browser tab title on /markets at 390px: Markets · AlphaCouncil
+PASS  browser tab title on /ar/templates/dividend-hunter at 1440px: صائد التوزيعات · AlphaCouncil
+PASS  browser tab title on /ar/templates/dividend-hunter at 390px: صائد التوزيعات · AlphaCouncil
+      screenshots in ..\docs\screenshots\seo-beta
+
+ALL PASS
+HTTP/1.1 401 Unauthorized X-Robots-Tag: noindex, nofollow  <- https://beta.alphacouncil.tech/robots.txt
+HTTP/1.1 401 Unauthorized X-Robots-Tag: noindex, nofollow  <- https://beta.alphacouncil.tech/sitemap.xml
+HTTP/1.1 401 Unauthorized X-Robots-Tag: noindex, nofollow  <- https://beta.alphacouncil.tech/
+release: cde2b0e629 (checked 2026-10-18T17:10:02Z through the beta tunnel)

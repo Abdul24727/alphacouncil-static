@@ -1,0 +1,132 @@
+PASS  robots.txt answers as text
+PASS  robots.txt allows the site
+PASS  robots.txt points at the sitemap on alphacouncil.tech
+PASS  robots.txt disallows the account pages and /api/ in both languages
+PASS  robots.txt leaves markets, screener, templates and stock pages open
+PASS  sitemap.xml answers as XML
+      sitemap: 1464 URLs, API universe: 716 tickers
+PASS  every sitemap URL is on https://alphacouncil.tech
+PASS  every sitemap URL lists en, ar and x-default alternates on alphacouncil.tech
+PASS  sitemap lists the public pages in English and Arabic
+PASS  sitemap lists no account page
+PASS  sitemap lists every stock page in both languages (716 × 2)
+PASS  stock lastmod is the date of the last price bar, and absent without one
+PASS  /                            AlphaCouncil · Research terminal for Gulf markets
+PASS  /pricing                     Pricing · AlphaCouncil
+PASS  /methodology                 Methodology · AlphaCouncil
+PASS  /legal/terms                 Terms of Service · AlphaCouncil
+PASS  /markets                     Markets · AlphaCouncil
+PASS  /screener                    Screener · AlphaCouncil
+PASS  /templates                   Templates · AlphaCouncil
+PASS  /templates/dividend-hunter   Dividend Hunter · AlphaCouncil
+PASS  /login                       Sign in · AlphaCouncil
+PASS  /t/2222                      Saudi Aramco (2222) · Tadawul · AlphaCouncil
+PASS  /t/1120                      Al Rajhi Bank (1120) · Tadawul · AlphaCouncil
+PASS  /t/2POINTZERO                Two Point Zero Group (2POINTZERO) · ADX · AlphaCouncil
+PASS  /ar                          AlphaCouncil · منصة البحث لأسواق الخليج
+PASS  /ar/pricing                  الأسعار · AlphaCouncil
+PASS  /ar/methodology              المنهجية · AlphaCouncil
+PASS  /ar/legal/terms              شروط الخدمة · AlphaCouncil
+PASS  /ar/markets                  الأسواق · AlphaCouncil
+PASS  /ar/screener                 فرز الأسهم · AlphaCouncil
+PASS  /ar/templates                القوالب · AlphaCouncil
+PASS  /ar/templates/dividend-hunter صائد التوزيعات · AlphaCouncil
+PASS  /ar/login                    تسجيل الدخول · AlphaCouncil
+PASS  /ar/t/2222                   أرامكو السعودية (2222) · تداول · AlphaCouncil
+PASS  /ar/t/1120                   الراجحي (1120) · تداول · AlphaCouncil
+PASS  /ar/t/2POINTZERO             مجموعة تو بوينت زيرو ش م ع (2POINTZERO) · سوق أبوظبي · AlphaCouncil
+PASS  link-preview bot reads the card in <head> on /t/2222
+PASS  link-preview bot reads the card in <head> on /ar/t/2222
+PASS  /t/2222_TADAWUL canonical is /t/2222
+PASS  /t/2222/financials canonical is /t/2222
+PASS  /ar/t/2222/council canonical is /ar/t/2222
+PASS  /t/NO-SUCH-TICKER is noindex
+PASS  /portfolio is noindex
+PASS  /ar/settings is noindex
+PASS  /checkout is noindex
+PASS  /verify-email is noindex
+PASS  /ar/reset-password is noindex
+PASS  /billing/return is noindex
+PASS  /og/en.png is a 1200x630 PNG
+PASS  /og/ar.png is a 1200x630 PNG
+PASS  browser tab title on / at 1440px: AlphaCouncil · Research terminal for Gulf markets
+PASS  browser tab title on / at 390px: AlphaCouncil · Research terminal for Gulf markets
+PASS  browser tab title on /ar at 1440px: AlphaCouncil · منصة البحث لأسواق الخليج
+PASS  browser tab title on /ar at 390px: AlphaCouncil · منصة البحث لأسواق الخليج
+PASS  browser tab title on /t/2222 at 1440px: Saudi Aramco (2222) · Tadawul · AlphaCouncil
+PASS  browser tab title on /t/2222 at 390px: Saudi Aramco (2222) · Tadawul · AlphaCouncil
+PASS  browser tab title on /ar/t/2222 at 1440px: أرامكو السعودية (2222) · تداول · AlphaCouncil
+PASS  browser tab title on /ar/t/2222 at 390px: أرامكو السعودية (2222) · تداول · AlphaCouncil
+PASS  browser tab title on /markets at 1440px: Markets · AlphaCouncil
+PASS  browser tab title on /markets at 390px: Markets · AlphaCouncil
+PASS  browser tab title on /ar/templates/dividend-hunter at 1440px: صائد التوزيعات · AlphaCouncil
+PASS  browser tab title on /ar/templates/dividend-hunter at 390px: صائد التوزيعات · AlphaCouncil
+      screenshots in ..\docs\screenshots\seo-production
+
+ALL PASS
+
+release: cde2b0e629 on alphacouncil.tech, checked 2026-10-18T17:13:09Z
+
+--- robots.txt
+User-Agent: *
+Allow: /
+Disallow: /api/
+Disallow: /portfolio
+Disallow: /settings
+Disallow: /dashboards
+Disallow: /checkout
+Disallow: /billing/
+Disallow: /verify-email
+Disallow: /reset-password
+Disallow: /ar/portfolio
+Disallow: /ar/settings
+Disallow: /ar/dashboards
+Disallow: /ar/checkout
+Disallow: /ar/billing/
+Disallow: /ar/verify-email
+Disallow: /ar/reset-password
+
+Sitemap: https://alphacouncil.tech/sitemap.xml
+
+--- sitemap.xml: first stock entry
+<loc>https://alphacouncil.tech/t/2222</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://alphacouncil.tech/t/2222" />
+<xhtml:link rel="alternate" hreflang="ar" href="https://alphacouncil.tech/ar/t/2222" />
+<xhtml:link rel="alternate" hreflang="x-default" href="https://alphacouncil.tech/t/2222" />
+<lastmod>2026-10-15</lastmod>
+</url>
+<url>
+--- /t/2222 as Googlebot: <head>
+<title>Saudi Aramco (2222) · Tadawul · AlphaCouncil</title>
+<meta name="description" content="Saudi Aramco (2222) on Tadawul: price chart, valuation, financial statements, news and the council&#x27;s rule-based votes, read from AlphaCouncil&#x27;s database. In English and Arabic."/>
+<link rel="canonical" href="https://alphacouncil.tech/t/2222"/>
+<link rel="alternate" hrefLang="en" href="https://alphacouncil.tech/t/2222"/>
+<link rel="alternate" hrefLang="ar" href="https://alphacouncil.tech/ar/t/2222"/>
+<link rel="alternate" hrefLang="x-default" href="https://alphacouncil.tech/t/2222"/>
+<meta property="og:title" content="Saudi Aramco (2222) · Tadawul · AlphaCouncil"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:image" content="https://alphacouncil.tech/og/en.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+--- /ar/t/2222 as Googlebot: <head>
+<title>أرامكو السعودية (2222) · تداول · AlphaCouncil</title>
+<meta name="description" content="أرامكو السعودية (2222) في تداول: الرسم البياني للسعر والتقييم والقوائم المالية والأخبار وتصويت المجلس بقواعده المعلنة، مقروءة من قاعدة بيانات AlphaCouncil. بالعربية والإنجليزية."/>
+<link rel="canonical" href="https://alphacouncil.tech/ar/t/2222"/>
+<link rel="alternate" hrefLang="en" href="https://alphacouncil.tech/t/2222"/>
+<link rel="alternate" hrefLang="ar" href="https://alphacouncil.tech/ar/t/2222"/>
+<link rel="alternate" hrefLang="x-default" href="https://alphacouncil.tech/t/2222"/>
+<meta property="og:title" content="أرامكو السعودية (2222) · تداول · AlphaCouncil"/>
+<meta property="og:locale" content="ar_SA"/>
+<meta property="og:image" content="https://alphacouncil.tech/og/ar.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+--- /ar/pricing as Googlebot: <head>
+<title>الأسعار · AlphaCouncil</title>
+<meta name="description" content="خطتان بالريال السعودي. الأسعار أدناه مقروءة من إعدادات الخطط نفسها التي يحصّل بها مزوّد الدفع لدينا، ميسّر."/>
+<link rel="canonical" href="https://alphacouncil.tech/ar/pricing"/>
+<link rel="alternate" hrefLang="en" href="https://alphacouncil.tech/pricing"/>
+<link rel="alternate" hrefLang="ar" href="https://alphacouncil.tech/ar/pricing"/>
+<link rel="alternate" hrefLang="x-default" href="https://alphacouncil.tech/pricing"/>
+<meta property="og:title" content="الأسعار · AlphaCouncil"/>
+<meta property="og:locale" content="ar_SA"/>
+<meta property="og:image" content="https://alphacouncil.tech/og/ar.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+--- old address still redirects
