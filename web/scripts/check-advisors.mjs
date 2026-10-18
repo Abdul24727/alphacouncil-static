@@ -6,6 +6,9 @@
 //   BASE_URL=http://localhost:3201 node scripts/check-advisors.mjs        # beta through the tunnel (everyone is Pro)
 //   BASE_URL=http://localhost:3110 LOCKED=1 node scripts/check-advisors.mjs   # an API with BILLING_OPEN: the Free preview
 //   BASE_URL=https://alphacouncil.tech VISITOR=1 node scripts/check-advisors.mjs  # signed out: no account, no session
+//   BASE_URL=https://alphacouncil.tech EMAIL=... node scripts/check-advisors.mjs   # an existing Pro account (billing open)
+//     EMAIL signs in instead of signing up (PASSWORD defaults to the checks' test password); on production the
+//     account needs Pro first: `python -m app.billing grant <email> 1` (docs/production.md, Pro billing).
 //
 // Test accounts are advisors-<locale>-<time>@example.com (no email is sent to example.com).
 import { mkdir, writeFile } from "node:fs/promises";
@@ -88,10 +91,19 @@ async function shot(page, name, whole = false) {
   console.log(`  ${file}`);
 }
 
+async function signIn(page, email, password) {
+  await page.goto(`${BASE_URL}/login?next=/home`, { waitUntil: "networkidle" });
+  await page.locator("input[type=email]:visible").fill(email);
+  await page.locator("input[type=password]:visible").fill(password);
+  await page.locator("form:visible button[type=submit]").click();
+  await page.waitForURL((u) => u.pathname.endsWith("/home"), { timeout: 30000 });
+}
+
 async function convene(locale) {
   const ctx = await context(1440);
   const page = await ctx.newPage();
-  await signUp(page, `advisors-${locale}-${Date.now()}@example.com`);
+  if (process.env.EMAIL) await signIn(page, process.env.EMAIL, process.env.PASSWORD ?? "a long test password");
+  else await signUp(page, `advisors-${locale}-${Date.now()}@example.com`);
   await page.goto(`${BASE_URL}${prefix(locale)}/t/${TICKER}/advisors`, { waitUntil: "networkidle" });
   await page.locator("[data-question-form]").waitFor({ timeout: 30000 });
   await page.waitForTimeout(800);

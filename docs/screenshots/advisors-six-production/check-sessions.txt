@@ -1,0 +1,29 @@
+PASS  en idle: no sideways scroll (0px)
+PASS  en idle: disclaimer on screen
+PASS  en idle: citation chips name a dataset (0)
+PASS  en: the verdict arrived (30 s on screen)
+PASS  en: saw the stages live (brief, openings, faultlines, debate, vote)
+PASS  en verdict 1440: no sideways scroll (0px)
+PASS  en verdict 1440: disclaimer on screen
+PASS  en verdict 1440: citation chips name a dataset (37)
+PASS  en: verdict headline is an assessment, not advice ("The room reads the dividend as covered by earnings but reset before, with cash coverage unproven.")
+INFO  en: figures marked as not found in the data: 2
+INFO  en: Took 0:29
+PASS  en 390: no sideways scroll (0px)
+PASS  en 390: disclaimer on screen
+PASS  en 390: citation chips name a dataset (37)
+PASS  ar idle: no sideways scroll (0px)
+PASS  ar idle: disclaimer on screen
+PASS  ar idle: citation chips name a dataset (0)
+PASS  ar: the verdict arrived (63 s on screen)
+PASS  ar: saw the stages live (brief, openings, faultlines, debate, vote)
+PASS  ar verdict 1440: no sideways scroll (0px)
+PASS  ar verdict 1440: disclaimer on screen
+PASS  ar verdict 1440: citation chips name a dataset (42)
+PASS  ar: verdict headline is an assessment, not advice ("الخيار (ب) هو الأقرب لقراءة البيانات: التوزيعات مغطاة بالأرباح، لكن استدامتها مرهونة بثبات الأرباح")
+PASS  ar: the verdict is in Arabic
+INFO  ar: figures marked as not found in the data: 1
+INFO  ar: استغرقت 1:02
+PASS  ar 390: no sideways scroll (0px)
+PASS  ar 390: disclaimer on screen
+PASS  ar 390: citation chips name a dataset (42)

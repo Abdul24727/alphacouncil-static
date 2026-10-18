@@ -451,9 +451,13 @@ and replayed at 1440 and 390 px, both languages) and in visitor mode on producti
 Chair runs at low reasoning effort. The number check flags figures the advisors work out themselves (an
 annualised dividend, a payout percentage): they show underlined as not found in the data.
 
-**Six advisors (2026-10-18, release `0db360c`, beta only until the owner's go-ahead)**: Prince Alwaleed and
-Abdullah Al-Rajhi joined at the owner's request; their seats go to the lawyer with the rest before the room is
-advertised. Two real sessions on beta (2222): English 32.5 s, $0.1742 (207,786 tokens in, 5,522 out); Arabic
+**Six advisors (2026-10-18)**: Prince Alwaleed and Abdullah Al-Rajhi joined at the owner's request (release
+`0db360c`); live on alphacouncil.tech since `16dba3a` with the owner's go-ahead; their seats go to the lawyer with
+the rest before the room is advertised. Production sets no `DEBATE_*` values, so the code default (all six) applies.
+On production, a test account with complimentary Pro for a day (`advisors-en-1792347926187@example.com`) held one
+session per language on 2222: English 29.4 s, $0.1960 (208,315 tokens in, 5,476 out; Chair $0.0975, advisors
+$0.0985); Arabic 62.4 s, $0.1742 (232,516 in, 7,133 out; Chair $0.1189, advisors $0.0553); 21 turns each.
+`check-advisors.mjs` passed in both languages at 1440 and 390 px (`screenshots/advisors-six-production/`). Two real sessions on beta (2222): English 32.5 s, $0.1742 (207,786 tokens in, 5,522 out); Arabic
 35.8 s, $0.2104 (231,956 in, 6,957 out); 21 turns each. `check-advisors.mjs` passed in both languages at 1440
 and 390 px (`screenshots/advisors-six/`).
 
