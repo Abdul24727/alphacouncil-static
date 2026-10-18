@@ -201,7 +201,8 @@ class _Obj:
 class FakeRouter:
     """Answers by seat and step, read from the prompt the engine sends."""
 
-    calls: list = []
+    calls: list = []  # requests answered
+    refused = 0  # requests refused for switching reasoning off
     fail_chair = False
 
     def __init__(self, **kw):
@@ -210,13 +211,19 @@ class FakeRouter:
     async def _create(self, **body):
         import openai
 
-        FakeRouter.calls.append(body)
         system, user = body["messages"][0]["content"], body["messages"][1]["content"]
         seat = "chair" if "YOUR SEAT: the Chair" in system else re.search(r"YOUR SEAT: .*?\(id (\w+)\)", system).group(1)
         step = re.search(r"THIS STEP \(([^)]+)\)", user).group(1)
         retry = len(body["messages"]) > 2
         if seat == "chair" and FakeRouter.fail_chair:
             raise openai.APIConnectionError(request=None)
+        if seat == "chair" and body["extra_body"].get("reasoning") == {"enabled": False}:
+            # Like Claude Sonnet 5.5 on OpenRouter: reasoning cannot be switched off.
+            msg = "Reasoning is mandatory for this endpoint and cannot be disabled."
+            response = _Obj(status_code=400, headers={}, request=None)
+            FakeRouter.refused += 1
+            raise openai.BadRequestError(msg, response=response, body={"message": msg, "code": 400})
+        FakeRouter.calls.append(body)
         reply = self.reply(seat, step, retry)
         usage = _Obj(prompt_tokens=1000, completion_tokens=100, cost=0.001)
         return _Obj(choices=[_Obj(message=_Obj(content=reply), finish_reason="stop")], usage=usage)
@@ -264,7 +271,10 @@ def router(room, monkeypatch):
 
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-used")
     monkeypatch.setattr(openai_compat.openai, "AsyncOpenAI", FakeRouter)
-    FakeRouter.calls, FakeRouter.fail_chair = [], False
+    FakeRouter.calls, FakeRouter.fail_chair, FakeRouter.refused = [], False, 0
+    from app.debate import llm
+
+    llm.REASONING_REQUIRED.clear()
     return room
 
 
@@ -303,6 +313,10 @@ def test_models_debate_with_checked_numbers_and_no_advice(router):
     assert system.index("DATA PACK") < system.index("YOUR SEAT") and "[P1] Quote, valuation" in system
     assert "return_12m_pct" in system and "Never tell the member or anyone else to buy, sell or hold" in system
     assert FakeRouter.calls[0]["extra_body"]["usage"] == {"include": True}
+    # The Chair's model refused "reasoning off" once; it then runs at the lowest effort, the advisors with it off.
+    assert FakeRouter.refused == 1 and {str(c["extra_body"].get("reasoning")) for c in chair_calls} == {"{'effort': 'low'}"}
+    assert all(c["extra_body"]["reasoning"] == {"enabled": False} for c in FakeRouter.calls if c not in chair_calls)
+    assert {c["max_tokens"] for c in chair_calls} == {1_200 + 2_048, 900 + 2_048, 1_600 + 2_048}
 
     from app.appdb import debate_sessions, engine_for
 

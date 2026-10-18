@@ -55,6 +55,22 @@ def parse_json(text: str) -> dict[str, Any]:
     return obj
 
 
+# Models that refuse to answer with reasoning switched off (Claude Sonnet 5.5 on OpenRouter: "Reasoning
+# is mandatory for this endpoint"). They get the lowest effort instead, from then on.
+REASONING_REQUIRED: set[str] = set()
+REASONING_ROOM = 2_048
+
+
+def _reasoning(settings: Settings, model: str) -> dict[str, Any] | None:
+    if settings.debate_reasoning:
+        return None
+    return {"effort": "low"} if model in REASONING_REQUIRED else {"enabled": False}
+
+
+def _refuses_no_reasoning(exc: openai.APIStatusError) -> bool:
+    return exc.status_code == 400 and "reasoning" in str(exc.body or exc.message).lower()
+
+
 async def ask(
     settings: Settings,
     model: str,
@@ -68,17 +84,21 @@ async def ask(
     client = make_client(settings)
     usage = Usage(model=model)
     msgs = list(messages)
-    extra = {**host_routing(settings), "usage": {"include": True}}
-    if not settings.debate_reasoning:
-        extra["reasoning"] = {"enabled": False}
     problem = "bad_output"
-    for _ in range(2):
+    attempts = 0
+    while attempts < 2:
+        extra: dict[str, Any] = {**host_routing(settings), "usage": {"include": True}}
+        reasoning = _reasoning(settings, model)
+        if reasoning is not None:
+            extra["reasoning"] = reasoning
+        # Thinking tokens count against max_tokens (Anthropic's budget is 1,024 at least): room for both.
+        limit = max_tokens if reasoning == {"enabled": False} else max_tokens + REASONING_ROOM
         started = time.monotonic()
         try:
             resp = await client.chat.completions.create(
                 model=model,
                 messages=msgs,
-                max_tokens=max_tokens,
+                max_tokens=limit,
                 temperature=temperature,
                 extra_body=extra,
                 timeout=TIMEOUT_S,
@@ -89,10 +109,16 @@ async def ask(
             raise SeatError("busy") from exc
         except openai.APITimeoutError as exc:
             raise SeatError("timeout") from exc
-        except (openai.APIStatusError, openai.APIConnectionError) as exc:
+        except openai.APIStatusError as exc:
+            if _refuses_no_reasoning(exc) and model not in REASONING_REQUIRED:
+                REASONING_REQUIRED.add(model)
+                continue  # the same request at the lowest effort; not an attempt
+            raise SeatError("unreachable") from exc
+        except openai.APIConnectionError as exc:
             raise SeatError("unreachable") from exc
         finally:
             usage.seconds += time.monotonic() - started
+        attempts += 1
         usage.add(getattr(resp, "usage", None))
         choice = resp.choices[0] if resp.choices else None
         text = (choice.message.content if choice and choice.message else None) or ""
