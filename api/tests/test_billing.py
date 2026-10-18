@@ -262,3 +262,32 @@ def test_complimentary_pro_never_charges_and_ends_by_itself(client, moyasar):
     assert client.get("/v1/billing").json()["plan"] == "pro"
     assert renew(client, end + timedelta(minutes=1))["ended"] == 1 and moyasar.created == []
     assert subscription(client, uid).status == "expired"
+
+
+def test_outside_calls_send_a_user_agent(monkeypatch):
+    """Moyasar's API is behind Cloudflare, which refuses Python's default user agent (1010)."""
+    import urllib.request
+
+    from app import http
+
+    seen = {}
+
+    class Answer:
+        status = 200
+
+        def read(self):
+            return b"{}"
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def fake_urlopen(req, timeout):
+        seen.update({k.lower(): v for k, v in req.header_items()})
+        return Answer()
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    assert http.call("GET", "https://api.moyasar.com/v1/payments").ok
+    assert seen["user-agent"].startswith("AlphaCouncil/")

@@ -10,6 +10,7 @@ import urllib.request
 from typing import Any
 
 TIMEOUT_S = 20
+USER_AGENT = "AlphaCouncil/1.0 (+https://alphacouncil.tech)"
 
 
 class Reply:
@@ -26,7 +27,8 @@ def basic(user: str, password: str = "") -> dict[str, str]:
 
 
 def call(method: str, url: str, *, json_body: Any = None, form: dict[str, str] | None = None, headers: dict[str, str] | None = None) -> Reply:
-    data, hdrs = None, {"Accept": "application/json", **(headers or {})}
+    # Moyasar's API sits behind Cloudflare, which refuses Python's default user agent (1010).
+    data, hdrs = None, {"Accept": "application/json", "User-Agent": USER_AGENT, **(headers or {})}
     if json_body is not None:
         data, hdrs["Content-Type"] = json.dumps(json_body).encode(), "application/json"
     elif form is not None:

@@ -121,12 +121,21 @@ if (process.env.CHECKOUT_EMAIL) {
       const form = page.locator("[data-moyasar-form]");
       await form.locator("input").first().waitFor({ timeout: 30000 });
       await page.screenshot({ path: `${OUT}/checkout-form-${outcome}-en-1440.png` });
-      await form.locator("input[name=name], input[autocomplete=cc-name]").first().fill("Test Card");
-      await form.locator("input[name=number], input[autocomplete=cc-number]").first().fill(card);
-      await form.locator("input[name=month], input[autocomplete=cc-exp]").first().fill("12/30");
-      await form.locator("input[name=cvc], input[autocomplete=cc-csc]").first().fill("123");
+      // Typed key by key: Moyasar's form formats the number and the expiry as they are typed.
+      await form.locator("#mysr-cc-name").pressSequentially("Test Card");
+      await form.locator("#mysr-cc-number").pressSequentially(card);
+      await form.locator("#mysr-cc-exp").pressSequentially("1230");
+      await form.locator("#mysr-cc-csc").pressSequentially("123");
       await form.locator("button[type=submit]").click();
-      await page.waitForURL((u) => u.pathname.endsWith("/billing/return"), { timeout: 90000 });
+      // Test mode: Moyasar's 3-D Secure emulator stands in for the bank; "(Y)" approves.
+      await page.waitForURL((u) => u.pathname.endsWith("/billing/return") || u.pathname.endsWith("/acs_emulator"), { timeout: 90000 });
+      if (page.url().includes("/acs_emulator")) {
+        const choice = page.locator("select");
+        if (await choice.count()) await choice.first().selectOption({ label: await choice.first().locator("option", { hasText: "(Y)" }).first().innerText() });
+        else await page.getByText("(Y) Authentication/Account Verification Successful").click();
+        await page.locator("input[type=submit], button[type=submit]").first().click();
+        await page.waitForURL((u) => u.pathname.endsWith("/billing/return"), { timeout: 90000 });
+      }
       if (outcome === "paid") {
         await page.locator("[data-pro-started]").waitFor({ timeout: 60000 });
         check(true, "test card 4111…1111: paid, Pro started");
