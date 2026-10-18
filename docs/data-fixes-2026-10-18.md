@@ -129,6 +129,18 @@ The owner chose both options, in this order: "Fix the Tadawul sectors: hide the 
   - `web/scripts/check-sectors.mjs` checks all Tadawul companies against the list, peers within one sector, and the peers panel and Sector vs Sector page in both languages at 1440 and 390 px.
   - The local run passed 19 of 19 (`screenshots/sectors-local/`).
 
+**Released**, in the owner's order, both through beta and then production:
+- **A:** release `ed1b5f4`.
+  - On beta (over the tunnel) and on alphacouncil.tech: 122 Tadawul companies without a sector, no mislabelled sector left, and the six right Utilities kept.
+  - Almarai's peers panel said "Sector unknown, so no peers are listed" in both languages.
+  - Screenshots: `screenshots/sectors-hidden-{beta,production}/`.
+- **B:** release `4604fa0`.
+  - `check-sectors.mjs` passed 19 of 19 on beta and again on alphacouncil.tech (`screenshots/sectors-check-production.txt`).
+  - All 269 Tadawul companies carry the exchange's sector, and peers stay within one sector.
+  - /methodology names the source and date.
+  - The data-fix check from Part 1 still passes 46 of 46 on production.
+  - Screenshots of the peers panel (Almarai, Maaden) and Sector vs Sector, in English and Arabic at 1440 and 390 px: `screenshots/sectors-{beta,production}/`.
+
 The other markets keep the pipeline's sector labels. The audit found only scattered errors there, e.g. ADX "Aviation" holds hotels and a driving school.
 
 The 5 USD-traded Bahrain listings still show BHD (Part 1, F5). Whether to keep a list for them is still the owner's call.

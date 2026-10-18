@@ -1,0 +1,22 @@
+PASS  269 Tadawul companies carry the exchange's sector, or none
+      not on the exchange's list (sector unknown): none
+PASS  all 22 official sectors are offered in the templates
+PASS  2280: peers are all Food & Beverages (8, sector_exchange)
+PASS  1211: peers are all Materials (8, sector_exchange)
+PASS  4002: peers are all Health Care Equipment & Svc (8, sector_exchange)
+PASS  4030: peers are all Energy (5, sector_exchange)
+PASS  1111: peers are all Financial Services (8, sector_exchange)
+PASS  2280 en 1440: peers panel lists same-sector peers
+PASS  1211 en 1440: peers panel lists same-sector peers
+PASS  sector vs sector en 1440: Food & Beverages / Materials
+PASS  2280 en 390: peers panel lists same-sector peers
+PASS  1211 en 390: peers panel lists same-sector peers
+PASS  sector vs sector en 390: Food & Beverages / Materials
+PASS  2280 ar 1440: peers panel lists same-sector peers
+PASS  1211 ar 1440: peers panel lists same-sector peers
+PASS  sector vs sector ar 1440: إنتاج الأغذية / المواد الأساسية
+PASS  2280 ar 390: peers panel lists same-sector peers
+PASS  1211 ar 390: peers panel lists same-sector peers
+PASS  sector vs sector ar 390: إنتاج الأغذية / المواد الأساسية
+
+all passed
