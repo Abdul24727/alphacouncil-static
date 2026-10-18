@@ -381,8 +381,12 @@ after a crash, and the URL never in the output.
   `messages/*.json`; re-run it after changing the hero title or the exchange names.
 - Check: `BASE_URL=… SHOTS_DIR=… node scripts/check-seo.mjs` (robots, sitemap against the API's ticker
   list, a sample of heads in both languages, the cards, screenshots at 1440 and 390 px).
-- Not done here: submitting the sitemap in Google Search Console / Bing Webmaster Tools needs the
-  owner's accounts (verify the domain, then add `https://alphacouncil.tech/sitemap.xml`).
+- Google Search Console (owner's Google account): Domain property `alphacouncil.tech`, verified
+  2026-10-18 by the "domain name provider" method (a `google-site-verification` TXT record at
+  Cloudflare; never remove it). `https://alphacouncil.tech/sitemap.xml` submitted the same day; Googlebot
+  fetched it at 18:16 UTC (200, `crawl-66-249-66-164.googlebot.com` in nginx's access log) while Search
+  Console still showed "Couldn't fetch", which it does until it processes a new sitemap. Bing Webmaster
+  Tools: not set up yet (it can import the site from Search Console).
 
 **Status (2026-10-18)**: live since release `cde2b0e629` (owner's approval). `check-seo.mjs` passes 62/62 on
 beta (through the tunnel) and on https://alphacouncil.tech; robots.txt and sitemap.xml (1,464 URLs: 16 pages
