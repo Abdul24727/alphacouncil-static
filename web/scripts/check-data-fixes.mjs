@@ -2,8 +2,8 @@
 // screenshots at 1440px and 390px in English and Arabic.
 //
 //   BASE_URL=http://localhost:3100 node scripts/check-data-fixes.mjs
-//   BASE_URL=http://localhost:3201 STAGING_AUTH=user:pass SHOTS_DIR=../docs/screenshots/data-fixes-beta node scripts/check-data-fixes.mjs
-//   BASE_URL=https://alphacouncil.tech SHOTS_DIR=../docs/screenshots/data-fixes-production SWEEP=1 node scripts/check-data-fixes.mjs
+//   BASE_URL=http://localhost:3201 STAGING_AUTH=user:pass SHOTS_DIR=../../docs/screenshots/data-fixes-beta node scripts/check-data-fixes.mjs
+//   BASE_URL=https://alphacouncil.tech SHOTS_DIR=../../docs/screenshots/data-fixes-production SWEEP=1 node scripts/check-data-fixes.mjs
 //
 // Page checks: the header price keeps the decimals it has (3 for KWD, BHD, OMR); a listing with
 // no confirmed currency says so; EPS is the API's (in the price's unit) or its reason; value

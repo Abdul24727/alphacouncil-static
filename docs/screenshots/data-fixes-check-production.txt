@@ -1,0 +1,49 @@
+PASS  101: the news date is the newest item's (2026-10-14)
+PASS  101 en: header price 0.815
+PASS  101 en: EPS 0.064 KWD
+PASS  101 en: news light fresh
+PASS  101 ar: header price 0.815
+PASS  101 ar: EPS د.ك 0.064
+PASS  101 ar: news light fresh
+PASS  2222: the news date is the newest item's (2026-03-09)
+PASS  2222 en: header price 25.28
+PASS  2222 en: EPS 1.84 SAR
+PASS  2222 en: value traded shows "Not in our price data"
+PASS  2222 en: news light stale
+PASS  2222 ar: header price 25.28
+PASS  2222 ar: EPS ر.س 1.84
+PASS  2222 ar: value traded shows "غير متوفرة في بيانات الأسعار"
+PASS  2222 ar: news light stale
+PASS  QCFS: the news date is the newest item's (2026-10-15)
+PASS  QCFS en: header price 2.345
+PASS  QCFS en: EPS 0.08 QAR
+PASS  QCFS en: news light fresh
+PASS  QCFS ar: header price 2.345
+PASS  QCFS ar: EPS ر.ق 0.08
+PASS  QCFS ar: news light fresh
+PASS  ADNOCDRILL: the news date is the newest item's (2026-10-14)
+PASS  ADNOCDRILL en: header price 5.50
+PASS  ADNOCDRILL en: EPS shows "Unit not confirmed"
+PASS  ADNOCDRILL en: news light fresh
+PASS  ADNOCDRILL ar: header price 5.50
+PASS  ADNOCDRILL ar: EPS shows "الوحدة غير مؤكدة"
+PASS  ADNOCDRILL ar: news light fresh
+PASS  NIND: the news date is the newest item's (2026-10-14)
+PASS  NIND en: header price 3.37
+PASS  NIND en: "Currency not confirmed" in the header
+PASS  NIND en: EPS 0.24
+PASS  NIND en: news light fresh
+PASS  NIND ar: header price 3.37
+PASS  NIND ar: "العملة غير مؤكدة" in the header
+PASS  NIND ar: EPS 0.24
+PASS  NIND ar: news light fresh
+PASS  methodology: news ages in calendar days
+PASS  methodology en 1440: news row shows 30
+PASS  methodology en 390: news row shows 30
+PASS  methodology ar 1440: news row shows 30
+PASS  methodology ar 390: news row shows 30
+sweep {"tickers":716,"eps_shown":500,"eps_unconfirmed":181,"eps_bad":0,"news_green_old":0,"news_green":445,"no_currency":7,"vt_reason":272}
+PASS  sweep: every EPS shown times its P/E gives the price (within 20%)
+PASS  sweep: no green news light on an item older than 30 days
+
+all passed

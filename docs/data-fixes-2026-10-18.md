@@ -26,14 +26,29 @@ Page check: `web/scripts/check-data-fixes.mjs`. It loads NBK, Aramco, QCFS, ADNO
 
 ## 2. Release
 
-Not released yet. `scripts/deploy-staging.sh`, the beta tunnel checks and `scripts/deploy-production.sh` all go over SSH to the server, which this session may not use. Once SSH is allowed, the steps are:
+**Live on alphacouncil.tech since release `3f403b2`.** The advisors'-room session deployed it to beta and then production, with these fixes unchanged from `46bb715`. That session's beta checks covered its own pages; this session had no SSH, so the data fixes were not checked on beta. The owner approved shipping them with that release.
+
+**Checked on production over HTTPS** (2026-10-18), with `check-data-fixes.mjs` and `SWEEP=1`: 46 of 46 checks passed. Output: `screenshots/data-fixes-check-production.txt`. Screenshots in English and Arabic at 1440 and 390 px: `screenshots/data-fixes-production/`.
+- NBK's header reads 0.815 KWD and its EPS 0.064 KWD.
+- NIND reads "Currency not confirmed", with EPS 0.24 in the price's unit.
+- Aramco's value traded reads "Not in our price data".
+- ADNOC Drilling's EPS reads "Unit not confirmed".
+- /methodology lists news at 30 calendar days.
+
+The sweep of all 716 tickers found:
+- 500 EPS figures shown, every one consistent with its P/E and price; 181 "Unit not confirmed".
+- 445 green news lights, none on an item older than 30 days.
+- 7 listings without a currency label.
+- 272 "Not in our price data": all 269 Tadawul tickers, plus 3 other files with no turnover on any bar.
+
+For a later release (SSH needed):
 
 ```bash
 scripts/deploy-staging.sh
 ssh -fN -L 3201:[::1]:3200 root@alphacouncil.tech
-BASE_URL=http://localhost:3201 SHOTS_DIR=../docs/screenshots/data-fixes-beta SWEEP=1 node web/scripts/check-data-fixes.mjs
+BASE_URL=http://localhost:3201 SHOTS_DIR=../../docs/screenshots/data-fixes-beta SWEEP=1 node web/scripts/check-data-fixes.mjs
 scripts/deploy-production.sh
-BASE_URL=https://alphacouncil.tech SHOTS_DIR=../docs/screenshots/data-fixes-production SWEEP=1 node web/scripts/check-data-fixes.mjs
+BASE_URL=https://alphacouncil.tech SHOTS_DIR=../../docs/screenshots/data-fixes-production SWEEP=1 node web/scripts/check-data-fixes.mjs
 ```
 
 ## 3. For the owner: what only the pipeline can fix
