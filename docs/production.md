@@ -154,8 +154,8 @@ A dump only counts once `pg_restore --list` can read it.
   destination and puts its credentials on the server themselves.
 - **Install or update**: run `scripts/install-backups.sh` once. It copies the two scripts and the units
   and starts the timer; add `--run` to take a backup right away. It does not depend on releases.
-- **Status (2026-10-18)**: the timer is not installed yet. It waits for the owner to run
-  `scripts/install-backups.sh --run`. One backup was taken by hand that day and its restore was checked
+- **Status**: installed 2026-10-18 with the owner's approval. The timer is enabled, and its first run
+  through systemd (09:15 UTC) succeeded. The restore check passed that day for `acp_prod` and `acp`
   (`screenshots/backup-restore-check-production.txt`).
 
 Check the last run:

@@ -24,7 +24,7 @@ done
 install -d -m 700 /var/backups/alphacouncil-platform
 systemctl daemon-reload
 systemctl enable --now acp-db-backup.timer
-systemctl list-timers acp-db-backup.timer --no-pager | head -2
+systemctl list-timers acp-db-backup.timer --no-pager --no-legend
 REMOTE
 
 if [[ "${1:-}" == "--run" ]]; then
