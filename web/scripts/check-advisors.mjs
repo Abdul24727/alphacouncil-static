@@ -127,7 +127,7 @@ async function convene(locale) {
     }));
     if (state.speaking.length > 1) check(false, `${locale}: one speaker at a time (${state.speaking.join(", ")})`);
     for (const s of state.speaking) {
-      if (s !== "chair" && !speakers.size) await shot(page, `speaking-${locale}-1440`);
+      if (s !== "chair" && ![...speakers].some((x) => x !== "chair")) await shot(page, `speaking-${locale}-1440`);
       speakers.add(s);
     }
     if (state.failed) break;
