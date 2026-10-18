@@ -34,11 +34,12 @@ Mail goes through the API's SMTP settings (SMTP_* in /etc/alphacouncil-platform/
 which are read here and never printed or logged. The recipient is ALERT_TO in
 /etc/alphacouncil-platform/prod/monitor.env (several: comma-separated).
 
-The outside check: when monitor.env has PING_URL (a Healthchecks.io check's ping URL), every round
-ends with a ping to it, or with a ping to PING_URL/fail when the round had news it could not email
-(the mail server refused, or a mail limit was reached). Healthchecks.io emails the owner from
-outside when a round fails that way, or when the pings stop: the server, its network or this
-monitor is down. The URL is never printed or logged.
+The outside check: when monitor.env has PING_URL (the web app of deploy/outside-check.gs, or a
+Healthchecks.io check's ping URL), every round ends with a ping to it, or with a failure ping when
+the round had news it could not email (the mail server refused, or a mail limit was reached):
+PING_URL?fail=1 for the web app, PING_URL/fail for Healthchecks.io. The outside check emails the
+owner when a round fails that way, or when the pings stop: the server, its network or this monitor
+is down. The URL is never printed or logged.
 """
 
 from __future__ import annotations
@@ -443,11 +444,15 @@ def try_send(config: dict, state: dict, now: float, subject: str, body: str) -> 
 
 
 def ping(config: dict, failed: bool, body: str) -> None:
-    """Tells the outside check (PING_URL) that this round ran: PING_URL/fail when it had news that
-    could not be emailed. Pings that stop are the outside check's own alarm."""
+    """Tells the outside check (PING_URL) that this round ran, with a failure ping when it had news
+    that could not be emailed. Pings that stop are the outside check's own alarm."""
     if not config["ping"]:
         return
-    url = config["ping"].rstrip("/") + ("/fail" if failed else "")
+    url = config["ping"].rstrip("/")
+    if failed:
+        # A Google Apps Script web app (…/exec) answers 401 to an extra path from someone not signed
+        # in, so it takes ?fail=1; Healthchecks.io takes /fail.
+        url += "?fail=1" if url.endswith("/exec") else "/fail"
     req = urllib.request.Request(url, data=body.encode()[:10_000], headers={"User-Agent": "alphacouncil-monitor/1"})
     try:
         with urllib.request.urlopen(req, timeout=PING_TIMEOUT) as r:

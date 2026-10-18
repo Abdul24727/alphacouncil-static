@@ -6,13 +6,15 @@
  * - Every 5 minutes (a time-driven trigger) it fetches https://alphacouncil.tech/home and
  *   /api/v1/health the way a visitor would.
  * - The server's monitor (scripts/prod-monitor.py) posts to this project's web app at the end of
- *   every round (PING_URL in /etc/alphacouncil-platform/prod/monitor.env), or to PING_URL/fail when
+ *   every round (PING_URL in /etc/alphacouncil-platform/prod/monitor.env), or to PING_URL?fail=1 when
  *   the round had an alert it could not email (the mail server refused, or a mail limit was reached).
  *
- * It emails the account's own address when the site fails 2 rounds in a row (the server or its
- * network is down, or the site is broken), when the monitor's pings stop for 15 minutes while the site
- * still answers (the monitor itself stopped), and when a /fail ping arrives; and once more when each
- * clears. At most MAILS_PER_DAY emails in 24 hours.
+ * It emails ALERT_TO when the site fails 2 rounds in a row (the server or its network is down, or
+ * the site is broken), when the monitor's pings stop for 15 minutes while the site still answers (the
+ * monitor itself stopped), and when a /fail ping arrives; and once more when each clears. At most
+ * MAILS_PER_DAY emails in 24 hours. ALERT_TO is a script property (Project Settings > Script
+ * Properties), the same address as the server's monitor and kept out of git; without it, setup()
+ * uses the account's own address.
  *
  * Set up once: paste this file into a new project at script.google.com (replacing Code.gs), run
  * setup() and allow what it asks, then Deploy > New deployment > Web app, Execute as: Me, Who has
@@ -129,13 +131,15 @@ function check() {
   }
 }
 
-/** The server's monitor checks in: PING_URL after every round, PING_URL/fail when it could not email. */
+/** The server's monitor checks in: PING_URL after every round, PING_URL?fail=1 when it could not email. */
 function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
     var state = load_();
-    var failed = String((e && e.pathInfo) || '').replace(/^\/+|\/+$/g, '') === 'fail';
+    // ?fail=1: a web app refuses an extra path (PING_URL/fail) from someone not signed in.
+    var failed = Boolean(e && e.parameter && e.parameter.fail === '1') ||
+      String((e && e.pathInfo) || '').replace(/^\/+|\/+$/g, '') === 'fail';
     var text = String((e && e.postData && e.postData.contents) || '').slice(0, 5000);
     if (state.silentAlerted) {
       mail_(state, 'Recovered: the server\'s monitor checks in again',
@@ -164,7 +168,7 @@ function setup() {
     if (t.getHandlerFunction() === 'check') ScriptApp.deleteTrigger(t);
   });
   ScriptApp.newTrigger('check').timeBased().everyMinutes(5).create();
-  props_().setProperty('ALERT_TO', Session.getEffectiveUser().getEmail());
+  if (!props_().getProperty('ALERT_TO')) props_().setProperty('ALERT_TO', Session.getEffectiveUser().getEmail());
   check();
   var state = load_();
   mail_(state, 'Test: the outside check is on',
@@ -176,7 +180,7 @@ function setup() {
     'and once more when each clears.\n\nThe site right now: ' +
     (state.siteFails ? 'NOT answering:\n' + state.lastProblem : 'both pages answered 200.'));
   save_(state);
-  console.log('setup done: trigger every 5 minutes, alerts to the account\'s address');
+  console.log('setup done: trigger every 5 minutes, alerts to ALERT_TO');
 }
 
 /** From the editor: the state as it stands (no URLs, no addresses). */
