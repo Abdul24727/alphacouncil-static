@@ -384,6 +384,43 @@ after a crash, and the URL never in the output.
 - Not done here: submitting the sitemap in Google Search Console / Bing Webmaster Tools needs the
   owner's accounts (verify the domain, then add `https://alphacouncil.tech/sitemap.xml`).
 
+## Advisors' room (Pro)
+
+The stock page's Advisors tab (`/t/<slug>/advisors`; the Council tab links to it): a Pro member asks a
+question about the stock, four simulated advisors debate it and a neutral Chair returns a scored assessment
+of the data. Code: `api/app/debate/`, `api/app/routers/debate.py`, `web/src/components/debate/`.
+
+- **Seats**: one markdown file each in `api/app/advisors/` (Buffett, Lynch, Dalio, Marks and the Chair);
+  the README there says how to swap an advisor (`DEBATE_ADVISORS`). The Chair's file holds the stage
+  instructions and the scoring scale. Portraits: initials on a graphite disc until the owner's caricatures
+  go into `web/public/advisors/` (README there) and are named in the seat files.
+- **Stages**: Brief (Chair) → Openings (advisors at once) → Fault lines (Chair) → Debate (`DEBATE_ROUNDS`,
+  advisors at once) → Vote (advisors score each option 0–10) → Verdict (Chair). The averages are computed by
+  the API, never by a model. Every seat reads the same data pack: the Copilot's database tools for the
+  stock (overview, fundamentals, dividends, council, peers, news, 1- and 5-year price summaries), tagged
+  P1–P8. Each line is checked with the Copilot's number checks: untagged figures get their dataset's tag,
+  figures found nowhere in the data are marked on screen, and sentences that read as advice (buy, sell,
+  hold, targets) are removed; option labels and the verdict headline with advice words are sent back.
+- **Models** (settings in each `api.env`, see `deploy/api.env.example`): advisors `DEBATE_ADVISOR_MODEL`,
+  Chair `DEBATE_CHAIR_MODEL`, through OpenRouter with the Copilot's key and host order. Without
+  `OPENROUTER_API_KEY` the room runs a labelled stand-in.
+- **Allowance**: 20 sessions per calendar month (UTC) on Pro (`plans.LIMITS`), shown under the question
+  box; a failed session does not count. One session at a time per account. Free and signed-out visitors
+  see the room locked.
+- **Sessions** are saved per account (`debate_sessions`, `debate_turns`; removed with the account) and run
+  to the end even if the browser leaves; "Past sessions" reopens them. A session still marked running
+  after 15 minutes (an API restart) is marked failed.
+- **Time and cost**: each session's seconds, tokens and OpenRouter's own cost are stored, and one line
+  per session goes to the service log (`journalctl -u acp-prod-api | grep debate`). Summary of the last
+  30 days: `sudo -E -u alphacouncil .venv/bin/python -m app.debate stats` in the release's `api/` with the
+  environment of its `api.env`.
+- **Check**: `BASE_URL=http://localhost:3201 node scripts/check-advisors.mjs` (beta through the tunnel)
+  convenes a session in English and in Arabic and writes screenshots of every stage at 1440 and 390 px to
+  `docs/screenshots/advisors/`; `LOCKED=1` against an API with billing open checks the Free preview.
+- **Legal**: the screen carries the disclaimer (simulated advisors built from public work, drawn as
+  caricatures, not the people) in both languages. The owner is getting a lawyer's view on using living
+  people's names before the feature is advertised.
+
 ## Not in production yet
 
 - `www.alphacouncil.tech` has no DNS record; when one is added, add `www` to the certificate.
