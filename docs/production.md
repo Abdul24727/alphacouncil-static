@@ -150,8 +150,8 @@ A dump only counts once `pg_restore --list` can read it.
   0600, root only.
 - **Contents**: personal data and Moyasar's saved-card token ids. Never print a dump, and copy one only
   to the off-server destination.
-- **Off the server**: an encrypted copy goes to the owner's S3-compatible bucket (see "Off-server copy"
-  below).
+- **Off the server**: the owner's computer copies every dump each day (see "Off-server copy" below). An
+  encrypted copy in an S3-compatible bucket is ready to switch on if the owner gets one.
 - **Install or update**: run `scripts/install-backups.sh`. It copies the three scripts and the units,
   installs rclone if it is missing, and starts the timer. Add `--run` to take a backup right away. It
   does not depend on releases.
@@ -198,7 +198,47 @@ container or its data directory is lost, follow these steps:
    still work.
 3. Create each database with its owner, as above, and `pg_restore` into it.
 
-### Off-server copy (S3-compatible bucket)
+### Off-server copy (the owner's computer)
+
+In use since 2026-10-19; the owner has no cloud storage. The scheduled task **AlphaCouncil backup copy**
+on the owner's Windows computer runs `%USERPROFILE%\AlphaCouncil-Backups\pull-backups.ps1`
+(`scripts/pull-backups.ps1`) every day at 09:00 Riyadh time (the server's backup runs at 04:30) and
+5 minutes after sign-in. A run missed while the computer was off starts as soon as it is on again.
+
+- **What it does**: lists the server's dumps with their SHA-256 over SSH (Windows' own OpenSSH, the
+  computer's key for `root@alphacouncil.tech`), copies each one the computer lacks or holds damaged,
+  and keeps a copy only once its SHA-256 matches the server's. Daily dumps stay 60 days and weekly
+  ones 400 days, counted from the time in the file name, so dumps the server has already deleted stay
+  on the computer.
+- **Where**: `%USERPROFILE%\AlphaCouncil-Backups\daily` and `\weekly`, with `pull.log` (one line per
+  run: counts and file names only). It is outside the repo and outside OneDrive. The dumps are not
+  encrypted there: the same computer holds the server's root SSH key, so encrypting them would not
+  stop anyone who can get into the computer. Keep the computer's sign-in protected, and never put that
+  folder in OneDrive, email or a shared drive.
+- **Watched**: each run that succeeds writes `/var/lib/acp-offsite-pull/last.json` on the server
+  (time, file count, newest dump; 0644, no contents). The monitor's "off-server backup copy" check
+  emails when that is more than 3 days old.
+- **Install or update** (no administrator rights; `-Remove` deletes the task and keeps the copies):
+
+  ```powershell
+  powershell -NoProfile -ExecutionPolicy Bypass -File scripts\install-backup-pull.ps1
+  ```
+
+- **Run it now**: in Task Scheduler, right-click "AlphaCouncil backup copy" > Run, or run the
+  `pull-backups.ps1` in that folder. The last line of `pull.log` says how it went.
+- **Restore when the server is gone**: on the new server, follow the three steps above for a lost
+  container, with the files from this computer: copy them up first, for example
+  `scp "%USERPROFILE%\AlphaCouncil-Backups\daily\acp_prod-<time>.dump" root@<server>:/root/`
+  (and the `globals-<time>.sql` of the same night).
+- **Limits**: copies arrive only while the computer is on and someone is signed in, and a computer
+  can be lost too. A bucket (below) is the stronger off-server copy.
+
+**Status (2026-10-19)**: installed on the owner's computer. The first run copied 13 files (11 daily,
+2 weekly), each matching the server's SHA-256; a second run copied none; a local copy damaged on
+purpose was fetched again; a run against an unreachable host logged `FAILED: … Could not resolve
+hostname` and exited 1. The monitor (`a65e535`) shows `off-server backup copy: … 0.0 days ago (13 files)`.
+
+### Off-server copy (S3-compatible bucket, not set up)
 
 Once `/etc/alphacouncil-platform/backup-offsite.env` exists, `acp-db-backup` runs
 `/usr/local/sbin/acp-db-offsite` (`deploy/acp-db-offsite.sh`) after each backup. It encrypts every new
@@ -239,7 +279,8 @@ Restore from the bucket when the server is gone: download a `.gpg` file (from th
 or with rclone), run `gpg --decrypt -o acp_prod.dump acp_prod-<time>.dump.gpg` (it asks for the
 passphrase; on Windows use Gpg4win), then restore as above.
 
-Status (2026-10-18): installed, and waiting for the owner's bucket and settings file. It was tested on the
+Status (2026-10-18): installed, and waiting for a bucket and settings file (the owner has none; the
+computer copy above is used instead). It was tested on the
 server against a local directory standing in for the bucket: 13 files were encrypted and uploaded, a
 second run sent nothing, the round trip matched byte for byte, and a group-readable file or a missing
 value was refused.
