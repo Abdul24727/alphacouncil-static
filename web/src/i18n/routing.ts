@@ -5,6 +5,9 @@ export const routing = defineRouting({
   locales: ["en", "ar"],
   defaultLocale: "en",
   localePrefix: "as-needed",
+  // hreflang comes from each page's metadata (lib/seo.ts), on alphacouncil.tech and the canonical
+  // slug; the middleware's Link header would repeat it from whatever URL and host was requested.
+  alternateLinks: false,
 });
 
 export type Locale = (typeof routing.locales)[number];

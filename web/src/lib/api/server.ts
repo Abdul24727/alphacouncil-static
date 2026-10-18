@@ -11,6 +11,8 @@ type S = components["schemas"];
 export type Plans = S["Plans"];
 export type Methodology = S["Methodology"];
 export type ExchangeSummary = S["ExchangeSummary"];
+export type UniverseEntry = S["UniverseEntry"];
+export type TickerRef = S["TickerRef"];
 
 /**
  * Public pages render what the API returns, or null when it cannot answer; the page then
@@ -31,3 +33,22 @@ async function get<T>(call: () => Promise<{ data?: T; error?: unknown }>): Promi
 export const getPlans = () => get(() => api.GET("/v1/plans", { cache: "no-store" }));
 export const getMethodology = () => get(() => api.GET("/v1/methodology", { cache: "no-store" }));
 export const getExchanges = () => get(() => api.GET("/v1/market/exchanges", { cache: "no-store" }));
+export const getTickerList = () => get(() => api.GET("/v1/tickers", { cache: "no-store" }));
+
+/**
+ * A stock page's company and symbol for its metadata. "unknown" only when the API says the
+ * ticker does not exist (404); null when the API could not answer.
+ */
+export async function getTickerRef(ref: string): Promise<TickerRef | "unknown" | null> {
+  await connection();
+  try {
+    const { data, response } = await api.GET("/v1/tickers/{ref}", {
+      params: { path: { ref } },
+      cache: "no-store",
+    });
+    if (data) return data.ticker;
+    return response.status === 404 ? "unknown" : null;
+  } catch {
+    return null;
+  }
+}

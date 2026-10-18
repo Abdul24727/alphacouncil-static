@@ -31,6 +31,12 @@ backend and the app's own emails. A mail that cannot be sent is retried next rou
 Mail goes through the API's SMTP settings (SMTP_* in /etc/alphacouncil-platform/prod/api.env),
 which are read here and never printed or logged. The recipient is ALERT_TO in
 /etc/alphacouncil-platform/prod/monitor.env (several: comma-separated).
+
+The outside check: when monitor.env has PING_URL (a Healthchecks.io check's ping URL), every round
+ends with a ping to it, or with a ping to PING_URL/fail when the round had news it could not email
+(the mail server refused, or a mail limit was reached). Healthchecks.io emails the owner from
+outside when a round fails that way, or when the pings stop: the server, its network or this
+monitor is down. The URL is never printed or logged.
 """
 
 from __future__ import annotations
@@ -67,11 +73,13 @@ FAILS_BEFORE_ALERT = 2
 MAILS_PER_DAY = 8
 MAILS_PER_MONTH = 60
 TIMEOUT = 20  # seconds, for each HTTP and TLS check
+PING_TIMEOUT = 10  # seconds; a missed ping is covered by the next round and the check's grace time
 
 API_ENV = os.environ.get("ACP_API_ENV", "/etc/alphacouncil-platform/prod/api.env")
 MONITOR_ENV = os.environ.get("ACP_MONITOR_ENV", "/etc/alphacouncil-platform/prod/monitor.env")
 STATE_FILE = os.path.join(os.environ.get("STATE_DIRECTORY", "/var/lib/acp-monitor"), "state.json")
 
+UNCHANGED = "unchanged"  # gather(): the billing check did not run, keep the journal position
 RIYADH = timezone(timedelta(hours=3))
 COUNTS = re.compile(r"\breminded=(\d+) renewed=(\d+) failed=(\d+) ended=(\d+) unreachable=(\d+)\b")
 COUNT_NAMES = ("reminded", "renewed", "failed", "ended", "unreachable")
@@ -107,7 +115,8 @@ def read_env(path: str) -> dict[str, str]:
 
 
 def load_config() -> dict:
-    """The recipient and the SMTP settings. Fails naming what is missing, never a value."""
+    """The recipient, the SMTP settings and the optional ping URL. Fails naming what is missing,
+    never a value."""
     try:
         api = read_env(API_ENV)
         monitor = read_env(MONITOR_ENV)
@@ -122,7 +131,13 @@ def load_config() -> dict:
     url = re.match(r"[^:]+://[^:/@]+:([^@]+)@", api.get("DATABASE_URL", ""))
     if url:
         secrets.add(url.group(1))
-    return {"to": to, "smtp": {k: v for k, v in api.items() if k.startswith("SMTP_")}, "secrets": secrets}
+    ping = monitor.get("PING_URL", "")
+    if ping and not re.fullmatch(r"https://[^\s/]+/\S+", ping):
+        # Not fatal: the alerts by mail still work, and the missing pings make the outside check email.
+        print(f"PING_URL in {MONITOR_ENV} is not an https:// URL: not pinging", file=sys.stderr)
+        ping = ""
+    return {"to": to, "smtp": {k: v for k, v in api.items() if k.startswith("SMTP_")}, "secrets": secrets,
+            "ping": ping}
 
 
 def redact(text: str, secrets: set[str]) -> str:
@@ -217,8 +232,8 @@ def check_service(unit: str, state: dict, now: float) -> Result:
 def billing_runs(state: dict) -> tuple[list[tuple[float, dict[str, int]]], str | None]:
     """The renewal runs logged since the last round, and the journal position after them. The
     first round only notes where the journal ends: past runs are not news."""
-    first = "billing_cursor" not in state
     cursor = state.get("billing_cursor")
+    first = not cursor
     args = ["journalctl", "-u", f"{BILLING}.service", "-o", "json", "--no-pager"]
     if first:
         args += ["-n", "1"]
@@ -323,9 +338,10 @@ def check_cert() -> Result:
 
 
 def gather(state: dict, now: float) -> tuple[dict[str, Result], list[tuple[str, str]], str | None]:
+    """All checks. The journal position comes back as UNCHANGED when the billing check could not run."""
     results: dict[str, Result] = {}
     events: list[tuple[str, str]] = []
-    cursor = state.get("billing_cursor")
+    cursor = UNCHANGED
 
     def guarded(group: str, fn):
         # A check that cannot run is itself a problem (alerted like any other), never a crash.
@@ -400,6 +416,21 @@ def try_send(config: dict, state: dict, now: float, subject: str, body: str) -> 
     return "sent"
 
 
+def ping(config: dict, failed: bool, body: str) -> None:
+    """Tells the outside check (PING_URL) that this round ran: PING_URL/fail when it had news that
+    could not be emailed. Pings that stop are the outside check's own alarm."""
+    if not config["ping"]:
+        return
+    url = config["ping"].rstrip("/") + ("/fail" if failed else "")
+    req = urllib.request.Request(url, data=body.encode()[:10_000], headers={"User-Agent": "alphacouncil-monitor/1"})
+    try:
+        with urllib.request.urlopen(req, timeout=PING_TIMEOUT) as r:
+            r.read(1000)
+    except (OSError, ValueError) as exc:  # HTTP errors, timeouts, no network
+        # Never the URL: it is the check's key.
+        print(f"outside check not pinged: {type(exc).__name__} {getattr(exc, 'code', '')}", file=sys.stderr)
+
+
 FOOTER = (
     "Checks run every 5 minutes on the server (acp-prod-monitor.timer). A problem is emailed when it\n"
     "starts and once more when it clears, never in between. What each check means, and how to change\n"
@@ -469,21 +500,28 @@ def check() -> int:
     still = [results[key] for key, k in keys.items() if k["alerted"] and key not in news and key in results]
 
     failing = [r.name for r in results.values() if r.ok is False]
-    print(f"{len(results) - len(failing)} of {len(results)} checks ok" + (f"; failing: {', '.join(failing)}" if failing else ""))
+    summary = f"{len(results) - len(failing)} of {len(results)} checks ok" + (f"; failing: {', '.join(failing)}" if failing else "")
+    print(summary)
     outcome = "sent"
     if problems or recovered or events:
-        outcome = try_send(config, state, now, *compose(problems, recovered, events, still, now))
+        subject, body = compose(problems, recovered, events, still, now)
+        outcome = try_send(config, state, now, subject, body)
+        if outcome != "sent":
+            why = "a mail limit is reached" if outcome == "capped" else "the mail server failed"
+            summary += f"\nNot emailed because {why} (tried again every round): {subject}"
     if outcome == "sent":
         for key, _ in problems:
             keys[key].update(alerted=True, alerted_at=now)
         for key, _, _ in recovered:
             keys[key].update(alerted=False, alerted_at=None)
-        state["billing_cursor"] = cursor
+        if cursor is not UNCHANGED:
+            state["billing_cursor"] = cursor
     # Not sent: the alert flags and the journal position stay, so the next round tries again.
     for key in [key for key, k in keys.items() if not k["alerted"] and not k["fails"]
                 and (key.startswith("check:") or key not in results)]:
         del keys[key]  # a check that runs again, a disk that is gone
     save_state(state)
+    ping(config, outcome != "sent", summary + "\n")  # last: a round that crashed before here sends no ping
     return 1 if outcome == "error" else 0
 
 
@@ -499,6 +537,11 @@ def status() -> int:
     sent = state.get("sent", [])
     day = sum(t > time.time() - 86400 for t in sent)
     print(f"alerts emailed: {day} in 24 hours (limit {MAILS_PER_DAY}), {len(sent)} in 30 days (limit {MAILS_PER_MONTH})")
+    try:
+        pinged = bool(read_env(MONITOR_ENV).get("PING_URL"))
+    except OSError:
+        pinged = False
+    print("outside check: " + ("PING_URL is set, pinged at the end of every round" if pinged else f"none (no PING_URL in {MONITOR_ENV})"))
     return 0
 
 

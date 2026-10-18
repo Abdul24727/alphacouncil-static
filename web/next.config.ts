@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { HTML_LIMITED_BOT_UA_RE } from "next/dist/shared/lib/router/utils/html-bots";
 import createNextIntlPlugin from "next-intl/plugin";
 
 // FastAPI origin. The browser only ever calls /api/v1/* on this origin.
@@ -31,9 +32,16 @@ const SECURITY_HEADERS = [
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), usb=()" },
 ];
 
+// Stock pages' <title>, canonical and cards depend on the ticker, so Next streams them into
+// <body> for ordinary visitors. Crawlers on this list get them in <head>: Next's own list
+// (Bingbot, link previews, Google's other crawlers) plus Googlebot, so the raw HTML Google
+// fetches already carries them.
+const HTML_LIMITED_BOTS = new RegExp(`${HTML_LIMITED_BOT_UA_RE.source}|Googlebot`, "i");
+
 const nextConfig: NextConfig = {
   cacheComponents: true,
   poweredByHeader: false,
+  htmlLimitedBots: HTML_LIMITED_BOTS,
   experimental: {
     // The /api rewrite drops a proxied response that is silent this long (default 30 s).
     // The Copilot stream also sends keep-alives every 10 s (api/app/copilot/stream.py).

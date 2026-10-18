@@ -6,10 +6,13 @@ Wants=network-online.target
 [Service]
 # One round of checks (scripts/prod-monitor.py check), started every 5 minutes by
 # acp-prod-monitor.timer. Installed outside the releases (scripts/install-monitoring.sh), so a
-# broken deploy cannot break it. Its own throwaway user: group alphacouncil to read the SMTP lines
-# of prod/api.env and monitor.env, group systemd-journal to read the services' logs.
+# broken deploy cannot break it. Its own system user (no login, no home; the installer creates
+# it): group alphacouncil to read the SMTP lines of prod/api.env and monitor.env, group
+# systemd-journal to read the services' logs. Not DynamicUser=: dbus-daemon drops dynamic users,
+# and `systemctl show` needs the bus.
 Type=oneshot
-DynamicUser=yes
+User=acp-monitor
+Group=acp-monitor
 SupplementaryGroups=alphacouncil systemd-journal
 StateDirectory=acp-monitor
 ExecStart=/usr/bin/python3 -I /usr/local/lib/acp-monitor/prod-monitor.py check

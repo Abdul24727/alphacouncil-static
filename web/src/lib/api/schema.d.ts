@@ -13,7 +13,8 @@ export interface paths {
         };
         /**
          * List Tickers
-         * @description The whole universe, Tadawul first. `has_prices`: a daily price file exists.
+         * @description The whole universe, Tadawul first. `has_prices`: a daily price file exists;
+         *     `prices_as_of`: the date of its last bar (the sitemap's lastmod).
          */
         get: operations["listTickers"];
         put?: never;
@@ -2139,6 +2140,8 @@ export interface components {
             sector_ar: string | null;
             /** Has Prices */
             has_prices: boolean;
+            /** Prices As Of */
+            prices_as_of: string | null;
         };
         /** User */
         User: {

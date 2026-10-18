@@ -12,7 +12,7 @@
           "tickers"
         ],
         "summary": "List Tickers",
-        "description": "The whole universe, Tadawul first. `has_prices`: a daily price file exists.",
+        "description": "The whole universe, Tadawul first. `has_prices`: a daily price file exists;\n`prices_as_of`: the date of its last bar (the sitemap's lastmod).",
         "operationId": "listTickers",
         "responses": {
           "200": {
@@ -6263,6 +6263,17 @@
           "has_prices": {
             "type": "boolean",
             "title": "Has Prices"
+          },
+          "prices_as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prices As Of"
           }
         },
         "type": "object",
@@ -6275,7 +6286,8 @@
           "name_ar",
           "sector_en",
           "sector_ar",
-          "has_prices"
+          "has_prices",
+          "prices_as_of"
         ],
         "title": "UniverseEntry"
       },

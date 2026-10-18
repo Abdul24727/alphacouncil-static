@@ -1045,5 +1045,20 @@
       "missing": "This page needs a payment from Moyasar's form.",
       "again": "Try again"
     }
+  },
+  "meta": {
+    "tagline": "Research terminal for Gulf markets",
+    "ogAlt": "AlphaCouncil, the research terminal for Gulf markets: Tadawul, ADX, DFM, QSE, Boursa Kuwait, BHB and MSX",
+    "home": "Gulf markets today on one screen: every exchange with its index and breadth, the day's top gainers and losers, and the latest company news.",
+    "markets": "Tadawul, ADX, DFM, QSE, Boursa Kuwait, BHB and MSX on one page: index level, daily change, advancers and decliners, and every listed equity to browse.",
+    "screener": "Screen Gulf equities across Tadawul, ADX, DFM, QSE, Boursa Kuwait, BHB and MSX by valuation, dividend yield, profitability and returns.",
+    "templates": "Ready sets of linked panels for Gulf equity research: a single stock, earnings season, dividend hunting and sector against sector.",
+    "stockTitle": "{company} · {exchange}",
+    "stockDescription": "{company} on {exchange}: price chart, valuation, financial statements, news and the council's rule-based votes, read from AlphaCouncil's database. In English and Arabic.",
+    "stockUnknown": "Unknown ticker",
+    "login": "Sign in to AlphaCouncil to keep a portfolio, alerts and your settings for Gulf markets.",
+    "signup": "Create your AlphaCouncil account: a portfolio, price alerts and the Copilot for Gulf markets, in English and Arabic.",
+    "forgot": "Set a new password for your AlphaCouncil account, including an account from the old AlphaCouncil site.",
+    "private": "Your AlphaCouncil account."
   }
 }
