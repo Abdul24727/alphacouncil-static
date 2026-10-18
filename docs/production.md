@@ -72,6 +72,12 @@ Both `api.env` files carry the old backend's MailerSend SMTP lines, copied on th
 owner's approval (the files before that are kept as `api.env.bak-<time>`); the old backend's own
 `.env` was not changed. MailerSend's free plan is shared with the old backend, which still runs.
 
+## Old-site accounts
+
+The old site's members were imported once (email, name, language, sign-up date and any registration
+acceptance; no password): see `docs/account-import.md`. They set a password through "Forgot password?",
+and accept the terms on that page if the old site had no acceptance on record for them.
+
 ## Not in production yet
 
 - Checkout (Moyasar) and Pro billing: until it opens, every account gets the Pro features

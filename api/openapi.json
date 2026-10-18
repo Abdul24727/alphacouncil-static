@@ -835,13 +835,55 @@
         }
       }
     },
+    "/v1/auth/reset-password/check": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Check Reset Link",
+        "description": "What the new-password page needs to know before it is filled in. Uses nothing up.",
+        "operationId": "checkResetLink",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetLinkBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResetLink"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/auth/reset-password": {
       "post": {
         "tags": [
           "auth"
         ],
         "summary": "Reset Password",
-        "description": "Sets a new password with the emailed link's token, once and within the hour. Every\nsession of the account ends (one opened with the old password too) and this browser is\nsigned in with a new one.",
+        "description": "Sets a new password with the emailed link's token, once and within the hour. Every\nsession of the account ends (one opened with the old password too) and this browser is\nsigned in with a new one. An account without a registration acceptance needs\naccept_terms, which records one.",
         "operationId": "resetPassword",
         "requestBody": {
           "content": {
@@ -3832,6 +3874,11 @@
             "maxLength": 200,
             "minLength": 10,
             "title": "Password"
+          },
+          "accept_terms": {
+            "type": "boolean",
+            "title": "Accept Terms",
+            "default": false
           }
         },
         "type": "object",
@@ -3840,6 +3887,34 @@
           "password"
         ],
         "title": "ResetBody"
+      },
+      "ResetLink": {
+        "properties": {
+          "needs_terms": {
+            "type": "boolean",
+            "title": "Needs Terms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "needs_terms"
+        ],
+        "title": "ResetLink",
+        "description": "A link that still works. needs_terms: its account has no registration acceptance, so\nthe new password is saved only with one."
+      },
+      "ResetLinkBody": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "ResetLinkBody"
       },
       "Returns": {
         "properties": {

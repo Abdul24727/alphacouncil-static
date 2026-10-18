@@ -5,7 +5,8 @@
 - Writes with a session cookie must come from an allowed Origin (CSRF).
 - Login and signup are rate limited per IP and per email.
 - Forgot password: an emailed link (token stored as its SHA-256) sets a new password once,
-  within an hour, and ends the account's other sessions.
+  within an hour, and ends the account's other sessions. An account without a registration
+  acceptance (brought over from the old site, app/import_old.py) accepts there.
 """
 
 import base64
@@ -234,6 +235,27 @@ def _start_session(request: Request, response: Response, conn, user_id: int) -> 
     )
 
 
+def _record_registration(conn, user_id: int) -> None:  # noqa: ANN001
+    conn.execute(
+        insert(consents).values(
+            user_id=user_id,
+            kind=REGISTRATION["kind"],
+            text_version=REGISTRATION["text_version"],
+            documents=REGISTRATION["documents"],
+            accepted_at=utcnow(),
+        )
+    )
+
+
+def _has_registration(conn, user_id: int) -> bool:  # noqa: ANN001
+    return (
+        conn.execute(
+            select(consents.c.id).where(consents.c.user_id == user_id, consents.c.kind == REGISTRATION["kind"])
+        ).first()
+        is not None
+    )
+
+
 def _limited(request: Request, email: str) -> None:
     limit = login_limit(request)
     if not (limit.hit(f"ip:{client_ip(request)}") and limit.hit(f"email:{email.strip().lower()}")):
@@ -257,15 +279,7 @@ def signup(request: Request, response: Response, body: SignupBody) -> Me:
                     created_at=utcnow(),
                 )
             ).inserted_primary_key[0]
-            conn.execute(
-                insert(consents).values(
-                    user_id=uid,
-                    kind=REGISTRATION["kind"],
-                    text_version=REGISTRATION["text_version"],
-                    documents=REGISTRATION["documents"],
-                    accepted_at=utcnow(),
-                )
-            )
+            _record_registration(conn, uid)
             _start_session(request, response, conn, uid)
     except IntegrityError as exc:
         raise HTTPException(409, "An account with this email already exists.") from exc
@@ -307,6 +321,19 @@ class ForgotBody(BaseModel):
 class ResetBody(BaseModel):
     token: str = Field(max_length=200)
     password: str = Field(min_length=10, max_length=200)
+    # The registration acceptance, asked only of an account that has none (ResetLink).
+    accept_terms: bool = False
+
+
+class ResetLinkBody(BaseModel):
+    token: str = Field(max_length=200)
+
+
+class ResetLink(BaseModel):
+    """A link that still works. needs_terms: its account has no registration acceptance, so
+    the new password is saved only with one."""
+
+    needs_terms: bool
 
 
 class Accepted(BaseModel):
@@ -351,11 +378,33 @@ def forgot_password(request: Request, body: ForgotBody, background: BackgroundTa
     return Accepted()
 
 
+LINK_EXPIRED = "This link has expired or was already used. Ask for a new one."
+
+
+@router.post("/reset-password/check", operation_id="checkResetLink", dependencies=[Depends(check_origin)])
+def check_reset_link(request: Request, body: ResetLinkBody) -> ResetLink:
+    """What the new-password page needs to know before it is filled in. Uses nothing up."""
+    if not reset_limit(request).hit(f"check:ip:{client_ip(request)}"):
+        raise HTTPException(429, "Too many attempts. Try again in 15 minutes.")
+    with db(request).connect() as conn:
+        row = conn.execute(
+            select(password_resets.c.user_id).where(
+                password_resets.c.token_hash == _token_hash(body.token),
+                password_resets.c.used_at.is_(None),
+                password_resets.c.expires_at > utcnow(),
+            )
+        ).first()
+        if row is None:
+            raise HTTPException(AUTH_FAILED, LINK_EXPIRED)
+        return ResetLink(needs_terms=not _has_registration(conn, row.user_id))
+
+
 @router.post("/reset-password", operation_id="resetPassword", dependencies=[Depends(check_origin)])
 def reset_password(request: Request, response: Response, body: ResetBody) -> Me:
     """Sets a new password with the emailed link's token, once and within the hour. Every
     session of the account ends (one opened with the old password too) and this browser is
-    signed in with a new one."""
+    signed in with a new one. An account without a registration acceptance needs
+    accept_terms, which records one."""
     if not reset_limit(request).hit(f"set:ip:{client_ip(request)}"):
         raise HTTPException(429, "Too many attempts. Try again in 15 minutes.")
     now = utcnow()
@@ -372,8 +421,14 @@ def reset_password(request: Request, response: Response, body: ResetBody) -> Me:
             .returning(password_resets.c.user_id)
         ).first()
         if claimed is None:
-            raise HTTPException(AUTH_FAILED, "This link has expired or was already used. Ask for a new one.")
+            raise HTTPException(AUTH_FAILED, LINK_EXPIRED)
         uid = claimed.user_id
+        if not _has_registration(conn, uid):
+            if not body.accept_terms:
+                # 409, not signup's 422 (a too-short password). Raised inside the transaction,
+                # so the claim rolls back and the link still works.
+                raise HTTPException(409, "Please accept the Terms of Service and Privacy Policy to continue.")
+            _record_registration(conn, uid)
         conn.execute(update(users).where(users.c.id == uid).values(password_hash=hash_password(body.password)))
         conn.execute(delete(sessions).where(sessions.c.user_id == uid))
         conn.execute(delete(password_resets).where(password_resets.c.user_id == uid, password_resets.c.used_at.is_(None)))

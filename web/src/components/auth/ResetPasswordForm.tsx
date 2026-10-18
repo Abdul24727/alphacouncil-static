@@ -4,9 +4,9 @@ import { useTranslations } from "next-intl";
 import { useState, useSyncExternalStore } from "react";
 import { Link } from "@/i18n/navigation";
 import { ApiError } from "@/lib/api/client";
-import { useResetPassword } from "@/lib/auth";
+import { useResetLink, useResetPassword } from "@/lib/auth";
 import { tokenFromHash } from "@/lib/reset-token";
-import { fieldClass } from "./AuthForm";
+import { AcceptTerms, fieldClass } from "./AuthForm";
 
 const subscribeHash = (onChange: () => void) => {
   window.addEventListener("hashchange", onChange);
@@ -23,8 +23,13 @@ export function ResetPasswordForm() {
     () => tokenFromHash(window.location.hash),
     () => undefined,
   );
-  const [error, setError] = useState<"mismatch" | "short" | "expired" | "rate" | "generic" | null>(null);
+  const [error, setError] = useState<"mismatch" | "short" | "expired" | "terms" | "rate" | "generic" | null>(null);
   const [done, setDone] = useState(false);
+  // An account brought over from the old site without a registration acceptance accepts here,
+  // as at sign-up. The save says so too (409), should the check not have answered.
+  const link = useResetLink(token);
+  const [termsRefused, setTermsRefused] = useState(false);
+  const needsTerms = link.data?.needs_terms === true || termsRefused;
 
   // Uncontrolled fields read on submit: anything typed before the page hydrates is kept.
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -34,14 +39,27 @@ export function ResetPasswordForm() {
     const password = String(form.get("password") ?? "");
     if (password.length < 10) return setError("short");
     if (password !== String(form.get("confirm") ?? "")) return setError("mismatch");
+    const accepted = form.get("accept") === "on";
+    if (needsTerms && !accepted) return setError("terms");
     if (!token) return;
     try {
-      await resetPassword.mutateAsync({ token, password });
+      await resetPassword.mutateAsync({ token, password, accept_terms: accepted });
       setDone(true);
     } catch (err) {
       const status = err instanceof ApiError ? err.status : 0;
+      if (status === 409) setTermsRefused(true);
       // The API answers 403 (never 401) for a used or expired link; see api/app/auth.py AUTH_FAILED.
-      setError(status === 403 ? "expired" : status === 422 ? "short" : status === 429 ? "rate" : "generic");
+      setError(
+        status === 403
+          ? "expired"
+          : status === 409
+            ? "terms"
+            : status === 422
+              ? "short"
+              : status === 429
+                ? "rate"
+                : "generic",
+      );
     }
   };
 
@@ -76,7 +94,8 @@ export function ResetPasswordForm() {
       </div>
     );
 
-  const message = error === "rate" ? t("errors.rate") : error === "generic" ? t("errors.generic") : error && t(`reset.${error}`);
+  const message =
+    error === "rate" || error === "generic" || error === "terms" ? t(`errors.${error}`) : error && t(`reset.${error}`);
 
   return (
     // method="post": a submit before the page has hydrated must not put the password in the URL.
@@ -107,6 +126,7 @@ export function ResetPasswordForm() {
           autoComplete="new-password"
         />
       </label>
+      {needsTerms && <AcceptTerms />}
       {message && (
         <p role="alert" className="text-loss">
           {message} {error === "expired" && newLink}

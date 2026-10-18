@@ -442,6 +442,7 @@
     },
     "accept": "I agree to the <terms>Terms of Service</terms> and acknowledge the <privacy>Privacy Policy</privacy>.",
     "forgotLink": "Forgot password?",
+    "oldSite": "Had an account on the old AlphaCouncil site? Choose “Forgot password?” once to set a new password for it.",
     "forgot": {
       "title": "Reset your password",
       "intro": "Enter the email you sign in with. We will send it a link to choose a new password.",

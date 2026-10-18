@@ -97,26 +97,7 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next?: stri
           {t("forgotLink")}
         </Link>
       )}
-      {mode === "signup" && (
-        // The old site's registration acceptance, word for word (api/app/legal.py records its version).
-        <label className="flex items-start gap-2 text-text-soft">
-          <input type="checkbox" name="accept" className="mt-0.5 size-4 shrink-0 accent-signal" />
-          <span>
-            {t.rich("accept", {
-              terms: (c) => (
-                <Link href="/legal/terms" target="_blank" className="text-signal hover:underline">
-                  {c}
-                </Link>
-              ),
-              privacy: (c) => (
-                <Link href="/legal/privacy" target="_blank" className="text-signal hover:underline">
-                  {c}
-                </Link>
-              ),
-            })}
-          </span>
-        </label>
-      )}
+      {mode === "signup" && <AcceptTerms />}
       {error && (
         <p role="alert" className="text-loss">
           {error}
@@ -135,6 +116,32 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next?: stri
           {t(mode === "login" ? "signupLink" : "loginLink")}
         </Link>
       </p>
+      {mode === "login" && <p className="text-[13px] text-muted">{t("oldSite")}</p>}
     </form>
+  );
+}
+
+/** The old site's registration acceptance, word for word (api/app/legal.py records its version).
+ *  Read on submit as the form field "accept". */
+export function AcceptTerms() {
+  const t = useTranslations("auth");
+  return (
+    <label className="flex items-start gap-2 text-text-soft">
+      <input type="checkbox" name="accept" className="mt-0.5 size-4 shrink-0 accent-signal" />
+      <span>
+        {t.rich("accept", {
+          terms: (c) => (
+            <Link href="/legal/terms" target="_blank" className="text-signal hover:underline">
+              {c}
+            </Link>
+          ),
+          privacy: (c) => (
+            <Link href="/legal/privacy" target="_blank" className="text-signal hover:underline">
+              {c}
+            </Link>
+          ),
+        })}
+      </span>
+    </label>
   );
 }

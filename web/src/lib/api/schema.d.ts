@@ -346,6 +346,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/auth/reset-password/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check Reset Link
+         * @description What the new-password page needs to know before it is filled in. Uses nothing up.
+         */
+        post: operations["checkResetLink"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/auth/reset-password": {
         parameters: {
             query?: never;
@@ -359,7 +379,8 @@ export interface paths {
          * Reset Password
          * @description Sets a new password with the emailed link's token, once and within the hour. Every
          *     session of the account ends (one opened with the old password too) and this browser is
-         *     signed in with a new one.
+         *     signed in with a new one. An account without a registration acceptance needs
+         *     accept_terms, which records one.
          */
         post: operations["resetPassword"];
         delete?: never;
@@ -1291,6 +1312,25 @@ export interface components {
             token: string;
             /** Password */
             password: string;
+            /**
+             * Accept Terms
+             * @default false
+             */
+            accept_terms: boolean;
+        };
+        /**
+         * ResetLink
+         * @description A link that still works. needs_terms: its account has no registration acceptance, so
+         *     the new password is saved only with one.
+         */
+        ResetLink: {
+            /** Needs Terms */
+            needs_terms: boolean;
+        };
+        /** ResetLinkBody */
+        ResetLinkBody: {
+            /** Token */
+            token: string;
         };
         /** Returns */
         Returns: {
@@ -2217,6 +2257,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Accepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    checkResetLink: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResetLinkBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResetLink"];
                 };
             };
             /** @description Validation Error */

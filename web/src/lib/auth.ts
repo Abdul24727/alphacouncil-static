@@ -68,7 +68,20 @@ export function useForgotPassword() {
 /** Sets a new password with the emailed link's token. The account's other sessions end and
  *  this browser is signed in. */
 export function useResetPassword() {
-  return useAuthMutation((body: { token: string; password: string }) =>
+  return useAuthMutation((body: { token: string; password: string; accept_terms: boolean }) =>
     api.POST("/v1/auth/reset-password", { body }).then(unwrap),
   );
+}
+
+/** Whether the link's account must accept the Terms and Privacy Policy as it saves the new
+ *  password (an account brought over from the old site without an acceptance). Uses nothing up;
+ *  a used or expired link is still reported by the save. */
+export function useResetLink(token: string | null | undefined) {
+  return useQuery({
+    queryKey: ["auth", "reset-link", token],
+    queryFn: async () => unwrap(await api.POST("/v1/auth/reset-password/check", { body: { token: token! } })),
+    enabled: !!token,
+    staleTime: Infinity,
+    retry: false,
+  });
 }
