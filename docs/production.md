@@ -104,9 +104,16 @@ Monthly, renewing until cancelled (`api/app/billing.py`):
 - Renewals: `acp-prod-billing.timer` (beta: `acp-billing.timer`) runs `python -m app.billing renew`
   hourly: reminders 3 days before, the charge at the period end, a failed charge retried daily three
   times with Pro kept, then the plan ends and the saved card is deleted.
-- Moyasar's webhook stays at the old site's address, `https://alphacouncil.tech/api/billing/webhook/moyasar`
-  (nginx → API), with `MOYASAR_WEBHOOK_SECRET`. It confirms payments for payers who closed the browser,
-  and a refund made in Moyasar's dashboard ends Pro.
+- Moyasar's webhook: the two live webhooks in the dashboard point at
+  `https://api.alphacouncil.tech/api/billing/webhook/moyasar` (seen 2026-10-18). That one path on the
+  api host goes to the new API (`sites-enabled/alphacouncil`, the old site's server block, backup
+  `/etc/nginx/alphacouncil.api-host.bak-*`); the rest of `api.alphacouncil.tech` stays the old backend.
+  `https://alphacouncil.tech/api/billing/webhook/moyasar` reaches the same handler. Both check
+  `MOYASAR_WEBHOOK_SECRET`. It confirms payments for payers who closed the browser, and a refund made in
+  Moyasar's dashboard ends Pro. Each event arrives twice (two webhooks); each payment is applied once.
+- Tested on beta with the account's Moyasar **test** keys (2026-10-18, `screenshots/accounts-billing/`):
+  declined card refused, paid card starts Pro with the card saved, and a renewal charged the saved
+  card through Moyasar and moved Pro a month on.
 - Settings: `BILLING_OPEN` (off = early access, everyone has Pro), `MOYASAR_PUBLISHABLE_KEY`,
   `MOYASAR_SECRET_KEY`, `MOYASAR_WEBHOOK_SECRET`. Production has the old site's live keys (copied on the
   server with the owner's approval); beta needs Moyasar **test** keys, and `web/scripts/check-billing.mjs`

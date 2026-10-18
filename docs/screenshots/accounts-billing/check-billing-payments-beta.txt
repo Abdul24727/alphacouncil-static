@@ -1,0 +1,15 @@
+PASS  billing is open on http://localhost:3201 (plan for a visitor: free)
+PASS  signed out: council panel on the overview is locked (1 locked)
+PASS  signed out: key metrics stay free
+PASS  signed out: financials are locked (3 panels)
+PASS  signed out: checkout asks to sign in first
+PASS  Arabic, 390 px: ownership locked (1)
+PASS  Free account, email not confirmed: checkout asks to confirm it
+PASS  Settings › Billing says Free
+PASS  Moyasar's Pay button in the brand (rgb(255, 106, 26), Archivo)
+PASS  test card 4123…0000: declined (The payment was not completed: INSUFFICIENT FUNDS)
+PASS  Moyasar's Pay button in the brand (rgb(255, 106, 26), Archivo)
+PASS  test card 4111…1111: paid, Pro started
+PASS  Pro renews with the saved card (visa 1111, through 2026-11-18T08:19:26.078108Z)
+
+Billing checks: all passed
