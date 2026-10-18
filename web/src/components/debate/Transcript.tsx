@@ -324,7 +324,9 @@ export function VerdictView({ room }: { room: Room }) {
             <p className="label-caps mb-1.5 text-muted">{t("gaps")}</p>
             <ul className="flex list-disc flex-col gap-1 ps-4 text-text-soft marker:text-muted" dir="auto">
               {v.gaps.map((x, i) => (
-                <li key={i}>{x}</li>
+                <li key={i}>
+                  <DebateText text={x} flags={turn?.flags} sources={s.sources} className="inline [&>p]:inline" />
+                </li>
               ))}
             </ul>
           </div>
