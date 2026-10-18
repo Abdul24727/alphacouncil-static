@@ -320,19 +320,16 @@ Not `DynamicUser=`: dbus-daemon drops dynamic users, and `systemctl show` needs 
   `/etc/alphacouncil-platform/prod/monitor.env` (root:alphacouncil 0640; several addresses:
   comma-separated). To change it, run the installer with the new address.
 - **What it cannot see**: it runs on the server it watches, so if the whole server, its network or
-  MailerSend is down, it cannot email. The outside check (below) covers that: Healthchecks.io emails
-  when the rounds stop pinging, or when a round had an alert it could not send. Still not covered: the
-  site unreachable from elsewhere while the server and its outgoing connections work (a provider
-  firewall, DNS seen from other networks), because the monitor's own fetch of `/home` starts on the
-  server. An outside HTTP check would add that; UptimeRobot's free plan is for non-commercial use only,
-  so there is none.
+  MailerSend is down, it cannot email, and its own fetch of `/home` starts on the server. The outside
+  check (below) covers both: from Google's servers it visits the site every 5 minutes, and it emails
+  when the rounds stop pinging or a round had an alert it could not send.
 
 Install or update (copies the script and units, enables the timer, runs one round, prints the checks):
 
 ```bash
 scripts/install-monitoring.sh owner@address --test   # first time: recipient, and one test alert
 scripts/install-monitoring.sh                        # later updates: same recipient
-scripts/install-monitoring.sh --ping                 # asks for the outside check's ping URL (below)
+scripts/install-monitoring.sh --ping                 # asks for the outside check's URL (below)
 ```
 
 A new address or ping URL replaces only its own line in `monitor.env`.
@@ -354,52 +351,61 @@ inbox. From 09:25 the timer's rounds pass all 13 checks as `acp-monitor`. The fi
 `DynamicUser=`, so the `systemctl` checks could not run, and one false alert went out at 09:20
 ("Problem: acp-prod-api check (+3 more)"). "Recovered" followed at 09:22, after the switch to `acp-monitor`.
 
-### Outside check (Healthchecks.io)
+### Outside check (Google Apps Script)
 
-A free [Healthchecks.io](https://healthchecks.io) check watches the monitor from outside (a dead-man's
-switch). When `PING_URL` is in `prod/monitor.env`, every round ends with a ping:
+A Google Apps Script project, **alphacouncil.tech outside check**, in the Google account
+`alphacouncil.admin@gmail.com` ([script.google.com](https://script.google.com), code in
+`deploy/outside-check.gs`) watches from Google's servers. It needs no other account and no payment.
+It does two things:
 
-| The round | Ping | Healthchecks.io emails |
-|---|---|---|
-| ran, and emailed everything it found (or found nothing new) | `PING_URL` | nothing, or "up" after a "down" |
-| had an alert it could not email (MailerSend refused, or the 8-a-day or 60-a-month limit) | `PING_URL/fail`, with the round's summary and the unsent subject | "down" at once |
-| did not run or did not finish: server off, network down, timer stopped, settings unreadable, crash | none | "down" 15 minutes after the last ping (period 5 + grace 10) |
+- **Visits the site**: every 5 minutes (a time-driven trigger) it fetches `https://alphacouncil.tech/home`
+  and `/api/v1/health` (status `ok`) the way a visitor would. This also covers the site being
+  unreachable from outside while the server and its outgoing connections still work: a provider
+  firewall, or DNS seen from other networks.
+- **Listens for the monitor** (a dead-man's switch): `PING_URL` in `prod/monitor.env` is the project's web
+  app, so every round of the server's monitor ends with a ping to it.
 
-- Healthchecks.io emails only when the check's state changes (down, then up), from its own servers, so
-  these emails do not count against the MailerSend budget. The free plan (20 checks, email alerts) is
-  enough.
-- The URL is the check's key: it is kept in `monitor.env` (root:alphacouncil 0640), not in git, and
-  is never printed or logged. A ping that fails only logs `outside check not pinged: …` in the round's
-  journal; the next round pings again 5 minutes later, inside the grace time.
+| What happens | The outside check emails |
+|---|---|
+| `/home` or `/api/v1/health` fails 2 checks in a row from outside (server or network down, or the site broken) | "Problem: alphacouncil.tech fails when checked from outside", then "Recovered" |
+| no ping for 15 minutes while the site still answers (the monitor's timer stopped, its settings are unreadable, or it crashes) | "Problem: the server's monitor has gone quiet", then "Recovered" |
+| a round pings `PING_URL?fail=1`: it had an alert it could not email (MailerSend refused, or the 8-a-day or 60-a-month limit) | "Problem: the server's monitor could not send an alert", with the round's summary, then "Recovered" at the next normal ping |
 
-Setting it up (the owner, once; Claude does not create accounts or handle the URL):
+- Alerts go to the script property `ALERT_TO`, the same address as the monitor's `ALERT_TO` (Project
+  Settings > Script Properties; not in git), from the Google account's Gmail, so they do not count
+  against MailerSend's budget. At most 20 a day; only changes are emailed, like the monitor.
+- While the site fails from outside, the "gone quiet" alert is held back: the site alert already says
+  the server may be down.
+- The web app runs as the account and accepts anonymous calls, so the server needs no Google sign-in.
+  Its URL is the key: it is kept in `monitor.env` (root:alphacouncil 0640) and the deployment, never
+  in git or logs. Google answers 401 to an extra path such as `PING_URL/fail` from someone not signed
+  in, so the monitor sends `?fail=1` to a URL ending in `/exec` (`/fail` to Healthchecks.io).
+- **Change the code**: edit `deploy/outside-check.gs`, paste it into the project's `Code.gs` and save
+  (the 5-minute check uses the saved code at once). Then Deploy > Manage deployments > edit (pencil) >
+  Version: New version > Deploy, so the web app runs it too. The URL stays the same.
+- **State**: in the editor, run `status` (siteFails, the alerts that are open, the last ping, mails in
+  24 hours, triggers). Executions lists every check and ping.
+- **Pause it**: delete the `check` trigger (Triggers) and the `PING_URL` line from `monitor.env`.
+  `setup` puts the trigger back.
 
-1. Sign up at healthchecks.io (free). Add a check named `alphacouncil.tech monitor`, schedule "Simple",
-   period 5 minutes, grace time 10 minutes. Its email integration goes to the account's address;
-   choose an address that is not hosted on this server.
-2. Copy the check's ping URL (`https://hc-ping.com/…`).
-3. In the repository, on `rebuild`: `scripts/install-monitoring.sh --ping`, then paste the URL at the
-   prompt (hidden, and not in the shell history). This also installs the current script. It runs one
-   round, so the check turns "up" on Healthchecks.io within a minute, and `status` ends with
-   `outside check: PING_URL is set…`.
+Set up from scratch (once, from the editor): paste the code, add the script property `ALERT_TO`, run
+`setup` and allow every permission it asks for (Google lists four: fetch web pages, send email as the
+account, run when the owner is away, see the account's address). Then Deploy > New deployment > Web app,
+Execute as: Me, Who has access: Anyone. Then `scripts/install-monitoring.sh --ping` with the web app URL.
 
-Test (once, after setting it up): stop the rounds until the "down" email arrives, then start them again:
+**Status (2026-10-19)**: live. The owner signed in to Google and allowed the permissions; Claude did
+the rest in the built-in browser. Before going live, the logic was tested locally with simulated
+outages (18 cases: 2 failing rounds, recovery, health status not `ok`, silence while the site answers,
+no duplicate alert while the server is down, `?fail=1` and its recovery, the daily cap). On
+alphacouncil.tech (`78c74af`): `setup` ran and sent its test email, the 5-minute check runs (01:44,
+01:49 Riyadh), every monitor round's ping arrives (web app version 2). A failure ping sent with the
+monitor's own `ping()` brought "could not send an alert", and the next round's normal ping brought
+"Recovered" (the script's state: 3 mails in 24 hours, no open alerts). The emails go to the owner's
+alert address, which the connected Gmail is not, so their arrival was not checked from here.
 
-```bash
-ssh root@alphacouncil.tech systemctl stop acp-prod-monitor.timer                            # "down" email about 15 minutes after the last ping
-ssh root@alphacouncil.tech systemctl start acp-prod-monitor.timer acp-prod-monitor.service  # pings at once: "up" email
-```
-
-Nothing is monitored while the timer is stopped, so start it again as soon as the email arrives. To
-retire the outside check, pause it on Healthchecks.io first (otherwise it emails "down"), then delete
-the `PING_URL` line from `monitor.env`.
-
-**Status (2026-10-18)**: live on alphacouncil.tech (`064d670`). The owner created the Healthchecks.io check
-(period 5 minutes, grace 10) and ran `scripts/install-monitoring.sh --ping`. In the test above, the stopped
-timer brought Healthchecks.io's "down" email, and starting it again brought the "up" email (as the owner
-reported; the emails went to the owner's alert address, not checked from here). Before that it was tested
-locally against a fake ping server: a plain ping, `/fail` when the mail fails or a limit is reached, no ping
-after a crash, and the URL never in the output.
+An earlier note here said a Healthchecks.io check was live. On 2026-10-19 the server had no `PING_URL`,
+so it was never connected. A Healthchecks.io check still works the same way (`--ping` with its URL)
+if the owner ever prefers one, but it adds no outside visit to the site.
 
 ## Search engines and link previews
 

@@ -31,7 +31,7 @@ done
 ping_url=""
 if $ping; then
   # Read here, not taken as an argument: the URL is the check's key, so it stays out of shell history.
-  read -rsp "Ping URL of the Healthchecks.io check (https://hc-ping.com/...; empty: keep the current one): " ping_url
+  read -rsp "Outside check URL (the web app of deploy/outside-check.gs, or a Healthchecks.io ping URL; empty: keep the current one): " ping_url
   echo
   if [[ -n "$ping_url" && ! "$ping_url" =~ ^https://[^[:space:]/]+/[^[:space:]]+$ ]]; then
     echo "refusing: not an https:// URL" >&2; exit 2
