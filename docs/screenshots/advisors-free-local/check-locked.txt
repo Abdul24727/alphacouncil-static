@@ -1,0 +1,16 @@
+PASS  en 1440: Free sees the locked preview, no Convene button
+PASS  en locked 1440: no sideways scroll (0px)
+PASS  en locked 1440: disclaimer on screen
+PASS  en locked 1440: citation chips name a dataset (0)
+PASS  en 390: Free sees the locked preview, no Convene button
+PASS  en locked 390: no sideways scroll (0px)
+PASS  en locked 390: disclaimer on screen
+PASS  en locked 390: citation chips name a dataset (0)
+PASS  ar 1440: Free sees the locked preview, no Convene button
+PASS  ar locked 1440: no sideways scroll (0px)
+PASS  ar locked 1440: disclaimer on screen
+PASS  ar locked 1440: citation chips name a dataset (0)
+PASS  ar 390: Free sees the locked preview, no Convene button
+PASS  ar locked 390: no sideways scroll (0px)
+PASS  ar locked 390: disclaimer on screen
+PASS  ar locked 390: citation chips name a dataset (0)

@@ -5,6 +5,7 @@
 //
 //   BASE_URL=http://localhost:3201 node scripts/check-advisors.mjs        # beta through the tunnel (everyone is Pro)
 //   BASE_URL=http://localhost:3110 LOCKED=1 node scripts/check-advisors.mjs   # an API with BILLING_OPEN: the Free preview
+//   BASE_URL=https://alphacouncil.tech VISITOR=1 node scripts/check-advisors.mjs  # signed out: no account, no session
 //
 // Test accounts are advisors-<locale>-<time>@example.com (no email is sent to example.com).
 import { mkdir, writeFile } from "node:fs/promises";
@@ -180,7 +181,41 @@ async function lockedPreview(locale) {
   }
 }
 
+/** Signed out: the room asks to sign in, the Council tab links to it, /pricing lists it under Pro. */
+async function visitor(locale) {
+  const status = await (await (await context(1440)).request.get(`${BASE_URL}/api/v1/debate/status`)).json();
+  check(
+    status.signed_in === false && status.stand_in === false && status.pro_limit === 20,
+    `status: models ${status.models.advisors} / ${status.models.chair}, plan ${status.plan}, Pro limit ${status.pro_limit}`,
+  );
+  for (const width of [1440, 390]) {
+    const ctx = await context(width);
+    const page = await ctx.newPage();
+    await page.goto(`${BASE_URL}${prefix(locale)}/t/${TICKER}/advisors`, { waitUntil: "networkidle" });
+    await page.locator("[data-debate-locked]").waitFor({ timeout: 30000 });
+    check((await page.locator("[data-convene]").count()) === 0, `${locale} ${width}: signed out, the room is locked`);
+    await screenChecks(page, `${locale} visitor ${width}`);
+    await shot(page, `visitor-${locale}-${width}`, width < 768);
+    await page.goto(`${BASE_URL}${prefix(locale)}/t/${TICKER}/council`, { waitUntil: "networkidle" });
+    const callout = page.locator("[data-advisors-callout] a");
+    await callout.waitFor({ timeout: 30000 });
+    check(!!(await callout.getAttribute("href"))?.endsWith(`/t/${TICKER}/advisors`), `${locale} ${width}: the Council tab links to the room`);
+    await shot(page, `council-callout-${locale}-${width}`);
+    await ctx.close();
+  }
+  const ctx = await context(1440);
+  const page = await ctx.newPage();
+  await page.goto(`${BASE_URL}${prefix(locale)}/pricing`, { waitUntil: "networkidle" });
+  const text = (await page.locator("body").textContent()) ?? "";
+  check(/advisors' room: 20 sessions|غرفة المستشارين: 20 جلسة/.test(text), `${locale}: /pricing lists the advisors' room under Pro`);
+  await ctx.close();
+}
+
 for (const locale of LOCALES) {
+  if (process.env.VISITOR) {
+    await visitor(locale);
+    continue;
+  }
   if (process.env.LOCKED) {
     await lockedPreview(locale);
     continue;
@@ -190,6 +225,6 @@ for (const locale of LOCALES) {
 }
 
 await browser.close();
-await writeFile(`${OUT}/check-${process.env.LOCKED ? "locked" : "sessions"}.txt`, report.join("\n") + "\n");
+await writeFile(`${OUT}/check-${process.env.VISITOR ? "visitor" : process.env.LOCKED ? "locked" : "sessions"}.txt`, report.join("\n") + "\n");
 console.log(failures.length ? `\n${failures.length} FAILED` : "\nall passed");
 process.exit(failures.length ? 1 : 0);

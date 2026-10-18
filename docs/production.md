@@ -433,6 +433,18 @@ of the data. Code: `api/app/debate/`, `api/app/routers/debate.py`, `web/src/comp
   caricatures, not the people) in both languages. The owner is getting a lawyer's view on using living
   people's names before the feature is advertised.
 
+**Status (2026-10-18)**: live on alphacouncil.tech since release `3f403b2ef7` (owner's approval: beta, then
+production; not advertised until the lawyer's view). On beta, six real sessions on 2222 (three in English,
+three in Arabic) took 33–53 s and cost $0.165–0.198 each (OpenRouter's figures; 137–155k tokens in,
+4–6k out): the Chair (Claude Sonnet 5.5, 3 calls) $0.087–0.107, the advisors (DeepSeek V4 Pro, 12 calls)
+$0.071–0.091. Arabic runs about 15–35% longer and dearer. A member using all 20 sessions costs about $4 a
+month. `check-advisors.mjs` passed on beta at `3f403b2` (`screenshots/advisors/`, every stage live at 1440 px
+and replayed at 1440 and 390 px, both languages) and in visitor mode on production
+(`screenshots/advisors-production/`); the Free preview was checked locally with billing open
+(`screenshots/advisors-free-local/`). Claude Sonnet 5.5 refuses requests with reasoning switched off, so the
+Chair runs at low reasoning effort. The number check flags figures the advisors work out themselves (an
+annualised dividend, a payout percentage): they show underlined as not found in the data.
+
 ## Not in production yet
 
 - `www.alphacouncil.tech` has no DNS record; when one is added, add `www` to the certificate.
