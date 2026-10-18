@@ -125,6 +125,18 @@ Monthly, renewing until cancelled (`api/app/billing.py`):
   `sudo -E -u alphacouncil .venv/bin/python -m app.billing grant <email> <days>` in the release's `api/`
   with the environment of its `api.env`.
 
+### Billing is open (since 2026-10-18)
+
+`BILLING_OPEN=true` in `/etc/alphacouncil-platform/prod/api.env` (the file before that is
+`api.env.bak-20261018082735`). Checked live over HTTPS (`screenshots/billing-live/`): /pricing shows
+"Get Pro" and no early-access note; the council, financials, ownership and calendar panels are locked
+for signed-out and Free visitors (EN 1440, AR 390); a new account is Free and is asked to confirm its
+email before paying; the live card form (no test-mode banner, orange "Pay 79.00") loads in both
+languages. No live payment was made by these checks.
+
+To close billing again (everyone back to Pro, checkout closed): delete the `BILLING_OPEN` line, then
+`systemctl restart acp-prod-api`.
+
 ## Not in production yet
 
 - `www.alphacouncil.tech` has no DNS record; when one is added, add `www` to the certificate.
