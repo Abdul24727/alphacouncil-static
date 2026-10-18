@@ -78,9 +78,46 @@ The old site's members were imported once (email, name, language, sign-up date a
 acceptance; no password): see `docs/account-import.md`. They set a password through "Forgot password?",
 and accept the terms on that page if the old site had no acceptance on record for them.
 
+## Email confirmation
+
+Sign-up emails a link to `/verify-email#token=…` (same scheme as the reset link; 48 hours, once).
+A reset link or Google also confirms the address. Until then the app shows a banner, and buying Pro
+needs it (receipts and renewal reminders go there). Automated emails to reserved test addresses
+(`example.com`, `.test`, …) are skipped, so the checks do not spend the mail plan's allowance.
+
+## Sign in with Google
+
+`GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` in each `api.env` (the old site's Google web client, copied
+on the server with the owner's approval). Google sends people back to
+`https://alphacouncil.tech/auth/google/callback`, the address registered for that client; nginx passes
+it to the API (`deploy/nginx-production.conf`). beta's address is not registered with Google, so the
+sign-in only completes on alphacouncil.tech. A new account (or an imported one without an acceptance)
+ticks the terms on `/signup` first.
+
+## Pro billing (Moyasar)
+
+Monthly, renewing until cancelled (`api/app/billing.py`):
+
+- The first payment is taken by Moyasar's form on `/checkout` (card details go to Moyasar only; the
+  card is saved there as a token). `/billing/return` asks the API to confirm, and the API acts only on
+  Moyasar's own record of the payment.
+- Renewals: `acp-prod-billing.timer` (beta: `acp-billing.timer`) runs `python -m app.billing renew`
+  hourly: reminders 3 days before, the charge at the period end, a failed charge retried daily three
+  times with Pro kept, then the plan ends and the saved card is deleted.
+- Moyasar's webhook stays at the old site's address, `https://alphacouncil.tech/api/billing/webhook/moyasar`
+  (nginx → API), with `MOYASAR_WEBHOOK_SECRET`. It confirms payments for payers who closed the browser,
+  and a refund made in Moyasar's dashboard ends Pro.
+- Settings: `BILLING_OPEN` (off = early access, everyone has Pro), `MOYASAR_PUBLISHABLE_KEY`,
+  `MOYASAR_SECRET_KEY`, `MOYASAR_WEBHOOK_SECRET`. Production has the old site's live keys (copied on the
+  server with the owner's approval); beta needs Moyasar **test** keys, and `web/scripts/check-billing.mjs`
+  pays there with Moyasar's published test cards.
+- **Opening billing ends early access**: Free locks the council, financials, ownership, calendar,
+  indicators and pins, and limits holdings (20), alerts (5) and Copilot questions (10 a day). The
+  phase checks read Pro data, so run them with billing closed (beta) or with a Pro account.
+- Complimentary Pro (owner, partners, test accounts), no card, ends by itself:
+  `sudo -E -u alphacouncil .venv/bin/python -m app.billing grant <email> <days>` in the release's `api/`
+  with the environment of its `api.env`.
+
 ## Not in production yet
 
-- Checkout (Moyasar) and Pro billing: until it opens, every account gets the Pro features
-  (the pricing page says so).
-- Email verification and social sign-in (the old site had them).
 - `www.alphacouncil.tech` has no DNS record; when one is added, add `www` to the certificate.

@@ -22,7 +22,7 @@ const ROUTES = [
 const SITE = new Set(["/", "/pricing", "/methodology", "/legal", "/legal/terms", "/login", "/signup", "/forgot-password", "/reset-password"]);
 const ALLOWED_FONTS = ["Archivo", "Martian Mono", "IBM Plex Sans Arabic"];
 // Latin that belongs in an Arabic page: the brand, currency and exchange codes, keys, the EN switch.
-const LATIN_OK = new Set(["AlphaCouncil", "EN", "SAR", "AED", "QAR", "KWD", "BHD", "OMR", "TASI", "ADX", "DFM", "QSE", "MSX", "BHB", "Ctrl", "DB", "EV/EBITDA", "Moyasar"]);
+const LATIN_OK = new Set(["AlphaCouncil", "Google", "EN", "SAR", "AED", "QAR", "KWD", "BHD", "OMR", "TASI", "ADX", "DFM", "QSE", "MSX", "BHB", "Ctrl", "DB", "EV/EBITDA", "Moyasar"]);
 
 const failures = [];
 const leaks = new Map();

@@ -67,6 +67,12 @@ PASS  en /login: drawn only in the brand faces (no Inter)
 PASS  en /signup: public page renders
 PASS  en /signup: no teal or purple
 PASS  en /signup: drawn only in the brand faces (no Inter)
+PASS  en /forgot-password: public page renders
+PASS  en /forgot-password: no teal or purple
+PASS  en /forgot-password: drawn only in the brand faces (no Inter)
+PASS  en /reset-password: public page renders
+PASS  en /reset-password: no teal or purple
+PASS  en /reset-password: drawn only in the brand faces (no Inter)
 PASS  ar /home: renders signed in, inside the shell (sidebar, work area, Copilot)
 PASS  ar /home: no teal or purple
 PASS  ar /home: drawn only in the brand faces (no Inter)
@@ -133,6 +139,12 @@ PASS  ar /login: drawn only in the brand faces (no Inter)
 PASS  ar /signup: public page renders
 PASS  ar /signup: no teal or purple
 PASS  ar /signup: drawn only in the brand faces (no Inter)
+PASS  ar /forgot-password: public page renders
+PASS  ar /forgot-password: no teal or purple
+PASS  ar /forgot-password: drawn only in the brand faces (no Inter)
+PASS  ar /reset-password: public page renders
+PASS  ar /reset-password: no teal or purple
+PASS  ar /reset-password: drawn only in the brand faces (no Inter)
 
 Phase 1 done-when: all checks passed
 
@@ -144,7 +156,7 @@ PASS  metrics panel loaded 1120 data
 PASS  peers row click moved every panel to 1180
 PASS  metrics panel has a freshness light (fresh)
 PASS  stale light is amber #F2B134 (rgb(242, 177, 52))
-PASS  tooltip shows the real timestamp: "Updated 16 Oct 07:02 · next run 18 Oct 03:00"
+PASS  tooltip shows the real timestamp: "Updated 17 Oct 04:51 · next run 19 Oct 03:00"
 PASS  tooltip dates the data itself: "Older than its expected update · data as of 8 Aug 2018"
 metrics light colour: rgb(63, 217, 138)
 
@@ -176,12 +188,12 @@ Copilot model: deepseek/deepseek-v3.2
 PASS  signed in (the model requires an account)
 PASS  metrics panel shows as a context chip
 PASS  answer cites the metrics panel
-PASS  answer finished in 24 s (limit 180 s)
-PASS  reasoning is collapsible (› REASONING · 5 STEPS)
+PASS  answer finished in 10 s (limit 180 s)
+PASS  reasoning is collapsible (› REASONING · 4 STEPS)
 PASS  3 follow-up questions
-PASS  citation scrolled the metrics panel into view (top -541 -> 108)
+PASS  citation scrolled the metrics panel into view (top -620 -> 144)
 PASS  the cited panel is highlighted
-PASS  pinned table appears on My dashboards
+note  this answer had no table to pin
 
 Phase 4 done-when: all checks passed
 
@@ -192,7 +204,7 @@ PASS  desktop: Screener (/screener) — 2 panel(s)
 PASS  desktop: Markets (/markets) — 2 panel(s)
 PASS  desktop: Templates (/templates) — 1 panel(s)
 PASS  desktop: My dashboards (/dashboards) — 1 panel(s), 1 labelled unavailable
-PASS  desktop: Settings (/settings) — 2 panel(s)
+PASS  desktop: Settings (/settings) — 3 panel(s)
 PASS  phone: Home (/home) — 4 panel(s)
 PASS  phone: My Portfolio (/portfolio) — 1 panel(s)
 PASS  phone: Screener (/screener) — 2 panel(s)
@@ -280,30 +292,21 @@ PASS  page /ar/legal/terms → 200
 PASS  page /ar/legal/privacy → 200
 PASS  page /ar/legal/refunds → 200
 PASS  page /ar/legal/cookies → 200
-PASS  page /ar/legal/ai-financial-disclaimer → 200
-PASS  all 45 internal links on the public pages resolve
-PASS  legal en terms: full text (4825 words), hash a54c4b0a7d65…
-PASS  legal ar terms: full text (4776 words)
-PASS  legal en privacy: full text (2941 words), hash b7a3e655b520…
-PASS  legal ar privacy: full text (2784 words)
-PASS  legal en refunds: full text (1285 words), hash 774a5290d51b…
-PASS  legal ar refunds: full text (1243 words)
-PASS  legal en cookies: full text (705 words), hash 54c6313fb963…
-PASS  legal ar cookies: full text (710 words)
-PASS  legal en ai-financial-disclaimer: full text (1307 words), hash 2653541a093a…
-PASS  legal ar ai-financial-disclaimer: full text (1428 words)
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
 
-Phase 6 done-when: all checks passed
+page.goto: Timeout 30000ms exceeded.
+Call log:
+[2m  - navigating to "http://localhost:3201/ar/legal/ai-financial-disclaimer", waiting until "domcontentloaded"[22m
+
+    at C:\projects\alphacouncil-platform\web\scripts\check-phase6.mjs:225:26 {
+  log: [
+    '  - navigating to "http://localhost:3201/ar/legal/ai-financial-disclaimer", waiting until "domcontentloaded"'
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v24.18.0
 
 === Phase 7 ===
-
-88 page views; 0 failure(s); 0 English string(s) in Arabic pages
-
-Summary
-  Phase 1: PASS
-  Phase 2: PASS
-  Phase 3: PASS
-  Phase 4: PASS
-  Phase 5: PASS
-  Phase 6: PASS
-  Phase 7: PASS
