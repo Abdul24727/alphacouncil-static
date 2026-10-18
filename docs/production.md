@@ -353,9 +353,12 @@ Nothing is monitored while the timer is stopped, so start it again as soon as th
 retire the outside check, pause it on Healthchecks.io first (otherwise it emails "down"), then delete
 the `PING_URL` line from `monitor.env`.
 
-**Status (2026-10-18)**: in `scripts/prod-monitor.py` and the installer, tested locally (fake ping server:
-plain ping, `/fail` when the mail fails or a limit is reached, no ping after a crash, the URL never in the
-output). Not on the server yet: it waits for the owner's Healthchecks.io check, step 3 above and the test.
+**Status (2026-10-18)**: live on alphacouncil.tech (`064d670`). The owner created the Healthchecks.io check
+(period 5 minutes, grace 10) and ran `scripts/install-monitoring.sh --ping`. In the test above, the stopped
+timer brought Healthchecks.io's "down" email, and starting it again brought the "up" email (as the owner
+reported; the emails went to the owner's alert address, not checked from here). Before that it was tested
+locally against a fake ping server: a plain ping, `/fail` when the mail fails or a limit is reached, no ping
+after a crash, and the URL never in the output.
 
 ## Search engines and link previews
 
