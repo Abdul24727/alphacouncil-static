@@ -18,6 +18,8 @@ Each round checks:
   unreachable renewals; failed renewals and ended plans are reported as they happen;
 - acp-db-backup.service (the nightly database dumps), once its timer is installed: the same
   last-run and timer checks;
+- the off-server copy of those dumps (scripts/pull-backups.ps1 on the owner's computer), once it
+  has reported in: its last complete copy is at most 3 days old;
 - no disk is more than 85% full, and the certificate alphacouncil.tech serves is valid for at
   least 14 more days.
 
@@ -63,6 +65,10 @@ HEALTH_URL = "https://alphacouncil.tech/api/v1/health"
 SERVICES = ("acp-prod-api", "acp-prod-web")
 BILLING = "acp-prod-billing"
 BACKUP = "acp-db-backup"  # nightly dumps (docs/production.md, "Backups"); checked once installed
+# The owner's computer reports its last complete copy of the dumps here (docs/production.md,
+# "Off-server copy"); checked once the file exists.
+OFFSITE_PULL = os.environ.get("ACP_OFFSITE_PULL", "/var/lib/acp-offsite-pull/last.json")
+OFFSITE_MAX_AGE = 3 * 86400  # seconds
 
 DISK_MAX = 85  # percent used; an alerted disk counts as fixed at DISK_CLEAR or below
 DISK_CLEAR = 83
@@ -322,6 +328,23 @@ def check_disks(state: dict) -> list[tuple[str, Result]]:
     return out
 
 
+def check_offsite() -> Result:
+    name = "off-server backup copy"
+    try:
+        with open(OFFSITE_PULL, encoding="utf-8-sig") as f:
+            report = json.load(f)
+    except FileNotFoundError:
+        return Result(name, None, f"no copy reported yet ({OFFSITE_PULL} does not exist)")
+    at = datetime.strptime(report["at"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc).timestamp()
+    age = time.time() - at
+    detail = (f"the owner's computer last copied the backups at {when(at)}, {age / 86400:.1f} days ago "
+              f"({report.get('files')} files, newest {report.get('newest') or 'unknown'})")
+    if age > OFFSITE_MAX_AGE:
+        detail += ('; turn that computer on and sign in: its task "AlphaCouncil backup copy" catches up '
+                   "by itself, and its pull.log says what went wrong")
+    return Result(name, age <= OFFSITE_MAX_AGE, detail)
+
+
 def check_cert() -> Result:
     try:
         with socket.create_connection((SITE, 443), timeout=TIMEOUT) as sock:
@@ -363,12 +386,15 @@ def gather(state: dict, now: float) -> tuple[dict[str, Result], list[tuple[str, 
         results.update(pairs)
     for key, res in guarded("backup", lambda: check_job(BACKUP, "database backup", optional=True)) or []:
         results[key] = res
+    res = guarded("offsite", check_offsite)
+    if res:
+        results["offsite"] = res
     for key, res in guarded("disk", lambda: check_disks(state)) or []:
         results[key] = res
     res = guarded("certificate", check_cert)
     if res:
         results["cert"] = res
-    for group in ("site", *SERVICES, "billing", "backup", "disk", "certificate"):
+    for group in ("site", *SERVICES, "billing", "backup", "offsite", "disk", "certificate"):
         if f"check:{group}" in state.get("keys", {}):  # it could not run before: now it did
             results.setdefault(f"check:{group}", Result(f"{group} check", True, "the check ran"))
     return results, events, cursor
@@ -559,6 +585,7 @@ def test() -> int:
         "  - the hourly Pro renewals job fails, Moyasar cannot be reached for a renewal,\n"
         "    a renewal charge is declined, or a Pro plan ends,\n"
         "  - the nightly database backup fails (once its timer is installed),\n"
+        "  - the off-server backup copy on the owner's computer is more than 3 days old,\n"
         f"  - a disk is over {DISK_MAX}% full or the certificate expires within {CERT_MIN_DAYS} days,\n"
         "and once more when each problem clears.\n\n"
         f"The checks right now:\n{snapshot}\n\n"
