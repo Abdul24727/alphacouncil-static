@@ -386,8 +386,10 @@ after a crash, and the URL never in the output.
   Cloudflare; never remove it). `https://alphacouncil.tech/sitemap.xml` submitted the same day; Googlebot
   fetched it at 18:16 UTC (200, `crawl-66-249-66-164.googlebot.com` in nginx's access log). Search Console
   first showed "Couldn't fetch" (what it shows until it processes a new sitemap), then the same day: type
-  Sitemap, status Success, 1,464 discovered pages. Bing Webmaster Tools: not set up yet (it can import the
-  site from Search Console).
+  Sitemap, status Success, 1,464 discovered pages.
+- Bing Webmaster Tools (owner's account): the site imported from Search Console on 2026-10-18 (verified
+  through it, no record of its own); the import brought no sitemap, so it was submitted by hand: Success,
+  about 1.5K URLs, no errors or warnings, the same day.
 
 **Status (2026-10-18)**: live since release `cde2b0e629` (owner's approval). `check-seo.mjs` passes 62/62 on
 beta (through the tunnel) and on https://alphacouncil.tech; robots.txt and sitemap.xml (1,464 URLs: 16 pages
