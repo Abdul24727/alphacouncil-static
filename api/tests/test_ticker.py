@@ -379,3 +379,30 @@ def test_methodology_names_the_tadawul_sector_source(client):
     src = get(client, "/v1/methodology")["tadawul_sectors"]
     assert src["source_url"].startswith("https://www.saudiexchange.sa/") and src["retrieved"] == "2026-10-18"
     assert src["companies"] == 273
+
+
+def test_a_recorded_trading_currency_is_shown_and_statements_keep_theirs(client, data_files):
+    import sqlite3
+
+    # Like GFH Financial on Bahrain Bourse: the pipeline says BHD, it trades in US dollars,
+    # and its EPS is stored in cents.
+    today = datetime.now(UTC).date().isoformat()
+    row = ("GFH.DU_BSE", "GFH.DU", "BSE", "BHD", 2, "Banks", "البنوك", today, 0.471, 0.0, 1e5, None, 1805.0,
+           12.11, None, None, None, None, None, None, None, None, None, None, 0, None)
+    with sqlite3.connect(data_files.briefs_db) as conn:
+        conn.execute(f"INSERT INTO briefs VALUES ({','.join('?' * len(row))})", row)
+    with sqlite3.connect(data_files.screening_db) as conn:
+        conn.execute("INSERT INTO scraped_ratios VALUES ('GFH.DU_BSE', 12.11, 1.96, NULL, NULL, NULL, NULL, NULL, 0.24, 3.89, NULL, 3832.59)")
+    d = get(client, "/v1/tickers/GFH.DU")
+    assert d["ticker"]["currency"] == "USD"
+    assert d["valuation"]["eps_ttm"] == 0.0389  # cents, confirmed by the P/E
+    assert get(client, "/v1/tickers/GFH.DU/statements")["currency"] == "BHD"
+
+
+def test_every_recorded_listing_currency_is_traded_on_its_exchange():
+    from app.universe import EXCHANGE_CURRENCIES, LISTING_CURRENCIES_FILE, load_listing_currencies
+
+    doc = json.loads(LISTING_CURRENCIES_FILE.read_text(encoding="utf-8"))
+    assert doc["decided"] and doc["sources"]
+    for key, cur in load_listing_currencies().items():
+        assert cur in EXCHANGE_CURRENCIES[key.rsplit("_", 1)[1]], key

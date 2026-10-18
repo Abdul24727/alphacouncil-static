@@ -67,7 +67,9 @@ function TickerHeader() {
   const locale = useLocale();
   const tx = useTranslations("exchanges");
   const slug = useGroupTicker(1);
-  const { data, isError, error } = useTickerDetail(slug);
+  const { data, isPending, isError, error } = useTickerDetail(slug);
+  // Until the quote has loaded there is nothing to say about it: a placeholder, not "No price".
+  const loading = isPending && !isError;
   const q = data?.quote;
   const ref = data?.ticker;
   // The price's own decimals: 0.815 KWD or 2.345 QAR keep their third (components/stock/common).
@@ -85,7 +87,13 @@ function TickerHeader() {
           <span className="num text-[12px]">{ref?.symbol ?? slug ?? "—"}</span>
         </span>
         <h1 className="headline min-w-0 text-[20px] leading-tight">
-          {ref ? <TickerNames nameEn={ref.name_en} nameAr={ref.name_ar} single /> : <span className="text-muted">{isError ? (error as Error).message : " "}</span>}
+          {ref ? (
+            <TickerNames nameEn={ref.name_en} nameAr={ref.name_ar} single />
+          ) : loading ? (
+            <span aria-busy className="inline-block h-5 w-40 animate-pulse rounded-chip bg-panel-raised align-middle" />
+          ) : (
+            <span className="text-muted">{isError ? (error as Error).message : " "}</span>
+          )}
         </h1>
         {ref && (
           <span className="label-caps hidden shrink-0 text-muted sm:inline">
@@ -100,7 +108,11 @@ function TickerHeader() {
             <FreshnessLight freshness={q?.freshness ?? null} />
           </span>
         )}
-        <span className="num text-[20px] text-text">{price ?? t("noPrice")}</span>
+        {loading ? (
+          <span aria-busy className="h-5 w-24 self-center animate-pulse rounded-chip bg-panel-raised" />
+        ) : (
+          <span className="num text-[20px] text-text">{price ?? t("noPrice")}</span>
+        )}
         {ref?.currency && price && <span className="label-caps text-muted">{currencyLabel(ref.currency, locale)}</span>}
         {/* A listing whose currency the data gets wrong (api/app/universe.py) says so, at every width. */}
         {ref && !ref.currency && price && <span className="text-muted">{t("currencyUnconfirmed")}</span>}

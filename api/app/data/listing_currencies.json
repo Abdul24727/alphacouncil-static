@@ -1,0 +1,17 @@
+{
+ "about": "Listings whose trading currency differs from the one the pipeline gives them (briefs.currency). Read by api/app/universe.py: only the trading currency changes (price, market cap, EPS, book value, portfolio groups); statements and dividends keep the pipeline's currency.",
+ "decided": "2026-10-18",
+ "decided_by": "owner",
+ "sources": [
+  "Audit reference check, docs/data-audit-2026-10-18.md F5: stockanalysis.com quote pages give each of these five as 'Price in USD' (2026-10-18).",
+  "The pipeline's own scraped ratio pages (evidence.sqlite, artifacts, artifact_type 'ratios'): market cap in 'مليون دولار' and book value in 'دولار' for all five; EPS in 'دولار' (ABC.BH, ARIG.BH) or 'سنتا', cents (GFH.DU, INOVEST, ITHMR.BH)."
+ ],
+ "not_checked": "Bahrain Bourse's own pages were not read: its site asked for a human verification.",
+ "listings": {
+  "ABC.BH_BSE": "USD",
+  "ARIG.BH_BSE": "USD",
+  "GFH.DU_BSE": "USD",
+  "INOVEST_BSE": "USD",
+  "ITHMR.BH_BSE": "USD"
+ }
+}

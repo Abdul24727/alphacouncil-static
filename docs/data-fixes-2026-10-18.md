@@ -17,7 +17,7 @@ During the live fetch, 7 consecutive requests (Tadawul 4150–4165) answered 502
 | F2 EPS units | EPS is shown only in the price's unit. Each ticker's unit is confirmed against its P/E: EPS × P/E must give the price (within 20%) as stored, or after dividing by the sub-unit of the listing's currency (100 for SAR, AED, QAR, USD; 1000 for KWD, BHD, OMR). Otherwise Key metrics shows **"Unit not confirmed"** with the rule on hover. Nothing is estimated. | `api/app/ratios.py` (`eps_in_price_unit`), `routers/ticker.py`, `overview-panels.tsx` | 305 shown as stored, 195 converted (KSE 93, MSM 49, BSE 24, ADX 14, DFM 11, Tadawul 4). 181 "Unit not confirmed": 166 have no P/E to check against (mostly losses; Tadawul 79), 15 have a P/E but no unit fits: 10,000× (ADNOCDRILL, ADNOCGAS, AMR, BOROUGE, FERTIGLB, LULU, TALABAT), 100,000× (811, 813, OEIHC), cents on a BHD label (GFH.DU), fils of KWD against a USD or AED price (KFH Bahrain, AGLTY, MAZAYA), and 4144 (negative EPS against a positive P/E). 35 have no EPS. |
 | F7 header decimals | The header, the peers table and market tables keep a price's own decimals. KWD, BHD and OMR always show 3. Other currencies show 3 when the stored price has a third decimal (QSE 2.345), and never pad a decimal the database lacks (AED 0.24 stays 0.24, F6). | `web/src/lib/format.ts` (`autoPriceDigits`), `StockTemplate.tsx`, `common.tsx` | 223 KWD, BHD and OMR headers, plus 28 prices with a third decimal (QSE 26, ADX 1, DFM 1). |
 | F3 news light | News is dated by its newest news or disclosure item, not by the fetch time. It turns amber after 30 calendar days (440 of 447 non-Tadawul tickers had an item within 30 days), or when the nightly fetch itself is late (2 trading days, the pipeline's window). With no item at all, the light is grey ("update time unknown"). Disclosures follow the same rule within the pipeline's own 120 days. The hover still shows the fetch time as "Updated". /methodology states the 30 calendar days in both languages. | `api/app/freshness.py` (`assess_items`, `NEWS_MAX_AGE_DAYS`), `routers/ticker.py`, `routers/site.py`, `messages/*.json` | Tadawul: about 5 of 269 green (was 262 green on items older than 30 days). Other exchanges are about the same as before. |
-| F5 currencies | **Cannot be taken from our data.** No table or file records a listing's trading currency, and the source's unit labels contradict themselves: KFH's Bahrain page labels its market cap in KWD while it trades in USD, and NIND's EPS is labelled in AED while it is stored ×1000. What the app does instead: a currency the exchange never trades in is not shown. The header says **"Currency not confirmed"** rather than giving a wrong one. | `api/app/universe.py` (`EXCHANGE_CURRENCIES`), `StockTemplate.tsx` | 7 of the 12: NIND, IFA, EKTTITAB, NIH (DFM, were KWD), GIH (ADX, KWD), OEIHC (ADX, OMR), KFH (Bahrain, KWD). Still wrong: the 5 USD-traded Bahrain listings (ABC.BH, ARIG.BH, GFH.DU, ITHMR.BH, INOVEST) show BHD. Our data has nothing that shows otherwise; see Part 4. |
+| F5 currencies | **Cannot be taken from our data.** No table or file records a listing's trading currency, and the source's unit labels contradict themselves: KFH's Bahrain page labels its market cap in KWD while it trades in USD, and NIND's EPS is labelled in AED while it is stored ×1000. What the app does instead: a currency the exchange never trades in is not shown. The header says **"Currency not confirmed"** rather than giving a wrong one. | `api/app/universe.py` (`EXCHANGE_CURRENCIES`), `StockTemplate.tsx` | 7 of the 12: NIND, IFA, EKTTITAB, NIH (DFM, were KWD), GIH (ADX, KWD), OEIHC (ADX, OMR), KFH (Bahrain, KWD). The 5 USD-traded Bahrain listings now show USD by the owner's decision (Part 5). |
 | F9 value traded | When a ticker's price file has no turnover on any bar, Key metrics shows **"Not in our price data"** (hover: the file does not record value traded) instead of a bare n/a. A file with turnover on earlier bars only still shows n/a. | `routers/ticker.py` (`value_traded_reason`), `overview-panels.tsx` | All 269 Tadawul pages. |
 
 Tests: `api/tests/test_ticker.py` covers the cases above with the real values (NBK, BMMI, ADNOCDIST, ADNOCDRILL, 811, KFH, Mazaya, 4144, ARIG). It also covers the news light (fresh, stale and unknown, plus a late fetch), the methodology window, value traded, and the currency rule. 138 API tests pass. `web/src/lib/format.test.ts` covers the price decimals; 16 web tests pass; typecheck, lint and `next build` are clean.
@@ -143,4 +143,25 @@ The owner chose both options, in this order: "Fix the Tadawul sectors: hide the 
 
 The other markets keep the pipeline's sector labels. The audit found only scattered errors there, e.g. ADX "Aviation" holds hotels and a driving school.
 
-The 5 USD-traded Bahrain listings still show BHD (Part 1, F5). Whether to keep a list for them is still the owner's call.
+## 5. Follow-ups the owner asked for (2026-10-18, evening)
+
+**Sector list refresh.**
+- The exchange's two pages were read again in the in-app browser. They match the committed list exactly: 22 sectors and 273 companies, none added, removed or moved. The file is unchanged.
+- `web/scripts/refresh-tadawul-sectors.mjs` makes this repeatable. The Saudi Exchange answers "Access Denied" to automated (headless) browsers, so its pages are read in an ordinary browser with the snippet the script prints. The script then checks that the English and Arabic pages agree, writes the file and lists what changed.
+- Run it when companies list or move sector.
+
+**The five US-dollar listings on Bahrain Bourse** (ABC.BH, ARIG.BH, GFH.DU, INOVEST, ITHMR.BH).
+- They now show USD, by the owner's decision, recorded with its sources in `api/app/data/listing_currencies.json`:
+  - the audit's reference check (stockanalysis.com: "Price in USD");
+  - the pipeline's own scraped pages, whose unit labels give market cap and book value in dollars and EPS in dollars or cents.
+- Bahrain Bourse's own pages were not read: its site asked for a human verification.
+- **What uses USD:** the trading currency only, i.e. price, market cap, EPS, book value and portfolio groups. Arabic pages write it "دولار".
+- **EPS:** for GFH.DU it is now converted from cents, confirmed by its P/E. INOVEST and ITHMR.BH have no P/E, so they stay "Unit not confirmed".
+- **What stays in BHD:** statements and dividends keep the pipeline's currency, because nothing confirms theirs.
+
+**Stock header while loading.** The header no longer says "No price" while the quote loads: the name and price show placeholder bars until the database answers. A stock with no price in the database still says "No price" once loaded (checked with SAGA).
+
+**Checks.**
+- API tests: 156 pass. Web tests: 23 pass.
+- `web/scripts/check-currency-header.mjs` checks the five listings in both languages, the header with the quote held back for 4 seconds, and "No price" after loading.
+- The local run passed 22 of 22 (`screenshots/currency-header-local/`).

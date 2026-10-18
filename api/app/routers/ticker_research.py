@@ -239,7 +239,8 @@ def get_statements(request: Request, ref: str, years: int = 5) -> Statements:
         Statement(section=name, rows=[sec[i] for i in sorted(sec)])
         for name, sec in sorted(by_section.items(), key=lambda kv: rank(kv[0]))
     ]
-    return Statements(years=sorted(yrs), unit="mn", currency=t.currency, statements=statements)
+    # Statements keep the pipeline's currency, not a recorded trading currency (universe.py).
+    return Statements(years=sorted(yrs), unit="mn", currency=t.report_currency, statements=statements)
 
 
 # --- Corporate: dividends and capital changes -----------------------------------------------
@@ -288,7 +289,7 @@ def get_corporate(request: Request, ref: str) -> Corporate:
     except MarketDataUnavailable as exc:
         raise unavailable(exc) from exc
     return Corporate(
-        currency=t.currency,
+        currency=t.report_currency,  # dividends, like statements (universe.py)
         dividends=[Dividend(**dict(r)) for r in divs],
         capital_changes=[CapitalChange(**dict(r)) for r in caps],
     )

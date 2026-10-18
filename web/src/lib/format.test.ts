@@ -1,7 +1,7 @@
 // Run with: npm test   (Node's built-in runner; Node 24 strips the types)
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { autoPriceDigits, fmtDate, fmtNumber, fmtStamp } from "./format.ts";
+import { autoPriceDigits, currencyLabel, fmtDate, fmtNumber, fmtStamp } from "./format.ts";
 
 test("dates: English month names, or Arabic ones with Latin digits in a right-to-left isolate", () => {
   assert.equal(fmtDate("2026-10-13"), "13 Oct 2026");
@@ -28,4 +28,10 @@ test("price decimals: always 3 for fils and baisa, otherwise the third only when
   assert.equal(fmtNumber(26.5, autoPriceDigits("SAR", 26.5)), "26.50");
   assert.equal(autoPriceDigits(null, 3.37), 2);
   assert.equal(autoPriceDigits("SAR"), 2);
+});
+
+test("currency labels: ISO codes in English, Gulf names in Arabic, the dollar included", () => {
+  assert.equal(currencyLabel("USD", "en"), "USD");
+  assert.equal(currencyLabel("USD", "ar"), "دولار");
+  assert.equal(currencyLabel("BHD", "ar"), "د.ب");
 });

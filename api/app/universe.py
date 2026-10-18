@@ -55,6 +55,15 @@ EXCHANGE_CURRENCIES: dict[str, set[str]] = {
     "MSM": {"OMR"},
 }
 
+# Listings that trade in another currency than the pipeline gives them: the five US-dollar lines on
+# Bahrain Bourse, recorded with the owner's decision and its sources in data/listing_currencies.json.
+LISTING_CURRENCIES_FILE = Path(__file__).parent / "data" / "listing_currencies.json"
+
+
+def load_listing_currencies(path: Path = LISTING_CURRENCIES_FILE) -> dict[str, str]:
+    """ticker_key -> trading currency."""
+    return dict(json.loads(path.read_text(encoding="utf-8"))["listings"])
+
 
 def normalize(text: str) -> str:
     """Case, Arabic letter variants, diacritics and Eastern digits folded for matching."""
@@ -79,8 +88,12 @@ class Ticker:
     ticker_key: str
     symbol: str
     exchange: str
-    # The listing's currency, or None when the pipeline's is one the exchange does not trade in.
+    # The listing's trading currency (price, market cap, EPS, book value), or None when the pipeline's
+    # is one the exchange does not trade in and no listing currency is recorded.
     currency: str | None
+    # The currency statements and dividends are labelled in: the pipeline's, when the exchange trades
+    # in it. Unchanged by data/listing_currencies.json, which only knows the trading currency.
+    report_currency: str | None
     # The pipeline's value as written: the unit its ratios are in (ratios.eps_in_price_unit).
     data_currency: str | None
     name_en: str | None
@@ -154,6 +167,7 @@ class Universe:
             symbol_counts[r["ticker"]] = symbol_counts.get(r["ticker"], 0) + 1
 
         official = load_tadawul_sectors()
+        listed_in = load_listing_currencies()
         tickers = []
         for r in rows:
             n = names.get(r["ticker_key"], {})
@@ -164,12 +178,15 @@ class Universe:
                 sector_en, sector_ar = r["sector_en"], r["sector_ar"]
                 sector_id = None if r["sector_id"] is None else str(r["sector_id"])
             name_en, name_ar = n.get("name_en"), n.get("name_ar")
+            traded = EXCHANGE_CURRENCIES.get(r["exchange"], {r["currency"]})
+            report_currency = r["currency"] if r["currency"] in traded else None
             tickers.append(
                 Ticker(
                     ticker_key=r["ticker_key"],
                     symbol=r["ticker"],
                     exchange=r["exchange"],
-                    currency=r["currency"] if r["currency"] in EXCHANGE_CURRENCIES.get(r["exchange"], {r["currency"]}) else None,
+                    currency=listed_in.get(r["ticker_key"], report_currency),
+                    report_currency=report_currency,
                     data_currency=r["currency"],
                     name_en=name_en,
                     name_ar=name_ar,

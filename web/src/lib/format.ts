@@ -84,7 +84,7 @@ export function fmtDate(iso: string | null | undefined, locale?: string): string
 }
 
 /** Arabic pages name currencies the way Gulf readers do; English pages keep the ISO code. */
-const CURRENCY_AR: Record<string, string> = { SAR: "ر.س", AED: "د.إ", QAR: "ر.ق", KWD: "د.ك", BHD: "د.ب", OMR: "ر.ع" };
+const CURRENCY_AR: Record<string, string> = { SAR: "ر.س", AED: "د.إ", QAR: "ر.ق", KWD: "د.ك", BHD: "د.ب", OMR: "ر.ع", USD: "دولار" };
 
 export function currencyLabel(code: string | null | undefined, locale: string): string {
   if (!code) return "";
