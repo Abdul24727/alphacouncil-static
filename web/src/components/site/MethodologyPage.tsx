@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Link } from "@/i18n/navigation";
 import { getMethodology, type Methodology } from "@/lib/api/server";
+import { fmtDate } from "@/lib/format";
 import { ruleArgs } from "@/lib/council-rules";
 import { H2, PAGE_LEAD, PAGE_TITLE } from "./PricingPage";
 import { Db, Unavailable, WRAP } from "./ui";
@@ -133,6 +134,21 @@ async function Data({ m, locale }: { m: Methodology; locale: string }) {
         </table>
       </div>
       <Body>{t.rich("total", { n: db, equities: String(m.equities) })}</Body>
+      <Body>
+        {t.rich("sectors", {
+          n: db,
+          date: fmtDate(m.tadawul_sectors.retrieved, locale) ?? m.tadawul_sectors.retrieved,
+          link: (c) => (
+            <a
+              href={locale === "ar" ? m.tadawul_sectors.source_url_ar : m.tadawul_sectors.source_url}
+              className="text-signal hover:underline"
+              rel="noopener"
+            >
+              {c}
+            </a>
+          ),
+        })}
+      </Body>
     </Section>
   );
 }

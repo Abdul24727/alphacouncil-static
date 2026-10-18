@@ -37,6 +37,7 @@ def test_sector_vs_sector(client):
     names = [s["sector_en"] for s in client.get("/v1/templates/sectors").json()]
     assert "Energy" in names and "Banks" in names
     c = client.get("/v1/templates/sector-vs-sector", params={"a": "Energy", "b": "Banks"}).json()
-    assert c["a"]["equities"] == 3 and c["b"]["equities"] == 2
-    assert c["a"]["median_pe"] == 16.235  # median of 14.47 (scraped) and 18.0
+    # Tadawul sectors are the exchange's own (universe.py): Luberef (2223) is Materials, not Energy.
+    assert c["a"]["equities"] == 2 and c["b"]["equities"] == 2
+    assert c["a"]["median_pe"] == 14.47  # 2222 (scraped); 2382 has no P/E
     assert client.get("/v1/templates/sector-vs-sector", params={"a": "Nope", "b": "Banks"}).status_code == 404

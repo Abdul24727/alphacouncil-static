@@ -104,11 +104,31 @@ The pipeline only can fix these. The app shows them as they are, or labels them,
 - **Blank Tadawul changes.** `_fmt_change` (:2588-2593) returns an empty string for any change ≥ 0, so 552,830 Tadawul rows have a blank Change. The app does not read that column, but the files are wrong.
 - **News and disclosures.** Their `as_of` is the fetch time. Tadawul collection has nearly stopped since September: 5 of 269 tickers have an item from the last 30 days. Disclosures were not refreshed on 10-17 or 10-18 (audit F3). The app now dates news by the newest item, so the lights show the gap.
 
-## 4. Question for the owner
+## 4. Tadawul sectors: the owner's choice and what was built
 
-**Sectors on Tadawul.** Until the pipeline fix (P1) lands, the screener filter, peers and the Sector vs Sector template group 98 companies under the wrong sector. Two options for the app, neither built yet:
+The owner chose both options, in this order: "Fix the Tadawul sectors: hide the nine wrong sector ids now, and build a sector list from the Saudi Exchange's official classification to replace them."
 
-- **A. Hide the nine wrong Tadawul sector ids now.** The app already does this for id 1. It is data-only: no outside list. Those 98 companies then show no sector and have no peers until P1 is fixed.
-- **B. Keep a Tadawul sector list in the repo**, taken from the Saudi Exchange's published sector classification (symbol → sector, English and Arabic). The app would use it over the pipeline's labels for Tadawul. It also covers the 24 unclassified companies. It is a list to maintain when companies list or move sector.
+**A. Hide the nine wrong ids** (commit `25e220b`)
+- Ids 7, 8, 13, 27, 34, 35, 37, 38 and 40 are treated like the catch-all id 1: no sector (`api/app/universe.py`).
+- The peers panel says the sector is unknown instead of "No peers in this sector".
+- The screener labels the cell "Sector unknown".
+- The portfolio's sector bars group these holdings under "Sector unknown" (it said "Other").
 
-The same choice applies to the 5 USD-traded Bahrain listings: a short list in the repo from the exchange's own listing pages, or wait for the pipeline.
+**B. The Saudi Exchange's own classification**
+- **The list:** `api/app/data/tadawul_sectors.json`. It holds the 22 sectors and 273 companies of the Saudi Exchange's Main Market Watch, read from its English and Arabic pages on 2026-10-18. The file keeps both URLs and the date. The two pages list the same companies under the same sectors, and the build checked that symbol by symbol. Names are kept exactly as the exchange writes them, e.g. "Real Estate Mgmt & Dev't" / "إدارة وتطوير العقارات".
+- **What changes on screen:**
+  - Tadawul sectors now come only from that list; the pipeline's labels are no longer used for Tadawul.
+  - A Tadawul company the list does not cover has no sector ("sector unknown"), never a guess. Today that applies to none of our 269.
+  - 203 of the 269 change label. The 24 catch-all companies get a sector, e.g. 1111 Saudi Tadawul Group is Financial Services.
+  - Bahri (4030) is filed under Energy, as the exchange files it.
+- **Peers** now take their members from these sectors, not from the pipeline's labels in `briefs`.
+- **/methodology** names the source and its date in both languages.
+- **Upkeep:** the list must be refreshed when companies list or move sector. The 4 newest listings (1325, 4328, 6022, 7205) are on it but not yet in our universe.
+- **Checks:**
+  - API tests: 153 pass.
+  - `web/scripts/check-sectors.mjs` checks all Tadawul companies against the list, peers within one sector, and the peers panel and Sector vs Sector page in both languages at 1440 and 390 px.
+  - The local run passed 19 of 19 (`screenshots/sectors-local/`).
+
+The other markets keep the pipeline's sector labels. The audit found only scattered errors there, e.g. ADX "Aviation" holds hotels and a driving school.
+
+The 5 USD-traded Bahrain listings still show BHD (Part 1, F5). Whether to keep a list for them is still the owner's call.

@@ -976,7 +976,8 @@
         "market": "Market",
         "equities": "Equities",
         "weekend": "Closed on",
-        "total": "<n>{equities}</n> equities in total."
+        "total": "<n>{equities}</n> equities in total.",
+        "sectors": "On Tadawul, sectors are the Saudi Exchange's own classification, as <link>its Main Market Watch</link> listed them on <n>{date}</n>. A company it does not list shows no sector. On the other markets, sectors come from the nightly pipeline."
       },
       "fresh": {
         "title": "How we decide data is fresh",

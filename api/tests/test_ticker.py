@@ -1,3 +1,4 @@
+import json
 from datetime import UTC, datetime
 
 from app import council
@@ -207,11 +208,14 @@ def test_every_screen_shows_the_same_ratios(client):
     assert council["value"] == v["pe"] and council["income"] == v["dividend_yield_pct"]
 
 
-def test_the_default_sector_bucket_is_not_a_sector(client):
-    # 1111 is labelled "Energy" through sector_id 1, the pipeline's unclassified bucket.
-    assert get(client, "/v1/tickers/1111")["ticker"]["sector_en"] is None
+def test_tadawul_sectors_are_the_exchanges_own(client):
+    # 1111 sat in the pipeline's catch-all ("Energy"); 2223 is labelled Energy in briefs, but the
+    # Saudi Exchange files Luberef under Materials.
+    t = get(client, "/v1/tickers/1111")["ticker"]
+    assert (t["sector_en"], t["sector_ar"]) == ("Financial Services", "الخدمات المالية")
+    assert get(client, "/v1/tickers/2223")["ticker"]["sector_en"] == "Materials"
     peers = [p["ticker"]["ticker_key"] for p in get(client, "/v1/tickers/2222/peers")["peers"]]
-    assert "1111_TADAWUL" not in peers and "2223_TADAWUL" in peers
+    assert "1111_TADAWUL" not in peers and "2223_TADAWUL" not in peers and "2382_TADAWUL" in peers
 
 
 def test_news_prefers_the_page_language_and_keeps_date_order():
@@ -336,17 +340,42 @@ def test_a_currency_the_exchange_does_not_trade_in_is_not_shown(client, data_fil
     assert get(client, "/v1/tickers/FAB")["ticker"]["currency"] == "AED"
 
 
-def test_a_mislabelled_tadawul_sector_is_not_shown(client, data_files):
+def test_a_tadawul_company_off_the_exchange_list_has_no_sector(client, data_files):
     import sqlite3
 
-    # Like 2280 Almarai: sector_id 8, which the pipeline names "Transportation" (food producers).
-    row = ("2280_TADAWUL", "2280", "TADAWUL", "SAR", 8, "Transportation", "النقل", datetime.now(UTC).date().isoformat(),
-           50.0, 0.0, 1e5, None, 50000.0, None, None, None, None, None, None, None, None, None, None, None, 0, None)
+    # 2280 Almarai: the pipeline says "Transportation", the exchange "Food & Beverages".
+    # 9999 is on no list: its pipeline label is not used, its sector is unknown.
+    today = datetime.now(UTC).date().isoformat()
+    rows = [
+        ("2280_TADAWUL", "2280", "TADAWUL", "SAR", 8, "Transportation", "النقل", today, 50.0, 0.0, 1e5, None, 50000.0,
+         None, None, None, None, None, None, None, None, None, None, None, 0, None),
+        ("9999_TADAWUL", "9999", "TADAWUL", "SAR", 4, "Banks", "البنوك", today, 10.0, 0.0, 1e5, None, 100.0,
+         None, None, None, None, None, None, None, None, None, None, None, 0, None),
+    ]
     with sqlite3.connect(data_files.briefs_db) as conn:
-        conn.execute(f"INSERT INTO briefs VALUES ({','.join('?' * len(row))})", row)
-    assert get(client, "/v1/tickers/2280")["ticker"]["sector_en"] is None
-    p = get(client, "/v1/tickers/2280/peers")
+        conn.executemany(f"INSERT INTO briefs VALUES ({','.join('?' * len(rows[0]))})", rows)
+    t = get(client, "/v1/tickers/2280")["ticker"]
+    assert (t["sector_en"], t["sector_ar"]) == ("Food & Beverages", "إنتاج الأغذية")
+    assert get(client, "/v1/tickers/9999")["ticker"]["sector_en"] is None
+    p = get(client, "/v1/tickers/9999/peers")
     assert p["sector_en"] is None and p["peers"] == []
-    assert "Transportation" not in {s["sector_en"] for s in get(client, "/v1/templates/sectors")}
-    # A right label on another id stays (fixture rows without an id keep theirs).
-    assert get(client, "/v1/tickers/1120")["ticker"]["sector_en"] == "Banks"
+    # Banks peers come from the universe: 1120, not the unlisted 9999 that briefs calls a bank.
+    assert [x["ticker"]["ticker_key"] for x in get(client, "/v1/tickers/1120/peers")["peers"]] == ["FAB_ADX"]
+    names = {s["sector_en"] for s in get(client, "/v1/templates/sectors")}
+    assert "Food & Beverages" in names and "Transportation" not in names
+
+
+def test_the_tadawul_sector_list_names_its_source():
+    from app.universe import TADAWUL_SECTORS_FILE, load_tadawul_sectors
+
+    doc = json.loads(TADAWUL_SECTORS_FILE.read_text(encoding="utf-8"))
+    assert doc["source_urls"]["en"].startswith("https://www.saudiexchange.sa/") and doc["retrieved"]
+    assert all(sec["en"] and sec["ar"] for sec in doc["sectors"])
+    symbols = [s for sec in doc["sectors"] for s in sec["symbols"]]
+    assert len(symbols) == len(set(symbols)) == doc["companies"] == len(load_tadawul_sectors())
+
+
+def test_methodology_names_the_tadawul_sector_source(client):
+    src = get(client, "/v1/methodology")["tadawul_sectors"]
+    assert src["source_url"].startswith("https://www.saudiexchange.sa/") and src["retrieved"] == "2026-10-18"
+    assert src["companies"] == 273

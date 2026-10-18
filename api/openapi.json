@@ -4052,6 +4052,9 @@
       },
       "Methodology": {
         "properties": {
+          "tadawul_sectors": {
+            "$ref": "#/components/schemas/SectorSource"
+          },
           "seats": {
             "items": {
               "$ref": "#/components/schemas/SeatRule"
@@ -4088,6 +4091,7 @@
         },
         "type": "object",
         "required": [
+          "tadawul_sectors",
           "seats",
           "freshness",
           "price_max_age_days",
@@ -5429,6 +5433,34 @@
           "return_12m"
         ],
         "title": "SectorMember"
+      },
+      "SectorSource": {
+        "properties": {
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "source_url_ar": {
+            "type": "string",
+            "title": "Source Url Ar"
+          },
+          "retrieved": {
+            "type": "string",
+            "title": "Retrieved"
+          },
+          "companies": {
+            "type": "integer",
+            "title": "Companies"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_url",
+          "source_url_ar",
+          "retrieved",
+          "companies"
+        ],
+        "title": "SectorSource"
       },
       "SectorStats": {
         "properties": {

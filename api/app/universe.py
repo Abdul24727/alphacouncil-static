@@ -1,5 +1,6 @@
 """The 716-equity universe in memory, rebuilt when the pipeline rewrites its files."""
 
+import json
 import re
 import threading
 import unicodedata
@@ -19,13 +20,26 @@ _DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890
 _PUNCT = re.compile(r"[^\w\s&]")
 
 
-UNCLASSIFIED_TADAWUL_SECTOR = 1
-# Tadawul sector ids whose pipeline label names another group: each holds one real group under
-# the wrong name (8 "Transportation" = food producers, 38 "Hotels & Restaurants" = materials,
-# 37 "Entertainment" = capital goods, 35, 27, 34, 40, 13, and 7 = 1832 only). 98 companies on
-# 2026-10-18 (docs/data-fixes-2026-10-18.md, P1). Hidden by the owner's choice until the
-# official classification replaces them.
-MISLABELLED_TADAWUL_SECTORS = {7, 8, 13, 27, 34, 35, 37, 38, 40}
+# Tadawul sectors come only from the Saudi Exchange's own classification (data/tadawul_sectors.json:
+# the Main Market Watch's groups in English and Arabic, with its source and date). The pipeline's
+# labels are not used for Tadawul: 98 named another group and 24 sat in a catch-all bucket
+# (docs/data-fixes-2026-10-18.md, P1). A company the list does not cover has no sector ("sector
+# unknown"), never a guess. Refresh the file when companies list or move sector.
+TADAWUL_SECTORS_FILE = Path(__file__).parent / "data" / "tadawul_sectors.json"
+
+
+def tadawul_sectors_source(path: Path = TADAWUL_SECTORS_FILE) -> dict:
+    """Where the Tadawul sector list comes from and when it was taken (for /methodology)."""
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    return {"source_url": doc["source_urls"]["en"], "source_url_ar": doc["source_urls"]["ar"],
+            "retrieved": doc["retrieved"], "companies": doc["companies"]}
+
+
+def load_tadawul_sectors(path: Path = TADAWUL_SECTORS_FILE) -> dict[str, tuple[str, str]]:
+    """Symbol -> (sector name in English, in Arabic), as the exchange publishes them."""
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    return {sym: (sec["en"], sec["ar"]) for sec in doc["sectors"] for sym in sec["symbols"]}
+
 
 # Currencies each exchange trades equities in (Bahrain also lists some in US dollars). The
 # pipeline gives some cross-listings their company's home currency instead (KWD on DFM, ADX
@@ -139,16 +153,16 @@ class Universe:
         for r in rows:
             symbol_counts[r["ticker"]] = symbol_counts.get(r["ticker"], 0) + 1
 
+        official = load_tadawul_sectors()
         tickers = []
         for r in rows:
             n = names.get(r["ticker_key"], {})
-            # Tadawul sector_id 1 is the pipeline's default bucket for listings it could not
-            # classify (the exchange operator, schools, brokers, delivery apps…), all labelled
-            # "Energy"; the mislabelled ids carry another group's name. A wrong sector is worse
-            # than none: treat it as unknown.
-            unclassified = r["exchange"] == "TADAWUL" and r["sector_id"] in (
-                {UNCLASSIFIED_TADAWUL_SECTOR} | MISLABELLED_TADAWUL_SECTORS
-            )
+            if r["exchange"] == "TADAWUL":
+                sector_en, sector_ar = official.get(r["ticker"], (None, None))
+                sector_id = f"tasi:{sector_en}" if sector_en else None
+            else:
+                sector_en, sector_ar = r["sector_en"], r["sector_ar"]
+                sector_id = None if r["sector_id"] is None else str(r["sector_id"])
             name_en, name_ar = n.get("name_en"), n.get("name_ar")
             tickers.append(
                 Ticker(
@@ -159,9 +173,9 @@ class Universe:
                     data_currency=r["currency"],
                     name_en=name_en,
                     name_ar=name_ar,
-                    sector_id=None if unclassified or r["sector_id"] is None else str(r["sector_id"]),
-                    sector_en=None if unclassified else r["sector_en"],
-                    sector_ar=None if unclassified else r["sector_ar"],
+                    sector_id=sector_id,
+                    sector_en=sector_en,
+                    sector_ar=sector_ar,
                     # /t/2222 for Tadawul and for symbols unique across exchanges;
                     # /t/<ticker_key> for the rest (2010 is SABIC on Tadawul, not 2010_KSE).
                     slug=(

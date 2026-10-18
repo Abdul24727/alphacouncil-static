@@ -345,22 +345,27 @@ def get_peers(request: Request, ref: str, limit: int = 8) -> Peers:
     if not t.sector_en:
         return Peers(basis="sector_exchange", sector_en=None, sector_ar=None, peers=[])
 
-    sql = (
-        "SELECT ticker_key, as_of_date, last_price, day_change_pct, market_cap_raw"
-        " FROM briefs WHERE sector_en = ? AND ticker_key != ? {extra}"
-        " ORDER BY market_cap_raw IS NULL, market_cap_raw DESC"
-    )
+    # Members come from the universe, not briefs' labels: Tadawul's sectors are the exchange's own
+    # classification (universe.py), and a sector the universe does not know has no members.
+    same = [p.ticker_key for p in universe.tickers if p.sector_en == t.sector_en and p.ticker_key != t.ticker_key]
+    local = [k for k in same if universe.by_key[k].exchange == t.exchange]
 
-    def same_sector(found) -> list:
-        # The universe drops sector labels it knows are wrong (universe.py): those rows are not peers.
-        return [r for r in found if (p := universe.by_key.get(r["ticker_key"])) and p.sector_en == t.sector_en][:limit]
+    def largest(conn, keys: list[str]) -> list:
+        if not keys:
+            return []
+        return conn.execute(
+            "SELECT ticker_key, as_of_date, last_price, day_change_pct, market_cap_raw FROM briefs"
+            f" WHERE ticker_key IN ({','.join('?' * len(keys))})"
+            " ORDER BY market_cap_raw IS NULL, market_cap_raw DESC LIMIT ?",
+            (*keys, limit),
+        ).fetchall()
 
     try:
         with reader(s.briefs_db, immutable=s.market_db_immutable, name="BRIEFS_DB") as conn:
-            rows = same_sector(conn.execute(sql.format(extra="AND exchange = ?"), (t.sector_en, t.ticker_key, t.exchange)).fetchall())
+            rows = largest(conn, local)
             basis = "sector_exchange"
             if len(rows) < 3:
-                rows = same_sector(conn.execute(sql.format(extra=""), (t.sector_en, t.ticker_key)).fetchall())
+                rows = largest(conn, same)
                 basis = "sector_gcc"
         rv = ratios.load(s, [r["ticker_key"] for r in rows])
     except MarketDataUnavailable as exc:

@@ -21,6 +21,7 @@ from ..freshness import (
 )
 from ..market_db import MarketDataUnavailable, reader
 from .market import _uni
+from ..universe import tadawul_sectors_source
 from .ticker import settings_of
 
 router = APIRouter(tags=["site"])
@@ -77,7 +78,16 @@ class ExchangeCalendar(BaseModel):
     weekend: list[int]  # weekday numbers, Monday = 0
 
 
+class SectorSource(BaseModel):
+    source_url: str
+    source_url_ar: str
+    retrieved: str  # YYYY-MM-DD
+    companies: int
+
+
 class Methodology(BaseModel):
+    # Tadawul sectors: the Saudi Exchange's classification as kept in the repo (universe.py).
+    tadawul_sectors: SectorSource
     seats: list[SeatRule]
     freshness: list[FreshnessRule]
     price_max_age_days: int
@@ -125,6 +135,7 @@ def methodology(request: Request) -> Methodology:
         counts[t.exchange] = counts.get(t.exchange, 0) + 1
 
     return Methodology(
+        tadawul_sectors=SectorSource(**tadawul_sectors_source()),
         seats=[
             SeatRule(seat=seat, inputs=list(council.INPUTS[seat]), thresholds=council.THRESHOLDS[seat])
             for seat in council.SEATS

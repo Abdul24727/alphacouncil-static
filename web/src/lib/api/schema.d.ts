@@ -1531,6 +1531,7 @@ export interface components {
         };
         /** Methodology */
         Methodology: {
+            tadawul_sectors: components["schemas"]["SectorSource"];
             /** Seats */
             seats: components["schemas"]["SeatRule"][];
             /** Freshness */
@@ -1909,6 +1910,17 @@ export interface components {
             dividend_yield_pct: number | null;
             /** Return 12M */
             return_12m: number | null;
+        };
+        /** SectorSource */
+        SectorSource: {
+            /** Source Url */
+            source_url: string;
+            /** Source Url Ar */
+            source_url_ar: string;
+            /** Retrieved */
+            retrieved: string;
+            /** Companies */
+            companies: number;
         };
         /** SectorStats */
         SectorStats: {
