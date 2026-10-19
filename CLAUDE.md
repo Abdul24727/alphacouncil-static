@@ -1,5 +1,7 @@
 # alphacouncil-platform
 
+Project plan and current step live in PROJECT.md — read it before starting work.
+
 The rebuilt AlphaCouncil: a dense research terminal for Gulf markets (Tadawul, ADX, DFM, QSE, Boursa Kuwait, BHB, MSX).
 
 ## Layout
@@ -20,7 +22,7 @@ The rebuilt AlphaCouncil: a dense research terminal for Gulf markets (Tadawul, A
 - The council (`api/app/council.py`) is six deterministic seats over database values (thresholds from the old strategy lenses); no LLM, no blended score. Every threshold lives in `THRESHOLDS`; the API returns them with each seat and on `/v1/methodology`, and the UI messages (`stock.council.rules.*`) take them as ICU arguments, so /methodology and the council panel cannot drift from the votes.
 - Accounts: sign-up requires the old site's registration acceptance and records it in `consents` (text and document versions in `api/app/legal.py`, tested against `web/src/content/legal`). Settings › Delete account removes the user and everything that cascades from it. The old site's members were imported without a password (`docs/account-import.md`); one without an acceptance accepts on the new-password page. Rate limits key on nginx's `X-Real-IP`, never on `X-Forwarded-For`, and are counted in the app database (`rate_hits`) so all uvicorn workers share them.
 - Copilot: the provider and model come from the environment only (`COPILOT_PROVIDER` auto|openrouter|anthropic|standin, `COPILOT_MODEL`; keys `OPENROUTER_API_KEY` / `ANTHROPIC_API_KEY` live in the server env file, never in git). `app/copilot/openai_compat.py` (OpenRouter or any OpenAI-compatible endpoint) and `engine.py` (Claude) share the prompt, tools and stream format. 60 questions an hour per user or address; with a model configured it answers signed-in users only (`/v1/copilot/status` says `sign_in_required`). Staging runs `deepseek/deepseek-v3.2` on OpenRouter.
-- Plan prices: `api/app/pricing.py`, ported from the old backend with the same env variables (PRICE_PRO_SAR, ELITE_ENABLED) the Moyasar checkout uses. This app has no checkout yet (`checkout_open: false`).
+- Plan prices: `api/app/pricing.py`, ported from the old backend with the same env variables (PRICE_PRO_SAR, ELITE_ENABLED) the Moyasar checkout uses. The Pro checkout (`api/app/billing.py`, Moyasar) is open on production since 2026-10-18; runbook: `docs/production.md`.
 
 ## Next.js 16 patterns used here
 
@@ -39,8 +41,9 @@ The rebuilt AlphaCouncil: a dense research terminal for Gulf markets (Tadawul, A
 
 ## Standing rules
 
-- Work only on git branch `rebuild`. Never push to main, never deploy to alphacouncil.tech.
-- Do not touch the live alphacouncil.tech or the old repos (`alphacouncil-static`, `Argaam-council-…`). Read them for reference only.
+- Work only on git branch `rebuild`. Never push to main.
+- alphacouncil.tech runs this app (since 2026-10-17). Release only beta → production with `scripts/deploy-staging.sh` then `scripts/deploy-production.sh`, and only with the owner's go-ahead for that release.
+- Do not change the old repos (`alphacouncil-static`, `Argaam-council-…`) or the old pipeline on the server (`/opt/alphacouncil/backend`): read them for reference only, unless the owner approves a specific change (PROJECT.md, Goal 2).
 - Follow BRAND.md exactly. Anything it bans is a bug.
 - Never show a number that is not from our database. Missing data = a labelled placeholder or "Data unavailable", never an estimate.
 - Before saying a step is done: run the app, screenshot the page at 1440px and 390px wide, and show it.
