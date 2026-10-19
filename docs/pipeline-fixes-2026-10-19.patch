@@ -1,0 +1,384 @@
+From 9e0cbc8c162f7f51a29691bb70f6c686baa4fbd7 Mon Sep 17 00:00:00 2001
+From: "Claude (audit part 2)" <claude@local>
+Date: Mon, 19 Oct 2026 14:26:57 +0300
+Subject: [PATCH 1/4] F-A: current Argaam page paths for 2080, 4240, AGILITY,
+ GULFNAV; list tickers with no fresh price chart in the nightly status and the
+ health digest
+
+---
+ _bin/nightly_pipeline.sh             |  7 +++-
+ argaam/tickers.csv                   |  8 ++--
+ argaam/tools/chart_failures.py       | 57 ++++++++++++++++++++++++++++
+ llm-council/scripts/health_digest.py |  8 +++-
+ 4 files changed, 74 insertions(+), 6 deletions(-)
+ create mode 100644 argaam/tools/chart_failures.py
+
+diff --git a/_bin/nightly_pipeline.sh b/_bin/nightly_pipeline.sh
+index a9732e5..f9c9072 100644
+--- a/_bin/nightly_pipeline.sh
++++ b/_bin/nightly_pipeline.sh
+@@ -197,6 +197,11 @@ if [ "${USEPCT:-0}" -ge 80 ]; then
+   alert FAIL "disk pressure" "Root filesystem at ${USEPCT}% after nightly hygiene — investigate before it fills. Log: $LOG"
+ fi
+ 
+-alert OK "OK${PARTIAL:+ (PARTIAL ${DONE}/716)}" "Scrape (mode=$MODE, $PREFIX: $DONE tickers${PARTIAL:+ — PARTIAL, below the $MIN_DONE full bar; fresh tickers served, stale withheld}) + rebuild + restart complete on VPS; /api/screening 200; disk ${USEPCT}%. Log: $LOG"
++# Tickers whose chart did not come through: a renamed company page answers 404, yet the
++# ticker still counts as done. Listed in the OK status and the health digest (audit part 2, F-A).
++CHARTS=$(cd "$ARGAAM" && "$PY" tools/chart_failures.py default_universe 2>/dev/null || true)
++log "[charts] ${CHARTS:-chart check unavailable}"
++
++alert OK "OK${PARTIAL:+ (PARTIAL ${DONE}/716)}" "Scrape (mode=$MODE, $PREFIX: $DONE tickers${PARTIAL:+ — PARTIAL, below the $MIN_DONE full bar; fresh tickers served, stale withheld}) + rebuild + restart complete on VPS; /api/screening 200; disk ${USEPCT}%. ${CHARTS:+$CHARTS. }Log: $LOG"
+ log "===== DAILY PIPELINE SUCCESS ====="
+ exit 0
+diff --git a/argaam/tickers.csv b/argaam/tickers.csv
+index fab5fab..49b8f8a 100644
+--- a/argaam/tickers.csv
++++ b/argaam/tickers.csv
+@@ -44,7 +44,7 @@ ticker,exchange,market,company_name,company_path,profile_path,company_id,market_
+ 2050,TADAWUL,TASI,مجموعة صافولا,/en/tadawul/tasi/savola-group/overview,/en/tadawul/tasi/savola-group/profile,85,3
+ 2060,TADAWUL,TASI,التصنيع,/en/tadawul/tasi/tasnee/overview,/en/tadawul/tasi/tasnee/profile,72,3
+ 2070,TADAWUL,TASI,الدوائية,/en/tadawul/tasi/spimaco/overview,/en/tadawul/tasi/spimaco/profile,75,3
+-2080,TADAWUL,TASI,الغاز,/en/tadawul/tasi/gasco/overview,/en/tadawul/tasi/gasco/profile,69,3
++2080,TADAWUL,TASI,الغاز,/en/tadawul/tasi/gasco-holding/overview,/en/tadawul/tasi/gasco-holding/profile,69,3
+ 2081,TADAWUL,TASI,الخريف,/en/tadawul/tasi/awpt/overview,/en/tadawul/tasi/awpt/profile,13068,3
+ 2082,TADAWUL,TASI,أكوا,/en/tadawul/tasi/acwa/overview,/en/tadawul/tasi/acwa/profile,4269,3
+ 2083,TADAWUL,TASI,مرافق,/en/tadawul/tasi/marafiq/overview,/en/tadawul/tasi/marafiq/profile,4307,3
+@@ -171,7 +171,7 @@ ticker,exchange,market,company_name,company_path,profile_path,company_id,market_
+ 4210,TADAWUL,TASI,الأبحاث والإعلام,/en/tadawul/tasi/srmg/overview,/en/tadawul/tasi/srmg/profile,578,3
+ 4220,TADAWUL,TASI,إعمار,/en/tadawul/tasi/emaar-ec/overview,/en/tadawul/tasi/emaar-ec/profile,832,3
+ 4230,TADAWUL,TASI,البحر الأحمر,/en/tadawul/tasi/red-sea/overview,/en/tadawul/tasi/red-sea/profile,833,3
+-4240,TADAWUL,TASI,سينومي ريتيل,/en/tadawul/tasi/cenomi-retail/overview,/en/tadawul/tasi/cenomi-retail/profile,917,3
++4240,TADAWUL,TASI,سينومي ريتيل,/en/tadawul/tasi/afg-retail/overview,/en/tadawul/tasi/afg-retail/profile,917,3
+ 4250,TADAWUL,TASI,جبل عمر,/en/tadawul/tasi/jabal-omar/overview,/en/tadawul/tasi/jabal-omar/profile,922,3
+ 4260,TADAWUL,TASI,بدجت السعودية,/en/tadawul/tasi/budget-saudi/overview,/en/tadawul/tasi/budget-saudi/profile,843,3
+ 4261,TADAWUL,TASI,ذيب,/en/tadawul/tasi/theeb/overview,/en/tadawul/tasi/theeb/profile,5122,3
+@@ -283,7 +283,7 @@ ADNOCLS,ADX,ADX,أدنوك للإمداد والخدمات,/ae-ar/companies/adx/
+ ADPORTS,ADX,ADX,أبوظبي للموانئ,/ae-ar/companies/adx/abu-dhabi-ports-company/overview,/ae-ar/companies/adx/abu-dhabi-ports-company/profile,,
+ ADSB,ADX,ADX,بناء السفن,/ae-ar/companies/adx/abu-dhabi-ship-building-co/overview,/ae-ar/companies/adx/abu-dhabi-ship-building-co/profile,,
+ AFNIC,ADX,ADX,الفجيرة الوطنية للتأمين,/ae-ar/companies/adx/al-fujairah-national-insurance/overview,/ae-ar/companies/adx/al-fujairah-national-insurance/profile,,
+-AGILITY,ADX,ADX,أجيليتي جلوبال بي إل سي,/ae-ar/companies/adx/agility-global/overview,/ae-ar/companies/adx/agility-global/profile,,
++AGILITY,ADX,ADX,أجيليتي جلوبال بي إل سي,/ae-ar/companies/adx/agility-global-plc/overview,/ae-ar/companies/adx/agility-global-plc/profile,,
+ AGTHIA,ADX,ADX,مجموعة أغذية,/ae-ar/companies/adx/agthia-group/overview,/ae-ar/companies/adx/agthia-group/profile,,
+ AKIC.AD,ADX,ADX,الخزنة للتأمين,/ae-ar/companies/adx/al-khazna-insurance/overview,/ae-ar/companies/adx/al-khazna-insurance/profile,,
+ ALAIN,ADX,ADX,العين الأهلية للتأمين,/ae-ar/companies/adx/al-ain-alahlia-insurance/overview,/ae-ar/companies/adx/al-ain-alahlia-insurance/profile,,
+@@ -407,7 +407,7 @@ EMAAR,DFM,DFM,إعمار,/ae-ar/companies/dfm/emaar/overview,/ae-ar/companies/df
+ EMAARDEV,DFM,DFM,إعمار للتطوير,/ae-ar/companies/dfm/emaar-development/overview,/ae-ar/companies/dfm/emaar-development/profile,,
+ EMPOWER,DFM,DFM,إمباور,/ae-ar/companies/dfm/empower/overview,/ae-ar/companies/dfm/empower/profile,,
+ ERC,DFM,DFM,الإمارات ريم للاستثمار,/ae-ar/companies/dfm/emirates-reem-investment/overview,/ae-ar/companies/dfm/emirates-reem-investment/profile,,
+-GULFNAV,DFM,DFM,الخليج للملاحة,/ae-ar/companies/dfm/gulf-navigation/overview,/ae-ar/companies/dfm/gulf-navigation/profile,,
++GULFNAV,DFM,DFM,الخليج للملاحة,/ae-ar/companies/dfm/gulf-navigation-holding/overview,/ae-ar/companies/dfm/gulf-navigation-holding/profile,,
+ IFA,DFM,DFM,ايفا,/ae-ar/companies/dfm/ifa/overview,/ae-ar/companies/dfm/ifa/profile,554,
+ ITHMR,DFM,DFM,الإثمار القابضة,/ae-ar/companies/dfm/ithmaar-holding/overview,/ae-ar/companies/dfm/ithmaar-holding/profile,,
+ MASQ,DFM,DFM,المشرق,/ae-ar/companies/dfm/mashreq/overview,/ae-ar/companies/dfm/mashreq/profile,435,
+diff --git a/argaam/tools/chart_failures.py b/argaam/tools/chart_failures.py
+new file mode 100644
+index 0000000..9ebf0f4
+--- /dev/null
++++ b/argaam/tools/chart_failures.py
+@@ -0,0 +1,57 @@
++"""List tickers whose price chart did not come through (audit part 2, F-A).
++
++A ticker counts as done after any attempt that did not crash, so the nightly
++"done 716/716" hides tickers whose chart page failed (for example a company page
++Argaam renamed, which answers 404). This prints one line for the nightly alert:
++
++    no fresh price chart: 3 (2080_TADAWUL, 624_KSE, TAQA_ADX)
++
++A ticker is listed when its newest run's chart section failed, or when its
++price_history_10y.csv is missing or older than --max-age-days. Read-only; exit 0.
++
++    python tools/chart_failures.py default_universe [--max-age-days 7]
++"""
++from __future__ import annotations
++
++import argparse
++import json
++import re
++from datetime import datetime, timezone
++from pathlib import Path
++
++# Same ticker-folder pattern as select_latest_complete.py.
++TICKER_DIR_RE = re.compile(r"^[A-Za-z0-9\. ]+_(TADAWUL|ADX|DFM|KSE|QSE|MSM|BSE)$")
++
++
++def chart_failures(universe: Path, max_age_days: int) -> list[str]:
++    now = datetime.now(timezone.utc)
++    bad = []
++    for d in sorted(p for p in universe.iterdir() if p.is_dir() and TICKER_DIR_RE.match(p.name)):
++        runs = sorted((d / "harvest_runs").glob("run_*"))
++        if not runs:
++            continue
++        try:
++            meta = json.loads((runs[-1] / "meta.json").read_text(encoding="utf-8"))
++        except (OSError, ValueError):
++            continue
++        chart = (meta.get("sections") or {}).get("chart")
++        price = d / "price_history_10y.csv"
++        age = ((now - datetime.fromtimestamp(price.stat().st_mtime, timezone.utc)).days
++               if price.exists() else None)
++        if (chart is not None and not chart.get("ok")) or age is None or age > max_age_days:
++            bad.append(d.name)
++    return bad
++
++
++def main() -> int:
++    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
++    ap.add_argument("universe", type=Path)
++    ap.add_argument("--max-age-days", type=int, default=7)
++    args = ap.parse_args()
++    bad = chart_failures(args.universe, args.max_age_days)
++    print(f"no fresh price chart: {len(bad)}" + (f" ({', '.join(bad)})" if bad else ""))
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/llm-council/scripts/health_digest.py b/llm-council/scripts/health_digest.py
+index 399df02..b894aaa 100644
+--- a/llm-council/scripts/health_digest.py
++++ b/llm-council/scripts/health_digest.py
+@@ -114,12 +114,16 @@ def _healthz(path):
+ 
+ 
+ def gather_scrape():
+-    out = {"ok": None, "fresh": None, "total": TOTAL, "timeouts": None, "line": "unknown", "log": None}
++    out = {"ok": None, "fresh": None, "total": TOTAL, "timeouts": None, "line": "unknown", "log": None,
++           "charts": None}
+     try:
+         p = os.path.join(LOGS_DIR, "LAST_RUN_STATUS.txt")
+         txt = open(p, errors="ignore").read() if os.path.exists(p) else ""
+         first = txt.strip().splitlines()[0] if txt.strip() else "no status file"
+         out["line"] = first
++        # Written by nightly_pipeline.sh from tools/chart_failures.py (audit part 2, F-A).
++        mc = re.search(r"no fresh price chart: \d+(?: \([^)]*\))?", txt)
++        out["charts"] = mc.group(0) if mc else None
+         # The pipeline's alert() writes line1 = "[OK] <ts>" (success, full OR
+         # partial-but-rebuilt) or "[FAIL] <ts>" (genuine failure, rebuild skipped) —
+         # it never writes the literal word "SUCCESS". A completed run is [OK] whether
+@@ -367,6 +371,8 @@ def render(scr, fr, be, sv, um=None, note=""):
+     L.append(f"SCRAPE     {sc} {scr.get('fresh','?')}/{scr.get('total','?')} fresh"
+              + (f", {scr['timeouts']} timeouts" if scr.get("timeouts") else "")
+              + (f"  [{scr['line']}]" if not scr['ok'] else ""))
++    if scr.get("charts"):
++        L.append(f"           {scr['charts']}")
+     if sc == "✗" and scr.get("log"):
+         L.append(f"           → {scr['log']}")
+     # Freshness
+-- 
+2.56.0.windows.2
+
+
+From 648269e936ed49fa52aa9bcd7dda214a42f99535 Mon Sep 17 00:00:00 2001
+From: "Claude (audit part 2)" <claude@local>
+Date: Mon, 19 Oct 2026 14:26:57 +0300
+Subject: [PATCH 2/4] F-E: Tadawul (TradingView) bars keep the value traded
+ from field a as Turnover
+
+---
+ argaam/main_patched2026_with_sectors.py | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/argaam/main_patched2026_with_sectors.py b/argaam/main_patched2026_with_sectors.py
+index 42a6620..17066bf 100644
+--- a/argaam/main_patched2026_with_sectors.py
++++ b/argaam/main_patched2026_with_sectors.py
+@@ -2542,6 +2542,7 @@ def _scrape_chart_tradingview(page, chart_url: str, run_dir: Path, ticker: str,
+     h_arr = data.get("h", [])  # high
+     l_arr = data.get("l", [])  # low
+     v_arr = data.get("v", [])  # volume
++    a_arr = data.get("a", [])  # value traded
+ 
+     if not t_arr:
+         meta["errors"].append("tv_no_bars_returned")
+@@ -2558,7 +2559,7 @@ def _scrape_chart_tradingview(page, chart_url: str, run_dir: Path, ticker: str,
+             _fmt_change(c_arr[i], c_arr[i - 1] if i > 0 and c_arr[i - 1] else None),
+             _fmt_pct_change(c_arr[i], c_arr[i - 1] if i > 0 and c_arr[i - 1] else None),
+             str(int(v_arr[i])) if i < len(v_arr) else "0",
+-            "",  # turnover — not in TV response
++            _fmt_turnover(a_arr, i),  # field "a" = value traded (audit part 2, F-E)
+             _fmt_price(o_arr[i]),
+             _fmt_price(h_arr[i]),
+             _fmt_price(l_arr[i]),
+@@ -2585,6 +2586,12 @@ def _fmt_price(val) -> str:
+         return ""
+     return f"{float(val):.2f}"
+ 
++def _fmt_turnover(a_arr, i) -> str:
++    try:
++        return str(int(round(float(a_arr[i]))))
++    except (IndexError, TypeError, ValueError):
++        return ""
++
+ def _fmt_change(current, previous) -> str:
+     if previous is None or previous == 0:
+         return "0.00"
+@@ -2623,6 +2630,7 @@ def _tv_history_to_csv(entity_id: str, run_dir: Path, ticker: str, meta: Dict[st
+         return meta
+     t_arr = data.get("t", []); c_arr = data.get("c", []); o_arr = data.get("o", [])
+     h_arr = data.get("h", []); l_arr = data.get("l", []); v_arr = data.get("v", [])
++    a_arr = data.get("a", [])
+     if not t_arr:
+         meta["errors"].append("tv_fallback_no_bars")  # source serves no data (e.g. 500/empty)
+         return meta
+@@ -2635,7 +2643,7 @@ def _tv_history_to_csv(entity_id: str, run_dir: Path, ticker: str, meta: Dict[st
+             _fmt_change(c_arr[i], c_arr[i - 1] if i > 0 and c_arr[i - 1] else None),
+             _fmt_pct_change(c_arr[i], c_arr[i - 1] if i > 0 and c_arr[i - 1] else None),
+             str(int(v_arr[i])) if i < len(v_arr) else "0",
+-            "",
++            _fmt_turnover(a_arr, i),
+             _fmt_price(o_arr[i]), _fmt_price(h_arr[i]), _fmt_price(l_arr[i]),
+         ])
+     headers = ["Date", "Price", "Change", "Change (%)", "Volume", "Turnover", "Open", "High", "Low"]
+-- 
+2.56.0.windows.2
+
+
+From ee88d04eadf5370516671592066c1101544b8f2c Mon Sep 17 00:00:00 2001
+From: "Claude (audit part 2)" <claude@local>
+Date: Mon, 19 Oct 2026 14:26:57 +0300
+Subject: [PATCH 3/4] F-B: ADX/DFM prices take the chart endpoint's full
+ precision; _fmt_price keeps up to 4 decimals
+
+---
+ argaam/main_patched2026_with_sectors.py | 60 ++++++++++++++++++++++++-
+ 1 file changed, 59 insertions(+), 1 deletion(-)
+
+diff --git a/argaam/main_patched2026_with_sectors.py b/argaam/main_patched2026_with_sectors.py
+index 17066bf..5b99370 100644
+--- a/argaam/main_patched2026_with_sectors.py
++++ b/argaam/main_patched2026_with_sectors.py
+@@ -2582,9 +2582,64 @@ def _scrape_chart_tradingview(page, chart_url: str, run_dir: Path, ticker: str,
+ 
+ 
+ def _fmt_price(val) -> str:
++    """Up to 4 decimals, at least 2: sub-1 prices tick in 0.001 (audit part 2, F-B)."""
+     if val is None:
+         return ""
+-    return f"{float(val):.2f}"
++    s = f"{float(val):.4f}".rstrip("0")
++    return s if len(s.split(".")[1]) >= 2 else f"{float(val):.2f}"
++
++def _price_cell_float(cell) -> Optional[float]:
++    try:
++        return float(str(cell).replace(",", "").strip())
++    except (TypeError, ValueError):
++        return None
++
++def _tv_price_overlay(html: str, headers: List[str], rows: List[List[str]],
++                      ticker: str) -> Tuple[List[List[str]], int]:
++    """Put the chart endpoint's full-precision Price/Open/High/Low into the rows of Argaam's
++    2-decimal HTML price table (audit part 2, F-B). A row changes only when the endpoint has a
++    bar with the same date and volume whose close rounds to the table's close; any other row,
++    and any fetch failure, keeps the table's values. Returns (rows, number of rows changed)."""
++    import urllib.request
++    import urllib.parse
++    cid = re.search(r'var\s+companyID\s*=\s*(\d+)', html or "")
++    if not cid or len(headers) != 9:
++        return rows, 0
++    entity_id = f"C_{cid.group(1).zfill(4)}"
++    api_url = (f"{BASE_URL}/en/charts/history"
++               f"?symbol={urllib.parse.quote(entity_id)}&resolution=1D&from=1462060800")
++    try:
++        req = urllib.request.Request(api_url, headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
++        with urllib.request.urlopen(req, timeout=30) as response:
++            data = json.loads(response.read().decode("utf-8"))
++    except Exception as e:
++        print(f"[WARN] price overlay skipped for {ticker}: {e}")
++        return rows, 0
++    if data.get("s") != "ok":
++        return rows, 0
++    bars = {}
++    for i, t in enumerate(data.get("t") or []):
++        try:
++            bars[datetime.fromtimestamp(t, tz=timezone.utc).date()] = (
++                data["c"][i], data["o"][i], data["h"][i], data["l"][i], data["v"][i])
++        except (IndexError, KeyError, TypeError, ValueError, OSError):
++            continue
++    out, changed = [], 0
++    for row in rows:
++        dt = parse_date_any(row[0]) if row else None
++        bar = bars.get(dt.date()) if dt else None
++        close = _price_cell_float(row[1]) if len(row) >= 9 else None
++        vol = _price_cell_float(row[4]) if len(row) >= 9 else None
++        if (bar is None or close is None or vol is None or None in bar
++                or int(float(bar[4])) != int(vol) or abs(float(bar[0]) - close) > 0.0051):
++            out.append(row)
++            continue
++        new = list(row)
++        new[1], new[6], new[7], new[8] = (_fmt_price(bar[0]), _fmt_price(bar[1]),
++                                          _fmt_price(bar[2]), _fmt_price(bar[3]))
++        changed += new != row
++        out.append(new)
++    return out, changed
+ 
+ def _fmt_turnover(a_arr, i) -> str:
+     try:
+@@ -2821,6 +2876,9 @@ def _scrape_chart_ajax_form(page, chart_url: str, run_dir: Path, ticker: str,
+     if len(rows) < 5:
+         print(f"[WARN] Only {len(rows)} rows extracted — data may be incomplete")
+ 
++    rows, n_precise = _tv_price_overlay(html, headers, rows, ticker)
++    meta["counts"]["rows_full_precision"] = n_precise
++
+     required_csv = run_dir / "price_history_10y.csv"
+     write_price_csv(required_csv, headers, rows)
+     meta["counts"]["rows"] = len(rows)
+-- 
+2.56.0.windows.2
+
+
+From 047fb908e861dbf6e2fcda5d66e9586684594028 Mon Sep 17 00:00:00 2001
+From: "Claude (audit part 2)" <claude@local>
+Date: Mon, 19 Oct 2026 14:26:57 +0300
+Subject: [PATCH 4/4] F-C: drop bars the source carries forward over market
+ holidays
+
+---
+ argaam/main_patched2026_with_sectors.py | 29 +++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+diff --git a/argaam/main_patched2026_with_sectors.py b/argaam/main_patched2026_with_sectors.py
+index 5b99370..bbe1fb7 100644
+--- a/argaam/main_patched2026_with_sectors.py
++++ b/argaam/main_patched2026_with_sectors.py
+@@ -6606,8 +6606,37 @@ def validate_price_range(headers: List[str], rows: List[List[str]], expected_yea
+         return True, diag
+     diag["error"] = f"insufficient_range (got {years_covered:.1f}y, need {expected_years}y)"
+     return False, diag
++def _drop_carried_forward_bars(rows: List[List[str]]) -> Tuple[List[List[str]], int]:
++    """Drop a bar that repeats the previous bar in Price, Volume, Turnover, Open, High and Low
++    with Volume above 0: the sources carry the last session forward on market holidays (audit
++    part 2, F-C). The first bar is kept. Rows may be oldest- or newest-first."""
++    if len(rows) < 2:
++        return rows, 0
++    d0 = parse_date_any(rows[0][0]) if rows[0] else None
++    d1 = parse_date_any(rows[-1][0]) if rows[-1] else None
++    newest_first = bool(d0 and d1 and d0 > d1)
++    kept, prev = [], None
++    for row in (reversed(rows) if newest_first else rows):
++        key = tuple(row[i].strip() for i in (1, 4, 5, 6, 7, 8)) if len(row) >= 9 else None
++        try:
++            traded = float(row[4].replace(",", "").strip()) > 0
++        except (IndexError, ValueError):
++            traded = False
++        if key is not None and key == prev and traded:
++            continue
++        kept.append(row)
++        prev = key
++    if newest_first:
++        kept.reverse()
++    return kept, len(rows) - len(kept)
++
++
+ def write_price_csv(csv_path: Path, headers: List[str], rows: List[List[str]]) -> None:
+     """Write price history data to CSV"""
++    if len(headers) == 9:
++        rows, n_dropped = _drop_carried_forward_bars(rows)
++        if n_dropped:
++            print(f"[INFO] Dropped {n_dropped} carried-forward holiday bars")
+     ensure_dir(csv_path.parent)
+     with csv_path.open("w", newline="", encoding="utf-8") as f:
+         w = csv.writer(f)
+-- 
+2.56.0.windows.2
+

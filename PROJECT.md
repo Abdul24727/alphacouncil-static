@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-19   **At version:** `bda8bb3` on branch `rebuild` (this file committed on top)
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-19   **At version:** `280211b` on branch `rebuild` (this file's latest state committed on top)
 
 ## 1. Objective
 alphacouncil.tech is ready to advertise: the code is safe off this computer, the market data is right at its source, and the named advisors, portraits and `www` address are settled.
@@ -31,6 +31,8 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - 2026-10-19 — off-server backups go to the owner's Windows computer (task "AlphaCouncil backup copy", daily). Rejected: a cloud bucket (owner has none; Claude cannot create accounts). The bucket path stays ready.
 - 2026-10-19 — outside check = Google Apps Script in the owner's Google account (site visits every 5 min + monitor pings). Rejected: Healthchecks.io (new account, no outside site visit), UptimeRobot (free plan non-commercial).
 - 2026-10-19 — PROJECT.md is the only source of project state; Claude's auto memory holds personal working preferences only. Rejected: turning auto memory off.
+- 2026-10-19 — pipeline fixes ship as `git format-patch` commits applied with `git apply` on the server (backend tree, and `-p2 --include='nightly_pipeline.sh'` in `/opt/alphacouncil/bin`), each file backed up as `.bak-<date>` first. Rejected: GNU `patch` from Windows (breaks `tickers.csv`'s CRLF hunks).
+- 2026-10-19 — chart failures are reported in the nightly OK status and the 06:30 health digest, not as a new alert email. Rejected: emailing every night (9 tickers fail every night today).
 
 ## 4. Autorun Policy
 - **Pre-approved:** creating and editing files in this repo on branch `rebuild`; running the project's checks and builds; read-only commands on the server over SSH (logs, `systemctl status`, `journalctl`, `sqlite3 -readonly`, listing and reading pipeline files); writing reports under `docs/`; committing on `rebuild`; screenshots with the built-in browser.
@@ -40,17 +42,20 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 
 ## 5. Changelog
 - 2026-10-19 — Project file created after the rebuild finished; the next work is launch readiness, in the owner's order: GitHub, pipeline data, lawyer review and portraits, then `www`.
+- 2026-10-19 — Goal 1 Step 1 and Goal 2 Steps 3–4 done in one chat; Goals 1–3 now wait on the owner (URL, fix choice, advice, portraits, DNS). The Apps Script Executions page could not be read (Google sign-in lapsed in the built-in browser); nginx's access log proved the 5-minute rounds instead.
 
 ## 6. Current State
 - Live on alphacouncil.tech: the rebuilt app (EN/AR), accounts with email verification and Google sign-in, Pro billing (Moyasar, hourly renewals), the advisors' room (six advisors, turn-by-turn playback, release `d356a3c`), official Tadawul sectors, the app-side data fixes.
-- Safety nets: nightly database backups on the server with a restore check; a daily copy of them on the owner's computer (first copy 2026-10-19, 13 files); the server monitor (14 checks every 5 min, emails); the outside check (live 2026-10-19, tested with a failure ping and its recovery).
-- Not done: the code has no remote (only this computer and the server hold it); data-audit part 2 (server side) never ran; pipeline faults P2–P4 and the Tadawul disclosures/turnover gaps are only labelled in the app, not fixed; advisor portraits are initials; no `www` DNS record; the owner's lawyer has not reviewed the named advisors.
+- Safety nets, all shown running unattended on 2026-10-19: nightly database backups on the server; the daily copy on the owner's computer (09:00 run copied that night's dump); the server monitor (14 checks every 5 min, no missed ping); the outside check (116 rounds every 5 min, all 200).
+- Data, part 2 done (`docs/data-audit-part2-2026-10-19.md`): causes found for the stopped tickers (Argaam renamed pages), UAE 2 decimals, holiday copies, Tadawul disclosures (source section stopped in March) and Tadawul turnover. Fixes F-A, F-E, F-B, F-C are a dry-run patch (`docs/pipeline-fixes-2026-10-19.patch`), not applied; F-D (disclosures) not built.
+- Waiting on the owner: GitHub repository URL (Step 2); fix choice A/B/C and F-D yes/no (Step 5); lawyer's advice (Step 7); portrait files (Step 8); the `www` DNS record (Step 9).
+- Not done: the code has no remote; advisor portraits are initials; no `www`; the lawyer has not reviewed the named advisors.
 - Untracked: `scripts/set-backup-bucket.sh` (bucket helper from the backups session; the bucket is not used).
 
 ## 7. Goals
 
 ## Goal 1 — Code and safety nets confirmed
-- **Status:** IN PROGRESS (started 2026-10-19)
+- **Status:** AWAITING CHECKPOINT — Step 1 DONE (Done-when items 3 and 4 verified 2026-10-19); Step 2 waits for the repository URL (items 1 and 2).
 - **Share of project:** ~15%
 - **Goal:** The code is in the owner's private GitHub repository, and the backup copy, monitor and outside check are shown to have run on their own.
 - **Done when:**
@@ -113,10 +118,10 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Outcome:** (partial — waiting at the checkpoint)
   - *Done:* secret scan. `git ls-files` check prints nothing. The step's history grep prints 6 lines, all false positives: its own regex in `PROJECT.md` (c46da77); `sk_test_x` fake in `api/tests/test_billing.py` and the prefix comment `(pk_test_/sk_test_)` in `deploy/api.env.example` (28e21dd); the empty `# OPENROUTER_API_KEY=  # set on the server only…` placeholder in `deploy/api.env.example` (8b715fd, 55de633, 2bef6a4). A stricter scan for real key shapes (Moyasar `sk_/pk_` + 16 chars, `sk-or-v1-`, `sk-ant-`, `GOCSPX-`, private-key blocks, AWS, `ghp_`, MailerSend `mlsn.`, the Apps Script `macros/s/AKfy…` URL, `hc-ping.com/<uuid>`) prints 0 for history and the working tree. No remote exists yet (`git remote -v` empty); `rebuild` = `c46da77` before this chat's commit.
   - *Rulings:* the step's grep "must print nothing" is read as "finds no secret": all 6 hits are reviewed non-secrets above. Cost if wrong: a secret pushed to a private repository — the stricter scan makes this unlikely.
-  - *Resume here:* the owner gives the URL → `git remote add origin <URL>`; `git push -u origin rebuild`; compare `git ls-remote origin refs/heads/rebuild` with `git rev-parse rebuild`; add one line to `CLAUDE.md` naming the remote.
+  - *Resume here:* the owner gives the URL → re-run the stricter scan, which must print 0: `git log --all -p | grep -c -E 'sk_(live|test)_[A-Za-z0-9]{16,}|pk_(live|test)_[A-Za-z0-9]{16,}|sk-or-v1-[0-9a-f]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|GOCSPX-[A-Za-z0-9_-]{10,}|BEGIN [A-Z ]*PRIVATE KEY-----|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{30,}|mlsn\.[a-f0-9]{30,}|macros/s/AKfy[A-Za-z0-9_-]{20,}|hc-ping\.com/[0-9a-f-]{36}'`; then `git remote add origin <URL>`; `git push -u origin rebuild`; compare `git ls-remote origin refs/heads/rebuild` with `git rev-parse rebuild`; add one line to `CLAUDE.md` naming the remote.
 
 ## Goal 2 — Market data correct at the source
-- **Status:** NOT STARTED
+- **Status:** AWAITING CHECKPOINT — Steps 3–4 DONE (Done-when item 1 met by the part-2 report); Step 5 waits for the owner's A/B/C choice.
 - **Share of project:** ~45%
 - **Goal:** The faults that only the pipeline can fix are fixed on the server, and the nightly data shows it.
 - **Done when:**
@@ -132,7 +137,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Goal outcome:** _(empty until the goal is worked)_
 
 ### Step 3 — Data audit part 2: read the server side
-- **Status:** NOT STARTED
+- **Status:** DONE
 - **Goal:** Each pipeline fault has a root cause backed by the server's own logs, schedule and files.
 - **Depends on:** nothing
 - **Reversibility:** reversible
@@ -147,10 +152,20 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - [ ] the report has a section for each of the five faults named in Goal 2's first Done-when item — check: headings in the file
   - [ ] each section quotes server evidence with a path — check: read the file
   - [ ] the fix table names, for each fault, a file and function in the server's copy — check: read the table
-- **Outcome:** _(empty until worked)_
+- **Outcome:**
+  - *Done:* `docs/data-audit-part2-2026-10-19.md`. Causes. F-A: Argaam renamed 4 company pages; old URLs 404, failure counted "done" (KPPC: no page found; TAQA: source data ends 2026-08-06). F-B: UAE path copies Argaam's 2-decimal HTML table; chart endpoint has full precision. F-C: source repeats last session on closed days (table and chart endpoint both). F-D: Tadawul reads company "Disclosures" section 204, which Argaam stopped filling (median newest 2026-03-08); disclosures run only on Friday full runs. F-E: TradingView path writes "" for turnover though the response's field `a` is turnover.
+  - *Not done:* the Pro panels vs database check named in "What this step is" (not in Done-when) — left for a later read-only pass. Why 79 Tadawul `news` sections failed with no error text in the 2026-10-16 run — not established.
+  - *Touched:* `docs/data-audit-part2-2026-10-19.md` (new). Outside the repo: `C:\AlphaCouncil-Staging\work\pipeline-fixes-20261019\server\` = code-only copy of the server's `/opt/alphacouncil/backend` tracked files at `a38dc07` + `/opt/alphacouncil/bin/{nightly_pipeline,publish_dbs,health_selfcheck}.sh` in `_bin/`, as local git commit `56006fa` (`core.autocrlf false`).
+  - *Verification:* (1) VERIFIED — headings F-A…F-E. (2) VERIFIED — each section quotes server paths (`harvest_runs/run_…/meta.json`, `price_history_10y.csv` rows, `main_patched…` lines). (3) VERIFIED — fix table names file + function per fault.
+  - *Rulings:* (a) Source facts were checked by fetching Argaam's public pages and chart endpoint from this computer (read-only); cost if wrong: none on the server. (b) F-D is not patched — classed "needs a new source mapping" under Step 4's default; cost: Tadawul disclosures stay stale until it is built. (c) The four extra chart failures found by the scan (412_KSE, AKIC.AD, BILDCO, BMUSC.BH) are listed, not investigated — outside the six named tickers.
+  - *Failed approaches:* `logs/daily_<date>.log` is empty after rotation and holds only the rebuild stage; scraper detail lives in `harvest_runs/*/meta.json`. Argaam's company listing URLs (`/ae-ar/companies/dfm`, `/kw-ar/companies`) 404; slugs came from the menus inside company pages.
+  - *Debt:* N/A
+  - *Resume here:* N/A
+  - *Verify in 30 seconds:* `curl -s -o /dev/null -w "%{http_code}" https://www.argaam.com/en/tadawul/tasi/gasco/overview` → 404; `…/gasco-holding/overview` → 200.
+  - *Stamp:* 2026-10-19; server pipeline `a38dc07`
 
 ### Step 4 — Prepare the fixes as a patch, without touching the server
-- **Status:** NOT STARTED
+- **Status:** DONE
 - **Goal:** Each proposed fix exists as a reviewed patch with a dry run on copies of the data.
 - **Depends on:** 3
 - **Reversibility:** reversible
@@ -164,10 +179,24 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Done when:**
   - [ ] the patch applies cleanly to the copy — check: `git apply --check` or `patch --dry-run`
   - [ ] each fix has before/after output in the report — check: read the "Dry run" section
-- **Outcome:** _(empty until worked)_
+- **Outcome:**
+  - *Done:* `docs/pipeline-fixes-2026-10-19.patch` = 4 commits (`git format-patch`) against an exact-bytes copy of the server: F-A (4 page paths in `argaam/tickers.csv`; new `argaam/tools/chart_failures.py`; its line in `_bin/nightly_pipeline.sh` OK status and `llm-council/scripts/health_digest.py`), F-E (turnover from field `a`), F-B (UAE full-precision overlay `_tv_price_overlay`; `_fmt_price` up to 4 decimals), F-C (`_drop_carried_forward_bars` in `write_price_csv`). 172+/9−. "Dry run" and "Applying it" sections added to the part-2 report.
+  - *Not done:* F-D (Tadawul disclosures) has no patch — needs a new mapping of Argaam's market-wide list (est. 100+ lines); owner decides in Step 5 whether to build it as a later step. The F-A scrape itself was not dry-run (needs the Argaam login and Playwright on the server); checked after the first night.
+  - *Touched:* `docs/pipeline-fixes-2026-10-19.patch` (new), `docs/data-audit-part2-2026-10-19.md` (Dry run, Applying it), `.gitattributes` (`*.patch -text`, so the CRLF hunks for `tickers.csv` survive). Outside the repo: `C:\AlphaCouncil-Staging\work\pipeline-fixes-20261019\` — `server\` (git: baseline `8fb08a5`, fixes `9e0cbc8` F-A, `648269e` F-E, `ee88d04` F-B, `047fb90` F-C), `data\` (6 copied price files), `dryrun_a.txt`, `dryrun_b_e.txt`, `dryrun_c.txt`.
+  - *Verification:* (1) VERIFIED — on a clean worktree of `8fb08a5`: `git apply --check --exclude='_bin/*'` exit 0; `git apply --check -p2 --include='nightly_pipeline.sh'` in a copy of `/opt/alphacouncil/bin` OK; both then applied; `py_compile` and `bash -n` pass. (2) VERIFIED — report "Dry run": F-B before/after (E7 0.91 → 0.905 = reference), F-C counts by exchange (MSM 137/50, BSE 47/19, matching part 1), F-E turnover for Aramco, F-A list of 33.
+  - *Rulings:* (a) The patch targets `git apply` on the server, not GNU `patch`: Git for Windows' `patch` rejects the CRLF hunks in text mode, `git apply` handles them; git is on the server. Cost if wrong: Step 6 uses `patch --binary` instead. (b) F-A's new line goes into the OK status and the 06:30 health digest, not a new alert email — 9 tickers fail every night, a daily alert would be noise. Cost: failures are seen in the digest, not instantly. (c) `_fmt_price` keeps up to 4 decimals, so Tadawul's split-adjusted history stores 28.9771 instead of 28.98. Cost: none known; last prices are unadjusted.
+  - *Failed approaches:* the first local copy was committed with Git for Windows' system `core.autocrlf=true`, which stored `tickers.csv` (CRLF on the server) as LF and made the diff touch all 721 lines — re-copied with `core.autocrlf false`. F-B does not apply without F-E (adjacent lines around `_fmt_price`).
+  - *Debt:* the 4 extra chart failures (412_KSE, AKIC.AD, BILDCO, BMUSC.BH) and KPPC have no fix; F-A's check will list them nightly.
+  - *Resume here:* N/A
+  - *Verify in 30 seconds:* `cd C:\AlphaCouncil-Staging\work\pipeline-fixes-20261019\server; git log --oneline` (5 commits); `git diff --stat 8fb08a5`.
+  - *Stamp:* 2026-10-19; baseline = server `a38dc07`
 
 ### Step 5 — Owner decides which fixes go to the server
-- **Status:** NOT STARTED
+- **Status:** AWAITING CHECKPOINT — the owner chooses, from the fix table in `docs/data-audit-part2-2026-10-19.md`:
+  - **A — all four patched fixes** (F-A, F-E, F-B, F-C). Recommended. Each was dry-run on real data. Cost: one extra Argaam request per UAE ticker a night; one night's data changes for UAE, Muscat, Bahrain and Tadawul turnover at once.
+  - **B — the low-risk three** (F-A, F-E, F-C), with F-B (UAE decimals) later. Cost: sub-1 AED prices stay 2-decimal; INVESTB-style fake ±25% days continue.
+  - **C — none.** Cost: GASCO, AFG, AGILITY and GULFNAV stay frozen at July/October; holiday copies and missing Tadawul turnover stay.
+  - Separately: **build F-D** (Tadawul disclosures from Argaam's market-wide list) as a new step, yes or no. Recommended: yes, after A/B has run one night.
 - **Goal:** The owner has chosen, fix by fix, what is applied to the live pipeline.
 - **Depends on:** 4
 - **Reversibility:** reversible
@@ -177,7 +206,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Consumes:** `docs/data-audit-part2-<date>.md` (fix table, dry runs); `docs/pipeline-fixes-<date>.patch`.
 - **Produces:** a `- **Checkpoint cleared:** <date> — <the owner's words>` line naming the approved fixes.
 - **How:** one question with the options (all / a listed subset / none), the recommendation, and what each costs.
-- **Defaults:** the owner approves "all" → every fix in the table; the owner is not at the keyboard → set AWAITING CHECKPOINT and hand over with the paused block.
+- **Defaults:** the owner approves "all" → F-A, F-E, F-B, F-C (F-D is not in the patch; "all" does not build it); the owner names a subset that includes F-B → F-E must come too (F-B applies only on top of F-E); the owner says yes to F-D → add it as a new step after Step 6, do not fold it into Step 6; the owner is not at the keyboard → set AWAITING CHECKPOINT and hand over with the paused block.
 - **Done when:**
   - [ ] the checkpoint line exists under this step with the owner's words — check: read the step
 - **Outcome:** _(empty until worked)_
@@ -190,10 +219,10 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Autorun:** no — checkpoint: decision (the owner's go-ahead for the server change, given in chat)
 - **What this step is:** Back up the files being changed, apply the approved part of the patch on the server, wait for the nightly run, then check the data and the app.
 - **Where:** server `/opt/alphacouncil/backend` (only the patched files, each backed up as `<file>.bak-<date>`); this repo's runbook.
-- **Consumes:** the approved list in Step 5's checkpoint line; `docs/pipeline-fixes-<date>.patch`.
+- **Consumes:** the approved list in Step 5's checkpoint line; `docs/pipeline-fixes-2026-10-19.patch` (4 `git format-patch` commits: F-A, F-E, F-B, F-C); the exact commands in the part-2 report's "Applying it" section; checks per fault in its F-A…F-E sections. Copy the patch to the server with `scp` (it holds no secrets).
 - **Produces:** the patched files on the server; a "Pipeline fixes" section in `docs/production.md` (what changed, the backups' names, how to undo); the part-2 report's "After the nightly run" section.
 - **How:** apply with `patch` on the server, run the pipeline's own syntax or test check if it has one, never restart or rerun the full pipeline by hand unless the owner says so. After the next nightly run: re-run the checks from the report and `SWEEP=1 node web/scripts/check-data-fixes.mjs` against production.
-- **Defaults:** the nightly run fails after the change → restore every `.bak-<date>` file at once, then report; a fix shows no effect after one night → leave it in, record it NOT MET, and report the next check.
+- **Defaults:** the nightly run fails after the change → restore every `.bak-<date>` file at once (and remove `argaam/tools/chart_failures.py`), then report; a fix shows no effect after one night → leave it in, record it NOT MET, and report the next check; the server's files differ from `a38dc07` when applying (`git apply --check` fails) → stop, apply nothing, report the file; apply with `git apply` (Git for Windows' `patch` mangles the CRLF hunks of `tickers.csv`; on Linux `patch --binary` also works); a subset approved → `git format-patch`'s sections are separate commits: apply only those, in order.
 - **Done when:**
   - [ ] each approved fault is gone in the new data — check: the per-fault checks in the report
   - [ ] the nightly run's log shows the same success lines and a price-file count no lower than the baseline — check: the log
@@ -201,7 +230,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Outcome:** _(empty until worked)_
 
 ## Goal 3 — Ready to advertise
-- **Status:** NOT STARTED
+- **Status:** AWAITING CHECKPOINT — Steps 7–9 each wait on the owner (re-tested 2026-10-19: no `www` record, no portrait files, no legal advice yet); Step 10 waits on Goal 2.
 - **Share of project:** ~40%
 - **Goal:** The advisors' names and texts follow the owner's legal advice, the six portraits are real, `www.alphacouncil.tech` works, and a full launch check passes on production.
 - **Done when:**
@@ -217,7 +246,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Goal outcome:** _(empty until the goal is worked)_
 
 ### Step 7 — Apply the lawyer's advice to the named advisors
-- **Status:** NOT STARTED
+- **Status:** AWAITING CHECKPOINT — the owner pastes or summarises the lawyer's advice in chat (2026-10-19: none yet).
 - **Goal:** The advisors' names, wording and disclaimers match the owner's legal advice, live on production.
 - **Depends on:** nothing
 - **Reversibility:** reversible
@@ -235,7 +264,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Outcome:** _(empty until worked)_
 
 ### Step 8 — Put the six real portraits in
-- **Status:** NOT STARTED
+- **Status:** AWAITING CHECKPOINT — the owner puts `buffett.webp`, `lynch.webp`, `dalio.webp`, `marks.webp`, `alwaleed.webp`, `alrajhi.webp` (and optionally `chair.webp`) in `web/public/advisors/` (2026-10-19: only `README.md` there). Names may change with Step 7.
 - **Goal:** The advisors' room shows the illustrator's six portraits, with initials only as a fallback.
 - **Depends on:** 7 (names may change)
 - **Reversibility:** reversible
@@ -252,7 +281,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Outcome:** _(empty until worked)_
 
 ### Step 9 — Make `www.alphacouncil.tech` work
-- **Status:** NOT STARTED
+- **Status:** AWAITING CHECKPOINT — the owner adds, in Cloudflare (the domain's DNS host: `koa`/`piper.ns.cloudflare.com`), an A record `www` → `72.60.91.24` (the apex's address; no AAAA seen), proxy off ("DNS only"), so the certificate challenge reaches the server. 2026-10-19: `www` answers NXDOMAIN.
 - **Goal:** `www.alphacouncil.tech` redirects to `https://alphacouncil.tech/` with a valid certificate.
 - **Depends on:** nothing
 - **Reversibility:** costly
@@ -289,6 +318,9 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 ## 8. Open Questions
 - **The GitHub repository URL** — blocks Step 2. The owner creates an empty private repository at github.com/new (no README, no licence) and pastes its URL. No default: Claude cannot create the account or repository.
 - **The lawyer's advice on the named advisors** — blocks Step 7 (and Step 8, since names may change). No default: it is the owner's legal call.
+- **Which pipeline fixes go to the server (A all four / B without F-B / C none), and whether to build F-D** — blocks Steps 5–6. Recommendation: A, and F-D yes after one night. No default: the standing rule keeps the old pipeline read-only without the owner's approval.
+- **The portrait files** — block Step 8. **The `www` A record in Cloudflare** — blocks Step 9. Both are the owner's actions.
+- **KPPC (624, Boursa Kuwait) and TAQA (ADX)** — Argaam has no page for KPPC and no TAQA bars after 2026-08-06. Delisted or suspended? The owner may know; until then the app keeps showing them stale (amber).
 
 ## 9. Next Up
-Goal 1, Step 1. First action: on this computer run `Get-ScheduledTaskInfo -TaskName 'AlphaCouncil backup copy'` and read the last 5 lines of `%USERPROFILE%\AlphaCouncil-Backups\pull.log`.
+Goal 1, Step 2 (awaiting the GitHub URL). First action once the owner gives it: run the secret scan again (`git log --all -p` with the stricter pattern in Step 2's Outcome must print 0), then `git remote add origin <URL>` and `git push -u origin rebuild`. Then Goal 2, Step 5 with the owner's A/B/C answer → Step 6 (apply per the part-2 report's "Applying it").
