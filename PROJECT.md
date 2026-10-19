@@ -50,7 +50,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 ## 7. Goals
 
 ## Goal 1 — Code and safety nets confirmed
-- **Status:** NOT STARTED
+- **Status:** IN PROGRESS (started 2026-10-19)
 - **Share of project:** ~15%
 - **Goal:** The code is in the owner's private GitHub repository, and the backup copy, monitor and outside check are shown to have run on their own.
 - **Done when:**
@@ -66,7 +66,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Goal outcome:** _(empty until the goal is worked)_
 
 ### Step 1 — Confirm the safety nets ran unattended
-- **Status:** NOT STARTED
+- **Status:** DONE
 - **Goal:** Evidence that the backup copy, the monitor and the outside check each ran without anyone starting them.
 - **Depends on:** nothing
 - **Reversibility:** reversible
@@ -82,10 +82,20 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - [ ] `last.json` `newest` names a dump dated 20261019 or later — check: `cat` on the server
   - [ ] the Apps Script Executions list has `check` runs 5 minutes apart for an hour or more — check: page text
   - [ ] the monitor's journal shows no `outside check not pinged` line since 2026-10-18 22:50 UTC — check: `journalctl -u acp-prod-monitor --since '2026-10-18 22:50' | grep -c 'not pinged'` prints 0
-- **Outcome:** _(empty until worked)_
+- **Outcome:**
+  - *Done:* all three safety nets ran on their own. Backup copy task 09:00 Riyadh, result 0, copied that night's dump. Outside check: 116 rounds 01:29:58–11:04:57 UTC. Monitor: no missed ping.
+  - *Not done:* N/A
+  - *Touched:* `docs/production.md` — a "First unattended run" paragraph under "Off-server copy (the owner's computer)" and a "First unattended hours" paragraph under "Outside check (Google Apps Script)".
+  - *Verification:* (1) VERIFIED — LastRunTime 2026-10-19 09:00 +03:00 (06:00 UTC), LastTaskResult 0, MissedRuns 0; `pull.log` `09:00:17 ok: copied 5, removed 0, 18 files here; newest acp_prod-20261019T013111Z.dump`. (2) VERIFIED — `last.json` `"newest":"acp_prod-20261019T013111Z.dump"`, `"at":"2026-10-19T06:00:16Z"`; `LAST_OK` 2026-10-19T01:31:13Z. (3) VERIFIED by server evidence instead of the Executions page — nginx `access.log`, UA `Google-Apps-Script`: 116 × `/home` 200 and 116 × `/api/v1/health` 200, one round every 5 min over 9.5 h. (4) VERIFIED — the grep printed 0.
+  - *Rulings:* item 3 checked through nginx's access log because the built-in browser's Google sign-in had lapsed (the default forbids typing a password). Why: the log proves the fetches arrived, which is stronger than the page saying they ran. Cost if wrong: none for the site checks; the Executions page also lists ping runs, which the log does not show (the monitor's 0 `not pinged` lines cover those).
+  - *Failed approaches:* `script.google.com/home/executions` in the built-in browser redirects to the public developers page (signed out).
+  - *Debt:* the three test emails from the outside check (2026-10-19) are still unconfirmed — CANNOT VERIFY HERE; verifier: owner; check: inbox and spam of the alert address for "alphacouncil.tech outside check". Monitor status shows 13 `ok` + `- Moyasar for renewals: no renewal run since the last round` (informational, not a failure) — matters for Step 10's "14 of 14".
+  - *Resume here:* N/A
+  - *Verify in 30 seconds:* `Get-ScheduledTaskInfo -TaskName 'AlphaCouncil backup copy'`; `ssh root@alphacouncil.tech "grep -c Google-Apps-Script /var/log/nginx/access.log"`
+  - *Stamp:* 2026-10-19, on `c46da77`
 
 ### Step 2 — Push branch `rebuild` to the owner's private GitHub repository
-- **Status:** NOT STARTED
+- **Status:** AWAITING CHECKPOINT — needs the owner's empty private repository URL (github.com/new, no README, no licence). Secret scan already done 2026-10-19 (see Outcome); nothing else to decide.
 - **Goal:** The owner's private GitHub repository holds branch `rebuild` at the local head.
 - **Depends on:** nothing
 - **Reversibility:** costly
@@ -100,7 +110,10 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - [ ] the secret scan prints nothing — check: both commands above
   - [ ] `git ls-remote origin refs/heads/rebuild` equals `git rev-parse rebuild` — check: compare the two outputs
   - [ ] the repository page shows "Private" — check: the owner confirms, or `git ls-remote` fails without credentials
-- **Outcome:** _(empty until worked)_
+- **Outcome:** (partial — waiting at the checkpoint)
+  - *Done:* secret scan. `git ls-files` check prints nothing. The step's history grep prints 6 lines, all false positives: its own regex in `PROJECT.md` (c46da77); `sk_test_x` fake in `api/tests/test_billing.py` and the prefix comment `(pk_test_/sk_test_)` in `deploy/api.env.example` (28e21dd); the empty `# OPENROUTER_API_KEY=  # set on the server only…` placeholder in `deploy/api.env.example` (8b715fd, 55de633, 2bef6a4). A stricter scan for real key shapes (Moyasar `sk_/pk_` + 16 chars, `sk-or-v1-`, `sk-ant-`, `GOCSPX-`, private-key blocks, AWS, `ghp_`, MailerSend `mlsn.`, the Apps Script `macros/s/AKfy…` URL, `hc-ping.com/<uuid>`) prints 0 for history and the working tree. No remote exists yet (`git remote -v` empty); `rebuild` = `c46da77` before this chat's commit.
+  - *Rulings:* the step's grep "must print nothing" is read as "finds no secret": all 6 hits are reviewed non-secrets above. Cost if wrong: a secret pushed to a private repository — the stricter scan makes this unlikely.
+  - *Resume here:* the owner gives the URL → `git remote add origin <URL>`; `git push -u origin rebuild`; compare `git ls-remote origin refs/heads/rebuild` with `git rev-parse rebuild`; add one line to `CLAUDE.md` naming the remote.
 
 ## Goal 2 — Market data correct at the source
 - **Status:** NOT STARTED

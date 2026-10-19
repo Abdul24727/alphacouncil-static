@@ -238,6 +238,12 @@ on the owner's Windows computer runs `%USERPROFILE%\AlphaCouncil-Backups\pull-ba
 purpose was fetched again; a run against an unreachable host logged `FAILED: … Could not resolve
 hostname` and exited 1. The monitor (`a65e535`) shows `off-server backup copy: … 0.0 days ago (13 files)`.
 
+**First unattended run (2026-10-19)**: the task started itself at 09:00 Riyadh (06:00 UTC), after the
+server's 01:31 UTC backup, and exited 0 (`Get-ScheduledTaskInfo`: LastTaskResult 0). `pull.log`:
+`ok: copied 5, removed 0, 18 files here; newest acp_prod-20261019T013111Z.dump`; that night's three
+files (`acp_prod-`, `acp-` and `globals-20261019T013111Z`) are in `daily\`. The server's `last.json`
+and the monitor (`… at 2026-10-19 06:00 UTC (09:00 Riyadh), 18 files`) agree.
+
 ### Off-server copy (S3-compatible bucket, not set up)
 
 Once `/etc/alphacouncil-platform/backup-offsite.env` exists, `acp-db-backup` runs
@@ -402,6 +408,14 @@ alphacouncil.tech (`78c74af`): `setup` ran and sent its test email, the 5-minute
 monitor's own `ping()` brought "could not send an alert", and the next round's normal ping brought
 "Recovered" (the script's state: 3 mails in 24 hours, no open alerts). The emails go to the owner's
 alert address, which the connected Gmail is not, so their arrival was not checked from here.
+
+**First unattended hours (2026-10-19)**: from 01:29:58 to 11:04:57 UTC the server's nginx log
+(`/var/log/nginx/access.log`, user agent `Google-Apps-Script`) has 116 rounds of `/home` and
+`/api/v1/health`, one every 5 minutes, all 200. The monitor's journal has no `outside check not pinged`
+line since 2026-10-18 22:50 UTC, and `prod-monitor.py status` prints `outside check: PING_URL is set,
+pinged at the end of every round`. The Executions page was not read: the built-in browser's Google
+sign-in had lapsed. To see the runs there, sign in as `alphacouncil.admin@gmail.com` and open the
+project's Executions.
 
 An earlier note here said a Healthchecks.io check was live. On 2026-10-19 the server had no `PING_URL`,
 so it was never connected. A Healthchecks.io check still works the same way (`--ping` with its URL)
