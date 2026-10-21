@@ -20,7 +20,7 @@ import { newsText } from "@/lib/news-text";
 import { useTickerCouncil, useTickerDetail, useTickerNews, useTickerPeers, useTickerPrices } from "@/lib/queries";
 import { useGroupTicker, useTickerGroups } from "@/lib/ticker-groups";
 import { CouncilRing, VoteLabel } from "./council";
-import { Num, priceDigits, QueryState, toTsv } from "./common";
+import { LangTag, Num, priceDigits, QueryState, toTsv } from "./common";
 import { INDICATORS, PriceChart, RANGES } from "./PriceChart";
 
 const GROUP = 1 as const;
@@ -407,7 +407,7 @@ export function NewsPanel({ className }: { className?: string }) {
                 <div className="mb-0.5 flex items-center gap-2">
                   <span className="num text-[11px] text-muted">{newsDate(i, locale)}</span>
                   <span className="label-caps rounded-chip border border-line px-1 text-muted">{t(`news.${i.section}`)}</span>
-                  {foreign && <span className="label-caps text-muted">{t(`news.in.${foreign}`)}</span>}
+                  {foreign && <LangTag lang={foreign} />}
                 </div>
                 {i.url ? (
                   <a

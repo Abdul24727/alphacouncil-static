@@ -149,13 +149,10 @@ function CopilotBody() {
     <>
       <header className="flex h-12 shrink-0 items-center gap-2 border-b border-line ps-3 pe-2">
         <h2 className="headline text-[17px] leading-none">{t("title")}</h2>
-        {standIn !== undefined && (
-          <span
-            title={standIn ? t("standInTip") : t("model", { name: modelStatus.data?.model ?? "" })}
-            className={`label-caps rounded-chip border px-1 ${standIn ? "border-stale/50 text-stale" : "border-line text-muted"}`}
-          >
-            {/* A model id is a technical name: Latin in both languages. */}
-            {standIn ? t("standIn") : <span lang="en" dir="ltr">{modelStatus.data?.model}</span>}
+        {/* Only the stand-in is labelled; a model id means nothing to members (QA audit row 8a). */}
+        {standIn && (
+          <span title={t("standInTip")} className="label-caps rounded-chip border border-stale/50 px-1 text-stale">
+            {t("standIn")}
           </span>
         )}
         <div className="ms-auto flex items-center gap-0.5">

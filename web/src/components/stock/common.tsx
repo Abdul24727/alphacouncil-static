@@ -18,6 +18,19 @@ export function priceDigits(currency: string | null | undefined, value?: number 
 export const hasArabic = (s: string | null | undefined) => !!s && /[؀-ۿ]/.test(s);
 
 /**
+ * "In English" / "بالإنجليزية": marks text the database stores only in the other language, shown
+ * as stored (never translated). `data-lang-tag` lets scripts/check-arabic.mjs accept the text it marks.
+ */
+export function LangTag({ lang, className = "" }: { lang: "en" | "ar"; className?: string }) {
+  const t = useTranslations("stock.news.in");
+  return (
+    <span data-lang-tag className={`label-caps shrink-0 text-muted ${className}`}>
+      {t(lang)}
+    </span>
+  );
+}
+
+/**
  * A formatted number, or a labelled "n/a" when the database has no value. With `reason` (what
  * the data says about the gap, e.g. "Not in our price data") the reason is shown instead,
  * and `detail` explains it on hover.

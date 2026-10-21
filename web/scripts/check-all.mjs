@@ -11,12 +11,18 @@ import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const results = [];
 
-for (const n of [1, 2, 3, 4, 5, 6, 7]) {
-  console.log(`\n=== Phase ${n} ===`);
-  const run = spawnSync(process.execPath, [path.join(here, `check-phase${n}.mjs`)], { stdio: "inherit", env: process.env });
-  results.push([n, run.status === 0]);
+// Phases 1-7, then no English on Arabic pages (QA audit 8a, 8b), signed out and signed in.
+const RUNS = [
+  ...[1, 2, 3, 4, 5, 6, 7].map((n) => [`Phase ${n}`, `check-phase${n}.mjs`, {}]),
+  ["Arabic, signed out", "check-arabic.mjs", {}],
+  ["Arabic, signed in", "check-arabic.mjs", { SIGNED_IN: "1" }],
+];
+for (const [name, script, env] of RUNS) {
+  console.log(`\n=== ${name} ===`);
+  const run = spawnSync(process.execPath, [path.join(here, script)], { stdio: "inherit", env: { ...process.env, ...env } });
+  results.push([name, run.status === 0]);
 }
 
 console.log("\nSummary");
-for (const [n, ok] of results) console.log(`  Phase ${n}: ${ok ? "PASS" : "FAIL"}`);
+for (const [name, ok] of results) console.log(`  ${name}: ${ok ? "PASS" : "FAIL"}`);
 process.exit(results.every(([, ok]) => ok) ? 0 : 1);

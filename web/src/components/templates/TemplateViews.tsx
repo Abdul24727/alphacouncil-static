@@ -131,7 +131,7 @@ function EarningsSeason() {
         <span className="label-caps text-muted">{t("window")}</span>
         {[14, 30, 60].map((d) => (
           <button key={d} type="button" aria-pressed={days === d} onClick={() => setDays(d)} className={`num rounded-chip px-2 py-0.5 text-[11.5px] ${days === d ? "text-signal" : "text-muted hover:text-text"}`}>
-            ±{d}d
+            {t("windowDays", { n: String(d) })}
           </button>
         ))}
       </div>

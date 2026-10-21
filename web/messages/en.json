@@ -40,7 +40,6 @@
     "clear": "New chat",
     "standIn": "Stand-in",
     "standInTip": "No AI model is configured. Answers are assembled by fixed rules from attached panels and the database.",
-    "model": "Model: {name}",
     "intro": "Ask about the panels you attach. Answers use only attached panels and our database, and cite where each figure came from.",
     "examples": [
       "Is the dividend sustainable?",
@@ -457,6 +456,8 @@
       "health": "Financial health",
       "income": "Income",
       "percentile": "Sector percentile",
+      "pctShort": "P{n}",
+      "score": "P{n}",
       "status": {
         "ok": "Computed",
         "published": "Published (Argaam, TTM)",
@@ -485,6 +486,7 @@
     },
     "statements": {
       "unit": "Millions of {currency}",
+      "fy": "FY{year}",
       "none": "No statement lines in our database for this ticker",
       "item": "Line item"
     },
@@ -766,6 +768,7 @@
     "title": "Templates",
     "unknown": "There is no template with this name.",
     "window": "Window",
+    "windowDays": "±{n}d",
     "names": {
       "tadawul-stock": "Tadawul Stock",
       "earnings-season": "Earnings Season",

@@ -4,6 +4,7 @@ import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { useLocale, useTranslations } from "next-intl";
 import { Panel } from "@/components/panel/Panel";
 import { dataLabel } from "@/lib/data-labels";
+import { dividendPeriod } from "@/lib/dividend-period";
 import type { components } from "@/lib/api/schema";
 import { currencyLabel, fmtDate, fmtNumber, fmtPct, signClass } from "@/lib/format";
 import {
@@ -15,7 +16,7 @@ import {
   useTickerStatements,
 } from "@/lib/queries";
 import { useGroupTicker } from "@/lib/ticker-groups";
-import { Num, priceDigits, QueryState, toTsv } from "./common";
+import { hasArabic, LangTag, Num, priceDigits, QueryState, toTsv } from "./common";
 import { newsDate } from "./overview-panels";
 
 const GROUP = 1 as const;
@@ -75,7 +76,7 @@ export function FundamentalsPanel({ className }: { className?: string }) {
                   <h3 className="headline text-[17px]">{t(`fundamentals.${g.group}`)}</h3>
                   {g.score != null ? (
                     <span className="num text-[12px] text-text-soft" title={t("fundamentals.percentile")}>
-                      P{fmtNumber(g.score, 0)}
+                      {t("fundamentals.score", { n: fmtNumber(g.score, 0) ?? "" })}
                     </span>
                   ) : (
                     <span className="label-caps text-muted">{t("fundamentals.noScore")}</span>
@@ -91,7 +92,7 @@ export function FundamentalsPanel({ className }: { className?: string }) {
                       <div className="mt-1 flex items-center gap-2">
                         <PercentileBar value={m.sector_percentile} />
                         <span className="num w-8 shrink-0 text-end text-[10.5px] text-muted">
-                          {m.sector_percentile != null ? `P${fmtNumber(m.sector_percentile, 0)}` : ""}
+                          {m.sector_percentile != null ? t("fundamentals.pctShort", { n: fmtNumber(m.sector_percentile, 0) ?? "" }) : ""}
                         </span>
                       </div>
                     </li>
@@ -149,7 +150,7 @@ export function StatementPanel({ section, className }: { section: "Income Statem
                       <th className="py-1 text-start font-normal">{t("statements.item")}</th>
                       {years.map((y) => (
                         <th key={y} className="num w-20 py-1 text-end font-normal">
-                          FY{y}
+                          {t("statements.fy", { year: String(y) })}
                         </th>
                       ))}
                     </tr>
@@ -410,20 +411,24 @@ export function EventsPanel({ className }: { className?: string }) {
     >
       <QueryState isPending={q.isPending} error={q.error} empty={items.length === 0} emptyText={t("events.none")}>
         <ul className="flex flex-col">
-          {items.map((i) => (
-            <li key={i.id} className="flex items-baseline gap-3 border-t border-line py-1.5 first:border-t-0">
-              <span className="num w-24 shrink-0 text-[11.5px] text-muted">{newsDate(i, locale)}</span>
-              {i.url ? (
-                <a href={i.url} target="_blank" rel="noopener noreferrer" lang={dataLabel(i.title, locale).lang} dir="auto" className="min-w-0 truncate text-text hover:text-signal">
-                  {dataLabel(i.title, locale).text}
-                </a>
-              ) : (
-                <span dir="auto" lang={dataLabel(i.title, locale).lang} className="min-w-0 truncate">
-                  {dataLabel(i.title, locale).text}
-                </span>
-              )}
-            </li>
-          ))}
+          {items.map((i) => {
+            const label = dataLabel(i.title, locale);
+            return (
+              <li key={i.id} className="flex items-baseline gap-3 border-t border-line py-1.5 first:border-t-0">
+                <span className="num w-24 shrink-0 text-[11.5px] text-muted">{newsDate(i, locale)}</span>
+                {i.url ? (
+                  <a href={i.url} target="_blank" rel="noopener noreferrer" lang={label.lang} dir="auto" className="min-w-0 truncate text-text hover:text-signal">
+                    {label.text}
+                  </a>
+                ) : (
+                  <span dir="auto" lang={label.lang} className="min-w-0 truncate">
+                    {label.text}
+                  </span>
+                )}
+                {label.lang !== (locale === "ar" ? "ar" : "en") && <LangTag lang={label.lang} />}
+              </li>
+            );
+          })}
         </ul>
       </QueryState>
     </Panel>
@@ -447,7 +452,13 @@ export function DividendsPanel({ className }: { className?: string }) {
       ticker={slug}
       onRefresh={() => q.refetch()}
       copyData={() =>
-        toTsv([[t("dividends.period"), t("dividends.ex_date"), t("dividends.pay_date"), t("dividends.dps")], ...rows.map((d) => [d.note, d.ex_date, d.pay_date, d.dps])])
+        toTsv([
+          [t("dividends.period"), t("dividends.ex_date"), t("dividends.pay_date"), t("dividends.dps")],
+          ...rows.map((d) => {
+            const p = dividendPeriod(d.note, locale);
+            return [[p.label, p.rest].filter(Boolean).join(" "), d.ex_date, d.pay_date, d.dps];
+          }),
+        ])
       }
       copilotData={() => c}
       className={className}
@@ -467,7 +478,9 @@ export function DividendsPanel({ className }: { className?: string }) {
           <tbody>
             {rows.map((d, i) => (
               <tr key={i} className="border-t border-line">
-                <td className="num py-1 text-[11.5px] text-text-soft">{d.note?.replace(/\s*_\s*/, " ")}</td>
+                <td className="py-1 text-[11.5px] text-text-soft">
+                  <DividendNote note={d.note} />
+                </td>
                 <td className="num py-1 text-[11.5px]">{d.ex_date ?? "—"}</td>
                 <td className="num hidden py-1 text-[11.5px] text-muted sm:table-cell">{d.pay_date ?? "—"}</td>
                 <td className="py-1 text-end">
@@ -480,6 +493,35 @@ export function DividendsPanel({ className }: { className?: string }) {
       </QueryState>
     </Panel>
   );
+}
+
+/** A dividend's period in the page's language; any other words in the note as stored, tagged with their language. */
+function DividendNote({ note }: { note: string | null | undefined }) {
+  const locale = useLocale();
+  const { label, rest } = dividendPeriod(note, locale);
+  const restLang = hasArabic(rest) ? "ar" : "en";
+  return (
+    <>
+      {label && <span className="num block">{label}</span>}
+      {rest && (
+        <span className="flex items-baseline gap-1.5">
+          <span lang={restLang} dir="auto">
+            {rest}
+          </span>
+          {restLang !== (locale === "ar" ? "ar" : "en") && <LangTag lang={restLang} />}
+        </span>
+      )}
+    </>
+  );
+}
+
+/** A capital change's note for the row's tooltip: prefixed with its language when that is not the page's. */
+function capitalNote(note: string | null | undefined, locale: string, t: (key: string) => string): string | undefined {
+  const text = note?.trim();
+  // The source fills an empty note with the word "Notes".
+  if (!text || text === "Notes") return undefined;
+  const lang = hasArabic(text) ? "ar" : "en";
+  return lang === (locale === "ar" ? "ar" : "en") ? text : `${t(`news.in.${lang}`)}: ${text}`;
 }
 
 export function CapitalPanel({ className }: { className?: string }) {
@@ -514,7 +556,7 @@ export function CapitalPanel({ className }: { className?: string }) {
           </thead>
           <tbody>
             {rows.map((r, i) => (
-              <tr key={i} className="border-t border-line" title={r.note ?? undefined}>
+              <tr key={i} className="border-t border-line" title={capitalNote(r.note, locale, t)}>
                 <td className="num py-1 text-[11.5px]">{r.date}</td>
                 <td className="py-1 text-text-soft" dir="auto" lang={dataLabel(r.change_type, locale).lang}>
                   {dataLabel(r.change_type, locale).text}

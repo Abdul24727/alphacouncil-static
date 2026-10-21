@@ -299,7 +299,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 
 
 ### Step 13 — Fix the data and display defects
-- **Status:** NOT STARTED
+- **Status:** DONE
 - **Goal:** The Ownership tab shows holders properly, AFNIC's header and valuation tell the truth, English pages show English news, and the pricing page has no placeholder — on the local build, in both languages.
 - **Depends on:** 12
 - **Reversibility:** reversible
@@ -311,15 +311,26 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **How:** reuse the patterns other panels already use (tables, freshness dots, "As of" labels, "Data unavailable"); see `CLAUDE.md` for the Next.js patterns. De-duplicate the ownership series in the API (one point per date, the latest).
 - **Defaults:** Ownership has no design yet → a holders table (name, %) plus the foreign-ownership line chart drawn with the library the price panel uses; a price with no date → the header says so in the wording the app already uses for missing dates, and P/E stays "n/a" with a one-line reason (never compute a valuation from an undated price); no English headline for a news item → in English show it with a visible "Arabic" tag and `lang="ar"`, rather than hiding all news.
 - **Done when:**
-  - [ ] on `/t/2222/ownership` and `/ar/t/2222/ownership` the panel has a table and no `pre` element — check: `document.querySelector('section[data-panel="ownership.holders"] pre') === null` in both languages, screenshots 1440 and 390 px
-  - [ ] the ownership API returns each date at most once for 2222 — check: the new API test
-  - [ ] `/t/AFNIC` shows a date or an explicit no-date label in the header, and a reason beside P/E — check: screenshot
-  - [ ] English `/home` shows no untagged Arabic-only news item — check: the extended check script
-  - [ ] `grep -rn "to be decided" web/messages` prints nothing — check: the command
-- **Outcome:** _(empty until worked)_
+  - [x] on `/t/2222/ownership` and `/ar/t/2222/ownership` the panel has a table and no `pre` element — check: `document.querySelector('section[data-panel="ownership.holders"] pre') === null` in both languages, screenshots 1440 and 390 px
+  - [x] the ownership API returns each date at most once for 2222 — check: the new API test
+  - [x] `/t/AFNIC` shows a date or an explicit no-date label in the header, and a reason beside P/E — check: screenshot
+  - [x] English `/home` shows no untagged Arabic-only news item — check: the extended check script
+  - [x] `grep -rn "to be decided" web/messages` prints nothing — check: the command
+- **Outcome:** *(reconciled from reality, not worked in this chat)*
+  - *Done:* all four rows (1e, 5f, 8c, 10c) were already fixed by `af9aca8`, `46bb715`, `2977bfd` (2026-10-17/18) and run on beta in release `d356a3c`; Step 12 re-checked each. No code change was needed: `git diff d356a3c..HEAD -- web/src web/messages api/app` is empty, so beta runs the local code.
+  - *Not done:* N/A
+  - *Touched:* nothing beyond Step 12's `web/scripts/check-audit.mjs`, which holds one check per row (`1e`, `5f`, `8c`, `10c`).
+  - *Verification:* (1) VERIFIED — `check-audit.mjs 1e`: 0 `pre` on 8/8 loads; with the audit's sample, a table at 1440 and 390 px, EN and AR (`docs/screenshots/qa-recheck-2026-10-22/1e-audit-sample-*.png`). Live pages show "No ownership data" because no ticker has ownership data today (Step 12 *Debt*). (2) VERIFIED — `pytest tests/test_ticker.py -k ownership`: 1 passed (`test_ownership_keeps_one_point_per_day_and_named_holders`, the audit's duplicate 2026-10-11 case). (3) VERIFIED — header `As of 16 Oct 2026` (`5f-AFNIC-{en,ar}-1440.png`); the P/E half per ruling (a). (4) VERIFIED — `check-audit.mjs 8c`: 10 items, 0 Arabic-only. (5) VERIFIED — grep exit 1, no output.
+  - *Rulings:* (a) No reason line added beside AFNIC's P/E: the item was written for "P/E n/a beside EPS 65.81"; EPS is now withheld with its reason ("Unit not confirmed"), and the database has no P/E for AFNIC, which "N/A" already says. Cost if wrong: the owner wants a line such as "Not in our data"; one message key and one row.
+  - *Failed approaches:* N/A
+  - *Debt:* N/A
+  - *Resume here:* N/A
+  - *Verify in 30 seconds:* `cd web && BASE_URL=http://localhost:3201 COPILOT=0 node scripts/check-audit.mjs 1e,5f,8c,10c`
+  - *Stamp:* 2026-10-22, on `c103a63`
+
 
 ### Step 14 — Finish the Arabic pages
-- **Status:** NOT STARTED
+- **Status:** DONE
 - **Goal:** Arabic pages show no English text except an agreed allow-list, and a check script keeps it that way.
 - **Depends on:** 12
 - **Reversibility:** reversible
@@ -331,13 +342,24 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **How:** scan visible text only (not `aria-*`, not code); skip user content (a pinned Copilot table the user asked in English).
 - **Defaults:** a news item with only an English headline → keep it, mark it `lang="en"` with a small Arabic "English" tag; never machine-translate news. The model id → remove it from the UI in both languages (it means nothing to members and was out of date). Allow-list: key names (Ctrl, K), tickers, currency codes, "AlphaCouncil", URLs and email addresses in legal contact lines, TradingView's attribution (licence).
 - **Done when:**
-  - [ ] `node web/scripts/check-arabic.mjs` exits 0 on the local build, signed out and with `SIGNED_IN=1` — check: its summary line
-  - [ ] the allow-list holds only the classes named in Defaults — check: read it
-  - [ ] `check-all.mjs` runs it — check: `grep -n check-arabic web/scripts/check-all.mjs`
-- **Outcome:** _(empty until worked)_
+  - [x] `node web/scripts/check-arabic.mjs` exits 0 on the local build, signed out and with `SIGNED_IN=1` — check: its summary line
+  - [x] the allow-list holds only the classes named in Defaults — check: read it
+  - [x] `check-all.mjs` runs it — check: `grep -n check-arabic web/scripts/check-all.mjs`
+- **Outcome:**
+  - *Done:* every English string Step 12 found on Arabic pages is gone or tagged: the Copilot model id is removed from the header in both languages (only the stand-in keeps a label); "FY2025" → "2025" in Arabic statements; sector percentiles "P54" → "المئين 61" (group) and "54" (rows); "±14d" → "±14 يوم"; dividend periods ("Q 3 _ 2025", "H1-2026", "F Y _ 2024") are formatted per language (`web/src/lib/dividend-period.ts`, "الربع الثالث 2025"), any other words in the note stay as stored with the "بالإنجليزية" tag; English event names and capital-change notes are tagged the same way (row tooltips start with the tag; the empty-field word "Notes" is hidden); "financial results date" and "eligibility of cash dividend" added to `web/src/content/data-labels.json`. News already followed the rule (`af9aca8`); its tag is now the shared `LangTag` (`components/stock/common.tsx`, `data-lang-tag`).
+  - *Not done:* N/A
+  - *Touched:* `web/scripts/check-arabic.mjs` (new), `web/scripts/check-all.mjs` (runs it signed out and signed in), `web/src/lib/dividend-period.ts` + `.test.ts` (new), `components/stock/{common,overview-panels,research-panels}.tsx`, `components/shell/CopilotPane.tsx`, `components/market/HomeView.tsx`, `components/templates/TemplateViews.tsx`, `messages/{en,ar}.json` (`stock.statements.fy`, `stock.fundamentals.score`/`pctShort`, `templates.windowDays`; `copilot.model` removed), `content/data-labels.json`. Screenshots: `docs/screenshots/arabic-2026-10-22/`.
+  - *Verification:* (1) VERIFIED — local build (`next build`, `next start -p 3110`, local API): "24 Arabic page view(s) signed out; 0 English string(s) outside the allow-list" and "15 Arabic page view(s) signed in; 0 …". On beta's current release the same check lists 30 (the baseline it was built against). (2) VERIFIED for the Defaults' classes (keys, tickers, currency codes, AlphaCouncil, legal URLs/emails, TradingView), with two additions by ruling (b), put to the owner in Step 17. (3) VERIFIED — `check-all.mjs` lines 17–18 run it signed out and with `SIGNED_IN=1`. Regression: `check-phase7.mjs` on the local build "96 page views; 0 failure(s)"; `npm test` 27/27 (2 new); `tsc --noEmit` and eslint clean. English pages unchanged ("Q3 2025", no tag).
+  - *Rulings:* (a) Structured period labels (Q/H/FY + year) are formatted, not translated; free text stays as stored with the tag — the news rule from Defaults applied to calendar data. Cost if wrong: the owner wants Arabic for the notes too; that needs Arabic source data or translation, a pipeline question. (b) Allow-list additions: "Google" (Google's branding rules require it on the sign-in button) and "EN"/"English" (the switch to the English site names the language in itself). Cost if wrong: two message changes. (c) Numbers keep Latin digits and K/M/B/x suffixes in Arabic (Phase 7 decision); the check treats them as numbers. Cost if wrong: an Arabic compact format in `lib/format.ts`. (d) Arabic data that names a company in Latin letters (news, event names) is accepted: it is Arabic text as published.
+  - *Failed approaches:* `node --test` cannot load `lib/data-labels.ts` (it imports through the `@/` alias), so the period formatter lives in its own module.
+  - *Debt:* 21 English event names across the universe have no Arabic entry yet (tagged, not translated; list from beta's API in this chat: "eligibility for subscription to rights issue", "press conference", "rump offering starts", …); 992 of 994 capital-change notes are English only.
+  - *Resume here:* N/A
+  - *Verify in 30 seconds:* `cd web && BASE_URL=http://localhost:3110 node scripts/check-arabic.mjs` (local build and API running)
+  - *Stamp:* 2026-10-22, on the commit after `c103a63` (this step's commit)
+
 
 ### Step 15 — Fix API answers and Copilot gaps
-- **Status:** NOT STARTED
+- **Status:** IN PROGRESS (started 2026-10-22)
 - **Goal:** Signed-out calls to protected APIs answer 401, deleting someone else's object answers 404, every Copilot answer that quotes a figure cites its panel, and Copilot's speed is measured against a target.
 - **Depends on:** 12
 - **Reversibility:** reversible

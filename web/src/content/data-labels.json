@@ -238,6 +238,7 @@
     ["Conference call with analysts and investors", "مؤتمر هاتفي مع المحللين والمستثمرين"],
     ["Earnings call", "مؤتمر هاتفي مع المحللين والمستثمرين"],
     ["Financial results disclosure", "إعلان النتائج المالية"],
+    ["Financial results date", "موعد إعلان النتائج المالية"],
     ["Results discussion session", "جلسة مناقشة النتائج المالية"],
     ["Analyst meeting", "إجتماع المحللين"],
     ["Analyst conference", "مؤتمر المحللين"],
@@ -317,6 +318,8 @@
     "start of ipo book-building process": "Start of IPO book-building",
     "end of ipo book-building process": "End of IPO book-building",
     "start of offering": "Start of offering",
-    "close of offering": "Close of offering"
+    "close of offering": "Close of offering",
+    "financial results date": "Financial results date",
+    "eligibility of cash dividend": "Eligibility for cash dividend"
   }
 }

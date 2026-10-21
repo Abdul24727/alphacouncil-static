@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { FreshnessLight, Panel } from "@/components/panel/Panel";
-import { QueryState, toTsv } from "@/components/stock/common";
+import { LangTag, QueryState, toTsv } from "@/components/stock/common";
 import { newsDate } from "@/components/stock/overview-panels";
 import type { components } from "@/lib/api/schema";
 import { fmtDate, fmtNumber, fmtPct, signClass } from "@/lib/format";
@@ -82,7 +82,6 @@ export function ExchangesTable({ rows }: { rows: Exchange[] }) {
 
 export function HomeView() {
   const t = useTranslations("market");
-  const ts = useTranslations("stock");
   const locale = useLocale();
   const q = useMarketOverview(locale === "ar" ? "ar" : "en");
   const o = q.data;
@@ -153,7 +152,7 @@ export function HomeView() {
                     <div className="mb-0.5 flex items-center gap-2">
                       <span className="num text-[11px] text-muted">{newsDate(n, locale)}</span>
                       <span className="num text-[11px] text-signal">{n.ticker.symbol}</span>
-                      {text.foreign && <span className="label-caps text-muted">{ts(`news.in.${text.foreign}`)}</span>}
+                      {text.foreign && <LangTag lang={text.foreign} />}
                     </div>
                     <a
                       href={n.url ?? undefined}
