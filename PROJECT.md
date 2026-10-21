@@ -1,15 +1,16 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-19   **At version:** `280211b` on branch `rebuild` (this file's latest state committed on top)
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-21   **At version:** `354e939` on branch `rebuild` (this file's latest state committed on top)
 
 ## 1. Objective
-alphacouncil.tech is ready to advertise: the code is safe off this computer, the market data is right at its source, and the named advisors, portraits and `www` address are settled.
+alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
 
 - The rebuild itself is finished and live: every phase of the original rebuild plan shipped, and production runs this app since 2026-10-17.
-- What is left is what stands between "live" and "safe to put money into advertising".
+- What is left is what stands between "live" and "fully built": the independent beta audit's open defects (`docs/qa-beta-2026-10/report.md`), the pipeline's data faults, the legal and portrait work, `www`, a checkout proven in test mode, and a full launch check.
+- **No one is charged until it is fully built** (owner, 2026-10-21: "I'm not gonna charge people when my product is half-baked. We'll lose customers forever."). Billing closes now (Step 11); opening it is the last step (Step 18).
 - For the owner (Abdul), who runs AlphaCouncil alone and has no paying members yet.
 - Correct data is the product: a research terminal that shows a stopped price or a wrong unit loses trust faster than one that is missing a feature.
 
-**Out of scope:** new features or panels; the advertising itself (campaigns, budgets, copy); retiring the old backend that still serves `api.alphacouncil.tech`; a cloud bucket for backups (the owner has none; the computer copy is used).
+**Out of scope:** new features or panels ("fully built" means what is already on the site, finished and right); the advertising itself (campaigns, budgets, copy); retiring the old backend that still serves `api.alphacouncil.tech`; a cloud bucket for backups (the owner has none; the computer copy is used).
 
 ## 2. Environment & Ground Truth
 Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, releases, billing, backups, monitoring and the outside check: `docs/production.md` (the runbook). Read those; this section holds only what neither says.
@@ -24,7 +25,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 
 ## 3. Decisions
 - 2026-10-17 — production (alphacouncil.tech) runs this app; each release goes beta → production through `scripts/deploy-staging.sh` then `scripts/deploy-production.sh`, with the owner's go-ahead per release.
-- 2026-10-18 — Pro billing is open (Moyasar, live keys); early access ended.
+- 2026-10-18 — Pro billing is open (Moyasar, live keys); early access ended. — **superseded 2026-10-21**: the owner will not charge anyone until the product is fully built (see below).
 - 2026-10-18 — Tadawul sectors come from the Saudi Exchange's official list (22 sectors, 273 companies), not the pipeline's labels. Other markets keep the pipeline's labels.
 - 2026-10-18 — the 5 USD-traded Bahrain listings show USD (owner's decision, sources in `api/app/data/listing_currencies.json`); other unconfirmed currencies show "Currency not confirmed".
 - 2026-10-18 — advisors' room: six named advisors on `deepseek/deepseek-v4-pro` plus a Chair on `anthropic/claude-sonnet-5.5`, Pro only. Rejected: several different models (cost, consistency).
@@ -33,6 +34,8 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - 2026-10-19 — PROJECT.md is the only source of project state; Claude's auto memory holds personal working preferences only. Rejected: turning auto memory off.
 - 2026-10-19 — pipeline fixes ship as `git format-patch` commits applied with `git apply` on the server (backend tree, and `-p2 --include='nightly_pipeline.sh'` in `/opt/alphacouncil/bin`), each file backed up as `.bak-<date>` first. Rejected: GNU `patch` from Windows (breaks `tickers.csv`'s CRLF hunks).
 - 2026-10-19 — chart failures are reported in the nightly OK status and the 06:30 health digest, not as a new alert email. Rejected: emailing every night (9 tickers fail every night today).
+- 2026-10-21 — No charging until fully built: production's checkout closes (Step 11) and reopens only as the last step, after the launch check passes (Step 18). Why: a customer who pays for a half-finished product is lost for good. Rejected: keeping billing open while the fixes land.
+- 2026-10-21 — "Fully built" includes the independent beta audit (`docs/qa-beta-2026-10/report.md`, runs 1–3): every FAIL row is fixed, or the owner accepts it in writing as by design (follows from the rule above). Rejected: launching with the audit's minor rows open.
 
 ## 4. Autorun Policy
 - **Pre-approved:** creating and editing files in this repo on branch `rebuild`; running the project's checks and builds; read-only commands on the server over SSH (logs, `systemctl status`, `journalctl`, `sqlite3 -readonly`, listing and reading pipeline files); writing reports under `docs/`; committing on `rebuild`; screenshots with the built-in browser.
@@ -43,31 +46,34 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 ## 5. Changelog
 - 2026-10-19 — Project file created after the rebuild finished; the next work is launch readiness, in the owner's order: GitHub, pipeline data, lawyer review and portraits, then `www`.
 - 2026-10-19 — Goal 1 Step 1 and Goal 2 Steps 3–4 done in one chat; Goals 1–3 now wait on the owner (URL, fix choice, advice, portraits, DNS). The Apps Script Executions page could not be read (Google sign-in lapsed in the built-in browser); nginx's access log proved the 5-minute rounds instead.
+- 2026-10-21 — Owner's rule: no charging until fully built. Plan grown to four goals: Goal 1 adds closing billing (Step 11); new Goal 3 fixes the independent beta audit's defects and proves checkout in Moyasar test mode (Steps 12–17; audit copied to `docs/qa-beta-2026-10/`); the old Goal 3 is now Goal 4 and ends with opening billing (Step 18). The GitHub URL the owner gave (`alphacouncil-static`) is public and holds the old site, so it is not used (Step 2).
 
 ## 6. Current State
-- Live on alphacouncil.tech: the rebuilt app (EN/AR), accounts with email verification and Google sign-in, Pro billing (Moyasar, hourly renewals), the advisors' room (six advisors, turn-by-turn playback, release `d356a3c`), official Tadawul sectors, the app-side data fixes.
+- Live on alphacouncil.tech: the rebuilt app (EN/AR), accounts with email verification and Google sign-in, Pro billing **open since 2026-10-18** (Moyasar live keys, hourly renewals; against the owner's 2026-10-21 rule, Step 11 closes it), the advisors' room (six advisors, turn-by-turn playback, release `d356a3c`), official Tadawul sectors, the app-side data fixes.
 - Safety nets, all shown running unattended on 2026-10-19: nightly database backups on the server; the daily copy on the owner's computer (09:00 run copied that night's dump); the server monitor (14 checks every 5 min, no missed ping); the outside check (116 rounds every 5 min, all 200).
 - Data, part 2 done (`docs/data-audit-part2-2026-10-19.md`): causes found for the stopped tickers (Argaam renamed pages), UAE 2 decimals, holiday copies, Tadawul disclosures (source section stopped in March) and Tadawul turnover. Fixes F-A, F-E, F-B, F-C are a dry-run patch (`docs/pipeline-fixes-2026-10-19.patch`), not applied; F-D (disclosures) not built.
-- Waiting on the owner: GitHub repository URL (Step 2); fix choice A/B/C and F-D yes/no (Step 5); lawyer's advice (Step 7); portrait files (Step 8); the `www` DNS record (Step 9).
+- Independent beta audit, 2026-10-15 → 21 (`docs/qa-beta-2026-10/report.md`). Pass: cross-account read and write isolation, unguessable IDs, no secrets in bundles, charts, freshness, data truth, Copilot trust tests 8/8. Open: Ownership tab shows raw JSON; 52 English strings on Arabic pages; AFNIC valuation and header; protected APIs answer 403 not 401; Copilot figures without citations and 12–41 s answers; checkout never tested on beta. Releases of 10-17 → 19 may have fixed some: Step 12 re-checks.
+- Waiting on the owner: a new empty private GitHub repository's URL (Step 2); the go-ahead to close billing (Step 11); fix choice A/B/C and F-D yes/no (Step 5); lawyer's advice (Step 7); portrait files (Step 8); the `www` DNS record (Step 9).
 - Not done: the code has no remote; advisor portraits are initials; no `www`; the lawyer has not reviewed the named advisors.
 - Untracked: `scripts/set-backup-bucket.sh` (bucket helper from the backups session; the bucket is not used).
 
 ## 7. Goals
 
-## Goal 1 — Code and safety nets confirmed
-- **Status:** AWAITING CHECKPOINT — Step 1 DONE (Done-when items 3 and 4 verified 2026-10-19); Step 2 waits for the repository URL (items 1 and 2).
+## Goal 1 — Safe footing: code backed up, safety nets proven, nobody charged
+- **Status:** AWAITING CHECKPOINT — Step 1 DONE (Done-when items 3 and 4 verified 2026-10-19); Step 2 waits for an empty private repository's URL (items 1 and 2); Step 11 waits for the owner's go-ahead to close billing (item 5).
 - **Share of project:** ~15%
-- **Goal:** The code is in the owner's private GitHub repository, and the backup copy, monitor and outside check are shown to have run on their own.
+- **Goal:** The code is in the owner's private GitHub repository, the backup copy, monitor and outside check are shown to have run on their own, and production takes no payments until the launch.
 - **Done when:**
   1. `git ls-remote origin refs/heads/rebuild` prints the same sha as `git rev-parse rebuild`, and `origin` is the owner's private repository.
   2. `git ls-files` lists no `api.env`, no `*.sqlite`, no key file (`git ls-files | grep -E '(^|/)api\.env$|\.sqlite$|id_ed25519'` prints nothing).
   3. `%USERPROFILE%\AlphaCouncil-Backups\pull.log` has an `ok:` line written by the scheduled task after the server's nightly backup, and the copy holds that night's `acp_prod-<date>T…Z.dump`.
   4. The outside check's Executions list shows `check` runs 5 minutes apart over at least an hour, and `prod-monitor.py status` prints `outside check: PING_URL is set`.
+  5. `curl -s https://alphacouncil.tech/api/v1/plans` prints `"checkout_open":false`, and `/pricing` shows the early-access note in English and Arabic.
 - **Depends on:** nothing
 - **Reversibility:** costly (pushing code to a third party, even privately)
-- **Autorun:** no — checkpoint: human-action (the owner creates the repository and gives its URL)
+- **Autorun:** no — checkpoint: human-action (the owner creates the repository and gives its URL) and decision (closing billing, Step 11)
 - **Consumes:** nothing
-- **Steps:** 1–2
+- **Steps:** 1–2, 11
 - **Goal outcome:** _(empty until the goal is worked)_
 
 ### Step 1 — Confirm the safety nets ran unattended
@@ -100,7 +106,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - *Stamp:* 2026-10-19, on `c46da77`
 
 ### Step 2 — Push branch `rebuild` to the owner's private GitHub repository
-- **Status:** AWAITING CHECKPOINT — needs the owner's empty private repository URL (github.com/new, no README, no licence). Secret scan already done 2026-10-19 (see Outcome); nothing else to decide.
+- **Status:** AWAITING CHECKPOINT — needs the owner's **empty, private** repository URL (github.com/new, Private, no README, no licence). Secret scan already done 2026-10-19 (see Outcome). 2026-10-21: the owner gave `https://github.com/Abdul24727/alphacouncil-static`, which cannot be used — see Outcome *Rulings* (b).
 - **Goal:** The owner's private GitHub repository holds branch `rebuild` at the local head.
 - **Depends on:** nothing
 - **Reversibility:** costly
@@ -117,12 +123,31 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - [ ] the repository page shows "Private" — check: the owner confirms, or `git ls-remote` fails without credentials
 - **Outcome:** (partial — waiting at the checkpoint)
   - *Done:* secret scan. `git ls-files` check prints nothing. The step's history grep prints 6 lines, all false positives: its own regex in `PROJECT.md` (c46da77); `sk_test_x` fake in `api/tests/test_billing.py` and the prefix comment `(pk_test_/sk_test_)` in `deploy/api.env.example` (28e21dd); the empty `# OPENROUTER_API_KEY=  # set on the server only…` placeholder in `deploy/api.env.example` (8b715fd, 55de633, 2bef6a4). A stricter scan for real key shapes (Moyasar `sk_/pk_` + 16 chars, `sk-or-v1-`, `sk-ant-`, `GOCSPX-`, private-key blocks, AWS, `ghp_`, MailerSend `mlsn.`, the Apps Script `macros/s/AKfy…` URL, `hc-ping.com/<uuid>`) prints 0 for history and the working tree. No remote exists yet (`git remote -v` empty); `rebuild` = `c46da77` before this chat's commit.
-  - *Rulings:* the step's grep "must print nothing" is read as "finds no secret": all 6 hits are reviewed non-secrets above. Cost if wrong: a secret pushed to a private repository — the stricter scan makes this unlikely.
+  - *Rulings:* the step's grep "must print nothing" is read as "finds no secret": all 6 hits are reviewed non-secrets above. Cost if wrong: a secret pushed to a private repository — the stricter scan makes this unlikely. (b) 2026-10-21: the URL the owner gave, `https://github.com/Abdul24727/alphacouncil-static`, is not used. It is **public** (`git -c credential.helper= ls-remote` lists it with no sign-in) and not empty: it holds the old static site (`master` 2026-07-03; also `staging-option-a`, `vps-production-sync-20260714`, `feat/settings-market-multiselect`, and `claude/affectionate-visvesvaraya-15c98d`, the newest at 2026-08-29). Pushing `rebuild` there would publish this code. The old backend repository `Argaam-council-before-testing-cluade-project-` is private but holds the old backend. So: ask for a new empty private repository (suggested name `alphacouncil-platform`). Cost if wrong: one more round-trip with the owner.
   - *Resume here:* the owner gives the URL → re-run the stricter scan, which must print 0: `git log --all -p | grep -c -E 'sk_(live|test)_[A-Za-z0-9]{16,}|pk_(live|test)_[A-Za-z0-9]{16,}|sk-or-v1-[0-9a-f]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|GOCSPX-[A-Za-z0-9_-]{10,}|BEGIN [A-Z ]*PRIVATE KEY-----|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{30,}|mlsn\.[a-f0-9]{30,}|macros/s/AKfy[A-Za-z0-9_-]{20,}|hc-ping\.com/[0-9a-f-]{36}'`; then `git remote add origin <URL>`; `git push -u origin rebuild`; compare `git ls-remote origin refs/heads/rebuild` with `git rev-parse rebuild`; add one line to `CLAUDE.md` naming the remote.
+
+### Step 11 — Close Pro checkout on production until the launch
+- **Status:** AWAITING CHECKPOINT — needs the owner's go-ahead in chat (payments and production are Always stop). Recommended: today.
+- **Goal:** Production's checkout is closed and every account has Pro free (early access) until Step 18 opens billing.
+- **Depends on:** nothing
+- **Reversibility:** reversible (put the line back)
+- **Autorun:** no — checkpoint: decision
+- **What this step is:** Billing opened on 2026-10-18 (`BILLING_OPEN=true`). On 2026-10-21 the owner ruled that no one is charged until the product is fully built. There are no paying members, so closing it costs nobody anything, and visitors see the whole product while it is finished. The runbook already holds the procedure.
+- **Where:** server `/etc/alphacouncil-platform/prod/api.env`; service `acp-prod-api`; `docs/production.md` section "Pro billing (Moyasar)".
+- **Consumes:** the runbook's lines "To close billing again (everyone back to Pro, checkout closed): delete the `BILLING_OPEN` line, then `systemctl restart acp-prod-api`."
+- **Produces:** `api.env.bak-<YYYYMMDDHHMMSS>` beside production's `api.env` (Step 18 names it); the `BILLING_OPEN` line removed; a dated paragraph "Billing closed again (<date>)" under "Billing is open (since 2026-10-18)" in `docs/production.md`, with the checks below.
+- **How:** first count renewing payers without reading any row: subscriptions with status `active` or `past_due` and a saved card (`token_id` set), count only. Then `cp -p api.env api.env.bak-<timestamp>`, `sed -i '/^BILLING_OPEN=/d' api.env`, `systemctl restart acp-prod-api`, then the checks. Never print `api.env`. Leave `acp-prod-billing.timer` enabled: with no renewing payers it charges nobody, and the monitor expects it.
+- **Defaults:** the count is above 0 → stop, change nothing, tell the owner the count (whether to refund or keep that member is the owner's call); a count-only query cannot be run → the owner checks Moyasar's live dashboard for payments since 2026-10-18, and that answer is recorded; the restart fails → restore the backup file, restart, report.
+- **Done when:**
+  - [ ] `curl -s https://alphacouncil.tech/api/v1/plans` prints `"checkout_open":false` — check: the command
+  - [ ] `/pricing` shows "Checkout is not open yet. During early access every account has the Pro features free." (English) and its Arabic text (Arabic) — check: screenshots at 1440 and 390 px
+  - [ ] a signed-out visitor sees the Ownership and Financials panels of `/t/2222` unlocked — check: screenshot
+  - [ ] the monitor's ok count is the same as before the change — check: `python3 -I /usr/local/lib/acp-monitor/prod-monitor.py status` before and after
+- **Outcome:** _(empty until worked)_
 
 ## Goal 2 — Market data correct at the source
 - **Status:** AWAITING CHECKPOINT — Steps 3–4 DONE (Done-when item 1 met by the part-2 report); Step 5 waits for the owner's A/B/C choice.
-- **Share of project:** ~45%
+- **Share of project:** ~25%
 - **Goal:** The faults that only the pipeline can fix are fixed on the server, and the nightly data shows it.
 - **Done when:**
   1. A report `docs/data-audit-part2-<date>.md` gives a root cause, with server evidence, for each of: the six stopped tickers, 2-decimal prices under 1 AED, repeated holiday bars, the Tadawul disclosure stall since 2026-10-16, and the missing Tadawul turnover.
@@ -229,20 +254,147 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - [ ] `check-data-fixes.mjs` with `SWEEP=1` passes every check on production — check: its summary line
 - **Outcome:** _(empty until worked)_
 
-## Goal 3 — Ready to advertise
-- **Status:** AWAITING CHECKPOINT — Steps 7–9 each wait on the owner (re-tested 2026-10-19: no `www` record, no portrait files, no legal advice yet); Step 10 waits on Goal 2.
-- **Share of project:** ~40%
-- **Goal:** The advisors' names and texts follow the owner's legal advice, the six portraits are real, `www.alphacouncil.tech` works, and a full launch check passes on production.
+## Goal 3 — Every known defect fixed, checkout proven
+- **Status:** NOT STARTED
+- **Share of project:** ~30%
+- **Goal:** Every defect the independent beta audit found is fixed or accepted by the owner as by design, the fixes are live on production, and checkout has been proven end to end in Moyasar test mode on beta.
 - **Done when:**
-  1. The owner's written legal advice is in `docs/legal-advisors-<date>.md` (the owner's summary, no personal data), and every change it asks for is live.
+  1. `docs/qa-beta-2026-10/reaudit-<date>.md` lists every item of Step 12's list (the audit's FAIL rows 1b, 1e, 2b, 5f, 7d, 7e, 7f, 8a, 8b, 8c, 9b, 10b, 10c, the 9f nit, and Copilot at 390 px) as PASS with evidence, or BY DESIGN with the owner's acceptance quoted.
+  2. `node web/scripts/check-arabic.mjs` passes on production: no English text on Arabic pages outside its allow-list.
+  3. `docs/checkout-test-<date>.md` shows every case passing in Moyasar test mode on beta, and beta's `api.env` has no `BILLING_OPEN` line afterwards.
+  4. Production runs the same release that was re-audited on beta (release ids recorded in `docs/production.md` match), and `node web/scripts/check-all.mjs` passes on it.
+- **Depends on:** nothing (Step 17's releases need the owner's go-ahead)
+- **Reversibility:** reversible
+- **Autorun:** yes for Steps 12–15 (read-only checks; code on `rebuild` checked on the local build); no for Step 16 (Moyasar and beta's billing setting) and Step 17 (releases)
+- **Consumes:** `docs/qa-beta-2026-10/report.md` (FAIL rows with exact repro steps; "Not tested" list); `docs/qa-beta-2026-10/moyasar-checkout-interview-prompt.md`; `docs/qa-beta-2026-10/copilot-adversarial-plan.md`; `BRAND.md`.
+- **Steps:** 12–17
+- **Goal outcome:** _(empty until the goal is worked)_
+
+### Step 12 — Re-check the audit's open rows on today's beta
+- **Status:** NOT STARTED
+- **Goal:** A dated list says, for each open item of the beta audit, whether it still fails today, with evidence, and which step fixes it.
+- **Depends on:** nothing
+- **Reversibility:** reversible
+- **Autorun:** yes (read-only)
+- **What this step is:** The audit ran 2026-10-15 → 21 while releases were still landing, so some rows may already be fixed. For example, the pricing placeholder "[Pro features: to be decided before the paid launch]" (row 10c) no longer appears in `web/messages`. Re-check before fixing, so no work goes into what is already right.
+- **Where:** beta through the tunnel `localhost:3201` (built-in browser and the check scripts); `docs/qa-beta-2026-10/`; screenshots under `docs/screenshots/qa-recheck-<date>/`.
+- **Consumes:** `docs/qa-beta-2026-10/report.md`: the FAIL rows 1b, 1e, 2b, 5f, 7d, 7e, 7f, 8a, 8b, 8c, 9b, 10b, 10c with their "Exact repro steps"; the 9f nit (DELETE answers 200 for an id the caller does not own); "Not tested" item 5 (Copilot at 390 px).
+- **Produces:** `docs/qa-beta-2026-10/defects-<date>.md` — one row per item (15 rows) with columns `row | finding | today (STILL FAILS / FIXED / BY DESIGN?) | evidence | fixed by (Step 13, 14, 15 or 16)`, then a section "Proposed BY DESIGN" listing what the owner is asked to accept in Step 17, each with one line of why.
+- **How:** follow each row's repro steps exactly, at the widths and languages it names. Row 2b: compare computed colours and fonts on `/home`, `/t/2222` and `/pricing` with the tokens in `BRAND.md` (the audit could not; the file is not served). Pages that need an account: use the accounts the project's phase checks already use. Never use production in this step.
+- **Defaults:** a row behaves as the code intends and the intent is sensible (1b: phones get a bottom tab bar, not a sidebar; signed-out `/portfolio`, `/dashboards`, `/settings` answer 200 with a sign-in prompt) → "BY DESIGN?" with the reason; text a licence requires (TradingView's "Charting by TradingView") → "BY DESIGN?"; a row does not reproduce on two tries → FIXED, with both tries as evidence; a row needs an account the checks do not have → CANNOT VERIFY HERE, verifier: owner, check: the row's repro steps.
+- **Done when:**
+  - [ ] the file has 15 rows, each with a today value and evidence — check: count the rows
+  - [ ] every STILL FAILS row names its fixing step — check: read the table
+- **Outcome:** _(empty until worked)_
+
+### Step 13 — Fix the data and display defects
+- **Status:** NOT STARTED
+- **Goal:** The Ownership tab shows holders properly, AFNIC's header and valuation tell the truth, English pages show English news, and the pricing page has no placeholder — on the local build, in both languages.
+- **Depends on:** 12
+- **Reversibility:** reversible
+- **Autorun:** yes (code on `rebuild`, checked on the local build; the release is Step 17)
+- **What this step is:** Fix the rows Step 12 marks STILL FAILS among: 1e — the Ownership panel (`section[data-panel="ownership.holders"]`) prints the API's JSON in a `<pre>` (`foreign_series`, `foreign_current_pct`, `major_holders`), and the series lists 2026-10-11 twice; 5f — AFNIC shows P/E "n/a" beside EPS 65.81 AED and price 230, and its header has no "As of" date; 8c — `/home` in English lists Arabic-only news; 10c — the pricing placeholder.
+- **Where:** the ownership panel (`grep -rn "ownership.holders" web/src`), the ticker header and key-metrics components, the home news component, `web/messages/en.json` and `ar.json`, `api/app/routers/ticker_research.py`.
+- **Consumes:** `docs/qa-beta-2026-10/defects-<date>.md` rows 1e, 5f, 8c, 10c.
+- **Produces:** the fixed components and API; one check per fix (extend the nearest `web/scripts/check-*.mjs`; API tests under `api/tests/`); each row in `defects-<date>.md` marked "fixed in <commit>".
+- **How:** reuse the patterns other panels already use (tables, freshness dots, "As of" labels, "Data unavailable"); see `CLAUDE.md` for the Next.js patterns. De-duplicate the ownership series in the API (one point per date, the latest).
+- **Defaults:** Ownership has no design yet → a holders table (name, %) plus the foreign-ownership line chart drawn with the library the price panel uses; a price with no date → the header says so in the wording the app already uses for missing dates, and P/E stays "n/a" with a one-line reason (never compute a valuation from an undated price); no English headline for a news item → in English show it with a visible "Arabic" tag and `lang="ar"`, rather than hiding all news.
+- **Done when:**
+  - [ ] on `/t/2222/ownership` and `/ar/t/2222/ownership` the panel has a table and no `pre` element — check: `document.querySelector('section[data-panel="ownership.holders"] pre') === null` in both languages, screenshots 1440 and 390 px
+  - [ ] the ownership API returns each date at most once for 2222 — check: the new API test
+  - [ ] `/t/AFNIC` shows a date or an explicit no-date label in the header, and a reason beside P/E — check: screenshot
+  - [ ] English `/home` shows no untagged Arabic-only news item — check: the extended check script
+  - [ ] `grep -rn "to be decided" web/messages` prints nothing — check: the command
+- **Outcome:** _(empty until worked)_
+
+### Step 14 — Finish the Arabic pages
+- **Status:** NOT STARTED
+- **Goal:** Arabic pages show no English text except an agreed allow-list, and a check script keeps it that way.
+- **Depends on:** 12
+- **Reversibility:** reversible
+- **Autorun:** yes (code on `rebuild`, checked on the local build)
+- **What this step is:** The audit found 52 English strings on public Arabic pages (102 in run 1) and 34 on signed-in ones (rows 8a, 8b): English news headlines on `/ar/t/2222`, "Ctrl K", the model id "deepseek/deepseek-v3.2" on every app page, TradingView's chart title, and "English version" plus contact URLs on `/ar/legal/*`. Arabic is half the market; it has to be first-class.
+- **Where:** `web/messages/ar.json`; the Copilot pane and search-hint components; the news components; the legal page shell (not `web/src/content/legal`, which `scripts/import-legal.py` writes); new `web/scripts/check-arabic.mjs`; `web/scripts/check-all.mjs`.
+- **Consumes:** `docs/qa-beta-2026-10/defects-<date>.md` rows 8a, 8b.
+- **Produces:** `web/scripts/check-arabic.mjs` — opens the Arabic public pages (the page list in `web/scripts/check-phase7.mjs`) and, with `SIGNED_IN=1`, the signed-in ones; reports visible Latin-letter words outside an allow-list kept at the top of the file; exits 0 only when there are none; listed in `check-all.mjs`. Plus the copy fixes.
+- **How:** scan visible text only (not `aria-*`, not code); skip user content (a pinned Copilot table the user asked in English).
+- **Defaults:** a news item with only an English headline → keep it, mark it `lang="en"` with a small Arabic "English" tag; never machine-translate news. The model id → remove it from the UI in both languages (it means nothing to members and was out of date). Allow-list: key names (Ctrl, K), tickers, currency codes, "AlphaCouncil", URLs and email addresses in legal contact lines, TradingView's attribution (licence).
+- **Done when:**
+  - [ ] `node web/scripts/check-arabic.mjs` exits 0 on the local build, signed out and with `SIGNED_IN=1` — check: its summary line
+  - [ ] the allow-list holds only the classes named in Defaults — check: read it
+  - [ ] `check-all.mjs` runs it — check: `grep -n check-arabic web/scripts/check-all.mjs`
+- **Outcome:** _(empty until worked)_
+
+### Step 15 — Fix API answers and Copilot gaps
+- **Status:** NOT STARTED
+- **Goal:** Signed-out calls to protected APIs answer 401, deleting someone else's object answers 404, every Copilot answer that quotes a figure cites its panel, and Copilot's speed is measured against a target.
+- **Depends on:** 12
+- **Reversibility:** reversible
+- **Autorun:** yes (code on `rebuild`; Copilot runs on beta are read-only questions)
+- **What this step is:** Row 9b: signed out, `GET /v1/portfolio`, `GET /v1/portfolio/alerts`, `GET /v1/me/prefs`, `POST /v1/portfolio/holdings` and `POST /v1/portfolio/alerts` answer 403 `{"detail":"Sign in to use this."}`, and `POST /v1/copilot/chat` answers 403 `sign_in_required`; 401 is the code for "not signed in". The 9f nit: `DELETE /v1/portfolio/holdings/{id}` answers 200 for an id the caller does not own (it changes nothing, which is right). Row 7d: an answer quoted book value and EPS with no citation chip. Row 7f: full answers take 12–41 s. Row 7e: tool-use narration in an answer in run 2, not seen in run 3 — keep a guard against it.
+- **Where:** the shared sign-in dependency in `api/app/` (find it with `grep -rn "Sign in to use this" api/app`), `api/app/routers/portfolio.py`, `api/app/routers/copilot.py` and its prompt, the web client's error handling in `web/src/lib/api/`.
+- **Consumes:** `docs/qa-beta-2026-10/defects-<date>.md` rows 9b, 9f nit, 7d, 7e, 7f; `docs/qa-beta-2026-10/copilot-adversarial-plan.md` (tests C1–C8, which must keep passing).
+- **Produces:** the status-code changes with tests in `api/tests/`; a Copilot citation rule (in the prompt, or a server-side check that asks for a citation when a figure has none); `docs/copilot-latency-<date>.md` with first-word and full-answer times, before and after, for the questions in rows 7d (`/t/METH.AD`, Key metrics, "What are the EV/EBITDA and the dividend yield?") and 7e (`/t/AFNIC`, Price + Key metrics, "What was the last closing price and the 1-month return?") plus three on `/t/2222`.
+- **How:** change the shared dependency once, not each route; keep the JSON bodies; check that the web client treats 401 as it treated 403 (`grep -rn "403" web/src`).
+- **Defaults:** speed target — first words within 5 s and full answers within 20 s (median); if the current model cannot reach it, record the times and the options (shorter context, earlier streaming, a faster model for Copilot) in the latency doc and change no model without the owner; the citation rule makes any of C1–C8 fail → revert it and record why; signed-out pages keep answering 200 with a sign-in prompt (BY DESIGN? in Step 12).
+- **Done when:**
+  - [ ] API tests prove 401 signed out on the six routes above and 404 on a foreign or missing holding and alert id — check: `pytest api/tests -q` summary line
+  - [ ] each question in the latency doc that quotes a figure shows at least one citation — check: the doc's table
+  - [ ] the latency doc shows the target met, or the owner's choice recorded — check: the doc
+  - [ ] C1–C8 pass after the change — check: their results in the latency doc
+- **Outcome:** _(empty until worked)_
+
+### Step 16 — Prove checkout in Moyasar test mode on beta
+- **Status:** NOT STARTED
+- **Goal:** Every checkout case has run in Moyasar test mode on beta and passed, and beta is back to billing closed.
+- **Depends on:** nothing
+- **Reversibility:** reversible
+- **Autorun:** no — checkpoint: decision (the owner's go-ahead: it changes beta's billing setting and uses Moyasar, both Always stop)
+- **What this step is:** The audit could not test checkout (row 10b): beta runs with billing closed, so `/pricing` says checkout is not open. The runbook records one test-mode payment on beta on 2026-10-18, not the full set of cases. This step proves the paid path before anyone pays.
+- **Where:** beta's `/etc/alphacouncil-platform/api.env` (`BILLING_OPEN` and the Moyasar **test** keys, by name only) and service `acp-api`; `web/scripts/check-billing.mjs`; Moyasar's test dashboard (owner); `docs/checkout-test-<date>.md`.
+- **Consumes:** `docs/qa-beta-2026-10/moyasar-checkout-interview-prompt.md` (run it with the owner first to agree the case list); the runbook section "Pro billing (Moyasar)".
+- **Produces:** `docs/checkout-test-<date>.md` — each case with steps, expected result, result and evidence; `api.env.bak-<timestamp>` beside beta's `api.env`.
+- **How:** back up beta's `api.env`, add `BILLING_OPEN=true`, `systemctl restart acp-api`, run the cases through the beta tunnel with Moyasar's published test cards, then remove the line and restart. Cases, at least: success (Pro granted; `/billing/return` confirms against Moyasar's record); declined card; 3-D Secure pass and fail; closing the browser after paying (the webhook grants Pro); a duplicate webhook applied once; cancel (Pro to the end of the period, no renewal); renewal (`python -m app.billing renew` on beta with a due test subscription); a refund in Moyasar's test dashboard ends Pro (owner); English and Arabic, 1440 and 390 px. Never live keys; never a real card.
+- **Defaults:** beta has no Moyasar test keys → stop; the owner adds them (names in the runbook); a case fails → record it, fix it in the repo if small, re-run; never leave beta with billing open at the end of the chat.
+- **Done when:**
+  - [ ] `docs/checkout-test-<date>.md` lists every case above as PASS with evidence — check: read it
+  - [ ] `node web/scripts/check-billing.mjs` passes on beta — check: its summary line, copied into the file
+  - [ ] `grep -c '^BILLING_OPEN=' /etc/alphacouncil-platform/api.env` prints 0 on the server afterwards — check: the command
+- **Outcome:** _(empty until worked)_
+
+### Step 17 — Re-audit beta, then release the fixes to production
+- **Status:** NOT STARTED
+- **Goal:** Steps 13–15's fixes run on beta and production, every audit item is PASS or accepted by the owner, and nothing regressed.
+- **Depends on:** 12, 13, 14, 15, 16
+- **Reversibility:** reversible (a release rolls back per the runbook)
+- **Autorun:** no — checkpoint: decision (the owner's go-ahead for the beta release, the BY DESIGN list, and the production release)
+- **What this step is:** One beta release with all of Goal 3's fixes, every audit item re-run on it, one question to the owner for the BY DESIGN list, then the production release.
+- **Where:** `scripts/deploy-staging.sh`, `scripts/deploy-production.sh`; `docs/qa-beta-2026-10/reaudit-<date>.md`; `docs/production.md`.
+- **Consumes:** `docs/qa-beta-2026-10/defects-<date>.md` (with Steps 13–15's commits); `web/scripts/check-arabic.mjs`; `docs/checkout-test-<date>.md`.
+- **Produces:** `docs/qa-beta-2026-10/reaudit-<date>.md` — each item PASS with evidence, or BY DESIGN with the owner's words; the production release id recorded in `docs/production.md`.
+- **How:** release to beta (go-ahead) → re-run each item's repro steps plus `check-all.mjs` and `check-arabic.mjs` on beta → ask the owner once to accept or reject the BY DESIGN list → release to production (go-ahead) → `check-all.mjs` and `check-arabic.mjs` on production.
+- **Defaults:** an item fails again on beta → back to its step, no production release; the owner rejects a BY DESIGN item → it becomes a fix in the step that owns its area (13, 14 or 15).
+- **Done when:**
+  - [ ] the re-audit file shows every item PASS, or BY DESIGN with the owner's words — check: read it
+  - [ ] production's release id equals the re-audited beta release — check: `docs/production.md`
+  - [ ] `check-all.mjs` and `check-arabic.mjs` pass on production — check: summary lines in the re-audit file
+- **Outcome:** _(empty until worked)_
+
+## Goal 4 — Launch: settled, checked, then paid
+- **Status:** AWAITING CHECKPOINT — Steps 7–9 each wait on the owner (re-tested 2026-10-19: no `www` record, no portrait files, no legal advice yet); Step 10 waits on Goals 2 and 3; Step 18 waits on Step 10 and the owner's go-ahead.
+- **Share of project:** ~30%
+- **Goal:** The advisors' names and texts follow the owner's legal advice, the six portraits are real, `www.alphacouncil.tech` works, a full launch check passes on production, and only then is Pro checkout open.
+- **Done when:**
+  1. The owner's written legal advice is in `docs/legal-advisors-<date>.md` (the owner's summary, no personal data), it answers Step 7's three questions, and every change it asks for is live.
   2. The advisors' room shows six real portraits in English and Arabic at 1440 and 390 px, with the initials only as a fallback for a missing file.
   3. `curl -sI https://www.alphacouncil.tech/` answers 301 to `https://alphacouncil.tech/`, and the certificate covers both names.
-  4. `docs/launch-check-<date>.md` records every check script passing on production (`check-all.mjs`, `check-data-fixes.mjs` with `SWEEP=1`, `check-seo.mjs`, `check-advisors.mjs`) and the monitor at 14 of 14.
-- **Depends on:** nothing for Steps 7–9; Step 10 (the launch check) depends on Goal 2.
-- **Reversibility:** reversible (DNS and certificate: costly)
-- **Autorun:** no — checkpoint: human-action (legal advice, portrait files, DNS record)
-- **Consumes:** `docs/advisors-portraits-brief.md` (the illustrator's brief); `api/app/advisors/*.md` (the six advisors and the Chair).
-- **Steps:** 7–10
+  4. `docs/launch-check-<date>.md` records every check script passing on production (`check-all.mjs`, `check-data-fixes.mjs` with `SWEEP=1`, `check-seo.mjs`, `check-advisors.mjs`, `check-arabic.mjs`) and the monitor at 14 of 14.
+  5. `curl -s https://alphacouncil.tech/api/v1/plans` prints `"checkout_open":true`, and the owner's own first real payment gave Pro (and its refund ended it, or the refund is recorded as waiting for Moyasar's settlement).
+- **Depends on:** nothing for Steps 7–9; Step 10 (the launch check) depends on Goals 2 and 3; Step 18 depends on Step 10.
+- **Reversibility:** reversible (DNS and certificate: costly; opening billing: costly — whoever pays is owed their month)
+- **Autorun:** no — checkpoint: human-action (legal advice, portrait files, DNS record) and decision (opening billing, Step 18)
+- **Consumes:** `docs/advisors-portraits-brief.md` (the illustrator's brief); `api/app/advisors/*.md` (the six advisors and the Chair); `docs/qa-beta-2026-10/reaudit-<date>.md` (Goal 3).
+- **Steps:** 7–10, 18
 - **Goal outcome:** _(empty until the goal is worked)_
 
 ### Step 7 — Apply the lawyer's advice to the named advisors
@@ -251,7 +403,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Depends on:** nothing
 - **Reversibility:** reversible
 - **Autorun:** no — checkpoint: human-action (the owner brings the advice)
-- **What this step is:** The room speaks as Buffett, Lynch, Dalio, Marks, Prince Alwaleed and Abdullah Al-Rajhi. Using real people's names and personas is the main legal exposure before advertising. The owner gets advice; this step applies it.
+- **What this step is:** The room speaks as Buffett, Lynch, Dalio, Marks, Prince Alwaleed and Abdullah Al-Rajhi. Using real people's names and personas is the main legal exposure before advertising. The owner gets advice; this step applies it. Put three questions to the lawyer in one visit: (a) the real names and personas; (b) whether the live Copilot and the advisors' room stay inside an information service that needs no CMA permit — the owner's own plan of 2026-08-08 (`C:\AlphaCouncil-Staging\CMA_FINTECH_EXPERMIT_PLAN.md`, lines 137–144) said not to "enable Council or Research Assistant for customers" before a permit; (c) whether Moyasar must be told, since the merchant account was approved on the representation that the product is not robo-advisory (`C:\AlphaCouncil-Staging\PROJECT_ENDGAME.md`, line 36).
 - **Where:** `api/app/advisors/*.md`; the advisors' room UI copy in `web/messages/en.json` and `web/messages/ar.json`; nothing in `web/src/content/legal` (those texts are copied from the old site by `scripts/import-legal.py` and never edited by hand).
 - **Consumes:** the owner's advice, pasted or summarised in chat.
 - **Produces:** `docs/legal-advisors-<date>.md` (what the advice says, what changed); the changed files; a release through beta then production with the owner's go-ahead.
@@ -259,6 +411,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Defaults:** the advice says no real names → rename to descriptive personas (for example "The Value Investor"), keep each advisor's method, and say "inspired by public writings" nowhere unless the advice allows it; the advice is ambiguous on a point → take the more cautious reading and list it for the owner.
 - **Done when:**
   - [ ] `docs/legal-advisors-<date>.md` lists each point of the advice and the change made for it — check: read the file
+  - [ ] the file records the lawyer's answers to (b) and (c), and any change they require is listed with the step that makes it — check: read the file
   - [ ] production's advisors' page shows the changed names or texts in English and Arabic — check: screenshots at 1440 and 390 px
   - [ ] `node web/scripts/check-advisors.mjs` passes on production — check: its summary line
 - **Outcome:** _(empty until worked)_
@@ -299,28 +452,49 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 
 ### Step 10 — Launch check on production
 - **Status:** NOT STARTED
-- **Goal:** One dated record shows every check passing on production after Goals 2 and 3's changes.
-- **Depends on:** 6, 7, 8, 9
+- **Goal:** One dated record shows every check passing on production after Goals 2, 3 and 4's changes, with billing still closed.
+- **Depends on:** 6, 7, 8, 9, 17
 - **Reversibility:** reversible
 - **Autorun:** yes
 - **What this step is:** The last pass before the owner spends on advertising: every check script, the monitor and screenshots of the key pages, in one report.
 - **Where:** `docs/launch-check-<date>.md`; screenshots under `docs/screenshots/launch-<date>/`.
-- **Consumes:** the releases from Steps 6–9.
-- **Produces:** `docs/launch-check-<date>.md`.
+- **Consumes:** the releases from Steps 6–9 and 17; `docs/qa-beta-2026-10/reaudit-<date>.md`; `web/scripts/check-arabic.mjs`.
+- **Produces:** `docs/launch-check-<date>.md` (Step 18 reads it before billing opens).
 - **How:** run the scripts against production through the tunnel or over HTTPS as each script supports; `python3 -I /usr/local/lib/acp-monitor/prod-monitor.py status` on the server; screenshots of /, /pricing, /home, a Tadawul stock, its advisors' page, in English and Arabic at 1440 and 390 px.
 - **Defaults:** a check fails → record it NOT MET with output, fix it only if the fix is inside this repo and small, release only with the owner's go-ahead; a step it depends on is blocked → run the check anyway and mark the gap.
 - **Done when:**
   - [ ] the report lists each script with its summary line, all passing — check: read the file
   - [ ] the monitor's status shows 14 of 14 ok — check: its output in the report
   - [ ] the screenshots exist for each page, both languages, both widths — check: list the folder
+  - [ ] `check-arabic.mjs` passes on production — check: its summary line in the report
+- **Outcome:** _(empty until worked)_
+
+### Step 18 — Open Pro billing on production (the paid launch)
+- **Status:** NOT STARTED
+- **Goal:** Pro can be bought on alphacouncil.tech, and the owner's own first real payment proved it end to end.
+- **Depends on:** 10
+- **Reversibility:** costly (whoever pays is owed their month, even if billing closes again)
+- **Autorun:** no — checkpoint: decision (the owner's go-ahead in chat after reading `docs/launch-check-<date>.md`)
+- **What this step is:** The last step of the plan. Billing reopens only when the launch check is all green (owner's rule, 2026-10-21).
+- **Where:** `/etc/alphacouncil-platform/prod/api.env`; service `acp-prod-api`; Moyasar's live dashboard (owner); `docs/production.md`.
+- **Consumes:** `docs/launch-check-<date>.md` with every item passing; the runbook section "Billing is open (since 2026-10-18)" (how it was opened and checked); Step 11's `api.env.bak-<YYYYMMDDHHMMSS>` and its "Billing closed again (<date>)" paragraph.
+- **Produces:** `BILLING_OPEN=true` in production's `api.env` (the file before it kept as `api.env.bak-<timestamp>`); a "Paid launch (<date>)" paragraph in `docs/production.md` with the checks below.
+- **How:** as on 2026-10-18: back up, add the line, `systemctl restart acp-prod-api`, check `/pricing` ("Get Pro", no early-access note) and that the live card form loads in English and Arabic, without paying. Then the owner pays once with their own card, confirms Pro on their account, and refunds in Moyasar's dashboard; the refund ends Pro (runbook).
+- **Defaults:** the refund is refused because Moyasar has not settled the payment (it happened on the old site on 2026-08-11: `insufficient_balance`) → record it; the owner refunds after settlement; that item is CANNOT VERIFY HERE, verifier: owner, check: Moyasar's dashboard shows the payment Refunded. Any check fails → close billing again at once (remove the line, restart) and report.
+- **Done when:**
+  - [ ] `curl -s https://alphacouncil.tech/api/v1/plans` prints `"checkout_open":true` — check: the command
+  - [ ] the owner's payment gave their account Pro, and the payment was applied once — check: the owner's Settings → Billing screenshot and the API log line for that payment id
+  - [ ] the refund ended Pro, or is recorded as waiting for settlement — check: screenshot, or the note
+  - [ ] the monitor shows 14 of 14 ok — check: `python3 -I /usr/local/lib/acp-monitor/prod-monitor.py status`
 - **Outcome:** _(empty until worked)_
 
 ## 8. Open Questions
-- **The GitHub repository URL** — blocks Step 2. The owner creates an empty private repository at github.com/new (no README, no licence) and pastes its URL. No default: Claude cannot create the account or repository.
+- **A new empty private GitHub repository's URL** — blocks Step 2. The owner creates one at github.com/new (Private, no README, no licence; suggested name `alphacouncil-platform`) and pastes its URL. The URL given on 2026-10-21 (`alphacouncil-static`) is public and holds the old site, so it is not used (Step 2, *Rulings* (b)). No default: Claude cannot create the repository.
+- **Go-ahead to close Pro checkout on production now** — blocks Step 11. Recommended: yes, today (no paying members, so nobody loses anything; everyone has Pro free until the launch). No default: payments and production are Always stop.
 - **The lawyer's advice on the named advisors** — blocks Step 7 (and Step 8, since names may change). No default: it is the owner's legal call.
 - **Which pipeline fixes go to the server (A all four / B without F-B / C none), and whether to build F-D** — blocks Steps 5–6. Recommendation: A, and F-D yes after one night. No default: the standing rule keeps the old pipeline read-only without the owner's approval.
 - **The portrait files** — block Step 8. **The `www` A record in Cloudflare** — blocks Step 9. Both are the owner's actions.
 - **KPPC (624, Boursa Kuwait) and TAQA (ADX)** — Argaam has no page for KPPC and no TAQA bars after 2026-08-06. Delisted or suspended? The owner may know; until then the app keeps showing them stale (amber).
 
 ## 9. Next Up
-Goal 1, Step 2 (awaiting the GitHub URL). First action once the owner gives it: run the secret scan again (`git log --all -p` with the stricter pattern in Step 2's Outcome must print 0), then `git remote add origin <URL>` and `git push -u origin rebuild`. Then Goal 2, Step 5 with the owner's A/B/C answer → Step 6 (apply per the part-2 report's "Applying it").
+Goal 3, Step 12 — it needs nothing from the owner. First action: open `docs/qa-beta-2026-10/report.md`, start the beta tunnel (`localhost:3201`), and re-run row 1e's repro steps (`/t/2222/ownership`, EN and AR), recording the result in a new `docs/qa-beta-2026-10/defects-<date>.md`; then the other 14 items, then Steps 13–15 (code on `rebuild`; releases wait for Step 17). As soon as the owner answers in chat: Step 11 (close billing — do this first), Step 2 (push to the new private repository), Step 5 → 6 (pipeline fixes).
