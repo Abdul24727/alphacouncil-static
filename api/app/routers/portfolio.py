@@ -209,7 +209,9 @@ def upsert_holding(request: Request, body: HoldingIn, user: Authed) -> Portfolio
 @router.delete("/holdings/{holding_id}", operation_id="deleteHolding")
 def delete_holding(request: Request, holding_id: int, user: Authed) -> Portfolio:
     with db(request).begin() as conn:
-        conn.execute(delete(holdings).where(holdings.c.id == holding_id, holdings.c.user_id == user.id))
+        gone = conn.execute(delete(holdings).where(holdings.c.id == holding_id, holdings.c.user_id == user.id)).rowcount
+    if not gone:  # not this member's, or already deleted (QA audit 9f)
+        raise HTTPException(404, "No such holding.")
     return get_portfolio(request, user)
 
 
@@ -263,5 +265,7 @@ def create_alert(request: Request, body: AlertIn, user: Authed) -> list[Alert]:
 @router.delete("/alerts/{alert_id}", operation_id="deleteAlert")
 def delete_alert(request: Request, alert_id: int, user: Authed) -> list[Alert]:
     with db(request).begin() as conn:
-        conn.execute(delete(alerts).where(alerts.c.id == alert_id, alerts.c.user_id == user.id))
+        gone = conn.execute(delete(alerts).where(alerts.c.id == alert_id, alerts.c.user_id == user.id)).rowcount
+    if not gone:  # not this member's, or already deleted (QA audit 9f)
+        raise HTTPException(404, "No such alert.")
     return list_alerts(request, user)

@@ -51,7 +51,7 @@ def test_cookie_writes_need_our_origin(client):
 
 
 def test_portfolio_requires_sign_in(client):
-    assert client.get("/v1/portfolio").status_code == 403  # never 401: see auth.AUTH_FAILED
+    assert client.get("/v1/portfolio").status_code == 401  # not signed in (auth.not_signed_in)
 
 
 def test_holdings_value_exposure_and_council(client):
@@ -194,9 +194,11 @@ def test_one_account_cannot_change_anothers_holdings_or_alerts(client):
 
     client.cookies.clear()
     signup(client, email="qa2@example.com")
-    # qa2 deletes qa1's ids: nothing of qa2's matches, and qa1 keeps both.
-    assert client.delete(f"/v1/portfolio/holdings/{holding_id}", headers=ORIGIN).status_code == 200
-    assert client.delete(f"/v1/portfolio/alerts/{alert_id}", headers=ORIGIN).status_code == 200
+    # qa2 deletes qa1's ids: 404, as for an id that does not exist, and qa1 keeps both (QA audit 9f).
+    assert client.delete(f"/v1/portfolio/holdings/{holding_id}", headers=ORIGIN).status_code == 404
+    assert client.delete(f"/v1/portfolio/alerts/{alert_id}", headers=ORIGIN).status_code == 404
+    assert client.delete("/v1/portfolio/holdings/987654321", headers=ORIGIN).status_code == 404
+    assert client.delete("/v1/portfolio/alerts/987654321", headers=ORIGIN).status_code == 404
     assert client.get("/v1/portfolio").json()["holdings"] == []
 
     client.cookies.clear()
@@ -205,19 +207,25 @@ def test_one_account_cannot_change_anothers_holdings_or_alerts(client):
     assert [x["id"] for x in client.get("/v1/portfolio/alerts").json()] == [alert_id]
 
 
-def test_signed_out_calls_never_answer_401(client):
-    # A 401 would drop the staging gate's Basic credentials in the browser (auth.AUTH_FAILED).
+def test_signed_out_calls_answer_401_but_403_behind_the_staging_gate(client):
+    # 401 is the code for "not signed in" (QA audit 9b). A request carrying an HTTP Basic login came
+    # through beta's staging gate, where a 401 would make the browser drop that login (audit 9c).
     calls = [
         ("get", "/v1/portfolio", None), ("get", "/v1/portfolio/alerts", None), ("get", "/v1/me/prefs", None),
         ("put", "/v1/me/prefs", {"data": {}}), ("post", "/v1/portfolio/holdings", {"ticker": "2222", "quantity": 1}),
         ("post", "/v1/portfolio/alerts", {"ticker": "2222", "kind": "above", "price": 1}),
         ("delete", "/v1/portfolio/holdings/1", None), ("delete", "/v1/portfolio/alerts/1", None),
         ("post", "/v1/me/delete", {"password": "x"}),
-        ("post", "/v1/auth/reset-password", {"token": "not-a-real-token", "password": "a long new password"}),
     ]
+    gate = {**ORIGIN, "Authorization": "Basic YmV0YTpwYXNzd29yZA=="}
     for method, path, body in calls:
         r = client.request(method.upper(), path, json=body, headers=ORIGIN)
-        assert r.status_code == 403, (method, path, r.status_code)
+        assert r.status_code == 401, (method, path, r.status_code)
+        assert r.json() == {"detail": "Sign in to use this."} and r.headers["www-authenticate"].startswith("Session")
+        assert client.request(method.upper(), path, json=body, headers=gate).status_code == 403, (method, path)
+    # A used or unknown link is not "not signed in": 403 either way.
+    bad_link = {"token": "not-a-real-token", "password": "a long new password"}
+    assert client.post("/v1/auth/reset-password", json=bad_link, headers=ORIGIN).status_code == 403
 
 
 def test_ids_are_random_and_lists_keep_creation_order(client):

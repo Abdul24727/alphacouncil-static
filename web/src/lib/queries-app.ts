@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api, unwrap } from "@/lib/api/client";
+import { api, ApiError, unwrap } from "@/lib/api/client";
 
 // Market-wide views
 
@@ -84,6 +84,10 @@ export function usePortfolioMutations() {
   const qc = useQueryClient();
   const setPortfolio = (data: unknown) => qc.setQueryData(["portfolio"], data);
   const setAlerts = (data: unknown) => qc.setQueryData(["portfolio", "alerts"], data);
+  // A delete answers 404 when the item is already gone (another tab): show the list as it is now.
+  const refetchIfGone = (key: string[]) => (e: Error) => {
+    if (e instanceof ApiError && e.status === 404) void qc.invalidateQueries({ queryKey: key });
+  };
   return {
     upsert: useMutation({
       mutationFn: async (body: { ticker: string; quantity: number; avg_cost?: number | null }) =>
@@ -94,6 +98,7 @@ export function usePortfolioMutations() {
       mutationFn: async (id: number) =>
         unwrap(await api.DELETE("/v1/portfolio/holdings/{holding_id}", { params: { path: { holding_id: id } } })),
       onSuccess: setPortfolio,
+      onError: refetchIfGone(["portfolio"]),
     }),
     addAlert: useMutation({
       mutationFn: async (body: { ticker: string; kind: "above" | "below"; price: number }) =>
@@ -104,6 +109,7 @@ export function usePortfolioMutations() {
       mutationFn: async (id: number) =>
         unwrap(await api.DELETE("/v1/portfolio/alerts/{alert_id}", { params: { path: { alert_id: id } } })),
       onSuccess: setAlerts,
+      onError: refetchIfGone(["portfolio", "alerts"]),
     }),
   };
 }

@@ -45,9 +45,10 @@ from .legal import REGISTRATION
 from .settings import Settings
 
 COOKIE = "acp_session"
-# Sign-in failures answer 403, not 401: a 401 without a WWW-Authenticate challenge (cookie
-# sessions have none) makes browsers drop cached HTTP Basic credentials, which logged
-# testers out of the staging gate after any signed-out API call.
+# A wrong password or a used link answers 403. "Not signed in" answers 401 (not_signed_in), except
+# behind beta's staging gate: there the browser sends the gate's HTTP Basic login with every
+# request, and any 401 makes it drop that login, which logged testers out after one signed-out
+# call (QA audit 9c). So a request that carries a Basic login gets 403 instead.
 AUTH_FAILED = 403
 SESSION_DAYS = 30
 RESET_MINUTES = 60
@@ -194,9 +195,17 @@ USER_COLUMNS = (
 )
 
 
-def require_user(user: Annotated[User | None, Depends(current_user)]) -> User:
+def not_signed_in(request: Request, detail: str) -> HTTPException:
+    """401 for a call that needs an account (QA audit 9b); 403 behind the staging gate (AUTH_FAILED)."""
+    if request.headers.get("authorization", "").lower().startswith("basic "):
+        return HTTPException(AUTH_FAILED, detail)
+    # A 401 names its scheme; this one is the session cookie, which no browser prompts for.
+    return HTTPException(401, detail, headers={"WWW-Authenticate": 'Session realm="AlphaCouncil"'})
+
+
+def require_user(request: Request, user: Annotated[User | None, Depends(current_user)]) -> User:
     if user is None:
-        raise HTTPException(AUTH_FAILED, "Sign in to use this.")
+        raise not_signed_in(request, "Sign in to use this.")
     return user
 
 

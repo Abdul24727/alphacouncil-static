@@ -139,7 +139,7 @@ def test_status_describes_the_room(room):
 
 def test_signed_out_and_free_members_cannot_convene(room, monkeypatch):
     body = {"ticker": "2222", "question": "Is the dividend covered?", "locale": "en"}
-    assert room.post("/v1/debate/sessions", json=body, headers=ORIGIN).status_code == 403
+    assert room.post("/v1/debate/sessions", json=body, headers=ORIGIN).status_code == 401  # not signed in
     signup(room)
     monkeypatch.setattr(room.app.state.settings, "billing_open", True)
     s = room.get("/v1/debate/status").json()

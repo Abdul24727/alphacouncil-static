@@ -6,7 +6,7 @@ from fastapi.responses import StreamingResponse
 from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel
 
-from ..auth import AUTH_FAILED, User, check_origin, client_ip, current_user
+from ..auth import User, check_origin, client_ip, current_user, not_signed_in
 from ..plans import plan_of
 from ..copilot.context import ChatRequest, to_input
 from ..copilot.engine import claude_stream
@@ -58,7 +58,7 @@ async def chat(
     """Streams one assistant message in the Vercel AI SDK UI message stream format."""
     real = uses_model(request)
     if real and user is None:
-        raise HTTPException(AUTH_FAILED, "sign_in_required")  # codes: the web pane words them per language
+        raise not_signed_in(request, "sign_in_required")  # codes: the web pane words them per language
     limit_key = f"user:{user.id}" if user else f"ip:{client_ip(request)}"
     # Free: 10 questions a day and no Pro-only tools; Pro: 60 an hour (plans.LIMITS).
     plan = await run_in_threadpool(plan_of, request, user)
