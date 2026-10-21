@@ -137,6 +137,16 @@ languages. No live payment was made by these checks.
 To close billing again (everyone back to Pro, checkout closed): delete the `BILLING_OPEN` line, then
 `systemctl restart acp-prod-api`.
 
+**Billing closed again (2026-10-22)**, on the owner's rule that no one is charged until the product is
+fully built (PROJECT.md, Step 11; it reopens at Step 18). Before: 0 subscriptions renewing on a saved
+card, 1 subscription in all, 0 payments recorded (counts only). The file before the change is
+`api.env.bak-20261021231429` (UTC); the `BILLING_OPEN` line is gone and `acp-prod-api` restarted.
+Checked over HTTPS (`screenshots/billing-closed-2026-10-22/`): `/api/v1/plans` says
+`"checkout_open":false`; `/pricing` has no buy button and shows "Early access: every account gets the
+Pro features free until paid plans open…" (EN and AR, 1440 and 390 px); signed out, the Ownership and
+Financials tabs of `/t/2222` are unlocked. Monitor: 13 ok before and after. `acp-prod-billing.timer`
+stays on; with no renewing card it charges nobody.
+
 ## Backups
 
 Every night at 01:30 UTC, `acp-db-backup.timer` runs `/usr/local/sbin/acp-db-backup`

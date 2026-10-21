@@ -63,7 +63,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 ## 7. Goals
 
 ## Goal 1 — Safe footing: code backed up, safety nets proven, nobody charged
-- **Status:** AWAITING CHECKPOINT — Step 1 DONE (Done-when items 3 and 4 verified 2026-10-19); Step 2 waits for an empty private repository's URL (items 1 and 2); Step 11 waits for the owner's go-ahead to close billing (item 5).
+- **Status:** AWAITING CHECKPOINT — Steps 1 and 11 DONE (Done-when items 3 and 4 verified 2026-10-19, item 5 on 2026-10-22); Step 2 waits for an empty private repository's URL (items 1 and 2).
 - **Share of project:** ~15%
 - **Goal:** The code is in the owner's private GitHub repository, the backup copy, monitor and outside check are shown to have run on their own, and production takes no payments until the launch.
 - **Done when:**
@@ -130,7 +130,8 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - *Resume here:* the owner gives the URL → re-run the stricter scan, which must print 0: `git log --all -p | grep -c -E 'sk_(live|test)_[A-Za-z0-9]{16,}|pk_(live|test)_[A-Za-z0-9]{16,}|sk-or-v1-[0-9a-f]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|GOCSPX-[A-Za-z0-9_-]{10,}|BEGIN [A-Z ]*PRIVATE KEY-----|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{30,}|mlsn\.[a-f0-9]{30,}|macros/s/AKfy[A-Za-z0-9_-]{20,}|hc-ping\.com/[0-9a-f-]{36}'`; then `git remote add origin <URL>`; `git push -u origin rebuild`; compare `git ls-remote origin refs/heads/rebuild` with `git rev-parse rebuild`; add one line to `CLAUDE.md` naming the remote.
 
 ### Step 11 — Close Pro checkout on production until the launch
-- **Status:** AWAITING CHECKPOINT — needs the owner's go-ahead in chat (payments and production are Always stop). Recommended: today. Re-tested 2026-10-22: production `/api/v1/plans` still says `"checkout_open":true`.
+- **Status:** DONE
+- **Checkpoint cleared:** 2026-10-22 — owner in chat: "Go-ahead: close Pro checkout on production now (Step 11)"
 - **Goal:** Production's checkout is closed and every account has Pro free (early access) until Step 18 opens billing.
 - **Depends on:** nothing
 - **Reversibility:** reversible (put the line back)
@@ -142,11 +143,22 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **How:** first count renewing payers without reading any row: subscriptions with status `active` or `past_due` and a saved card (`token_id` set), count only. Then `cp -p api.env api.env.bak-<timestamp>`, `sed -i '/^BILLING_OPEN=/d' api.env`, `systemctl restart acp-prod-api`, then the checks. Never print `api.env`. Leave `acp-prod-billing.timer` enabled: with no renewing payers it charges nobody, and the monitor expects it.
 - **Defaults:** the count is above 0 → stop, change nothing, tell the owner the count (whether to refund or keep that member is the owner's call); a count-only query cannot be run → the owner checks Moyasar's live dashboard for payments since 2026-10-18, and that answer is recorded; the restart fails → restore the backup file, restart, report.
 - **Done when:**
-  - [ ] `curl -s https://alphacouncil.tech/api/v1/plans` prints `"checkout_open":false` — check: the command
-  - [ ] `/pricing` shows "Checkout is not open yet. During early access every account has the Pro features free." (English) and its Arabic text (Arabic) — check: screenshots at 1440 and 390 px
-  - [ ] a signed-out visitor sees the Ownership and Financials panels of `/t/2222` unlocked — check: screenshot
-  - [ ] the monitor's ok count is the same as before the change — check: `python3 -I /usr/local/lib/acp-monitor/prod-monitor.py status` before and after
-- **Outcome:** _(empty until worked)_
+  - [x] `curl -s https://alphacouncil.tech/api/v1/plans` prints `"checkout_open":false` — check: the command
+  - [x] `/pricing` shows "Checkout is not open yet. During early access every account has the Pro features free." (English) and its Arabic text (Arabic) — check: screenshots at 1440 and 390 px
+  - [x] a signed-out visitor sees the Ownership and Financials panels of `/t/2222` unlocked — check: screenshot
+  - [x] the monitor's ok count is the same as before the change — check: `python3 -I /usr/local/lib/acp-monitor/prod-monitor.py status` before and after
+- **Outcome:**
+  - *Done:* production's checkout is closed; every account has Pro free again. Counts first: 0 subscriptions renewing on a saved card, 1 subscription in all, 0 payments in `billing_payments`.
+  - *Not done:* N/A
+  - *Touched:* server `/etc/alphacouncil-platform/prod/api.env` (`BILLING_OPEN` line removed; backup `api.env.bak-20261021231429`, UTC — Step 18 restores from it or re-adds the line), `acp-prod-api` restarted; `docs/production.md` paragraph "Billing closed again (2026-10-22)"; screenshots `docs/screenshots/billing-closed-2026-10-22/`.
+  - *Verification:* (1) VERIFIED — `"checkout_open":false` over HTTPS. (2) VERIFIED — `/pricing` shows no buy button and the note "Early access: every account gets the Pro features free until paid plans open. We will tell you before anything changes, and subscribing will be your choice." and in Arabic "وصول مبكر: كل حساب يحصل على مزايا برو مجانًا حتى تُفتح الخطط المدفوعة…", at 1440 and 390 px (`pricing-*.png`, `*-full.png`). The item's quoted sentence is the signed-in checkout message; signed out, the page shows this note instead, which says the same. (3) VERIFIED — signed out, `/t/2222/ownership` and `/financials` (EN, AR) show their panels with no Pro lock (`t2222-*.png`). (4) VERIFIED — 13 `ok` before and after (plus the informational "Moyasar for renewals: no renewal run since the last round").
+  - *Rulings:* (a) The one existing subscription is not renewing on a card (the count was 0), so it was left as it is. Cost if wrong: none charged — the renewals job only charges a saved card.
+  - *Failed approaches:* N/A
+  - *Debt:* N/A
+  - *Resume here:* N/A
+  - *Verify in 30 seconds:* `curl -s https://alphacouncil.tech/api/v1/plans | grep -o '"checkout_open":[a-z]*'`
+  - *Stamp:* 2026-10-22, on `7b2437a` (server change; no code change)
+
 
 ## Goal 2 — Market data correct at the source
 - **Status:** AWAITING CHECKPOINT — Steps 3–4 DONE (Done-when item 1 met by the part-2 report); Step 5 waits for the owner's A/B/C choice.
