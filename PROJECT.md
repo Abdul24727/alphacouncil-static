@@ -49,14 +49,15 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - 2026-10-19 — Goal 1 Step 1 and Goal 2 Steps 3–4 done in one chat; Goals 1–3 now wait on the owner (URL, fix choice, advice, portraits, DNS). The Apps Script Executions page could not be read (Google sign-in lapsed in the built-in browser); nginx's access log proved the 5-minute rounds instead.
 - 2026-10-21 — Owner's rule: no charging until fully built. Plan grown to four goals: Goal 1 adds closing billing (Step 11); new Goal 3 fixes the independent beta audit's defects and proves checkout in Moyasar test mode (Steps 12–17; audit copied to `docs/qa-beta-2026-10/`); the old Goal 3 is now Goal 4 and ends with opening billing (Step 18). The GitHub URL the owner gave (`alphacouncil-static`) is public and holds the old site, so it is not used (Step 2).
 - 2026-10-22 — Goal 3 Steps 12–15 done in one chat. The beta audit's run 2 had predated four releases: 8 of 15 items were already fixed. 403 → 401 kept 403 for requests carrying beta's gate login, since the audit's own 9c fix needed it. Copilot obeyed a prompt injection once (C4) on the same release that passed it on 10-21; a prompt rule is on `rebuild`, proven only after Step 17's beta release.
+- 2026-10-22 — Owner's go-ahead: production checkout closed (Step 11; 0 renewing payers, 0 payments ever) and checkout proven on beta in Moyasar test mode, 13 of 13 (Step 16). Beta's password gate stands between Moyasar and beta (its return and its webhooks); the test scripts route around it and say so.
 
 ## 6. Current State
-- Live on alphacouncil.tech: the rebuilt app (EN/AR), accounts with email verification and Google sign-in, Pro billing **open since 2026-10-18** (Moyasar live keys, hourly renewals; against the owner's 2026-10-21 rule, Step 11 closes it), the advisors' room (six advisors, turn-by-turn playback, release `d356a3c`), official Tadawul sectors, the app-side data fixes.
+- Live on alphacouncil.tech: the rebuilt app (EN/AR), accounts with email verification and Google sign-in, Pro checkout **closed since 2026-10-22** (Step 11: early access, everyone has Pro; it reopens at Step 18; no one had paid), the advisors' room (six advisors, turn-by-turn playback, release `d356a3c`), official Tadawul sectors, the app-side data fixes.
 - Safety nets, all shown running unattended on 2026-10-19: nightly database backups on the server; the daily copy on the owner's computer (09:00 run copied that night's dump); the server monitor (14 checks every 5 min, no missed ping); the outside check (116 rounds every 5 min, all 200).
 - Data, part 2 done (`docs/data-audit-part2-2026-10-19.md`): causes found for the stopped tickers (Argaam renamed pages), UAE 2 decimals, holiday copies, Tadawul disclosures (source section stopped in March) and Tadawul turnover. Fixes F-A, F-E, F-B, F-C are a dry-run patch (`docs/pipeline-fixes-2026-10-19.patch`), not applied; F-D (disclosures) not built.
-- Independent beta audit (`docs/qa-beta-2026-10/report.md`), re-checked 2026-10-22 (`defects-2026-10-22.md`): 8 of its 15 open items were already fixed by the 10-17/18 releases; Arabic pages (8a/8b, `b548bbe`), 401/404 (9b/9f, `b551630`) and a Copilot prompt rule (C4, failed once today) are fixed on `rebuild` but **not released**; Copilot speed meets the target on the median. Left: checkout in Moyasar test mode (Step 16), the re-audit and releases (Step 17), and 4 BY DESIGN items for the owner.
+- Independent beta audit (`docs/qa-beta-2026-10/report.md`), re-checked 2026-10-22 (`defects-2026-10-22.md`): 8 of its 15 open items were already fixed by the 10-17/18 releases; Arabic pages (8a/8b, `b548bbe`), 401/404 (9b/9f, `b551630`) and a Copilot prompt rule (C4, failed once today) are fixed on `rebuild` but **not released**; Copilot speed meets the target on the median. Checkout proven in Moyasar test mode on beta, 13 of 13 (Step 16, `docs/checkout-test-2026-10-22.md`). Left: one beta release, the re-audit and the production release (Step 17), and 4 BY DESIGN items for the owner.
 - No ticker has ownership or analyst data today (0 of 716 on beta's API); the audit saw 2222's ownership on 2026-10-16.
-- Waiting on the owner (re-tested 2026-10-22: production `checkout_open: true`, `www` NXDOMAIN, no portrait files): the go-ahead to close billing (Step 11); the go-ahead for checkout tests on beta (Step 16); a new empty private GitHub repository's URL (Step 2); fix choice A/B/C and F-D yes/no (Step 5); lawyer's advice (Step 7); portrait files (Step 8); the `www` DNS record (Step 9).
+- Waiting on the owner (re-tested 2026-10-22: `www` NXDOMAIN, no portrait files): the go-ahead for the beta release (Step 17); a new empty private GitHub repository's URL (Step 2); fix choice A/B/C and F-D yes/no (Step 5); lawyer's advice (Step 7); portrait files (Step 8); the `www` DNS record (Step 9).
 - Not done: the code has no remote; advisor portraits are initials; no `www`; the lawyer has not reviewed the named advisors.
 - Untracked: `scripts/set-backup-bucket.sh` (bucket helper from the backups session; the bucket is not used).
 
@@ -270,7 +271,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Outcome:** _(empty until worked)_
 
 ## Goal 3 — Every known defect fixed, checkout proven
-- **Status:** AWAITING CHECKPOINT — Steps 12–15 DONE 2026-10-22 (all fixes on `rebuild`, not released); Step 16 waits for the owner's go-ahead (Moyasar test mode on beta); Step 17 waits on Step 16 and the owner's release go-aheads.
+- **Status:** AWAITING CHECKPOINT — Steps 12–16 DONE 2026-10-22 (fixes on `rebuild`, not released; checkout proven on beta); Step 17 waits for the owner's go-ahead for the beta release, then the BY DESIGN answers and the production release go-ahead.
 - **Share of project:** ~30%
 - **Goal:** Every defect the independent beta audit found is fixed or accepted by the owner as by design, the fixes are live on production, and checkout has been proven end to end in Moyasar test mode on beta.
 - **Done when:**
@@ -404,7 +405,8 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 
 
 ### Step 16 — Prove checkout in Moyasar test mode on beta
-- **Status:** AWAITING CHECKPOINT — needs the owner's go-ahead in chat to (1) add `BILLING_OPEN=true` to beta's `api.env` for the test and remove it after, and (2) run Moyasar test-mode payments on beta. First action after the go-ahead: check by name only that beta's `api.env` holds Moyasar **test** keys (`grep -c '^MOYASAR_SECRET_KEY=sk_test_'`); if not, the owner adds them. Recommended: yes — test keys only, no real card, beta only.
+- **Status:** DONE
+- **Checkpoint cleared:** 2026-10-22 — owner in chat: "run the checkout tests in Moyasar test mode on beta (Step 16)"
 - **Goal:** Every checkout case has run in Moyasar test mode on beta and passed, and beta is back to billing closed.
 - **Depends on:** nothing
 - **Reversibility:** reversible
@@ -416,13 +418,24 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **How:** back up beta's `api.env`, add `BILLING_OPEN=true`, `systemctl restart acp-api`, run the cases through the beta tunnel with Moyasar's published test cards, then remove the line and restart. Cases, at least: success (Pro granted; `/billing/return` confirms against Moyasar's record); declined card; 3-D Secure pass and fail; closing the browser after paying (the webhook grants Pro); a duplicate webhook applied once; cancel (Pro to the end of the period, no renewal); renewal (`python -m app.billing renew` on beta with a due test subscription); a refund in Moyasar's test dashboard ends Pro (owner); English and Arabic, 1440 and 390 px. Never live keys; never a real card.
 - **Defaults:** beta has no Moyasar test keys → stop; the owner adds them (names in the runbook); a case fails → record it, fix it in the repo if small, re-run; never leave beta with billing open at the end of the chat.
 - **Done when:**
-  - [ ] `docs/checkout-test-<date>.md` lists every case above as PASS with evidence — check: read it
-  - [ ] `node web/scripts/check-billing.mjs` passes on beta — check: its summary line, copied into the file
-  - [ ] `grep -c '^BILLING_OPEN=' /etc/alphacouncil-platform/api.env` prints 0 on the server afterwards — check: the command
-- **Outcome:** _(empty until worked)_
+  - [x] `docs/checkout-test-<date>.md` lists every case above as PASS with evidence — check: read it
+  - [x] `node web/scripts/check-billing.mjs` passes on beta — check: its summary line, copied into the file
+  - [x] `grep -c '^BILLING_OPEN=' /etc/alphacouncil-platform/api.env` prints 0 on the server afterwards — check: the command
+- **Outcome:**
+  - *Done:* every checkout case passed in Moyasar test mode on beta in one run (13 of 13, 2026-10-21 23:47–23:48 UTC): declined card, 3-D Secure refused and approved, the return page ignoring a forged `status=paid`, renewal on the saved card, cancel, refund ending Pro, a closed browser started by the notification, a duplicate notification applied once, a wrong secret refused, EN/AR at 1440 and 390 px. `check-billing.mjs`: "Billing checks: all passed". Beta closed again. No app change was needed.
+  - *Not done:* N/A
+  - *Touched:* new `web/scripts/check-checkout.mjs`; `web/scripts/check-billing.mjs` (return page through the tunnel); `docs/checkout-test-2026-10-22.md`; `docs/production.md` (Pro billing: the 2026-10-22 test); screenshots `docs/screenshots/checkout-test-2026-10-22/`. Server: beta `api.env` backed up as `api.env.bak-20261021231949`, `BILLING_OPEN=true` and a throwaway `MOYASAR_WEBHOOK_SECRET` added for the test, then the backup restored and `acp-api` restarted (23:50:40 UTC).
+  - *Verification:* (1) VERIFIED — the doc's table: 13 PASS with payment ids and screenshots. (2) VERIFIED — "Billing checks: all passed" copied into the doc (its Pro-account part from the run before). (3) VERIFIED — `grep -c` → 0 for `BILLING_OPEN` and for `MOYASAR_WEBHOOK_SECRET`; `/v1/plans` → `"checkout_open":false`.
+  - *Rulings:* (a) Moyasar's webhooks cannot reach beta (the password gate answers 401), so the notification cases delivered Moyasar's body to beta's API from the server; the handler still re-fetches each payment from Moyasar. Cost if wrong: Moyasar's real delivery is untested on beta; production's live webhooks were seen arriving on 2026-10-18, and Step 18's first real payment checks it again. (b) The refund went through Moyasar's test API with beta's test key (the script refuses any other key), not the owner's dashboard. Cost if wrong: none for money (test mode); the dashboard's own refund button is untested. (c) A throwaway webhook secret was added to beta for the test and removed with the restore. (d) Test addresses were confirmed by setting `email_verified_at` in beta's database (example.com gets no email).
+  - *Failed approaches:* first runs stopped at Moyasar's return to `https://beta.alphacouncil.tech/billing/return` (401 from the gate in a browser without its login), at Cloudflare's 1010 on Python's default user agent, and at the shared sign-in limit (10 per 15 min; the tunnel is one address). The scripts handle all three.
+  - *Debt:* beta keeps the `checkout-*@example.com` test accounts; three have test-mode subscriptions that renew monthly on Moyasar test cards (no real money). Deleting them is the owner's call.
+  - *Resume here:* N/A
+  - *Verify in 30 seconds:* `ssh root@alphacouncil.tech "grep -c '^BILLING_OPEN=' /etc/alphacouncil-platform/api.env"` (prints 0)
+  - *Stamp:* 2026-10-22, on `01f3249` (scripts and docs committed with this outcome)
+
 
 ### Step 17 — Re-audit beta, then release the fixes to production
-- **Status:** NOT STARTED
+- **Status:** AWAITING CHECKPOINT — needs the owner's go-ahead in chat for one beta release of `rebuild` (Steps 13–15: `b548bbe`, `b551630`; scripts since). After the release and the re-audit, one message to the owner: the 4 BY DESIGN items in `docs/qa-beta-2026-10/defects-2026-10-22.md` and the production release go-ahead.
 - **Goal:** Steps 13–15's fixes run on beta and production, every audit item is PASS or accepted by the owner, and nothing regressed.
 - **Depends on:** 12, 13, 14, 15, 16
 - **Reversibility:** reversible (a release rolls back per the runbook)
@@ -549,8 +562,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 
 ## 8. Open Questions
 - **A new empty private GitHub repository's URL** — blocks Step 2. The owner creates one at github.com/new (Private, no README, no licence; suggested name `alphacouncil-platform`) and pastes its URL. The URL given on 2026-10-21 (`alphacouncil-static`) is public and holds the old site, so it is not used (Step 2, *Rulings* (b)). No default: Claude cannot create the repository.
-- **Go-ahead to close Pro checkout on production now** — blocks Step 11. Recommended: yes, today (no paying members, so nobody loses anything; everyone has Pro free until the launch). No default: payments and production are Always stop.
-- **Go-ahead for checkout tests in Moyasar test mode on beta** — blocks Step 16 (and so Goal 3). It sets `BILLING_OPEN=true` on beta for the test and removes it after; test keys and Moyasar's published test cards only. Recommended: yes. No default: Moyasar and beta's settings are Always stop.
+- **Go-ahead for one beta release of `rebuild`** — blocks Step 17 (and so Goal 3). It carries the Arabic, 401/404 and Copilot-prompt fixes (`b548bbe`, `b551630`); then the re-audit, the 4 BY DESIGN answers and a production release go-ahead. Recommended: yes. No default: releases are Always stop.
 - **Ownership data has stopped** — no ticker has `ticker_insights.ownership` today (beta's API, 2026-10-22); it existed on 2026-10-16. Pipeline question for Goal 2 (Step 5's fix list does not cover it). Until then the Ownership tab says "No ownership data".
 - **The lawyer's advice on the named advisors** — blocks Step 7 (and Step 8, since names may change). No default: it is the owner's legal call.
 - **Which pipeline fixes go to the server (A all four / B without F-B / C none), and whether to build F-D** — blocks Steps 5–6. Recommendation: A, and F-D yes after one night. No default: the standing rule keeps the old pipeline read-only without the owner's approval.
@@ -558,4 +570,4 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **KPPC (624, Boursa Kuwait) and TAQA (ADX)** — Argaam has no page for KPPC and no TAQA bars after 2026-08-06. Delisted or suspended? The owner may know; until then the app keeps showing them stale (amber).
 
 ## 9. Next Up
-Everything left waits on the owner. In this order, as soon as each answer arrives in chat: Step 11 (close billing on production — first, it is the owner's own rule and production still takes payments); Step 16 (checkout tests in Moyasar test mode on beta — first action: confirm by name only that beta's `api.env` has `sk_test_` keys); then Step 17 (one beta release with `b548bbe` + `b551630`, re-audit with `check-audit.mjs`, the 4 BY DESIGN items, production release); Step 2 (push to the new private repository); Step 5 → 6 (pipeline fixes); Steps 7–9 (advice, portraits, `www`).
+Everything left waits on the owner. As soon as each answer arrives in chat: Step 17 (one beta release with `scripts/deploy-staging.sh`; re-audit with `cd web && BASE_URL=http://localhost:3201 node scripts/check-audit.mjs`, item `C` three times for C4, `check-arabic.mjs` signed out and `SIGNED_IN=1`; then the 4 BY DESIGN items and the production release go-ahead in one message); Step 2 (push to the new private repository); Step 5 → 6 (pipeline fixes); Steps 7–9 (advice, portraits, `www`).

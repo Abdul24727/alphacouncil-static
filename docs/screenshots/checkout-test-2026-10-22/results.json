@@ -1,0 +1,119 @@
+{
+  "base_url": "http://localhost:3201",
+  "at": "2026-10-21T23:48:31.320Z",
+  "results": [
+    {
+      "id": "0",
+      "name": "beta's checkout is open with Moyasar TEST keys",
+      "ok": true,
+      "evidence": {
+        "note": "checkout_open=true, test key=true"
+      }
+    },
+    {
+      "id": "1",
+      "name": "declined card: refused, no Pro",
+      "ok": true,
+      "evidence": {
+        "note": "\"The payment was not completed: INSUFFICIENT FUNDS\", plan free",
+        "payment": "749a96a5-a4f7-4b7d-b48c-313bb5f54ac9"
+      }
+    },
+    {
+      "id": "2",
+      "name": "3-D Secure refused: not paid, no Pro",
+      "ok": true,
+      "evidence": {
+        "note": "\"The payment was not completed: 3DS: Card authentication declined.\", plan free",
+        "payment": "3d11ba18-20eb-4ed2-b7ab-6cb8169a46d0"
+      }
+    },
+    {
+      "id": "3",
+      "name": "3-D Secure approved: paid, Pro started, card saved, renews",
+      "ok": true,
+      "evidence": {
+        "note": "Pro through 2026-11-21T23:47:33.561755Z, visa 1111, renews=true",
+        "payment": "fbd5ca98-f913-4c0d-ba3f-3621f1fec84c"
+      }
+    },
+    {
+      "id": "4",
+      "name": "return page confirms with Moyasar: a declined payment with status=paid in the address does not start Pro",
+      "ok": true,
+      "evidence": {
+        "payment": "749a96a5-a4f7-4b7d-b48c-313bb5f54ac9"
+      }
+    },
+    {
+      "id": "5",
+      "name": "renewal: the saved card is charged and Pro moves a month on",
+      "ok": true,
+      "evidence": {
+        "note": "job: reminded=0 renewed=1 failed=0 ended=0 unreachable=0; Pro through 2026-11-21T23:46:39.521959Z; payments first:paid, renewal:paid",
+        "payment": "61a84840-a34d-5572-8469-0ef0b8bdc36c"
+      }
+    },
+    {
+      "id": "6",
+      "name": "cancel: Pro until the paid month ends, no renewal",
+      "ok": true,
+      "evidence": {
+        "note": "status canceled, Pro through 2026-11-21T23:46:39.521959Z, renews=false"
+      }
+    },
+    {
+      "id": "7",
+      "name": "refund of the payment for the current month ends Pro",
+      "ok": true,
+      "evidence": {
+        "note": "Moyasar refund: 200 refunded; notification: 200 {\"ok\":true}; plan free, status expired",
+        "payment": "61a84840-a34d-5572-8469-0ef0b8bdc36c"
+      }
+    },
+    {
+      "id": "8",
+      "name": "browser closed after paying: Moyasar's notification starts Pro",
+      "ok": true,
+      "evidence": {
+        "note": "before the notification free; notification: 200 {\"ok\":true}; after pro through 2026-11-21T23:48:03.367131Z",
+        "payment": "cb5c3c91-3030-458c-a2ba-8b81d9ae072c"
+      }
+    },
+    {
+      "id": "9",
+      "name": "the same notification again changes nothing",
+      "ok": true,
+      "evidence": {
+        "note": "second: 200 {\"ok\":true}; Pro through 2026-11-21T23:48:03.367131Z (was 2026-11-21T23:48:03.367131Z); payment rows 1",
+        "payment": "cb5c3c91-3030-458c-a2ba-8b81d9ae072c"
+      }
+    },
+    {
+      "id": "10",
+      "name": "paid in English at 390 px",
+      "ok": true,
+      "evidence": {
+        "note": "Pro through 2026-11-21T23:48:18.507918Z; sideways 0px",
+        "payment": "24925966-ac74-46a0-b782-4d9c810add4c"
+      }
+    },
+    {
+      "id": "11",
+      "name": "paid in Arabic at 1440 px",
+      "ok": true,
+      "evidence": {
+        "note": "Pro through 2026-11-21T23:48:28.815143Z; sideways 0px",
+        "payment": "3aca69e1-6de1-418d-bc5c-dd14bc3a99b7"
+      }
+    },
+    {
+      "id": "12",
+      "name": "a notification with the wrong secret is refused",
+      "ok": true,
+      "evidence": {
+        "note": "HTTP 403"
+      }
+    }
+  ]
+}

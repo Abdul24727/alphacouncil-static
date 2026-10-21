@@ -113,7 +113,13 @@ Monthly, renewing until cancelled (`api/app/billing.py`):
   Moyasar's dashboard ends Pro. Each event arrives twice (two webhooks); each payment is applied once.
 - Tested on beta with the account's Moyasar **test** keys (2026-10-18, `screenshots/accounts-billing/`):
   declined card refused, paid card starts Pro with the card saved, and a renewal charged the saved
-  card through Moyasar and moved Pro a month on.
+  card through Moyasar and moved Pro a month on. Full case list on 2026-10-22, 13 of 13
+  (`docs/checkout-test-2026-10-22.md`, `web/scripts/check-checkout.mjs`): also 3-D Secure refused, the
+  return page ignoring a forged `status=paid`, cancel, refund ending Pro, a closed browser started by
+  the notification, a duplicate notification applied once, a wrong `secret_token` refused, EN/AR at
+  1440 and 390 px. Beta needs a `MOYASAR_WEBHOOK_SECRET` for the notification cases (it has none
+  normally), and Moyasar's return to `https://beta.alphacouncil.tech` meets the password gate, so the
+  scripts load it through the tunnel.
 - Settings: `BILLING_OPEN` (off = early access, everyone has Pro), `MOYASAR_PUBLISHABLE_KEY`,
   `MOYASAR_SECRET_KEY`, `MOYASAR_WEBHOOK_SECRET`. Production has the old site's live keys (copied on the
   server with the owner's approval); beta needs Moyasar **test** keys, and `web/scripts/check-billing.mjs`

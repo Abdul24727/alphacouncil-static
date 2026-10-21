@@ -114,6 +114,13 @@ if (process.env.CHECKOUT_EMAIL) {
   if (!String(key.publishable_key ?? "").startsWith("pk_test_")) {
     check(false, "the payment part runs only with Moyasar TEST keys");
   } else {
+    // Moyasar returns the browser to the site's public address; through the tunnel that is beta's
+    // password-gated host, so the return page is loaded from BASE_URL instead (same app).
+    await page.route(/\/billing\/return/, (route) => {
+      const url = new URL(route.request().url());
+      if (url.origin === new URL(BASE_URL).origin) return route.continue();
+      return route.fulfill({ status: 302, headers: { location: `${BASE_URL}${url.pathname}${url.search}` } });
+    });
     for (const [card, outcome] of [["4123120001090000", "declined"], ["4111111111111111", "paid"]]) {
       await page.goto(`${BASE_URL}/checkout`, { waitUntil: "networkidle" });
       await page.locator("[data-checkout] input[type=checkbox]").check();
