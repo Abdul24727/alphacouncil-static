@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-21   **At version:** `354e939` on branch `rebuild` (this file's latest state committed on top)
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-22   **At version:** `b551630` on branch `rebuild` (this file's latest state committed on top)
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -36,6 +36,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - 2026-10-19 — chart failures are reported in the nightly OK status and the 06:30 health digest, not as a new alert email. Rejected: emailing every night (9 tickers fail every night today).
 - 2026-10-21 — No charging until fully built: production's checkout closes (Step 11) and reopens only as the last step, after the launch check passes (Step 18). Why: a customer who pays for a half-finished product is lost for good. Rejected: keeping billing open while the fixes land.
 - 2026-10-21 — "Fully built" includes the independent beta audit (`docs/qa-beta-2026-10/report.md`, runs 1–3): every FAIL row is fixed, or the owner accepts it in writing as by design (follows from the rule above). Rejected: launching with the audit's minor rows open.
+- 2026-10-22 — "Not signed in" answers 401; a request carrying an HTTP Basic login (beta's staging gate) answers 403, because any 401 makes the browser drop the gate's login (audit 9c). Rejected: 401 everywhere (re-breaks 9c on beta); an nginx change on beta (Always stop, and not needed).
 
 ## 4. Autorun Policy
 - **Pre-approved:** creating and editing files in this repo on branch `rebuild`; running the project's checks and builds; read-only commands on the server over SSH (logs, `systemctl status`, `journalctl`, `sqlite3 -readonly`, listing and reading pipeline files); writing reports under `docs/`; committing on `rebuild`; screenshots with the built-in browser.
@@ -47,13 +48,15 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - 2026-10-19 — Project file created after the rebuild finished; the next work is launch readiness, in the owner's order: GitHub, pipeline data, lawyer review and portraits, then `www`.
 - 2026-10-19 — Goal 1 Step 1 and Goal 2 Steps 3–4 done in one chat; Goals 1–3 now wait on the owner (URL, fix choice, advice, portraits, DNS). The Apps Script Executions page could not be read (Google sign-in lapsed in the built-in browser); nginx's access log proved the 5-minute rounds instead.
 - 2026-10-21 — Owner's rule: no charging until fully built. Plan grown to four goals: Goal 1 adds closing billing (Step 11); new Goal 3 fixes the independent beta audit's defects and proves checkout in Moyasar test mode (Steps 12–17; audit copied to `docs/qa-beta-2026-10/`); the old Goal 3 is now Goal 4 and ends with opening billing (Step 18). The GitHub URL the owner gave (`alphacouncil-static`) is public and holds the old site, so it is not used (Step 2).
+- 2026-10-22 — Goal 3 Steps 12–15 done in one chat. The beta audit's run 2 had predated four releases: 8 of 15 items were already fixed. 403 → 401 kept 403 for requests carrying beta's gate login, since the audit's own 9c fix needed it. Copilot obeyed a prompt injection once (C4) on the same release that passed it on 10-21; a prompt rule is on `rebuild`, proven only after Step 17's beta release.
 
 ## 6. Current State
 - Live on alphacouncil.tech: the rebuilt app (EN/AR), accounts with email verification and Google sign-in, Pro billing **open since 2026-10-18** (Moyasar live keys, hourly renewals; against the owner's 2026-10-21 rule, Step 11 closes it), the advisors' room (six advisors, turn-by-turn playback, release `d356a3c`), official Tadawul sectors, the app-side data fixes.
 - Safety nets, all shown running unattended on 2026-10-19: nightly database backups on the server; the daily copy on the owner's computer (09:00 run copied that night's dump); the server monitor (14 checks every 5 min, no missed ping); the outside check (116 rounds every 5 min, all 200).
 - Data, part 2 done (`docs/data-audit-part2-2026-10-19.md`): causes found for the stopped tickers (Argaam renamed pages), UAE 2 decimals, holiday copies, Tadawul disclosures (source section stopped in March) and Tadawul turnover. Fixes F-A, F-E, F-B, F-C are a dry-run patch (`docs/pipeline-fixes-2026-10-19.patch`), not applied; F-D (disclosures) not built.
-- Independent beta audit, 2026-10-15 → 21 (`docs/qa-beta-2026-10/report.md`). Pass: cross-account read and write isolation, unguessable IDs, no secrets in bundles, charts, freshness, data truth, Copilot trust tests 8/8. Open: Ownership tab shows raw JSON; 52 English strings on Arabic pages; AFNIC valuation and header; protected APIs answer 403 not 401; Copilot figures without citations and 12–41 s answers; checkout never tested on beta. Releases of 10-17 → 19 may have fixed some: Step 12 re-checks.
-- Waiting on the owner: a new empty private GitHub repository's URL (Step 2); the go-ahead to close billing (Step 11); fix choice A/B/C and F-D yes/no (Step 5); lawyer's advice (Step 7); portrait files (Step 8); the `www` DNS record (Step 9).
+- Independent beta audit (`docs/qa-beta-2026-10/report.md`), re-checked 2026-10-22 (`defects-2026-10-22.md`): 8 of its 15 open items were already fixed by the 10-17/18 releases; Arabic pages (8a/8b, `b548bbe`), 401/404 (9b/9f, `b551630`) and a Copilot prompt rule (C4, failed once today) are fixed on `rebuild` but **not released**; Copilot speed meets the target on the median. Left: checkout in Moyasar test mode (Step 16), the re-audit and releases (Step 17), and 4 BY DESIGN items for the owner.
+- No ticker has ownership or analyst data today (0 of 716 on beta's API); the audit saw 2222's ownership on 2026-10-16.
+- Waiting on the owner (re-tested 2026-10-22: production `checkout_open: true`, `www` NXDOMAIN, no portrait files): the go-ahead to close billing (Step 11); the go-ahead for checkout tests on beta (Step 16); a new empty private GitHub repository's URL (Step 2); fix choice A/B/C and F-D yes/no (Step 5); lawyer's advice (Step 7); portrait files (Step 8); the `www` DNS record (Step 9).
 - Not done: the code has no remote; advisor portraits are initials; no `www`; the lawyer has not reviewed the named advisors.
 - Untracked: `scripts/set-backup-bucket.sh` (bucket helper from the backups session; the bucket is not used).
 
@@ -127,7 +130,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - *Resume here:* the owner gives the URL → re-run the stricter scan, which must print 0: `git log --all -p | grep -c -E 'sk_(live|test)_[A-Za-z0-9]{16,}|pk_(live|test)_[A-Za-z0-9]{16,}|sk-or-v1-[0-9a-f]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|GOCSPX-[A-Za-z0-9_-]{10,}|BEGIN [A-Z ]*PRIVATE KEY-----|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{30,}|mlsn\.[a-f0-9]{30,}|macros/s/AKfy[A-Za-z0-9_-]{20,}|hc-ping\.com/[0-9a-f-]{36}'`; then `git remote add origin <URL>`; `git push -u origin rebuild`; compare `git ls-remote origin refs/heads/rebuild` with `git rev-parse rebuild`; add one line to `CLAUDE.md` naming the remote.
 
 ### Step 11 — Close Pro checkout on production until the launch
-- **Status:** AWAITING CHECKPOINT — needs the owner's go-ahead in chat (payments and production are Always stop). Recommended: today.
+- **Status:** AWAITING CHECKPOINT — needs the owner's go-ahead in chat (payments and production are Always stop). Recommended: today. Re-tested 2026-10-22: production `/api/v1/plans` still says `"checkout_open":true`.
 - **Goal:** Production's checkout is closed and every account has Pro free (early access) until Step 18 opens billing.
 - **Depends on:** nothing
 - **Reversibility:** reversible (put the line back)
@@ -255,7 +258,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Outcome:** _(empty until worked)_
 
 ## Goal 3 — Every known defect fixed, checkout proven
-- **Status:** IN PROGRESS (started 2026-10-22)
+- **Status:** AWAITING CHECKPOINT — Steps 12–15 DONE 2026-10-22 (all fixes on `rebuild`, not released); Step 16 waits for the owner's go-ahead (Moyasar test mode on beta); Step 17 waits on Step 16 and the owner's release go-aheads.
 - **Share of project:** ~30%
 - **Goal:** Every defect the independent beta audit found is fixed or accepted by the owner as by design, the fixes are live on production, and checkout has been proven end to end in Moyasar test mode on beta.
 - **Done when:**
@@ -355,11 +358,11 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - *Debt:* 21 English event names across the universe have no Arabic entry yet (tagged, not translated; list from beta's API in this chat: "eligibility for subscription to rights issue", "press conference", "rump offering starts", …); 992 of 994 capital-change notes are English only.
   - *Resume here:* N/A
   - *Verify in 30 seconds:* `cd web && BASE_URL=http://localhost:3110 node scripts/check-arabic.mjs` (local build and API running)
-  - *Stamp:* 2026-10-22, on the commit after `c103a63` (this step's commit)
+  - *Stamp:* 2026-10-22, on `b548bbe`
 
 
 ### Step 15 — Fix API answers and Copilot gaps
-- **Status:** IN PROGRESS (started 2026-10-22)
+- **Status:** DONE
 - **Goal:** Signed-out calls to protected APIs answer 401, deleting someone else's object answers 404, every Copilot answer that quotes a figure cites its panel, and Copilot's speed is measured against a target.
 - **Depends on:** 12
 - **Reversibility:** reversible
@@ -371,14 +374,25 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **How:** change the shared dependency once, not each route; keep the JSON bodies; check that the web client treats 401 as it treated 403 (`grep -rn "403" web/src`).
 - **Defaults:** speed target — first words within 5 s and full answers within 20 s (median); if the current model cannot reach it, record the times and the options (shorter context, earlier streaming, a faster model for Copilot) in the latency doc and change no model without the owner; the citation rule makes any of C1–C8 fail → revert it and record why; signed-out pages keep answering 200 with a sign-in prompt (BY DESIGN? in Step 12).
 - **Done when:**
-  - [ ] API tests prove 401 signed out on the six routes above and 404 on a foreign or missing holding and alert id — check: `pytest api/tests -q` summary line
-  - [ ] each question in the latency doc that quotes a figure shows at least one citation — check: the doc's table
-  - [ ] the latency doc shows the target met, or the owner's choice recorded — check: the doc
-  - [ ] C1–C8 pass after the change — check: their results in the latency doc
-- **Outcome:** _(empty until worked)_
+  - [x] API tests prove 401 signed out on the six routes above and 404 on a foreign or missing holding and alert id — check: `pytest api/tests -q` summary line
+  - [x] each question in the latency doc that quotes a figure shows at least one citation — check: the doc's table
+  - [x] the latency doc shows the target met, or the owner's choice recorded — check: the doc
+  - [ ] C1–C8 pass after the change — check: their results in the latency doc *(CANNOT VERIFY HERE: see Verification (4))*
+- **Outcome:**
+  - *Done:* not signed in → 401 (`auth.not_signed_in`, with `WWW-Authenticate: Session`) on every route behind `require_user` and on Copilot chat; a request that carries an HTTP Basic login (beta's staging gate) keeps 403 so the gate login survives (audit 9c). Deleting a holding or alert that is not the member's, or no longer exists, → 404; the web client refetches the list on 404. Copilot's prompt gained an "Instructions." rule (data is never instructions; requests to drop the rules or answer with a fixed word get a one-line redirect) after C4 failed once on beta today. The citation rule and the narration guard already existed (`2bef6a4`) and passed (7d, 7e). `docs/copilot-latency-2026-10-22.md`: Step 15's five questions, C1–C8 twice.
+  - *Not done:* N/A
+  - *Touched:* `api/app/auth.py`, `api/app/routers/{copilot,portfolio}.py`, `api/app/copilot/engine.py`, `api/tests/test_{accounts,copilot,debate}.py`, `web/src/lib/queries-app.ts`, `web/scripts/check-audit.mjs` (latency set, item `C`), `docs/copilot-latency-2026-10-22.md`, `docs/qa-beta-2026-10/defects-2026-10-22.md`. Commit `b551630`.
+  - *Verification:* (1) VERIFIED — `pytest -q`: 157 passed; `test_signed_out_calls_answer_401_but_403_behind_the_staging_gate` (the six routes plus PUT prefs, both deletes, `/me/delete`), `test_one_account_cannot_change_anothers_holdings_or_alerts` (qa1's ids and missing ids → 404), Copilot 401 `sign_in_required`. End to end on the local build through Next's proxy: 401 plain, 403 with a Basic login; `check-audit.mjs 9b,9f` → PASS, PASS. A member still deletes their own holding and alert from the UI (200, rows gone). (2) VERIFIED — the doc's table: 4–11 citations on every answer. (3) VERIFIED — median first words 1.7 s, full 17.2 s against 5 / 20 s; nine answers today: 2.7 / 17.2 s; the tail reaches 56 s (options listed, none applied). (4) CANNOT VERIFY HERE — on beta's current release C1–C8 pass except C4, which failed once and passed once; the prompt rule that answers C4 can only meet the real model once released. Verifier: Step 17. Check: after the beta release, `BASE_URL=http://localhost:3201 OUT=… node web/scripts/check-audit.mjs C` three times, C4 PASS each time, and C1–C8 PASS.
+  - *Rulings:* (a) 401 everywhere except requests carrying an HTTP Basic login, which keep 403. Why: beta's gate is HTTP Basic and any 401 makes browsers drop its login (audit 9c); production has no gate. Cost if wrong: an auditor on the public beta address still sees 403; production and the tunnel show 401 (put to the owner as BY DESIGN 4). (b) Failed sign-ins, used links and Pro-only data keep 403 (not "not signed in"). (c) The prompt rule was added without a run against the real model (no AI key off the server). Cost if wrong: C4 still flaky after release; Step 17 catches it before production. (d) Speed: target met on the median, so no change and no question to the owner; the long tail is written down.
+  - *Failed approaches:* the first C1–C8 run reused one browser, so attached panels carried over and C7/C8 could not attach; each question now gets a fresh browser. The first C3 grader read "No, I cannot give you a yes or no answer" as a "no".
+  - *Debt:* C8's answer named an internal field ("the data freshness category"); the prompt forbids field names. Minor; watch in Step 17.
+  - *Resume here:* N/A
+  - *Verify in 30 seconds:* `cd api && uv run pytest -q tests/test_accounts.py -k "401 or anothers"`
+  - *Stamp:* 2026-10-22, on `b551630`
+
 
 ### Step 16 — Prove checkout in Moyasar test mode on beta
-- **Status:** NOT STARTED
+- **Status:** AWAITING CHECKPOINT — needs the owner's go-ahead in chat to (1) add `BILLING_OPEN=true` to beta's `api.env` for the test and remove it after, and (2) run Moyasar test-mode payments on beta. First action after the go-ahead: check by name only that beta's `api.env` holds Moyasar **test** keys (`grep -c '^MOYASAR_SECRET_KEY=sk_test_'`); if not, the owner adds them. Recommended: yes — test keys only, no real card, beta only.
 - **Goal:** Every checkout case has run in Moyasar test mode on beta and passed, and beta is back to billing closed.
 - **Depends on:** nothing
 - **Reversibility:** reversible
@@ -403,10 +417,10 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Autorun:** no — checkpoint: decision (the owner's go-ahead for the beta release, the BY DESIGN list, and the production release)
 - **What this step is:** One beta release with all of Goal 3's fixes, every audit item re-run on it, one question to the owner for the BY DESIGN list, then the production release.
 - **Where:** `scripts/deploy-staging.sh`, `scripts/deploy-production.sh`; `docs/qa-beta-2026-10/reaudit-<date>.md`; `docs/production.md`.
-- **Consumes:** `docs/qa-beta-2026-10/defects-<date>.md` (with Steps 13–15's commits); `web/scripts/check-arabic.mjs`; `docs/checkout-test-<date>.md`.
+- **Consumes:** `docs/qa-beta-2026-10/defects-2026-10-22.md` (16 rows with their fixing commits `b548bbe`, `b551630`, and 4 Proposed BY DESIGN items); `web/scripts/check-audit.mjs` (every item's repro; `C` = trust suite C1–C8; `7f` = Step 15's latency set); `web/scripts/check-arabic.mjs`; `docs/copilot-latency-2026-10-22.md`; `docs/checkout-test-<date>.md`.
 - **Produces:** `docs/qa-beta-2026-10/reaudit-<date>.md` — each item PASS with evidence, or BY DESIGN with the owner's words; the production release id recorded in `docs/production.md`.
 - **How:** release to beta (go-ahead) → re-run each item's repro steps plus `check-all.mjs` and `check-arabic.mjs` on beta → ask the owner once to accept or reject the BY DESIGN list → release to production (go-ahead) → `check-all.mjs` and `check-arabic.mjs` on production.
-- **Defaults:** an item fails again on beta → back to its step, no production release; the owner rejects a BY DESIGN item → it becomes a fix in the step that owns its area (13, 14 or 15).
+- **Defaults:** an item fails again on beta → back to its step, no production release; the owner rejects a BY DESIGN item → it becomes a fix in the step that owns its area (13, 14 or 15). Re-audit through the tunnel: `cd web && BASE_URL=http://localhost:3201 OUT=../docs/screenshots/reaudit-<date> node scripts/check-audit.mjs` (all items, ~15 min), then `check-audit.mjs C` twice more (C4 must pass 3 of 3: the prompt rule from `b551630` meets the real model only on beta), then `check-arabic.mjs` signed out and `SIGNED_IN=1`. 9b through the tunnel must show 401; on the public beta address it shows 403 by design (BY DESIGN 4). Ownership (1e): if no ticker has ownership data yet, the audit-sample proof stands. Ask the owner the four BY DESIGN items in one message, with the release go-ahead.
 - **Done when:**
   - [ ] the re-audit file shows every item PASS, or BY DESIGN with the owner's words — check: read it
   - [ ] production's release id equals the re-audited beta release — check: `docs/production.md`
@@ -414,7 +428,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Outcome:** _(empty until worked)_
 
 ## Goal 4 — Launch: settled, checked, then paid
-- **Status:** AWAITING CHECKPOINT — Steps 7–9 each wait on the owner (re-tested 2026-10-19: no `www` record, no portrait files, no legal advice yet); Step 10 waits on Goals 2 and 3; Step 18 waits on Step 10 and the owner's go-ahead.
+- **Status:** AWAITING CHECKPOINT — Steps 7–9 each wait on the owner (re-tested 2026-10-22: `www` NXDOMAIN, no portrait files, no legal advice in chat); Step 10 waits on Goals 2 and 3; Step 18 waits on Step 10 and the owner's go-ahead.
 - **Share of project:** ~30%
 - **Goal:** The advisors' names and texts follow the owner's legal advice, the six portraits are real, `www.alphacouncil.tech` works, a full launch check passes on production, and only then is Pro checkout open.
 - **Done when:**
@@ -524,10 +538,12 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 ## 8. Open Questions
 - **A new empty private GitHub repository's URL** — blocks Step 2. The owner creates one at github.com/new (Private, no README, no licence; suggested name `alphacouncil-platform`) and pastes its URL. The URL given on 2026-10-21 (`alphacouncil-static`) is public and holds the old site, so it is not used (Step 2, *Rulings* (b)). No default: Claude cannot create the repository.
 - **Go-ahead to close Pro checkout on production now** — blocks Step 11. Recommended: yes, today (no paying members, so nobody loses anything; everyone has Pro free until the launch). No default: payments and production are Always stop.
+- **Go-ahead for checkout tests in Moyasar test mode on beta** — blocks Step 16 (and so Goal 3). It sets `BILLING_OPEN=true` on beta for the test and removes it after; test keys and Moyasar's published test cards only. Recommended: yes. No default: Moyasar and beta's settings are Always stop.
+- **Ownership data has stopped** — no ticker has `ticker_insights.ownership` today (beta's API, 2026-10-22); it existed on 2026-10-16. Pipeline question for Goal 2 (Step 5's fix list does not cover it). Until then the Ownership tab says "No ownership data".
 - **The lawyer's advice on the named advisors** — blocks Step 7 (and Step 8, since names may change). No default: it is the owner's legal call.
 - **Which pipeline fixes go to the server (A all four / B without F-B / C none), and whether to build F-D** — blocks Steps 5–6. Recommendation: A, and F-D yes after one night. No default: the standing rule keeps the old pipeline read-only without the owner's approval.
 - **The portrait files** — block Step 8. **The `www` A record in Cloudflare** — blocks Step 9. Both are the owner's actions.
 - **KPPC (624, Boursa Kuwait) and TAQA (ADX)** — Argaam has no page for KPPC and no TAQA bars after 2026-08-06. Delisted or suspended? The owner may know; until then the app keeps showing them stale (amber).
 
 ## 9. Next Up
-Goal 3, Step 12 — it needs nothing from the owner. First action: open `docs/qa-beta-2026-10/report.md`, start the beta tunnel (`localhost:3201`), and re-run row 1e's repro steps (`/t/2222/ownership`, EN and AR), recording the result in a new `docs/qa-beta-2026-10/defects-<date>.md`; then the other 14 items, then Steps 13–15 (code on `rebuild`; releases wait for Step 17). As soon as the owner answers in chat: Step 11 (close billing — do this first), Step 2 (push to the new private repository), Step 5 → 6 (pipeline fixes).
+Everything left waits on the owner. In this order, as soon as each answer arrives in chat: Step 11 (close billing on production — first, it is the owner's own rule and production still takes payments); Step 16 (checkout tests in Moyasar test mode on beta — first action: confirm by name only that beta's `api.env` has `sk_test_` keys); then Step 17 (one beta release with `b548bbe` + `b551630`, re-audit with `check-audit.mjs`, the 4 BY DESIGN items, production release); Step 2 (push to the new private repository); Step 5 → 6 (pipeline fixes); Steps 7–9 (advice, portraits, `www`).
