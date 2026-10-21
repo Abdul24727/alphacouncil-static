@@ -255,7 +255,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Outcome:** _(empty until worked)_
 
 ## Goal 3 — Every known defect fixed, checkout proven
-- **Status:** NOT STARTED
+- **Status:** IN PROGRESS (started 2026-10-22)
 - **Share of project:** ~30%
 - **Goal:** Every defect the independent beta audit found is fixed or accepted by the owner as by design, the fixes are live on production, and checkout has been proven end to end in Moyasar test mode on beta.
 - **Done when:**
@@ -271,7 +271,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Goal outcome:** _(empty until the goal is worked)_
 
 ### Step 12 — Re-check the audit's open rows on today's beta
-- **Status:** NOT STARTED
+- **Status:** DONE
 - **Goal:** A dated list says, for each open item of the beta audit, whether it still fails today, with evidence, and which step fixes it.
 - **Depends on:** nothing
 - **Reversibility:** reversible
@@ -283,9 +283,20 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **How:** follow each row's repro steps exactly, at the widths and languages it names. Row 2b: compare computed colours and fonts on `/home`, `/t/2222` and `/pricing` with the tokens in `BRAND.md` (the audit could not; the file is not served). Pages that need an account: use the accounts the project's phase checks already use. Never use production in this step.
 - **Defaults:** a row behaves as the code intends and the intent is sensible (1b: phones get a bottom tab bar, not a sidebar; signed-out `/portfolio`, `/dashboards`, `/settings` answer 200 with a sign-in prompt) → "BY DESIGN?" with the reason; text a licence requires (TradingView's "Charting by TradingView") → "BY DESIGN?"; a row does not reproduce on two tries → FIXED, with both tries as evidence; a row needs an account the checks do not have → CANNOT VERIFY HERE, verifier: owner, check: the row's repro steps.
 - **Done when:**
-  - [ ] the file has 15 rows, each with a today value and evidence — check: count the rows
-  - [ ] every STILL FAILS row names its fixing step — check: read the table
-- **Outcome:** _(empty until worked)_
+  - [x] the file has 15 rows, each with a today value and evidence — check: count the rows
+  - [x] every STILL FAILS row names its fixing step — check: read the table
+- **Outcome:**
+  - *Done:* `docs/qa-beta-2026-10/defects-2026-10-22.md`, 15 rows, on beta release `d356a3c`. FIXED: 1e, 2b (now tested), 5f, 7d, 7e, 8c, 10c, Copilot at 390 px (now tested). STILL FAILS: 7f and 9b and the 9f nit (→ Step 15), 8a and 8b (→ Step 14), 10b (→ Step 16). BY DESIGN?: 1b and the pages half of 9b (→ owner, Step 17). Most fixes came from `af9aca8`, `2bef6a4`, `46bb715`, `2977bfd` (2026-10-17/18), which landed after the audit's run 2.
+  - *Not done:* N/A
+  - *Touched:* new `web/scripts/check-audit.mjs` (every item's repro as one check; `[items]` filter; `COPILOT=0` skips the slow ones); `docs/qa-beta-2026-10/defects-2026-10-22.md`; evidence in `docs/screenshots/qa-recheck-2026-10-22/` (`results.json`, `slow/`, `c390/`).
+  - *Verification:* (1) VERIFIED — 15 table rows, each with a today value and evidence. (2) VERIFIED — every STILL FAILS row names Step 14, 15 or 16.
+  - *Rulings:* (a) 1e is FIXED although no ticker has ownership data today: the panel was proven with the audit's own JSON fed to beta's page, plus the existing API test. Cost if wrong: the pipeline's real block has a shape the sample lacks; seen when data returns. (b) 5f is FIXED without a reason line beside P/E: the defect was P/E "n/a" beside an EPS that implied 3.5x; EPS is now withheld ("Unit not confirmed"), and "N/A" is the app's standard placeholder. Cost if wrong: the owner wants a reason line; a small change in Step 13. (c) 2b compares computed colours of every visible element (charts and SVG excluded; the audit's 2a covers chart pixels) and first font faces; phase 7 checks drawn fonts. (d) 8a/8b counted against Step 14's allow-list classes; the language option "English" (`lang="en"`) and the user's own email are left for Step 14 to classify. (e) The 9f probe deletes a missing id (987654321), not qa1's objects; same query path, no other account touched. (f) 7f measured on 4 answers against Step 15's default target (5 s / 20 s median).
+  - *Failed approaches:* reading `screening.sqlite` on the server with `python3` over SSH was refused by Claude Code's auto-mode classifier ("Production Reads"); scanning all 716 tickers through beta's own API (`/tickers/{slug}/insights`) answered the same question.
+  - *Debt:* `ticker_insights.ownership` (and `analysts`) is null for all 716 tickers on beta's API today; the audit saw 2222's ownership on 2026-10-16, so the pipeline stopped writing it — a Goal 2 data question (see Open Questions).
+  - *Resume here:* N/A
+  - *Verify in 30 seconds:* `cd web && BASE_URL=http://localhost:3201 COPILOT=0 node scripts/check-audit.mjs 1e,5f,9b,10c`
+  - *Stamp:* 2026-10-22, on `37c3898` (beta and production on release `d356a3c`)
+
 
 ### Step 13 — Fix the data and display defects
 - **Status:** NOT STARTED

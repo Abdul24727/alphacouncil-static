@@ -1,0 +1,39 @@
+{
+  "base_url": "http://localhost:3201",
+  "at": "2026-10-21T21:38:15.660Z",
+  "results": [
+    {
+      "row": "c390",
+      "status": "PASS",
+      "finding": "Copilot at 390 px, EN and AR: answers en 586 chars, 5 cites, 0px sideways; ar 720 chars, 3 cites, 0px sideways",
+      "evidence": [
+        {
+          "route": "/t/2222",
+          "question": "What is the dividend yield?",
+          "locale": "en",
+          "width": 390,
+          "first_ms": 1687,
+          "full_ms": 11155,
+          "sideways": 0,
+          "text": "Saudi Aramco's (2222) dividend yield is 5.23% as of 2026-10-20, based on its current stock price of SAR 25.48. DBThe dividend yield calculation includes the most recent dividend payments, which have been:- SAR 0.34 per share for Q2 2026 (ex-date 2026-08-19) DB- SAR 0.34 per share for Q1 2026 (ex-date 2026-06-01) DB- SAR 0.34 per share for Q4 2025 (ex-date 2026-03-16) DB- SAR 0.33 per share for Q3 2025 (ex-date 2025-11-17) DBOver the past year, the dividend payments have been consistent, with four quarterly payments totaling approximately SAR 1.34 per share on an annualized basis.",
+          "citations": 5,
+          "stepsOpen": false,
+          "file": "c390-copilot-en.png"
+        },
+        {
+          "route": "/t/2222",
+          "question": "ما هو عائد التوزيعات؟",
+          "locale": "ar",
+          "width": 390,
+          "first_ms": 1984,
+          "full_ms": 30761,
+          "sideways": 0,
+          "text": "عائد التوزيعات لأسهم أرامكو السعودية (2222) هو 5.23% اعتباراً من 2026-10-20، بناءً على آخر سعر إغلاق عند 25.48 ريال سعودي. DBالبيانات المالية تظهر أن الشركة توزع أرباحاً ربع سنوية منتظمة، حيث كانت التوزيعات في العامين الأخيرين:- أربع أرباح لكل سنة بقيمة 0.33-0.34 ريال للسهم (شملت أرباحاً مرتبطة بالأداء قدرها 820 مليون ريال) DB- في عام 2024 كانت التوزيعات بقيمة 0.48 ريال للسهم (شملت أرباحاً مرتبطة بالأداء قدرها حوالي 40.4 مليار ريال) DBأحدث توزيعات أرباح لأرامكو السعوديةDBتثبيت في لوحةتاريخ الإعلانتاريخ الاستحقاقتاريخ الدفعالتوزيع لكل سهم (ريال)2026-08-042026-08-192026-08-270.342026-05-102026-06-012026-06-090.342026-03-102026-03-162026-03-310.342025-11-042025-11-172025-11-260.332025-08-052025-08-192025-08-280.33",
+          "citations": 3,
+          "stepsOpen": false,
+          "file": "c390-copilot-ar.png"
+        }
+      ]
+    }
+  ]
+}

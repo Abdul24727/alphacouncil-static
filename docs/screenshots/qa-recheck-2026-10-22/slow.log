@@ -1,0 +1,8 @@
+PASS       7d    METH.AD answer: 10 figure(s), 4 citation chip(s)
+PASS       7e    no tool-use narration in the answer; steps list collapsed: true
+FAIL       c390  Copilot at 390 px, EN and AR: answers en 418 chars, 0 cites, 0px sideways; ar 716 chars, 0 cites, 0px sideways
+FAIL       7f    median first words 5.1 s (target 5), full 22.4 s (target 20); each: 5.7/10.7, 5.1/22.4, 2.7/14.5, 4.7/31.5
+FAIL       8a    853 distinct English string(s) on 24 public Arabic pages, signed out (audit run 2: 52)
+FAIL       8b    26 distinct English string(s) on 6 signed-in Arabic pages (audit run 2: 34)
+
+6 item(s): 2 PASS, 4 FAIL

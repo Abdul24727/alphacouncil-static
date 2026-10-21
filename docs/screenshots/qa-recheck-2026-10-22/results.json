@@ -1,0 +1,681 @@
+{
+  "base_url": "http://localhost:3201",
+  "at": "2026-10-21T21:31:11.438Z",
+  "results": [
+    {
+      "row": "1b",
+      "status": "BY DESIGN?",
+      "finding": "390 px: bottom tab bar instead of a sidebar; Ctrl+K opens search, Ctrl+L opens Copilot; Ctrl+B only flips data-sidebar (no sidebar on phones)",
+      "evidence": [
+        {
+          "who": "out",
+          "locale": "en",
+          "before": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "Tabs",
+            "dataSidebar": "expanded",
+            "dialog": false,
+            "copilot": false
+          },
+          "afterB": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "Tabs",
+            "dataSidebar": "collapsed",
+            "dialog": false,
+            "copilot": false
+          },
+          "afterK": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "Tabs",
+            "dataSidebar": "collapsed",
+            "dialog": true,
+            "copilot": false
+          },
+          "afterL": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "Tabs",
+            "dataSidebar": "collapsed",
+            "dialog": false,
+            "copilot": true
+          },
+          "file": "1b-out-en-390-copilot.png"
+        },
+        {
+          "who": "out",
+          "locale": "ar",
+          "before": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "علامات التبويب",
+            "dataSidebar": "expanded",
+            "dialog": false,
+            "copilot": false
+          },
+          "afterB": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "علامات التبويب",
+            "dataSidebar": "collapsed",
+            "dialog": false,
+            "copilot": false
+          },
+          "afterK": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "علامات التبويب",
+            "dataSidebar": "collapsed",
+            "dialog": true,
+            "copilot": false
+          },
+          "afterL": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "علامات التبويب",
+            "dataSidebar": "collapsed",
+            "dialog": false,
+            "copilot": true
+          },
+          "file": "1b-out-ar-390-copilot.png"
+        },
+        {
+          "who": "in",
+          "locale": "en",
+          "before": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "Tabs",
+            "dataSidebar": "expanded",
+            "dialog": false,
+            "copilot": false
+          },
+          "afterB": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "Tabs",
+            "dataSidebar": "collapsed",
+            "dialog": false,
+            "copilot": false
+          },
+          "afterK": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "Tabs",
+            "dataSidebar": "collapsed",
+            "dialog": true,
+            "copilot": false
+          },
+          "afterL": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "Tabs",
+            "dataSidebar": "collapsed",
+            "dialog": false,
+            "copilot": true
+          },
+          "file": "1b-in-en-390-copilot.png"
+        },
+        {
+          "who": "in",
+          "locale": "ar",
+          "before": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "علامات التبويب",
+            "dataSidebar": "expanded",
+            "dialog": false,
+            "copilot": false
+          },
+          "afterB": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "علامات التبويب",
+            "dataSidebar": "collapsed",
+            "dialog": false,
+            "copilot": false
+          },
+          "afterK": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "علامات التبويب",
+            "dataSidebar": "collapsed",
+            "dialog": true,
+            "copilot": false
+          },
+          "afterL": {
+            "sidebar": false,
+            "tabBar": true,
+            "tabBarLabel": "علامات التبويب",
+            "dataSidebar": "collapsed",
+            "dialog": false,
+            "copilot": true
+          },
+          "file": "1b-in-ar-390-copilot.png"
+        }
+      ]
+    },
+    {
+      "row": "1e",
+      "status": "PASS",
+      "finding": "no <pre> in the panel (8/8); with the audit's sample it draws a table (true); live ownership today: none for 2222",
+      "evidence": {
+        "live_ownership": null,
+        "runs": [
+          {
+            "injected": false,
+            "locale": "en",
+            "width": 1440,
+            "found": true,
+            "pre": 0,
+            "tables": 0,
+            "rows": 0,
+            "text": "2222 Ownership DATA UNAVAILABLE No ownership data in our database for this ticker",
+            "file": "1e-live-en-1440.png"
+          },
+          {
+            "injected": false,
+            "locale": "en",
+            "width": 390,
+            "found": true,
+            "pre": 0,
+            "tables": 0,
+            "rows": 0,
+            "text": "2222 Ownership DATA UNAVAILABLE No ownership data in our database for this ticker",
+            "file": "1e-live-en-390.png"
+          },
+          {
+            "injected": false,
+            "locale": "ar",
+            "width": 1440,
+            "found": true,
+            "pre": 0,
+            "tables": 0,
+            "rows": 0,
+            "text": "2222 الملكية البيانات غير متاحة لا توجد بيانات ملكية لهذا السهم في قاعدة بياناتنا",
+            "file": "1e-live-ar-1440.png"
+          },
+          {
+            "injected": false,
+            "locale": "ar",
+            "width": 390,
+            "found": true,
+            "pre": 0,
+            "tables": 0,
+            "rows": 0,
+            "text": "2222 الملكية البيانات غير متاحة لا توجد بيانات ملكية لهذا السهم في قاعدة بياناتنا",
+            "file": "1e-live-ar-390.png"
+          },
+          {
+            "injected": true,
+            "locale": "en",
+            "width": 1440,
+            "found": true,
+            "pre": 0,
+            "tables": 1,
+            "rows": 1,
+            "text": "2222 Ownership Foreign ownership Owned by foreign investors 0.72% Foreign ownership limit N/A 17 Sept 2026 0.74% 11 Oct 2026 0.72% Major holders HOLDER STAKE AS",
+            "file": "1e-audit-sample-en-1440.png"
+          },
+          {
+            "injected": true,
+            "locale": "en",
+            "width": 390,
+            "found": true,
+            "pre": 0,
+            "tables": 1,
+            "rows": 1,
+            "text": "2222 Ownership Foreign ownership Owned by foreign investors 0.72% Foreign ownership limit N/A 17 Sept 2026 0.74% 11 Oct 2026 0.72% Major holders HOLDER STAKE Ki",
+            "file": "1e-audit-sample-en-390.png"
+          },
+          {
+            "injected": true,
+            "locale": "ar",
+            "width": 1440,
+            "found": true,
+            "pre": 0,
+            "tables": 1,
+            "rows": 1,
+            "text": "2222 الملكية ملكية الأجانب ملكية المستثمرين الأجانب 0.72% الحد الأعلى لملكية الأجانب غير متاح ⁧17 سبتمبر 2026⁩ 0.74% ⁧11 أكتوبر 2026⁩ 0.72% كبار الملاك المالك ا",
+            "file": "1e-audit-sample-ar-1440.png"
+          },
+          {
+            "injected": true,
+            "locale": "ar",
+            "width": 390,
+            "found": true,
+            "pre": 0,
+            "tables": 1,
+            "rows": 1,
+            "text": "2222 الملكية ملكية الأجانب ملكية المستثمرين الأجانب 0.72% الحد الأعلى لملكية الأجانب غير متاح ⁧17 سبتمبر 2026⁩ 0.74% ⁧11 أكتوبر 2026⁩ 0.72% كبار الملاك المالك ا",
+            "file": "1e-audit-sample-ar-390.png"
+          }
+        ]
+      }
+    },
+    {
+      "row": "2b",
+      "status": "PASS",
+      "finding": "the 13 BRAND.md colour tokens equal the CSS variables, and every drawn colour is a token, on 6/6 page loads (/home, /t/2222, /pricing × EN, AR)",
+      "evidence": [
+        {
+          "route": "/home",
+          "locale": "en",
+          "varsOk": true,
+          "vars": {
+            "bg": "#0c0d10",
+            "panel": "#14161b",
+            "panel-raised": "#1d2028",
+            "line": "#272b34",
+            "text": "#eceef2",
+            "text-soft": "#b8beca",
+            "muted": "#9299a8",
+            "signal": "#ff6a1a",
+            "signal-ink": "#170800",
+            "gain": "#3fd98a",
+            "loss": "#ff4d5e",
+            "stale": "#f2b134",
+            "neutral-seat": "#4a505c"
+          },
+          "off": {},
+          "faces": {
+            "Archivo": 54,
+            "Martian Mono": 104
+          }
+        },
+        {
+          "route": "/home",
+          "locale": "ar",
+          "varsOk": true,
+          "vars": {
+            "bg": "#0c0d10",
+            "panel": "#14161b",
+            "panel-raised": "#1d2028",
+            "line": "#272b34",
+            "text": "#eceef2",
+            "text-soft": "#b8beca",
+            "muted": "#9299a8",
+            "signal": "#ff6a1a",
+            "signal-ink": "#170800",
+            "gain": "#3fd98a",
+            "loss": "#ff4d5e",
+            "stale": "#f2b134",
+            "neutral-seat": "#4a505c"
+          },
+          "off": {},
+          "faces": {
+            "Archivo": 67,
+            "Martian Mono": 91
+          }
+        },
+        {
+          "route": "/t/2222",
+          "locale": "en",
+          "varsOk": true,
+          "vars": {
+            "bg": "#0c0d10",
+            "panel": "#14161b",
+            "panel-raised": "#1d2028",
+            "line": "#272b34",
+            "text": "#eceef2",
+            "text-soft": "#b8beca",
+            "muted": "#9299a8",
+            "signal": "#ff6a1a",
+            "signal-ink": "#170800",
+            "gain": "#3fd98a",
+            "loss": "#ff4d5e",
+            "stale": "#f2b134",
+            "neutral-seat": "#4a505c"
+          },
+          "off": {},
+          "faces": {
+            "Archivo": 91,
+            "Martian Mono": 95
+          }
+        },
+        {
+          "route": "/t/2222",
+          "locale": "ar",
+          "varsOk": true,
+          "vars": {
+            "bg": "#0c0d10",
+            "panel": "#14161b",
+            "panel-raised": "#1d2028",
+            "line": "#272b34",
+            "text": "#eceef2",
+            "text-soft": "#b8beca",
+            "muted": "#9299a8",
+            "signal": "#ff6a1a",
+            "signal-ink": "#170800",
+            "gain": "#3fd98a",
+            "loss": "#ff4d5e",
+            "stale": "#f2b134",
+            "neutral-seat": "#4a505c"
+          },
+          "off": {},
+          "faces": {
+            "Archivo": 117,
+            "Martian Mono": 60
+          }
+        },
+        {
+          "route": "/pricing",
+          "locale": "en",
+          "varsOk": true,
+          "vars": {
+            "bg": "#0c0d10",
+            "panel": "#14161b",
+            "panel-raised": "#1d2028",
+            "line": "#272b34",
+            "text": "#eceef2",
+            "text-soft": "#b8beca",
+            "muted": "#9299a8",
+            "signal": "#ff6a1a",
+            "signal-ink": "#170800",
+            "gain": "#3fd98a",
+            "loss": "#ff4d5e",
+            "stale": "#f2b134",
+            "neutral-seat": "#4a505c"
+          },
+          "off": {},
+          "faces": {
+            "Archivo": 45,
+            "Martian Mono": 2
+          }
+        },
+        {
+          "route": "/pricing",
+          "locale": "ar",
+          "varsOk": true,
+          "vars": {
+            "bg": "#0c0d10",
+            "panel": "#14161b",
+            "panel-raised": "#1d2028",
+            "line": "#272b34",
+            "text": "#eceef2",
+            "text-soft": "#b8beca",
+            "muted": "#9299a8",
+            "signal": "#ff6a1a",
+            "signal-ink": "#170800",
+            "gain": "#3fd98a",
+            "loss": "#ff4d5e",
+            "stale": "#f2b134",
+            "neutral-seat": "#4a505c"
+          },
+          "off": {},
+          "faces": {
+            "Archivo": 45,
+            "Martian Mono": 2
+          }
+        }
+      ]
+    },
+    {
+      "row": "5f",
+      "status": "PASS",
+      "finding": "header carries a date: true; P/E n/a only where EPS is not shown either: true (API eps_ttm null, reason unit_unconfirmed)",
+      "evidence": [
+        {
+          "locale": "en",
+          "header": "AFNIC Al Fujairah National Insurance ADX 230.00 AED +9.52% As of 16 Oct 2026",
+          "pe": "P/E N/A",
+          "eps": "EPS (TTM) Unit not confirmed",
+          "file": "5f-AFNIC-en-1440.png",
+          "api": {
+            "as_of_date": "2026-10-16",
+            "pe": null,
+            "eps_ttm": null,
+            "eps_ttm_reason": "unit_unconfirmed"
+          }
+        },
+        {
+          "locale": "ar",
+          "header": "AFNIC الفجيرة الوطنية للتأمين سوق أبوظبي 230.00 د.إ +9.52% بتاريخ ⁧16 أكتوبر 2026⁩",
+          "pe": "مكرر الربحية غير متاح",
+          "eps": "ربحية السهم (12 شهرًا) الوحدة غير مؤكدة",
+          "file": "5f-AFNIC-ar-1440.png",
+          "api": {
+            "as_of_date": "2026-10-16",
+            "pe": null,
+            "eps_ttm": null,
+            "eps_ttm_reason": "unit_unconfirmed"
+          }
+        }
+      ]
+    },
+    {
+      "row": "8c",
+      "status": "PASS",
+      "finding": "English /home news: 10 item(s), 0 Arabic-only, 0 of them without lang=\"ar\" and a language tag",
+      "evidence": {
+        "items": [
+          {
+            "title": "Equipment House wins SAR 16.6M contract with Aseer Health Cl",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "Equipment House secures SAR 50M medical equipment maintenanc",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "Twareat appeals ruling in SABIC lawsuit",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "Tadawul approves SNB Capital as market maker for Almarai, Al",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "SVCP publishes circular on 69.7% capital cut to offset losse",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "SVCP shareholders to vote on 69.71% capital cut on Oct. 22",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "Equipment House plans 3M share buyback",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "Alandalus obtains SAR 35M facilities from SNB",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "Sport Clubs leases land to develop new center in Riyadh",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "NADEC completes acquisition of partner stake in Al Raie Live",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          }
+        ],
+        "file": "8c-home-en-1440.png"
+      }
+    },
+    {
+      "row": "9b",
+      "status": "FAIL",
+      "finding": "signed-out protected APIs: GET /portfolio 403, GET /portfolio/alerts 403, GET /me/prefs 403, PUT /me/prefs 403, POST /portfolio/holdings 403, POST /portfolio/alerts 403, POST /copilot/chat 403",
+      "evidence": {
+        "api": [
+          {
+            "method": "GET",
+            "path": "/portfolio",
+            "status": 403,
+            "body": "{\"detail\":\"Sign in to use this.\"}"
+          },
+          {
+            "method": "GET",
+            "path": "/portfolio/alerts",
+            "status": 403,
+            "body": "{\"detail\":\"Sign in to use this.\"}"
+          },
+          {
+            "method": "GET",
+            "path": "/me/prefs",
+            "status": 403,
+            "body": "{\"detail\":\"Sign in to use this.\"}"
+          },
+          {
+            "method": "PUT",
+            "path": "/me/prefs",
+            "status": 403,
+            "body": "{\"detail\":\"Sign in to use this.\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/portfolio/holdings",
+            "status": 403,
+            "body": "{\"detail\":\"Sign in to use this.\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/portfolio/alerts",
+            "status": 403,
+            "body": "{\"detail\":\"Sign in to use this.\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/copilot/chat",
+            "status": 403,
+            "body": "{\"detail\":\"sign_in_required\"}"
+          }
+        ]
+      }
+    },
+    {
+      "row": "9b-p",
+      "status": "FAIL",
+      "finding": "signed-out /portfolio, /dashboards, /settings (EN, AR): 200 with sign-in link, 200, 200 with sign-in link, 200 with sign-in link, 200, 200 with sign-in link",
+      "evidence": {
+        "pages": [
+          {
+            "locale": "en",
+            "route": "/portfolio",
+            "status": 200,
+            "signInLinks": 2
+          },
+          {
+            "locale": "en",
+            "route": "/dashboards",
+            "status": 200,
+            "signInLinks": 0
+          },
+          {
+            "locale": "en",
+            "route": "/settings",
+            "status": 200,
+            "signInLinks": 2
+          },
+          {
+            "locale": "ar",
+            "route": "/portfolio",
+            "status": 200,
+            "signInLinks": 2
+          },
+          {
+            "locale": "ar",
+            "route": "/dashboards",
+            "status": 200,
+            "signInLinks": 0
+          },
+          {
+            "locale": "ar",
+            "route": "/settings",
+            "status": 200,
+            "signInLinks": 2
+          }
+        ]
+      }
+    },
+    {
+      "row": "9f",
+      "status": "FAIL",
+      "finding": "signed in, DELETE an id the caller does not own: holdings 200, alerts 200",
+      "evidence": [
+        {
+          "path": "/api/v1/portfolio/holdings/987654321",
+          "status": 200,
+          "body": "{\"holdings\":[],\"groups\":[],\"council\":[{\"seat\":\"value\",\"bullish\":0,\"neutral\":0,\"b"
+        },
+        {
+          "path": "/api/v1/portfolio/alerts/987654321",
+          "status": 200,
+          "body": "[]"
+        }
+      ]
+    },
+    {
+      "row": "10b",
+      "status": "FAIL",
+      "finding": "checkout not tested in Moyasar test mode yet; beta /plans checkout_open=false (Step 16)",
+      "evidence": {
+        "checkout_open": false,
+        "runs": [
+          {
+            "locale": "en",
+            "placeholder": false,
+            "closed": true,
+            "buy": 0,
+            "file": "10-pricing-en-1440.png",
+            "excerpt": "Pricing Two plans, priced in Saudi riyals. The prices below are read from the same plan configuration our payment provider, Moyasar, charges. Free 0 SAR a month Market data and research for every GCC investor. Markets overview, screener and templates Every stock page: price chart, key metrics, peers"
+          },
+          {
+            "locale": "ar",
+            "placeholder": false,
+            "closed": false,
+            "buy": 0,
+            "file": "10-pricing-ar-1440.png",
+            "excerpt": "الأسعار خطتان بالريال السعودي. الأسعار أدناه مقروءة من إعدادات الخطط نفسها التي يحصّل بها مزوّد الدفع لدينا، ميسّر. مجاني 0 ريال شهريًا بيانات الأسواق والأبحاث لكل مستثمر في الخليج. نظرة على الأسواق وفرز الأسهم والقوالب صفحة كل سهم: الرسم البياني للسعر والمؤشرات الرئيسية والأقران والأخبار محفظتي حتى"
+          }
+        ]
+      }
+    },
+    {
+      "row": "10c",
+      "status": "PASS",
+      "finding": "pricing placeholder text: en none, ar none",
+      "evidence": [
+        {
+          "locale": "en",
+          "placeholder": false,
+          "closed": true,
+          "buy": 0,
+          "file": "10-pricing-en-1440.png",
+          "excerpt": "Pricing Two plans, priced in Saudi riyals. The prices below are read from the same plan configuration our payment provider, Moyasar, charges. Free 0 SAR a month Market data and research for every GCC investor. Markets overview, screener and templates Every stock page: price chart, key metrics, peers"
+        },
+        {
+          "locale": "ar",
+          "placeholder": false,
+          "closed": false,
+          "buy": 0,
+          "file": "10-pricing-ar-1440.png",
+          "excerpt": "الأسعار خطتان بالريال السعودي. الأسعار أدناه مقروءة من إعدادات الخطط نفسها التي يحصّل بها مزوّد الدفع لدينا، ميسّر. مجاني 0 ريال شهريًا بيانات الأسواق والأبحاث لكل مستثمر في الخليج. نظرة على الأسواق وفرز الأسهم والقوالب صفحة كل سهم: الرسم البياني للسعر والمؤشرات الرئيسية والأقران والأخبار محفظتي حتى"
+        }
+      ]
+    }
+  ]
+}
