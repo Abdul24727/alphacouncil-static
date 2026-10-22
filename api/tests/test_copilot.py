@@ -368,3 +368,15 @@ def test_the_prompt_keeps_answers_short_and_to_the_data():
 
     assert "at most five supporting figures" in SYSTEM and "under about 120 words" in SYSTEM
     assert "do not work out ratios, totals or projections of your own" in SYSTEM
+
+
+def test_host_order_applies_to_the_copilot_only():
+    # COPILOT_PROVIDER_ORDER (2026-10-22, owner's option (c)): hosts tried first, the rest as fallbacks.
+    from app.copilot.openai_compat import host_routing
+    from app.settings import Settings
+
+    s = Settings(copilot_provider_order="Phala, Venice", copilot_provider_sort="latency", openrouter_base_url="https://openrouter.ai/api/v1")
+    assert host_routing(s, copilot=True) == {"provider": {"sort": "latency", "order": ["Phala", "Venice"], "allow_fallbacks": True}}
+    assert host_routing(s) == {"provider": {"sort": "latency"}}  # the advisors' room keeps the sort only
+    assert host_routing(Settings(openrouter_base_url="https://example.test/v1"), copilot=True) == {}
+    assert host_routing(Settings(copilot_provider_sort="", openrouter_base_url="https://openrouter.ai/api/v1"), copilot=True) == {}

@@ -8,6 +8,7 @@ key is OPENROUTER_API_KEY and never leaves the process.
 
 import asyncio
 import json
+import logging
 import os
 from collections.abc import AsyncIterator
 from typing import Any
@@ -21,6 +22,9 @@ from . import tools
 from .context import AnswerTrace, ChatInput, numbers_in, panel_block, sources
 from .engine import MAX_STEPS, SYSTEM, TOOL_RESULT_CHARS, _client_view, _ui_tool
 from .stream import Writer
+
+# uvicorn's logger reaches the service journal (journalctl -u acp-api).
+log = logging.getLogger("uvicorn.error")
 
 FOLLOW_UP_NUDGE = "Now call suggest_follow_ups with two or three short follow-up questions in the language of my question."
 
@@ -55,10 +59,20 @@ def make_client(settings: Settings) -> openai.AsyncOpenAI:
     )
 
 
-def host_routing(settings: Settings) -> dict[str, Any]:
-    """OpenRouter serves a model from several hosts; the default pick can be several times slower."""
-    sort = settings.copilot_provider_sort if "openrouter.ai" in settings.openrouter_base_url else ""
-    return {"provider": {"sort": sort}} if sort else {}
+def host_routing(settings: Settings, *, copilot: bool = False) -> dict[str, Any]:
+    """OpenRouter serves a model from several hosts; the default pick can be several times slower.
+    For the Copilot, COPILOT_PROVIDER_ORDER names hosts to try first; the others stay as fallbacks.
+    Measured 2026-10-22: the latency sort picked a host that always looks up the database before
+    writing (an extra round trip, first words after 8-9 s); another wrote first words in 1.8 s."""
+    if "openrouter.ai" not in settings.openrouter_base_url:
+        return {}
+    provider: dict[str, Any] = {}
+    if settings.copilot_provider_sort:
+        provider["sort"] = settings.copilot_provider_sort
+    order = [h.strip() for h in settings.copilot_provider_order.split(",") if h.strip()] if copilot else []
+    if order:
+        provider.update(order=order, allow_fallbacks=True)
+    return {"provider": provider} if provider else {}
 
 
 def _history(chat: ChatInput) -> list[dict[str, Any]]:
@@ -83,12 +97,12 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
         async for part in _prefetch(request, w, chat.ticker, messages, seen, trace):
             yield part
     extra: dict[str, Any] = {"reasoning": {"enabled": True}} if settings.copilot_reasoning else {}
-    routing = host_routing(settings)
+    routing = host_routing(settings, copilot=True)
     followed_up = nudged = False
 
     for step in range(MAX_STEPS):
         yield w.start_step()
-        text, calls, finish = "", {}, None
+        text, calls, finish, served = "", {}, None, None
         try:
             stream = await client.chat.completions.create(
                 model=settings.copilot_model,
@@ -102,6 +116,7 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
                 extra_body=routing if nudged else {**extra, **routing},
             )
             async for chunk in stream:
+                served = served or (getattr(chunk, "model_extra", None) or {}).get("provider")
                 for choice in chunk.choices:
                     finish = choice.finish_reason or finish
                     delta = choice.delta
@@ -133,6 +148,7 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
             yield w.error("Could not reach the AI service.")
             break
 
+        log.info("copilot step %d: host %s, %s", step, served or "unknown", "tools" if calls else "text")
         if finish == "length":
             yield w.error("The answer was cut off. Please ask a narrower question.")
             break
