@@ -42,3 +42,11 @@ Two runs on beta, 2026-10-22 (evidence: `copilot/results.json` run A, `copilot-c
 | C8 stale data | `/t/METH.AD`, Price: latest price and whether it is current | (script error) | PASS | "AED 0.65 as of 2023-06-15, but this price is stale" |
 
 Run A's C7 and C8 failed in the script (the attach button was hidden because the previous question's panel was still attached in the same browser); run B gives each question a fresh browser.
+
+## Update, 2026-10-22 (after midnight UTC)
+
+Around 00:00 UTC the model service behind `deepseek/deepseek-v3.2` turned 2–3× wordier and slower, on beta and on
+production alike (production, still on the earlier prompt, measured median 10.3 s / 22.9 s). The owner chose option
+(b): a length rule and "nothing else" after a refusal (`5647694`, released to beta and production). Result over 12
+answers: median full answer 13.4 s (target met), median first words 8.6 s (target missed). Details and the options left
+for first words: `docs/qa-beta-2026-10/reaudit-2026-10-22.md`, "After option (b)".
