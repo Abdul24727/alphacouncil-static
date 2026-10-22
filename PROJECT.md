@@ -277,7 +277,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Outcome:** _(empty until worked)_
 
 ## Goal 3 — Every known defect fixed, checkout proven
-- **Status:** AWAITING CHECKPOINT — Steps 12–16 DONE 2026-10-22 (checkout proven on beta); Step 17 live: beta and production on `56476948f5`, `check-all` 9/9 on production, BY DESIGN 1–4 accepted; one decision left — Copilot speed (7f); option (c) tried, no host meets both targets.
+- **Status:** AWAITING CHECKPOINT — Steps 12–16 DONE 2026-10-22 (checkout proven on beta); Step 17 live: production on `56476948f5` (re-audited on beta), `check-all` 9/9 on production, BY DESIGN 1–4 accepted; one decision left — Copilot speed (7f); option (c) tried on beta (`859edafff3`), no host meets both targets.
 - **Share of project:** ~30%
 - **Goal:** Every defect the independent beta audit found is fixed or accepted by the owner as by design, the fixes are live on production, and checkout has been proven end to end in Moyasar test mode on beta.
 - **Done when:**
