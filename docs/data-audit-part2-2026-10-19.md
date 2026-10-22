@@ -331,3 +331,41 @@ does, so the patch does not go to the server as it is. Options for the owner:
 the night after it is applied, `[disclosures]` in the run's log shows `0 failed`, and for each of
 three tickers the list named in the 7 days before the run, the API's newest disclosure has that
 date (`/api/v1/tickers/<code>/news`).
+
+## F-F. Ownership and analyst data wiped every daily night (found 2026-10-22)
+
+**Root cause:** `llm-council/ingest_ticker_insights.py` (`build_for_ticker`) reads the analyst
+and ownership files only from each ticker's newest complete run (`selection_latest_complete.csv`).
+Since the daily/full split (2026-06-28) only Friday's full run scrapes those pages, so on six
+nights of seven the chosen run is a daily one without them, and `INSERT OR REPLACE` writes the
+ticker's row with `analysts`, `estimates` and `ownership` empty.
+
+Evidence (read-only, 2026-10-22): the selection picks `2222_TADAWUL/harvest_runs/run_20261022_000750`
+(daily); that run and `run_20261021_000957` have no `*_analyst_opinion.csv`,
+`*_foreign_ownership.csv` or `*_shareholder_history.csv`; `run_20261016_002441` (full) has all
+three (its `meta.json`: analyst_opinion 100 rows, foreign_ownership 18, shareholder_history 5).
+`/var/lib/alphacouncil/screening.sqlite`, `ticker_insights`: 694 rows, 0 with ownership, 0 with
+analysts; Aramco's row (updated 2026-10-22 01:52 UTC) has performance and seasonality only.
+
+**Fix** (`docs/pipeline-fix-ff-2026-10-22.patch`, one commit, `5a9bffd` in the work copy; 23 lines
+added, 6 removed; applies alone on F-C, independent of F-D): per file, use the newest run on disk
+that has it (the chosen run first). Nightly hygiene keeps the newest full run, so the fallback
+reaches last Friday's files and no further. Price history still comes from the chosen run.
+
+**Dry run** (copies of the 3,086 analyst and ownership CSVs from all 2,148 run folders, 1.9 MB,
+and the server's selection CSV; outputs in
+`C:\AlphaCouncil-Staging\work\pipeline-fixes-20261019\dryrun_f\dryrun_f.txt`):
+
+| Tickers (of 716) with | Before (today's code) | After the fix |
+|---|---|---|
+| analyst ratings | 0 | 353 |
+| estimates | 0 | 645 |
+| ownership | 0 | 677 |
+
+Aramco after: 23 analysts, consensus Buy; foreign ownership 0.72 % (limit 49 %) as of 2026-10-13.
+Tonight's Friday full run will restore the data for one day without the fix; Saturday's daily run
+(2026-10-24 00:00 UTC) wipes it again.
+
+**Check after a daily night with it:** in the published `screening.sqlite`, `ticker_insights`
+has ownership for at least 600 tickers and analysts for at least 300, and Aramco's
+`/api/v1/tickers/2222/insights` shows analysts and ownership.

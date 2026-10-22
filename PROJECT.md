@@ -191,7 +191,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Reversibility:** costly (the pipeline writes the live data)
 - **Autorun:** no — checkpoint: decision (Step 5) and the owner's go-ahead for the server change (Step 7)
 - **Consumes:** `docs/data-audit-2026-10-18.md` (part 1; its section 8 lists the read-only commands for part 2); `docs/data-fixes-2026-10-18.md` part 3 (faults P2–P4 and "Also for the pipeline", with evidence).
-- **Steps:** 3–6, 19
+- **Steps:** 3–6, 19, 21
 - **Goal outcome:** _(empty until the goal is worked)_
 
 ### Step 3 — Data audit part 2: read the server side
@@ -333,6 +333,34 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - *Resume here:* when the owner answers. Route 1: with the go-ahead, one read-only test on the server — open the list page in the scraper's Playwright context with its saved session (`argaam/_export_auth_state.py` writes it; find the path there, never print the file) and count `class="date"` items; > 0 → add a `--browser` path to `list_items` that loads the two list pages in that context, dry-run again, then apply as in Step 6 (backups `.bak-<date>`, `git apply` both trees). 0 → back to the owner (route 2 or 3). Route 2: add `--list-dir` (read saved list pages instead of fetching) and a Windows task that saves the two pages and `scp`s them to `/opt/alphacouncil/backend/argaam/default_universe/.market_disclosure_lists/`.
   - *Verify in 30 seconds:* `cd C:\AlphaCouncil-Staging\work\pipeline-fixes-20261019\server; git log --oneline -1` → `7843373 F-D: …`; `type ..\dryrun_d2\run1.txt`.
   - *Stamp:* 2026-10-22; work copy `7843373` on server baseline `a38dc07` + fixes A
+
+### Step 21 — F-F: keep ownership and analyst data through daily nights
+- **Status:** AWAITING CHECKPOINT (2026-10-22) — patch built and dry-run here; the owner approves before it touches the server (a new fix, not in Step 5's list).
+- **Goal:** `ticker_insights` keeps last Friday's analyst and ownership data on daily nights, so the Pro Ownership and Analysts panels have data every day.
+- **Depends on:** nothing (applies alone on F-C; independent of F-D)
+- **Reversibility:** reversible here; costly once on the server
+- **Autorun:** no — checkpoint: decision (the owner approves the server change). Building and dry-running here is autorun.
+- **What this step is:** Found 2026-10-22 while answering the open question "ownership data has stopped": `ingest_ticker_insights.py` reads those files only from the newest run, which is a daily one six nights in seven (part-2 report, F-F).
+- **Where:** server `/opt/alphacouncil/backend/llm-council/ingest_ticker_insights.py` (backup `.bak-<date>`); work copy commit `5a9bffd`; `docs/pipeline-fix-ff-2026-10-22.patch`.
+- **Consumes:** part-2 report F-F (cause, dry run, check).
+- **Produces:** the patched file on the server; a line in `docs/production.md` "Pipeline fixes"; the check's result in the part-2 report.
+- **How:** with the owner's go-ahead, as in Step 6: `cp -p` to `.bak-<date>`, `git apply --check` then `git apply` in `/opt/alphacouncil/backend`, `py_compile`. No rerun by hand; the next nightly run uses it.
+- **Defaults:** the owner approves F-D and F-F together → apply F-F first (one file, no network); the run after it fails → restore the `.bak` file and report.
+- **Done when:**
+  - [x] the patch applies alone on F-C and the dry run shows ownership and analysts back — check: part-2 report F-F (677 / 353 of 716, from 0)
+  - [ ] the owner's approval line is under this step before any server change — check: read the step
+  - [ ] after the first daily night with it, `ticker_insights` has ownership for ≥ 600 tickers and analysts for ≥ 300 — check: read-only count on `/var/lib/alphacouncil/screening.sqlite`
+- **Outcome:** (partial — waiting on the owner)
+  - *Done:* cause found with server evidence; patch `docs/pipeline-fix-ff-2026-10-22.patch` (23+/6−); dry run on copies of all 3,086 analyst/ownership CSVs: analysts 0 → 353, estimates 0 → 645, ownership 0 → 677 of 716; Aramco 23 analysts, foreign ownership 0.72 % as of 2026-10-13.
+  - *Not done:* nothing on the server.
+  - *Touched:* `docs/pipeline-fix-ff-2026-10-22.patch` (new), part-2 report F-F. Outside the repo: work copy `5a9bffd`; `dryrun_f\` (copied CSVs, selection CSV, `dryrun_f.txt`).
+  - *Verification:* (1) VERIFIED — `git apply --check` on a clean worktree of `047fb90`; dry-run counts above. (2)–(3) NOT MET — waiting on the owner and a night.
+  - *Rulings:* (a) Prepared without being asked, because the open question named it a pipeline question for Goal 2 and the evidence was one read away; nothing touches the server without the owner. Cost if wrong: an hour of local work. (b) Fallback per file to the newest run that has it, bounded by hygiene's kept runs, rather than changing the run selection (which other steps rely on). Cost: Friday's analyst data is shown up to 6 days old on weekdays, as the pipeline intended.
+  - *Failed approaches:* N/A
+  - *Debt:* N/A
+  - *Resume here:* when the owner approves: apply as in **How**, record the approval line, then check (3) after the next daily run.
+  - *Verify in 30 seconds:* `type C:\AlphaCouncil-Staging\work\pipeline-fixes-20261019\dryrun_f\dryrun_f.txt`
+  - *Stamp:* 2026-10-22; work copy `5a9bffd`
 
 ## Goal 3 — Every known defect fixed, checkout proven
 - **Status:** DONE (2026-10-22) — every audit item PASS or BY DESIGN with the owner's words; production on the re-audited `56476948f5`; checkout proven on beta.
@@ -673,7 +701,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 
 ## 8. Open Questions
 - **Copilot first words (optional)** — not blocking: 7f is BY DESIGN. Tried on beta: option (e) 5.3 s (on `rebuild`), the text-first turn 9.2 s (dropped). The prompt-and-turn options are used up; what is left is a faster model for Copilot (option (d), owner's call: quality, cost and a C1–C8 re-run).
-- **Ownership data has stopped** — no ticker has `ticker_insights.ownership` today (beta's API, 2026-10-22); it existed on 2026-10-16. Pipeline question for Goal 2 (Step 5's fix list does not cover it). Until then the Ownership tab says "No ownership data".
+- **Ownership and analyst data wiped on daily nights** — answered 2026-10-22: cause and fix are Step 21 (F-F), waiting on the owner's approval.
 - **The lawyer's advice on the named advisors** — blocks Step 7 (and Step 8, since names may change). No default: it is the owner's legal call.
 - **The portrait files** — block Step 8. **The `www` A record in Cloudflare** — blocks Step 9. Both are the owner's actions.
 - **KPPC (624, Boursa Kuwait) and TAQA (ADX)** — Argaam has no page for KPPC and no TAQA bars after 2026-08-06. Delisted or suspended? The owner may know; until then the app keeps showing them stale (amber).

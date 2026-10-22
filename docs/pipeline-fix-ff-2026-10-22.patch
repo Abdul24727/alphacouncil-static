@@ -1,0 +1,71 @@
+From 5a9bffd8b86a695ad62effbb9303329db8711736 Mon Sep 17 00:00:00 2001
+From: Abdulaziz Al-Tamimi <attmimi.abdul@gmail.com>
+Date: Thu, 22 Oct 2026 19:09:02 +0300
+Subject: [PATCH] F-F: ticker insights take analyst and ownership files from
+ the newest run that has them
+
+Since the daily/full split only Friday's full run scrapes analyst and ownership pages,
+but ingest_ticker_insights.py read them from the newest complete run (usually a daily
+one), so every daily rebuild replaced them with nothing (0 of 694 rows on 2026-10-22).
+It now falls back, per file, to the ticker's newest run on disk that has the file;
+nightly hygiene keeps the newest full run. Price history still comes from the chosen run.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ llm-council/ingest_ticker_insights.py | 29 +++++++++++++++++++++------
+ 1 file changed, 23 insertions(+), 6 deletions(-)
+
+diff --git a/llm-council/ingest_ticker_insights.py b/llm-council/ingest_ticker_insights.py
+index fb8da70..c7dc403 100644
+--- a/llm-council/ingest_ticker_insights.py
++++ b/llm-council/ingest_ticker_insights.py
+@@ -110,6 +110,22 @@ def _find(run, *suffixes):
+     return None
+ 
+ 
++def _runs_from(universe, tk, run):
++    """The chosen run, then the ticker's other runs on disk, newest first. Daily runs scrape
++    no analyst or ownership pages (only Friday's full run does), so those files are looked up
++    in the newest run that has them; nightly hygiene keeps that full run (audit part 2, F-F)."""
++    others = sorted(glob.glob(os.path.join(universe, tk, "harvest_runs", "run_*")), reverse=True)
++    return [run] + [r for r in others if os.path.normpath(r) != os.path.normpath(run)]
++
++
++def _find_recent(runs, *suffixes):
++    for r in runs:
++        hit = _find(r, *suffixes)
++        if hit:
++            return hit
++    return None
++
++
+ # ── analyst ratings (broker opinions → current consensus) ───────────────────
+ 
+ def _analyst_rows(path):
+@@ -428,16 +444,17 @@ def build_for_ticker(universe, tk, run=None):
+         run = _latest_run(universe, tk)
+     if not run:
+         return None
+-    ratings = parse_ratings(_find(run, "*_analyst_opinion.csv"))
+-    estimates = parse_estimates(_find(run, "*_analyst_recommendation.csv"))
++    runs = _runs_from(universe, tk, run)
++    ratings = parse_ratings(_find_recent(runs, "*_analyst_opinion.csv"))
++    estimates = parse_estimates(_find_recent(runs, "*_analyst_recommendation.csv"))
+     # NB: "*_foreign_ownership.csv" would ALSO match the major_shareholders
+     # summary file — select the plain series file explicitly.
+-    fo_all = glob.glob(os.path.join(run, "*_foreign_ownership.csv"))
+-    fo_series = next((p for p in fo_all if "major_shareholders" not in os.path.basename(p)), None)
++    fo_series = next((p for r in runs for p in sorted(glob.glob(os.path.join(r, "*_foreign_ownership.csv")))
++                      if "major_shareholders" not in os.path.basename(p)), None)
+     ownership = parse_ownership(
+         fo_series,
+-        _find(run, "*_major_shareholders_foreign_ownership.csv"),
+-        _find(run, "*_shareholder_history.csv"),
++        _find_recent(runs, "*_major_shareholders_foreign_ownership.csv"),
++        _find_recent(runs, "*_shareholder_history.csv"),
+     )
+     ph = _find(run, "price_history_10y.csv", "price_history*.csv")
+     performance, seasonality = perf_and_seasonality(ph)
+-- 
+2.56.0.windows.2
+
