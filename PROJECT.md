@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-22   **At version:** `859edaf` on branch `rebuild` (beta `859edafff3`, production `56476948f5`; this file's latest state committed on top)
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-22   **At version:** `8211d87` on branch `rebuild` (beta `8211d87f5a`, production `56476948f5`; this file's latest state committed on top and pushed to `origin`)
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -57,16 +57,17 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - 2026-10-22 — Production released twice (`53c3c54aa0`, `56476948f5`), check-all 9/9 each time; BY DESIGN 1–4 accepted; option (b) cut Copilot's full answers to 13.4 s but not first words (8.6 s). Goal 1 item 5 met (Step 11).
 - 2026-10-22 — Option (c) tried on beta: OpenRouter hosts timed with the Copilot's real input; Phala and SiliconFlow pinned in the app in turn. SiliconFlow halves first words (3.8 s) but writes slowly (median 23.8 s, one 150 s); no host meets both targets, so production was not released.
 - 2026-10-22 — Goal 3 DONE. Option (e) on beta (`8211d87f5a`): first token about 2 s, but first words 5.3 s (target 5 s) because the model sometimes writes a table or the follow-ups before the text; full answers 15.2 s; C1–C8 16/16. Production stays on `56476948f5`; 7f BY DESIGN in the owner's words. Owner also chose pipeline fixes A, F-D after one night, and the now-private `alphacouncil-static` repository.
+- 2026-10-22 — Goal 1 DONE: `rebuild` pushed to the owner's now-private `alphacouncil-static` (a new branch beside the old site's; the step's "not empty" default was for a rejected push). Goal 2: fixes A applied on the server 14:49 UTC, 9 h before the night's run; baseline 679/691 price files and `check-data-fixes` 46/46; F-D added as Step 19.
 
 ## 6. Current State
-- Live on alphacouncil.tech since 2026-10-22: release `56476948f5` (the QA audit fixes and the short-answer Copilot prompt; beta runs the same). The rebuilt app (EN/AR), accounts with email verification and Google sign-in, Pro checkout **closed since 2026-10-22** (Step 11: early access, everyone has Pro; it reopens at Step 18; no one had paid), the advisors' room (six advisors, turn-by-turn playback, release `d356a3c`), official Tadawul sectors, the app-side data fixes.
-- Safety nets, all shown running unattended on 2026-10-19: nightly database backups on the server; the daily copy on the owner's computer (09:00 run copied that night's dump); the server monitor (14 checks every 5 min, no missed ping); the outside check (116 rounds every 5 min, all 200).
-- Data, part 2 done (`docs/data-audit-part2-2026-10-19.md`): causes found for the stopped tickers (Argaam renamed pages), UAE 2 decimals, holiday copies, Tadawul disclosures (source section stopped in March) and Tadawul turnover. Fixes F-A, F-E, F-B, F-C are a dry-run patch (`docs/pipeline-fixes-2026-10-19.patch`), not applied; F-D (disclosures) not built.
-- Independent beta audit (`docs/qa-beta-2026-10/report.md`), re-checked 2026-10-22 (`defects-2026-10-22.md`): 8 of its 15 open items were already fixed by the 10-17/18 releases; Arabic pages (8a/8b, `b548bbe`), 401/404 (9b/9f, `b551630`) and a Copilot prompt rule (C4, failed once today) are fixed on `rebuild` but **not released**; Copilot speed meets the target on the median. Checkout proven in Moyasar test mode on beta, 13 of 13 (Step 16). Re-audit done and released (`reaudit-2026-10-22.md`): every item PASS or BY DESIGN (accepted by the owner) except 7f's first words; `check-all` 9/9 on production.
-- Copilot's model service (`deepseek/deepseek-v3.2` on OpenRouter) turned 2–3× wordier and slower on 2026-10-22 ~00:00 UTC; the short-answer prompt brought full answers back to a 13.4 s median, but first words take 8.6 s (target 5 s). Pinning a host (option (c)) did not fix both. Beta runs `859edafff3` (host setting available, unused); production `56476948f5`.
-- No ticker has ownership or analyst data today (0 of 716 on beta's API); the audit saw 2222's ownership on 2026-10-16.
-- Waiting on the owner (re-tested 2026-10-22: `www` NXDOMAIN, no portrait files): Copilot's first-words choice (Step 17); a new empty private GitHub repository's URL (Step 2); fix choice A/B/C and F-D yes/no (Step 5); lawyer's advice (Step 7); portrait files (Step 8); the `www` DNS record (Step 9).
-- Not done: the code has no remote; advisor portraits are initials; no `www`; the lawyer has not reviewed the named advisors.
+- Live on alphacouncil.tech: release `56476948f5` (QA audit fixes, short-answer Copilot), the one re-audited on beta; `check-all` 9/9 on 2026-10-22 14:46 UTC. Pro checkout **closed** since 2026-10-22 (early access, everyone has Pro; it reopens at Step 18; no one has paid).
+- Beta runs `8211d87f5a`: the same app plus option (e), the Copilot's first turn answering from the fetched data (`COPILOT_FIRST_TURN=answer`): first words 5.3 s, full answers 15.2 s. Production keeps first words 8.6 s, accepted as by design (owner). The next production release from `rebuild` carries (e).
+- Goal 3 DONE: every audit item PASS or BY DESIGN with the owner's words (`docs/qa-beta-2026-10/reaudit-2026-10-22.md`); checkout proven in Moyasar test mode on beta, 13 of 13.
+- Goal 1 DONE: `rebuild` is on GitHub (`origin` = the owner's private `alphacouncil-static`, whose other branches hold the old site). Safety nets keep running on their own: backup copy daily at 09:00 Riyadh, monitor 13 ok, outside check every 5 min.
+- Goal 2: pipeline fixes F-A, F-E, F-B, F-C applied on the server 2026-10-22 14:49 UTC (backups `.bak-20261022`; runbook "Pipeline fixes (applied 2026-10-22)"). The first run with them is 2026-10-23 00:00 UTC (the weekly full run); its checks are Step 6 *Resume here*. F-D (Tadawul disclosures) is Step 19, after that night.
+- Data before the fixes: 679 of 691 price files written per night; `check-data-fixes` 46/46 on production; GASCO, AFG, Agility and Gulf Navigation stopped in July/October; no ticker has ownership or analyst data (0 of 716; it existed on 2026-10-16).
+- Waiting on the owner (re-tested 2026-10-22: `www` NXDOMAIN, no portrait files): the lawyer's advice (Step 7), the portrait files (Step 8), the `www` DNS record (Step 9).
+- Not done: advisor portraits are initials; no `www`; the lawyer has not reviewed the named advisors.
 - Untracked: `scripts/set-backup-bucket.sh` (bucket helper from the backups session; the bucket is not used).
 
 ## 7. Goals
@@ -178,7 +179,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 
 
 ## Goal 2 — Market data correct at the source
-- **Status:** AWAITING CHECKPOINT — Steps 3–4 DONE (Done-when item 1 met by the part-2 report); Step 5 waits for the owner's A/B/C choice.
+- **Status:** IN PROGRESS (2026-10-22) — Steps 3–5 DONE; Step 6 PARTIAL: fixes A applied on the server 14:49 UTC, checks wait for the first nightly run (2026-10-23 00:00 UTC, the Friday full run); Step 19 (F-D) after that night.
 - **Share of project:** ~25%
 - **Goal:** The faults that only the pipeline can fix are fixed on the server, and the nightly data shows it.
 - **Done when:**
@@ -190,7 +191,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Reversibility:** costly (the pipeline writes the live data)
 - **Autorun:** no — checkpoint: decision (Step 5) and the owner's go-ahead for the server change (Step 7)
 - **Consumes:** `docs/data-audit-2026-10-18.md` (part 1; its section 8 lists the read-only commands for part 2); `docs/data-fixes-2026-10-18.md` part 3 (faults P2–P4 and "Also for the pipeline", with evidence).
-- **Steps:** 3–6
+- **Steps:** 3–6, 19
 - **Goal outcome:** _(empty until the goal is worked)_
 
 ### Step 3 — Data audit part 2: read the server side
@@ -249,11 +250,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - *Stamp:* 2026-10-19; baseline = server `a38dc07`
 
 ### Step 5 — Owner decides which fixes go to the server
-- **Status:** AWAITING CHECKPOINT — the owner chooses, from the fix table in `docs/data-audit-part2-2026-10-19.md`:
-  - **A — all four patched fixes** (F-A, F-E, F-B, F-C). Recommended. Each was dry-run on real data. Cost: one extra Argaam request per UAE ticker a night; one night's data changes for UAE, Muscat, Bahrain and Tadawul turnover at once.
-  - **B — the low-risk three** (F-A, F-E, F-C), with F-B (UAE decimals) later. Cost: sub-1 AED prices stay 2-decimal; INVESTB-style fake ±25% days continue.
-  - **C — none.** Cost: GASCO, AFG, AGILITY and GULFNAV stay frozen at July/October; holiday copies and missing Tadawul turnover stay.
-  - Separately: **build F-D** (Tadawul disclosures from Argaam's market-wide list) as a new step, yes or no. Recommended: yes, after A/B has run one night.
+- **Status:** DONE (2026-10-22) — the owner chose A (all four patched fixes) and F-D as a new step after one night. The options put to the owner were: A all four (recommended), B without F-B, or none; and F-D yes/no.
 - **Checkpoint cleared:** 2026-10-22 — owner in chat chose "A: all four, go ahead" (F-A, F-E, F-B, F-C, with the go-ahead to apply them on the server) and, for F-D, "Yes, after one night" (built as a new step after the fixes have run one night, prepared and dry-run here first, approved by the owner before it touches the server).
 - **Goal:** The owner has chosen, fix by fix, what is applied to the live pipeline.
 - **Depends on:** 4
@@ -266,11 +263,22 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **How:** one question with the options (all / a listed subset / none), the recommendation, and what each costs.
 - **Defaults:** the owner approves "all" → F-A, F-E, F-B, F-C (F-D is not in the patch; "all" does not build it); the owner names a subset that includes F-B → F-E must come too (F-B applies only on top of F-E); the owner says yes to F-D → add it as a new step after Step 6, do not fold it into Step 6; the owner is not at the keyboard → set AWAITING CHECKPOINT and hand over with the paused block.
 - **Done when:**
-  - [ ] the checkpoint line exists under this step with the owner's words — check: read the step
-- **Outcome:** _(empty until worked)_
+  - [x] the checkpoint line exists under this step with the owner's words — check: read the step
+- **Outcome:**
+  - *Done:* the owner's choice recorded above: F-A, F-E, F-B, F-C go to the server (Step 6); F-D becomes Step 19.
+  - *Not done:* N/A
+  - *Touched:* this file only.
+  - *Verification:* (1) VERIFIED — the checkpoint line names the four fixes and F-D in the owner's words.
+  - *Rulings:* N/A
+  - *Failed approaches:* N/A
+  - *Debt:* N/A
+  - *Resume here:* N/A
+  - *Verify in 30 seconds:* read the checkpoint line.
+  - *Stamp:* 2026-10-22
 
 ### Step 6 — Apply the approved fixes on the server and check the next nightly run
-- **Status:** NOT STARTED
+- **Status:** PARTIAL — applied 2026-10-22 14:49 UTC; the checks wait for the first nightly run with the fixes (2026-10-23 00:00 UTC, Friday full run).
+- **Checkpoint cleared:** 2026-10-22 — owner in chat chose "A: all four, go ahead" (with the go-ahead to apply them on the server; see Step 5).
 - **Goal:** The approved fixes run on the server, and the next nightly data shows each fault gone.
 - **Depends on:** 5
 - **Reversibility:** costly
@@ -285,6 +293,35 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - [ ] each approved fault is gone in the new data — check: the per-fault checks in the report
   - [ ] the nightly run's log shows the same success lines and a price-file count no lower than the baseline — check: the log
   - [ ] `check-data-fixes.mjs` with `SWEEP=1` passes every check on production — check: its summary line
+- **Outcome:** (partial — waiting for the night's data)
+  - *Done:* on the server, as root, 14:49 UTC: the four touched files backed up as `.bak-20261022` (`argaam/tickers.csv`, `argaam/main_patched2026_with_sectors.py`, `llm-council/scripts/health_digest.py`, `/opt/alphacouncil/bin/nightly_pipeline.sh`); `git apply --check` passed on both trees, then applied (the patch is at `/root/pipeline-fixes-2026-10-19.patch`); `py_compile` (3 files) and `bash -n` passed; `tickers.csv` keeps CRLF (721 of 721 lines) and changes 4 lines; `nightly_pipeline.sh` keeps mode 755. `chart_failures.py default_universe` (read-only) before the first run: "no fresh price chart: 33 (2080_TADAWUL, 412_KSE, 4240_TADAWUL, 624_KSE, …, GULFNAV_DFM, …)", the dry run's 33. Runbook section "Pipeline fixes (applied 2026-10-22)" in `docs/production.md` (what changed, backups, undo, baseline).
+  - *Not done:* the three Done-when checks: they need the 2026-10-23 run's data.
+  - *Touched:* server `/opt/alphacouncil/backend/argaam/{tickers.csv,main_patched2026_with_sectors.py,tools/chart_failures.py}`, `/opt/alphacouncil/backend/llm-council/scripts/health_digest.py`, `/opt/alphacouncil/bin/nightly_pipeline.sh` (+ their `.bak-20261022`); `docs/production.md`.
+  - *Verification:* (1)–(3) NOT MET yet — no nightly run has used the fixes. Baseline before them: the 2026-10-22 daily run wrote 679 of 691 price files (the 10-18 count too); OK status "Scrape (mode=daily, dailyrun_20261022: 716 tickers) + rebuild + restart complete …"; newest bars 2080 23/07/2026, 4240 07/10/2026, AGILITY 2026/07/23, GULFNAV 2026/07/23; 2222's newest bar (21/10/2026) has an empty Turnover. `SWEEP=1 check-data-fixes.mjs` on production before the fixes (14:56 UTC): 46 PASS, 0 FAIL, "all passed"; sweep 716 tickers, `eps_bad` 0 (`docs/screenshots/data-fixes-production-20261022-before/check-data-fixes.txt`).
+  - *Rulings:* (a) Applied in the afternoon (UTC), with no pipeline process running, 9 h before the 00:00 UTC run, rather than waiting for the owner to pick a time. Cost if wrong: none found; the files are only read at 00:00. (b) Backups dated `.bak-20261022` (the day applied), not `.bak-20261019` as the report's command says. (c) The first run with the fixes is the weekly full run (`MODE=full WORKERS=8`), not a daily one; the baseline is a daily run. Cost if wrong: a lower count may be the mode, not the fix; compare with the previous full run (2026-10-16, `cron_heavy.log`) before restoring anything.
+  - *Failed approaches:* N/A
+  - *Debt:* KPPC (624) and the other chart failures outside the four stay listed (no fix; Open Questions).
+  - *Resume here:* after the 2026-10-23 run has finished (`cat /opt/alphacouncil/logs/LAST_RUN_STATUS.txt` shows `[OK] 2026-10-23 …`; the last daily run ended 02:16 UTC, allow a full run until 06:00) — over SSH, read-only: (1) `grep -E "ALERT|\[charts\]" /opt/alphacouncil/logs/cron_heavy.log | tail -3` — OK status, now with "no fresh price chart: N (…)", N below 33 and without 2080, 4240, AGILITY, GULFNAV; (2) `find /opt/alphacouncil/backend/argaam/default_universe -mindepth 2 -maxdepth 2 -name price_history_10y.csv -newermt "2026-10-23 00:00:00" | wc -l` ≥ 679; (3) F-A: `tail -1` of those four tickers' `price_history_10y.csv` dated 2026-10-22 or later (Tadawul dd/mm/yyyy, UAE yyyy/mm/dd); F-B: INVESTB_ADX's and SHUAA_DFM's newest bars have 3 decimals; F-C: AACT_MSM has no bar on 2026-03-22 or 03-23, and no two identical consecutive bars on MSM/BSE; F-E: 2222_TADAWUL's newest bar has a Turnover between volume × low and volume × high. Then, after `publish_dbs.sh` (hourly 05:00–10:00 UTC): `cd web && BASE_URL=https://alphacouncil.tech SHOTS_DIR=../../docs/screenshots/data-fixes-production-20261023 SWEEP=1 node scripts/check-data-fixes.mjs`. Write the results as an "After the nightly run" section in `docs/data-audit-part2-2026-10-19.md`. If the run failed: restore every `.bak-20261022`, `rm argaam/tools/chart_failures.py`, report.
+  - *Verify in 30 seconds:* `ssh root@alphacouncil.tech "cd /opt/alphacouncil/backend && git diff --stat -- argaam llm-council/scripts | tail -1; ls argaam/*.bak-20261022"`
+  - *Stamp:* 2026-10-22; server pipeline `a38dc07` + fixes A (uncommitted on the server)
+
+### Step 19 — Build F-D: Tadawul disclosures from Argaam's market-wide list
+- **Status:** NOT STARTED
+- **Goal:** Tadawul tickers get current disclosures again, read from Argaam's market-wide disclosure list.
+- **Depends on:** 6 (the owner: after the other fixes have run one night)
+- **Reversibility:** reversible on this computer; costly once on the server (the pipeline writes the live data)
+- **Autorun:** no — checkpoint: decision (the owner approves the dry-run results before the patch touches the server). Building and dry-running it on this computer is autorun.
+- **What this step is:** Argaam stopped filling each company's "Disclosures" section 204 (median newest 2026-03-08, part-2 report F-D); the market-wide list still updates. Map its items to tickers and write them where the pipeline writes disclosures today, prepared and dry-run here first (owner, 2026-10-22).
+- **Where:** the work copy `C:\AlphaCouncil-Staging\work\pipeline-fixes-20261019\server\` (git, `core.autocrlf false`; baseline `8fb08a5`, then F-A `9e0cbc8`, F-E `648269e`, F-B `ee88d04`, F-C `047fb90`); a new patch `docs/pipeline-fix-fd-<date>.patch`; the part-2 report's F-D section.
+- **Consumes:** `docs/data-audit-part2-2026-10-19.md` F-D (cause, where disclosures are written, the check); Step 6's result (the four fixes ran one night).
+- **Produces:** one `git format-patch` commit on top of F-C; an "F-D dry run" section in the part-2 report (before/after for 2222 and nine other Tadawul tickers).
+- **How:** read Argaam's public market-wide list from this computer (read-only), map items to `argaam/tickers.csv` by company id or name; dry-run on copies of the affected files only; nothing on the server before the owner's approval; then apply as in Step 6 (backups `.bak-<date>`, `git apply`).
+- **Defaults:** an item with no matching ticker → skip it and count the skips; the list needs Argaam's login → stop and report (the scraper's login stays on the server, Claude does not read it); more than ~150 changed lines → split, smallest useful part first; an item's date or company is missing → skip it, never guess.
+- **Done when:**
+  - [ ] the patch applies cleanly to the work copy on top of F-C — check: `git apply --check`
+  - [ ] the dry run gives 2222 and at least nine other Tadawul tickers a disclosure dated within 7 days of the run — check: the "F-D dry run" section
+  - [ ] the owner's approval line is under this step before any server change — check: read the step
+  - [ ] after the first nightly run with it, Aramco's newest disclosure in the API is within 7 days of the run — check: as in the part-2 report's F-D section ("Check after it is built")
 - **Outcome:** _(empty until worked)_
 
 ## Goal 3 — Every known defect fixed, checkout proven
@@ -488,7 +525,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - *Stamp:* 2026-10-22, beta `8211d87f5a`, production `56476948f5`
 
 ## Goal 4 — Launch: settled, checked, then paid
-- **Status:** AWAITING CHECKPOINT — Steps 7–9 each wait on the owner (re-tested 2026-10-22: `www` NXDOMAIN, no portrait files, no legal advice in chat); Step 10 waits on Goals 2 and 3; Step 18 waits on Step 10 and the owner's go-ahead.
+- **Status:** AWAITING CHECKPOINT — Steps 7–9 each wait on the owner (re-tested 2026-10-22: `www` NXDOMAIN, no portrait files, no legal advice in chat); Step 10 waits on Goal 2 (Steps 6 and 19) and Steps 7–9 (Goal 3 is done); Step 18 waits on Step 10 and the owner's go-ahead.
 - **Share of project:** ~30%
 - **Goal:** The advisors' names and texts follow the owner's legal advice, the six portraits are real, `www.alphacouncil.tech` works, a full launch check passes on production, and only then is Pro checkout open.
 - **Done when:**
@@ -560,7 +597,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 ### Step 10 — Launch check on production
 - **Status:** NOT STARTED
 - **Goal:** One dated record shows every check passing on production after Goals 2, 3 and 4's changes, with billing still closed.
-- **Depends on:** 6, 7, 8, 9, 17
+- **Depends on:** 6, 7, 8, 9, 17, 19
 - **Reversibility:** reversible
 - **Autorun:** yes
 - **What this step is:** The last pass before the owner spends on advertising: every check script, the monitor and screenshots of the key pages, in one report.
@@ -596,11 +633,11 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Outcome:** _(empty until worked)_
 
 ## 8. Open Questions
-- **A new empty private GitHub repository's URL** — blocks Step 2. The owner creates one at github.com/new (Private, no README, no licence; suggested name `alphacouncil-platform`) and pastes its URL. The URL given on 2026-10-21 (`alphacouncil-static`) is public and holds the old site, so it is not used (Step 2, *Rulings* (b)). No default: Claude cannot create the repository.
+- **Copilot first words (optional)** — not blocking: 7f is BY DESIGN. Option (e) on beta reached 5.3 s; one more change (the first turn offers only `need_database`, so the text always comes first; the table, chart and follow-ups after it) would likely bring it near 2–3 s. Needs the owner's go-ahead for a beta release, and a production release if it meets both targets (`reaudit-2026-10-22.md`, "Option (e)", last bullet).
 - **Ownership data has stopped** — no ticker has `ticker_insights.ownership` today (beta's API, 2026-10-22); it existed on 2026-10-16. Pipeline question for Goal 2 (Step 5's fix list does not cover it). Until then the Ownership tab says "No ownership data".
 - **The lawyer's advice on the named advisors** — blocks Step 7 (and Step 8, since names may change). No default: it is the owner's legal call.
 - **The portrait files** — block Step 8. **The `www` A record in Cloudflare** — blocks Step 9. Both are the owner's actions.
 - **KPPC (624, Boursa Kuwait) and TAQA (ADX)** — Argaam has no page for KPPC and no TAQA bars after 2026-08-06. Delisted or suspended? The owner may know; until then the app keeps showing them stale (amber).
 
 ## 9. Next Up
-Goal 3 is DONE. Next: Step 2 (push `rebuild` to the owner's now-private repository), then Step 6 (apply pipeline fixes A on the server). Then, as each answer arrives: Step 2 (push to the new private repository — Goal 1's last item), Step 5 → 6 (pipeline fixes), Steps 7–9 (advice, portraits, `www`), Step 10 (launch check), Step 18 (open billing).
+Goal 2, Step 6: after the 2026-10-23 00:00 UTC nightly run has finished (from about 06:00 UTC), run the checks in Step 6 *Resume here* and write "After the nightly run" into `docs/data-audit-part2-2026-10-19.md`. Then Step 19 (build F-D on this computer and dry-run it; the owner approves before it touches the server). Goal 4 waits on the owner (legal advice, portraits, `www`); then Step 10 (launch check) and Step 18 (open billing).

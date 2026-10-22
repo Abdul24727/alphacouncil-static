@@ -555,6 +555,31 @@ $0.0985); Arabic 62.4 s, $0.1742 (232,516 in, 7,133 out; Chair $0.1189, advisors
 35.8 s, $0.2104 (231,956 in, 6,957 out); 21 turns each. `check-advisors.mjs` passed in both languages at 1440
 and 390 px (`screenshots/advisors-six/`).
 
+## Pipeline fixes (applied 2026-10-22)
+
+The old pipeline (`/opt/alphacouncil/backend`, nightly from cron at 00:00 UTC) carries fixes F-A, F-E, F-B and F-C
+from `docs/pipeline-fixes-2026-10-19.patch` (owner: "A: all four, go ahead", 2026-10-22). Applied 14:49 UTC with
+`git apply` exactly as in `docs/data-audit-part2-2026-10-19.md`, "Applying it"; `py_compile` and `bash -n` passed.
+
+- **F-A** `argaam/tickers.csv`: the current Argaam page paths of 2080 (GASCO), 4240 (AFG), AGILITY and GULFNAV.
+  New `argaam/tools/chart_failures.py` (read-only) lists tickers with no fresh price chart; the nightly OK status
+  (`/opt/alphacouncil/bin/nightly_pipeline.sh`, a `[charts]` log line) and the 06:30 health digest
+  (`llm-council/scripts/health_digest.py`) show its line. Before the first run with the fix it listed 33.
+- **F-E** Tadawul bars keep the value traded (TradingView field `a`).
+- **F-B** ADX/DFM prices take the chart endpoint's full precision (prices under 1 AED keep 3 decimals).
+- **F-C** bars the source carries forward over market holidays are dropped.
+
+Backups, all `.bak-20261022` beside the file: `argaam/tickers.csv`, `argaam/main_patched2026_with_sectors.py`,
+`llm-council/scripts/health_digest.py` (under `/opt/alphacouncil/backend`) and `/opt/alphacouncil/bin/nightly_pipeline.sh`.
+
+To undo: copy each `.bak-20261022` file back over its original and remove `argaam/tools/chart_failures.py`. No
+restart is needed; the next nightly run uses the restored files.
+
+Baseline before the fixes (run of 2026-10-22, daily mode): 691 price files, 679 written by the run
+(`find /opt/alphacouncil/backend/argaam/default_universe -mindepth 2 -maxdepth 2 -name price_history_10y.csv -newermt "<run start>" | wc -l`);
+OK status "Scrape (mode=daily, …: 716 tickers) + rebuild + restart complete". The first run with the fixes is the
+full (Friday) run of 2026-10-23 00:00 UTC; its checks are in PROJECT.md Step 6.
+
 ## Not in production yet
 
 - `www.alphacouncil.tech` has no DNS record; when one is added, add `www` to the certificate.
