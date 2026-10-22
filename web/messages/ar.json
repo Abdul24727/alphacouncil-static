@@ -68,7 +68,8 @@
       "get_price_summary": "تلخيص الأسعار",
       "show_table": "إنشاء جدول",
       "show_price_chart": "رسم بياني",
-      "suggest_follow_ups": "اقتراح أسئلة متابعة"
+      "suggest_follow_ups": "اقتراح أسئلة متابعة",
+      "need_database": "طلب بيانات إضافية"
     },
     "skills": {
       "dividend": {

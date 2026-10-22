@@ -124,6 +124,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **What this step is:** The code exists only on this computer and the server; one disk failure loses the source. The owner creates an empty private repository on github.com (no README) and gives its URL; Claude adds it as `origin` and pushes `rebuild` only.
 - **Where:** this repo's git config; github.com (owner's account).
 - **Consumes:** the owner's repository URL, given in chat.
+- **Checkpoint cleared:** 2026-10-22 — owner in chat: "https://github.com/Abdul24727/alphacouncil-static its private now" (the same repository as 2026-10-21, now private; it still holds the old static site on other branches).
 - **Produces:** remote `origin` = the owner's URL; `rebuild` pushed with upstream tracking; one line in `CLAUDE.md` naming the remote.
 - **How:** first scan for secrets: `git ls-files` check from the goal's Done-when, and `git log --all -p | grep -E 'sk_live_|sk_test_|pk_live_|BEGIN [A-Z ]*PRIVATE KEY|OPENROUTER_API_KEY=.+'` must print nothing. Then `git remote add origin <URL>` and `git push -u origin rebuild`. Git for Windows' credential manager opens GitHub's sign-in for the owner: the owner signs in; Claude never types a password or token.
 - **Defaults:** HTTPS URL → use it as given; SSH URL (`git@github.com:…`) → try it, and on a key error ask the owner for the HTTPS URL instead; the secret scan finds anything → stop, push nothing, report the file and commit (not the value); the repository is not empty (push rejected) → stop and ask, never force-push; the owner asks for `main` → push `rebuild` as `main` only if they say so in chat, never `git push … main` from a local `main`.
@@ -244,6 +245,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - **B — the low-risk three** (F-A, F-E, F-C), with F-B (UAE decimals) later. Cost: sub-1 AED prices stay 2-decimal; INVESTB-style fake ±25% days continue.
   - **C — none.** Cost: GASCO, AFG, AGILITY and GULFNAV stay frozen at July/October; holiday copies and missing Tadawul turnover stay.
   - Separately: **build F-D** (Tadawul disclosures from Argaam's market-wide list) as a new step, yes or no. Recommended: yes, after A/B has run one night.
+- **Checkpoint cleared:** 2026-10-22 — owner in chat chose "A: all four, go ahead" (F-A, F-E, F-B, F-C, with the go-ahead to apply them on the server) and, for F-D, "Yes, after one night" (built as a new step after the fixes have run one night, prepared and dry-run here first, approved by the owner before it touches the server).
 - **Goal:** The owner has chosen, fix by fix, what is applied to the live pipeline.
 - **Depends on:** 4
 - **Reversibility:** reversible
@@ -277,7 +279,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Outcome:** _(empty until worked)_
 
 ## Goal 3 — Every known defect fixed, checkout proven
-- **Status:** AWAITING CHECKPOINT — Steps 12–16 DONE 2026-10-22 (checkout proven on beta); Step 17 live: production on `56476948f5` (re-audited on beta), `check-all` 9/9 on production, BY DESIGN 1–4 accepted; one decision left — Copilot speed (7f); option (c) tried on beta (`859edafff3`), no host meets both targets.
+- **Status:** IN PROGRESS (option (e), 2026-10-22) — Steps 12–16 DONE 2026-10-22 (checkout proven on beta); Step 17 live: production on `56476948f5` (re-audited on beta), `check-all` 9/9 on production, BY DESIGN 1–4 accepted; one decision left — Copilot speed (7f); option (c) tried on beta (`859edafff3`), no host meets both targets.
 - **Share of project:** ~30%
 - **Goal:** Every defect the independent beta audit found is fixed or accepted by the owner as by design, the fixes are live on production, and checkout has been proven end to end in Moyasar test mode on beta.
 - **Done when:**
@@ -441,10 +443,11 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 
 
 ### Step 17 — Re-audit beta, then release the fixes to production
-- **Status:** AWAITING CHECKPOINT — everything done and live except Copilot speed (7f): production's median first words 8.6 s (target 5 s), full answers 13.4 s (met). Option (c) tried on 2026-10-22: no OpenRouter host meets both targets. The owner chooses: accept the current speed (BY DESIGN), (d) a faster model, or (e) a first turn that answers from the data already given.
+- **Status:** IN PROGRESS (started 2026-10-22, option (e)) — everything done and live except Copilot speed (7f): production's median first words 8.6 s (target 5 s), full answers 13.4 s (met). Option (c) tried on 2026-10-22: no OpenRouter host meets both targets. The owner chooses: accept the current speed (BY DESIGN), (d) a faster model, or (e) a first turn that answers from the data already given.
 - **Checkpoint cleared:** 2026-10-22 — beta release only; owner in chat: "Go-ahead: one beta release of rebuild (Step 17), then re-audit it."
 - **Checkpoint cleared:** 2026-10-22 — owner in chat: "Copilot first words: try option (c), pin the OpenRouter host that served the fast answers on 2026-10-21. Go-ahead for the beta release and, if it meets the target, production."
 - **Checkpoint cleared:** 2026-10-22 — owner in chat: "Go-ahead: release to production now. Accept BY DESIGN items 1-4. Copilot speed: option (b) — add the length rule and drop "and suggest one", as a second small beta release, then production."
+- **Checkpoint cleared:** 2026-10-22 — owner in chat chose "Try (e), then accept": Copilot answers straight from the panel data it already has instead of looking something up first; go-ahead for one beta release and, only if both targets are met there, one production release; if it falls short, production stays as it is and the current speed is accepted as by design. Either way Goal 3 closes.
 - **Goal:** Steps 13–15's fixes run on beta and production, every audit item is PASS or accepted by the owner, and nothing regressed.
 - **Depends on:** 12, 13, 14, 15, 16
 - **Reversibility:** reversible (a release rolls back per the runbook)

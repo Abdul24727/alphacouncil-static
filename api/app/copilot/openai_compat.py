@@ -10,6 +10,7 @@ import asyncio
 import json
 import logging
 import os
+import time
 from collections.abc import AsyncIterator
 from typing import Any
 
@@ -29,11 +30,32 @@ log = logging.getLogger("uvicorn.error")
 FOLLOW_UP_NUDGE = "Now call suggest_follow_ups with two or three short follow-up questions in the language of my question."
 
 
-def _tool_defs() -> list[dict[str, Any]]:
+def _tool_defs(specs: list[dict[str, Any]] = tools.ALL_TOOLS) -> list[dict[str, Any]]:
     return [
         {"type": "function", "function": {"name": t["name"], "description": t["description"], "parameters": t["input_schema"]}}
-        for t in tools.ALL_TOOLS
+        for t in specs
     ]
+
+
+# Option (e), 2026-10-22: the host OpenRouter picks always looked something up before writing,
+# which put first words at 8-9 s. With the page ticker's data already fetched, the first turn
+# offers only the display tools and this one, so the model writes at once unless the data is
+# missing; then it asks, and the next turn offers every tool.
+NEED_DATABASE = "need_database"
+NEED_DATABASE_TOOL: dict[str, Any] = {
+    "name": NEED_DATABASE,
+    "description": (
+        "Call this, and write nothing, only when the attached panels and the data already fetched above "
+        "do not hold what the question needs (for example another company, price history, news, peers or the council). "
+        "The database tools are offered on the next turn."
+    ),
+    "input_schema": {"type": "object", "properties": {}, "required": []},
+}
+FIRST_TURN_TOOLS = [*tools.UI_TOOLS, NEED_DATABASE_TOOL]
+ANSWER_AT_ONCE = (
+    " When the attached panels and that fetched data hold what the question needs, write the answer straight away, "
+    "with no tool call before it."
+)
 
 
 # Fewer round trips: each one costs a full model turn on OpenAI-compatible providers.
@@ -75,8 +97,9 @@ def host_routing(settings: Settings, *, copilot: bool = False) -> dict[str, Any]
     return {"provider": provider} if provider else {}
 
 
-def _history(chat: ChatInput) -> list[dict[str, Any]]:
-    msgs: list[dict[str, Any]] = [{"role": "system", "content": SYSTEM + SYSTEM_EXTRA}]
+def _history(chat: ChatInput, first_turn: str = "lookup") -> list[dict[str, Any]]:
+    rule = ANSWER_AT_ONCE if chat.ticker and first_turn in ("answer", "prompt") else ""
+    msgs: list[dict[str, Any]] = [{"role": "system", "content": SYSTEM + SYSTEM_EXTRA + rule}]
     msgs += [{"role": m.role, "content": m.text} for m in chat.history if m.text.strip()]
     parts = [panel_block(chat), f"Interface language: {chat.locale}. Page ticker: {chat.ticker or 'none'}.", chat.question]
     msgs.append({"role": "user", "content": "\n\n".join(p for p in parts if p)})
@@ -92,10 +115,11 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
     trace = AnswerTrace(chat)
 
     client = make_client(settings)
-    messages = _history(chat)
+    messages = _history(chat, settings.copilot_first_turn)
     if chat.ticker:
         async for part in _prefetch(request, w, chat.ticker, messages, seen, trace):
             yield part
+    answer_first = bool(chat.ticker) and settings.copilot_first_turn == "answer"
     extra: dict[str, Any] = {"reasoning": {"enabled": True}} if settings.copilot_reasoning else {}
     routing = host_routing(settings, copilot=True)
     followed_up = nudged = False
@@ -103,11 +127,12 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
     for step in range(MAX_STEPS):
         yield w.start_step()
         text, calls, finish, served = "", {}, None, None
+        started, first_token = time.monotonic(), None
         try:
             stream = await client.chat.completions.create(
                 model=settings.copilot_model,
                 messages=messages,
-                tools=_tool_defs(),
+                tools=_tool_defs(FIRST_TURN_TOOLS if answer_first and step == 0 else tools.ALL_TOOLS),
                 tool_choice={"type": "function", "function": {"name": "suggest_follow_ups"}} if nudged else "auto",
                 parallel_tool_calls=True,
                 max_tokens=8_000,
@@ -122,6 +147,8 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
                     delta = choice.delta
                     # OpenRouter passes a model's reasoning as `reasoning` (not in the OpenAI schema).
                     reasoning = getattr(delta, "reasoning", None) or getattr(delta, "reasoning_content", None)
+                    if first_token is None and (delta.content or delta.tool_calls or reasoning):
+                        first_token = time.monotonic() - started
                     # The follow-up turn only renders its tool call; its text is not part of the answer.
                     if isinstance(reasoning, str) and reasoning and not nudged:
                         yield w.reasoning(reasoning)
@@ -148,7 +175,14 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
             yield w.error("Could not reach the AI service.")
             break
 
-        log.info("copilot step %d: host %s, %s", step, served or "unknown", "tools" if calls else "text")
+        log.info(
+            "copilot step %d: host %s, %s, first token %s, step %.1f s",
+            step,
+            served or "unknown",
+            ",".join(c["name"] for c in calls.values()) or "text",
+            f"{first_token:.1f} s" if first_token is not None else "none",
+            time.monotonic() - started,
+        )
         if finish == "length":
             yield w.error("The answer was cut off. Please ask a narrower question.")
             break
@@ -183,6 +217,12 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
         )
 
         for c in ordered:
+            if c["name"] == NEED_DATABASE:
+                # The answer-first turn asked for the database: the next turn offers every tool.
+                yield w.tool_call(c["id"], c["name"], {})
+                yield w.tool_result(c["id"], {"ok": True})
+                messages.append({"role": "tool", "tool_call_id": c["id"], "content": json.dumps({"ok": True, "note": "The database tools are available now."})})
+                continue
             # Streamed arguments arrive as text: parse and validate before running anything.
             try:
                 raw = json.loads(c["arguments"] or "{}")

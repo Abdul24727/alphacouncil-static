@@ -52,6 +52,12 @@ class Settings(BaseSettings):
     # OpenRouter hosts the Copilot tries first, in order (comma list, e.g. "Phala"); the others stay
     # as fallbacks. Empty = the sort above decides. Copilot only, not the advisors' room.
     copilot_provider_order: str = ""
+    # The Copilot's first model turn when the page ticker's data was fetched in advance:
+    #   "answer": offer only the display tools and need_database, so the model writes from the
+    #             panels and fetched data unless it asks for the database (one extra turn then);
+    #   "prompt": every tool, plus a rule to answer at once when that data holds the answer;
+    #   "lookup": every tool, no rule (before 2026-10-22). OpenAI-compatible providers only.
+    copilot_first_turn: str = "answer"
     copilot_effort: str = "medium"  # low | medium | high | xhigh | max
     # Questions per hour per signed-in user (or per address for the stand-in).
     copilot_hourly_limit: int = 60

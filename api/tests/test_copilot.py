@@ -380,3 +380,84 @@ def test_host_order_applies_to_the_copilot_only():
     assert host_routing(s) == {"provider": {"sort": "latency"}}  # the advisors' room keeps the sort only
     assert host_routing(Settings(openrouter_base_url="https://example.test/v1"), copilot=True) == {}
     assert host_routing(Settings(copilot_provider_sort="", openrouter_base_url="https://openrouter.ai/api/v1"), copilot=True) == {}
+
+
+def _ask_on_2222(client, email, question="Is the dividend safe?"):
+    client.post("/v1/auth/signup", json={"email": email, "password": "correct horse battery", "accept_terms": True}, headers={"Origin": "http://testserver"})
+    body = {"messages": [{"id": "u1", "role": "user", "parts": [{"type": "text", "text": question}]}], "panels": [], "locale": "en", "ticker": "2222"}
+    parts = []
+    with client.stream("POST", "/v1/copilot/chat", json=body, headers={"Origin": "http://testserver"}) as r:
+        for line in r.iter_lines():
+            if line.startswith("data: ") and line != "data: [DONE]":
+                parts.append(json.loads(line[6:]))
+    return parts
+
+
+def _offered(body):
+    return [t["function"]["name"] for t in body["tools"]]
+
+
+def test_answer_first_turn_offers_only_display_tools_and_need_database(client, monkeypatch):
+    # Option (e), 2026-10-22: with the page ticker's data fetched, the first turn writes from it.
+    from app.copilot import openai_compat
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-used")
+    monkeypatch.setattr(openai_compat.openai, "AsyncOpenAI", _FakeOpenAI)
+    assert client.app.state.settings.copilot_first_turn == "answer"  # the default
+    _FakeOpenAI.seen = []
+    _FakeOpenAI.turns = [
+        [
+            _chunk(content="Saudi Aramco paid 0.34 per share in Q2 2026 [DB]."),
+            _chunk(tool=(0, "call_1", "suggest_follow_ups", '{"questions": ["Payout ratio?", "Yield vs peers?"]}')),
+            _chunk(finish="tool_calls"),
+        ],
+    ]
+    parts = _ask_on_2222(client, "answer-first@example.com")
+    assert len(_FakeOpenAI.seen) == 1
+    assert _offered(_FakeOpenAI.seen[0]) == ["show_table", "show_price_chart", "suggest_follow_ups", "need_database"]
+    assert "write the answer straight away" in _FakeOpenAI.seen[0]["messages"][0]["content"]
+    assert text_of(parts) == "Saudi Aramco paid 0.34 per share in Q2 2026 [DB]."
+
+
+def test_need_database_opens_every_tool_on_the_next_turn(client, monkeypatch):
+    from app.copilot import openai_compat, tools
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-used")
+    monkeypatch.setattr(openai_compat.openai, "AsyncOpenAI", _FakeOpenAI)
+    _FakeOpenAI.seen = []
+    _FakeOpenAI.turns = [
+        [_chunk(tool=(0, "call_1", "need_database", "{}")), _chunk(finish="tool_calls")],
+        [_chunk(tool=(0, "call_2", "get_dividends", '{"ticker": "2222"}')), _chunk(finish="tool_calls")],
+        [
+            _chunk(content="Saudi Aramco paid 0.34 per share in Q2 2026 [DB]."),
+            _chunk(tool=(0, "call_3", "suggest_follow_ups", '{"questions": ["Payout ratio?", "Yield vs peers?"]}')),
+            _chunk(finish="tool_calls"),
+        ],
+    ]
+    parts = _ask_on_2222(client, "need-db@example.com", "How did the price move after the last dividend?")
+    assert len(_FakeOpenAI.seen) == 3
+    assert _offered(_FakeOpenAI.seen[1]) == [t["name"] for t in tools.ALL_TOOLS]
+    asked = [m for m in _FakeOpenAI.seen[1]["messages"] if m["role"] == "tool" and m["tool_call_id"] == "call_1"]
+    assert asked and "available now" in asked[0]["content"]
+    names = [p["toolName"] for p in parts if p["type"] == "tool-input-available"]
+    assert "need_database" in names and "get_dividends" in names
+    assert text_of(parts) == "Saudi Aramco paid 0.34 per share in Q2 2026 [DB]."
+
+
+def test_lookup_first_turn_keeps_every_tool_and_no_rule(client, monkeypatch):
+    from app.copilot import openai_compat, tools
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-used")
+    monkeypatch.setattr(openai_compat.openai, "AsyncOpenAI", _FakeOpenAI)
+    monkeypatch.setattr(client.app.state.settings, "copilot_first_turn", "lookup")
+    _FakeOpenAI.seen = []
+    _FakeOpenAI.turns = [
+        [
+            _chunk(content="Saudi Aramco paid 0.34 per share in Q2 2026 [DB]."),
+            _chunk(tool=(0, "call_1", "suggest_follow_ups", '{"questions": ["Payout ratio?", "Yield vs peers?"]}')),
+            _chunk(finish="tool_calls"),
+        ],
+    ]
+    _ask_on_2222(client, "lookup@example.com")
+    assert _offered(_FakeOpenAI.seen[0]) == [t["name"] for t in tools.ALL_TOOLS]
+    assert "write the answer straight away" not in _FakeOpenAI.seen[0]["messages"][0]["content"]

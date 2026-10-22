@@ -68,7 +68,8 @@
       "get_price_summary": "Summarised prices",
       "show_table": "Built a table",
       "show_price_chart": "Drew a chart",
-      "suggest_follow_ups": "Suggested follow-ups"
+      "suggest_follow_ups": "Suggested follow-ups",
+      "need_database": "Asked for more data"
     },
     "skills": {
       "dividend": {
