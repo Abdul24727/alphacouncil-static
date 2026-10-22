@@ -305,6 +305,7 @@ def test_openrouter_reads_the_page_tickers_core_data_before_its_first_turn(clien
 
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-used")
     monkeypatch.setattr(openai_compat.openai, "AsyncOpenAI", _FakeOpenAI)
+    monkeypatch.setattr(client.app.state.settings, "copilot_first_turn", "lookup")
     _FakeOpenAI.seen = []
     _FakeOpenAI.turns = [
         [
@@ -397,26 +398,58 @@ def _offered(body):
     return [t["function"]["name"] for t in body["tools"]]
 
 
-def test_answer_first_turn_offers_only_display_tools_and_need_database(client, monkeypatch):
-    # Option (e), 2026-10-22: with the page ticker's data fetched, the first turn writes from it.
-    from app.copilot import openai_compat
+def test_answer_first_turn_offers_only_need_database_then_a_display_turn(client, monkeypatch):
+    # 2026-10-22: with the page ticker's data fetched, the first turn writes the text and nothing
+    # else; the table, chart and follow-ups come in the turn after it, whose text is not shown.
+    from app.copilot import openai_compat, tools
 
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-used")
     monkeypatch.setattr(openai_compat.openai, "AsyncOpenAI", _FakeOpenAI)
     assert client.app.state.settings.copilot_first_turn == "answer"  # the default
     _FakeOpenAI.seen = []
     _FakeOpenAI.turns = [
+        [_chunk(content="Saudi Aramco paid 0.34 per share in Q2 2026 [DB]."), _chunk(finish="stop")],
         [
-            _chunk(content="Saudi Aramco paid 0.34 per share in Q2 2026 [DB]."),
-            _chunk(tool=(0, "call_1", "suggest_follow_ups", '{"questions": ["Payout ratio?", "Yield vs peers?"]}')),
+            _chunk(content="Here is a table."),
+            _chunk(tool=(0, "call_1", "show_table", '{"title": "DPS", "columns": ["Quarter", "DPS"], "rows": [["Q2 2026", 0.34]], "source": "DB"}')),
+            _chunk(tool=(1, "call_2", "suggest_follow_ups", '{"questions": ["Payout ratio?", "Yield vs peers?"]}')),
             _chunk(finish="tool_calls"),
         ],
     ]
     parts = _ask_on_2222(client, "answer-first@example.com")
-    assert len(_FakeOpenAI.seen) == 1
-    assert _offered(_FakeOpenAI.seen[0]) == ["show_table", "show_price_chart", "suggest_follow_ups", "need_database"]
-    assert "write the answer straight away" in _FakeOpenAI.seen[0]["messages"][0]["content"]
-    assert text_of(parts) == "Saudi Aramco paid 0.34 per share in Q2 2026 [DB]."
+    assert len(_FakeOpenAI.seen) == 2
+    assert _offered(_FakeOpenAI.seen[0]) == ["need_database"]
+    system = _FakeOpenAI.seen[0]["messages"][0]["content"]
+    assert "write the answer straight away" in system and "Write the answer text first" in system
+    assert _offered(_FakeOpenAI.seen[1]) == [t["name"] for t in tools.UI_TOOLS]
+    assert _FakeOpenAI.seen[1]["tool_choice"] == "auto"
+    assert text_of(parts) == "Saudi Aramco paid 0.34 per share in Q2 2026 [DB]."  # not the display turn's text
+    assert data(parts, "table") and data(parts, "followups") == [{"questions": ["Payout ratio?", "Yield vs peers?"]}]
+    # The text streams before anything the display turn draws.
+    types = [p["type"] for p in parts]
+    assert types.index("text-delta") < types.index("data-table")
+
+
+def test_answer_first_display_tools_wait_for_their_turn_and_follow_ups_are_forced_if_missing(client, monkeypatch):
+    from app.copilot import openai_compat
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-used")
+    monkeypatch.setattr(openai_compat.openai, "AsyncOpenAI", _FakeOpenAI)
+    _FakeOpenAI.seen = []
+    _FakeOpenAI.turns = [
+        [  # a display tool the first turn was not offered: held back, not run
+            _chunk(content="The yield is 5.21% [P1]."),
+            _chunk(tool=(0, "call_1", "suggest_follow_ups", '{"questions": ["Too", "early"]}')),
+            _chunk(finish="tool_calls"),
+        ],
+        [_chunk(content="Nothing to add."), _chunk(finish="stop")],  # the display turn draws nothing
+        [_chunk(tool=(0, "call_9", "suggest_follow_ups", '{"questions": ["Payout ratio?", "Next ex-date?"]}')), _chunk(finish="tool_calls")],
+    ]
+    parts = _ask_on_2222(client, "display-none@example.com")
+    assert len(_FakeOpenAI.seen) == 3
+    assert _FakeOpenAI.seen[2]["tool_choice"] == {"type": "function", "function": {"name": "suggest_follow_ups"}}
+    assert text_of(parts) == "The yield is 5.21% [P1]."
+    assert data(parts, "followups") == [{"questions": ["Payout ratio?", "Next ex-date?"]}]
 
 
 def test_need_database_opens_every_tool_on_the_next_turn(client, monkeypatch):

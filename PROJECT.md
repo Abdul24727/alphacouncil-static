@@ -337,7 +337,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Reversibility:** reversible
 - **Autorun:** yes for Steps 12–15 (read-only checks; code on `rebuild` checked on the local build); no for Step 16 (Moyasar and beta's billing setting) and Step 17 (releases)
 - **Consumes:** `docs/qa-beta-2026-10/report.md` (FAIL rows with exact repro steps; "Not tested" list); `docs/qa-beta-2026-10/moyasar-checkout-interview-prompt.md`; `docs/qa-beta-2026-10/copilot-adversarial-plan.md`; `BRAND.md`.
-- **Steps:** 12–17
+- **Steps:** 12–17, 20 (an optional speed step after the goal closed)
 - **Goal outcome:**
   - *Verification:* (1) VERIFIED — `docs/qa-beta-2026-10/reaudit-2026-10-22.md` "Items": every row PASS, or BY DESIGN with the owner's words (1b and signed-out pages: "Accept BY DESIGN items 1-4."; 7f: "Try (e), then accept", quoted under "Option (e)"). (2) VERIFIED — `check-arabic.mjs` on production 2026-10-22 14:46 UTC: "24 Arabic page view(s) signed out; 0 English string(s) outside the allow-list", "15 … signed in; 0 …" (`docs/screenshots/reaudit-2026-10-22/check-all-production-56476948f5-after-e.txt`). (3) VERIFIED — `docs/checkout-test-2026-10-22.md` 13 of 13 PASS; `grep -c '^BILLING_OPEN='` on beta's `api.env` → 0 (re-checked 14:01 UTC). (4) VERIFIED — production `…/prod/releases/56476948f5` (`readlink`), the release beta was re-audited on (release log 10:16 / 10:36); `check-all.mjs` on it 9/9 at 14:46 UTC.
   - *Delivered:* every defect the independent beta audit found is fixed and live on alphacouncil.tech, or accepted by the owner as by design (phones' tab bar, signed-out pages with a prompt, "Google"/"EN" on Arabic pages, 403 behind beta's gate, Copilot's first-words speed); checkout is proven in Moyasar test mode on beta, 13 of 13. Answer to "did I deliver that?": yes — the one target not met (first words 5 s) is accepted in the owner's own words.
@@ -523,6 +523,25 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - *Resume here:* N/A
   - *Verify in 30 seconds:* `ssh root@alphacouncil.tech 'readlink -f /opt/alphacouncil-platform/current /opt/alphacouncil-platform/prod/current'` (both `…/56476948f5`)
   - *Stamp:* 2026-10-22, beta `8211d87f5a`, production `56476948f5`
+
+### Step 20 — Copilot: the answer text always comes first
+- **Status:** IN PROGRESS (started 2026-10-22)
+- **Checkpoint cleared:** 2026-10-22 — owner in chat: "Go-ahead: Copilot first-turn change (the first turn offers only need_database, so the answer text always comes first). One beta release, then production only if it meets both targets (5 s / 20 s)."
+- **Goal:** Copilot's first words come within 5 s and full answers within 20 s (medians), on production, with C1–C8 still passing.
+- **Depends on:** 17
+- **Reversibility:** reversible (`COPILOT_FIRST_TURN=lookup` in an `api.env`, or a release back)
+- **Autorun:** no — checkpoint: decision (cleared above, for one beta release and a conditional production release)
+- **What this step is:** Option (e) (`8211d87`) put the model's first token at about 2 s, but in 4 of 12 answers the model wrote a table or the follow-ups before the text, so first words took 5.3 s (median). This step offers only `need_database` on the first turn, so the text always comes first; a second turn then offers only the table, chart and follow-up tools, and its text is not shown.
+- **Where:** `api/app/copilot/openai_compat.py`, `api/tests/test_copilot.py`; beta and production releases; `docs/qa-beta-2026-10/reaudit-2026-10-22.md`; `docs/production.md` release log.
+- **Consumes:** `reaudit-2026-10-22.md` "Option (e)" (the measurements and the cause); `web/scripts/check-audit.mjs` (`7f`, `c390`, `C`).
+- **Produces:** the change with tests; a section "After the text-first change" in the re-audit file; release-log rows.
+- **How:** commit on `rebuild`; `scripts/deploy-staging.sh`; `check-audit.mjs 7f,C` then `7f,c390,C` on beta (12 answers, medians over both); if both targets are met, `scripts/deploy-production.sh` (no commit in between: it ships only beta's commit) and `check-all.mjs` on production; record after.
+- **Defaults:** a target missed → production stays on `56476948f5`, beta keeps the new release, 7f stays BY DESIGN; any of C1–C8 fails twice → no production release, record it; the display turn breaks tables or follow-ups → record it, no production release.
+- **Done when:**
+  - [ ] the latency medians over 12 answers on beta meet 5 s / 20 s, or the miss is recorded — check: `check-audit.mjs` output in the re-audit file
+  - [ ] C1–C8 pass on both runs — check: the same output
+  - [ ] if met: production runs beta's release and `check-all.mjs` passes on it — check: `readlink` and the summary line
+- **Outcome:** _(empty until worked)_
 
 ## Goal 4 — Launch: settled, checked, then paid
 - **Status:** AWAITING CHECKPOINT — Steps 7–9 each wait on the owner (re-tested 2026-10-22: `www` NXDOMAIN, no portrait files, no legal advice in chat); Step 10 waits on Goal 2 (Steps 6 and 19) and Steps 7–9 (Goal 3 is done); Step 18 waits on Step 10 and the owner's go-ahead.
