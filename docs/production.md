@@ -36,6 +36,7 @@ generated password, and the two services.
 | 2026-10-22 10:11 | `53c3c54aa0` | `53c3c54aa0` | the same app as `ae72d6a05b` (only the re-audit record changed); owner: "release to production now" | beta smoke `check-audit.mjs` 1e,5f,8c,9b,9f,10c; production `check-all.mjs` 9/9 incl. `check-arabic.mjs` both ways (`screenshots/reaudit-2026-10-22/check-all-production-53c3c54aa0.txt`); monitor 13 ok before and after |
 | 2026-10-22 10:16 / 10:36 | `56476948f5` | `56476948f5` | Copilot: short answers from the data's own figures (owner's option (b)) | beta: `reaudit-2026-10-22.md`, "After option (b)"; production: `check-all.mjs` 9/9 incl. `check-arabic.mjs` both ways (`screenshots/reaudit-2026-10-22/check-all-production-56476948f5.txt`); monitor 13 ok |
 | 2026-10-22 12:13 | `859edafff3` | — | `COPILOT_PROVIDER_ORDER` setting (Copilot's preferred OpenRouter hosts; empty = automatic) and the serving host logged per step. Tried on beta with Phala, then SiliconFlow,Phala; neither met the speed target, setting removed again (owner's option (c)) | `reaudit-2026-10-22.md`, "Option (c)" |
+| 2026-10-22 14:14 | `8211d87f5a` | — | Copilot's first turn answers from the fetched data, `COPILOT_FIRST_TURN` (owner's option (e)). First words 5.3 s, full 15.2 s (medians, 12 answers): first-words target missed, so production stays on `56476948f5` and 7f is BY DESIGN (owner) | `reaudit-2026-10-22.md`, "Option (e)"; C1–C8 16/16 |
 
 Check production privately before or after a release through a tunnel:
 
