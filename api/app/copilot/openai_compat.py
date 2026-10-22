@@ -39,10 +39,12 @@ def _tool_defs(specs: list[dict[str, Any]] = tools.ALL_TOOLS) -> list[dict[str, 
 
 # Option (e), 2026-10-22: the host OpenRouter picks always looked something up before writing,
 # which put first words at 8-9 s. With the page ticker's data already fetched, the first turn
-# offers only this tool, so the model writes the answer at once unless the data is missing; then
-# it asks, and the next turn offers every tool. Offering the display tools on the first turn too
-# (8211d87) let the model write a table or the follow-ups before the text (first words 5.3 s);
-# they now come in a turn of their own after the text (DISPLAY_NUDGE).
+# offers only the display tools and this one, so the model writes at once unless the data is
+# missing; then it asks, and the next turn offers every tool. Measured on beta: first words 5.3 s,
+# full answers 15.2 s (medians). Tried and dropped the same day (38452ea): offering only
+# need_database first and the display tools in a turn after the text. It was slower (first words
+# 9.2 s, full 28.7 s, 12 answers): without show_table the model wrote the table's figures into the text, it
+# still wrote a follow-ups call before the text, and the follow-ups often needed a third turn.
 NEED_DATABASE = "need_database"
 NEED_DATABASE_TOOL: dict[str, Any] = {
     "name": NEED_DATABASE,
@@ -53,16 +55,10 @@ NEED_DATABASE_TOOL: dict[str, Any] = {
     ),
     "input_schema": {"type": "object", "properties": {}, "required": []},
 }
-FIRST_TURN_TOOLS = [NEED_DATABASE_TOOL]
+FIRST_TURN_TOOLS = [*tools.UI_TOOLS, NEED_DATABASE_TOOL]
 ANSWER_AT_ONCE = (
     " When the attached panels and that fetched data hold what the question needs, write the answer straight away, "
     "with no tool call before it."
-)
-TEXT_FIRST = " Write the answer text first: you are asked for any table, chart and the follow-up questions after it."
-DISPLAY_NUDGE = (
-    "Your answer is written. If a small table or a price chart of figures from it would help, call show_table or "
-    "show_price_chart now. Then call suggest_follow_ups with two or three short follow-up questions in the language "
-    "of my question. Write no more text."
 )
 
 
@@ -107,8 +103,6 @@ def host_routing(settings: Settings, *, copilot: bool = False) -> dict[str, Any]
 
 def _history(chat: ChatInput, first_turn: str = "lookup") -> list[dict[str, Any]]:
     rule = ANSWER_AT_ONCE if chat.ticker and first_turn in ("answer", "prompt") else ""
-    if chat.ticker and first_turn == "answer":
-        rule += TEXT_FIRST
     msgs: list[dict[str, Any]] = [{"role": "system", "content": SYSTEM + SYSTEM_EXTRA + rule}]
     msgs += [{"role": m.role, "content": m.text} for m in chat.history if m.text.strip()]
     parts = [panel_block(chat), f"Interface language: {chat.locale}. Page ticker: {chat.ticker or 'none'}.", chat.question]
@@ -132,9 +126,7 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
     answer_first = bool(chat.ticker) and settings.copilot_first_turn == "answer"
     extra: dict[str, Any] = {"reasoning": {"enabled": True}} if settings.copilot_reasoning else {}
     routing = host_routing(settings, copilot=True)
-    # nudged: the forced follow-ups turn. displaying: the answer-first mode's turn after the
-    # text, offering only the table, chart and follow-up tools. Neither turn's text is shown.
-    followed_up = nudged = displaying = False
+    followed_up = nudged = False
 
     for step in range(MAX_STEPS):
         yield w.start_step()
@@ -144,15 +136,13 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
             stream = await client.chat.completions.create(
                 model=settings.copilot_model,
                 messages=messages,
-                tools=_tool_defs(
-                    FIRST_TURN_TOOLS if answer_first and step == 0 else tools.UI_TOOLS if displaying else tools.ALL_TOOLS
-                ),
+                tools=_tool_defs(FIRST_TURN_TOOLS if answer_first and step == 0 else tools.ALL_TOOLS),
                 tool_choice={"type": "function", "function": {"name": "suggest_follow_ups"}} if nudged else "auto",
                 parallel_tool_calls=True,
                 max_tokens=8_000,
                 stream=True,
-                # The follow-up and display turns only need quick tool calls.
-                extra_body=routing if nudged or displaying else {**extra, **routing},
+                # The follow-up turn only needs a quick tool call.
+                extra_body=routing if nudged else {**extra, **routing},
             )
             async for chunk in stream:
                 served = served or (getattr(chunk, "model_extra", None) or {}).get("provider")
@@ -163,13 +153,12 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
                     reasoning = getattr(delta, "reasoning", None) or getattr(delta, "reasoning_content", None)
                     if first_token is None and (delta.content or delta.tool_calls or reasoning):
                         first_token = time.monotonic() - started
-                    # The follow-up and display turns only render their tool calls; their text is not part of the answer.
-                    hidden = nudged or displaying
-                    if isinstance(reasoning, str) and reasoning and not hidden:
+                    # The follow-up turn only renders its tool call; its text is not part of the answer.
+                    if isinstance(reasoning, str) and reasoning and not nudged:
                         yield w.reasoning(reasoning)
                     if delta.content:
                         text += delta.content
-                        if not hidden:
+                        if not nudged:
                             yield w.text(delta.content)
                     for tc in delta.tool_calls or []:
                         c = calls.setdefault(tc.index, {"id": "", "name": "", "arguments": ""})
@@ -204,26 +193,10 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
         if nudged:
             # Only the follow-ups are wanted from the nudge turn.
             calls = {i: c for i, c in calls.items() if c["name"] == "suggest_follow_ups"}
-        elif displaying:
-            calls = {i: c for i, c in calls.items() if c["name"] in tools.UI_TOOL_NAMES}
-        elif answer_first and step == 0:
-            # A display tool the first turn was not offered waits for the display turn.
-            calls = {i: c for i, c in calls.items() if c["name"] not in tools.UI_TOOL_NAMES}
-        if not (nudged or displaying):
+        if not nudged:
             trace.step(text, called_database=any(c["name"] not in tools.UI_TOOL_NAMES for c in calls.values()))
         if not calls:
             yield w.finish_step()
-            if answer_first and step == 0 and text.strip():
-                # The answer is written: one turn for its table, chart and follow-ups.
-                messages.append({"role": "assistant", "content": text})
-                messages.append({"role": "user", "content": DISPLAY_NUDGE})
-                displaying = True
-                continue
-            if displaying and not followed_up and step < MAX_STEPS - 1:
-                # Nothing drawn and no follow-ups: ask for the follow-ups alone.
-                messages[-1] = {"role": "user", "content": FOLLOW_UP_NUDGE}
-                displaying, nudged = False, True
-                continue
             # SYSTEM asks for follow-ups at the end of every answer; some models stop without
             # them. One short extra turn that must call suggest_follow_ups.
             if not followed_up and not nudged and text.strip() and step < MAX_STEPS - 1:
@@ -289,10 +262,6 @@ async def openai_stream(request: Request, chat: ChatInput, settings: Settings) -
         # Follow-ups close the answer: no further model turn after them.
         if nudged or followed_up:
             break
-        if displaying:
-            # A table or chart but no follow-ups: ask for them alone.
-            messages.append({"role": "user", "content": FOLLOW_UP_NUDGE})
-            displaying, nudged = False, True
 
     # Sentences that quote a figure without its tag get the tag of where the figure was read.
     cites = trace.citations()
