@@ -72,7 +72,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 ## 7. Goals
 
 ## Goal 1 — Safe footing: code backed up, safety nets proven, nobody charged
-- **Status:** AWAITING CHECKPOINT — Steps 1 and 11 DONE (Done-when items 3 and 4 verified 2026-10-19, item 5 on 2026-10-22); Step 2 waits for an empty private repository's URL (items 1 and 2).
+- **Status:** DONE (2026-10-22) — Steps 1, 2 and 11 DONE; every Done-when item verified 2026-10-22.
 - **Share of project:** ~15%
 - **Goal:** The code is in the owner's private GitHub repository, the backup copy, monitor and outside check are shown to have run on their own, and production takes no payments until the launch.
 - **Done when:**
@@ -86,7 +86,11 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Autorun:** no — checkpoint: human-action (the owner creates the repository and gives its URL) and decision (closing billing, Step 11)
 - **Consumes:** nothing
 - **Steps:** 1–2, 11
-- **Goal outcome:** _(empty until the goal is worked)_
+- **Goal outcome:**
+  - *Verification:* (1) VERIFIED — `git ls-remote origin refs/heads/rebuild` = `git rev-parse rebuild` (`16aef98…` at the first push; pushed again with this record); `origin` = `https://github.com/Abdul24727/alphacouncil-static`, private: anonymous `git ls-remote` asks for a username, `api.github.com/repos/…` answers 404. (2) VERIFIED — the `git ls-files` grep prints nothing (count 0). (3) VERIFIED — `pull.log` "2026-10-22 09:00:15 ok: copied 3, removed 0, 27 files here; newest acp_prod-20261022T013419Z.dump" (task result 0, 0 missed runs), the dump the server wrote at 01:34 UTC (`LAST_OK` 2026-10-22T01:34:22Z). (4) VERIFIED — as in Step 1's ruling, through nginx's log instead of the Executions page: `Google-Apps-Script` visits to `/home` and `/api/v1/health` every 5 min, the latest 14:44:57 UTC today; `prod-monitor.py status`: "outside check: PING_URL is set, pinged at the end of every round". (5) VERIFIED — `"checkout_open":false` (14:50 UTC); `/pricing`'s early-access note in EN and AR per Step 11's screenshots.
+  - *Delivered:* the code is off this computer in the owner's private GitHub repository (branch `rebuild`), the three safety nets keep running on their own, and production takes no payments until Step 18.
+  - *Carried forward:* the outside check's three test emails (2026-10-19) are still unconfirmed by the owner (Step 1 *Debt*). The repository's other branches still hold the old static site. Push `rebuild` after each commit worth keeping (`git push`, upstream set).
+  - *Stamp:* 2026-10-22, on `16aef98`
 
 ### Step 1 — Confirm the safety nets ran unattended
 - **Status:** DONE
@@ -118,7 +122,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - *Stamp:* 2026-10-19, on `c46da77`
 
 ### Step 2 — Push branch `rebuild` to the owner's private GitHub repository
-- **Status:** AWAITING CHECKPOINT — needs the owner's **empty, private** repository URL (github.com/new, Private, no README, no licence). Secret scan already done 2026-10-19 (see Outcome). 2026-10-21: the owner gave `https://github.com/Abdul24727/alphacouncil-static`, which cannot be used — see Outcome *Rulings* (b).
+- **Status:** DONE (2026-10-22) — `rebuild` pushed to the owner's now-private repository `alphacouncil-static`.
 - **Goal:** The owner's private GitHub repository holds branch `rebuild` at the local head.
 - **Depends on:** nothing
 - **Reversibility:** costly
@@ -134,8 +138,11 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - [ ] the secret scan prints nothing — check: both commands above
   - [ ] `git ls-remote origin refs/heads/rebuild` equals `git rev-parse rebuild` — check: compare the two outputs
   - [ ] the repository page shows "Private" — check: the owner confirms, or `git ls-remote` fails without credentials
-- **Outcome:** (partial — waiting at the checkpoint)
-  - *Done:* secret scan. `git ls-files` check prints nothing. The step's history grep prints 6 lines, all false positives: its own regex in `PROJECT.md` (c46da77); `sk_test_x` fake in `api/tests/test_billing.py` and the prefix comment `(pk_test_/sk_test_)` in `deploy/api.env.example` (28e21dd); the empty `# OPENROUTER_API_KEY=  # set on the server only…` placeholder in `deploy/api.env.example` (8b715fd, 55de633, 2bef6a4). A stricter scan for real key shapes (Moyasar `sk_/pk_` + 16 chars, `sk-or-v1-`, `sk-ant-`, `GOCSPX-`, private-key blocks, AWS, `ghp_`, MailerSend `mlsn.`, the Apps Script `macros/s/AKfy…` URL, `hc-ping.com/<uuid>`) prints 0 for history and the working tree. No remote exists yet (`git remote -v` empty); `rebuild` = `c46da77` before this chat's commit.
+- **Outcome:**
+  - *Done (2026-10-22):* `origin` = `https://github.com/Abdul24727/alphacouncil-static` (the owner made it private); the stricter scan printed 0 for history and the working tree, the `git ls-files` check 0; `git push -u origin rebuild` created the branch (`* [new branch] rebuild -> rebuild`), Git for Windows' stored GitHub sign-in was used (no prompt). The repository's other branches (`master`, `staging-option-a`, …, the old static site) were not touched. `CLAUDE.md` names the remote.
+  - *Verification (2026-10-22):* (1) VERIFIED — both scans 0. (2) VERIFIED — `git ls-remote origin refs/heads/rebuild` = `git rev-parse rebuild` = `16aef98…`. (3) VERIFIED — anonymous `git -c credential.helper= ls-remote` fails asking for a username; `https://api.github.com/repos/Abdul24727/alphacouncil-static` answers 404.
+  - *Rulings (2026-10-22):* (c) The repository is not empty (the old static site on five branches and a tag); the step's "not empty" default was written for a rejected push, and this push only adds a new branch, so it went ahead on the owner's choice of this repository. Cost if wrong: the code shares a repository with the old site; moving it later is one `git push` to a new remote.
+  - *Earlier (2026-10-19):* secret scan. `git ls-files` check prints nothing. The step's history grep prints 6 lines, all false positives: its own regex in `PROJECT.md` (c46da77); `sk_test_x` fake in `api/tests/test_billing.py` and the prefix comment `(pk_test_/sk_test_)` in `deploy/api.env.example` (28e21dd); the empty `# OPENROUTER_API_KEY=  # set on the server only…` placeholder in `deploy/api.env.example` (8b715fd, 55de633, 2bef6a4). A stricter scan for real key shapes (Moyasar `sk_/pk_` + 16 chars, `sk-or-v1-`, `sk-ant-`, `GOCSPX-`, private-key blocks, AWS, `ghp_`, MailerSend `mlsn.`, the Apps Script `macros/s/AKfy…` URL, `hc-ping.com/<uuid>`) prints 0 for history and the working tree. No remote exists yet (`git remote -v` empty); `rebuild` = `c46da77` before this chat's commit.
   - *Rulings:* the step's grep "must print nothing" is read as "finds no secret": all 6 hits are reviewed non-secrets above. Cost if wrong: a secret pushed to a private repository — the stricter scan makes this unlikely. (b) 2026-10-21: the URL the owner gave, `https://github.com/Abdul24727/alphacouncil-static`, is not used. It is **public** (`git -c credential.helper= ls-remote` lists it with no sign-in) and not empty: it holds the old static site (`master` 2026-07-03; also `staging-option-a`, `vps-production-sync-20260714`, `feat/settings-market-multiselect`, and `claude/affectionate-visvesvaraya-15c98d`, the newest at 2026-08-29). Pushing `rebuild` there would publish this code. The old backend repository `Argaam-council-before-testing-cluade-project-` is private but holds the old backend. So: ask for a new empty private repository (suggested name `alphacouncil-platform`). Cost if wrong: one more round-trip with the owner.
   - *Resume here:* the owner gives the URL → re-run the stricter scan, which must print 0: `git log --all -p | grep -c -E 'sk_(live|test)_[A-Za-z0-9]{16,}|pk_(live|test)_[A-Za-z0-9]{16,}|sk-or-v1-[0-9a-f]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|GOCSPX-[A-Za-z0-9_-]{10,}|BEGIN [A-Z ]*PRIVATE KEY-----|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{30,}|mlsn\.[a-f0-9]{30,}|macros/s/AKfy[A-Za-z0-9_-]{20,}|hc-ping\.com/[0-9a-f-]{36}'`; then `git remote add origin <URL>`; `git push -u origin rebuild`; compare `git ls-remote origin refs/heads/rebuild` with `git rev-parse rebuild`; add one line to `CLAUDE.md` naming the remote.
 

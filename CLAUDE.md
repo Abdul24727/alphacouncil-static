@@ -42,6 +42,7 @@ The rebuilt AlphaCouncil: a dense research terminal for Gulf markets (Tadawul, A
 ## Standing rules
 
 - Work only on git branch `rebuild`. Never push to main.
+- Remote `origin` = the owner's private GitHub repository `https://github.com/Abdul24727/alphacouncil-static` (its other branches hold the old static site; push `rebuild` only, never force).
 - alphacouncil.tech runs this app (since 2026-10-17). Release only beta → production with `scripts/deploy-staging.sh` then `scripts/deploy-production.sh`, and only with the owner's go-ahead for that release.
 - Do not change the old repos (`alphacouncil-static`, `Argaam-council-…`) or the old pipeline on the server (`/opt/alphacouncil/backend`): read them for reference only, unless the owner approves a specific change (PROJECT.md, Goal 2).
 - Follow BRAND.md exactly. Anything it bans is a bug.
