@@ -306,7 +306,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - *Stamp:* 2026-10-22; server pipeline `a38dc07` + fixes A (uncommitted on the server)
 
 ### Step 19 — Build F-D: Tadawul disclosures from Argaam's market-wide list
-- **Status:** NOT STARTED
+- **Status:** AWAITING CHECKPOINT (2026-10-22) — built and dry-run on this computer; on the server the market-wide list answers HTTP 405 "Human Verification". Owner decides: (1) read the list in the scraper's logged-in browser session on the server — **recommended**, if that session gets the real page (one test run with the owner's go-ahead first); (2) the owner's computer reads the list daily and copies it to the server; (3) leave F-D unbuilt. Costs: part-2 report, "F-D dry run".
 - **Goal:** Tadawul tickers get current disclosures again, read from Argaam's market-wide disclosure list.
 - **Depends on:** 6 (the owner: after the other fixes have run one night)
 - **Reversibility:** reversible on this computer; costly once on the server (the pipeline writes the live data)
@@ -317,12 +317,22 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Produces:** one `git format-patch` commit on top of F-C; an "F-D dry run" section in the part-2 report (before/after for 2222 and nine other Tadawul tickers).
 - **How:** read Argaam's public market-wide list from this computer (read-only), map items to `argaam/tickers.csv` by company id or name; dry-run on copies of the affected files only; nothing on the server before the owner's approval; then apply as in Step 6 (backups `.bak-<date>`, `git apply`).
 - **Defaults:** an item with no matching ticker → skip it and count the skips; the list needs Argaam's login → stop and report (the scraper's login stays on the server, Claude does not read it); more than ~150 changed lines → split, smallest useful part first; an item's date or company is missing → skip it, never guess.
-- **Done when:**
-  - [ ] the patch applies cleanly to the work copy on top of F-C — check: `git apply --check`
-  - [ ] the dry run gives 2222 and at least nine other Tadawul tickers a disclosure dated within 7 days of the run — check: the "F-D dry run" section
-  - [ ] the owner's approval line is under this step before any server change — check: read the step
-  - [ ] after the first nightly run with it, Aramco's newest disclosure in the API is within 7 days of the run — check: as in the part-2 report's F-D section ("Check after it is built")
-- **Outcome:** _(empty until worked)_
+- **Done when:** (items 2 and 4 revised 2026-10-22: Aramco published nothing in the lists that week, so "Aramco within 7 days" tested Aramco, not the fix)
+  - [x] the patch applies cleanly to the work copy on top of F-C — check: `git apply --check`
+  - [x] the dry run gives at least ten Tadawul tickers a disclosure dated within 7 days of the run, and every list item whose code is in `tickers.csv` reaches its ticker — check: the "F-D dry run" section
+  - [ ] the owner's approval line (route 1, 2 or 3, and the go-ahead) is under this step before any server change — check: read the step
+  - [ ] after the first nightly run with it, `[disclosures]` in the log shows `0 failed`, and three tickers the list named in the 7 days before the run show that date as their newest disclosure in `/api/v1/tickers/<code>/news` — check: as in the part-2 report ("Check after it is built")
+- **Outcome:** (partial — waiting on the owner's choice of route)
+  - *Done:* `docs/pipeline-fix-fd-2026-10-22.patch` (work copy commit `7843373` on F-C): new `argaam/tools/market_disclosures.py` (reads page 1 of lists 244 en / 245 ar, matches each article to its ticker by the page's `DMP_CompanySymbol`, keeps a manifest per ticker), 9 lines in `evidence_builder.py` `process_ticker`, a `[disclosures]` step in `nightly_pipeline.sh` before the rebuild. Dry run and server finding: part-2 report, "F-D dry run".
+  - *Not done:* nothing on the server. The server cannot read the list (405 "Human Verification"); the route is the owner's call (Status line).
+  - *Touched:* `docs/pipeline-fix-fd-2026-10-22.patch` (new), `docs/data-audit-part2-2026-10-19.md` (F-D dry run). Outside the repo: work copy `server\` (commit `7843373`), `dryrun_d2\` (copy universe, `run1.txt`, `run2.txt`, `builder.txt`, `evidence_dry.sqlite`), `dryrun_d\_pylib` (bs4 4.15 for the dry run), worktree `check_fd\` and `check_fd_bin\` (apply checks).
+  - *Verification:* (1) VERIFIED — `git apply --check` passes on a clean worktree of `047fb90` and, with `-p2 --include='nightly_pipeline.sh'` and `core.autocrlf=false`, on a copy of the script; results byte-identical to the work copy; `py_compile`, `bash -n` pass. (2) VERIFIED — 16 tickers have a disclosure dated 2026-10-15 or later; all 92 list items accounted for (58 to 23 tickers, 34 Nomu/6022 with no ticker, 0 failed). (3)–(4) NOT MET — waiting on the owner.
+  - *Rulings:* (a) Built and dry-run before the fixes' first night (the owner said "after one night"): nothing touches the server before the night and the owner's approval. Cost if wrong: an evening's local work. (b) Both languages (244 English and 245 Arabic): the company lists gave English only; Arabic pages now get Arabic disclosures first. Cost: about 46 more article fetches per 11 days. (c) Not split despite 220 lines (rule: ~150): 205 are one new standalone file; the existing code changes are 16 lines, and no smaller part does anything alone. (d) The saved article keeps only the headline and `div.ck-editor.article` (no widget text, no image captions); without that block the item has no body and the builder's AI summary covers it, as for today's Tadawul items. (e) Not working around Argaam's human check on the server: the route is put to the owner instead.
+  - *Failed approaches:* the anonymous list from the server (405); company overview pages (no article links without a browser); a Git Bash path inside a Python string made `C:\c\AlphaCouncil-Staging\…` (empty folders, removed; `C:\c\Users\…` there is older and not from this project, left alone). Without bs4 locally the builder's regex fallback keeps only ~100 characters: dry runs need bs4 (`dryrun_d\_pylib`).
+  - *Debt:* none in the code. The 34 Nomu items have no ticker (the universe has no Nomu listings).
+  - *Resume here:* when the owner answers. Route 1: with the go-ahead, one read-only test on the server — open the list page in the scraper's Playwright context with its saved session (`argaam/_export_auth_state.py` writes it; find the path there, never print the file) and count `class="date"` items; > 0 → add a `--browser` path to `list_items` that loads the two list pages in that context, dry-run again, then apply as in Step 6 (backups `.bak-<date>`, `git apply` both trees). 0 → back to the owner (route 2 or 3). Route 2: add `--list-dir` (read saved list pages instead of fetching) and a Windows task that saves the two pages and `scp`s them to `/opt/alphacouncil/backend/argaam/default_universe/.market_disclosure_lists/`.
+  - *Verify in 30 seconds:* `cd C:\AlphaCouncil-Staging\work\pipeline-fixes-20261019\server; git log --oneline -1` → `7843373 F-D: …`; `type ..\dryrun_d2\run1.txt`.
+  - *Stamp:* 2026-10-22; work copy `7843373` on server baseline `a38dc07` + fixes A
 
 ## Goal 3 — Every known defect fixed, checkout proven
 - **Status:** DONE (2026-10-22) — every audit item PASS or BY DESIGN with the owner's words; production on the re-audited `56476948f5`; checkout proven on beta.

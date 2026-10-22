@@ -269,3 +269,65 @@ a blank Change on up days (part 1). One line to fix if the owner wants it.
 Not covered by this part: the Pro panels (financials, ownership, calendar) against the database,
 listed in PROJECT.md Step 3's description but not in its done-when list. Left for a later
 read-only pass.
+
+## F-D dry run (2026-10-22, nothing written on the server)
+
+**What was built** (`docs/pipeline-fix-fd-2026-10-22.patch`, one `git format-patch` commit on
+top of F-C, `7843373` in the work copy; 220 lines added, 1 removed, of which 205 are the new tool):
+
+- New `argaam/tools/market_disclosures.py`. Each night it reads page 1 of Argaam's market-wide
+  disclosure lists (`/en/company/disclosure/sectionid/244/marketid/3/pageno/1` and the Arabic
+  `…/ar/…/sectionid/245/…`), about 11 days of items. Each list item gives only a date and a
+  headline, so the tool fetches each new article once and reads the company code the page names
+  (`DMP_CompanySymbol = ["4321"]`). It keeps, per ticker,
+  `default_universe/<code>_TADAWUL/market_disclosures/market_disclosures_manifest.csv` and one small
+  HTML file per article (headline and text only, about 15 KB). An article whose code is not in
+  `tickers.csv` (the parallel market, Nomu) is skipped and counted. A failed fetch is retried the
+  next night. It prints one line, e.g.
+  `market disclosures: 58 new for 23 tickers (newest 2026-10-22); 34 with no ticker; 0 failed`.
+- `llm-council/evidence_builder.py`, `process_ticker`: reads that manifest as the ticker's
+  `disclosures` (9 lines). Item ids are the same as the company lists gave
+  (`<ticker>_disclosures_disclosures_<article id>`), so an article in both is stored once.
+- `nightly_pipeline.sh`: runs the tool after the scrape and before the rebuild (`timeout 900`,
+  never fatal), logs `[disclosures] …`, and adds that line to the OK status.
+
+**Dry run on this computer** (copy universe of 269 empty Tadawul ticker folders; outputs in
+`C:\AlphaCouncil-Staging\work\pipeline-fixes-20261019\dryrun_d2\`):
+
+| | Result |
+|---|---|
+| First run (15:58 UTC) | 92 list items in 14 days (46 English, 46 Arabic): 58 given to 23 tickers, 34 with no ticker (all Nomu codes 9xxx, plus 6022), 0 failed; 3 min 21 s |
+| Second run | 0 new, 0 fetched; 8 s (each article is fetched once) |
+| Evidence builder (bs4 4.15, the server's version; AI-summary call stubbed) | 58 items for 23 tickers, all `extraction_status` ok, bodies 464–8,129 characters, 0 summary calls, no "Loading data…" widget text in any snippet |
+| Tickers whose newest disclosure is within 7 days (on or after 2026-10-15) | **16** (4014, 4321, 7211, 7201, 6018, 4265, 2240, 4320, 3040, 2360, 4270, 4170, 4002, 8120, 4090, 1211) |
+| Aramco (2222) | none: neither list names Aramco since 2026-10-11, so no correct fix gives it one this week |
+| The same articles in the server's database today | 1 of 52 (dated up to 10-21): these disclosures do not reach the app at all now |
+
+Snippet samples: 4321 "Arabian Centres Co. (Cenomi Centers) announced that a court ruling was
+issued in its favor on Oct. 21, dismissing a lawsuit…"; 1211 "Saudi Arabian Mining Co. (Maaden) said
+shareholders approved the election of the board…". The patch applies cleanly on a clean copy at F-C
+(`git apply --check --exclude='_bin/*'`, and `-p2 --include='nightly_pipeline.sh'` on a copy of the
+script), the files compile, `bash -n` passes, and the results are byte-identical to the work copy.
+
+**Blocker found on the server (read-only check, 2026-10-22 16:05 UTC):** from the server's address,
+both list pages answer **HTTP 405 "Human Verification"** (2 tries each, same answer). Article
+pages, company pages and the chart endpoint answer 200 from the server, so F-B and the article
+fetches are unaffected; only the list is. Company overview pages carry no article links without a
+browser, so they are no substitute. Getting around a human check is not something this project
+does, so the patch does not go to the server as it is. Options for the owner:
+
+1. **Read the list inside the scraper's own browser session on the server** (Playwright with the
+   owner's Argaam member login, the way the pipeline already reads every company page). About 30
+   more lines in the tool. First check, with the owner's go-ahead, whether that session gets the
+   real list page; if it also gets the human check, this option is out. Uses the owner's login
+   (Claude does not read it).
+2. **The owner's computer reads the two list pages once a day** (a scheduled task like the backup
+   copy) and copies a small list file to the server; the server still fetches the articles. About
+   20 more lines plus the task. Works only while the computer is on at least once every ~10 days.
+3. **Leave F-D unbuilt.** Tadawul disclosures stay at 2026-10-05 or older; the app's light shows
+   the gap.
+
+**Check after it is built** (replaces "Aramco within 7 days", which depends on Aramco publishing):
+the night after it is applied, `[disclosures]` in the run's log shows `0 failed`, and for each of
+three tickers the list named in the 7 days before the run, the API's newest disclosure has that
+date (`/api/v1/tickers/<code>/news`).

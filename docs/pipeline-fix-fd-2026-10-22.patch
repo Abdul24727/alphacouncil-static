@@ -1,0 +1,279 @@
+From 7843373b035571ab500e8df0431cdcea3a5c618f Mon Sep 17 00:00:00 2001
+From: Abdulaziz Al-Tamimi <attmimi.abdul@gmail.com>
+Date: Thu, 22 Oct 2026 19:02:37 +0300
+Subject: [PATCH] F-D: Tadawul disclosures from Argaam's market-wide lists
+
+Argaam stopped filling each company's Disclosures list (section 204) in 2026-03;
+its market-wide lists (244 English, 245 Arabic, market 3) still update. New
+argaam/tools/market_disclosures.py reads them each night, gives each article to the
+ticker its page names (DMP_CompanySymbol), and keeps a manifest per ticker that
+evidence_builder.py reads as disclosures (same item ids as before, so no repeats).
+nightly_pipeline.sh runs it after the scrape, before the rebuild; its line goes into
+the OK status. Never fatal.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ _bin/nightly_pipeline.sh           |   7 +-
+ argaam/tools/market_disclosures.py | 205 +++++++++++++++++++++++++++++
+ llm-council/evidence_builder.py    |   9 ++
+ 3 files changed, 220 insertions(+), 1 deletion(-)
+ create mode 100644 argaam/tools/market_disclosures.py
+
+diff --git a/_bin/nightly_pipeline.sh b/_bin/nightly_pipeline.sh
+index f9c9072..102d254 100644
+--- a/_bin/nightly_pipeline.sh
++++ b/_bin/nightly_pipeline.sh
+@@ -118,6 +118,11 @@ else
+   log "[2/3] Scrape COMPLETE ($DONE tickers)."
+ fi
+ 
++# Tadawul disclosures from Argaam's market-wide lists: the company lists stopped in 2026-03
++# (audit part 2, F-D). Before the rebuild, which reads them; never fatal.
++DISCL=$(cd "$ARGAAM" && timeout 900 "$PY" tools/market_disclosures.py default_universe tickers.csv 2>>"$LOG" | tail -1)
++log "[disclosures] ${DISCL:-market disclosures unavailable}"
++
+ # ---- 3/3 REBUILD --------------------------------------------------------------
+ log "[3/3] Rebuild: run_rebuild_pipeline.py (incremental evidence) ..."
+ ( cd "$LLM" && "$PY" run_rebuild_pipeline.py ) >> "$LOG" 2>&1
+@@ -202,6 +207,6 @@ fi
+ CHARTS=$(cd "$ARGAAM" && "$PY" tools/chart_failures.py default_universe 2>/dev/null || true)
+ log "[charts] ${CHARTS:-chart check unavailable}"
+ 
+-alert OK "OK${PARTIAL:+ (PARTIAL ${DONE}/716)}" "Scrape (mode=$MODE, $PREFIX: $DONE tickers${PARTIAL:+ — PARTIAL, below the $MIN_DONE full bar; fresh tickers served, stale withheld}) + rebuild + restart complete on VPS; /api/screening 200; disk ${USEPCT}%. ${CHARTS:+$CHARTS. }Log: $LOG"
++alert OK "OK${PARTIAL:+ (PARTIAL ${DONE}/716)}" "Scrape (mode=$MODE, $PREFIX: $DONE tickers${PARTIAL:+ — PARTIAL, below the $MIN_DONE full bar; fresh tickers served, stale withheld}) + rebuild + restart complete on VPS; /api/screening 200; disk ${USEPCT}%. ${CHARTS:+$CHARTS. }${DISCL:+$DISCL. }Log: $LOG"
+ log "===== DAILY PIPELINE SUCCESS ====="
+ exit 0
+diff --git a/argaam/tools/market_disclosures.py b/argaam/tools/market_disclosures.py
+new file mode 100644
+index 0000000..fe9ef5d
+--- /dev/null
++++ b/argaam/tools/market_disclosures.py
+@@ -0,0 +1,205 @@
++"""Tadawul disclosures from Argaam's market-wide lists (audit part 2, F-D).
++
++Argaam stopped filling each company's own "Disclosures" list (section 204) in
++2026-03, but still publishes Tadawul disclosures in its market-wide lists:
++section 244 (English) and 245 (Arabic), market 3. This reads those lists, fetches
++each new article once, and gives it to the ticker whose code the article page
++names (DMP_CompanySymbol). Per ticker it keeps
++
++    <universe>/<code>_TADAWUL/market_disclosures/market_disclosures_manifest.csv
++    <universe>/<code>_TADAWUL/market_disclosures/<lang>_<article id>.html  (headline and text only)
++
++which evidence_builder.py reads as that ticker's disclosures. Prints one line for
++the nightly status, for example
++
++    market disclosures: 9 new for 8 tickers (newest 2026-10-22); 2 with no ticker; 0 failed
++
++An item with no date, or whose company is not in tickers.csv, is skipped, never
++guessed. A failed fetch is retried the next night. Exit 0 unless the arguments are wrong.
++
++    python tools/market_disclosures.py default_universe tickers.csv [--days 14] [--keep-days 365]
++"""
++from __future__ import annotations
++
++import argparse
++import csv
++import html
++import json
++import re
++import sys
++import time
++import urllib.request
++from datetime import date, datetime, timedelta, timezone
++from pathlib import Path
++
++BASE_URL = "https://www.argaam.com"
++LISTS = {"en": 244, "ar": 245}  # section ids of the market-wide lists; market 3 = Tadawul
++MAX_PAGES = 3
++HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
++                         "(KHTML, like Gecko) Chrome/130.0 Safari/537.36"}
++FIELDS = ["item_id", "url", "title", "date_iso", "file_path", "language"]
++MANIFEST = "market_disclosures_manifest.csv"
++RIYADH = timezone(timedelta(hours=3))
++ITEM_RE = re.compile(
++    r'<div class="date">\s*([\d/]+)\s*(?:<i[^>]*></i>)?\s*</div>\s*<div class="title">\s*'
++    r'<a href="(/(?:en|ar)/article/articledetail/id/(\d+))"[^>]*>(?:\s*<i[^>]*></i>)?([^<]+)</a>')
++SYMBOL_RE = re.compile(r"DMP_CompanySymbol\s*=\s*\[([^\]]*)\]")
++
++
++def fetch(url: str) -> str:
++    req = urllib.request.Request(url, headers=HEADERS)
++    with urllib.request.urlopen(req, timeout=30) as r:
++        return r.read().decode("utf-8", errors="replace")
++
++
++def parse_date(text: str) -> date | None:
++    """The English list writes 22/10/2026, the Arabic one 2026/10/22."""
++    text = text.strip()
++    try:
++        return datetime.strptime(text, "%Y/%m/%d" if text[:4].isdigit() else "%d/%m/%Y").date()
++    except ValueError:
++        return None
++
++
++def list_items(lang: str, section: int, since: date) -> list[tuple[date, str, str, str]]:
++    """(date, url, article id, title) of the list's items dated `since` or later."""
++    out = []
++    for page in range(1, MAX_PAGES + 1):
++        rows = ITEM_RE.findall(fetch(f"{BASE_URL}/{lang}/company/disclosure/sectionid/{section}"
++                                     f"/marketid/3/pageno/{page}"))
++        if not rows:
++            break
++        reached_older = False
++        for d_text, path, art_id, title in rows:
++            d = parse_date(d_text)
++            if d is None:
++                continue
++            if d < since:
++                reached_older = True
++                continue
++            out.append((d, BASE_URL + path, art_id, html.unescape(title).strip()))
++        if reached_older:
++            break
++        time.sleep(1)
++    return out
++
++
++def article_body(page: str) -> str:
++    """The article's text block (<div class="ck-editor article ...">, nested divs counted),
++    without scripts or image captions. The page's other blocks (AI summary, comment scores)
++    say "Loading data..." to a script-less reader. "" when absent: the item then has no body,
++    like the company-list items before it, and evidence_builder fetches a summary instead."""
++    start = re.search(r'<div\b[^>]*\bclass="ck-editor article\b', page)
++    if not start:
++        return ""
++    depth = 0
++    for m in re.finditer(r"<div\b|</div\s*>", page[start.start():]):
++        depth += 1 if m.group(0).startswith("<div") else -1
++        if depth == 0:
++            block = page[start.start():start.start() + m.end()]
++            block = re.sub(r"<script\b.*?</script\s*>", "", block, flags=re.S | re.I)
++            return re.sub(r'<p\b[^>]*class="ckeCaption"[^>]*>.*?</p\s*>', "", block, flags=re.S | re.I)
++    return ""
++
++
++def read_manifest(path: Path) -> list[dict]:
++    if not path.exists():
++        return []
++    with open(path, encoding="utf-8-sig", newline="") as f:
++        return list(csv.DictReader(f))
++
++
++def write_manifest(folder: Path, rows: list[dict], keep_from: str) -> None:
++    """Newest first; rows older than keep_from are dropped with their files."""
++    kept = []
++    for r in sorted(rows, key=lambda r: (r["date_iso"], r["item_id"]), reverse=True):
++        if r["date_iso"] >= keep_from:
++            kept.append(r)
++        else:
++            (folder.parent / r["file_path"]).unlink(missing_ok=True)
++    with open(folder / MANIFEST, "w", encoding="utf-8", newline="") as f:
++        w = csv.DictWriter(f, fieldnames=FIELDS)
++        w.writeheader()
++        w.writerows(kept)
++
++
++def main() -> int:
++    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
++    ap.add_argument("universe", type=Path)
++    ap.add_argument("tickers_csv", type=Path)
++    ap.add_argument("--days", type=int, default=14, help="read list items this many days back")
++    ap.add_argument("--keep-days", type=int, default=365, help="drop manifest rows older than this")
++    args = ap.parse_args()
++
++    with open(args.tickers_csv, encoding="utf-8-sig", newline="") as f:
++        codes = {r["ticker"].strip() for r in csv.DictReader(f) if r.get("exchange", "").strip() == "TADAWUL"}
++    state_path = args.universe / ".market_disclosures_state.json"
++    try:
++        seen = json.loads(state_path.read_text(encoding="utf-8")).get("seen", {})
++    except (OSError, ValueError):
++        seen = {}
++
++    today = datetime.now(RIYADH).date()
++    since = today - timedelta(days=args.days)
++    new_rows: dict[str, list[dict]] = {}
++    no_ticker = failed = 0
++    for lang, section in LISTS.items():
++        try:
++            items = list_items(lang, section, since)
++        except Exception as e:  # noqa: BLE001 - one list failing must not stop the other
++            print(f"[WARN] {lang} disclosure list: {e}", file=sys.stderr)
++            failed += 1
++            continue
++        for d, url, art_id, title in items:
++            key = f"{lang}_{art_id}"
++            if key in seen:
++                continue
++            try:
++                page = fetch(url)
++            except Exception as e:  # noqa: BLE001 - not marked seen, so retried next night
++                print(f"[WARN] {url}: {e}", file=sys.stderr)
++                failed += 1
++                continue
++            time.sleep(1)
++            m = SYMBOL_RE.search(page)
++            symbols = re.findall(r'"\s*([^"\s]+)\s*"', m.group(1)) if m else []
++            tickers = [f"{s}_TADAWUL" for s in symbols
++                       if s in codes and (args.universe / f"{s}_TADAWUL").is_dir()]
++            seen[key] = {"date": d.isoformat(), "tickers": tickers}
++            if not tickers:
++                no_ticker += 1
++                continue
++            # The block evidence_builder reads: <div id="articledetail"> with the headline and text.
++            doc = (f'<!doctype html><html><head><meta charset="utf-8"><title>{html.escape(title)}</title>'
++                   f'</head><body><div id="articledetail"><h1>{html.escape(title)}</h1>'
++                   f"{article_body(page)}</div></body></html>\n")
++            for tk in tickers:
++                folder = args.universe / tk / "market_disclosures"
++                folder.mkdir(exist_ok=True)
++                (folder / f"{key}.html").write_text(doc, encoding="utf-8")
++                new_rows.setdefault(tk, []).append({
++                    "item_id": f"disclosures_{art_id}", "url": url, "title": title,
++                    "date_iso": d.isoformat(), "file_path": f"market_disclosures/{key}.html",
++                    "language": lang})
++
++    keep_from = (today - timedelta(days=args.keep_days)).isoformat()
++    for folder in sorted(args.universe.glob("*_TADAWUL/market_disclosures")):
++        rows = {r["item_id"]: r for r in read_manifest(folder / MANIFEST)}
++        rows.update({r["item_id"]: r for r in new_rows.get(folder.parent.name, [])})
++        write_manifest(folder, list(rows.values()), keep_from)
++
++    # Items older than the list window cannot come back, so their keys can go.
++    forget_before = (since - timedelta(days=30)).isoformat()
++    seen = {k: v for k, v in seen.items() if v.get("date", "") >= forget_before}
++    state_path.write_text(json.dumps({"updated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
++                                      "seen": seen}, ensure_ascii=False), encoding="utf-8")
++
++    n_new = sum(len(v) for v in new_rows.values())
++    newest = max((r["date_iso"] for v in new_rows.values() for r in v), default="none")
++    print(f"market disclosures: {n_new} new for {len(new_rows)} tickers (newest {newest}); "
++          f"{no_ticker} with no ticker; {failed} failed")
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/llm-council/evidence_builder.py b/llm-council/evidence_builder.py
+index 129411d..b71793f 100644
+--- a/llm-council/evidence_builder.py
++++ b/llm-council/evidence_builder.py
+@@ -634,6 +634,15 @@ def process_ticker(
+             )
+             all_items.extend(items)
+ 
++    # Tadawul disclosures from Argaam's market-wide lists (audit part 2, F-D): the company
++    # lists stopped in 2026-03, so argaam/tools/market_disclosures.py keeps a manifest per
++    # ticker beside harvest_runs. Its file paths are relative to the ticker folder.
++    md_manifest = ticker_dir / "market_disclosures" / "market_disclosures_manifest.csv"
++    if md_manifest.exists():
++        all_items.extend(_process_section_with_manifest(
++            ticker_key, "disclosures", ticker_dir, _read_manifest(md_manifest), existing_summaries
++        ))
++
+     # ------------------------------------------------------------------
+     # Artifacts: financial_ratios.csv
+     # ------------------------------------------------------------------
+-- 
+2.56.0.windows.2
+
