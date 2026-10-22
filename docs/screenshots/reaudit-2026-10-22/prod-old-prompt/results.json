@@ -1,0 +1,68 @@
+{
+  "base_url": "http://localhost:3301",
+  "at": "2026-10-22T00:41:04.925Z",
+  "results": [
+    {
+      "row": "7f",
+      "status": "FAIL",
+      "finding": "median first words 10.3 s (target 5), full 22.9 s (target 20); each: 4.0/8.4, 5.9/10.5, 27.6/45.2, 10.3/22.9, 11.7/30.8",
+      "evidence": [
+        {
+          "route": "/t/METH.AD",
+          "question": "What are the EV/EBITDA and the dividend yield?",
+          "locale": "en",
+          "width": 1440,
+          "first_ms": 4035,
+          "full_ms": 8362,
+          "citations": 8,
+          "figures": 10,
+          "text": "Neither figure is available for Methaq Takaful Insurance (METH.AD) in this database.EV/EBITDA — not reported; the metric is treated as not meaningful for the Insurance sector, so no value exists here DB.Dividend yield — not reported, because the inputs needed to compute it are missing; the dividend history for this ticker contains no recorded distributions at all DB P1Key metrics.For context, the valuation items that are available are price-to-sales at 0.21x, at the 96.7th percentile of Insurance peers, while the income-side payout ratio is likewise unavailable DB. On the profitability side, return on assets is -71.75% and net margin -17.66% (3.5th sector percentile), and price-to-book and return on equity are also not reported P1Key metrics DB. Book value is negative at -4.81, which is consistent with a company that has no distributable surplus P1Key metrics.Note that the quote on your panel — last price 0.65 AED, market cap 96.75 million AED — is dated 2023-06-15 and is flagged as out of date, so a yield computed today would not rest on a current price in any case P1Key metrics."
+        },
+        {
+          "route": "/t/AFNIC",
+          "question": "What was the last closing price and the 1-month return?",
+          "locale": "en",
+          "width": 1440,
+          "first_ms": 5897,
+          "full_ms": 10541,
+          "citations": 7,
+          "figures": 18,
+          "text": "The last price on record for Al Fujairah National Insurance (AFNIC, ADX) is 230 AED, dated 2026-10-16; the 1-month return is not available in this dataset. P2Key metricsSupporting detail:- Last price 230 AED as of 2026-10-16, that day's change +9.52%, on volume of 26 shares and value traded of 5,980 AED, market cap 305.9 mn AED. P2Key metrics- The quote's price data is flagged as stale (as-of 2026-10-16, past its 2-day refresh window), so this is the most recent closing print held here, not a live quote. P2Key metrics- The 1-month return has no value, and neither do the 3-month, 6-month or 12-month returns — no daily price history exists for this ticker in the database, so a one-month change cannot be computed from the available records. P2Key metrics DB- Related context on the same screen: P/B 0.69x, dividend yield 4.35%, ROE 22.24%, ROA 8.92%, book value 332.52; no dividend or capital-change entries are recorded. P2Key metrics DB"
+        },
+        {
+          "route": "/t/2222",
+          "question": "Is the dividend safe?",
+          "locale": "en",
+          "width": 1440,
+          "first_ms": 27572,
+          "full_ms": 45156,
+          "citations": 16,
+          "figures": 88,
+          "text": "Short answer: The data shows a dividend that looks well covered by earnings and supported by a healthy balance sheet, but its headline size has already been reduced once (the large performance‑linked add‑ons disappeared after 2024/25), and the coverage inputs that matter most — payout ratio, cash flow, net margin, interest coverage — are not published here, so \"safety\" can't be confirmed from this database P1Key metrics DB.What the numbers show (Saudi Aramco, 2222, SAR): P1Key metricsCoverage by earnings: the last four declared quarterly DPS are SAR 0.34, 0.34, 0.34 and 0.33, totalling SAR 1.35, against trailing EPS of SAR 1.84 DBP1Key metrics — roughly 73% of earnings. The payout ratio itself is not published in the fundamentals (it lists as missing inputs) DB.Cash being paid out: each recent quarter runs about SAR 82,060–82,080 million, versus SAR 116,450–116,510 million in the 2024 quarters DB. Market cap is SAR 6,117,760 million, so a year of dividends is a small slice of the equity value P1Key metrics.Direction of travel: the base component has been nudged up (0.33 in 2025 → 0.34 in the Q1 and Q2 2026 declarations), but the performance‑linked element shrank from SAR 40,390–40,410 million per quarter (2024) to SAR 820 million per quarter (2025) and is absent from the 2026 notes DB. On a trailing four‑quarter basis that is a step down from SAR 1.77 to SAR 1.35 per share.Profitability and balance sheet behind it: ROE 26.75%, ROA 15.86%, debt/equity 0.20 (54th sector percentile), current ratio 2.00 (68.7th sector percentile), health score 61.35 DB.Yield today: 5.23% at the SAR 25.48 close of 2026-10-20, with the income seat voting bullish (yield above its 5% threshold) and the risk seat bullish (1‑year volatility 14.8%) P1Key metricsDB.What is not available here: payout ratio, free cash flow yield, interest coverage, net margin, gross margin and ROIC all come back as missing or not applicable for this sector, and no forward dividend policy or guidance statement is in the feed DB. News and disclosures are also stale — dated 2026-03-09 against a 30‑ and 120‑day window — and the news seat abstained because there is no rated item in the last 30 days, so nothing in the data flags an announced cut or change P1Key metricsDB.Read together: earnings and balance‑sheet metrics do not strain the current SAR 0.34 quarterly rate, but the record shows the company has already trimmed the variable layer, and the cash‑flow evidence needed to call the dividend fully safe is not in this database DB.Saudi Aramco (2222) dividend history, SAR per shareget_dividends(2222)Pin to dashboardEx-datePeriodDPS (SAR)Total (SAR mn)Note2026-08-19Q2 20260.3482,060no performance-linked component2026-06-01Q1 20260.3482,080no performance-linked component2026-03-16Q4 20250.3482,080no performance-linked component2025-11-17Q3 20250.3380,120incl. performance-linked SAR 820 mn2025-08-19Q2 20250.3380,110incl. performance-linked SAR 820 mn2025-05-21Q1 20250.3380,110incl. performance-linked SAR 820 mn2025-03-17Q4 20240.3380,100incl. performance-linked SAR 820 mn2024-11-14Q3 20240.48116,450incl. performance-linked SAR 40,390 mn2024-08-20Q2 20240.48116,450incl. performance-linked SAR 40,390 mn2024-05-14Q1 20240.48116,510incl. performance-linked SAR 40,410 mn"
+        },
+        {
+          "route": "/t/2222",
+          "question": "How does the valuation compare with its peers?",
+          "locale": "en",
+          "width": 1440,
+          "first_ms": 10332,
+          "full_ms": 22920,
+          "citations": 14,
+          "figures": 39,
+          "text": "Saudi Aramco trades on a mid-pack P/E within its sector but at a far richer price-to-book and a clearly higher dividend yield than the peers with published figures, while its market cap dwarfs every other name in the Energy peer set on Tadawul P1Key metricsP2Peers.Aramco's P/E is 13.86x, sitting above the cheapest peer The National Shipping Company of Saudi Arabia at 5.14x and Petro Rabigh at 12.43x, but well below ADES Holding Company at 28.20x; across the three peers with published earnings multiples the average is about 15.3x P1Key metricsP2Peers.Arabian Drilling Company and Saudi Arabian Refineries Company show no P/E at all, so they cannot be placed on that scale P2Peers.Book-based comparison is one-sided: Aramco's P/B is 3.93x on a book value of SAR 6.49 per share, and the peer panel carries no P/B for any of the five peers P1Key metricsP2Peers.On yield, Aramco's dividend yield of 5.23% is roughly double the two peers that disclose one — 2.84% for National Shipping and 2.78% for ADES — with no yield shown for Petro Rabigh, Arabian Drilling or Al-Musafi P1Key metricsP2Peers.Scale is the starkest gap: market capitalisation SAR 6,117,760 mn for Aramco against SAR 32,410.49 mn for the largest peer (National Shipping), then Petro Rabigh SAR 28,808.04 mn, ADES SAR 18,573.04 mn, Arabian Drilling SAR 8,397.15 mn and Al-Musafi SAR 766.5 mn P1Key metricsP2Peers.The fundamentals panel gives no EV/EBITDA or price-to-sales for Aramco, so the comparison is limited to P/E, P/B and yield DB.Timing note: Aramco's quote and ratios are as of 2026-10-20, while the peer figures are as of 2026-10-16, so the two sets are four days apart P1Key metricsP2Peers.Energy peers vs Saudi Aramco (2222)P1 P2Pin to dashboardTickerNamePrice (SAR)Market cap (SAR mn)P/EDividend yield %2222Saudi Aramco25.486,117,76013.865.234030The National Shipping Company of Saudi Arabia35.1232,410.495.142.842380Petro Rabigh17.2428,808.0412.43n/a2382ADES Holding Company16.4518,573.0428.202.782381Arabian Drilling Company94.358,397.15n/an/a2030Saudi Arabian Refineries Company51.10766.50n/an/a"
+        },
+        {
+          "route": "/t/2222",
+          "question": "What was the last close, and how has the price moved over the past month?",
+          "locale": "en",
+          "width": 1440,
+          "first_ms": 11661,
+          "full_ms": 30827,
+          "citations": 10,
+          "figures": 56,
+          "text": "Saudi Aramco (2222, Tadawul) last closed at SAR 25.48 on 2026-10-20, down 1.24% on the day DB. Over the past month it has gone essentially sideways: SAR 25.56 on 2026-09-17 to SAR 25.48 on 2026-10-20, a change of -0.31% across 23 trading days DB.Supporting figures for the month (2026-09-17 to 2026-10-20) DB:- Highest daily close: SAR 25.90; lowest daily close: SAR 25.18 P1Price- Average daily volume: 9,095,659 shares DB- One-month return as the overview reports it: -0.94%- The chart above covers this same 1M window DBWider context, for reference:- 3-month return -5.81%, 6-month -7.60%, 12-month +3.18% DB- The 1-year price panel begins at SAR 24.85 close on 2025-10-06 P1Price- Price sits below both the 50-day SMA (SAR 25.92) and the 200-day SMA (SAR 26.29); RSI-14 at 55.96; 8.87% below the 52-week high and 9.40% above the 52-week low DB- Quote as of 2026-10-20, with market cap SAR 6,117,760 million and a dividend yield of 5.23% DBI can only describe what the data shows — this is not a recommendation to buy, sell or hold.2222 · 1MPin to dashboarda#tv-attr-logo{--fill:#131722;--stroke:#fff;position:absolute;left:10px;bottom:10px;height:19px;width:35px;margin:0;padding:0;border:0;z-index:3;}a#tv-attr-logo[data-dark]{--fill:#D1D4DC;--stroke:#131722;}20 Oct 2026O25.80H25.80L25.48C25.48-1.24%V11.79M"
+        }
+      ]
+    }
+  ]
+}

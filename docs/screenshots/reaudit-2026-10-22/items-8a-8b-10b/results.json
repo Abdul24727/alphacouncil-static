@@ -1,0 +1,6349 @@
+{
+  "base_url": "http://localhost:3201",
+  "at": "2026-10-22T00:58:33.220Z",
+  "results": [
+    {
+      "row": "8a",
+      "status": "PASS",
+      "finding": "check-arabic.mjs: 24 Arabic page view(s) signed out; 0 English string(s) outside the allow-list (raw count, tickers and brand included: 843; audit run 2: 52)",
+      "evidence": {
+        "checkArabic": {
+          "ok": true,
+          "summary": "24 Arabic page view(s) signed out; 0 English string(s) outside the allow-list",
+          "leaks": []
+        },
+        "raw": [
+          {
+            "string": "AlphaCouncil | span | lang=ar",
+            "pages": [
+              "/",
+              "/",
+              "/pricing",
+              "/pricing"
+            ],
+            "count": 29
+          },
+          {
+            "string": "EN | a | lang=ar",
+            "pages": [
+              "/",
+              "/pricing",
+              "/methodology",
+              "/legal"
+            ],
+            "count": 20
+          },
+          {
+            "string": "· EN / ع | p | lang=ar",
+            "pages": [
+              "/"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AlphaCouncil برنامج بحثي. لا شيء في هذا الموقع نصيحة استثمارية. | p | lang=ar",
+            "pages": [
+              "/",
+              "/pricing",
+              "/methodology",
+              "/legal"
+            ],
+            "count": 5
+          },
+          {
+            "string": "© مؤسسة إنسايت لين، تعمل باسم AlphaCouncil | p | lang=ar",
+            "pages": [
+              "/",
+              "/pricing",
+              "/methodology",
+              "/legal"
+            ],
+            "count": 5
+          },
+          {
+            "string": "ما ليس AlphaCouncil | h2 | lang=ar",
+            "pages": [
+              "/methodology"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AlphaCouncil برنامج بحثي. ليس نصيحة استثمارية، وليس وسيطًا، ولا ينفّذ  | p | lang=ar",
+            "pages": [
+              "/methodology"
+            ],
+            "count": 1
+          },
+          {
+            "string": "الوثائق التي تحكم استخدامك لـ AlphaCouncil. | p | lang=ar",
+            "pages": [
+              "/legal"
+            ],
+            "count": 1
+          },
+          {
+            "string": "— مؤسسة إنسايت لين، مؤسسة فردية سعودية، السجل التجاري / الرقم الوطني ا | p | lang=ar",
+            "pages": [
+              "/legal",
+              "/legal/terms"
+            ],
+            "count": 2
+          },
+          {
+            "string": "support@alphacouncil.tech | a | lang=ar",
+            "pages": [
+              "/legal",
+              "/legal/terms"
+            ],
+            "count": 2
+          },
+          {
+            "string": "المُشغِّل: مؤسسة إنسايت لين، مؤسسة فردية سعودية، السجل التجاري / الرقم | p | lang=ar",
+            "pages": [
+              "/legal/terms"
+            ],
+            "count": 1
+          },
+          {
+            "string": "تحكم شروط الخدمة هذه (\"الشروط\") الوصول إلى المواقع الإلكترونية والتطبي | p | lang=ar",
+            "pages": [
+              "/legal/terms"
+            ],
+            "count": 1
+          },
+          {
+            "string": "تُقدَّم الخدمة من قبل مؤسسة إنسايت لين، وهي مؤسسة فردية مسجّلة في المم | p | lang=ar",
+            "pages": [
+              "/legal/terms"
+            ],
+            "count": 1
+          },
+          {
+            "string": "توفّر AlphaCouncil أدوات آلية للأبحاث المالية وفرز الأسهم وتحليل المحا | p | lang=ar",
+            "pages": [
+              "/legal/terms"
+            ],
+            "count": 1
+          },
+          {
+            "string": "لا تنفّذ AlphaCouncil الصفقات ولا تُرتّبها، ولا تتلقى أوامر التداول أو | p | lang=ar",
+            "pages": [
+              "/legal/terms"
+            ],
+            "count": 1
+          },
+          {
+            "string": "إلى أقصى حد يسمح به القانون المعمول به، لن تتحمل AlphaCouncil ولا مالك | p | lang=ar",
+            "pages": [
+              "/legal/terms"
+            ],
+            "count": 1
+          },
+          {
+            "string": "إلى أقصى حد يسمح به القانون، ستعوّضنا وتحمي AlphaCouncil ومالكها وموظف | p | lang=ar",
+            "pages": [
+              "/legal/terms"
+            ],
+            "count": 1
+          },
+          {
+            "string": "عدم وجود شراكة أو وكالة. لا تنشئ هذه الشروط شراكة أو مشروعاً مشتركاً أ | p | lang=ar",
+            "pages": [
+              "/legal/terms"
+            ],
+            "count": 1
+          },
+          {
+            "string": "البريد الإلكتروني: support@alphacouncil.tech | p | lang=ar",
+            "pages": [
+              "/legal/terms"
+            ],
+            "count": 1
+          },
+          {
+            "string": "صفحة التواصل: https://alphacouncil.tech/contact.html | p | lang=ar",
+            "pages": [
+              "/legal/terms"
+            ],
+            "count": 1
+          },
+          {
+            "string": "الموقع الإلكتروني: https://alphacouncil.tech | p | lang=ar",
+            "pages": [
+              "/legal/terms"
+            ],
+            "count": 1
+          },
+          {
+            "string": "المتابعة باستخدام Google | a | lang=ar",
+            "pages": [
+              "/login"
+            ],
+            "count": 1
+          },
+          {
+            "string": "جديد في AlphaCouncil؟ | p | lang=ar",
+            "pages": [
+              "/login"
+            ],
+            "count": 1
+          },
+          {
+            "string": "هل كان لديك حساب في موقع AlphaCouncil السابق؟ اختر «نسيت كلمة المرور؟» | p | lang=ar",
+            "pages": [
+              "/login"
+            ],
+            "count": 1
+          },
+          {
+            "string": "المتابعة باستخدام Google | button | lang=ar",
+            "pages": [
+              "/signup"
+            ],
+            "count": 1
+          },
+          {
+            "string": "Ctrl K | kbd | lang=ar",
+            "pages": [
+              "/home",
+              "/portfolio",
+              "/screener",
+              "/markets"
+            ],
+            "count": 15
+          },
+          {
+            "string": "UAB | home.gainers | lang=ar",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SHPS | home.gainers | lang=ar",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MGMC | home.losers | lang=ar",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GWCS | home.news | lang=ar",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GHITHA | home.news | lang=ar",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GFH.DU | home.news | lang=ar",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BBK.BH | home.news | lang=ar",
+            "pages": [
+              "/home",
+              "/home"
+            ],
+            "count": 2
+          },
+          {
+            "string": "MEZA | home.news | lang=ar",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"UAB\" | span",
+            "pages": [
+              "/home",
+              "/screener"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"SHPS\" | span",
+            "pages": [
+              "/home",
+              "/screener"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"MGMC\" | span",
+            "pages": [
+              "/home",
+              "/screener"
+            ],
+            "count": 2
+          },
+          {
+            "string": "2POINTZERO | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ABNIC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADAV.AD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADCB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADIB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADNH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADNHC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADNIC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADNOCDIST | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADNOCDRILL | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADNOCGAS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADNOCLS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADPORTS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADSB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AFNIC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AGILITY | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AGTHIA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AKIC.AD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALAIN | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALDAR | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALEFEDT | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALPHADHABI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AMR | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ANAN | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "APEX | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ARAM | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ASM | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AWNIC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BILDCO | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BOROUGE | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BOS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BURJEEL | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "CBI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DANA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DHAFRA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DRIVE | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "EAND | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "EASYLEAS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "EIC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "EMSTEEL | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ESG | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ESHRAQ | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "FAB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "FBI.AD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "FCI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "FERTIGLB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "FH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "FIDELITY | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "FNF | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GCEM | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GHITHA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GIH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GMPC.AD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "HAYAH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "HH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ICAP | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "IH.AD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "IHC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "INVESTB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "INVICTUS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "JULPHAR | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "KICO | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "LULU | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MAIR | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MANAZEL | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MBME | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "METH.AD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MODON | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NBF | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NBQ | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NCTH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NMDC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NMDCENR | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OEIHC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ORAS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ORDS | screener.results | lang=ar",
+            "pages": [
+              "/screener",
+              "/screener",
+              "/screener"
+            ],
+            "count": 3
+          },
+          {
+            "string": "PALMS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "PHX | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "PRESIGHT | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "PUREHEALTH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QIC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "RAKB.AD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "RAKCEC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "RAKN.AD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "RAKPROP | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "RAKWCT | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "RAPCO | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "RPM | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SAGA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SAWAEED | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SCIDC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SIB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SICO | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SPACE42 | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SUDATEL | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "TAQA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "TKFL | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "TNI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UAB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UNION | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "WAHA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AGLTY | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AIRARABIA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AJMANBAN | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALANSARI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALEC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALFIRDOU | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALLIANCE | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALRAMZ | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALSALAMS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AMAN | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AMANAT | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AMCREIT | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AMLAK | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ARMX | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ASNIC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BHMCAPIT | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "CBD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DEWA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DEYAAR | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DFM | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DIB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DIC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DIN | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DNIR | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DRC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DSI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DTC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DU | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DUBAIRES | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "E NBD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "EIBANK | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "EKTTITAB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "EMAAR | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "EMAARDEV | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "EMPOWER | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ERC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GULFNAV | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "IFA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ITHMR | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MASQ | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MAZAYA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NAHO | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NCC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NGI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NIH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NIND | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ORIENT | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ORIENTTKAFUL | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "PARKIN | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SALAMA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SALIK | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SHUAA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SPINNEYS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SUKOON | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "TAALEEM | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "TABREED | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "TAKAFUL | screener.results | lang=ar",
+            "pages": [
+              "/screener",
+              "/screener"
+            ],
+            "count": 2
+          },
+          {
+            "string": "TALABAT | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "TECOM | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UFC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UNIKAI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UNIONCOO | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UPP | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "WATANIA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ABQK | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AHCS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AKHI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BEMA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BLDN | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BRES | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "CBQK | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DBIS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DHBK | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DOHI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DUBK | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ERES | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "FALH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GISS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GWCS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "IGRD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "IHGS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "IQCD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MARK | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MCCS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MCGS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MERS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MEZA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MFMS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MHAR | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MKDM | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MPHC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MRDS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NLCS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QAMC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QATI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QCFS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QEWS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QFBQ | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QFLS.QA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QGMD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QGRI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QGTS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QIBK | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QIGD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QIIK | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QIMD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QISI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QLMI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QNBK | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QNCD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QNNS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QOIS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SIIS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "TQES | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UDCD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "VFQS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "WDAM | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ZHCD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ABC.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ABRAAJ | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALBH.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "APMTB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ARIG.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BASREC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BBK.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BCFC.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BEYON | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BFM | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BISB.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BKIC.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BMEB.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BMMI.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BMUSC.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BNH.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "CINECO.B | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "CPARK | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DUTYF.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ESTERD.B | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "FAMILY B | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GFH.DU | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GHG.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "INOVEST | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ITHMR.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "KFH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "KHALEEJI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NBB.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NHOTEL.B | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "POLTRY | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SALAM.DU | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SEEF.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SILAH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SOLID BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "TRAFCO.B | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UGH.BHR | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UGIC.BH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ZAINBH | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AACT | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AAIC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ABOB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ABRJ | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AJS.OM | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AMAT | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AMCI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AOFS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ASYAD | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ATMI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BATP | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BKDB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BKMB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BKNZ | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BKSB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BRDE | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BWPC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "CMII | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DFIN | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DGEN | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DICS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DIDI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GECS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "LIVA | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MFCI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MGMC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MHAS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MSPW | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NBOB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OAB | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OCAI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OCCI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OCCO | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OCHL | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OEIO | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OFC.OM | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OFM.OM | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OMVS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OOMS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OQBI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OQEP | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OQGN | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OREF.OM | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OTEL | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OUIC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "PHPC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "RCCI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "RNSS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SHPS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SIHC | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SOMS | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SPSI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SSPW | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SUWP | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "TFCI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UFCI | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "VOES | screener.results | lang=ar",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"2POINTZERO\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ABNIC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"ADAV.AD\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ADCB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ADIB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ADNH\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"ADNHC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"ADNIC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"ADNOCDIST\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ADNOCDRILL\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ADNOCGAS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ADNOCLS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ADPORTS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ADSB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"AFNIC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"AGILITY\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"AGTHIA\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"AKIC.AD\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ALAIN\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"ALDAR\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ALEFEDT\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ALPHADHABI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"AMR\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ANAN\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"APEX\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ARAM\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ASM\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"AWNIC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"BILDCO\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"BOROUGE\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"BOS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"BURJEEL\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"CBI\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"DANA\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"DHAFRA\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"DRIVE\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"EAND\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"EASYLEAS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"EIC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"EMSTEEL\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ESG\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ESHRAQ\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"FAB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"FBI.AD\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"FCI\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"FERTIGLB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"FH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"FIDELITY\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"FNF\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"GCEM\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"GHITHA\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"GIH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"GMPC.AD\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"HAYAH\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"HH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ICAP\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"IH.AD\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"IHC\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"INVESTB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"INVICTUS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"JULPHAR\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"KICO\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"LULU\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"MAIR\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"MANAZEL\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"MBME\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"METH.AD\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"MODON\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"NBF\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"NBQ\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"NCTH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"NMDC\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"NMDCENR\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"OEIHC\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ORAS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ORDS\" | span",
+            "pages": [
+              "/screener",
+              "/screener",
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 6
+          },
+          {
+            "string": "title=\"PALMS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"PHX\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"PRESIGHT\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"PUREHEALTH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"QIC\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"RAKB.AD\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"RAKCEC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"RAKN.AD\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"RAKPROP\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"RAKWCT\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"RAPCO\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"RPM\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"SAGA\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"SAWAEED\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"SCIDC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"SIB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"SICO\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"SPACE42\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"SUDATEL\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"TAQA\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"TKFL\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"TNI\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"UNION\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"WAHA\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"AGLTY\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"AIRARABIA\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"AJMANBAN\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ALANSARI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"ALEC\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ALFIRDOU\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ALLIANCE\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"ALRAMZ\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"ALSALAMS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"AMAN\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"AMANAT\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"AMCREIT\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"AMLAK\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"ARMX\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ASNIC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"BHMCAPIT\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"CBD\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"DEWA\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"DEYAAR\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"DFM\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"DIB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"DIC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"DIN\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"DNIR\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"DRC\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"DSI\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"DTC\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"DU\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"DUBAIRES\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"E NBD\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"EIBANK\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"EKTTITAB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"EMAAR\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"EMAARDEV\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"EMPOWER\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ERC\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"GULFNAV\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"IFA\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ITHMR\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"MASQ\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"MAZAYA\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"NAHO\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"NCC\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"NGI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"NIH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"NIND\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ORIENT\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"ORIENTTKAFUL\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"PARKIN\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"SALAMA\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"SALIK\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"SHUAA\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"SPINNEYS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"SUKOON\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"TAALEEM\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"TABREED\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"TAKAFUL\" | span",
+            "pages": [
+              "/screener",
+              "/screener",
+              "/templates/sector-vs-sector",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 4
+          },
+          {
+            "string": "title=\"TALABAT\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"TECOM\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"UFC\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"UNIKAI\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"UNIONCOO\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"UPP\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"WATANIA\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"ABQK\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"AHCS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/dividend-hunter"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"AKHI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"BEMA\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"BLDN\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"BRES\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/dividend-hunter"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"CBQK\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/dividend-hunter"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"DBIS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"DHBK\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/dividend-hunter"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"DOHI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"DUBK\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ERES\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"FALH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"GISS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/dividend-hunter"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"GWCS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"IGRD\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"IHGS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"IQCD\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/dividend-hunter"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"MARK\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/dividend-hunter"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"MCCS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"MCGS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"MERS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"MEZA\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"MFMS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"MHAR\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/dividend-hunter"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"MKDM\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"MPHC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"MRDS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"NLCS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"QAMC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/dividend-hunter"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"QATI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"QCFS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"QEWS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"QFBQ\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"QFLS.QA\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/dividend-hunter"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"QGMD\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"QGRI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"QGTS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"QIBK\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"QIGD\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"QIIK\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"QIMD\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"QISI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/dividend-hunter",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 4
+          },
+          {
+            "string": "title=\"QLMI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"QNBK\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"QNCD\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/dividend-hunter"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"QNNS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"QOIS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"SIIS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/dividend-hunter"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"TQES\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"UDCD\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season",
+              "/templates/dividend-hunter"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"VFQS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"WDAM\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"ZHCD\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"ABC.BH\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"ABRAAJ\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ALBH.BH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"APMTB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ARIG.BH\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"BASREC\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"BBK.BH\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"BCFC.BH\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"BEYON\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"BFM\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"BISB.BH\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"BKIC.BH\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"BMEB.BH\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"BMMI.BH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"BMUSC.BH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"BNH.BH\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"CINECO.B\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"CPARK\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"DUTYF.BH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ESTERD.B\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"FAMILY B\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"GFH.DU\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"GHG.BH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"INOVEST\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"ITHMR.BH\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"KFH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"KHALEEJI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"NBB.BH\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"NHOTEL.B\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"POLTRY\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"SALAM.DU\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"SEEF.BH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"SILAH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"SOLID BH\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"TRAFCO.B\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"UGH.BHR\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"UGIC.BH\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"ZAINBH\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"AACT\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"AAIC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"ABOB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ABRJ\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"AJS.OM\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"AMAT\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"AMCI\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"AOFS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 3
+          },
+          {
+            "string": "title=\"ASYAD\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"ATMI\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"BATP\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"BKDB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"BKMB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"BKNZ\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"BKSB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"BRDE\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"BWPC\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"CMII\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"DFIN\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"DGEN\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"DICS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"DIDI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"GECS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"LIVA\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"MFCI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"MHAS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"MSPW\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"NBOB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"OAB\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"OCAI\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"OCCI\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"OCCO\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"OCHL\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"OEIO\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"OFC.OM\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"OFM.OM\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"OMVS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"OOMS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"OQBI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"OQEP\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"OQGN\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"OREF.OM\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"OTEL\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"OUIC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"PHPC\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"RCCI\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"RNSS\" | span",
+            "pages": [
+              "/screener",
+              "/templates/dividend-hunter"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"SIHC\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"SOMS\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"SPSI\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"SSPW\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"SUWP\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"TFCI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"UFCI\" | span",
+            "pages": [
+              "/screener",
+              "/templates/sector-vs-sector"
+            ],
+            "count": 2
+          },
+          {
+            "string": "title=\"VOES\" | span",
+            "pages": [
+              "/screener"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MERS | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MRDS | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QFBQ | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QAMC | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QEWS | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QIIK | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SIIS | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "VFQS | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BRES | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MPHC | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QGRI | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QNNS | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UDCD | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "WDAM | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AHCS | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QIMD | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QISI | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AKHI | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "IQCD | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MCCS | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MHAR | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MFMS | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ORDS | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season",
+              "/templates/earnings-season"
+            ],
+            "count": 2
+          },
+          {
+            "string": "QCFS | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DOHI | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MARK | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DBIS | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GISS | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QGMD | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QOIS | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ZHCD | earnings.upcoming | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QIGD | earnings.recent | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ERES | earnings.recent | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QNCD | earnings.recent | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QGTS | earnings.recent | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GWCS | earnings.recent | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "CBQK | earnings.recent | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ABQK | earnings.recent | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QIBK | earnings.recent | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QFLS.QA | earnings.recent | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DHBK | earnings.recent | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QNBK | earnings.recent | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OQBI | earnings.recent | lang=ar",
+            "pages": [
+              "/templates/earnings-season"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ORIENT | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AMLAK | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SAWAEED | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SUDATEL | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADNHC | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ICAP | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "RNSS | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QNCD | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALPHADHABI | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "FBI.AD | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BRES | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QAMC | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SIIS | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "EMAAR | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "RAKCEC | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "IQCD | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "EIC | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MSPW | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UDCD | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AJS.OM | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DANA | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "CBQK | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AHCS | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "EMAARDEV | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NGI | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AWNIC | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QFLS.QA | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AOFS | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "PALMS | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GMPC.AD | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BRDE | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AMAT | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "LULU | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QISI | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OCCO | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AMCREIT | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GISS | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SCIDC | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DEYAAR | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NBQ | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AGTHIA | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BOROUGE | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MKDM | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MHAR | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADNIC | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DHBK | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DIC | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALLIANCE | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADNH | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ORDS | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DUBAIRES | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MARK | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UNIONCOO | dividends.ranked | lang=ar",
+            "pages": [
+              "/templates/dividend-hunter"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DFM | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALANSARI | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AMANAT | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GFH.DU | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AMLAK | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NBB.BH | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BBK.BH | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALRAMZ | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ABC.BH | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SHUAA | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SALAM.DU | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OMVS | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BHMCAPIT | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UGH.BHR | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ARIG.BH | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "WATANIA | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DIDI | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "INOVEST | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "KHALEEJI | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BISB.BH | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SOLID BH | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AAIC | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ITHMR.BH | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BKIC.BH | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BNH.BH | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BCFC.BH | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AOFS | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UFCI | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "TFCI | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ESTERD.B | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MFCI | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OEIO | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UGIC.BH | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SIHC | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BMEB.BH | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "TAKAFUL | sectors.members.a | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QATI | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ADNIC | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SUKOON | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QGRI | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DIN | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DOHI | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SALAMA | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "EIC | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QISI | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "NGI | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DHAFRA | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BEMA | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AKHI | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ABNIC | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AWNIC | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "QLMI | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "TKFL | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALAIN | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ALLIANCE | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DNIR | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "TAKAFUL | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "RAKN.AD | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ORIENT | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "UNION | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AFNIC | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "FIDELITY | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "HAYAH | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SICO | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ORIENTTKAFUL | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "IH.AD | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "ASNIC | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AMAN | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "LIVA | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "METH.AD | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "DICS | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "OUIC | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "AMAT | sectors.members.b | lang=ar",
+            "pages": [
+              "/templates/sector-vs-sector"
+            ],
+            "count": 1
+          },
+          {
+            "string": "English | settings.display | lang=en",
+            "pages": [
+              "/settings"
+            ],
+            "count": 1
+          },
+          {
+            "string": "أصدرت شركة النفط السعودية أرامكو صكوكًا دولية بقيمة 3 مليارات دولار تح | overview.news | lang=ar",
+            "pages": [
+              "/t/2222"
+            ],
+            "count": 1
+          },
+          {
+            "string": "وقعت شركة أرامكو صفقة إيجار تتجاوز قيمتها 11 مليار دولار تتعلق بمرافق  | overview.news | lang=ar",
+            "pages": [
+              "/t/2222"
+            ],
+            "count": 1
+          },
+          {
+            "string": "أعلنت شركة النفط السعودية أرامكو اليوم عن بيع سندات غير مضمونة مقومة ب | overview.news | lang=ar",
+            "pages": [
+              "/t/2222"
+            ],
+            "count": 1
+          },
+          {
+            "string": "وقعت شركة أرامكو اتفاقية مساهمين مع كل من ليدي وإس أل بي، تمهيدًا لتطو | overview.news | lang=ar",
+            "pages": [
+              "/t/2222"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"الرسوم البيانية من TradingView\" | a",
+            "pages": [
+              "/t/2222"
+            ],
+            "count": 1
+          },
+          {
+            "string": "including performance-linked dividends SAR 820 million | calendar.dividends | lang=en",
+            "pages": [
+              "/t/2222/calendar",
+              "/t/2222/calendar",
+              "/t/2222/calendar",
+              "/t/2222/calendar"
+            ],
+            "count": 4
+          },
+          {
+            "string": "including performance-linked dividends SAR 40390 million | calendar.dividends | lang=en",
+            "pages": [
+              "/t/2222/calendar",
+              "/t/2222/calendar"
+            ],
+            "count": 2
+          },
+          {
+            "string": "including performance-linked dividends SAR 40410 million | calendar.dividends | lang=en",
+            "pages": [
+              "/t/2222/calendar"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"بالإنجليزية: The Saudi Government, as the selling shareholde\" | tr",
+            "pages": [
+              "/t/2222/calendar"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"بالإنجليزية: The General Assembly approved the board of dire\" | tr",
+            "pages": [
+              "/t/2222/calendar"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"بالإنجليزية: The General Assembly approved the recommendatio\" | tr",
+            "pages": [
+              "/t/2222/calendar"
+            ],
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "row": "8b",
+      "status": "PASS",
+      "finding": "check-arabic.mjs SIGNED_IN=1: 15 Arabic page view(s) signed in; 0 English string(s) outside the allow-list (raw count: 24; audit run 2: 34)",
+      "evidence": {
+        "checkArabic": {
+          "ok": true,
+          "summary": "15 Arabic page view(s) signed in; 0 English string(s) outside the allow-list",
+          "leaks": []
+        },
+        "raw": [
+          {
+            "string": "AlphaCouncil | span | lang=ar",
+            "pages": [
+              "/home",
+              "/portfolio",
+              "/dashboards",
+              "/settings"
+            ],
+            "count": 6
+          },
+          {
+            "string": "Ctrl K | kbd | lang=ar",
+            "pages": [
+              "/home",
+              "/portfolio",
+              "/dashboards",
+              "/settings"
+            ],
+            "count": 6
+          },
+          {
+            "string": "audit-1792630650647@example.com | span | lang=ar",
+            "pages": [
+              "/home",
+              "/portfolio",
+              "/dashboards",
+              "/settings"
+            ],
+            "count": 6
+          },
+          {
+            "string": "EN | a | lang=ar",
+            "pages": [
+              "/home",
+              "/portfolio",
+              "/dashboards",
+              "/settings"
+            ],
+            "count": 6
+          },
+          {
+            "string": "audit-1792630650647@example.com | bdi | lang=ar",
+            "pages": [
+              "/home",
+              "/portfolio",
+              "/dashboards",
+              "/settings"
+            ],
+            "count": 6
+          },
+          {
+            "string": "UAB | home.gainers | lang=ar",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "SHPS | home.gainers | lang=ar",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "MGMC | home.losers | lang=ar",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GWCS | home.news | lang=ar",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GHITHA | home.news | lang=ar",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "GFH.DU | home.news | lang=ar",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "BBK.BH | home.news | lang=ar",
+            "pages": [
+              "/home",
+              "/home"
+            ],
+            "count": 2
+          },
+          {
+            "string": "MEZA | home.news | lang=ar",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"مسجل باسم audit-1792630650647@example.com\" | span",
+            "pages": [
+              "/home",
+              "/portfolio",
+              "/dashboards",
+              "/settings"
+            ],
+            "count": 6
+          },
+          {
+            "string": "title=\"UAB\" | span",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"SHPS\" | span",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"MGMC\" | span",
+            "pages": [
+              "/home"
+            ],
+            "count": 1
+          },
+          {
+            "string": "English | settings.display | lang=en",
+            "pages": [
+              "/settings"
+            ],
+            "count": 1
+          },
+          {
+            "string": "مسجل باسم audit-1792630650647@example.com | settings.account | lang=ar",
+            "pages": [
+              "/settings"
+            ],
+            "count": 1
+          },
+          {
+            "string": "أصدرت شركة النفط السعودية أرامكو صكوكًا دولية بقيمة 3 مليارات دولار تح | overview.news | lang=ar",
+            "pages": [
+              "/t/2222"
+            ],
+            "count": 1
+          },
+          {
+            "string": "وقعت شركة أرامكو صفقة إيجار تتجاوز قيمتها 11 مليار دولار تتعلق بمرافق  | overview.news | lang=ar",
+            "pages": [
+              "/t/2222"
+            ],
+            "count": 1
+          },
+          {
+            "string": "أعلنت شركة النفط السعودية أرامكو اليوم عن بيع سندات غير مضمونة مقومة ب | overview.news | lang=ar",
+            "pages": [
+              "/t/2222"
+            ],
+            "count": 1
+          },
+          {
+            "string": "وقعت شركة أرامكو اتفاقية مساهمين مع كل من ليدي وإس أل بي، تمهيدًا لتطو | overview.news | lang=ar",
+            "pages": [
+              "/t/2222"
+            ],
+            "count": 1
+          },
+          {
+            "string": "title=\"الرسوم البيانية من TradingView\" | a",
+            "pages": [
+              "/t/2222"
+            ],
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "row": "10b",
+      "status": "PASS",
+      "finding": "checkout in Moyasar test mode: checkout-test-2026-10-22.md says 13 of 13 PASS; beta closed again: true",
+      "evidence": {
+        "doc": "checkout-test-2026-10-22.md",
+        "checkout_open": false,
+        "runs": [
+          {
+            "locale": "en",
+            "placeholder": false,
+            "closed": true,
+            "buy": 0,
+            "file": "10-pricing-en-1440.png",
+            "excerpt": "Pricing Two plans, priced in Saudi riyals. The prices below are read from the same plan configuration our payment provider, Moyasar, charges. Free 0 SAR a month Market data and research for every GCC investor. Markets overview, screener and templates Every stock page: price chart, key metrics, peers"
+          },
+          {
+            "locale": "ar",
+            "placeholder": false,
+            "closed": false,
+            "buy": 0,
+            "file": "10-pricing-ar-1440.png",
+            "excerpt": "الأسعار خطتان بالريال السعودي. الأسعار أدناه مقروءة من إعدادات الخطط نفسها التي يحصّل بها مزوّد الدفع لدينا، ميسّر. مجاني 0 ريال شهريًا بيانات الأسواق والأبحاث لكل مستثمر في الخليج. نظرة على الأسواق وفرز الأسهم والقوالب صفحة كل سهم: الرسم البياني للسعر والمؤشرات الرئيسية والأقران والأخبار محفظتي حتى"
+          }
+        ]
+      }
+    }
+  ]
+}

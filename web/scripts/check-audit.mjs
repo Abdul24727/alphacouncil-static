@@ -6,7 +6,8 @@
 // items: a comma list (e.g. "1e,5f"); default all. COPILOT=0 skips the Copilot items (7d 7e 7f c390 C),
 // which take a few minutes. The signed-in items sign up audit-<time>@example.com (no email is sent).
 // Verdicts: PASS, FAIL, "BY DESIGN?" (behaves as the code intends; the owner is asked to accept it).
-import { mkdir, writeFile } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { chromium } from "playwright-core";
 
 const BASE_URL = process.env.BASE_URL ?? "http://localhost:3201";
@@ -491,13 +492,26 @@ async function arabicScan(routes, storageState) {
   await ctx.close();
   return [...found].map(([k, where]) => ({ string: k, pages: where.slice(0, 4), count: where.length }));
 }
+// The verdict is check-arabic.mjs (its allow-list: PROJECT.md Step 14); the audit's raw count
+// (every Latin word, tickers and the brand included) is kept as information.
+function checkArabic(signedIn) {
+  const run = spawnSync(process.execPath, [new URL("./check-arabic.mjs", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")], {
+    env: { ...process.env, BASE_URL, ...(signedIn ? { SIGNED_IN: "1" } : {}) },
+    encoding: "utf8",
+    timeout: 900000,
+  });
+  const lines = (run.stdout ?? "").trim().split("\n");
+  return { ok: run.status === 0, summary: lines.at(-1), leaks: lines.filter((l) => l.startsWith("ENGLISH")) };
+}
 if (want("8a")) {
   const s = await arabicScan(PUBLIC);
-  verdict("8a", s.length ? "FAIL" : "PASS", `${s.length} distinct English string(s) on ${PUBLIC.length} public Arabic pages, signed out (audit run 2: 52)`, s);
+  const c = checkArabic(false);
+  verdict("8a", c.ok ? "PASS" : "FAIL", `check-arabic.mjs: ${c.summary} (raw count, tickers and brand included: ${s.length}; audit run 2: 52)`, { checkArabic: c, raw: s });
 }
 if (want("8b")) {
   const s = await arabicScan(SIGNED, await account());
-  verdict("8b", s.length ? "FAIL" : "PASS", `${s.length} distinct English string(s) on ${SIGNED.length} signed-in Arabic pages (audit run 2: 34)`, s);
+  const c = checkArabic(true);
+  verdict("8b", c.ok ? "PASS" : "FAIL", `check-arabic.mjs SIGNED_IN=1: ${c.summary} (raw count: ${s.length}; audit run 2: 34)`, { checkArabic: c, raw: s });
 }
 if (want("8c")) {
   const ctx = await context(1440);
@@ -583,8 +597,14 @@ if (want("10b") || want("10c")) {
     await ctx.close();
   }
   const plans = await (await fetch(`${BASE_URL}/api/v1/plans`)).json();
-  if (want("10b"))
-    verdict("10b", "FAIL", `checkout not tested in Moyasar test mode yet; beta /plans checkout_open=${plans.checkout_open} (Step 16)`, { checkout_open: plans.checkout_open, runs });
+  if (want("10b")) {
+    // Proven by check-checkout.mjs with beta's billing opened for the test (Step 16); its record is the newest docs/checkout-test-*.md.
+    const docs = (await readdir(new URL("../../docs/", import.meta.url))).filter((f) => /^checkout-test-.*\.md$/.test(f)).sort();
+    const doc = docs.at(-1) ? await readFile(new URL(`../../docs/${docs.at(-1)}`, import.meta.url), "utf8") : "";
+    const m = doc.match(/## Results: (\d+) of (\d+) PASS/);
+    const ok = !!m && m[1] === m[2] && plans.checkout_open === false;
+    verdict("10b", ok ? "PASS" : "FAIL", `checkout in Moyasar test mode: ${docs.at(-1) ?? "no record"} says ${m ? `${m[1]} of ${m[2]} PASS` : "nothing"}; beta closed again: ${plans.checkout_open === false}`, { doc: docs.at(-1), checkout_open: plans.checkout_open, runs });
+  }
   if (want("10c")) verdict("10c", runs.some((r) => r.placeholder) ? "FAIL" : "PASS", `pricing placeholder text: ${runs.map((r) => `${r.locale} ${r.placeholder ? "present" : "none"}`).join(", ")}`, runs);
 }
 

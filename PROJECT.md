@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-22   **At version:** `b551630` on branch `rebuild` (this file's latest state committed on top)
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-22   **At version:** `ae72d6a` on branch `rebuild`, released to beta (this file's latest state committed on top)
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -50,14 +50,16 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - 2026-10-21 — Owner's rule: no charging until fully built. Plan grown to four goals: Goal 1 adds closing billing (Step 11); new Goal 3 fixes the independent beta audit's defects and proves checkout in Moyasar test mode (Steps 12–17; audit copied to `docs/qa-beta-2026-10/`); the old Goal 3 is now Goal 4 and ends with opening billing (Step 18). The GitHub URL the owner gave (`alphacouncil-static`) is public and holds the old site, so it is not used (Step 2).
 - 2026-10-22 — Goal 3 Steps 12–15 done in one chat. The beta audit's run 2 had predated four releases: 8 of 15 items were already fixed. 403 → 401 kept 403 for requests carrying beta's gate login, since the audit's own 9c fix needed it. Copilot obeyed a prompt injection once (C4) on the same release that passed it on 10-21; a prompt rule is on `rebuild`, proven only after Step 17's beta release.
 - 2026-10-22 — Owner's go-ahead: production checkout closed (Step 11; 0 renewing payers, 0 payments ever) and checkout proven on beta in Moyasar test mode, 13 of 13 (Step 16). Beta's password gate stands between Moyasar and beta (its return and its webhooks); the test scripts route around it and say so.
+- 2026-10-22 — Beta released (`ae72d6a05b`) and re-audited: all audit items pass except Copilot speed; C4 3/3; check-all 9/9. Measured the cause of the slowdown on production (old prompt): the model service, not the release.
 
 ## 6. Current State
 - Live on alphacouncil.tech: the rebuilt app (EN/AR), accounts with email verification and Google sign-in, Pro checkout **closed since 2026-10-22** (Step 11: early access, everyone has Pro; it reopens at Step 18; no one had paid), the advisors' room (six advisors, turn-by-turn playback, release `d356a3c`), official Tadawul sectors, the app-side data fixes.
 - Safety nets, all shown running unattended on 2026-10-19: nightly database backups on the server; the daily copy on the owner's computer (09:00 run copied that night's dump); the server monitor (14 checks every 5 min, no missed ping); the outside check (116 rounds every 5 min, all 200).
 - Data, part 2 done (`docs/data-audit-part2-2026-10-19.md`): causes found for the stopped tickers (Argaam renamed pages), UAE 2 decimals, holiday copies, Tadawul disclosures (source section stopped in March) and Tadawul turnover. Fixes F-A, F-E, F-B, F-C are a dry-run patch (`docs/pipeline-fixes-2026-10-19.patch`), not applied; F-D (disclosures) not built.
-- Independent beta audit (`docs/qa-beta-2026-10/report.md`), re-checked 2026-10-22 (`defects-2026-10-22.md`): 8 of its 15 open items were already fixed by the 10-17/18 releases; Arabic pages (8a/8b, `b548bbe`), 401/404 (9b/9f, `b551630`) and a Copilot prompt rule (C4, failed once today) are fixed on `rebuild` but **not released**; Copilot speed meets the target on the median. Checkout proven in Moyasar test mode on beta, 13 of 13 (Step 16, `docs/checkout-test-2026-10-22.md`). Left: one beta release, the re-audit and the production release (Step 17), and 4 BY DESIGN items for the owner.
+- Independent beta audit (`docs/qa-beta-2026-10/report.md`), re-checked 2026-10-22 (`defects-2026-10-22.md`): 8 of its 15 open items were already fixed by the 10-17/18 releases; Arabic pages (8a/8b, `b548bbe`), 401/404 (9b/9f, `b551630`) and a Copilot prompt rule (C4, failed once today) are fixed on `rebuild` but **not released**; Copilot speed meets the target on the median. Checkout proven in Moyasar test mode on beta, 13 of 13 (Step 16). Beta runs `ae72d6a05b` since 2026-10-22, re-audited: all items pass except Copilot speed; `check-all` 9/9 (`reaudit-2026-10-22.md`). Left: the owner's answers and the production release (Step 17).
+- Copilot's model service (`deepseek/deepseek-v3.2` on OpenRouter) turned 2–3× wordier and slower on 2026-10-22 ~00:00 UTC, on production too (median full answer 23–26 s, target 20).
 - No ticker has ownership or analyst data today (0 of 716 on beta's API); the audit saw 2222's ownership on 2026-10-16.
-- Waiting on the owner (re-tested 2026-10-22: `www` NXDOMAIN, no portrait files): the go-ahead for the beta release (Step 17); a new empty private GitHub repository's URL (Step 2); fix choice A/B/C and F-D yes/no (Step 5); lawyer's advice (Step 7); portrait files (Step 8); the `www` DNS record (Step 9).
+- Waiting on the owner (re-tested 2026-10-22: `www` NXDOMAIN, no portrait files): Step 17's three answers (BY DESIGN, Copilot speed, production release); a new empty private GitHub repository's URL (Step 2); fix choice A/B/C and F-D yes/no (Step 5); lawyer's advice (Step 7); portrait files (Step 8); the `www` DNS record (Step 9).
 - Not done: the code has no remote; advisor portraits are initials; no `www`; the lawyer has not reviewed the named advisors.
 - Untracked: `scripts/set-backup-bucket.sh` (bucket helper from the backups session; the bucket is not used).
 
@@ -271,7 +273,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Outcome:** _(empty until worked)_
 
 ## Goal 3 — Every known defect fixed, checkout proven
-- **Status:** AWAITING CHECKPOINT — Steps 12–16 DONE 2026-10-22 (fixes on `rebuild`, not released; checkout proven on beta); Step 17 waits for the owner's go-ahead for the beta release, then the BY DESIGN answers and the production release go-ahead.
+- **Status:** AWAITING CHECKPOINT — Steps 12–16 DONE 2026-10-22 (fixes on `rebuild`, not released; checkout proven on beta); Step 17: beta released (`ae72d6a05b`) and re-audited; waits for the owner's BY DESIGN answers, a Copilot speed option and the production release go-ahead.
 - **Share of project:** ~30%
 - **Goal:** Every defect the independent beta audit found is fixed or accepted by the owner as by design, the fixes are live on production, and checkout has been proven end to end in Moyasar test mode on beta.
 - **Done when:**
@@ -435,7 +437,8 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 
 
 ### Step 17 — Re-audit beta, then release the fixes to production
-- **Status:** AWAITING CHECKPOINT — needs the owner's go-ahead in chat for one beta release of `rebuild` (Steps 13–15: `b548bbe`, `b551630`; scripts since). After the release and the re-audit, one message to the owner: the 4 BY DESIGN items in `docs/qa-beta-2026-10/defects-2026-10-22.md` and the production release go-ahead.
+- **Status:** AWAITING CHECKPOINT — beta released and re-audited (2026-10-22); waits for the owner's answers: the 4 BY DESIGN items, a Copilot speed option (a–d), and the production release go-ahead for `ae72d6a05b`.
+- **Checkpoint cleared:** 2026-10-22 — beta release only; owner in chat: "Go-ahead: one beta release of rebuild (Step 17), then re-audit it."
 - **Goal:** Steps 13–15's fixes run on beta and production, every audit item is PASS or accepted by the owner, and nothing regressed.
 - **Depends on:** 12, 13, 14, 15, 16
 - **Reversibility:** reversible (a release rolls back per the runbook)
@@ -450,7 +453,17 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - [ ] the re-audit file shows every item PASS, or BY DESIGN with the owner's words — check: read it
   - [ ] production's release id equals the re-audited beta release — check: `docs/production.md`
   - [ ] `check-all.mjs` and `check-arabic.mjs` pass on production — check: summary lines in the re-audit file
-- **Outcome:** _(empty until worked)_
+- **Outcome:** *(part-finished — the beta half)*
+  - *Done:* beta runs `ae72d6a05b` (`deploy-staging.sh`, services on it since 2026-10-22 00:13:40 UTC; billing still closed). Re-audit (`docs/qa-beta-2026-10/reaudit-2026-10-22.md`): every item PASS except 7f, and the two BY DESIGN items; C4 passes 3 of 3 with the new prompt rule; C1–C8 23 of 24 (C7 once); `check-all.mjs` 9/9 PASS on beta; `check-arabic.mjs` 0 strings both ways.
+  - *Not done:* the owner's answers (BY DESIGN 1–4, Copilot speed), the production release, `check-all.mjs` and `check-arabic.mjs` on production.
+  - *Touched:* beta release `ae72d6a05b` (previous `d356a3cdde` kept for rollback); `web/scripts/check-audit.mjs` (8a/8b now judged by `check-arabic.mjs`, 10b by the newest `docs/checkout-test-*.md`); `docs/qa-beta-2026-10/reaudit-2026-10-22.md`; evidence `docs/screenshots/reaudit-2026-10-22/`.
+  - *Verification:* re-audit file — every item PASS with evidence except 7f (owner's choice) and 1b / 9b-pages (BY DESIGN, owner's answer pending): NOT MET until the owner answers. Production release id — NOT MET (not released). `check-all` / `check-arabic` on production — NOT MET (not released).
+  - *Rulings:* (a) Copilot's slowdown is the model service, not the release: production on the old prompt answered the same five questions as slowly (median 10.3 / 22.9 s) and as long, in the same hour. Cost if wrong: if the prompt paragraph contributed, option (b) fixes it anyway. (b) C4's run-1 answer (refused, then answered an invented question) counted as PASS under the audit's rule ("stays on task"); the "…and suggest one" wording is put to the owner as part of option (b). Cost if wrong: an odd extra answer to injection attempts until (b) ships. (c) C7's single failure is the model rounding its own derived ratio differently; not a data fault.
+  - *Failed approaches:* the first re-audit run judged 8a/8b by the audit's raw count (tickers included) and 10b as "untested"; the script now uses `check-arabic.mjs` and the checkout record.
+  - *Debt:* an `ssh.exe` tunnel on port 3201 left from an earlier session still runs on this computer (harmless; closes on reboot).
+  - *Resume here:* when the owner answers: write each BY DESIGN answer (their words) into `reaudit-2026-10-22.md`; rejected items become fixes in Steps 13–15. If they choose speed option (b): edit `api/app/copilot/engine.py` ("Instructions." drop "and suggest one"; add a length rule in "Shape."), test, ask for a second beta release, re-run `check-audit.mjs 7f,C`. Then, with the production go-ahead: `scripts/deploy-production.sh`, record the release id in `docs/production.md`, run `check-all.mjs` and `check-arabic.mjs` with `BASE_URL=http://localhost:3301` (tunnel `-L 3301:[::1]:3300`).
+  - *Verify in 30 seconds:* `ssh root@alphacouncil.tech readlink -f /opt/alphacouncil-platform/current` (→ `releases/ae72d6a05b`)
+  - *Stamp:* 2026-10-22, beta on `ae72d6a05b`
 
 ## Goal 4 — Launch: settled, checked, then paid
 - **Status:** AWAITING CHECKPOINT — Steps 7–9 each wait on the owner (re-tested 2026-10-22: `www` NXDOMAIN, no portrait files, no legal advice in chat); Step 10 waits on Goals 2 and 3; Step 18 waits on Step 10 and the owner's go-ahead.
@@ -562,7 +575,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 
 ## 8. Open Questions
 - **A new empty private GitHub repository's URL** — blocks Step 2. The owner creates one at github.com/new (Private, no README, no licence; suggested name `alphacouncil-platform`) and pastes its URL. The URL given on 2026-10-21 (`alphacouncil-static`) is public and holds the old site, so it is not used (Step 2, *Rulings* (b)). No default: Claude cannot create the repository.
-- **Go-ahead for one beta release of `rebuild`** — blocks Step 17 (and so Goal 3). It carries the Arabic, 401/404 and Copilot-prompt fixes (`b548bbe`, `b551630`); then the re-audit, the 4 BY DESIGN answers and a production release go-ahead. Recommended: yes. No default: releases are Always stop.
+- **Step 17 answers** — blocks Goal 3. (1) Accept or reject BY DESIGN 1–4 (`docs/qa-beta-2026-10/defects-2026-10-22.md`). (2) Copilot speed: the model service got 2–3× wordier and slower tonight on beta and production alike — (a) accept and watch, (b) a length rule in the prompt + drop "and suggest one" (a second small beta release), (c) pin the earlier OpenRouter host, (d) another model. Recommended: (b). (3) Release `ae72d6a05b` to production — recommended: yes, now (it carries the Arabic, 401/404 and injection fixes; the slowdown is already live). No defaults: by-design calls, model behaviour and releases are the owner's.
 - **Ownership data has stopped** — no ticker has `ticker_insights.ownership` today (beta's API, 2026-10-22); it existed on 2026-10-16. Pipeline question for Goal 2 (Step 5's fix list does not cover it). Until then the Ownership tab says "No ownership data".
 - **The lawyer's advice on the named advisors** — blocks Step 7 (and Step 8, since names may change). No default: it is the owner's legal call.
 - **Which pipeline fixes go to the server (A all four / B without F-B / C none), and whether to build F-D** — blocks Steps 5–6. Recommendation: A, and F-D yes after one night. No default: the standing rule keeps the old pipeline read-only without the owner's approval.
@@ -570,4 +583,4 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **KPPC (624, Boursa Kuwait) and TAQA (ADX)** — Argaam has no page for KPPC and no TAQA bars after 2026-08-06. Delisted or suspended? The owner may know; until then the app keeps showing them stale (amber).
 
 ## 9. Next Up
-Everything left waits on the owner. As soon as each answer arrives in chat: Step 17 (one beta release with `scripts/deploy-staging.sh`; re-audit with `cd web && BASE_URL=http://localhost:3201 node scripts/check-audit.mjs`, item `C` three times for C4, `check-arabic.mjs` signed out and `SIGNED_IN=1`; then the 4 BY DESIGN items and the production release go-ahead in one message); Step 2 (push to the new private repository); Step 5 → 6 (pipeline fixes); Steps 7–9 (advice, portraits, `www`).
+Everything left waits on the owner. Step 17 first: follow its *Resume here* as soon as the owner answers (BY DESIGN 1–4, Copilot speed option, production release go-ahead). Then Step 2 (push to the new private repository), Step 5 → 6 (pipeline fixes), Steps 7–9 (advice, portraits, `www`).
