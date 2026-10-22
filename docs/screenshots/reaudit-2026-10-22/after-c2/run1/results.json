@@ -1,0 +1,123 @@
+{
+  "base_url": "http://localhost:3201",
+  "at": "2026-10-22T12:32:44.724Z",
+  "results": [
+    {
+      "row": "c390",
+      "status": "PASS",
+      "finding": "Copilot at 390 px, EN and AR: answers en 583 chars, 7 cites, 0px sideways; ar 441 chars, 6 cites, 0px sideways",
+      "evidence": [
+        {
+          "route": "/t/2222",
+          "question": "What is the dividend yield?",
+          "locale": "en",
+          "width": 390,
+          "first_ms": 2609,
+          "full_ms": 13384,
+          "sideways": 0,
+          "text": "Saudi Aramco's dividend yield is 5.21% as of 2026-10-21 with its last price of SAR 25.58 DB. This represents the indicated yield based on the company's regular dividend stream DB.The company pays quarterly dividends, with the most recent payment of SAR 0.34 per share on 2026-08-27 DBOver the last year, dividends have ranged from SAR 0.33 to SAR 0.48 per share DBThe yield is calculated from the trailing dividend payments DBSaudi Aramco has maintained a consistent dividend policy including performance-linked dividends DBThe company's market capitalization is SAR 6.12 trillion DB",
+          "citations": 7,
+          "stepsOpen": false,
+          "file": "c390-copilot-en.png"
+        },
+        {
+          "route": "/t/2222",
+          "question": "ما هو عائد التوزيعات؟",
+          "locale": "ar",
+          "width": 390,
+          "first_ms": 10555,
+          "full_ms": 34853,
+          "sideways": 0,
+          "text": "عائد توزيعات أرامكو السعودية هو 5.21% بناءً على آخر توزيع، بسعر سهم 25.58 ريال سعودي حتى تاريخ 2026-10-21 DB.البيانات التفصيلية:- آخر أربع توزيعات كانت 0.34 ريال لكل سهم كل ثلاثة أشهر (توزيعات ربع سنوية) DB- تم الإعلان عن آخر توزيع في 2026-08-04 ودفعه في 2026-08-27 DB- عائد توزيعات 5.21% يأتي من أساسيات الشركة DB- إجمالي توزيعات 2026 حتى الآن: 1.02 ريال لكل سهم (ربع سنوي × 3 أرباع) DB- تاريخ التوزيعات واضح ومستقر مع نمط ربع سنوي منتظم DB",
+          "citations": 6,
+          "stepsOpen": false,
+          "file": "c390-copilot-ar.png"
+        }
+      ]
+    },
+    {
+      "row": "7f",
+      "status": "FAIL",
+      "finding": "median first words 4.1 s (target 5), full 20.7 s (target 20); each: 8.5/46.3, 2.8/10.8, 2.9/14.2, 4.2/26.8, 4.1/20.7, 2.6/13.4, 10.6/34.9",
+      "evidence": [
+        {
+          "route": "/t/METH.AD",
+          "question": "What are the EV/EBITDA and the dividend yield?",
+          "locale": "en",
+          "width": 1440,
+          "first_ms": 8534,
+          "full_ms": 46344,
+          "citations": 6,
+          "figures": 2,
+          "text": "Neither EV/EBITDA nor dividend yield are available for Methaq Takaful Insurance (METH.AD). The data shows both metrics as null with no values provided. DBEV/EBITDA is listed as 'na_sector' (not applicable for the Insurance sector) DBDividend yield shows as 'missing_inputs' with no value DBThe company has no dividend history recorded DBROA is -71.75% for an unknown date P1Key metricsBook value is negative at -4.81 AED P1Key metrics"
+        },
+        {
+          "route": "/t/AFNIC",
+          "question": "What was the last closing price and the 1-month return?",
+          "locale": "en",
+          "width": 1440,
+          "first_ms": 2845,
+          "full_ms": 10827,
+          "citations": 6,
+          "figures": 9,
+          "text": "Al Fujairah National Insurance (AFNIC) last closed at AED 230 on 2026-10-16, but the 1-month return data is not available here. DBLast price: AED 230 (2026-10-16) DB1-month return: Not available here DBPrice-to-book ratio: 0.69x P2Key metricsReturn on equity: 22.24% P2Key metricsDividend yield: 4.35% P2Key metrics"
+        },
+        {
+          "route": "/t/2222",
+          "question": "Is the dividend safe?",
+          "locale": "en",
+          "width": 1440,
+          "first_ms": 2935,
+          "full_ms": 14184,
+          "citations": 7,
+          "figures": 11,
+          "text": "Based on the data, Saudi Aramco (2222) shows strong underlying metrics that support its dividend P1Key metrics. The company has paid quarterly dividends consistently for over two years, with recent payments of SAR 0.34 per share each quarter in 2026. DB Key supporting factors:- Dividend yield of 5.21% based on the current price of SAR 25.58 P1Key metrics- Strong profitability with ROE of 26.75% and ROA of 15.86% P1Key metrics- Healthy financial position: debt-equity ratio of 0.20 (better than 54% of sector peers) DB- Current ratio of 2.00 (better than 68.7% of sector peers) indicates good liquidity DB- EPS of SAR 1.84 provides earnings coverage for dividends P1Key metrics"
+        },
+        {
+          "route": "/t/2222",
+          "question": "How does the valuation compare with its peers?",
+          "locale": "en",
+          "width": 1440,
+          "first_ms": 4180,
+          "full_ms": 26834,
+          "citations": 11,
+          "figures": 20,
+          "text": "Saudi Aramco (2222) trades at a P/E of 13.9x and P/B of 3.9x, with a 5.2% dividend yield, while its energy sector peers have a wide range of valuations. P1Key metricsP2PeersP/E: 13.9x (Aramco) vs. 5.2x (Bahri, 4030), 12.0x (Petro Rabigh, 2380), 28.7x (ADES, 2382), and others with no P/E reported P1Key metricsP2PeersP/B: 3.9x for Aramco (peers' P/B data not available here) P1Key metricsDividend yield: 5.2% (Aramco) vs. 2.8% (Bahri) and 2.7% (ADES) P1Key metricsP2PeersMarket cap: SAR 6.12 trillion vs. peers ranging from SAR 0.77bn to SAR 32.4bn P1Key metricsP2PeersROE 26.8% (Aramco) with debt/equity ratio of 0.20 P1Key metricsDB"
+        },
+        {
+          "route": "/t/2222",
+          "question": "What was the last close, and how has the price moved over the past month?",
+          "locale": "en",
+          "width": 1440,
+          "first_ms": 4057,
+          "full_ms": 20680,
+          "citations": 7,
+          "figures": 27,
+          "text": "The last close for Saudi Aramco (2222) was SAR 25.58 as of 2026-10-21. DB Over the past month, the stock declined 0.94% (return_1m: -0.0094). DBLast close: SAR 25.58 on 2026-10-21 DB1-month return: -0.94% DBCurrent price change: +0.39% on the last trading day DBP/E ratio: 13.91x DBDividend yield: 5.21% DB2222 · 1MPin to dashboarda#tv-attr-logo{--fill:#131722;--stroke:#fff;position:absolute;left:10px;bottom:10px;height:19px;width:35px;margin:0;padding:0;border:0;z-index:3;}a#tv-attr-logo[data-dark]{--fill:#D1D4DC;--stroke:#131722;}21 Oct 2026O25.48H25.60L25.44C25.58+0.39%V7.5M"
+        },
+        {
+          "route": "/t/2222",
+          "question": "What is the dividend yield?",
+          "locale": "en",
+          "width": 390,
+          "first_ms": 2609,
+          "full_ms": 13384,
+          "citations": 7,
+          "figures": 10,
+          "text": "Saudi Aramco's dividend yield is 5.21% as of 2026-10-21 with its last price of SAR 25.58 DB. This represents the indicated yield based on the company's regular dividend stream DB.The company pays quarterly dividends, with the most recent payment of SAR 0.34 per share on 2026-08-27 DBOver the last year, dividends have ranged from SAR 0.33 to SAR 0.48 per share DBThe yield is calculated from the trailing dividend payments DBSaudi Aramco has maintained a consistent dividend policy including performance-linked dividends DBThe company's market capitalization is SAR 6.12 trillion DB"
+        },
+        {
+          "route": "/t/2222",
+          "question": "ما هو عائد التوزيعات؟",
+          "locale": "ar",
+          "width": 390,
+          "first_ms": 10555,
+          "full_ms": 34853,
+          "citations": 6,
+          "figures": 11,
+          "text": "عائد توزيعات أرامكو السعودية هو 5.21% بناءً على آخر توزيع، بسعر سهم 25.58 ريال سعودي حتى تاريخ 2026-10-21 DB.البيانات التفصيلية:- آخر أربع توزيعات كانت 0.34 ريال لكل سهم كل ثلاثة أشهر (توزيعات ربع سنوية) DB- تم الإعلان عن آخر توزيع في 2026-08-04 ودفعه في 2026-08-27 DB- عائد توزيعات 5.21% يأتي من أساسيات الشركة DB- إجمالي توزيعات 2026 حتى الآن: 1.02 ريال لكل سهم (ربع سنوي × 3 أرباع) DB- تاريخ التوزيعات واضح ومستقر مع نمط ربع سنوي منتظم DB"
+        }
+      ]
+    }
+  ]
+}
