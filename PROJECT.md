@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-22   **At version:** `8211d87` on branch `rebuild` (beta `8211d87f5a`, production `56476948f5`; this file's latest state committed on top and pushed to `origin`)
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-22   **At version:** `dbefc91` on branch `rebuild` (beta `38452ea553`, production `56476948f5`; this file's latest state committed on top and pushed to `origin`)
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -38,7 +38,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - 2026-10-21 — "Fully built" includes the independent beta audit (`docs/qa-beta-2026-10/report.md`, runs 1–3): every FAIL row is fixed, or the owner accepts it in writing as by design (follows from the rule above). Rejected: launching with the audit's minor rows open.
 - 2026-10-22 — "Not signed in" answers 401; a request carrying an HTTP Basic login (beta's staging gate) answers 403, because any 401 makes the browser drop the gate's login (audit 9c). Rejected: 401 everywhere (re-breaks 9c on beta); an nginx change on beta (Always stop, and not needed).
 - 2026-10-22 — The owner accepts the audit's BY DESIGN items 1–4: phones get a tab bar, not a sidebar; signed-out `/portfolio`, `/dashboards`, `/settings` answer 200 with a prompt; "Google" and "EN"/"English" may appear on Arabic pages; behind beta's gate "not signed in" stays 403.
-- 2026-10-22 — Copilot speed (7f) is accepted as by design (owner: "Try (e), then accept"): production keeps `56476948f5`, first words 8.6 s. Option (e), the first turn answering from the fetched data, runs on beta and `rebuild` (first words 5.3 s, target 5 s). Rejected for now: a faster model (d), pinning a host (c).
+- 2026-10-22 — Copilot speed (7f) is accepted as by design (owner: "Try (e), then accept"): production keeps `56476948f5`, first words 8.6 s. Option (e), the first turn answering from the fetched data, is on `rebuild` (first words 5.3 s, target 5 s). Rejected: the text-first turn (`38452ea`, slower: 9.2 s / 28.7 s); for now a faster model (d) and pinning a host (c).
 - 2026-10-22 — Copilot answers are short and quote the data's own figures (at most five, under about 120 words, no ratios of its own); a refused instruction gets one sentence. Owner's option (b), after the model service turned wordier. Rejected for now: changing the model or pinning a host (owner's call).
 
 ## 4. Autorun Policy
@@ -56,12 +56,12 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - 2026-10-22 — Beta released (`ae72d6a05b`) and re-audited: all audit items pass except Copilot speed; C4 3/3; check-all 9/9. Measured the cause of the slowdown on production (old prompt): the model service, not the release.
 - 2026-10-22 — Production released twice (`53c3c54aa0`, `56476948f5`), check-all 9/9 each time; BY DESIGN 1–4 accepted; option (b) cut Copilot's full answers to 13.4 s but not first words (8.6 s). Goal 1 item 5 met (Step 11).
 - 2026-10-22 — Option (c) tried on beta: OpenRouter hosts timed with the Copilot's real input; Phala and SiliconFlow pinned in the app in turn. SiliconFlow halves first words (3.8 s) but writes slowly (median 23.8 s, one 150 s); no host meets both targets, so production was not released.
-- 2026-10-22 — Goal 3 DONE. Option (e) on beta (`8211d87f5a`): first token about 2 s, but first words 5.3 s (target 5 s) because the model sometimes writes a table or the follow-ups before the text; full answers 15.2 s; C1–C8 16/16. Production stays on `56476948f5`; 7f BY DESIGN in the owner's words. Owner also chose pipeline fixes A, F-D after one night, and the now-private `alphacouncil-static` repository.
+- 2026-10-22 — Goal 3 DONE. Option (e) on beta (`8211d87f5a`): first token about 2 s, but first words 5.3 s (target 5 s) because the model sometimes writes a table or the follow-ups before the text; full answers 15.2 s; C1–C8 16/16. Production stays on `56476948f5`; 7f BY DESIGN in the owner's words. Owner also chose pipeline fixes A, F-D after one night, and the now-private `alphacouncil-static` repository. Then, with the owner's go-ahead, a text-first turn (`38452ea`) measured slower (9.2 s / 28.7 s): not released, `rebuild` back to (e).
 - 2026-10-22 — Goal 1 DONE: `rebuild` pushed to the owner's now-private `alphacouncil-static` (a new branch beside the old site's; the step's "not empty" default was for a rejected push). Goal 2: fixes A applied on the server 14:49 UTC, 9 h before the night's run; baseline 679/691 price files and `check-data-fixes` 46/46; F-D added as Step 19.
 
 ## 6. Current State
 - Live on alphacouncil.tech: release `56476948f5` (QA audit fixes, short-answer Copilot), the one re-audited on beta; `check-all` 9/9 on 2026-10-22 14:46 UTC. Pro checkout **closed** since 2026-10-22 (early access, everyone has Pro; it reopens at Step 18; no one has paid).
-- Beta runs `8211d87f5a`: the same app plus option (e), the Copilot's first turn answering from the fetched data (`COPILOT_FIRST_TURN=answer`): first words 5.3 s, full answers 15.2 s. Production keeps first words 8.6 s, accepted as by design (owner). The next production release from `rebuild` carries (e).
+- Beta runs `38452ea553` (a text-first Copilot turn, measured slower: first words 9.2 s, full 28.7 s; not released) until its next release; `rebuild` is back on option (e) (`dbefc91`: first words 5.3 s, full 15.2 s on beta). Production keeps first words 8.6 s, accepted as by design (owner); its next release from `rebuild` carries option (e).
 - Goal 3 DONE: every audit item PASS or BY DESIGN with the owner's words (`docs/qa-beta-2026-10/reaudit-2026-10-22.md`); checkout proven in Moyasar test mode on beta, 13 of 13.
 - Goal 1 DONE: `rebuild` is on GitHub (`origin` = the owner's private `alphacouncil-static`, whose other branches hold the old site). Safety nets keep running on their own: backup copy daily at 09:00 Riyadh, monitor 13 ok, outside check every 5 min.
 - Goal 2: pipeline fixes F-A, F-E, F-B, F-C applied on the server 2026-10-22 14:49 UTC (backups `.bak-20261022`; runbook "Pipeline fixes (applied 2026-10-22)"). The first run with them is 2026-10-23 00:00 UTC (the weekly full run); its checks are Step 6 *Resume here*. F-D (Tadawul disclosures) is Step 19, after that night.
@@ -341,7 +341,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Goal outcome:**
   - *Verification:* (1) VERIFIED — `docs/qa-beta-2026-10/reaudit-2026-10-22.md` "Items": every row PASS, or BY DESIGN with the owner's words (1b and signed-out pages: "Accept BY DESIGN items 1-4."; 7f: "Try (e), then accept", quoted under "Option (e)"). (2) VERIFIED — `check-arabic.mjs` on production 2026-10-22 14:46 UTC: "24 Arabic page view(s) signed out; 0 English string(s) outside the allow-list", "15 … signed in; 0 …" (`docs/screenshots/reaudit-2026-10-22/check-all-production-56476948f5-after-e.txt`). (3) VERIFIED — `docs/checkout-test-2026-10-22.md` 13 of 13 PASS; `grep -c '^BILLING_OPEN='` on beta's `api.env` → 0 (re-checked 14:01 UTC). (4) VERIFIED — production `…/prod/releases/56476948f5` (`readlink`), the release beta was re-audited on (release log 10:16 / 10:36); `check-all.mjs` on it 9/9 at 14:46 UTC.
   - *Delivered:* every defect the independent beta audit found is fixed and live on alphacouncil.tech, or accepted by the owner as by design (phones' tab bar, signed-out pages with a prompt, "Google"/"EN" on Arabic pages, 403 behind beta's gate, Copilot's first-words speed); checkout is proven in Moyasar test mode on beta, 13 of 13. Answer to "did I deliver that?": yes — the one target not met (first words 5 s) is accepted in the owner's own words.
-  - *Carried forward:* `rebuild` and beta carry option (e) (`COPILOT_FIRST_TURN=answer` by default), production does not: the next production release from `rebuild` carries it unless `COPILOT_FIRST_TURN=lookup` is set in production's `api.env`. A further step (the first turn offers only `need_database`, so the text always comes first) is written up in the re-audit file, not done. Ownership data stopped (Goal 2 question). Beta keeps the checkout test accounts.
+  - *Carried forward:* (updated after Step 20) `rebuild` carries option (e) again (`dbefc91`); beta runs the slower `38452ea553` until its next release. Before that: `rebuild` and beta carried option (e) (`COPILOT_FIRST_TURN=answer` by default), production does not: the next production release from `rebuild` carries it unless `COPILOT_FIRST_TURN=lookup` is set in production's `api.env`. A further step (the first turn offers only `need_database`, so the text always comes first) is written up in the re-audit file, not done. Ownership data stopped (Goal 2 question). Beta keeps the checkout test accounts.
   - *Stamp:* 2026-10-22; beta `8211d87f5a`, production `56476948f5`
 
 ### Step 12 — Re-check the audit's open rows on today's beta
@@ -525,7 +525,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
   - *Stamp:* 2026-10-22, beta `8211d87f5a`, production `56476948f5`
 
 ### Step 20 — Copilot: the answer text always comes first
-- **Status:** IN PROGRESS (started 2026-10-22)
+- **Status:** DONE (2026-10-22) — targets not met (first words 9.2 s, full 28.7 s on beta); production not released; `rebuild` back to option (e) (`dbefc91`).
 - **Checkpoint cleared:** 2026-10-22 — owner in chat: "Go-ahead: Copilot first-turn change (the first turn offers only need_database, so the answer text always comes first). One beta release, then production only if it meets both targets (5 s / 20 s)."
 - **Goal:** Copilot's first words come within 5 s and full answers within 20 s (medians), on production, with C1–C8 still passing.
 - **Depends on:** 17
@@ -538,10 +538,20 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **How:** commit on `rebuild`; `scripts/deploy-staging.sh`; `check-audit.mjs 7f,C` then `7f,c390,C` on beta (12 answers, medians over both); if both targets are met, `scripts/deploy-production.sh` (no commit in between: it ships only beta's commit) and `check-all.mjs` on production; record after.
 - **Defaults:** a target missed → production stays on `56476948f5`, beta keeps the new release, 7f stays BY DESIGN; any of C1–C8 fails twice → no production release, record it; the display turn breaks tables or follow-ups → record it, no production release.
 - **Done when:**
-  - [ ] the latency medians over 12 answers on beta meet 5 s / 20 s, or the miss is recorded — check: `check-audit.mjs` output in the re-audit file
-  - [ ] C1–C8 pass on both runs — check: the same output
-  - [ ] if met: production runs beta's release and `check-all.mjs` passes on it — check: `readlink` and the summary line
-- **Outcome:** _(empty until worked)_
+  - [x] the latency medians over 12 answers on beta meet 5 s / 20 s, or the miss is recorded — check: `check-audit.mjs` output in the re-audit file
+  - [x] C1–C8 pass on both runs — check: the same output
+  - [x] if met: production runs beta's release and `check-all.mjs` passes on it — check: `readlink` and the summary line *(not met, so not released: N/A)*
+- **Outcome:**
+  - *Done:* `38452ea` (first turn: `need_database` only; then a turn for table, chart and follow-ups with its text hidden; then the forced follow-ups turn if none came), 3 new tests, API 163 passed; beta release `38452ea553` 15:18 UTC; `check-audit.mjs 7f,C` and `7f,c390,C`. Medians over 12 answers: first words 9.2 s, full 28.7 s — slower than option (e) (5.3 s / 15.2 s). Production not released. `rebuild` restored to option (e)'s code and tests (`dbefc91`, as `8211d87` plus a comment on why).
+  - *Not done:* N/A — the decided scope was built and measured; it missed both targets.
+  - *Touched:* `api/app/copilot/openai_compat.py`, `api/tests/test_copilot.py` (`38452ea`, then restored in `dbefc91`); `docs/qa-beta-2026-10/reaudit-2026-10-22.md` "After the text-first change"; `docs/production.md` release log; evidence `docs/screenshots/reaudit-2026-10-22/after-e2/`.
+  - *Verification:* (1) VERIFIED — miss recorded: run 1 10.3 s / 33.1 s, run 2 5.6 s / 27.5 s, both 9.2 s / 28.7 s. (2) VERIFIED — C1–C8 8/8 on each run. (3) N/A — not met, so no production release (`readlink` still `…/prod/releases/56476948f5`).
+  - *Rulings:* (a) Run 2 made although run 1 already settled it, so the record compares 12 answers like options (b), (c) and (e). Cost: about 8 minutes of Copilot use on beta. (b) `rebuild` restored to option (e)'s code instead of leaving the slower change in: the next production release ships whatever beta runs from `rebuild`, so leaving it would carry a measured slowdown. Cost if wrong: none; (e2) stays in git history (`38452ea`). (c) Beta is not rolled back now (that is a release, which needs the owner's go-ahead); it keeps `38452ea553` until its next release, which carries option (e) again. Cost: the beta Copilot is slower than production's until then; nobody outside the project uses beta.
+  - *Failed approaches:* the text-first turn itself (see the re-audit file): the model writes a follow-ups call it was not offered before the text, and puts a table's figures into the text when `show_table` is missing.
+  - *Debt:* N/A
+  - *Resume here:* N/A
+  - *Verify in 30 seconds:* `git diff 8211d87 dbefc91 -- api/` (only the comment differs)
+  - *Stamp:* 2026-10-22; beta `38452ea553`, production `56476948f5`, `rebuild` `dbefc91`
 
 ## Goal 4 — Launch: settled, checked, then paid
 - **Status:** AWAITING CHECKPOINT — Steps 7–9 each wait on the owner (re-tested 2026-10-22: `www` NXDOMAIN, no portrait files, no legal advice in chat); Step 10 waits on Goal 2 (Steps 6 and 19) and Steps 7–9 (Goal 3 is done); Step 18 waits on Step 10 and the owner's go-ahead.
@@ -652,7 +662,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - **Outcome:** _(empty until worked)_
 
 ## 8. Open Questions
-- **Copilot first words (optional)** — not blocking: 7f is BY DESIGN. Option (e) on beta reached 5.3 s; one more change (the first turn offers only `need_database`, so the text always comes first; the table, chart and follow-ups after it) would likely bring it near 2–3 s. Needs the owner's go-ahead for a beta release, and a production release if it meets both targets (`reaudit-2026-10-22.md`, "Option (e)", last bullet).
+- **Copilot first words (optional)** — not blocking: 7f is BY DESIGN. Tried on beta: option (e) 5.3 s (on `rebuild`), the text-first turn 9.2 s (dropped). The prompt-and-turn options are used up; what is left is a faster model for Copilot (option (d), owner's call: quality, cost and a C1–C8 re-run).
 - **Ownership data has stopped** — no ticker has `ticker_insights.ownership` today (beta's API, 2026-10-22); it existed on 2026-10-16. Pipeline question for Goal 2 (Step 5's fix list does not cover it). Until then the Ownership tab says "No ownership data".
 - **The lawyer's advice on the named advisors** — blocks Step 7 (and Step 8, since names may change). No default: it is the owner's legal call.
 - **The portrait files** — block Step 8. **The `www` A record in Cloudflare** — blocks Step 9. Both are the owner's actions.
