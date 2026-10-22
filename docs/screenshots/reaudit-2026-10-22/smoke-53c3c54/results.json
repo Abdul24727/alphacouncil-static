@@ -1,0 +1,343 @@
+{
+  "base_url": "http://localhost:3201",
+  "at": "2026-10-22T10:06:17.009Z",
+  "results": [
+    {
+      "row": "1e",
+      "status": "PASS",
+      "finding": "no <pre> in the panel (8/8); with the audit's sample it draws a table (true); live ownership today: none for 2222",
+      "evidence": {
+        "live_ownership": null,
+        "runs": [
+          {
+            "injected": false,
+            "locale": "en",
+            "width": 1440,
+            "found": true,
+            "pre": 0,
+            "tables": 0,
+            "rows": 0,
+            "text": "2222 Ownership DATA UNAVAILABLE No ownership data in our database for this ticker",
+            "file": "1e-live-en-1440.png"
+          },
+          {
+            "injected": false,
+            "locale": "en",
+            "width": 390,
+            "found": true,
+            "pre": 0,
+            "tables": 0,
+            "rows": 0,
+            "text": "2222 Ownership DATA UNAVAILABLE No ownership data in our database for this ticker",
+            "file": "1e-live-en-390.png"
+          },
+          {
+            "injected": false,
+            "locale": "ar",
+            "width": 1440,
+            "found": true,
+            "pre": 0,
+            "tables": 0,
+            "rows": 0,
+            "text": "2222 الملكية البيانات غير متاحة لا توجد بيانات ملكية لهذا السهم في قاعدة بياناتنا",
+            "file": "1e-live-ar-1440.png"
+          },
+          {
+            "injected": false,
+            "locale": "ar",
+            "width": 390,
+            "found": true,
+            "pre": 0,
+            "tables": 0,
+            "rows": 0,
+            "text": "2222 الملكية البيانات غير متاحة لا توجد بيانات ملكية لهذا السهم في قاعدة بياناتنا",
+            "file": "1e-live-ar-390.png"
+          },
+          {
+            "injected": true,
+            "locale": "en",
+            "width": 1440,
+            "found": true,
+            "pre": 0,
+            "tables": 1,
+            "rows": 1,
+            "text": "2222 Ownership Foreign ownership Owned by foreign investors 0.72% Foreign ownership limit N/A 17 Sept 2026 0.74% 11 Oct 2026 0.72% Major holders HOLDER STAKE AS",
+            "file": "1e-audit-sample-en-1440.png"
+          },
+          {
+            "injected": true,
+            "locale": "en",
+            "width": 390,
+            "found": true,
+            "pre": 0,
+            "tables": 1,
+            "rows": 1,
+            "text": "2222 Ownership Foreign ownership Owned by foreign investors 0.72% Foreign ownership limit N/A 17 Sept 2026 0.74% 11 Oct 2026 0.72% Major holders HOLDER STAKE Ki",
+            "file": "1e-audit-sample-en-390.png"
+          },
+          {
+            "injected": true,
+            "locale": "ar",
+            "width": 1440,
+            "found": true,
+            "pre": 0,
+            "tables": 1,
+            "rows": 1,
+            "text": "2222 الملكية ملكية الأجانب ملكية المستثمرين الأجانب 0.72% الحد الأعلى لملكية الأجانب غير متاح ⁧17 سبتمبر 2026⁩ 0.74% ⁧11 أكتوبر 2026⁩ 0.72% كبار الملاك المالك ا",
+            "file": "1e-audit-sample-ar-1440.png"
+          },
+          {
+            "injected": true,
+            "locale": "ar",
+            "width": 390,
+            "found": true,
+            "pre": 0,
+            "tables": 1,
+            "rows": 1,
+            "text": "2222 الملكية ملكية الأجانب ملكية المستثمرين الأجانب 0.72% الحد الأعلى لملكية الأجانب غير متاح ⁧17 سبتمبر 2026⁩ 0.74% ⁧11 أكتوبر 2026⁩ 0.72% كبار الملاك المالك ا",
+            "file": "1e-audit-sample-ar-390.png"
+          }
+        ]
+      }
+    },
+    {
+      "row": "5f",
+      "status": "PASS",
+      "finding": "header carries a date: true; P/E n/a only where EPS is not shown either: true (API eps_ttm null, reason unit_unconfirmed)",
+      "evidence": [
+        {
+          "locale": "en",
+          "header": "AFNIC Al Fujairah National Insurance ADX 230.00 AED +9.52% As of 16 Oct 2026",
+          "pe": "P/E N/A",
+          "eps": "EPS (TTM) Unit not confirmed",
+          "file": "5f-AFNIC-en-1440.png",
+          "api": {
+            "as_of_date": "2026-10-16",
+            "pe": null,
+            "eps_ttm": null,
+            "eps_ttm_reason": "unit_unconfirmed"
+          }
+        },
+        {
+          "locale": "ar",
+          "header": "AFNIC الفجيرة الوطنية للتأمين سوق أبوظبي 230.00 د.إ +9.52% بتاريخ ⁧16 أكتوبر 2026⁩",
+          "pe": "مكرر الربحية غير متاح",
+          "eps": "ربحية السهم (12 شهرًا) الوحدة غير مؤكدة",
+          "file": "5f-AFNIC-ar-1440.png",
+          "api": {
+            "as_of_date": "2026-10-16",
+            "pe": null,
+            "eps_ttm": null,
+            "eps_ttm_reason": "unit_unconfirmed"
+          }
+        }
+      ]
+    },
+    {
+      "row": "8c",
+      "status": "PASS",
+      "finding": "English /home news: 10 item(s), 0 Arabic-only, 0 of them without lang=\"ar\" and a language tag",
+      "evidence": {
+        "items": [
+          {
+            "title": "Equipment House signs SAR 11.9M medical operations, maintena",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "SABIC says partnerships boost productivity, unlock new oppor",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "Twareat appeals ruling in SABIC lawsuit",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "IHR renews SAR 30M credit facilities with Al Rajhi Bank",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "Tadawul approves SNB Capital as market maker for Almarai, Al",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "Al Kathiri pays 7th semi-annual sukuk yields",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "SVCP publishes circular on 69.7% capital cut to offset losse",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "Equipment House plans 3M share buyback",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "East Pipes: New contract with Aramco not linked to emergency",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          },
+          {
+            "title": "Alandalus obtains SAR 35M facilities from SNB",
+            "lang": "en",
+            "tag": null,
+            "arabicOnly": false
+          }
+        ],
+        "file": "8c-home-en-1440.png"
+      }
+    },
+    {
+      "row": "9b",
+      "status": "PASS",
+      "finding": "signed-out protected APIs: GET /portfolio 401, GET /portfolio/alerts 401, GET /me/prefs 401, PUT /me/prefs 401, POST /portfolio/holdings 401, POST /portfolio/alerts 401, POST /copilot/chat 401",
+      "evidence": {
+        "api": [
+          {
+            "method": "GET",
+            "path": "/portfolio",
+            "status": 401,
+            "body": "{\"detail\":\"Sign in to use this.\"}"
+          },
+          {
+            "method": "GET",
+            "path": "/portfolio/alerts",
+            "status": 401,
+            "body": "{\"detail\":\"Sign in to use this.\"}"
+          },
+          {
+            "method": "GET",
+            "path": "/me/prefs",
+            "status": 401,
+            "body": "{\"detail\":\"Sign in to use this.\"}"
+          },
+          {
+            "method": "PUT",
+            "path": "/me/prefs",
+            "status": 401,
+            "body": "{\"detail\":\"Sign in to use this.\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/portfolio/holdings",
+            "status": 401,
+            "body": "{\"detail\":\"Sign in to use this.\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/portfolio/alerts",
+            "status": 401,
+            "body": "{\"detail\":\"Sign in to use this.\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/copilot/chat",
+            "status": 401,
+            "body": "{\"detail\":\"sign_in_required\"}"
+          }
+        ]
+      }
+    },
+    {
+      "row": "9b-p",
+      "status": "BY DESIGN?",
+      "finding": "signed-out /portfolio, /dashboards, /settings (EN, AR): 200 with sign-in link, 200, 200 with sign-in link, 200 with sign-in link, 200, 200 with sign-in link",
+      "evidence": {
+        "pages": [
+          {
+            "locale": "en",
+            "route": "/portfolio",
+            "status": 200,
+            "signInLinks": 2
+          },
+          {
+            "locale": "en",
+            "route": "/dashboards",
+            "status": 200,
+            "signInLinks": 0
+          },
+          {
+            "locale": "en",
+            "route": "/settings",
+            "status": 200,
+            "signInLinks": 2
+          },
+          {
+            "locale": "ar",
+            "route": "/portfolio",
+            "status": 200,
+            "signInLinks": 2
+          },
+          {
+            "locale": "ar",
+            "route": "/dashboards",
+            "status": 200,
+            "signInLinks": 0
+          },
+          {
+            "locale": "ar",
+            "route": "/settings",
+            "status": 200,
+            "signInLinks": 2
+          }
+        ]
+      }
+    },
+    {
+      "row": "9f",
+      "status": "PASS",
+      "finding": "signed in, DELETE an id the caller does not own: holdings 404, alerts 404",
+      "evidence": [
+        {
+          "path": "/api/v1/portfolio/holdings/987654321",
+          "status": 404,
+          "body": "{\"detail\":\"No such holding.\"}"
+        },
+        {
+          "path": "/api/v1/portfolio/alerts/987654321",
+          "status": 404,
+          "body": "{\"detail\":\"No such alert.\"}"
+        }
+      ]
+    },
+    {
+      "row": "10c",
+      "status": "PASS",
+      "finding": "pricing placeholder text: en none, ar none",
+      "evidence": [
+        {
+          "locale": "en",
+          "placeholder": false,
+          "closed": true,
+          "buy": 0,
+          "file": "10-pricing-en-1440.png",
+          "excerpt": "Pricing Two plans, priced in Saudi riyals. The prices below are read from the same plan configuration our payment provider, Moyasar, charges. Free 0 SAR a month Market data and research for every GCC investor. Markets overview, screener and templates Every stock page: price chart, key metrics, peers"
+        },
+        {
+          "locale": "ar",
+          "placeholder": false,
+          "closed": false,
+          "buy": 0,
+          "file": "10-pricing-ar-1440.png",
+          "excerpt": "الأسعار خطتان بالريال السعودي. الأسعار أدناه مقروءة من إعدادات الخطط نفسها التي يحصّل بها مزوّد الدفع لدينا، ميسّر. مجاني 0 ريال شهريًا بيانات الأسواق والأبحاث لكل مستثمر في الخليج. نظرة على الأسواق وفرز الأسهم والقوالب صفحة كل سهم: الرسم البياني للسعر والمؤشرات الرئيسية والأقران والأخبار محفظتي حتى"
+        }
+      ]
+    }
+  ]
+}
