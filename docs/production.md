@@ -595,6 +595,11 @@ them, so daily runs (which do not scrape them) no longer blank the Ownership and
 so GULFNAV's row in `argaam/tickers.csv` points at Argaam's `/ae-ar/companies/dfm/etihad-energy-holding/` pages (the
 ticker key stays `GULFNAV`; the file stays CRLF). Backup `argaam/tickers.csv.bak-20261023`; to undo, copy it back.
 
-## Not in production yet
+## `www.alphacouncil.tech` (since 2026-10-23)
 
-- `www.alphacouncil.tech` has no DNS record; when one is added, add `www` to the certificate.
+- DNS: Cloudflare A record `www` → `72.60.91.24`, proxy off ("DNS only"), like the apex, `api` and `beta`.
+- Certificate `alphacouncil.tech` (certbot, nginx plugin) covers `alphacouncil.tech`, `api.alphacouncil.tech` and
+  `www.alphacouncil.tech`; expanded with `certbot certonly --nginx --cert-name alphacouncil.tech --expand -d …` so
+  certbot did not edit the nginx files; renewal still uses `installer = nginx`, which reloads nginx.
+- nginx: `deploy/nginx-production.conf` already lists `www` and answers `301` to `https://alphacouncil.tech$request_uri`
+  on HTTP and HTTPS. Check: `curl -sI https://www.alphacouncil.tech/` → 301, `Location: https://alphacouncil.tech/`.

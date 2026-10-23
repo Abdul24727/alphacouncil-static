@@ -69,8 +69,9 @@ Older entries: `changelog-archive.md`.
 - Goal 1 DONE: `rebuild` is on GitHub (`origin` = the owner's private `alphacouncil-static`, whose other branches hold the old site). Safety nets keep running on their own: backup copy daily at 09:00 Riyadh, monitor 13 ok, outside check every 5 min.
 - Goal 2: on the server since 2026-10-22: F-A, F-E, F-B, F-C (backups `.bak-20261022`); since 2026-10-23 12:28 UTC: F-F (`.bak-20261023`); since 13:22 UTC: F-A2 (GULFNAV → Etihad Energy Holding's Argaam pages, `tickers.csv.bak-20261023`). Runbook "Pipeline fixes". First night (2026-10-23, full run): F-B, F-C, F-E gone; GASCO, AFG, Agility back; GULFNAV not then (its old page has no data; F-A2's first night is 2026-10-24); `check-data-fixes` all passed (`vt_reason` 272 → 5); 675 of 691 price files (recount on the 2026-10-24 daily run). F-D (Step 19) not built (owner, route 3): Argaam answers 405 "Human Verification" to the server for the market-wide list, even logged in; the patch is kept in `docs/`. Tadawul disclosures stay stale (newest 2026-10-05).
 - Ownership and analysts in the published DB after the 10-23 full run: 672 and 356 tickers; F-F should keep them through daily nights (first check: 2026-10-24).
-- Waiting on the owner (re-tested 2026-10-22: `www` NXDOMAIN, no portrait files): the lawyer's advice (Step 7), the portrait files (Step 8), the `www` DNS record (Step 9).
-- Not done: advisor portraits are initials; no `www`; the lawyer has not reviewed the named advisors.
+- `www.alphacouncil.tech` works since 2026-10-23 (301 to the apex; certificate covers it; Step 9 DONE).
+- Waiting on the owner: the portraits' style image and a way to make them (Step 8). The lawyer's review (Step 7) is now last, after the launch check.
+- Not done: advisor portraits are initials; the lawyer has not reviewed the site.
 - Untracked: `scripts/set-backup-bucket.sh` (bucket helper from the backups session; the bucket is not used).
 
 ## 7. Goals
@@ -604,7 +605,7 @@ Older entries: `changelog-archive.md`.
   - *Stamp:* 2026-10-22; beta `38452ea553`, production `56476948f5`, `rebuild` `dbefc91`
 
 ## Goal 4 — Launch: settled, checked, then paid
-- **Status:** IN PROGRESS (2026-10-23) — order changed by the owner: 8 (portraits) and 9 (`www`, being set up with the owner) → 10 (launch check; interim run passed signed out) → 7 (the lawyer reviews the finished site) → 18 (billing). Step 8 waits on the style image and the owner's go-ahead to generate.
+- **Status:** IN PROGRESS (2026-10-23) — order changed by the owner: 8 (portraits) and 9 (`www`: DONE 2026-10-23) → 10 (launch check; interim run passed signed out) → 7 (the lawyer reviews the finished site) → 18 (billing). Step 8 waits on the style image and a way to generate (Higgsfield has 1.64 credits, free plan) or the owner's files.
 - **Share of project:** ~30%
 - **Goal:** The advisors' names and texts follow the owner's legal advice, the six portraits are real, `www.alphacouncil.tech` works, a full launch check passes on production, and only then is Pro checkout open.
 - **Done when:**
@@ -657,7 +658,7 @@ Older entries: `changelog-archive.md`.
 - **Outcome:** _(empty until worked)_
 
 ### Step 9 — Make `www.alphacouncil.tech` work
-- **Status:** AWAITING CHECKPOINT — the owner adds, in Cloudflare (the domain's DNS host: `koa`/`piper.ns.cloudflare.com`), an A record `www` → `72.60.91.24` (the apex's address; no AAAA seen), proxy off ("DNS only"), so the certificate challenge reaches the server. 2026-10-19: `www` answers NXDOMAIN.
+- **Status:** DONE (2026-10-23) — `www` A record added in Cloudflare (DNS only), certificate expanded to `www`, and `www` answers 301 to `https://alphacouncil.tech/`. nginx needed no change (its config already named and redirected `www`).
 - **Checkpoint cleared:** 2026-10-23 — owner in chat: "for the DNS, can you walk me through it or set it up? And I just click the important buttons that you are not allowed to do. If you are allowed to do it all, then go ahead." (covers the record, the certificate and the redirect; the owner signs in to Cloudflare).
 - **Goal:** `www.alphacouncil.tech` redirects to `https://alphacouncil.tech/` with a valid certificate.
 - **Depends on:** nothing
@@ -670,9 +671,19 @@ Older entries: `changelog-archive.md`.
 - **How:** extend the existing certificate with the same tool that issued it (check with `certbot certificates` first); `nginx -t` before any reload; keep HSTS as it is.
 - **Defaults:** the owner asks what record to add → an A record `www` with the same IPv4 as `alphacouncil.tech`, plus AAAA if the apex has one; certificate renewal fails → leave nginx unchanged and report.
 - **Done when:**
-  - [ ] `curl -sI https://www.alphacouncil.tech/` shows 301 and `location: https://alphacouncil.tech/` — check: the command
-  - [ ] `openssl s_client -connect alphacouncil.tech:443 -servername www.alphacouncil.tech </dev/null | openssl x509 -noout -ext subjectAltName` lists both names — check: the command
-- **Outcome:** _(empty until worked)_
+  - [x] `curl -sI https://www.alphacouncil.tech/` shows 301 and `location: https://alphacouncil.tech/` — check: the command
+  - [x] `openssl s_client -connect alphacouncil.tech:443 -servername www.alphacouncil.tech </dev/null | openssl x509 -noout -ext subjectAltName` lists both names — check: the command
+- **Outcome:**
+  - *Done:* 2026-10-23. Cloudflare (owner's Chrome via Claude in Chrome, owner signed in): A record `www` → `72.60.91.24`, proxy off ("DNS only"), TTL Auto; resolves at 1.1.1.1, 8.8.8.8 and on the server. Server: renewal settings backed up (`/root/letsencrypt-renewal-alphacouncil.tech.conf.bak-20261023`); `certbot certonly --nginx --dry-run` then `certbot certonly --nginx --cert-name alphacouncil.tech --expand -d alphacouncil.tech -d api.alphacouncil.tech -d www.alphacouncil.tech` (new expiry 2027-01-21; renewal keeps `authenticator = nginx`, `installer = nginx`); `nginx -t` ok, `systemctl reload nginx`. No nginx file changed: the server's `alphacouncil-platform` site equals `deploy/nginx-production.conf`, which already names `www` and sends it to the apex.
+  - *Not done:* N/A
+  - *Touched:* Cloudflare DNS (one record); server `/etc/letsencrypt` (certificate `alphacouncil.tech`, 3 names); `docs/production.md`.
+  - *Verification:* (1) VERIFIED — `curl -sI https://www.alphacouncil.tech/` → `HTTP/1.1 301`, `Location: https://alphacouncil.tech/`; `/pricing?x=1` keeps path and query; `http://www…` → 301 to `https://alphacouncil.tech/`; the apex 200, `/api/v1/health` 200, `api.alphacouncil.tech` 200; the app's browser lands on `https://alphacouncil.tech/`. (2) VERIFIED — SAN `DNS:alphacouncil.tech, DNS:api.alphacouncil.tech, DNS:www.alphacouncil.tech`, notAfter 2027-01-21.
+  - *Rulings:* (a) `certonly` (certificate only) rather than certbot's installer, so certbot does not edit the nginx files kept in the repo; the renewal settings kept `installer = nginx`, so renewals still reload nginx. Cost if wrong: a renewal that does not reload nginx — the monitor's certificate check would warn 14 days before expiry. (b) The built-in browser's Cloudflare sign-in failed its human check twice; switched to the owner's Chrome with the owner's agreement.
+  - *Failed approaches:* Cloudflare sign-in in the app's built-in browser ("There was a problem with verification").
+  - *Debt:* N/A
+  - *Resume here:* N/A
+  - *Verify in 30 seconds:* `curl -sI https://www.alphacouncil.tech/ | findstr /i "HTTP location"`
+  - *Stamp:* 2026-10-23; production `56476948f5`
 
 ### Step 10 — Launch check on production
 - **Status:** IN PROGRESS (2026-10-23) — interim run: every signed-out check passes on production (`docs/launch-check-2026-10-23.md`); the real run waits on Steps 7–9, the owner's signed-in run, and Goal 2's last checks.
