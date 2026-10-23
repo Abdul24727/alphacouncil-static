@@ -450,3 +450,10 @@ with F-F and with F-A2.
 | `ticker_insights` (published DB) | 711 rows, **672** with ownership, **356** with analysts — written by the 10-23 **full** run | still ≥ 600 / ≥ 300 after a **daily** night (Step 21's check; without F-F a daily night left 0 / 0) |
 | Price files written in the run's day | 675 on 10-23 (a full run); baseline 679 on a daily run | ≥ 679 |
 | Fixes on the server | all present: `.bak-20261022` ×4, `tickers.csv.bak-20261023` (F-A2), `ingest_ticker_insights.py.bak-20261023` (F-F); `git diff --stat` 4 files, 132+/14− | unchanged |
+
+**`SWEEP=1 check-data-fixes.mjs` against production, the same evening (Goal 2, item 3):** **all passed**,
+44 PASS, 0 FAIL — the same 44 as on 10-23 (two value-traded checks stopped applying when F-E landed).
+Sweep over all 716 tickers: `{"tickers":716,"eps_shown":503,"eps_unconfirmed":181,"eps_bad":0,`
+`"news_green_old":0,"news_green":451,"no_currency":7,"vt_reason":5}` — `eps_bad` 0 and `vt_reason` 5,
+both unchanged since the fixes landed. Report and screenshots:
+`docs/screenshots/data-fixes-production-20261024-pre/`.
