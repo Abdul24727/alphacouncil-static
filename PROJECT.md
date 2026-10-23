@@ -618,7 +618,7 @@ Older entries: `changelog-archive.md`.
 - **Reversibility:** reversible (DNS and certificate: costly; opening billing: costly — whoever pays is owed their month)
 - **Autorun:** no — checkpoint: human-action (portrait files or the owner's go-ahead to make them, the lawyer's advice) and decision (opening billing, Step 18)
 - **Consumes:** `docs/advisors-portraits-brief.md` (the illustrator's brief); `api/app/advisors/*.md` (the six advisors and the Chair); `docs/qa-beta-2026-10/reaudit-<date>.md` (Goal 3).
-- **Steps:** in order 8, 9, 10, 7, 18
+- **Steps:** in order 8, 9, 22, 10, 7, 18
 - **Goal outcome:** _(empty until the goal is worked)_
 
 ### Step 7 — The lawyer reviews the finished site; apply the advice
@@ -666,6 +666,24 @@ Older entries: `changelog-archive.md`.
   - *Resume here:* with the owner's go-ahead: release beta (`scripts/deploy-staging.sh`) then production (`scripts/deploy-production.sh`); this release also carries Copilot option (e) (`copilot_first_turn=answer`, beta 2026-10-22: first words 5.3 s, full 15.2 s). Then screenshots of `/t/2222/advisors` on production in EN/AR at 1440 and 390 (`node <scratch>/route_shots.cjs https://alphacouncil.tech <dir> /t/2222/advisors advisors`, or `check-advisors.mjs VISITOR=1`).
   - *Stamp:* 2026-10-23; on `rebuild` (this commit)
 
+### Step 22 — The advisors' room moves like the reference ("Roast Room")
+- **Status:** AWAITING CHECKPOINT (2026-10-23) — owner's request with the reference screenshot (the Roast Room from the brief); the owner will send one more image of exactly how it should look. Needs that image and the assets below.
+- **Goal:** The room looks and moves like the reference: large portraits standing round a table, full names under them, the speaker's mouth moving while their line is written, "···" over advisors still thinking, one speaker at a time.
+- **Depends on:** 8 (portraits live). Before 10 (the launch check).
+- **Reversibility:** reversible
+- **Autorun:** no — checkpoint: human-action (the owner's reference image and the extra images) and decision (the owner approves the look on beta before production)
+- **What this step is:** The owner (2026-10-23): "It should be a little bit interactive presentation … a little bit of mouth movement and animation going on while an LLM is producing … they have the full names … three dots on top of each … the speaking should be in turns." Already there (`web/src/components/debate/`): lines play one at a time and type out (`Player.tsx`, speed 1.5×, "lines up next", "Skip ahead"); "···" over seats writing (`WritingMark`); the speaker's seat lifts, rings orange and shows bars (`Stage.tsx`); the speaker line has the full name and stance. Openings are written at the same time by the model but played one after another, as in the reference (several "•••", one speaker). Missing: (1) portraits are 52–66 px circles (`SeatDisc`), the reference has large busts (about 160–200 px) behind a table arc with the caption on the table; (2) seat tags show surnames (`seatShort`), the reference full names; (3) no mouth movement.
+- **Where:** `web/src/components/debate/Stage.tsx`, `parts.tsx`, `Player.tsx`; `web/public/advisors/`; `api/app/advisors/*.md` and `api/app/debate/roster.py` (a second image per seat, e.g. `portrait_talk:`).
+- **Consumes:** the owner's second reference image; per advisor, from ChatGPT with the same style: the portrait on a **transparent background**, and the same with the **mouth open as if speaking** (transparent too); the Chair's gavel on a transparent background.
+- **Produces:** the redesigned stage; `<id>-talk.webp` files; screenshots mid-session EN and AR at 1440 and 390 px; a release through beta then production with the owner's go-ahead.
+- **How:** mouth movement = swap the two images about every 150 ms while that advisor's line is typing, closed when it ends; none with `prefers-reduced-motion`. Brand rules hold: graphite table, no gradients, no glow (BRAND.md), orange marks the speaker. Phones (390 px): the speaker large, the others small in a row — never sideways scroll.
+- **Defaults:** no talk image for a seat → its portrait stays still with the current lift; reference and BRAND.md disagree → BRAND.md wins and the difference is listed for the owner.
+- **Done when:**
+  - [ ] mid-session screenshots (EN, AR; 1440, 390) show large portraits round the table, full names, the speaker's mouth-open frame and "···" over thinking seats — check: screenshots
+  - [ ] `check-advisors.mjs` passes on beta (live session) and the owner approves the look there — check: summary line and the owner's words
+  - [ ] released to production with the owner's go-ahead — check: the release log
+- **Outcome:** _(empty until worked)_
+
 ### Step 9 — Make `www.alphacouncil.tech` work
 - **Status:** DONE (2026-10-23) — `www` A record added in Cloudflare (DNS only), certificate expanded to `www`, and `www` answers 301 to `https://alphacouncil.tech/`. nginx needed no change (its config already named and redirected `www`).
 - **Checkpoint cleared:** 2026-10-23 — owner in chat: "for the DNS, can you walk me through it or set it up? And I just click the important buttons that you are not allowed to do. If you are allowed to do it all, then go ahead." (covers the record, the certificate and the redirect; the owner signs in to Cloudflare).
@@ -697,7 +715,7 @@ Older entries: `changelog-archive.md`.
 ### Step 10 — Launch check on production
 - **Status:** IN PROGRESS (2026-10-23) — interim run: every signed-out check passes on production (`docs/launch-check-2026-10-23.md`); the real run waits on Steps 7–9, the owner's signed-in run, and Goal 2's last checks.
 - **Goal:** One dated record shows every check passing on production after Goals 2, 3 and 4's changes, with billing still closed.
-- **Depends on:** 6, 8, 9, 17, 21 (19 superseded 2026-10-23; 7 now comes after this step)
+- **Depends on:** 6, 8, 9, 17, 21, 22 (19 superseded 2026-10-23; 7 now comes after this step)
 - **Reversibility:** reversible
 - **Autorun:** yes
 - **What this step is:** The last pass before the owner spends on advertising: every check script, the monitor and screenshots of the key pages, in one report.
