@@ -22,8 +22,11 @@ const QUESTIONS = {
   en: "Is the dividend covered by earnings, and how safe is it?",
   ar: "هل تغطي الأرباح التوزيعات، وما مدى أمانها؟",
 };
-const STAGES = ["brief", "openings", "faultlines", "debate", "vote", "verdict"];
+const STAGES = ["brief", "openings", "faultlines", "debate", "final", "verdict"];
 const ADVICE = { en: /\b(buy|sell|hold)\b/i, ar: /(اشتر|بيع السهم|احتفظ|شراء السهم)/ };
+// The lengths chair.md asks for (engine.ANSWER_WORDS / CHAIR_WORDS): an answer outside them is kept, and reported.
+const ANSWER_WORDS = [250, 400];
+const CHAIR_WORDS = [200, 350];
 
 await mkdir(OUT, { recursive: true });
 const browser = await chromium.launch({ channel: "chrome" });
@@ -74,6 +77,55 @@ async function screenChecks(page, label) {
   check(r.cites.every((c) => /^P\d$/.test(c)), `${label}: citation chips name a dataset (${r.cites.length})`);
 }
 
+/**
+ * The three-round format on screen (PROJECT.md Step 23): round 1 full answers, round 2 challenges,
+ * round 3 final words with "what changed", and the Chair's complete answer. Reads each stage's own tab.
+ */
+async function formatChecks(page, locale, standIn) {
+  const open = async (stage) => {
+    await page.locator(`[data-stage-tab=${stage}]`).click();
+    await page.locator(`[data-stage-view=${stage}]`).waitFor();
+    await page.waitForTimeout(250);
+  };
+  const words = (s) => s.replace(/\[(?:P\d+|DB)\]/g, " ").split(/\s+/).filter(Boolean).length;
+
+  await open("openings");
+  const answers = await page.locator('[data-turn^="openings:"]').allInnerTexts();
+  const lengths = answers.map(words);
+  check(answers.length >= 3, `${locale}: round 1 is a full answer from each advisor (${answers.length})`);
+  // The stand-in writes one sentence per seat on purpose, so only a model's answers can be full ones.
+  if (standIn) note(`INFO  ${locale}: stand-in room, so round 1 lengths are not checked (${lengths.join(", ")} words)`);
+  else
+    check(
+      lengths.every((n) => n >= 120),
+      `${locale}: round 1 answers are full, not openings (${lengths.join(", ")} words)`,
+    );
+  const outside = lengths.filter((n) => n < ANSWER_WORDS[0] || n > ANSWER_WORDS[1]).length;
+  note(`INFO  ${locale}: round 1 answers outside ${ANSWER_WORDS.join("–")} words: ${outside} of ${lengths.length}`);
+
+  await open("debate");
+  const challenges = await page.locator('[data-turn^="debate:"]').allInnerTexts();
+  const conceded = await page.locator("[data-concedes]").count();
+  check(challenges.length >= 3, `${locale}: round 2 is a challenge from each advisor (${challenges.length})`);
+  note(`INFO  ${locale}: advisors who conceded a point: ${conceded}`);
+
+  await open("final");
+  const finals = await page.locator('[data-turn^="final:"]').allInnerTexts();
+  const changed = await page.locator('[data-turn^="final:"] [data-changed]').count();
+  check(finals.length >= 3, `${locale}: round 3 is a final word from each advisor (${finals.length})`);
+  check(changed === finals.length, `${locale}: every final word says what changed (${changed} of ${finals.length})`);
+  check(
+    (await page.locator("[data-vote-table]").count()) === 0,
+    `${locale}: the final word carries no scores`,
+  );
+
+  await open("verdict");
+  const answer = (await page.locator("[data-answer]").textContent()) ?? "";
+  check(answer.trim().length > 0, `${locale}: the Chair wrote the room's complete answer`);
+  note(`INFO  ${locale}: the Chair's answer is ${words(answer)} words (asked for ${CHAIR_WORDS.join("–")})`);
+  check(!ADVICE[locale].test(answer), `${locale}: the Chair's answer is an assessment, not advice`);
+}
+
 /** A screenshot; `whole` grows the window to the room's height first (the app scrolls an inner pane, not the page). */
 async function shot(page, name, whole = false) {
   const file = `${OUT}/${name}.png`;
@@ -102,6 +154,9 @@ async function signIn(page, email, password) {
 async function convene(locale) {
   const ctx = await context(1440);
   const page = await ctx.newPage();
+  // The stand-in room (no model key) answers in one sentence and in a second: some checks below are a model's.
+  const standIn = (await (await ctx.request.get(`${BASE_URL}/api/v1/debate/status`)).json()).stand_in === true;
+  if (standIn) note(`INFO  ${locale}: the room is the labelled stand-in, not a model`);
   if (process.env.EMAIL) await signIn(page, process.env.EMAIL, process.env.PASSWORD ?? "a long test password");
   else await signUp(page, `advisors-${locale}-${Date.now()}@example.com`);
   await page.goto(`${BASE_URL}${prefix(locale)}/t/${TICKER}/advisors`, { waitUntil: "networkidle" });
@@ -140,10 +195,14 @@ async function convene(locale) {
     await page.waitForTimeout(700);
   }
   const seconds = (Date.now() - started) / 1000;
-  check(speakers.size >= 3, `${locale}: lines played in turn (${[...speakers].join(", ")})`);
   const verdict = page.locator("[data-verdict]");
   check((await verdict.count()) === 1, `${locale}: the verdict arrived (${seconds.toFixed(0)} s on screen)`);
-  check(seen.size >= 4, `${locale}: saw the stages live (${[...seen].join(", ")})`);
+  // A stand-in session is over in about a second, so nothing can be caught mid-round: only a model's can.
+  if (standIn) note(`INFO  ${locale}: stand-in room, so the live rounds are not followed (${seconds.toFixed(0)} s)`);
+  else {
+    check(speakers.size >= 3, `${locale}: lines played in turn (${[...speakers].join(", ")})`);
+    check(seen.size >= 4, `${locale}: saw the stages live (${[...seen].join(", ")})`);
+  }
   await page.waitForTimeout(1000);
   await shot(page, `live-verdict-${locale}-1440`);
   await shot(page, `verdict-${locale}-1440-full`, true);
@@ -156,6 +215,8 @@ async function convene(locale) {
   note(`INFO  ${locale}: figures marked as not found in the data: ${unverified}`);
   const took = await page.locator("[data-verdict]").textContent();
   note(`INFO  ${locale}: ${(took.match(/(Took|استغرقت) [\d:]+/) ?? ["time not shown"])[0]}`);
+
+  await formatChecks(page, locale, standIn);
 
   // Every stage replayed at 1440 (whole page), from the stage tabs.
   for (const stage of STAGES) {

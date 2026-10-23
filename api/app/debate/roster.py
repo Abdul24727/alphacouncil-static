@@ -2,7 +2,7 @@
 
 A file is front matter (`key: value` lines between `---`) and a markdown body whose `## ` headings
 are its sections. An advisor's whole body is its brief; the Chair's "Stage: …" sections are the
-instructions for each step and its "Scoring" section is the scale every vote uses.
+instructions for each step.
 """
 
 import re
@@ -25,12 +25,11 @@ ADVISOR_SECTIONS = (
 CHAIR_SECTIONS = (
     "Who the Chair is",
     "Stage: Brief",
-    "Stage: Openings",
+    "Stage: Answers",
     "Stage: Fault lines",
-    "Stage: Debate",
-    "Stage: Vote",
-    "Stage: Verdict",
-    "Scoring",
+    "Stage: Challenges",
+    "Stage: Final word",
+    "Stage: The answer",
     "Voice",
 )
 FIELDS = ("id", "name_en", "name_ar", "initials", "lens_en", "lens_ar", "portrait")

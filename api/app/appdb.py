@@ -200,9 +200,9 @@ debate_sessions = Table(
     Column("status", String(10), nullable=False),  # running | done | failed
     Column("seats", JSON, nullable=False),  # [{id, name_en, name_ar, ...}] as they were
     Column("models", JSON, nullable=False),  # {"advisors": ..., "chair": ...}
-    Column("rounds", Integer, nullable=False),  # openings + debate rounds + vote
+    Column("rounds", Integer, nullable=False),  # answers + rounds of challenges + the final word
     Column("sources", JSON),  # citation tag -> dataset
-    Column("result", JSON),  # the vote count (engine.count_votes)
+    Column("result", JSON),  # where the room landed (engine.count_leans / count_answers)
     Column("error", String(200)),
     Column("seconds", Float),
     Column("cost_usd", Float),  # OpenRouter's own figure for every call, summed
@@ -212,14 +212,15 @@ debate_sessions = Table(
     Column("finished_at", DateTime(timezone=True)),
 )
 
-# Each step of a session: the Chair's brief, fault lines and verdict, every advisor's opening,
-# replies and vote. Written as each one lands, so a reload (or another API worker) can follow along.
+# Each step of a session: the Chair's brief, fault lines and answer, every advisor's own answer,
+# challenges and final word. Written as each one lands, so a reload (or another API worker) can follow along.
 debate_turns = Table(
     "debate_turns",
     metadata,
     Column("id", Integer, primary_key=True),
     Column("session_id", Integer, ForeignKey("debate_sessions.id", ondelete="CASCADE"), nullable=False, index=True),
-    Column("stage", String(12), nullable=False),  # brief | openings | faultlines | debate | vote | verdict
+    # brief | openings | faultlines | debate | final | verdict ("vote" where "final" now sits, before 2026-10-24)
+    Column("stage", String(12), nullable=False),
     Column("round", Integer),
     Column("seat", String(32), nullable=False),
     Column("data", JSON, nullable=False),

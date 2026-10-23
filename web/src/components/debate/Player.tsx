@@ -92,14 +92,23 @@ export function SpeechBubble({ room, player }: { room: Room; player: Player }) {
   const { seat, name, short } = useSeats(room.session?.seats);
   const { line } = player;
   if (!line) return null;
+  // An open session has no options, so the caption says what the seat is doing without a lean.
   const action =
     line.kind === "opens"
-      ? t("opens", { option: line.lean ?? "" })
+      ? line.lean
+        ? t("opens", { option: line.lean })
+        : t("opensPlain")
       : line.kind === "answers"
-        ? t("answers", { name: short(line.to), option: line.lean ?? "" })
-        : line.kind === "votes"
-          ? t("votes", { option: line.lean ?? "", score: String(line.score ?? "") })
-          : t(line.kind);
+        ? line.lean
+          ? t("answers", { name: short(line.to), option: line.lean })
+          : t("answersPlain", { name: short(line.to) })
+        : line.kind === "finals"
+          ? line.lean
+            ? t("finals", { option: line.lean })
+            : t("finalsPlain")
+          : line.kind === "votes"
+            ? t("votes", { option: line.lean ?? "", score: String(line.score ?? "") })
+            : t(line.kind);
   const done = room.status !== "running" && player.waiting === 0;
 
   return (

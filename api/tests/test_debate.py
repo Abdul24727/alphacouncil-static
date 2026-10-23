@@ -8,7 +8,7 @@ import pytest
 from sqlalchemy import select
 
 ORIGIN = {"Origin": "http://testserver"}
-STAGES = ["brief", "openings", "faultlines", "debate", "vote", "verdict"]
+STAGES = ["brief", "openings", "faultlines", "debate", "final", "verdict"]
 
 
 def signup(client, email="room@example.com"):
@@ -16,7 +16,12 @@ def signup(client, email="room@example.com"):
     assert client.post("/v1/auth/signup", json=body, headers=ORIGIN).status_code == 200
 
 
-def convene(client, question="Is the dividend covered by earnings?", ticker="2222", locale="en", status=200):
+# An open question (the room answers it) and one that asks the room to choose between readings.
+OPEN_Q = "Is the dividend covered by earnings?"
+CHOICE_Q = "Is the dividend covered by earnings, or covered only if margins hold?"
+
+
+def convene(client, question=OPEN_Q, ticker="2222", locale="en", status=200):
     events = []
     with client.stream(
         "POST", "/v1/debate/sessions", json={"ticker": ticker, "question": question, "locale": locale}, headers=ORIGIN
@@ -89,7 +94,7 @@ def test_six_seats_and_seats_tied_to_a_company_sit_out(room, monkeypatch):
     assert sorted(openings) == ["alwaleed", "buffett", "dalio", "lynch", "marks"]
     # Aramco: all six.
     events = convene(room, ticker="2222")
-    assert len([e for e in events if e["type"] == "turn" and e["turn"]["stage"] == "vote"]) == 6
+    assert len([e for e in events if e["type"] == "turn" and e["turn"]["stage"] == "final"]) == 6
     assert events[-1]["status"] == "done"
 
 
@@ -104,19 +109,33 @@ def test_the_roster_setting_is_checked():
         roster.advisors("buffett,nobody")
 
 
-def test_votes_are_counted_by_the_engine():
-    from app.debate.engine import count_votes
+def test_the_final_leans_are_counted_by_the_engine():
+    from app.debate.engine import count_answers, count_leans
 
-    votes = {
-        "a": {"scores": {"A": 7, "B": 4}, "top": "A"},
-        "b": {"scores": {"A": 6, "B": 6}, "top": "B"},
-        "c": {"scores": {"A": 8, "B": 3}, "top": "A"},
+    finals = {
+        "a": {"lean": "A", "text": "x"},
+        "b": {"lean": "B", "text": "x"},
+        "c": {"lean": "A", "text": "x"},
         "d": {"absent": True, "error": "busy"},
     }
-    r = count_votes(["A", "B"], votes)
-    assert r["average"] == {"A": 7.0, "B": 13 / 3} and r["best"] == ["A"] and r["agreement"] == 2 and r["voters"] == 3
-    tie = count_votes(["A", "B"], {"a": {"scores": {"A": 5, "B": 5}, "top": "A"}})
-    assert tie["best"] == ["A", "B"] and tie["agreement"] == 1
+    r = count_leans(["A", "B"], finals)
+    assert r["mode"] == "choice" and r["tally"] == {"A": 2, "B": 1} and r["best"] == ["A"] and r["voters"] == 3
+    assert r["leans"] == {"a": "A", "b": "B", "c": "A"}
+    tie = count_leans(["A", "B"], {"a": {"lean": "A"}, "b": {"lean": "B"}})
+    assert tie["best"] == ["A", "B"] and tie["voters"] == 2
+    # Nobody gave a lean: no option is favoured, rather than all of them.
+    assert count_leans(["A", "B"], {"a": {"absent": True}})["best"] == []
+    # An open session has nothing to count, only who answered.
+    assert count_answers(finals) == {"mode": "open", "voters": 3}
+
+
+def test_the_stand_in_reads_which_questions_ask_the_room_to_choose():
+    from app.debate.standin import mode_for
+
+    for q in (CHOICE_Q, "Should I read the payout as safe?", "هل يجب قراءة التوزيعات كمغطاة؟", "Covered, or at risk?"):
+        assert mode_for(q) == "choice", q
+    for q in (OPEN_Q, "How safe is the dividend?", "ما الذي تُظهره الميزانية؟"):
+        assert mode_for(q) == "open", q
 
 
 def test_checks_cite_flag_and_remove_advice():
@@ -155,32 +174,38 @@ def test_signed_out_and_free_members_cannot_convene(room, monkeypatch):
     assert r.status_code == 403 and r.json()["detail"] == "pro_required"
 
 
-def test_a_stand_in_session_runs_every_stage_and_is_saved(room):
+def test_an_open_session_runs_every_stage_and_is_saved(room):
+    """A question that is not a choice: no options, no leans, the room answers the question itself."""
     signup(room)
     events = convene(room)
     assert events[0]["type"] == "session" and events[0]["session"]["status"] == "running"
     sid = events[0]["session"]["id"]
     assert [e["stage"] for e in events if e["type"] == "stage"] == STAGES
     rounds = [(e["stage"], e["round"], e["rounds"]) for e in events if e["type"] == "stage" and e["round"]]
-    assert rounds == [("openings", 1, 3), ("debate", 2, 3), ("vote", 3, 3)]
+    assert rounds == [("openings", 1, 3), ("debate", 2, 3), ("final", 3, 3)]
     turns = [e["turn"] for e in events if e["type"] == "turn"]
     assert [t["seat"] for t in turns if t["stage"] == "openings"] != []
     assert len(turns) == 1 + 4 + 1 + 4 + 4 + 1
     brief = turns[0]["data"]
-    assert [o["id"] for o in brief["options"]] == ["A", "B", "C"]
-    # Buffett's stand-in quotes ROE from the overview, cited to it.
+    assert brief["mode"] == "open" and brief["options"] == []
+    # Buffett's stand-in quotes ROE from the overview, cited to it; the answer's length is counted, not cut.
     opening = next(t for t in turns if t["stage"] == "openings" and t["seat"] == "buffett")
     assert "26.75%" in opening["data"]["text"] and "[P1]" in opening["data"]["text"]
-    assert opening["flags"]["unverified"] == []
+    assert opening["data"]["lean"] is None and opening["flags"]["unverified"] == []
+    assert opening["flags"]["words"] == len(opening["data"]["text"].replace("[P1]", "").split())
+    final = next(t for t in turns if t["stage"] == "final" and t["seat"] == "buffett")
+    assert final["data"]["lean"] is None and final["data"]["lean_changed"] is False and final["data"]["would_change"]
+    verdict = next(t for t in turns if t["stage"] == "verdict")["data"]
+    assert verdict["answer"] and verdict["favours"] == "" and verdict["gaps"]
     writing = [e["seats"] for e in events if e["type"] == "writing"]
     assert ["chair"] in writing and ["buffett", "lynch", "dalio", "marks"] in writing
     result = next(e["result"] for e in events if e["type"] == "result")
-    assert set(result["average"]) == {"A", "B", "C"} and result["voters"] == 4
+    assert result == {"mode": "open", "voters": 4}
     assert events[-1]["type"] == "done" and events[-1]["status"] == "done"
 
     listed = room.get("/v1/debate/sessions").json()
     assert [x["id"] for x in listed] == [sid] and listed[0]["ticker"]["symbol"] == "2222"
-    assert listed[0]["result"]["labels"]["A"] and listed[0]["result"]["headline"]
+    assert listed[0]["result"]["labels"] == {} and listed[0]["result"]["headline"]
     full = room.get(f"/v1/debate/sessions/{sid}").json()
     assert full["status"] == "done" and len(full["turns"]) == 15 and full["sources"]["P1"]["ok"] is True
     assert full["seats"][0]["name_en"] == "Warren Buffett" and full["rounds"] == 3
@@ -193,11 +218,69 @@ def test_a_stand_in_session_runs_every_stage_and_is_saved(room):
     assert stats["models"] == ["stand-in / stand-in"]
 
 
+def test_a_choice_session_frames_options_and_counts_the_final_leans(room):
+    signup(room)
+    events = convene(room, question=CHOICE_Q)
+    turns = [e["turn"] for e in events if e["type"] == "turn"]
+    brief = turns[0]["data"]
+    assert brief["mode"] == "choice" and [o["id"] for o in brief["options"]] == ["A", "B", "C"]
+    leans = {t["seat"]: t["data"]["lean"] for t in turns if t["stage"] == "final"}
+    assert set(leans) == {"buffett", "lynch", "dalio", "marks"} and all(x in ("A", "B", "C") for x in leans.values())
+    result = next(e["result"] for e in events if e["type"] == "result")
+    assert result["mode"] == "choice" and result["voters"] == 4
+    assert sum(result["tally"].values()) == 4 and result["leans"] == leans
+    # The most-favoured option is the one most advisors ended on, and nothing is scored.
+    assert all(result["tally"][o] == max(result["tally"].values()) for o in result["best"])
+    assert "average" not in result and not any(t["stage"] == "vote" for t in turns)
+    verdict = next(t for t in turns if t["stage"] == "verdict")["data"]
+    assert verdict["favours"] and verdict["answer"]
+    assert room.get("/v1/debate/sessions").json()[0]["result"]["labels"]["A"]
+
+
+def test_a_session_saved_in_the_scored_format_still_loads(room):
+    """Sessions held before 2026-10-24 scored options in a vote stage: they are served as they were."""
+    from sqlalchemy import insert, update
+
+    from app.appdb import debate_sessions, debate_turns, engine_for, users
+    from app.debate import roster, store
+
+    signup(room)
+    url = room.app.state.settings.database_url
+    with engine_for(url).connect() as conn:
+        user_id = conn.execute(select(users.c.id)).scalar_one()
+    seats = [roster.load(i).info.model_dump() for i in ("buffett", "marks")] + [roster.chair().info.model_dump()]
+    sid = store.create(
+        url, user_id=user_id, ticker_key="2222_TADAWUL", question="Is it covered?", locale="en",
+        seats=seats, models={"advisors": "m", "chair": "c"}, rounds=3,
+    )
+    with engine_for(url).begin() as conn:
+        for stage, rnd, seat, data in [
+            ("brief", None, "chair", {"question": "Is it covered?", "options": [{"id": "A", "label": "Covered", "detail": ""}], "focus": [], "weighing": {}, "note": ""}),
+            ("vote", 3, "buffett", {"scores": {"A": 7, "B": 4}, "top": "A", "reason": "Because."}),
+            ("verdict", None, "chair", {"headline": "Covered", "summary": "s", "why": [], "watch_out": None, "disagreements": [], "gaps": []}),
+        ]:
+            conn.execute(insert(debate_turns).values(session_id=sid, stage=stage, round=rnd, seat=seat, data=data, flags=None))
+        conn.execute(update(debate_sessions).where(debate_sessions.c.id == sid).values(
+            status="done", result={"average": {"A": 7.0, "B": 4.0}, "best": ["A"], "agreement": 2, "voters": 2, "scores": {}},
+        ))
+
+    full = room.get(f"/v1/debate/sessions/{sid}").json()
+    assert [t["stage"] for t in full["turns"]] == ["brief", "vote", "verdict"]
+    assert full["turns"][1]["data"]["scores"] == {"A": 7, "B": 4}
+    assert full["result"]["average"]["A"] == 7.0 and full["turns"][2]["data"]["summary"] == "s"
+    assert "mode" not in full["turns"][0]["data"] and "mode" not in full["result"]
+
+
 def test_arabic_sessions_answer_in_arabic(room):
     signup(room)
-    events = convene(room, question="هل التوزيعات مغطاة؟", locale="ar")
-    brief = next(e["turn"]["data"] for e in events if e["type"] == "turn" and e["turn"]["stage"] == "brief")
+    events = convene(room, question="هل يجب قراءة التوزيعات كمغطاة أم كمعرضة للخطر؟", locale="ar")
+    turns = [e["turn"] for e in events if e["type"] == "turn"]
+    brief = turns[0]["data"]
+    assert brief["mode"] == "choice"
     assert re.search(r"[؀-ۿ]", brief["question"]) and re.search(r"[؀-ۿ]", brief["options"][0]["label"])
+    for stage in ("openings", "debate", "final", "verdict"):
+        text = next(t for t in turns if t["stage"] == stage)["data"]
+        assert re.search(r"[؀-ۿ]", text.get("text") or text["answer"]), stage
 
 
 def test_the_monthly_allowance_and_one_session_at_a_time(room, monkeypatch):
@@ -271,6 +354,7 @@ class FakeRouter:
             first = "Buy the shares" if not retry else "Earnings cover the dividend"
             return json.dumps(
                 {
+                    "mode": "choice",
                     "question": "Is the dividend covered by earnings?",
                     "options": [{"id": "A", "label": first, "detail": "Payout ratio 41.9 [P2]."}, {"id": "B", "label": "Covered only if margins hold", "detail": "x"}],
                     "focus": ["payout", "debt"],
@@ -278,7 +362,7 @@ class FakeRouter:
                     "note": "",
                 }
             )
-        if step == "Openings":
+        if step == "Answers":
             text = {
                 "buffett": "ROE is 26.75%. I would buy at this price.",
                 "lynch": "The P/E is 99.9 [P1].",
@@ -286,16 +370,27 @@ class FakeRouter:
             return "```json\n" + json.dumps({"lean": "A", "headline": "Covered.", "text": text}) + "\n```"
         if step == "Fault lines":
             return json.dumps({"lines": [{"title": "Payout", "between": ["buffett", "marks", "nobody"], "text": "They differ."}], "summary": ""})
-        if step == "Debate":
-            return json.dumps({"responds_to": "buffett" if seat != "buffett" else "lynch", "lean": "B" if seat == "marks" else "A", "headline": "No.", "text": "I disagree."})
-        if step == "Vote":
-            return json.dumps({"scores": {"A": 7 if seat != "marks" else 3, "B": "6"}, "top": "B", "reason": "Because."})
+        if step == "Challenges":
+            return json.dumps({
+                "responds_to": "buffett" if seat != "buffett" else "lynch",
+                "lean": "B" if seat == "marks" else "A",
+                "headline": "No.",
+                "text": "I disagree.",
+                "concedes": "The payout ratio matters." if seat == "lynch" else "",
+            })
+        if step == "Final word":
+            # Lynch moves to B here (it challenged on A); Marks was already on B.
+            return json.dumps({
+                "lean": "B" if seat in ("marks", "lynch") else "A",
+                "text": "That is where I land.",
+                "changed": "The payout ratio." if seat == "lynch" else "",
+                "would_change": "A longer earnings record.",
+            })
         return json.dumps(
             {
                 "headline": "The data supports a covered dividend",
-                "summary": "Most advisors read it as covered.",
-                "why": [{"seat": "buffett", "point": "ROE is high."}, {"seat": "nobody", "point": "x"}],
-                "watch_out": {"seat": "marks", "point": "Margins could fall."},
+                "answer": "The room reads the payout as covered, with Marks and Lynch on the conditional reading.",
+                "favours": "The room splits evenly between the two readings.",
                 "disagreements": ["Marks reads the cycle differently."],
                 "gaps": ["No earnings forecasts."],
             }
@@ -330,16 +425,20 @@ def test_models_debate_with_checked_numbers_and_no_advice(router):
     buffett = turns[("openings", "buffett")]
     assert buffett["data"]["text"] == "ROE is 26.75% [P1]." and buffett["flags"]["removed"] == 1 and buffett["flags"]["cited"] == 1
     assert turns[("openings", "lynch")]["flags"]["unverified"] == ["99.9"]
-    # The fault line keeps only real advisors; replies record a changed lean.
+    # The fault line keeps only real advisors; challenges record a changed lean and a conceded point.
     assert turns[("faultlines", "chair")]["data"]["lines"][0]["between"] == ["buffett", "marks"]
     assert turns[("debate", "marks")]["data"]["changed"] is True and turns[("debate", "lynch")]["data"]["changed"] is False
-    # Scores: "6" read as 6; the named top must be a highest score.
-    vote = turns[("vote", "buffett")]["data"]
-    assert vote["scores"] == {"A": 7, "B": 6} and vote["top"] == "A"
+    assert turns[("debate", "lynch")]["data"]["concedes"] == "The payout ratio matters."
+    # The final word: Lynch moved from A to B and says what changed; Marks was already on B.
+    lynch = turns[("final", "lynch")]["data"]
+    assert lynch["lean"] == "B" and lynch["lean_changed"] is True and lynch["changed"] == "The payout ratio."
+    assert turns[("final", "marks")]["data"]["lean_changed"] is False
+    # The leans are counted here, not scored by a model: two on each reading is a tie.
     result = next(e["result"] for e in events if e["type"] == "result")
-    assert result["average"] == {"A": 6.0, "B": 6.0} and result["best"] == ["A", "B"]
+    assert result["mode"] == "choice" and result["tally"] == {"A": 2, "B": 2} and result["best"] == ["A", "B"]
+    assert result["leans"] == {"buffett": "A", "lynch": "B", "dalio": "A", "marks": "B"}
     verdict = turns[("verdict", "chair")]["data"]
-    assert [w["seat"] for w in verdict["why"]] == ["buffett", None]
+    assert verdict["answer"].startswith("The room reads the payout") and verdict["favours"]
 
     # One model for the advisors, another for the Chair; the data pack precedes every seat's brief.
     models = {c["model"] for c in FakeRouter.calls}
@@ -353,7 +452,7 @@ def test_models_debate_with_checked_numbers_and_no_advice(router):
     # The Chair's model refused "reasoning off" once; it then runs at the lowest effort, the advisors with it off.
     assert FakeRouter.refused == 1 and {str(c["extra_body"].get("reasoning")) for c in chair_calls} == {"{'effort': 'low'}"}
     assert all(c["extra_body"]["reasoning"] == {"enabled": False} for c in FakeRouter.calls if c not in chair_calls)
-    assert {c["max_tokens"] for c in chair_calls} == {1_200 + 2_048, 900 + 2_048, 1_600 + 2_048}
+    assert {c["max_tokens"] for c in chair_calls} == {1_200 + 2_048, 900 + 2_048, 2_200 + 2_048}
 
     from app.appdb import debate_sessions, engine_for
 

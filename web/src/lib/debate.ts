@@ -2,8 +2,17 @@
 // POST /v1/debate/sessions, or a saved session from GET /v1/debate/sessions/{id}) folded into one
 // state. Pure functions only, so they run in node:test (debate.test.ts) and in the browser.
 
-export const STAGES = ["brief", "openings", "faultlines", "debate", "vote", "verdict"] as const;
-export type Stage = (typeof STAGES)[number];
+export const STAGES = ["brief", "openings", "faultlines", "debate", "final", "verdict"] as const;
+/** `vote` is where `final` now sits in sessions held before 2026-10-24, which scored options. */
+export type Stage = (typeof STAGES)[number] | "vote";
+
+/** The stages of one session: its own fifth stage, so a saved scored session still replays. */
+export function stagesOf(s: SessionMeta | null | undefined): Stage[] {
+  return STAGES.map((x) => (x === "final" && scored(s) ? "vote" : x));
+}
+
+/** A session held in the scored format: it has vote turns. New sessions never write any. */
+const scored = (s: SessionMeta | null | undefined) => (s?.turns ?? []).some((t) => t.stage === "vote");
 
 export type SeatInfo = {
   id: string;
@@ -21,29 +30,61 @@ export type SeatInfo = {
   recuse?: string[];
 };
 
-export type Flags = { unverified: string[]; cited: number; removed: number };
+/** `words` is on the long answers (an advisor's own answer, the Chair's): the length as written, never cut. */
+export type Flags = { unverified: string[]; cited: number; removed: number; words?: number };
 export type Option = { id: string; label: string; detail: string };
-export type Brief = { question: string; options: Option[]; focus: string[]; weighing: Record<string, string>; note: string };
+/** `choice`: the Chair framed options and each advisor leans to one. `open`: no options, the question itself. */
+export type Mode = "choice" | "open";
+export type Brief = {
+  /** Absent in sessions held before 2026-10-24: options then meant a choice. */
+  mode?: Mode;
+  question: string;
+  options: Option[];
+  focus: string[];
+  weighing: Record<string, string>;
+  note: string;
+};
 export type Absent = { absent: true; error: string };
-export type Opening = { lean: string; headline: string; text: string };
-export type Reply = Opening & { responds_to: string | null; changed: boolean };
+/** Round 1: an advisor's own complete answer, written without seeing the others'. */
+export type Opening = { lean: string | null; headline: string; text: string };
+/** Round 2: the answer this advisor disagrees with most, challenged, with a point they may concede. */
+export type Reply = Opening & { responds_to: string | null; changed: boolean; concedes?: string };
+/** Round 3: the final position, what changed in it, and what data would change it. No scores. */
+export type Final = {
+  lean: string | null;
+  lean_changed: boolean;
+  text: string;
+  /** Empty when nothing changed during the room. */
+  changed: string;
+  would_change: string;
+};
 export type FaultLines = { lines: { title: string; between: string[]; text: string }[]; summary: string };
+/** Sessions held before 2026-10-24 scored every option instead of giving a final word. */
 export type Vote = { scores: Record<string, number>; top: string; reason: string };
 export type Credited = { seat: string | null; point: string };
 export type Verdict = {
   headline: string;
-  summary: string;
-  why: Credited[];
-  watch_out: Credited | null;
+  /** The room's complete answer (new sessions). Scored sessions have `summary`, `why` and `watch_out` instead. */
+  answer?: string;
+  /** In a choice session: which reading the room favours and how firmly. */
+  favours?: string;
   disagreements: string[];
   gaps: string[];
+  summary?: string;
+  why?: Credited[];
+  watch_out?: Credited | null;
 };
 export type Result = {
-  average: Record<string, number | null>;
-  best: string[];
-  agreement: number;
+  /** Absent in scored sessions, which have `average`, `agreement` and `scores`. */
+  mode?: Mode;
   voters: number;
-  scores: Record<string, Record<string, number>>;
+  /** choice: how many advisors lean to each option after the final word, and the option(s) most favoured. */
+  tally?: Record<string, number>;
+  leans?: Record<string, string>;
+  best?: string[];
+  average?: Record<string, number | null>;
+  agreement?: number;
+  scores?: Record<string, Record<string, number>>;
   labels?: Record<string, string>;
   headline?: string | null;
 };
@@ -174,7 +215,7 @@ export function steps(s: SessionMeta): { stage: Stage; round: number | null; sea
     { stage: "openings", round: 1, seats: advisors },
     { stage: "faultlines", round: null, seats: ["chair"] },
     ...Array.from({ length: debates }, (_, i) => ({ stage: "debate" as Stage, round: 2 + i, seats: advisors })),
-    { stage: "vote", round: s.rounds, seats: advisors },
+    { stage: scored(s) ? "vote" : "final", round: s.rounds, seats: advisors },
     { stage: "verdict", round: null, seats: ["chair"] },
   ];
 }
@@ -225,11 +266,24 @@ export function verdictOf(room: Room): Verdict | null {
   return t && !isAbsent(t.data) ? (t.data as unknown as Verdict) : null;
 }
 
-/** The option a seat leans to now: its last reply's lean, else its opening's. */
+/** Whether the Chair framed options for this session, or the room answers the question itself. */
+export function modeOf(room: Room): Mode {
+  const b = briefOf(room);
+  // Sessions held before 2026-10-24 carry no mode: options then always meant a choice.
+  return b?.mode ?? ((b?.options.length ?? 0) > 0 ? "choice" : "open");
+}
+
+/** The option a seat leans to now: its latest round's lean (none in an open session). */
 export function leanOf(room: Room, seat: string): string | null {
-  const said = room.turns.filter((t) => t.seat === seat && (t.stage === "openings" || t.stage === "debate") && !isAbsent(t.data));
+  const stages: Stage[] = ["openings", "debate", "final"];
+  const said = room.turns.filter((t) => t.seat === seat && stages.includes(t.stage) && !isAbsent(t.data));
   const last = said[said.length - 1];
-  return last ? (last.data.lean as string) : null;
+  return last ? ((last.data.lean as string | null) ?? null) : null;
+}
+
+export function finalOf(room: Room, seat: string): Final | null {
+  const t = room.turns.find((x) => x.stage === "final" && x.seat === seat);
+  return t && !isAbsent(t.data) ? (t.data as unknown as Final) : null;
 }
 
 export function voteOf(room: Room, seat: string): Vote | null {
@@ -317,8 +371,8 @@ export const SPEEDS = [1, 1.5, 2] as const;
 export type Line = {
   seat: string;
   stage: Stage;
-  kind: "frames" | "opens" | "answers" | "faults" | "votes" | "verdict" | "absent";
-  /** The advisor answered, in a debate reply. */
+  kind: "frames" | "opens" | "answers" | "faults" | "finals" | "votes" | "verdict" | "absent";
+  /** The advisor challenged, in a round-2 reply. */
   to: string | null;
   lean: string | null;
   score: number | null;
@@ -353,12 +407,16 @@ export function lineOf(turn: Turn): Line {
     }
     case "debate":
       return { ...base, kind: "answers", to: (d.responds_to as string | null) ?? null, lean: str(d.lean), text: clip(`${str(d.headline)} ${str(d.text)}`) };
+    case "final":
+      // The final position, and what changed in it when something did.
+      return { ...base, kind: "finals", lean: str(d.lean) || null, text: clip(`${str(d.text)} ${str(d.changed)}`) };
     case "vote": {
       const v = d as unknown as Vote;
       return { ...base, kind: "votes", lean: v.top, score: v.scores?.[v.top] ?? null, text: clip(str(d.reason)) };
     }
     case "verdict":
-      return { ...base, kind: "verdict", text: clip(`${str(d.headline)}. ${str(d.summary)}`.replace(/\.\.\s/, ". ")) };
+      // The complete answer in new sessions, the summary in scored ones.
+      return { ...base, kind: "verdict", text: clip(`${str(d.headline)}. ${str(d.answer) || str(d.summary)}`.replace(/\.\.\s/, ". ")) };
   }
 }
 

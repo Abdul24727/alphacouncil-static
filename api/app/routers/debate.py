@@ -74,7 +74,7 @@ class DebateStatus(BaseModel):
     pro_limit: int  # what Pro allows, for the locked preview's "N sessions a month"
     running: int | None  # a session of this account still in progress
     seats: list[roster.SeatInfo]  # the advisors in seat order, then the Chair
-    rounds: int  # openings + debate rounds + vote
+    rounds: int  # answers + rounds of challenges + the final word
     models: dict[str, str]
 
 
@@ -250,7 +250,7 @@ async def start(request: Request, body: StartBody, user: Annotated[User, Depends
             return await llm.ask(s, model, messages, max_tokens=max_tokens, temperature=temperature, check=check)
 
     else:
-        ask = standin.make_asker(pack, advisors, body.locale)
+        ask = standin.make_asker(pack, advisors, body.locale, question)
 
     queue: asyncio.Queue[dict[str, Any] | None] = asyncio.Queue()
     found = await run_in_threadpool(store.get_for, url, user.id, sid)

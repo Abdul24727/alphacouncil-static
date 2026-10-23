@@ -8,10 +8,10 @@ import { ApiError } from "@/lib/api/client";
 import { useMe } from "@/lib/auth";
 import {
   EMPTY_ROOM,
-  STAGES,
   applyEvent,
   reached,
   roomFromSession,
+  stagesOf,
   type DebateEvent,
   type Room,
   type SeatInfo,
@@ -205,9 +205,10 @@ function SessionStage({ room }: { room: Room }) {
 function StageTabs({ room, view, onPick }: { room: Room; view: Stage | null; onPick: (s: Stage) => void }) {
   const t = useTranslations("debate");
   const open = reached(room);
+  // This session's own stages: the final word, or the vote in one held in the scored format.
   return (
     <nav aria-label={t("stagesNav")} className="-mb-2 flex w-full items-stretch overflow-x-auto @4xl:mb-0 @4xl:w-auto">
-      {STAGES.map((s) => {
+      {stagesOf(room.session).map((s) => {
         const live = room.status === "running" && room.stage === s;
         const done = open.has(s) && !live;
         return (
@@ -383,7 +384,7 @@ function PastSessions({ onOpen, current }: { onOpen: (id: number) => void; curre
   );
 }
 
-const HOW: Stage[] = ["brief", "openings", "faultlines", "debate", "vote", "verdict"];
+const HOW: Stage[] = ["brief", "openings", "faultlines", "debate", "final", "verdict"];
 
 function HowItWorks() {
   const t = useTranslations("debate");

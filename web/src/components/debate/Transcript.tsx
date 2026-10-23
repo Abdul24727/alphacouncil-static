@@ -7,9 +7,11 @@ import {
   fmtElapsed,
   fmtScore,
   isAbsent,
+  modeOf,
   turnsOf,
   verdictOf,
   type FaultLines,
+  type Final,
   type Reply,
   type Room,
   type Stage,
@@ -47,6 +49,7 @@ export function StageView({ room, stage }: { room: Room; stage: Stage }) {
           </div>
         ))}
       {stage === "faultlines" && <FaultLinesView room={room} />}
+      {stage === "final" && <FinalWordView room={room} />}
       {stage === "vote" && <VoteTable room={room} />}
       {stage === "verdict" && <VerdictView room={room} />}
       {waiting && stage !== "verdict" && <p className="mt-2 animate-pulse text-muted">{t("inProgress")}</p>}
@@ -121,8 +124,9 @@ function SpeechItem({ room, turn }: { room: Room; turn: Turn }) {
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline gap-x-2">
           <span className="font-semibold text-text">{name(turn.seat)}</span>
-          {d.responds_to && <span className="text-muted">{t("answers", { other: short(d.responds_to) })}</span>}
-          {!isAbsent(turn.data) && (
+          {d.responds_to && <span className="text-muted">{t("challenges", { other: short(d.responds_to) })}</span>}
+          {/* An open session has no options, so there is nothing to lean to. */}
+          {!isAbsent(turn.data) && d.lean && (
             <span className="num text-[11px] text-text-soft">
               {d.changed ? t("changed", { option: d.lean }) : t("leans", { option: d.lean })}
             </span>
@@ -138,11 +142,65 @@ function SpeechItem({ room, turn }: { room: Room; turn: Turn }) {
               </p>
             )}
             <DebateText text={d.text} flags={turn.flags} sources={room.session!.sources} className="mt-1 text-text-soft" />
+            {d.concedes && (
+              <p className="mt-1 text-[13px] text-text-soft" dir="auto" data-concedes>
+                <span className="label-caps me-1.5 text-muted">{t("concedes")}</span>
+                {d.concedes}
+              </p>
+            )}
             <FlagNotes flags={turn.flags} />
           </>
         )}
       </div>
     </li>
+  );
+}
+
+/** Round 3: each advisor's final position, what changed in it, and what data would change it. */
+function FinalWordView({ room }: { room: Room }) {
+  const t = useTranslations("debate");
+  const { seat, name } = useSeats(room.session!.seats);
+  const turns = turnsOf(room, "final");
+  if (!turns.length) return null;
+  return (
+    <ul className="mt-2 flex flex-col">
+      {turns.map((x) => {
+        const d = x.data as unknown as Final;
+        return (
+          <li key={x.seat} className="flex gap-3 border-t border-line py-2.5 first:border-t-0" data-turn={`final:${x.seat}`}>
+            <SeatDisc seat={seat(x.seat)} size={36} />
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-baseline gap-x-2">
+                <span className="font-semibold text-text">{name(x.seat)}</span>
+                {!isAbsent(x.data) && d.lean && (
+                  <span className="num text-[11px] text-text-soft">
+                    {d.lean_changed ? t("changed", { option: d.lean }) : t("leans", { option: d.lean })}
+                  </span>
+                )}
+              </div>
+              {isAbsent(x.data) ? (
+                <p className="text-muted">{t("noAnswer", { reason: t(`errors.${errKey(String(x.data.error))}`) })}</p>
+              ) : (
+                <>
+                  <DebateText text={d.text} flags={x.flags} sources={room.session!.sources} className="mt-1 text-text" />
+                  <p className="mt-1 text-[13px] text-text-soft" dir="auto" data-changed={d.changed ? "yes" : "no"}>
+                    <span className="label-caps me-1.5 text-muted">{t("whatChanged")}</span>
+                    {d.changed || t("nothingChanged")}
+                  </p>
+                  {d.would_change && (
+                    <p className="mt-0.5 text-[13px] text-text-soft" dir="auto">
+                      <span className="label-caps me-1.5 text-muted">{t("wouldChange")}</span>
+                      {d.would_change}
+                    </p>
+                  )}
+                  <FlagNotes flags={x.flags} />
+                </>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
@@ -214,12 +272,12 @@ function VoteTable({ room, caption }: { room: Room; caption?: string }) {
               </tr>
             );
           })}
-          {room.result && (
+          {room.result?.average && (
             <tr className="border-t border-line">
               <td className="py-1.5 pe-2 text-muted">{t("average")}</td>
               {options.map((o) => (
-                <td key={o} className={`num px-2 py-1.5 text-end ${room.result!.best.includes(o) ? "text-text" : "text-muted"}`}>
-                  {fmtScore(room.result!.average[o]) ?? "—"}
+                <td key={o} className={`num px-2 py-1.5 text-end ${room.result!.best?.includes(o) ? "text-text" : "text-muted"}`}>
+                  {fmtScore(room.result!.average![o]) ?? "—"}
                 </td>
               ))}
               <td className="hidden @3xl:table-cell" />
@@ -232,7 +290,8 @@ function VoteTable({ room, caption }: { room: Room; caption?: string }) {
   );
 }
 
-/** The Chair's verdict: the room's assessment, the scores, why, what to watch, the gaps. */
+/** The Chair's answer: the room's complete answer, where it still splits, the gaps — and, in a
+ *  session held in the scored format, the scores, why, what to watch instead. */
 export function VerdictView({ room }: { room: Room }) {
   const t = useTranslations("debate");
   const locale = useLocale();
@@ -243,6 +302,10 @@ export function VerdictView({ room }: { room: Room }) {
   const brief = briefOf(room);
   const r = room.result;
   if (!v || !brief) return null;
+  const choice = modeOf(room) === "choice";
+  // A scored session (before 2026-10-24) has averages to show; a new one has the final leans counted.
+  const averages = r?.average && r.mode === undefined ? r : null;
+  const leans = r?.mode === "choice" ? r : null;
   const label = (id: string) => brief.options.find((o) => o.id === id)?.label ?? id;
   const credited = (c: { seat: string | null; point: string }, i: number) => (
     <li key={i} className="flex gap-2">
@@ -261,15 +324,25 @@ export function VerdictView({ room }: { room: Room }) {
         <p className="headline mt-1 text-[24px] leading-tight" dir="auto">
           {v.headline}
         </p>
+        {v.favours && <DebateText text={v.favours} flags={turn?.flags} sources={s.sources} className="mt-1.5 text-[14px] text-text" />}
         {v.summary && <DebateText text={v.summary} flags={turn?.flags} sources={s.sources} className="mt-1.5 text-[14px] text-text" />}
       </div>
 
-      {r && (
+      {v.answer && (
+        <div data-answer>
+          <p className="label-caps mb-1.5 text-muted">{t("theAnswer")}</p>
+          <DebateText text={v.answer} flags={turn?.flags} sources={s.sources} className="text-[14.5px] text-text" />
+        </div>
+      )}
+
+      {/* New sessions: how the advisors' final leans fell. Scored sessions: the averages they gave. */}
+      {leans && choice && (
         <div>
-          <p className="label-caps mb-1 text-muted">{t("scores")}</p>
+          <p className="label-caps mb-1 text-muted">{t("finalLeans")}</p>
           <ul className="flex flex-col">
             {brief.options.map((o) => {
-              const best = r.best.includes(o.id);
+              const n = leans.tally?.[o.id] ?? 0;
+              const best = !!leans.best?.includes(o.id);
               return (
                 <li key={o.id} className="flex items-center gap-2.5 border-t border-line py-1.5 first:border-t-0">
                   <OptionId id={o.id} strong={best} />
@@ -277,28 +350,60 @@ export function VerdictView({ room }: { room: Room }) {
                     {o.label}
                   </span>
                   <span className="h-1 w-24 overflow-hidden rounded-full bg-line">
-                    <span className={`block h-full ${best ? "bg-signal" : "bg-neutral-seat"}`} style={{ width: `${(r.average[o.id] ?? 0) * 10}%` }} />
+                    <span
+                      className={`block h-full ${best ? "bg-signal" : "bg-neutral-seat"}`}
+                      style={{ width: `${leans.voters ? (n / leans.voters) * 100 : 0}%` }}
+                    />
                   </span>
-                  <span className="num w-8 text-end">{fmtScore(r.average[o.id]) ?? "—"}</span>
+                  <span className="num w-10 text-end">{t("ofN", { n, m: leans.voters })}</span>
                 </li>
               );
             })}
           </ul>
           <p className="mt-1 text-text-soft">
-            {r.best.length > 1
-              ? t("tie", { options: r.best.map(label).join(t("and")) })
-              : r.best.length === 1
-                ? t("agreement", { n: r.agreement, m: r.voters, option: r.best[0] })
+            {(leans.best?.length ?? 0) > 1
+              ? t("tie", { options: (leans.best ?? []).map(label).join(t("and")) })
+              : leans.best?.length === 1
+                ? t("favoured", { n: leans.tally?.[leans.best[0]] ?? 0, m: leans.voters, option: leans.best[0] })
+                : null}
+          </p>
+        </div>
+      )}
+      {averages && (
+        <div>
+          <p className="label-caps mb-1 text-muted">{t("scores")}</p>
+          <ul className="flex flex-col">
+            {brief.options.map((o) => {
+              const best = !!averages.best?.includes(o.id);
+              return (
+                <li key={o.id} className="flex items-center gap-2.5 border-t border-line py-1.5 first:border-t-0">
+                  <OptionId id={o.id} strong={best} />
+                  <span className="min-w-0 flex-1" dir="auto">
+                    {o.label}
+                  </span>
+                  <span className="h-1 w-24 overflow-hidden rounded-full bg-line">
+                    <span className={`block h-full ${best ? "bg-signal" : "bg-neutral-seat"}`} style={{ width: `${(averages.average?.[o.id] ?? 0) * 10}%` }} />
+                  </span>
+                  <span className="num w-8 text-end">{fmtScore(averages.average?.[o.id]) ?? "—"}</span>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="mt-1 text-text-soft">
+            {(averages.best?.length ?? 0) > 1
+              ? t("tie", { options: (averages.best ?? []).map(label).join(t("and")) })
+              : averages.best?.length === 1
+                ? t("agreement", { n: averages.agreement ?? 0, m: averages.voters, option: averages.best[0] })
                 : null}
           </p>
         </div>
       )}
 
       <div className="grid gap-4 @4xl:grid-cols-2">
-        {v.why.length > 0 && (
+        {(v.why?.length ?? 0) > 0 && (
           <div>
             <p className="label-caps mb-1.5 text-muted">{t("why")}</p>
-            <ul className="flex flex-col gap-1.5">{v.why.map(credited)}</ul>
+            <ul className="flex flex-col gap-1.5">{v.why!.map(credited)}</ul>
           </div>
         )}
         {v.watch_out && (
@@ -388,7 +493,7 @@ export function KeyPoints({ room, onPick }: { room: Room; onPick: (stage: Stage)
     turnsOf(room, stage, round).map((x) => {
       const d = x.data as unknown as Reply;
       const who = short(x.seat) + (d.responds_to ? ` → ${short(d.responds_to)}` : "");
-      return isAbsent(x.data) ? line(x.seat, who, t("noAnswerShort")) : line(x.seat, who, d.headline || d.text.slice(0, 120), d.lean, x.flags);
+      return isAbsent(x.data) ? line(x.seat, who, t("noAnswerShort")) : line(x.seat, who, d.headline || d.text.slice(0, 120), d.lean ?? undefined, x.flags);
     });
 
   const debateRounds = [...new Set(turnsOf(room, "debate").map((x) => x.round))];
@@ -412,6 +517,17 @@ export function KeyPoints({ room, onPick }: { room: Room; onPick: (stage: Stage)
               (faults.data as unknown as FaultLines).lines.map((f, i) => line(`fl${i}`, f.between.map((x) => short(x)).join(t("versus")), f.title, undefined, faults.flags)),
             )}
           {debateRounds.map((r) => section("debate", t("kp.debate", { n: r ?? 2 }), speeches("debate", r)))}
+          {section(
+            "final",
+            t("kp.final", { n: s.rounds }),
+            turnsOf(room, "final").map((x) => {
+              const d = x.data as unknown as Final;
+              return isAbsent(x.data)
+                ? line(x.seat, short(x.seat), t("noAnswerShort"))
+                : line(x.seat, short(x.seat), firstSentence(d.text), d.lean ?? undefined, x.flags);
+            }),
+          )}
+          {/* Sessions held in the scored format keep their vote here. */}
           {section(
             "vote",
             t("kp.vote", { n: s.rounds }),

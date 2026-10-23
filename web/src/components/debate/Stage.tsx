@@ -4,9 +4,11 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import {
   briefOf,
+  finalOf,
   fmtElapsed,
   fmtScore,
   leanOf,
+  modeOf,
   progress,
   voteOf,
   type Room,
@@ -53,7 +55,9 @@ export function SeatArc({
         const speaks = speaking === s.id;
         const addressed = addressee === s.id;
         const lean = room ? leanOf(room, s.id) : null;
+        // A scored session shows the seat's top option and score; a new one, that it has had its final word.
         const vote = room ? voteOf(room, s.id) : null;
+        const final = room ? finalOf(room, s.id) : null;
         return (
           <div
             key={s.id}
@@ -83,9 +87,9 @@ export function SeatArc({
               {s.role === "chair" ? t(crowded ? "chairShort" : "chair") : seatShort(s, locale)}
             </span>
             <span className="hidden max-w-full truncate text-center text-[11px] leading-tight text-muted @3xl:block">{seatLens(s, locale)}</span>
-            {s.role === "advisor" && (vote || lean) && (
-              <span className="num text-[11px] text-text-soft" title={vote ? t("topVote") : t("leaning")}>
-                {vote ? `${vote.top} · ${vote.scores[vote.top]}` : `→ ${lean}`}
+            {s.role === "advisor" && (vote || lean || final) && (
+              <span className="num text-[11px] text-text-soft" title={vote ? t("topVote") : final ? t("finalWord") : t("leaning")}>
+                {vote ? `${vote.top} · ${vote.scores[vote.top]}` : lean ? `→ ${lean}` : "✓"}
               </span>
             )}
           </div>
@@ -142,7 +146,7 @@ export function RoundCard({ room }: { room: Room }) {
   }, [writers.length]);
   const weigher = writers.length ? writers[tick % writers.length] : null;
   const what = weigher ? brief?.weighing?.[weigher] || "" : "";
-  const isRound = stage === "openings" || stage === "debate" || stage === "vote";
+  const isRound = stage === "openings" || stage === "debate" || stage === "final" || stage === "vote";
   const state = room.status === "done" ? "done" : room.status === "failed" ? "failed" : stage;
 
   return (
@@ -223,36 +227,65 @@ export function OnTheTable({ room, onStock }: { room: Room; onStock?: React.Reac
           </p>
         )}
       </div>
-      <ol className="flex flex-col" aria-label={t("options")}>
-        {(brief?.options ?? []).map((o) => {
-          const avg = result?.average[o.id] ?? null;
-          const best = !!result?.best.includes(o.id);
-          const leaning = advisors.filter((a) => leanOf(room, a.id) === o.id).map((a) => short(a.id));
-          return (
-            <li key={o.id} className="flex items-center gap-2.5 border-t border-line py-1.5 first:border-t-0" data-option={o.id}>
-              <OptionId id={o.id} strong={best} />
-              <span className="min-w-0 flex-1" dir="auto">
-                {o.label}
-              </span>
-              {result ? (
-                <span className="flex w-[118px] shrink-0 items-center gap-2" title={t("averageScore")}>
-                  <span className="h-1 flex-1 overflow-hidden rounded-full bg-line">
-                    <span className={`block h-full ${best ? "bg-signal" : "bg-neutral-seat"}`} style={{ width: `${(avg ?? 0) * 10}%` }} />
-                  </span>
-                  <span className={`num w-8 text-end text-[13px] ${best ? "text-text" : "text-text-soft"}`}>{fmtScore(avg) ?? "—"}</span>
+      {/* A choice session lists the readings on the table; an open one, what the room must weigh. */}
+      {brief && modeOf(room) === "open" ? (
+        <div className="min-w-0">
+          <p className="label-caps mb-1 text-muted">{t("focus")}</p>
+          <ul className="flex flex-col" aria-label={t("focus")} data-focus-list>
+            {brief.focus.map((f) => (
+              <li key={f} className="border-t border-line py-1.5 first:border-t-0" dir="auto">
+                {f}
+              </li>
+            ))}
+            {!brief.focus.length && <li className="py-1.5 text-muted">{t("noOptions")}</li>}
+          </ul>
+        </div>
+      ) : (
+        <ol className="flex flex-col" aria-label={t("options")}>
+          {(brief?.options ?? []).map((o) => {
+            // Scored sessions show the average; new ones, how many advisors ended up leaning here.
+            const avg = result?.average?.[o.id] ?? null;
+            const best = !!result?.best?.includes(o.id);
+            const tally = result?.mode === "choice" ? (result.tally?.[o.id] ?? 0) : null;
+            const leaning = advisors.filter((a) => leanOf(room, a.id) === o.id).map((a) => short(a.id));
+            return (
+              <li key={o.id} className="flex items-center gap-2.5 border-t border-line py-1.5 first:border-t-0" data-option={o.id}>
+                <OptionId id={o.id} strong={best} />
+                <span className="min-w-0 flex-1" dir="auto">
+                  {o.label}
                 </span>
-              ) : (
-                leaning.length > 0 && (
-                  <span className="shrink-0 truncate text-[12px] text-muted" title={t("leaning")}>
-                    {leaning.join(" · ")}
+                {tally != null ? (
+                  <span className="flex w-[118px] shrink-0 items-center gap-2" title={t("finalLeans")}>
+                    <span className="h-1 flex-1 overflow-hidden rounded-full bg-line">
+                      <span
+                        className={`block h-full ${best ? "bg-signal" : "bg-neutral-seat"}`}
+                        style={{ width: `${result!.voters ? (tally / result!.voters) * 100 : 0}%` }}
+                      />
+                    </span>
+                    <span className={`num w-10 text-end text-[13px] ${best ? "text-text" : "text-text-soft"}`}>
+                      {t("ofN", { n: tally, m: result!.voters })}
+                    </span>
                   </span>
-                )
-              )}
-            </li>
-          );
-        })}
-        {!brief && <li className="h-16 animate-pulse rounded-panel bg-panel-raised/50" aria-hidden />}
-      </ol>
+                ) : avg != null ? (
+                  <span className="flex w-[118px] shrink-0 items-center gap-2" title={t("averageScore")}>
+                    <span className="h-1 flex-1 overflow-hidden rounded-full bg-line">
+                      <span className={`block h-full ${best ? "bg-signal" : "bg-neutral-seat"}`} style={{ width: `${avg * 10}%` }} />
+                    </span>
+                    <span className={`num w-8 text-end text-[13px] ${best ? "text-text" : "text-text-soft"}`}>{fmtScore(avg) ?? "—"}</span>
+                  </span>
+                ) : (
+                  leaning.length > 0 && (
+                    <span className="shrink-0 truncate text-[12px] text-muted" title={t("leaning")}>
+                      {leaning.join(" · ")}
+                    </span>
+                  )
+                )}
+              </li>
+            );
+          })}
+          {!brief && <li className="h-16 animate-pulse rounded-panel bg-panel-raised/50" aria-hidden />}
+        </ol>
+      )}
     </section>
   );
 }

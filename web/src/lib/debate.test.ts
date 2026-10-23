@@ -11,11 +11,13 @@ import {
   firstSentence,
   fmtScore,
   leanOf,
+  modeOf,
   parseSse,
   progress,
   reached,
   roomFromSession,
   splitText,
+  stagesOf,
   stepProgress,
   steps,
   type DebateEvent,
@@ -53,12 +55,28 @@ const SESSION: SessionMeta = {
 const turn = (stage: string, round: number | null, s: string, data: Record<string, unknown>) =>
   ({ type: "turn", turn: { stage, round, seat: s, data, flags: null } }) as DebateEvent;
 
-test("steps: brief, openings, fault lines, each debate round, vote, verdict", () => {
+test("steps: brief, answers, fault lines, each round of challenges, final word, the answer", () => {
   assert.deepEqual(
     steps(SESSION).map((s) => `${s.stage}:${s.round ?? "-"}:${s.seats.length}`),
-    ["brief:-:1", "openings:1:2", "faultlines:-:1", "debate:2:2", "vote:3:2", "verdict:-:1"],
+    ["brief:-:1", "openings:1:2", "faultlines:-:1", "debate:2:2", "final:3:2", "verdict:-:1"],
   );
   assert.equal(steps({ ...SESSION, rounds: 4 }).filter((s) => s.stage === "debate").length, 2);
+  assert.deepEqual(stagesOf(SESSION), ["brief", "openings", "faultlines", "debate", "final", "verdict"]);
+});
+
+test("a session held in the scored format keeps its vote stage", () => {
+  const scored: SessionMeta = {
+    ...SESSION,
+    status: "done",
+    turns: [
+      { stage: "brief", round: null, seat: "chair", data: { question: "q", options: [{ id: "A", label: "l", detail: "" }] }, flags: null },
+      { stage: "vote", round: 3, seat: "buffett", data: { scores: { A: 7 }, top: "A", reason: "r" }, flags: null },
+    ],
+  };
+  assert.deepEqual(stagesOf(scored), ["brief", "openings", "faultlines", "debate", "vote", "verdict"]);
+  assert.equal(steps(scored).find((s) => s.round === 3)?.stage, "vote");
+  // No mode was stored then: options meant a choice.
+  assert.equal(modeOf(roomFromSession(scored)), "choice");
 });
 
 test("events fold into the room, and progress counts each seat's answer", () => {
@@ -70,11 +88,15 @@ test("events fold into the room, and progress counts each seat's answer", () => 
   room = applyEvent(room, turn("openings", 1, "marks", { lean: "B", headline: "h", text: "t" }));
   assert.equal(stepProgress(room), 0.5);
   assert.equal(progress(room), 2 / 9); // 1 + 2 + 1 + 2 + 2 + 1 answers in all
+  assert.equal(modeOf(room), "open"); // the brief framed no options
   assert.equal(leanOf(room, "marks"), "B");
   room = applyEvent(room, turn("debate", 2, "marks", { lean: "A", headline: "h", text: "t", responds_to: null, changed: true }));
   assert.equal(leanOf(room, "marks"), "A");
   assert.equal(leanOf(room, "buffett"), null);
-  assert.deepEqual([...reached(room)].sort(), ["brief", "debate", "openings"]);
+  // The final word is the latest lean there is.
+  room = applyEvent(room, turn("final", 3, "marks", { lean: "B", lean_changed: true, text: "t", changed: "c", would_change: "w" }));
+  assert.equal(leanOf(room, "marks"), "B");
+  assert.deepEqual([...reached(room)].sort(), ["brief", "debate", "final", "openings"]);
   room = applyEvent(room, { type: "done", status: "failed", seconds: 61.5, result: null });
   assert.equal(room.status, "failed");
   assert.deepEqual(room.writing, []);
@@ -141,9 +163,16 @@ test("spoken lines: tags out, cut at a sentence, one line per turn", () => {
   assert.equal(clip("First part ends here. Second part runs on and on and on.", 40), "First part ends here.");
   const reply = lineOf({ stage: "debate", round: 2, seat: "alwaleed", flags: null, data: { responds_to: "buffett", lean: "B", headline: "Not so.", text: "Debt is 0.20 [P2].", changed: false } });
   assert.deepEqual(reply, { seat: "alwaleed", stage: "debate", kind: "answers", to: "buffett", lean: "B", score: null, text: "Not so. Debt is 0.20." });
+  // The final word reads out the position and what changed in it; an open session has no lean.
+  const last = lineOf({ stage: "final", round: 3, seat: "marks", flags: null, data: { lean: null, lean_changed: false, text: "I stay here [P1].", changed: "", would_change: "w" } });
+  assert.deepEqual(last, { seat: "marks", stage: "final", kind: "finals", to: null, lean: null, score: null, text: "I stay here." });
+  assert.equal(lineOf({ stage: "final", round: 3, seat: "marks", flags: null, data: { lean: "A", text: "Here.", changed: "The payout.", would_change: "" } }).text, "Here. The payout.");
   const vote = lineOf({ stage: "vote", round: 3, seat: "marks", flags: null, data: { scores: { A: 3, B: 8 }, top: "B", reason: "Because." } });
   assert.equal(vote.kind, "votes");
   assert.equal(vote.score, 8);
+  // The Chair's line: the complete answer in a new session, the summary in a scored one.
+  assert.equal(lineOf({ stage: "verdict", round: null, seat: "chair", flags: null, data: { headline: "The room answers", answer: "Here it is." } }).text, "The room answers. Here it is.");
+  assert.equal(lineOf({ stage: "verdict", round: null, seat: "chair", flags: null, data: { headline: "Covered", summary: "Most read it so." } }).text, "Covered. Most read it so.");
   assert.equal(lineOf({ stage: "openings", round: 1, seat: "lynch", flags: null, data: { absent: true, error: "busy" } }).kind, "absent");
   assert.equal(lineOf({ stage: "faultlines", round: null, seat: "chair", flags: null, data: { lines: [{ title: "Payout?" }, { title: "Cycle" }], summary: "" } }).text, "Payout. Cycle.");
 });

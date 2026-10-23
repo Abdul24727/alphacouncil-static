@@ -2,8 +2,8 @@
 
 One markdown file per seat. `app/debate/roster.py` reads them; nothing else about a seat lives in code.
 
-- `chair.md`: the neutral Chair. Its "Stage: …" sections are the instructions for each step of a session and its
-  "Scoring" section is the scale every advisor votes on. Keep the headings; change the wording freely.
+- `chair.md`: the neutral Chair. Its "Stage: …" sections are the instructions for each step of a session: Brief,
+  Answers, Fault lines, Challenges, Final word, The answer. Keep the headings; change the wording freely.
 - `buffett.md`, `lynch.md`, `dalio.md`, `marks.md`, `alwaleed.md`, `alrajhi.md`: the advisors. Each has the same sections: Who they are, Investing
   principles, What they look at first, How they argue and disagree, Blind spots, Voice. The whole file (front matter
   removed) is that advisor's brief.

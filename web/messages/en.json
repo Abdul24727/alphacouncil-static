@@ -102,11 +102,12 @@
     "stagesNav": "Stages of the session",
     "stages": {
       "brief": "Brief",
-      "openings": "Openings",
+      "openings": "Answers",
       "faultlines": "Fault lines",
-      "debate": "Debate",
-      "vote": "Vote",
-      "verdict": "Verdict"
+      "debate": "Challenges",
+      "verdict": "The answer",
+      "final": "Final word",
+      "vote": "Vote"
     },
     "past": "Past sessions",
     "pastEmpty": "No sessions yet. Your sessions are saved here.",
@@ -118,7 +119,6 @@
     "writing": "Writing",
     "seatsLabel": "The advisors and the Chair",
     "leaning": "Leaning",
-    "topVote": "Top option and its score",
     "onTable": "On the table",
     "youAsked": "You asked: {question}",
     "options": "Options",
@@ -135,24 +135,25 @@
       "failed": "Session stopped"
     },
     "happening": {
-      "brief": "The Chair is reading your question and framing the options.",
-      "openings": "The advisors are writing their opening positions.",
+      "brief": "The Chair is reading your question and framing it for the room.",
+      "openings": "Each advisor is writing their own full answer, without seeing the others'.",
       "faultlines": "The Chair is naming where the advisors disagree.",
-      "debate": "The advisors are reading each other's openings and answering back.",
-      "vote": "Each advisor is scoring every option from 0 to 10.",
-      "verdict": "The Chair is counting the votes and writing the verdict.",
-      "done": "The verdict is in.",
-      "failed": "The session stopped: {error}"
+      "debate": "The advisors are challenging the answer each of them disagrees with most.",
+      "verdict": "The Chair is writing the room's answer.",
+      "done": "The room has answered.",
+      "failed": "The session stopped: {error}",
+      "final": "Each advisor is giving their final position and what changed in it.",
+      "vote": "Each advisor is scoring every option from 0 to 10."
     },
     "detail": {
       "brief": "Every seat reads the same data from our database, and nothing else.",
-      "openings": "They write at the same time and do not see each other's work. Each opening appears as soon as it is in.",
+      "openings": "They write at the same time and do not see each other's work. Each answer appears as soon as it is in.",
       "faultlines": "It names the disagreements and the figures they turn on, without taking a side.",
-      "debate": "Each advisor answers, by name, the argument they disagree with most, and may change their lean.",
-      "vote": "A score is the advisor's judgement of how well the data supports an option; the room averages them.",
-      "verdict": "The verdict is an assessment of the data, never advice."
+      "debate": "Each advisor challenges, by name, the answer they disagree with most, and may concede a point.",
+      "verdict": "The room's answer is an assessment of the data, never advice.",
+      "final": "Two or three sentences each: where they end up, what changed on the way, and what data would change it.",
+      "vote": "A score is the advisor's judgement of how well the data supports an option; the room averages them."
     },
-    "answers": "answering {other}",
     "leans": "leans {option}",
     "changed": "now leans {option}",
     "noAnswer": "No answer this round ({reason}).",
@@ -168,7 +169,7 @@
     "why": "Why",
     "average": "Room average",
     "scoresNote": "Scores (0 to 10) are the advisors' judgement of how well the data supports each option, averaged by the room. They are not market data.",
-    "verdictLabel": "The room's assessment",
+    "verdictLabel": "The room's answer",
     "scores": "Scores",
     "agreement": "{n} of {m} advisors scored option {option} highest.",
     "tie": "Tied: {options}.",
@@ -184,11 +185,12 @@
     "kpEmpty": "Key points appear here as each step lands.",
     "kp": {
       "brief": "Chair: reading your question",
-      "openings": "Round {n}: opening positions",
+      "openings": "Round {n}: the answers",
       "faultlines": "Chair: where they disagree",
-      "debate": "Round {n}: the debate",
-      "vote": "Round {n}: the vote",
-      "verdict": "Chair: the verdict"
+      "debate": "Round {n}: the challenges",
+      "verdict": "Chair: the room's answer",
+      "final": "Round {n}: the final word",
+      "vote": "Round {n}: the vote"
     },
     "status": {
       "running": "Running",
@@ -236,12 +238,12 @@
     "how": {
       "title": "How it works",
       "steps": {
-        "brief": "The Chair restates your question and frames two to four options: readings of the data, never actions.",
-        "openings": "The advisors write their opening positions at the same time, each from their own principles and only from our data.",
-        "faultlines": "The Chair names where they disagree and the figures the disagreement turns on.",
-        "debate": "Each advisor answers, by name, the argument they disagree with most.",
-        "vote": "Each advisor scores every option from 0 to 10; the room averages the scores.",
-        "verdict": "The Chair writes the verdict: a scored assessment of the data, never advice to buy, sell or hold."
+        "brief": "The Chair restates your question. If it asks the room to choose, it frames two to four readings of the data — never actions.",
+        "openings": "Each advisor writes their own full answer at the same time, from their own principles and from our data alone.",
+        "faultlines": "The Chair names where they disagree and the figures it turns on.",
+        "debate": "Each advisor challenges, by name, the answer they disagree with most, and may concede a point.",
+        "verdict": "The Chair writes the room's complete answer: where it agrees, where it splits, and what the data cannot tell. Never buy, sell or hold.",
+        "final": "Each gives a final position in two or three sentences: what changed, and what data would change it."
       },
       "data": "Every figure comes from AlphaCouncil's database and carries the tag of the dataset it was read from. Figures the checks cannot find in the data are marked."
     },
@@ -258,17 +260,33 @@
       "chair": "Chair",
       "speaking": "Speaking",
       "frames": "frames the question",
-      "opens": "opening · leans {option}",
-      "answers": "answers {name} · leans {option}",
+      "opens": "answers · leans {option}",
+      "answers": "challenges {name} · leans {option}",
       "faults": "names the fault lines",
       "votes": "votes {option} · {score}",
-      "verdict": "the verdict",
+      "verdict": "the room's answer",
       "absent": "no answer this round",
       "upNext": "{n, plural, =0 {Up to date} one {# line up next} other {# lines up next}}",
       "speed": "Playback speed",
       "skip": "Skip ahead",
-      "replay": "Play the debate"
-    }
+      "replay": "Play the debate",
+      "opensPlain": "answers the question",
+      "answersPlain": "challenges {name}",
+      "finals": "final word · leans {option}",
+      "finalsPlain": "final word"
+    },
+    "challenges": "challenging {other}",
+    "concedes": "Concedes",
+    "whatChanged": "What changed",
+    "nothingChanged": "Nothing changed during the room.",
+    "wouldChange": "Would change it",
+    "theAnswer": "The room's answer",
+    "finalLeans": "Where they ended up",
+    "finalWord": "Has given a final word",
+    "favoured": "{n} of {m} advisors ended up leaning to option {option}.",
+    "ofN": "{n}/{m}",
+    "noOptions": "No options: the room answers the question itself.",
+    "topVote": "Top option and its score"
   },
   "placeholder": {
     "phase": "Built in Phase {phase}",
