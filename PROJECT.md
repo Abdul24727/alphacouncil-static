@@ -671,7 +671,7 @@ Older entries: `changelog-archive.md`.
 - **Outcome:** _(empty until worked)_
 
 ### Step 10 — Launch check on production
-- **Status:** NOT STARTED
+- **Status:** IN PROGRESS (2026-10-23) — interim run: every signed-out check passes on production (`docs/launch-check-2026-10-23.md`); the real run waits on Steps 7–9, the owner's signed-in run, and Goal 2's last checks.
 - **Goal:** One dated record shows every check passing on production after Goals 2, 3 and 4's changes, with billing still closed.
 - **Depends on:** 6, 7, 8, 9, 17, 21 (19 superseded 2026-10-23)
 - **Reversibility:** reversible
@@ -684,10 +684,16 @@ Older entries: `changelog-archive.md`.
 - **Defaults:** a check fails → record it NOT MET with output, fix it only if the fix is inside this repo and small, release only with the owner's go-ahead; a step it depends on is blocked → run the check anyway and mark the gap. Checks that sign up or sign in test accounts (`check-all.mjs`, `check-advisors.mjs` without `VISITOR`, `check-arabic.mjs SIGNED_IN=1`) are not run by Claude on production (no account creation on the live site, 2026-10-23): the owner runs them from this computer (`cd web; $env:BASE_URL="https://alphacouncil.tech"; node scripts/check-all.mjs`) and the result goes into the report; Claude runs the signed-out ones (`check-seo`, `check-arabic` signed out at 1440,390, `check-advisors VISITOR=1`, `check-data-fixes SWEEP=1`) and the monitor.
 - **Done when:**
   - [ ] the report lists each script with its summary line, all passing — check: read the file
-  - [ ] the monitor's status shows 14 of 14 ok — check: its output in the report
+  - [ ] the monitor's status shows every line ok except "Moyasar for renewals", which shows "–" while billing is closed (revised 2026-10-23 from "14 of 14 ok": with checkout closed no renewal runs, so that line cannot be ok before Step 18) — check: its output in the report
   - [ ] the screenshots exist for each page, both languages, both widths — check: list the folder
   - [ ] `check-arabic.mjs` passes on production — check: its summary line in the report
-- **Outcome:** _(empty until worked)_
+- **Outcome:** (interim, 2026-10-23 — not the run Step 18 reads)
+  - *Done:* `docs/launch-check-2026-10-23.md`. Signed out on production: `check-data-fixes` SWEEP=1 all passed (44), `check-seo` 62/62, `check-arabic` 48 Arabic views at 1440 and 390 with 0 English strings, `check-advisors VISITOR=1` 24/24; monitor 13 ok + renewals "–"; screenshots of `/`, `/pricing`, `/home`, `/t/2222`, `/t/2222/advisors` in EN and AR at 1440 and 390 (`docs/screenshots/launch-2026-10-23/`), all 200, no sideways scroll; `checkout_open:false`.
+  - *Not done:* `check-all.mjs` and the signed-in checks (the owner runs them: they create test accounts); Steps 7–9's changes; Goal 2's 2026-10-24 checks and F-A2.
+  - *Verification:* (1) NOT MET — `check-all` and the signed-in checks not run. (2) VERIFIED under the revised wording (13 ok + renewals "–"). (3) VERIFIED for today's pages; to be retaken after Steps 7–9. (4) VERIFIED signed out; signed in: the owner.
+  - *Rulings:* (a) Ran the signed-out half now, while Steps 7–9 wait (this step's default: run anyway and mark the gap). Cost: the run repeats later. (b) No test accounts on production from Claude; the owner runs `check-all`. Cost: the launch check needs the owner at the keyboard for one command. (c) Monitor item reworded, not left impossible. Cost if the owner wants a literal 14/14: it can only come after billing opens (Step 18 checks it then).
+  - *Resume here:* once Steps 7–9 are live and Goal 2 is DONE: rerun the four signed-out scripts and the page screenshots into `docs/screenshots/launch-<date>/`, ask the owner to run `check-all.mjs` (and the signed-in advisors and Arabic checks) on production with output into that folder, then write `docs/launch-check-<date>.md` as the real record.
+  - *Stamp:* 2026-10-23; production `56476948f5`
 
 ### Step 18 — Open Pro billing on production (the paid launch)
 - **Status:** NOT STARTED

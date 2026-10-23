@@ -1,0 +1,34 @@
+PASS  status: models deepseek/deepseek-v4-pro / anthropic/claude-sonnet-5.5, plan pro, Pro limit 20
+PASS  en 1440: signed out, the room is locked
+PASS  en visitor 1440: no sideways scroll (0px)
+PASS  en visitor 1440: disclaimer on screen
+PASS  en visitor 1440: citation chips name a dataset (0)
+  ../docs/screenshots/launch-2026-10-23/advisors-visitor/visitor-en-1440.png
+PASS  en 1440: the Council tab links to the room
+  ../docs/screenshots/launch-2026-10-23/advisors-visitor/council-callout-en-1440.png
+PASS  en 390: signed out, the room is locked
+PASS  en visitor 390: no sideways scroll (0px)
+PASS  en visitor 390: disclaimer on screen
+PASS  en visitor 390: citation chips name a dataset (0)
+  ../docs/screenshots/launch-2026-10-23/advisors-visitor/visitor-en-390.png
+PASS  en 390: the Council tab links to the room
+  ../docs/screenshots/launch-2026-10-23/advisors-visitor/council-callout-en-390.png
+PASS  en: /pricing lists the advisors' room under Pro
+PASS  status: models deepseek/deepseek-v4-pro / anthropic/claude-sonnet-5.5, plan pro, Pro limit 20
+PASS  ar 1440: signed out, the room is locked
+PASS  ar visitor 1440: no sideways scroll (0px)
+PASS  ar visitor 1440: disclaimer on screen
+PASS  ar visitor 1440: citation chips name a dataset (0)
+  ../docs/screenshots/launch-2026-10-23/advisors-visitor/visitor-ar-1440.png
+PASS  ar 1440: the Council tab links to the room
+  ../docs/screenshots/launch-2026-10-23/advisors-visitor/council-callout-ar-1440.png
+PASS  ar 390: signed out, the room is locked
+PASS  ar visitor 390: no sideways scroll (0px)
+PASS  ar visitor 390: disclaimer on screen
+PASS  ar visitor 390: citation chips name a dataset (0)
+  ../docs/screenshots/launch-2026-10-23/advisors-visitor/visitor-ar-390.png
+PASS  ar 390: the Council tab links to the room
+  ../docs/screenshots/launch-2026-10-23/advisors-visitor/council-callout-ar-390.png
+PASS  ar: /pricing lists the advisors' room under Pro
+
+all passed
