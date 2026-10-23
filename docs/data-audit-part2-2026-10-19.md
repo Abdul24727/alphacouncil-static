@@ -435,3 +435,18 @@ The baseline (679) was a daily run; the next daily run (2026-10-24) is the like-
   last bar exactly. Nothing to fix in the pipeline; whether the app keeps, marks or drops it is the
   owner's call.
 - **KPPC (624, التخصيص):** no public notice found; still open.
+
+## Before the 2026-10-24 daily night (2026-10-23 22:5x UTC, read-only on the server)
+
+Written so the next section has an exact "before". Tonight's run at 00:00 UTC is a **daily** run —
+`crontab`: `0 0 * * 0-4,6 MODE=daily WORKERS=4`, `0 0 * * 5 MODE=full WORKERS=8`, and 2026-10-24 is a
+Saturday — so it is the like-for-like comparison against the 679 baseline, and the first daily night
+with F-F and with F-A2.
+
+| What | Value now | What the run should make of it |
+|---|---|---|
+| `LAST_RUN_STATUS.txt` | `[OK] 2026-10-23 04:55:59`, mode=full, 716 tickers, `no fresh price chart: 33` | `[OK] 2026-10-24`, and the chart line without GULFNAV_DFM |
+| GULFNAV_DFM newest bar | `2026/07/23` (the old Argaam page's last) | `2026/10/23` (Friday's DFM session), from the Etihad Energy Holding pages |
+| `ticker_insights` (published DB) | 711 rows, **672** with ownership, **356** with analysts — written by the 10-23 **full** run | still ≥ 600 / ≥ 300 after a **daily** night (Step 21's check; without F-F a daily night left 0 / 0) |
+| Price files written in the run's day | 675 on 10-23 (a full run); baseline 679 on a daily run | ≥ 679 |
+| Fixes on the server | all present: `.bak-20261022` ×4, `tickers.csv.bak-20261023` (F-A2), `ingest_ticker_insights.py.bak-20261023` (F-F); `git diff --stat` 4 files, 132+/14− | unchanged |
