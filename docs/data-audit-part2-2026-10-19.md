@@ -369,3 +369,39 @@ Tonight's Friday full run will restore the data for one day without the fix; Sat
 **Check after a daily night with it:** in the published `screening.sqlite`, `ticker_insights`
 has ownership for at least 600 tickers and analysts for at least 300, and Aramco's
 `/api/v1/tickers/2222/insights` shows analysts and ownership.
+
+## After the nightly run (2026-10-23, first run with F-A, F-E, F-B, F-C)
+
+The 2026-10-23 run was the weekly full run (`MODE=full WORKERS=8`), started 00:00:01 UTC:
+`Scrape done count: 716/716`, `Rebuild exit code: 0`, `ALERT [OK]` at 04:55:59, `DAILY PIPELINE
+SUCCESS`; published by `publish_dbs.sh` at 05:00:43 (`/healthz/deep=ok`). The OK status now ends
+with the F-A line: `no fresh price chart: 33 (412_KSE, 4210_TADAWUL, 4250_TADAWUL, 4290_TADAWUL,
+624_KSE, …)`.
+
+| Fault | Check | Result |
+|---|---|---|
+| F-A | 2080, 4240, AGILITY, GULFNAV newest bar on or after 2026-10-22 | **3 of 4.** 2080 `22/10/2026` 54.65, 4240 `22/10/2026` 11.74, AGILITY `2026/10/22` 1.48; all three left the chart-failure list. **GULFNAV still `2026/07/23`**: its chart page no longer shows the date box (`date_setting_failed … input#txtFromDate`) and the chart endpoint has no bars for `C_7525` since 2025-06; nothing the pipeline can read has a price after 2026-07-23. |
+| F-B | INVESTB, SHUAA newest bars keep 3 decimals | Yes: INVESTB 0.025 / 0.026 / 0.025, SHUAA 0.232 / 0.235 / 0.23(0), E7 0.906 / 0.902. |
+| F-C | AACT has no 2026-03-22/23 bar; no identical consecutive bars on MSM/BSE | Yes: AACT goes 03/19 → 03/24; scan of every MSM and BSE file, last 12 months: 0 repeats. |
+| F-E | Aramco's newest bar has a turnover within volume × low…high | Yes: `22/10/2026` volume 7,315,186, turnover 185,595,347 (184.9 M … 186.8 M). The Change column is filled too. |
+
+**`check-data-fixes.mjs`, `SWEEP=1`, production (12:3x UTC):** "all passed", 44 PASS, 0 FAIL
+(`docs/screenshots/data-fixes-production-20261023/check-data-fixes.txt`). Two checks fewer than on
+2026-10-22 (46) because they run only when a ticker has no value traded: since F-E it has one.
+Sweep: 716 tickers, `eps_bad` 0, `news_green_old` 0, and `vt_reason` (no value traded) **272 → 5**.
+
+**Price files:** 675 of 691 written this night (baseline 679 on 2026-10-22's daily run). The 16 not
+written, by cause:
+- 5 long-stale, no fix: 624_KSE (KPPC, no Argaam page), GULFNAV, BWPC_MSM, AKIC.AD_ADX, BILDCO_ADX.
+- 3 one-off timeouts: 4210, 4250, 4290 (`tv_api_fetch_failed: The read operation timed out`, all
+  between 00:58 and 00:59). Their files keep 2026-10-21's bars; new failures, not a fix's effect
+  (F-E only reads one more field of the same response).
+- 7 whose run had no `financial_ratios.csv`, so `select_latest_complete` served the previous run:
+  2190, 4140, 640_KSE, DIN_DFM, FH_ADX, INVICTUS_ADX, WAHA_ADX. Same rate both nights (13 runs
+  without the ratios file on 2026-10-22, before the fixes, and 13 on 2026-10-23).
+- 1 thin history: ABRAAJ_BSE (`insufficient_range`, 1.8 years).
+
+The baseline (679) was a daily run; the next daily run (2026-10-24) is the like-for-like count.
+
+**Also seen:** TAQA_ADX's file is rewritten every night, but its newest bar is still `06/08/2026`
+(Argaam's data ends there), so the chart-failure line, which goes by file age, does not list it.

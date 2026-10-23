@@ -581,6 +581,15 @@ Baseline before the fixes (run of 2026-10-22, daily mode): 691 price files, 679 
 OK status "Scrape (mode=daily, …: 716 tickers) + rebuild + restart complete". The first run with the fixes is the
 full (Friday) run of 2026-10-23 00:00 UTC; its checks are in PROJECT.md Step 6.
 
+First night with them (2026-10-23, full run): OK, 716/716; F-B, F-C, F-E gone in the data; F-A fixed 2080, 4240
+and AGILITY (GULFNAV has no readable source); `check-data-fixes` all passed. Details: the part-2 report,
+"After the nightly run".
+
+**F-F** (applied 2026-10-23 12:28 UTC, owner: "Approve F-F (Step 21)"; `docs/pipeline-fix-ff-2026-10-22.patch`):
+`llm-council/ingest_ticker_insights.py` takes the analyst and ownership files from the ticker's newest run that has
+them, so daily runs (which do not scrape them) no longer blank the Ownership and Analysts data. Backup
+`llm-council/ingest_ticker_insights.py.bak-20261023`; to undo, copy it back (no restart needed).
+
 ## Not in production yet
 
 - `www.alphacouncil.tech` has no DNS record; when one is added, add `www` to the certificate.
