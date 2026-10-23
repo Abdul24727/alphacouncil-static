@@ -426,8 +426,9 @@ The baseline (679) was a daily run; the next daily run (2026-10-24) is the like-
   answers 200 for overview, profile and chart, with `companyID 6018`, the date box, and table rows up
   to 2026/10/23. **Fix F-A2** (`docs/pipeline-fix-fa2-2026-10-23.patch`, work copy `e261fb6`): GULFNAV's
   two page paths in `tickers.csv` point at `etihad-energy-holding`; CRLF kept; the ticker key stays
-  `GULFNAV`. `git apply --check` passes on the server's tree (checked only). Not applied: it waits on
-  the owner. The app still names it Gulf Navigation (names come from the platform's CSVs), which is a
+  `GULFNAV`. `git apply --check` passes on the server's tree. **Applied 2026-10-23 13:22 UTC** with the owner's
+  go-ahead (backup `argaam/tickers.csv.bak-20261023`; 721 of 721 lines still CRLF; the server reaches the
+  new pages, 200); first night 2026-10-24. The app still names it Gulf Navigation (names come from the platform's CSVs), which is a
   separate display change.
 - **TAQA was delisted from ADX**, effective 2026-09-01, after Abu Dhabi Power Corporation took 100 %
   (AGBI, The National, Khaleej Times). Its last trading day was 2026-08-06 at 2.66 AED, which is our

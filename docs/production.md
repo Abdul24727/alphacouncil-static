@@ -590,6 +590,11 @@ and AGILITY (GULFNAV has no readable source); `check-data-fixes` all passed. Det
 them, so daily runs (which do not scrape them) no longer blank the Ownership and Analysts data. Backup
 `llm-council/ingest_ticker_insights.py.bak-20261023`; to undo, copy it back (no restart needed).
 
+**F-A2** (applied 2026-10-23 13:22 UTC, owner: "Yes, apply F-A2 on the server now";
+`docs/pipeline-fix-fa2-2026-10-23.patch`): Gulf Navigation is now Etihad Energy Holding (DFM ticker ETIHADENERGY),
+so GULFNAV's row in `argaam/tickers.csv` points at Argaam's `/ae-ar/companies/dfm/etihad-energy-holding/` pages (the
+ticker key stays `GULFNAV`; the file stays CRLF). Backup `argaam/tickers.csv.bak-20261023`; to undo, copy it back.
+
 ## Not in production yet
 
 - `www.alphacouncil.tech` has no DNS record; when one is added, add `www` to the certificate.
