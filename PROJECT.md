@@ -605,7 +605,7 @@ Older entries: `changelog-archive.md`.
   - *Stamp:* 2026-10-22; beta `38452ea553`, production `56476948f5`, `rebuild` `dbefc91`
 
 ## Goal 4 — Launch: settled, checked, then paid
-- **Status:** IN PROGRESS (2026-10-23) — order changed by the owner: 8 (portraits) and 9 (`www`: DONE 2026-10-23) → 10 (launch check; interim run passed signed out) → 7 (the lawyer reviews the finished site) → 18 (billing). Step 8 waits on the style image and a way to generate (Higgsfield has 1.64 credits, free plan) or the owner's files.
+- **Status:** IN PROGRESS (2026-10-23) — order changed by the owner: 8 (portraits) and 9 (`www`: DONE 2026-10-23) → 10 (launch check; interim run passed signed out) → 7 (the lawyer reviews the finished site) → 18 (billing). Step 8 waits on the owner's seven images from ChatGPT (prompts in `docs/advisors-portrait-prompts.md`).
 - **Share of project:** ~30%
 - **Goal:** The advisors' names and texts follow the owner's legal advice, the six portraits are real, `www.alphacouncil.tech` works, a full launch check passes on production, and only then is Pro checkout open.
 - **Done when:**
@@ -641,7 +641,7 @@ Older entries: `changelog-archive.md`.
 - **Outcome:** _(empty until worked)_
 
 ### Step 8 — Put the six real portraits in
-- **Status:** AWAITING CHECKPOINT (2026-10-23) — no files yet. The owner expects the portraits to be made, not supplied: needed from the owner are the style reference image (shared in an earlier chat, not on file here) and a go-ahead to generate them with the connected image tool (uses the owner's credits), or files from an illustrator.
+- **Status:** AWAITING CHECKPOINT (2026-10-23) — the owner generates the seven images in ChatGPT with `docs/advisors-portrait-prompts.md` and sends the files (owner: "If I have enough credit … do it [on Higgsfield] … Best models. If I don't, would use ChatGPT"; Higgsfield had 1.64 credits: Nano Banana Pro 2 credits a portrait, GPT Image 2.5 0.25). The owner's screenshot of the reference style refines the prompts' style line.
 - **Goal:** The advisors' room shows six cartoon portraits in one style, with initials only as a fallback.
 - **Depends on:** nothing (until 2026-10-23: Step 7; the lawyer now reviews the portraits as they are, and may ask for changes)
 - **Reversibility:** reversible
@@ -677,7 +677,7 @@ Older entries: `changelog-archive.md`.
   - *Done:* 2026-10-23. Cloudflare (owner's Chrome via Claude in Chrome, owner signed in): A record `www` → `72.60.91.24`, proxy off ("DNS only"), TTL Auto; resolves at 1.1.1.1, 8.8.8.8 and on the server. Server: renewal settings backed up (`/root/letsencrypt-renewal-alphacouncil.tech.conf.bak-20261023`); `certbot certonly --nginx --dry-run` then `certbot certonly --nginx --cert-name alphacouncil.tech --expand -d alphacouncil.tech -d api.alphacouncil.tech -d www.alphacouncil.tech` (new expiry 2027-01-21; renewal keeps `authenticator = nginx`, `installer = nginx`); `nginx -t` ok, `systemctl reload nginx`. No nginx file changed: the server's `alphacouncil-platform` site equals `deploy/nginx-production.conf`, which already names `www` and sends it to the apex.
   - *Not done:* N/A
   - *Touched:* Cloudflare DNS (one record); server `/etc/letsencrypt` (certificate `alphacouncil.tech`, 3 names); `docs/production.md`.
-  - *Verification:* (1) VERIFIED — `curl -sI https://www.alphacouncil.tech/` → `HTTP/1.1 301`, `Location: https://alphacouncil.tech/`; `/pricing?x=1` keeps path and query; `http://www…` → 301 to `https://alphacouncil.tech/`; the apex 200, `/api/v1/health` 200, `api.alphacouncil.tech` 200; the app's browser lands on `https://alphacouncil.tech/`. (2) VERIFIED — SAN `DNS:alphacouncil.tech, DNS:api.alphacouncil.tech, DNS:www.alphacouncil.tech`, notAfter 2027-01-21.
+  - *Verification:* (1) VERIFIED — `curl -sI https://www.alphacouncil.tech/` → `HTTP/1.1 301`, `Location: https://alphacouncil.tech/`; `/pricing?x=1` keeps path and query; `http://www…` → 301 to `https://alphacouncil.tech/`; the apex 200, `/api/v1/health` 200, `api.alphacouncil.tech` 200; the app's browser lands on `https://alphacouncil.tech/`. (2) VERIFIED — SAN `DNS:alphacouncil.tech, DNS:api.alphacouncil.tech, DNS:www.alphacouncil.tech`, notAfter 2027-01-21. Renewal: `certbot renew --dry-run --cert-name alphacouncil.tech` → `fullchain.pem (success)`; monitor "TLS certificate: … expires on 2027-01-21 16:54 UTC, in 90 days".
   - *Rulings:* (a) `certonly` (certificate only) rather than certbot's installer, so certbot does not edit the nginx files kept in the repo; the renewal settings kept `installer = nginx`, so renewals still reload nginx. Cost if wrong: a renewal that does not reload nginx — the monitor's certificate check would warn 14 days before expiry. (b) The built-in browser's Cloudflare sign-in failed its human check twice; switched to the owner's Chrome with the owner's agreement.
   - *Failed approaches:* Cloudflare sign-in in the app's built-in browser ("There was a problem with verification").
   - *Debt:* N/A
