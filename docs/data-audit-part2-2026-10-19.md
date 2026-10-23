@@ -327,6 +327,15 @@ does, so the patch does not go to the server as it is. Options for the owner:
 3. **Leave F-D unbuilt.** Tadawul disclosures stay at 2026-10-05 or older; the app's light shows
    the gap.
 
+**Route 1 tested (2026-10-23 about 12:30 UTC, owner's go-ahead for one test):** a headless Chromium context
+seeded from the scraper's saved session (`default_universe/_auth_state.json`, saved 00:01 that night),
+opened the way the workers open theirs, loaded both list pages once: **405 "Human Verification", 0 items**
+for both. Argaam shows the check to the server even when it is logged in, so route 1 is out. Nothing was
+retried or worked around; the test printed only status, title and item count and wrote nothing.
+Left for the owner: route 2 (the owner's computer reads the list) or route 3 (leave F-D unbuilt).
+Argaam checks this list for server traffic even when logged in, so route 2 should be checked
+against the owner's Argaam subscription terms first.
+
 **Check after it is built** (replaces "Aramco within 7 days", which depends on Aramco publishing):
 the night after it is applied, `[disclosures]` in the run's log shows `0 failed`, and for each of
 three tickers the list named in the 7 days before the run, the API's newest disclosure has that
