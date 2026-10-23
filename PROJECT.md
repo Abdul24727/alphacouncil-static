@@ -41,6 +41,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - 2026-10-22 — Copilot speed (7f) is accepted as by design (owner: "Try (e), then accept"): production keeps `56476948f5`, first words 8.6 s. Option (e), the first turn answering from the fetched data, is on `rebuild` (first words 5.3 s, target 5 s). Rejected: the text-first turn (`38452ea`, slower: 9.2 s / 28.7 s); for now a faster model (d) and pinning a host (c).
 - 2026-10-22 — Copilot answers are short and quote the data's own figures (at most five, under about 120 words, no ratios of its own); a refused instruction gets one sentence. Owner's option (b), after the model service turned wordier. Rejected for now: changing the model or pinning a host (owner's call).
 - 2026-10-23 — F-D (Tadawul disclosures from Argaam's market-wide list) is not built: Argaam shows the server a human check on that list even when logged in, and this project does not work around it. Owner's route 3; the patch stays in `docs/`. Rejected: route 1 (tested: 405), route 2 (the owner's computer reads the list; depends on Argaam's terms).
+- 2026-10-23 — The lawyer's review comes last: after the portraits, `www` and the launch check, so the lawyer tests the finished site and advises on the advisors, the portraits and the legal papers (terms, privacy) together; before billing opens, because the permit and Moyasar questions decide how Pro may be sold. Cost if wrong: portraits or texts made before the advice may have to be redone. Rejected: advice first (the owner: the lawyer needs a working site to review).
 
 ## 4. Autorun Policy
 - **Pre-approved:** creating and editing files in this repo on branch `rebuild`; running the project's checks and builds; read-only commands on the server over SSH (logs, `systemctl status`, `journalctl`, `sqlite3 -readonly`, listing and reading pipeline files); writing reports under `docs/`; committing on `rebuild`; screenshots with the built-in browser.
@@ -603,7 +604,7 @@ Older entries: `changelog-archive.md`.
   - *Stamp:* 2026-10-22; beta `38452ea553`, production `56476948f5`, `rebuild` `dbefc91`
 
 ## Goal 4 — Launch: settled, checked, then paid
-- **Status:** AWAITING CHECKPOINT — Steps 7–9 each wait on the owner (re-tested 2026-10-23: `www` NXDOMAIN, no portrait files, no legal advice in chat); Step 10 waits on Goal 2 (Steps 6 and 21) and Steps 7–9 (Goal 3 is done); Step 18 waits on Step 10 and the owner's go-ahead.
+- **Status:** IN PROGRESS (2026-10-23) — order changed by the owner: 8 (portraits) and 9 (`www`, being set up with the owner) → 10 (launch check; interim run passed signed out) → 7 (the lawyer reviews the finished site) → 18 (billing). Step 8 waits on the style image and the owner's go-ahead to generate.
 - **Share of project:** ~30%
 - **Goal:** The advisors' names and texts follow the owner's legal advice, the six portraits are real, `www.alphacouncil.tech` works, a full launch check passes on production, and only then is Pro checkout open.
 - **Done when:**
@@ -612,21 +613,21 @@ Older entries: `changelog-archive.md`.
   3. `curl -sI https://www.alphacouncil.tech/` answers 301 to `https://alphacouncil.tech/`, and the certificate covers both names.
   4. `docs/launch-check-<date>.md` records every check script passing on production (`check-all.mjs`, `check-data-fixes.mjs` with `SWEEP=1`, `check-seo.mjs`, `check-advisors.mjs`, `check-arabic.mjs`) and the monitor at 14 of 14.
   5. `curl -s https://alphacouncil.tech/api/v1/plans` prints `"checkout_open":true`, and the owner's own first real payment gave Pro (and its refund ended it, or the refund is recorded as waiting for Moyasar's settlement).
-- **Depends on:** nothing for Steps 7–9; Step 10 (the launch check) depends on Goals 2 and 3; Step 18 depends on Step 10.
+- **Depends on:** order since 2026-10-23 (owner): Steps 8 and 9 first; Step 10 (the launch check) after them and Goal 2; **Step 7 (the lawyer reviews the finished, working site) after Step 10**; Step 18 (billing) after Step 7.
 - **Reversibility:** reversible (DNS and certificate: costly; opening billing: costly — whoever pays is owed their month)
-- **Autorun:** no — checkpoint: human-action (legal advice, portrait files, DNS record) and decision (opening billing, Step 18)
+- **Autorun:** no — checkpoint: human-action (portrait files or the owner's go-ahead to make them, the lawyer's advice) and decision (opening billing, Step 18)
 - **Consumes:** `docs/advisors-portraits-brief.md` (the illustrator's brief); `api/app/advisors/*.md` (the six advisors and the Chair); `docs/qa-beta-2026-10/reaudit-<date>.md` (Goal 3).
-- **Steps:** 7–10, 18
+- **Steps:** in order 8, 9, 10, 7, 18
 - **Goal outcome:** _(empty until the goal is worked)_
 
-### Step 7 — Apply the lawyer's advice to the named advisors
-- **Status:** AWAITING CHECKPOINT — the owner pastes or summarises the lawyer's advice in chat (2026-10-19: none yet).
-- **Goal:** The advisors' names, wording and disclaimers match the owner's legal advice, live on production.
-- **Depends on:** nothing
+### Step 7 — The lawyer reviews the finished site; apply the advice
+- **Status:** NOT STARTED — moved to the end on 2026-10-23 (owner: the lawyer tests the working site, then advises what it needs, what it does not, and how to write its legal papers and privacy terms). Waits on Step 10.
+- **Goal:** The advisors' names, wording and disclaimers, and the site's legal texts (terms, privacy), match the owner's legal advice, live on production.
+- **Depends on:** 10 (the site is finished and checked, so the lawyer reviews what customers will get); before 18 (two of the questions decide whether and how Pro may be sold)
 - **Reversibility:** reversible
 - **Autorun:** no — checkpoint: human-action (the owner brings the advice)
-- **What this step is:** The room speaks as Buffett, Lynch, Dalio, Marks, Prince Alwaleed and Abdullah Al-Rajhi. Using real people's names and personas is the main legal exposure before advertising. The owner gets advice; this step applies it. Put three questions to the lawyer in one visit: (a) the real names and personas; (b) whether the live Copilot and the advisors' room stay inside an information service that needs no CMA permit — the owner's own plan of 2026-08-08 (`C:\AlphaCouncil-Staging\CMA_FINTECH_EXPERMIT_PLAN.md`, lines 137–144) said not to "enable Council or Research Assistant for customers" before a permit; (c) whether Moyasar must be told, since the merchant account was approved on the representation that the product is not robo-advisory (`C:\AlphaCouncil-Staging\PROJECT_ENDGAME.md`, line 36).
-- **Where:** `api/app/advisors/*.md`; the advisors' room UI copy in `web/messages/en.json` and `web/messages/ar.json`; nothing in `web/src/content/legal` (those texts are copied from the old site by `scripts/import-legal.py` and never edited by hand).
+- **What this step is:** The room speaks as Buffett, Lynch, Dalio, Marks, Prince Alwaleed and Abdullah Al-Rajhi. Using real people's names and personas is the main legal exposure before advertising. The owner gets advice; this step applies it. Put three questions to the lawyer in one visit: (a) the real names and personas; (b) whether the live Copilot and the advisors' room stay inside an information service that needs no CMA permit — the owner's own plan of 2026-08-08 (`C:\AlphaCouncil-Staging\CMA_FINTECH_EXPERMIT_PLAN.md`, lines 137–144) said not to "enable Council or Research Assistant for customers" before a permit; (c) whether Moyasar must be told, since the merchant account was approved on the representation that the product is not robo-advisory (`C:\AlphaCouncil-Staging\PROJECT_ENDGAME.md`, line 36). Added 2026-10-23: (d) the portraits (caricatures of living people), and (e) which legal papers the site needs and how to write them (terms, privacy policy, disclaimers), reviewing the live site itself.
+- **Where:** `api/app/advisors/*.md`; the advisors' room UI copy in `web/messages/en.json` and `web/messages/ar.json`; portraits in `web/public/advisors/`. Legal texts in `web/src/content/legal` are copied from the old site by `scripts/import-legal.py` and never edited by hand: if the lawyer supplies new texts, how they enter the site (a new source for the import, and consent versions in `api/app/legal.py`) is decided then with the owner.
 - **Consumes:** the owner's advice, pasted or summarised in chat.
 - **Produces:** `docs/legal-advisors-<date>.md` (what the advice says, what changed); the changed files; a release through beta then production with the owner's go-ahead.
 - **How:** keep advisor ids (`buffett`, `lynch`, `dalio`, `marks`, `alwaleed`, `alrajhi`) and `DEBATE_ADVISORS` stable even if display names change, so saved sessions keep working.
@@ -639,9 +640,9 @@ Older entries: `changelog-archive.md`.
 - **Outcome:** _(empty until worked)_
 
 ### Step 8 — Put the six real portraits in
-- **Status:** AWAITING CHECKPOINT — the owner puts `buffett.webp`, `lynch.webp`, `dalio.webp`, `marks.webp`, `alwaleed.webp`, `alrajhi.webp` (and optionally `chair.webp`) in `web/public/advisors/` (2026-10-19: only `README.md` there). Names may change with Step 7.
-- **Goal:** The advisors' room shows the illustrator's six portraits, with initials only as a fallback.
-- **Depends on:** 7 (names may change)
+- **Status:** AWAITING CHECKPOINT (2026-10-23) — no files yet. The owner expects the portraits to be made, not supplied: needed from the owner are the style reference image (shared in an earlier chat, not on file here) and a go-ahead to generate them with the connected image tool (uses the owner's credits), or files from an illustrator.
+- **Goal:** The advisors' room shows six cartoon portraits in one style, with initials only as a fallback.
+- **Depends on:** nothing (until 2026-10-23: Step 7; the lawyer now reviews the portraits as they are, and may ask for changes)
 - **Reversibility:** reversible
 - **Autorun:** no — checkpoint: human-action (the owner provides the files)
 - **What this step is:** Portraits are initials placeholders until the files arrive (`docs/advisors-portraits-brief.md`). This step adds the files and wires them in.
@@ -657,6 +658,7 @@ Older entries: `changelog-archive.md`.
 
 ### Step 9 — Make `www.alphacouncil.tech` work
 - **Status:** AWAITING CHECKPOINT — the owner adds, in Cloudflare (the domain's DNS host: `koa`/`piper.ns.cloudflare.com`), an A record `www` → `72.60.91.24` (the apex's address; no AAAA seen), proxy off ("DNS only"), so the certificate challenge reaches the server. 2026-10-19: `www` answers NXDOMAIN.
+- **Checkpoint cleared:** 2026-10-23 — owner in chat: "for the DNS, can you walk me through it or set it up? And I just click the important buttons that you are not allowed to do. If you are allowed to do it all, then go ahead." (covers the record, the certificate and the redirect; the owner signs in to Cloudflare).
 - **Goal:** `www.alphacouncil.tech` redirects to `https://alphacouncil.tech/` with a valid certificate.
 - **Depends on:** nothing
 - **Reversibility:** costly
@@ -675,7 +677,7 @@ Older entries: `changelog-archive.md`.
 ### Step 10 — Launch check on production
 - **Status:** IN PROGRESS (2026-10-23) — interim run: every signed-out check passes on production (`docs/launch-check-2026-10-23.md`); the real run waits on Steps 7–9, the owner's signed-in run, and Goal 2's last checks.
 - **Goal:** One dated record shows every check passing on production after Goals 2, 3 and 4's changes, with billing still closed.
-- **Depends on:** 6, 7, 8, 9, 17, 21 (19 superseded 2026-10-23)
+- **Depends on:** 6, 8, 9, 17, 21 (19 superseded 2026-10-23; 7 now comes after this step)
 - **Reversibility:** reversible
 - **Autorun:** yes
 - **What this step is:** The last pass before the owner spends on advertising: every check script, the monitor and screenshots of the key pages, in one report.
@@ -700,7 +702,7 @@ Older entries: `changelog-archive.md`.
 ### Step 18 — Open Pro billing on production (the paid launch)
 - **Status:** NOT STARTED
 - **Goal:** Pro can be bought on alphacouncil.tech, and the owner's own first real payment proved it end to end.
-- **Depends on:** 10
+- **Depends on:** 10 and 7 (the lawyer's advice is live; if it changed pages, their checks rerun first)
 - **Reversibility:** costly (whoever pays is owed their month, even if billing closes again)
 - **Autorun:** no — checkpoint: decision (the owner's go-ahead in chat after reading `docs/launch-check-<date>.md`)
 - **What this step is:** The last step of the plan. Billing reopens only when the launch check is all green (owner's rule, 2026-10-21).
