@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-23   **At version:** `399ec4d` on branch `rebuild` (beta `38452ea553`, production `56476948f5`; this file's latest state committed on top and pushed to `origin`)
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-23   **At version:** `a2e2c31` on branch `rebuild` (beta and production `a2e2c318bc`; this file's latest state committed on top and pushed to `origin`)
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -63,8 +63,8 @@ Older entries: `changelog-archive.md`.
 - 2026-10-23 — First night with fixes A (full run): F-B, F-C, F-E gone in the data; F-A 3 of 4 (GULFNAV has no readable source); `check-data-fixes` all passed; 675 price files vs 679 (3 one-off chart timeouts and the usual runs without a ratios file, not the fixes). F-F found (since the daily/full split, daily rebuilds blanked ownership and analysts) and applied with the owner's approval. F-D: the server gets Argaam's 405 human check on the market-wide list even in the logged-in browser session; not worked around, back to the owner.
 
 ## 6. Current State
-- Live on alphacouncil.tech: release `56476948f5` (QA audit fixes, short-answer Copilot), the one re-audited on beta; `check-all` 9/9 on 2026-10-22 14:46 UTC. Pro checkout **closed** since 2026-10-22 (early access, everyone has Pro; it reopens at Step 18; no one has paid).
-- Beta runs `38452ea553` (a text-first Copilot turn, measured slower: first words 9.2 s, full 28.7 s; not released) until its next release; `rebuild` is back on option (e) (`dbefc91`: first words 5.3 s, full 15.2 s on beta). Production keeps first words 8.6 s, accepted as by design (owner); its next release from `rebuild` carries option (e).
+- Live on alphacouncil.tech: release `a2e2c318bc` since 2026-10-23 21:28 UTC (advisor portraits; Copilot option (e)); beta runs the same; beta `check-all` 9/9 before the release. Pro checkout **closed** (early access, everyone has Pro; it reopens at Step 18; no one has paid).
+- Copilot: option (e) is live (first turn answers from the page's fetched data; beta 2026-10-22: first words 5.3 s, full 15.2 s; 7f stays BY DESIGN). Production's speed with it not yet re-measured.
 - Goal 3 DONE: every audit item PASS or BY DESIGN with the owner's words (`docs/qa-beta-2026-10/reaudit-2026-10-22.md`); checkout proven in Moyasar test mode on beta, 13 of 13.
 - Goal 1 DONE: `rebuild` is on GitHub (`origin` = the owner's private `alphacouncil-static`, whose other branches hold the old site). Safety nets keep running on their own: backup copy daily at 09:00 Riyadh, monitor 13 ok, outside check every 5 min.
 - Goal 2: on the server since 2026-10-22: F-A, F-E, F-B, F-C (backups `.bak-20261022`); since 2026-10-23 12:28 UTC: F-F (`.bak-20261023`); since 13:22 UTC: F-A2 (GULFNAV → Etihad Energy Holding's Argaam pages, `tickers.csv.bak-20261023`). Runbook "Pipeline fixes". First night (2026-10-23, full run): F-B, F-C, F-E gone; GASCO, AFG, Agility back; GULFNAV not then (its old page has no data; F-A2's first night is 2026-10-24); `check-data-fixes` all passed (`vt_reason` 272 → 5); 675 of 691 price files (recount on the 2026-10-24 daily run). F-D (Step 19) not built (owner, route 3): Argaam answers 405 "Human Verification" to the server for the market-wide list, even logged in; the patch is kept in `docs/`. Tadawul disclosures stay stale (newest 2026-10-05).
@@ -605,7 +605,7 @@ Older entries: `changelog-archive.md`.
   - *Stamp:* 2026-10-22; beta `38452ea553`, production `56476948f5`, `rebuild` `dbefc91`
 
 ## Goal 4 — Launch: settled, checked, then paid
-- **Status:** IN PROGRESS (2026-10-23) — order changed by the owner: 8 (portraits) and 9 (`www`: DONE 2026-10-23) → 10 (launch check; interim run passed signed out) → 7 (the lawyer reviews the finished site) → 18 (billing). Step 8: the portraits are in the app on `rebuild`; production after the next release (owner's go-ahead).
+- **Status:** IN PROGRESS (2026-10-23) — order changed by the owner: 8 (portraits) and 9 (`www`: DONE 2026-10-23) → 10 (launch check; interim run passed signed out) → 7 (the lawyer reviews the finished site) → 18 (billing). Step 8 DONE (portraits live, release `a2e2c318bc`).
 - **Share of project:** ~30%
 - **Goal:** The advisors' names and texts follow the owner's legal advice, the six portraits are real, `www.alphacouncil.tech` works, a full launch check passes on production, and only then is Pro checkout open.
 - **Done when:**
@@ -641,7 +641,7 @@ Older entries: `changelog-archive.md`.
 - **Outcome:** _(empty until worked)_
 
 ### Step 8 — Put the six real portraits in
-- **Status:** PARTIAL (2026-10-23) — the owner's seven images (ChatGPT) are in the app on `rebuild` and checked locally in EN/AR at 1440 and 390 px, with the initials fallback proven; on production after the next release (beta → production, the owner's go-ahead).
+- **Status:** DONE (2026-10-23) — live on production in release `a2e2c318bc` (21:28 UTC), all seven portraits, EN and AR at 1440 and 390 px.
 - **Goal:** The advisors' room shows six cartoon portraits in one style, with initials only as a fallback.
 - **Depends on:** nothing (until 2026-10-23: Step 7; the lawyer now reviews the portraits as they are, and may ask for changes)
 - **Reversibility:** reversible
@@ -653,13 +653,13 @@ Older entries: `changelog-archive.md`.
 - **How:** serve from the app's own origin (the CSP blocks other origins); keep each file small enough for 390 px phones; the Chair keeps its current mark unless the brief says otherwise.
 - **Defaults:** a file is missing or unusable → keep that advisor's initials and list it; files are larger than ~150 KB → convert to WebP at the displayed size times two.
 - **Done when:**
-  - [ ] six portraits show on production in English and Arabic at 1440 and 390 px — check: screenshots
+  - [x] six portraits show on production in English and Arabic at 1440 and 390 px — check: screenshots
   - [x] removing one file in a local build shows that advisor's initials — check: local screenshot
-- **Outcome:** (partial — waiting on a release)
+- **Outcome:**
   - *Done:* the owner's seven 1024 px images (ChatGPT, from `docs/advisors-portrait-prompts.md`) → 512 × 512 WebP, 19–23 KB each, in `web/public/advisors/` (`buffett`, `lynch`, `dalio`, `marks`, `alwaleed`, `alrajhi`, `chair`); originals kept in `docs/advisors-portraits/originals/`. Each seat file `api/app/advisors/<id>.md` names its file (`portrait: <id>.webp`). `SeatDisc` (`web/src/components/debate/parts.tsx`) falls back to the initials when a named image fails to load. `test_debate.py` now checks each named portrait is the seat's own file and exists. API tests 162 passed; `tsc` and eslint clean; `next build` OK (93 pages).
-  - *Not done:* production (needs the release).
+  - *Not done:* N/A
   - *Touched:* `web/public/advisors/*.webp`, `web/public/advisors/README.md`, `api/app/advisors/*.md` (7), `web/src/components/debate/parts.tsx`, `api/tests/test_debate.py`, `docs/advisors-portraits/originals/`, `docs/screenshots/portraits-2026-10-23/`.
-  - *Verification:* (1) NOT MET until the release; locally (dev server, signed out, `/t/2222/advisors`): all seven portraits in EN and AR at 1440 and 390, no sideways scroll (`docs/screenshots/portraits-2026-10-23/local/`). (2) VERIFIED — with the browser answering 404 for `marks.webp`, Marks's seat shows "HM" and the others keep their portraits (`…/fallback-marks-missing/seats-crop.en.1440.png`).
+  - *Verification:* (1) VERIFIED 2026-10-23 on production `a2e2c318bc`: `/api/v1/debate/status` 7 of 7 seats with a portrait, `stand_in` false; `/t/2222/advisors` EN and AR at 1440 and 390, 200, no sideways scroll (`docs/screenshots/release-a2e2c318bc/production/`); beta the same before it (`…/beta/`, `check-all` 9/9). Before that, locally (dev server, signed out, `/t/2222/advisors`): all seven portraits in EN and AR at 1440 and 390, no sideways scroll (`docs/screenshots/portraits-2026-10-23/local/`). (2) VERIFIED — with the browser answering 404 for `marks.webp`, Marks's seat shows "HM" and the others keep their portraits (`…/fallback-marks-missing/seats-crop.en.1440.png`).
   - *Rulings:* (a) 512 px, not the brief's 1024 (README: at least 512; the room draws 22–66 px, and next/image resizes per screen). (b) The fallback test blocks the file in the browser: moving the file away was not a test, because the dev server kept serving a resized copy it already had. Cost: none in production, where a removed file keeps showing until the image cache expires. (c) The images lean realistic (3D-rendered faces) rather than cartoonish; kept as the owner sent them, for the lawyer's review (Step 7).
   - *Failed approaches:* the app's preview tool reads `.claude/launch.json` from the session's original folder, not this repo: the servers were started from the shell instead (`uv run uvicorn …` port 8000, `npm run dev -- -p 3100`).
   - *Debt:* N/A

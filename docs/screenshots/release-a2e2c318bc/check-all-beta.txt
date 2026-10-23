@@ -1,0 +1,331 @@
+
+=== Phase 1 ===
+PASS  signed up and signed in
+PASS  en /home: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /home: no teal or purple
+PASS  en /home: drawn only in the brand faces (no Inter)
+PASS  en /portfolio: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /portfolio: no teal or purple
+PASS  en /portfolio: drawn only in the brand faces (no Inter)
+PASS  en /screener: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /screener: no teal or purple
+PASS  en /screener: drawn only in the brand faces (no Inter)
+PASS  en /markets: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /markets: no teal or purple
+PASS  en /markets: drawn only in the brand faces (no Inter)
+PASS  en /templates: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /templates: no teal or purple
+PASS  en /templates: drawn only in the brand faces (no Inter)
+PASS  en /templates/earnings-season: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /templates/earnings-season: no teal or purple
+PASS  en /templates/earnings-season: drawn only in the brand faces (no Inter)
+PASS  en /templates/dividend-hunter: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /templates/dividend-hunter: no teal or purple
+PASS  en /templates/dividend-hunter: drawn only in the brand faces (no Inter)
+PASS  en /templates/sector-vs-sector: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /templates/sector-vs-sector: no teal or purple
+PASS  en /templates/sector-vs-sector: drawn only in the brand faces (no Inter)
+PASS  en /dashboards: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /dashboards: no teal or purple
+PASS  en /dashboards: drawn only in the brand faces (no Inter)
+PASS  en /settings: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /settings: no teal or purple
+PASS  en /settings: drawn only in the brand faces (no Inter)
+PASS  en /t/2222: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /t/2222: no teal or purple
+PASS  en /t/2222: drawn only in the brand faces (no Inter)
+PASS  en /t/2222/financials: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /t/2222/financials: no teal or purple
+PASS  en /t/2222/financials: drawn only in the brand faces (no Inter)
+PASS  en /t/2222/council: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /t/2222/council: no teal or purple
+PASS  en /t/2222/council: drawn only in the brand faces (no Inter)
+PASS  en /t/2222/ownership: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /t/2222/ownership: no teal or purple
+PASS  en /t/2222/ownership: drawn only in the brand faces (no Inter)
+PASS  en /t/2222/calendar: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  en /t/2222/calendar: no teal or purple
+PASS  en /t/2222/calendar: drawn only in the brand faces (no Inter)
+PASS  en /: public page renders
+PASS  en /: no teal or purple
+PASS  en /: drawn only in the brand faces (no Inter)
+PASS  en /pricing: public page renders
+PASS  en /pricing: no teal or purple
+PASS  en /pricing: drawn only in the brand faces (no Inter)
+PASS  en /methodology: public page renders
+PASS  en /methodology: no teal or purple
+PASS  en /methodology: drawn only in the brand faces (no Inter)
+PASS  en /legal: public page renders
+PASS  en /legal: no teal or purple
+PASS  en /legal: drawn only in the brand faces (no Inter)
+PASS  en /legal/privacy: public page renders
+PASS  en /legal/privacy: no teal or purple
+PASS  en /legal/privacy: drawn only in the brand faces (no Inter)
+PASS  en /login: public page renders
+PASS  en /login: no teal or purple
+PASS  en /login: drawn only in the brand faces (no Inter)
+PASS  en /signup: public page renders
+PASS  en /signup: no teal or purple
+PASS  en /signup: drawn only in the brand faces (no Inter)
+PASS  en /forgot-password: public page renders
+PASS  en /forgot-password: no teal or purple
+PASS  en /forgot-password: drawn only in the brand faces (no Inter)
+PASS  en /reset-password: public page renders
+PASS  en /reset-password: no teal or purple
+PASS  en /reset-password: drawn only in the brand faces (no Inter)
+PASS  ar /home: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /home: no teal or purple
+PASS  ar /home: drawn only in the brand faces (no Inter)
+PASS  ar /portfolio: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /portfolio: no teal or purple
+PASS  ar /portfolio: drawn only in the brand faces (no Inter)
+PASS  ar /screener: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /screener: no teal or purple
+PASS  ar /screener: drawn only in the brand faces (no Inter)
+PASS  ar /markets: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /markets: no teal or purple
+PASS  ar /markets: drawn only in the brand faces (no Inter)
+PASS  ar /templates: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /templates: no teal or purple
+PASS  ar /templates: drawn only in the brand faces (no Inter)
+PASS  ar /templates/earnings-season: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /templates/earnings-season: no teal or purple
+PASS  ar /templates/earnings-season: drawn only in the brand faces (no Inter)
+PASS  ar /templates/dividend-hunter: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /templates/dividend-hunter: no teal or purple
+PASS  ar /templates/dividend-hunter: drawn only in the brand faces (no Inter)
+PASS  ar /templates/sector-vs-sector: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /templates/sector-vs-sector: no teal or purple
+PASS  ar /templates/sector-vs-sector: drawn only in the brand faces (no Inter)
+PASS  ar /dashboards: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /dashboards: no teal or purple
+PASS  ar /dashboards: drawn only in the brand faces (no Inter)
+PASS  ar /settings: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /settings: no teal or purple
+PASS  ar /settings: drawn only in the brand faces (no Inter)
+PASS  ar /t/2222: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /t/2222: no teal or purple
+PASS  ar /t/2222: drawn only in the brand faces (no Inter)
+PASS  ar /t/2222/financials: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /t/2222/financials: no teal or purple
+PASS  ar /t/2222/financials: drawn only in the brand faces (no Inter)
+PASS  ar /t/2222/council: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /t/2222/council: no teal or purple
+PASS  ar /t/2222/council: drawn only in the brand faces (no Inter)
+PASS  ar /t/2222/ownership: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /t/2222/ownership: no teal or purple
+PASS  ar /t/2222/ownership: drawn only in the brand faces (no Inter)
+PASS  ar /t/2222/calendar: renders signed in, inside the shell (sidebar, work area, Copilot)
+PASS  ar /t/2222/calendar: no teal or purple
+PASS  ar /t/2222/calendar: drawn only in the brand faces (no Inter)
+PASS  ar /: public page renders
+PASS  ar /: no teal or purple
+PASS  ar /: drawn only in the brand faces (no Inter)
+PASS  ar /pricing: public page renders
+PASS  ar /pricing: no teal or purple
+PASS  ar /pricing: drawn only in the brand faces (no Inter)
+PASS  ar /methodology: public page renders
+PASS  ar /methodology: no teal or purple
+PASS  ar /methodology: drawn only in the brand faces (no Inter)
+PASS  ar /legal: public page renders
+PASS  ar /legal: no teal or purple
+PASS  ar /legal: drawn only in the brand faces (no Inter)
+PASS  ar /legal/privacy: public page renders
+PASS  ar /legal/privacy: no teal or purple
+PASS  ar /legal/privacy: drawn only in the brand faces (no Inter)
+PASS  ar /login: public page renders
+PASS  ar /login: no teal or purple
+PASS  ar /login: drawn only in the brand faces (no Inter)
+PASS  ar /signup: public page renders
+PASS  ar /signup: no teal or purple
+PASS  ar /signup: drawn only in the brand faces (no Inter)
+PASS  ar /forgot-password: public page renders
+PASS  ar /forgot-password: no teal or purple
+PASS  ar /forgot-password: drawn only in the brand faces (no Inter)
+PASS  ar /reset-password: public page renders
+PASS  ar /reset-password: no teal or purple
+PASS  ar /reset-password: drawn only in the brand faces (no Inter)
+
+Phase 1 done-when: all checks passed
+
+=== Phase 2 ===
+PASS  all 5 panels start on 2222
+PASS  after switching one panel, all 5 panels show 1120
+PASS  header follows the group (Al Rajhi Bank)
+PASS  metrics panel loaded 1120 data
+PASS  peers row click moved every panel to 1180
+PASS  metrics panel has a freshness light (fresh)
+PASS  stale light is amber #F2B134 (rgb(242, 177, 52))
+PASS  tooltip shows the real timestamp: "Updated 23 Oct 07:07 · next run 03:00"
+PASS  tooltip dates the data itself: "Older than its expected update · data as of 8 Aug 2018"
+metrics light colour: rgb(63, 217, 138)
+
+Phase 2 done-when: all checks passed
+
+=== Phase 3 ===
+716 tickers, 691 with a price file
+… 50/716
+… 100/716
+… 150/716
+… 200/716
+… 250/716
+… 300/716
+… 350/716
+… 400/716
+… 450/716
+… 500/716
+… 550/716
+… 600/716
+… 650/716
+… 700/716
+charts drawn: 691/691 tickers with price history
+"Data unavailable": 25/25 tickers without history
+
+Phase 3 done-when: all checks passed
+
+=== Phase 4 ===
+Copilot model: deepseek/deepseek-v3.2
+PASS  signed in (the model requires an account)
+PASS  metrics panel shows as a context chip
+PASS  answer cites the metrics panel
+PASS  answer finished in 10 s (limit 180 s)
+PASS  reasoning is collapsible (› REASONING · 4 STEPS)
+PASS  3 follow-up questions
+PASS  citation scrolled the metrics panel into view (top -621 -> 144)
+PASS  the cited panel is highlighted
+note  this answer had no table to pin
+
+Phase 4 done-when: all checks passed
+
+=== Phase 5 ===
+PASS  desktop: Home (/home) — 4 panel(s)
+PASS  desktop: My Portfolio (/portfolio) — 1 panel(s)
+PASS  desktop: Screener (/screener) — 2 panel(s)
+PASS  desktop: Markets (/markets) — 2 panel(s)
+PASS  desktop: Templates (/templates) — 1 panel(s)
+PASS  desktop: My dashboards (/dashboards) — 1 panel(s), 1 labelled unavailable
+PASS  desktop: Settings (/settings) — 3 panel(s)
+PASS  phone: Home (/home) — 4 panel(s)
+PASS  phone: My Portfolio (/portfolio) — 1 panel(s)
+PASS  phone: Screener (/screener) — 2 panel(s)
+PASS  sign-up lands on My Portfolio
+PASS  three holdings listed (3)
+PASS  exposure grouped per currency (SAR and AED)
+
+Phase 5 done-when: all checks passed
+
+=== Phase 6 ===
+PASS  landing en 1440px: no teal or purple
+PASS  landing en 1440px: only BRAND.md colours
+PASS  landing en 1440px: no gradient text or background
+PASS  landing en 1440px: no glow effects (shadows, blurs)
+PASS  landing en 1440px: no emoji or flag emoji
+PASS  landing en 1440px: no icon-in-a-rounded-box
+PASS  landing en 1440px: no grid of identical feature cards
+PASS  landing en 1440px: no small uppercase eyebrow above a heading
+PASS  landing en 1440px: no fake browser dots
+PASS  landing en 1440px: no repeated stat-chip rows
+PASS  landing en 1440px: rendered fonts are Archivo SemiBold, IBM Plex Sans Arabic, Martian Mono SemiExpanded
+PASS  landing en 1440px: every number on screen sits in a database value (10 found)
+PASS  landing en 1440px: those values equal the API (7 exchanges, 716 equities, Pro 79)
+PASS  landing en 1440px: no sideways scroll
+PASS  landing en 1440px: no page errors
+PASS  landing en 390px: no teal or purple
+PASS  landing en 390px: only BRAND.md colours
+PASS  landing en 390px: no gradient text or background
+PASS  landing en 390px: no glow effects (shadows, blurs)
+PASS  landing en 390px: no emoji or flag emoji
+PASS  landing en 390px: no icon-in-a-rounded-box
+PASS  landing en 390px: no grid of identical feature cards
+PASS  landing en 390px: no small uppercase eyebrow above a heading
+PASS  landing en 390px: no fake browser dots
+PASS  landing en 390px: no repeated stat-chip rows
+PASS  landing en 390px: rendered fonts are Archivo SemiBold, IBM Plex Sans Arabic, Martian Mono SemiExpanded
+PASS  landing en 390px: every number on screen sits in a database value (10 found)
+PASS  landing en 390px: those values equal the API (7 exchanges, 716 equities, Pro 79)
+PASS  landing en 390px: no sideways scroll
+PASS  landing en 390px: no page errors
+PASS  landing ar 1440px: no teal or purple
+PASS  landing ar 1440px: only BRAND.md colours
+PASS  landing ar 1440px: no gradient text or background
+PASS  landing ar 1440px: no glow effects (shadows, blurs)
+PASS  landing ar 1440px: no emoji or flag emoji
+PASS  landing ar 1440px: no icon-in-a-rounded-box
+PASS  landing ar 1440px: no grid of identical feature cards
+PASS  landing ar 1440px: no small uppercase eyebrow above a heading
+PASS  landing ar 1440px: no fake browser dots
+PASS  landing ar 1440px: no repeated stat-chip rows
+PASS  landing ar 1440px: rendered fonts are Archivo SemiBold, IBM Plex Sans Arabic, IBM Plex Sans Arabic SemiBold, Martian Mono SemiExpanded, IBM Plex Sans Arabic Medium
+PASS  landing ar 1440px: every number on screen sits in a database value (10 found)
+PASS  landing ar 1440px: those values equal the API (7 exchanges, 716 equities, Pro 79)
+PASS  landing ar 1440px: no sideways scroll
+PASS  landing ar 1440px: no page errors
+PASS  landing ar 390px: no teal or purple
+PASS  landing ar 390px: only BRAND.md colours
+PASS  landing ar 390px: no gradient text or background
+PASS  landing ar 390px: no glow effects (shadows, blurs)
+PASS  landing ar 390px: no emoji or flag emoji
+PASS  landing ar 390px: no icon-in-a-rounded-box
+PASS  landing ar 390px: no grid of identical feature cards
+PASS  landing ar 390px: no small uppercase eyebrow above a heading
+PASS  landing ar 390px: no fake browser dots
+PASS  landing ar 390px: no repeated stat-chip rows
+PASS  landing ar 390px: rendered fonts are Archivo SemiBold, IBM Plex Sans Arabic, IBM Plex Sans Arabic SemiBold, Martian Mono SemiExpanded, IBM Plex Sans Arabic Medium
+PASS  landing ar 390px: every number on screen sits in a database value (10 found)
+PASS  landing ar 390px: those values equal the API (7 exchanges, 716 equities, Pro 79)
+PASS  landing ar 390px: no sideways scroll
+PASS  landing ar 390px: no page errors
+PASS  page / → 200
+PASS  page /pricing → 200
+PASS  page /methodology → 200
+PASS  page /legal → 200
+PASS  page /legal/terms → 200
+PASS  page /legal/privacy → 200
+PASS  page /legal/refunds → 200
+PASS  page /legal/cookies → 200
+PASS  page /legal/ai-financial-disclaimer → 200
+PASS  page /ar → 200
+PASS  page /ar/pricing → 200
+PASS  page /ar/methodology → 200
+PASS  page /ar/legal → 200
+PASS  page /ar/legal/terms → 200
+PASS  page /ar/legal/privacy → 200
+PASS  page /ar/legal/refunds → 200
+PASS  page /ar/legal/cookies → 200
+PASS  page /ar/legal/ai-financial-disclaimer → 200
+PASS  all 45 internal links on the public pages resolve
+PASS  legal en terms: full text (4825 words), hash a54c4b0a7d65…
+PASS  legal ar terms: full text (4776 words)
+PASS  legal en privacy: full text (2941 words), hash b7a3e655b520…
+PASS  legal ar privacy: full text (2784 words)
+PASS  legal en refunds: full text (1285 words), hash 774a5290d51b…
+PASS  legal ar refunds: full text (1243 words)
+PASS  legal en cookies: full text (705 words), hash 54c6313fb963…
+PASS  legal ar cookies: full text (710 words)
+PASS  legal en ai-financial-disclaimer: full text (1307 words), hash 2653541a093a…
+PASS  legal ar ai-financial-disclaimer: full text (1428 words)
+
+Phase 6 done-when: all checks passed
+
+=== Phase 7 ===
+
+96 page views; 0 failure(s); 0 English string(s) in Arabic pages
+
+=== Arabic, signed out ===
+
+24 Arabic page view(s) signed out; 0 English string(s) outside the allow-list
+
+=== Arabic, signed in ===
+
+15 Arabic page view(s) signed in; 0 English string(s) outside the allow-list
+
+Summary
+  Phase 1: PASS
+  Phase 2: PASS
+  Phase 3: PASS
+  Phase 4: PASS
+  Phase 5: PASS
+  Phase 6: PASS
+  Phase 7: PASS
+  Arabic, signed out: PASS
+  Arabic, signed in: PASS
