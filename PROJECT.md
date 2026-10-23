@@ -40,6 +40,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - 2026-10-22 — The owner accepts the audit's BY DESIGN items 1–4: phones get a tab bar, not a sidebar; signed-out `/portfolio`, `/dashboards`, `/settings` answer 200 with a prompt; "Google" and "EN"/"English" may appear on Arabic pages; behind beta's gate "not signed in" stays 403.
 - 2026-10-22 — Copilot speed (7f) is accepted as by design (owner: "Try (e), then accept"): production keeps `56476948f5`, first words 8.6 s. Option (e), the first turn answering from the fetched data, is on `rebuild` (first words 5.3 s, target 5 s). Rejected: the text-first turn (`38452ea`, slower: 9.2 s / 28.7 s); for now a faster model (d) and pinning a host (c).
 - 2026-10-22 — Copilot answers are short and quote the data's own figures (at most five, under about 120 words, no ratios of its own); a refused instruction gets one sentence. Owner's option (b), after the model service turned wordier. Rejected for now: changing the model or pinning a host (owner's call).
+- 2026-10-23 — F-D (Tadawul disclosures from Argaam's market-wide list) is not built: Argaam shows the server a human check on that list even when logged in, and this project does not work around it. Owner's route 3; the patch stays in `docs/`. Rejected: route 1 (tested: 405), route 2 (the owner's computer reads the list; depends on Argaam's terms).
 
 ## 4. Autorun Policy
 - **Pre-approved:** creating and editing files in this repo on branch `rebuild`; running the project's checks and builds; read-only commands on the server over SSH (logs, `systemctl status`, `journalctl`, `sqlite3 -readonly`, listing and reading pipeline files); writing reports under `docs/`; committing on `rebuild`; screenshots with the built-in browser.
@@ -65,7 +66,7 @@ Older entries: `changelog-archive.md`.
 - Beta runs `38452ea553` (a text-first Copilot turn, measured slower: first words 9.2 s, full 28.7 s; not released) until its next release; `rebuild` is back on option (e) (`dbefc91`: first words 5.3 s, full 15.2 s on beta). Production keeps first words 8.6 s, accepted as by design (owner); its next release from `rebuild` carries option (e).
 - Goal 3 DONE: every audit item PASS or BY DESIGN with the owner's words (`docs/qa-beta-2026-10/reaudit-2026-10-22.md`); checkout proven in Moyasar test mode on beta, 13 of 13.
 - Goal 1 DONE: `rebuild` is on GitHub (`origin` = the owner's private `alphacouncil-static`, whose other branches hold the old site). Safety nets keep running on their own: backup copy daily at 09:00 Riyadh, monitor 13 ok, outside check every 5 min.
-- Goal 2: on the server since 2026-10-22: F-A, F-E, F-B, F-C (backups `.bak-20261022`); since 2026-10-23 12:28 UTC: F-F (`.bak-20261023`). Runbook "Pipeline fixes". First night (2026-10-23, full run): F-B, F-C, F-E gone; GASCO, AFG, Agility back; GULFNAV not (no readable source); `check-data-fixes` all passed (`vt_reason` 272 → 5); 675 of 691 price files (recount on the 2026-10-24 daily run). F-D (Step 19) built here, not on the server: Argaam answers 405 "Human Verification" to the server for the market-wide list, even logged in.
+- Goal 2: on the server since 2026-10-22: F-A, F-E, F-B, F-C (backups `.bak-20261022`); since 2026-10-23 12:28 UTC: F-F (`.bak-20261023`). Runbook "Pipeline fixes". First night (2026-10-23, full run): F-B, F-C, F-E gone; GASCO, AFG, Agility back; GULFNAV not (no readable source); `check-data-fixes` all passed (`vt_reason` 272 → 5); 675 of 691 price files (recount on the 2026-10-24 daily run). F-D (Step 19) not built (owner, route 3): Argaam answers 405 "Human Verification" to the server for the market-wide list, even logged in; the patch is kept in `docs/`. Tadawul disclosures stay stale (newest 2026-10-05).
 - Ownership and analysts in the published DB after the 10-23 full run: 672 and 356 tickers; F-F should keep them through daily nights (first check: 2026-10-24).
 - Waiting on the owner (re-tested 2026-10-22: `www` NXDOMAIN, no portrait files): the lawyer's advice (Step 7), the portrait files (Step 8), the `www` DNS record (Step 9).
 - Not done: advisor portraits are initials; no `www`; the lawyer has not reviewed the named advisors.
@@ -180,7 +181,7 @@ Older entries: `changelog-archive.md`.
 
 
 ## Goal 2 — Market data correct at the source
-- **Status:** IN PROGRESS (2026-10-23) — Steps 3–5 DONE; Step 6 PARTIAL (first night checked; price-file recount on the 2026-10-24 daily run; GULFNAV waits on the owner); Step 21 (F-F) PARTIAL: applied, checked after the 2026-10-24 daily run; Step 19 (F-D) AWAITING CHECKPOINT: route 1 failed (405 human check even when logged in), owner picks route 2 or 3.
+- **Status:** IN PROGRESS (2026-10-23) — Steps 3–5 DONE; Step 6 PARTIAL (first night checked; price-file recount on the 2026-10-24 daily run; GULFNAV waits on the owner); Step 21 (F-F) PARTIAL: applied, checked after the 2026-10-24 daily run; Step 19 (F-D) SUPERSEDED: not built, owner's route 3 (Argaam's 405 human check on the server even when logged in), so F-D is out of Done-when item 2.
 - **Share of project:** ~25%
 - **Goal:** The faults that only the pipeline can fix are fixed on the server, and the nightly data shows it.
 - **Done when:**
@@ -309,7 +310,8 @@ Older entries: `changelog-archive.md`.
   - *Stamp:* 2026-10-22; server pipeline `a38dc07` + fixes A (uncommitted on the server)
 
 ### Step 19 — Build F-D: Tadawul disclosures from Argaam's market-wide list
-- **Status:** AWAITING CHECKPOINT (2026-10-23) — built and dry-run on this computer; on the server the market-wide list answers HTTP 405 "Human Verification", **also inside the scraper's logged-in browser session** (route 1 tested once 2026-10-23: 405, 0 items; out). Owner decides between (2) the owner's computer reads the list daily and copies it to the server, after checking this fits the Argaam subscription terms, and (3) leave F-D unbuilt — recommended until (2) is confirmed allowed. Costs: part-2 report, "F-D dry run".
+- **Status:** SUPERSEDED (2026-10-23) — owner chose route 3: F-D is not built. Built and dry-run on this computer, but on the server Argaam's market-wide list answers HTTP 405 "Human Verification", also inside the scraper's logged-in browser session (route 1 tested once: out). The patch stays in `docs/pipeline-fix-fd-2026-10-22.patch` in case Argaam's terms or access change. Tadawul disclosures stay at 2026-10-05 or older; the app's light shows the gap.
+- **Checkpoint cleared (decision):** 2026-10-23 — owner in chat: "F-D (Step 19): route 3, leave it unbuilt for now. Keep the patch in docs/ in case Argaam's terms or access change."
 - **Checkpoint cleared (route only):** 2026-10-23 — owner in chat: "For F-D (Step 19), go with route 1: test once whether the scraper's logged-in browser session on the server gets the real disclosure list; if it does, build it, dry-run it, and show me before applying." The server change itself still needs the owner's approval after the dry run.
 - **Goal:** Tadawul tickers get current disclosures again, read from Argaam's market-wide disclosure list.
 - **Depends on:** 6 (the owner: after the other fixes have run one night)
@@ -599,7 +601,7 @@ Older entries: `changelog-archive.md`.
   - *Stamp:* 2026-10-22; beta `38452ea553`, production `56476948f5`, `rebuild` `dbefc91`
 
 ## Goal 4 — Launch: settled, checked, then paid
-- **Status:** AWAITING CHECKPOINT — Steps 7–9 each wait on the owner (re-tested 2026-10-23: `www` NXDOMAIN, no portrait files, no legal advice in chat); Step 10 waits on Goal 2 (Steps 6, 19, 21) and Steps 7–9 (Goal 3 is done); Step 18 waits on Step 10 and the owner's go-ahead.
+- **Status:** AWAITING CHECKPOINT — Steps 7–9 each wait on the owner (re-tested 2026-10-23: `www` NXDOMAIN, no portrait files, no legal advice in chat); Step 10 waits on Goal 2 (Steps 6 and 21) and Steps 7–9 (Goal 3 is done); Step 18 waits on Step 10 and the owner's go-ahead.
 - **Share of project:** ~30%
 - **Goal:** The advisors' names and texts follow the owner's legal advice, the six portraits are real, `www.alphacouncil.tech` works, a full launch check passes on production, and only then is Pro checkout open.
 - **Done when:**
@@ -671,7 +673,7 @@ Older entries: `changelog-archive.md`.
 ### Step 10 — Launch check on production
 - **Status:** NOT STARTED
 - **Goal:** One dated record shows every check passing on production after Goals 2, 3 and 4's changes, with billing still closed.
-- **Depends on:** 6, 7, 8, 9, 17, 19
+- **Depends on:** 6, 7, 8, 9, 17, 21 (19 superseded 2026-10-23)
 - **Reversibility:** reversible
 - **Autorun:** yes
 - **What this step is:** The last pass before the owner spends on advertising: every check script, the monitor and screenshots of the key pages, in one report.
@@ -714,4 +716,4 @@ Older entries: `changelog-archive.md`.
 - **KPPC (624, Boursa Kuwait), TAQA (ADX) and GULFNAV (DFM)** — Argaam has no page for KPPC, no TAQA bars after 2026-08-06, and no GULFNAV price after 2026-07-23 that the pipeline can read (its chart page lost the date box on 2026-10-23; the chart endpoint is empty for `C_7525`). Delisted or suspended? The owner may know; until then the app keeps showing them stale (amber). TAQA is also missed by the `[charts]` line, which goes by file age, not by the newest bar.
 
 ## 9. Next Up
-Goal 2: after the 2026-10-24 00:00 UTC daily run is published (from 05:00 UTC; daily runs end about 02:20), the price-file recount in Step 6 *Resume here* (≥ 679) and Step 21's ownership/analyst count (≥ 600 / ≥ 300); add both to "After the nightly run" in the part-2 report. Owner's answers still open: Step 19 route 2 or 3, and whether GULFNAV, KPPC and TAQA are suspended (Open Questions). Goal 4 waits on the owner (legal advice, portraits, `www`); then Step 10 (launch check) and Step 18 (open billing).
+Goal 2: after the 2026-10-24 00:00 UTC daily run is published (from 05:00 UTC; daily runs end about 02:20), the price-file recount in Step 6 *Resume here* (≥ 679) and Step 21's ownership/analyst count (≥ 600 / ≥ 300); add both to "After the nightly run" in the part-2 report. Owner's answer still open: whether GULFNAV, KPPC and TAQA are suspended (Open Questions). If both counts pass, Goal 2 is DONE except GULFNAV (record it per the owner's answer). Goal 4 waits on the owner (legal advice, portraits, `www`); then Step 10 (launch check) and Step 18 (open billing).

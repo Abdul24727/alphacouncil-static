@@ -336,6 +336,8 @@ Left for the owner: route 2 (the owner's computer reads the list) or route 3 (le
 Argaam checks this list for server traffic even when logged in, so route 2 should be checked
 against the owner's Argaam subscription terms first.
 
+**Owner's decision (2026-10-23): route 3.** F-D is not built; the patch stays in `docs/pipeline-fix-fd-2026-10-22.patch` in case Argaam's terms or access change.
+
 **Check after it is built** (replaces "Aramco within 7 days", which depends on Aramco publishing):
 the night after it is applied, `[disclosures]` in the run's log shows `0 failed`, and for each of
 three tickers the list named in the 7 days before the run, the API's newest disclosure has that
