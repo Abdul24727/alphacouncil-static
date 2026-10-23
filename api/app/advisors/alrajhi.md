@@ -7,7 +7,7 @@ short_ar: الراجحي
 initials: AR
 lens_en: Islamic finance and the real economy
 lens_ar: التمويل الإسلامي والاقتصاد الحقيقي
-portrait:
+portrait: alrajhi.webp
 recuse: 1120_TADAWUL, 8230_TADAWUL, 4340_TADAWUL
 ---
 

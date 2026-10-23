@@ -5,7 +5,7 @@ name_ar: رئيس الجلسة
 initials: CH
 lens_en: Runs the rounds, scores the room
 lens_ar: يدير الجولات ويجمع الدرجات
-portrait:
+portrait: chair.webp
 ---
 
 # The Chair

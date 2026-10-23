@@ -605,7 +605,7 @@ Older entries: `changelog-archive.md`.
   - *Stamp:* 2026-10-22; beta `38452ea553`, production `56476948f5`, `rebuild` `dbefc91`
 
 ## Goal 4 — Launch: settled, checked, then paid
-- **Status:** IN PROGRESS (2026-10-23) — order changed by the owner: 8 (portraits) and 9 (`www`: DONE 2026-10-23) → 10 (launch check; interim run passed signed out) → 7 (the lawyer reviews the finished site) → 18 (billing). Step 8 waits on the owner's seven images from ChatGPT (prompts in `docs/advisors-portrait-prompts.md`).
+- **Status:** IN PROGRESS (2026-10-23) — order changed by the owner: 8 (portraits) and 9 (`www`: DONE 2026-10-23) → 10 (launch check; interim run passed signed out) → 7 (the lawyer reviews the finished site) → 18 (billing). Step 8: the portraits are in the app on `rebuild`; production after the next release (owner's go-ahead).
 - **Share of project:** ~30%
 - **Goal:** The advisors' names and texts follow the owner's legal advice, the six portraits are real, `www.alphacouncil.tech` works, a full launch check passes on production, and only then is Pro checkout open.
 - **Done when:**
@@ -641,7 +641,7 @@ Older entries: `changelog-archive.md`.
 - **Outcome:** _(empty until worked)_
 
 ### Step 8 — Put the six real portraits in
-- **Status:** AWAITING CHECKPOINT (2026-10-23) — the owner generates the seven images in ChatGPT with `docs/advisors-portrait-prompts.md` and sends the files (owner: "If I have enough credit … do it [on Higgsfield] … Best models. If I don't, would use ChatGPT"; Higgsfield had 1.64 credits: Nano Banana Pro 2 credits a portrait, GPT Image 2.5 0.25). The owner's screenshot of the reference style refines the prompts' style line.
+- **Status:** PARTIAL (2026-10-23) — the owner's seven images (ChatGPT) are in the app on `rebuild` and checked locally in EN/AR at 1440 and 390 px, with the initials fallback proven; on production after the next release (beta → production, the owner's go-ahead).
 - **Goal:** The advisors' room shows six cartoon portraits in one style, with initials only as a fallback.
 - **Depends on:** nothing (until 2026-10-23: Step 7; the lawyer now reviews the portraits as they are, and may ask for changes)
 - **Reversibility:** reversible
@@ -654,8 +654,17 @@ Older entries: `changelog-archive.md`.
 - **Defaults:** a file is missing or unusable → keep that advisor's initials and list it; files are larger than ~150 KB → convert to WebP at the displayed size times two.
 - **Done when:**
   - [ ] six portraits show on production in English and Arabic at 1440 and 390 px — check: screenshots
-  - [ ] removing one file in a local build shows that advisor's initials — check: local screenshot
-- **Outcome:** _(empty until worked)_
+  - [x] removing one file in a local build shows that advisor's initials — check: local screenshot
+- **Outcome:** (partial — waiting on a release)
+  - *Done:* the owner's seven 1024 px images (ChatGPT, from `docs/advisors-portrait-prompts.md`) → 512 × 512 WebP, 19–23 KB each, in `web/public/advisors/` (`buffett`, `lynch`, `dalio`, `marks`, `alwaleed`, `alrajhi`, `chair`); originals kept in `docs/advisors-portraits/originals/`. Each seat file `api/app/advisors/<id>.md` names its file (`portrait: <id>.webp`). `SeatDisc` (`web/src/components/debate/parts.tsx`) falls back to the initials when a named image fails to load. `test_debate.py` now checks each named portrait is the seat's own file and exists. API tests 162 passed; `tsc` and eslint clean; `next build` OK (93 pages).
+  - *Not done:* production (needs the release).
+  - *Touched:* `web/public/advisors/*.webp`, `web/public/advisors/README.md`, `api/app/advisors/*.md` (7), `web/src/components/debate/parts.tsx`, `api/tests/test_debate.py`, `docs/advisors-portraits/originals/`, `docs/screenshots/portraits-2026-10-23/`.
+  - *Verification:* (1) NOT MET until the release; locally (dev server, signed out, `/t/2222/advisors`): all seven portraits in EN and AR at 1440 and 390, no sideways scroll (`docs/screenshots/portraits-2026-10-23/local/`). (2) VERIFIED — with the browser answering 404 for `marks.webp`, Marks's seat shows "HM" and the others keep their portraits (`…/fallback-marks-missing/seats-crop.en.1440.png`).
+  - *Rulings:* (a) 512 px, not the brief's 1024 (README: at least 512; the room draws 22–66 px, and next/image resizes per screen). (b) The fallback test blocks the file in the browser: moving the file away was not a test, because the dev server kept serving a resized copy it already had. Cost: none in production, where a removed file keeps showing until the image cache expires. (c) The images lean realistic (3D-rendered faces) rather than cartoonish; kept as the owner sent them, for the lawyer's review (Step 7).
+  - *Failed approaches:* the app's preview tool reads `.claude/launch.json` from the session's original folder, not this repo: the servers were started from the shell instead (`uv run uvicorn …` port 8000, `npm run dev -- -p 3100`).
+  - *Debt:* N/A
+  - *Resume here:* with the owner's go-ahead: release beta (`scripts/deploy-staging.sh`) then production (`scripts/deploy-production.sh`); this release also carries Copilot option (e) (`copilot_first_turn=answer`, beta 2026-10-22: first words 5.3 s, full 15.2 s). Then screenshots of `/t/2222/advisors` on production in EN/AR at 1440 and 390 (`node <scratch>/route_shots.cjs https://alphacouncil.tech <dir> /t/2222/advisors advisors`, or `check-advisors.mjs VISITOR=1`).
+  - *Stamp:* 2026-10-23; on `rebuild` (this commit)
 
 ### Step 9 — Make `www.alphacouncil.tech` work
 - **Status:** DONE (2026-10-23) — `www` A record added in Cloudflare (DNS only), certificate expanded to `www`, and `www` answers 301 to `https://alphacouncil.tech/`. nginx needed no change (its config already named and redirected `www`).

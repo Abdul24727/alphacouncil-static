@@ -7,7 +7,7 @@ short_ar: الوليد
 initials: AW
 lens_en: Global brands bought in a crisis
 lens_ar: علامات كبرى تُشترى وقت الأزمات
-portrait:
+portrait: alwaleed.webp
 recuse: 4280_TADAWUL
 ---
 

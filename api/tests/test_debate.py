@@ -2,6 +2,7 @@
 
 import json
 import re
+from pathlib import Path
 
 import pytest
 from sqlalchemy import select
@@ -53,9 +54,15 @@ def test_every_seat_file_has_its_sections_and_says_it_is_simulated():
         assert set(roster.ADVISOR_SECTIONS) <= set(a.sections)
         who = a.sections["Who they are"]
         assert "simulated advisor" in who and "does not speak for" in who
-        assert a.info.name_ar and a.info.lens_ar and len(a.info.initials) == 2 and a.info.portrait is None
+        assert a.info.name_ar and a.info.lens_ar and len(a.info.initials) == 2
     chair = roster.chair()
     assert set(roster.CHAIR_SECTIONS) <= set(chair.sections) and chair.info.role == "chair"
+    # Each named portrait is the seat's own file, and it is in web/public/advisors (served at /advisors/<file>).
+    public = Path(__file__).resolve().parents[2] / "web" / "public"
+    for seat in [*roster.advisors("buffett,lynch,dalio,marks,alwaleed,alrajhi"), chair]:
+        if seat.info.portrait:
+            assert seat.info.portrait == f"/advisors/{seat.info.id}.webp"
+            assert (public / seat.info.portrait.lstrip("/")).is_file(), seat.info.portrait
 
 
 def test_six_seats_and_seats_tied_to_a_company_sit_out(room, monkeypatch):

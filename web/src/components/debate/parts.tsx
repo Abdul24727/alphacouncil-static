@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { splitText, type Flags, type SeatInfo, type Source } from "@/lib/debate";
 
 export const seatName = (s: SeatInfo | undefined, locale: string) => (s ? (locale === "ar" ? s.name_ar : s.name_en) : "");
@@ -24,18 +24,21 @@ export function useSeats(seats: SeatInfo[] | undefined) {
 
 /**
  * A seat's portrait slot: the owner's caricature when the seat file names one
- * (web/public/advisors), otherwise the seat's initials on a graphite disc.
+ * (web/public/advisors) and it loads, otherwise the seat's initials on a graphite disc.
  */
 export function SeatDisc({ seat, size = 56, active = false }: { seat: SeatInfo | undefined; size?: number; active?: boolean }) {
   const ring = active ? "border-signal" : seat?.role === "chair" ? "border-muted/60 border-dashed" : "border-line";
+  // A named file that fails to load (missing, renamed) falls back to the initials.
+  const [failed, setFailed] = useState<string | null>(null);
+  const portrait = seat?.portrait && seat.portrait !== failed ? seat.portrait : null;
   return (
     <span
       aria-hidden
       className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border bg-panel-raised ${ring}`}
       style={{ width: size, height: size }}
     >
-      {seat?.portrait ? (
-        <Image src={seat.portrait} alt="" width={size} height={size} className="size-full object-cover" />
+      {portrait ? (
+        <Image src={portrait} alt="" width={size} height={size} className="size-full object-cover" onError={() => setFailed(portrait)} />
       ) : (
         <span className="num text-text-soft" style={{ fontSize: Math.round(size * 0.3) }}>
           {seat?.initials ?? ""}

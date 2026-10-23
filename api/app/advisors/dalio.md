@@ -5,7 +5,7 @@ name_ar: راي داليو
 initials: RD
 lens_en: Cycles, scenarios and balance
 lens_ar: الدورات والسيناريوهات والتوازن
-portrait:
+portrait: dalio.webp
 ---
 
 # Ray Dalio (simulated advisor)

@@ -5,7 +5,7 @@ name_ar: هوارد ماركس
 initials: HM
 lens_en: Risk, cycles and what is priced in
 lens_ar: المخاطر والدورات وما يعكسه السعر
-portrait:
+portrait: marks.webp
 ---
 
 # Howard Marks (simulated advisor)

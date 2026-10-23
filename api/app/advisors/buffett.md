@@ -5,7 +5,7 @@ name_ar: وارن بافيت
 initials: WB
 lens_en: Durable advantage at a sensible price
 lens_ar: ميزة دائمة بسعر معقول
-portrait:
+portrait: buffett.webp
 ---
 
 # Warren Buffett (simulated advisor)

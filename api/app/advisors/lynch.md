@@ -5,7 +5,7 @@ name_ar: بيتر لينش
 initials: PL
 lens_en: Know the story, check the numbers
 lens_ar: افهم القصة وتحقق من الأرقام
-portrait:
+portrait: lynch.webp
 ---
 
 # Peter Lynch (simulated advisor)
