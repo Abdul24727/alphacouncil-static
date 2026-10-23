@@ -416,3 +416,21 @@ The baseline (679) was a daily run; the next daily run (2026-10-24) is the like-
 
 **Also seen:** TAQA_ADX's file is rewritten every night, but its newest bar is still `06/08/2026`
 (Argaam's data ends there), so the chart-failure line, which goes by file age, does not list it.
+
+### GULFNAV, TAQA and KPPC (2026-10-23, public sources and Argaam's pages, read-only)
+
+- **GULFNAV is not suspended: it was renamed Etihad Energy Holding** (DFM ticker ETIHADENERGY) after
+  the 19 June 2026 close, on completing its acquisition of Brooge (Observer Dubai, UAE Stock Talks;
+  Investing.com shows it trading at 3.02 AED on 2026-10-01). Argaam's old `gulf-navigation-holding`
+  pages have no prices after 2026-07-23 and no date box; `/ae-ar/companies/dfm/etihad-energy-holding/`
+  answers 200 for overview, profile and chart, with `companyID 6018`, the date box, and table rows up
+  to 2026/10/23. **Fix F-A2** (`docs/pipeline-fix-fa2-2026-10-23.patch`, work copy `e261fb6`): GULFNAV's
+  two page paths in `tickers.csv` point at `etihad-energy-holding`; CRLF kept; the ticker key stays
+  `GULFNAV`. `git apply --check` passes on the server's tree (checked only). Not applied: it waits on
+  the owner. The app still names it Gulf Navigation (names come from the platform's CSVs), which is a
+  separate display change.
+- **TAQA was delisted from ADX**, effective 2026-09-01, after Abu Dhabi Power Corporation took 100 %
+  (AGBI, The National, Khaleej Times). Its last trading day was 2026-08-06 at 2.66 AED, which is our
+  last bar exactly. Nothing to fix in the pipeline; whether the app keeps, marks or drops it is the
+  owner's call.
+- **KPPC (624, التخصيص):** no public notice found; still open.

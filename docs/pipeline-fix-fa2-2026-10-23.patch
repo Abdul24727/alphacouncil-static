@@ -1,0 +1,31 @@
+From e261fb6b31489163143ab6f00a2ec4fad1d89069 Mon Sep 17 00:00:00 2001
+From: Abdulaziz Al-Tamimi <attmimi.abdul@gmail.com>
+Date: Fri, 23 Oct 2026 15:51:11 +0300
+Subject: [PATCH] F-A2: GULFNAV's Argaam pages are now Etihad Energy Holding's
+
+Gulf Navigation was renamed Etihad Energy Holding (DFM ticker ETIHADENERGY) after
+19 June 2026. Argaam's old gulf-navigation-holding pages have no prices after
+2026-07-23 and no date box; etihad-energy-holding (companyID 6018) has both.
+Only the two page paths in tickers.csv change; the ticker key stays GULFNAV.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ argaam/tickers.csv | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/argaam/tickers.csv b/argaam/tickers.csv
+index 49b8f8a..10894b9 100644
+--- a/argaam/tickers.csv
++++ b/argaam/tickers.csv
+@@ -407,7 +407,7 @@ EMAAR,DFM,DFM,إعمار,/ae-ar/companies/dfm/emaar/overview,/ae-ar/companies/df
+ EMAARDEV,DFM,DFM,إعمار للتطوير,/ae-ar/companies/dfm/emaar-development/overview,/ae-ar/companies/dfm/emaar-development/profile,,
+ EMPOWER,DFM,DFM,إمباور,/ae-ar/companies/dfm/empower/overview,/ae-ar/companies/dfm/empower/profile,,
+ ERC,DFM,DFM,الإمارات ريم للاستثمار,/ae-ar/companies/dfm/emirates-reem-investment/overview,/ae-ar/companies/dfm/emirates-reem-investment/profile,,
+-GULFNAV,DFM,DFM,الخليج للملاحة,/ae-ar/companies/dfm/gulf-navigation-holding/overview,/ae-ar/companies/dfm/gulf-navigation-holding/profile,,
++GULFNAV,DFM,DFM,الخليج للملاحة,/ae-ar/companies/dfm/etihad-energy-holding/overview,/ae-ar/companies/dfm/etihad-energy-holding/profile,,
+ IFA,DFM,DFM,ايفا,/ae-ar/companies/dfm/ifa/overview,/ae-ar/companies/dfm/ifa/profile,554,
+ ITHMR,DFM,DFM,الإثمار القابضة,/ae-ar/companies/dfm/ithmaar-holding/overview,/ae-ar/companies/dfm/ithmaar-holding/profile,,
+ MASQ,DFM,DFM,المشرق,/ae-ar/companies/dfm/mashreq/overview,/ae-ar/companies/dfm/mashreq/profile,435,
+-- 
+2.56.0.windows.2
+
