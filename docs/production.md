@@ -498,12 +498,18 @@ of the data. Code: `api/app/debate/`, `api/app/routers/debate.py`, `web/src/comp
   bin Talal, Abdullah bin Sulaiman Al-Rajhi and the Chair; the README there says how to swap an advisor
   (`DEBATE_ADVISORS`). A seat sits out sessions about companies its person chairs (`recuse`): Alwaleed for
   Kingdom Holding (4280); Al-Rajhi for Al Rajhi Bank (1120), Al Rajhi Takaful (8230) and Al Rajhi REIT (4340).
-  The Chair's file holds the stage instructions and the scoring scale. Portraits: initials on a graphite disc
-  until the owner's caricatures go into `web/public/advisors/` (README there) and are named in the seat files;
-  `docs/advisors-portraits-brief.md` is the brief for the illustrator.
+  The Chair's file holds the stage instructions and the scoring scale. Portraits: the owner's seven caricatures
+  are live since `a2e2c318bc` (2026-10-23), in `web/public/advisors/` and named in the seat files; a file that
+  fails to load falls back to the seat's initials on a graphite disc. `docs/advisors-portraits-brief.md` is the
+  brief for the illustrator.
 - **Stages**: Brief (Chair) → Openings (advisors at once) → Fault lines (Chair) → Debate (`DEBATE_ROUNDS`,
   advisors at once) → Vote (advisors score each option 0–10) → Verdict (Chair). The averages are computed by
-  the API, never by a model. Every seat reads the same data pack: the Copilot's database tools for the
+  the API, never by a model.
+  **Changing (not released):** branch `rebuild` (`b8dc9c7`, PROJECT.md Step 23) replaces this with three
+  rounds and no scores — Brief (the Chair also picks `choice` or `open`) → Answers (each advisor's own full
+  answer) → Fault lines → Challenges → Final word (stage id `final`, where `vote` sits today) → The answer
+  (the Chair's complete answer). It ships with Step 22's look, after the owner approves both on beta.
+  Sessions saved in this scored format keep replaying as they are, vote table and averages included. Every seat reads the same data pack: the Copilot's database tools for the
   stock (overview, fundamentals, dividends, council, peers, news, 1- and 5-year price summaries), tagged
   P1–P8. Each line is checked with the Copilot's number checks: untagged figures get their dataset's tag,
   figures found nowhere in the data are marked on screen, and sentences that read as advice (buy, sell,
