@@ -42,6 +42,7 @@ Stack, data facts, Next.js patterns and standing rules: `CLAUDE.md`. Servers, re
 - 2026-10-22 — Copilot answers are short and quote the data's own figures (at most five, under about 120 words, no ratios of its own); a refused instruction gets one sentence. Owner's option (b), after the model service turned wordier. Rejected for now: changing the model or pinning a host (owner's call).
 - 2026-10-23 — F-D (Tadawul disclosures from Argaam's market-wide list) is not built: Argaam shows the server a human check on that list even when logged in, and this project does not work around it. Owner's route 3; the patch stays in `docs/`. Rejected: route 1 (tested: 405), route 2 (the owner's computer reads the list; depends on Argaam's terms).
 - 2026-10-23 — The lawyer's review comes last: after the portraits, `www` and the launch check, so the lawyer tests the finished site and advises on the advisors, the portraits and the legal papers (terms, privacy) together; before billing opens, because the permit and Moyasar questions decide how Pro may be sold. Cost if wrong: portraits or texts made before the advice may have to be redone. Rejected: advice first (the owner: the lawyer needs a working site to review).
+- 2026-10-23 — The advisors' room gives full answers in three rounds (owner: "Go with A: round 1 independent full answers written blind, round 2 challenges, round 3 short final positions with what changed, then the Chair writes the complete answer. Options only when the question asks to choose."). Rejected: today's options-and-votes format with a new look only (B); one round and the Chair (C). Built in Step 23.
 
 ## 4. Autorun Policy
 - **Pre-approved:** creating and editing files in this repo on branch `rebuild`; running the project's checks and builds; read-only commands on the server over SSH (logs, `systemctl status`, `journalctl`, `sqlite3 -readonly`, listing and reading pipeline files); writing reports under `docs/`; committing on `rebuild`; screenshots with the built-in browser.
@@ -605,7 +606,7 @@ Older entries: `changelog-archive.md`.
   - *Stamp:* 2026-10-22; beta `38452ea553`, production `56476948f5`, `rebuild` `dbefc91`
 
 ## Goal 4 — Launch: settled, checked, then paid
-- **Status:** IN PROGRESS (2026-10-23) — order changed by the owner: 8 (portraits) and 9 (`www`: DONE 2026-10-23) → 10 (launch check; interim run passed signed out) → 7 (the lawyer reviews the finished site) → 18 (billing). Step 8 DONE (portraits live, release `a2e2c318bc`).
+- **Status:** IN PROGRESS (2026-10-23) — order (owner): 8 DONE (portraits live, `a2e2c318bc`), 9 DONE (`www`), then 22 (the room's look: waits on the owner's transparent and mouth-open images) with 23 (full answers in three rounds: can start now), released together after the owner approves on beta → 10 (launch check; interim run passed signed out) → 7 (the lawyer reviews the finished site) → 18 (billing).
 - **Share of project:** ~30%
 - **Goal:** The advisors' names and texts follow the owner's legal advice, the six portraits are real, `www.alphacouncil.tech` works, a full launch check passes on production, and only then is Pro checkout open.
 - **Done when:**
@@ -618,7 +619,7 @@ Older entries: `changelog-archive.md`.
 - **Reversibility:** reversible (DNS and certificate: costly; opening billing: costly — whoever pays is owed their month)
 - **Autorun:** no — checkpoint: human-action (portrait files or the owner's go-ahead to make them, the lawyer's advice) and decision (opening billing, Step 18)
 - **Consumes:** `docs/advisors-portraits-brief.md` (the illustrator's brief); `api/app/advisors/*.md` (the six advisors and the Chair); `docs/qa-beta-2026-10/reaudit-<date>.md` (Goal 3).
-- **Steps:** in order 8, 9, 22, 10, 7, 18
+- **Steps:** in order 8, 9, 22 with 23, 10, 7, 18
 - **Goal outcome:** _(empty until the goal is worked)_
 
 ### Step 7 — The lawyer reviews the finished site; apply the advice
@@ -684,6 +685,22 @@ Older entries: `changelog-archive.md`.
   - [ ] released to production with the owner's go-ahead — check: the release log
 - **Outcome:** _(empty until worked)_
 
+### Step 23 — The advisors' room: full answers in three rounds
+- **Status:** NOT STARTED — owner's decision 2026-10-23 (Decisions). Built with Step 22 (the look) and released together.
+- **Goal:** Every session gives a fully rounded answer: independent full answers, a round of challenges, short final positions, and the Chair's complete answer; options only when the question asks to choose.
+- **Depends on:** nothing (Step 22 shares the UI files: build them in one branch of work, one release).
+- **Reversibility:** reversible (saved sessions in the old format must still replay)
+- **Autorun:** yes for building and testing here and on beta; no for production (the owner's go-ahead for the release, as always)
+- **What this step is:** Today (`api/app/debate/engine.py` `run`, stages `brief`, `openings`, `faultlines`, `debate`, `vote`, `verdict`; prompts per stage in `api/app/advisors/chair.md` and each seat's file): the Chair frames 2–4 options; R1 openings 80–140 words, each with a `lean`; the Chair's fault lines; R2 replies 60–120 words; R3 0–10 scores per option (`count_votes`); the Chair's verdict. New: **brief** — the question restated, `mode` = `choice` (the question asks to choose: 2–4 options) or `open` (no options), focus items; **R1 answers** — each advisor's complete answer from the data pack and their own method (about 250–400 words, cited figures, headline), written blind (the round already runs in parallel: keep it so no advisor sees another's); **fault lines** — unchanged; **R2 challenges** — each answers the one answer they disagree with most, with the data, and may concede a point; **R3 final word** — 2–3 sentences: final position, what changed and why (or nothing), what data would change it, `lean` only in `choice` mode (no scores); **the Chair's answer** — the complete answer (about 200–350 words): where the room agrees, where it splits and why, what the data cannot tell; in `choice` mode it says which reading the room favours. Never buy/sell/hold advice (the existing rule stays, and `checks.py` keeps checking every figure against the data pack).
+- **Where:** `api/app/debate/engine.py` (shapes, `MAX_TOKENS`, a new stage id `final` in place of `vote` for new sessions), `checks.py`, `standin.py`, `store.py` (old sessions with `vote` still load), `api/app/advisors/*.md` (stage sections), `api/app/routers/debate.py`; `web/src/lib/debate.ts` (`STAGES`, `lineOf`), `web/src/components/debate/*` (stage names: Brief · Answers · Fault lines · Challenges · Final word · The answer; the live caption shows the headline and the first sentences, the transcript the full answer), `web/messages/{en,ar}.json`; `api/tests/test_debate.py`, `web/src/lib/debate.test.ts`, `web/scripts/check-advisors.mjs`.
+- **How:** keep stage ids where the meaning holds (`brief`, `openings`, `faultlines`, `debate`, `verdict`) so Past sessions keep working; add `final`; render old `vote` data as before. Prompts change in the seat files, not in code. Measure a full session's time and cost on beta (today about 1 minute) and report them.
+- **Defaults:** a question that is a choice ("A or B?", "should I…") → `choice` with the options it names; otherwise `open`; an advisor's answer over the length → keep it, flag it in the check, do not cut text; a session longer than ~3 minutes on beta → shorten R1 to 200–300 words before release and say so.
+- **Done when:**
+  - [ ] API tests pass, including new ones for `open` and `choice` sessions and an old saved session replaying — check: `uv run pytest -q`
+  - [ ] a live session on beta in each mode (EN and AR) shows R1 answers, R2 challenges, R3 final words with "what changed", and the Chair's complete answer; no buy/sell words; every figure checked — check: `check-advisors.mjs` on beta and screenshots
+  - [ ] the owner approves on beta, then production gets it with the owner's go-ahead — check: the release log
+- **Outcome:** _(empty until worked)_
+
 ### Step 9 — Make `www.alphacouncil.tech` work
 - **Status:** DONE (2026-10-23) — `www` A record added in Cloudflare (DNS only), certificate expanded to `www`, and `www` answers 301 to `https://alphacouncil.tech/`. nginx needed no change (its config already named and redirected `www`).
 - **Checkpoint cleared:** 2026-10-23 — owner in chat: "for the DNS, can you walk me through it or set it up? And I just click the important buttons that you are not allowed to do. If you are allowed to do it all, then go ahead." (covers the record, the certificate and the redirect; the owner signs in to Cloudflare).
@@ -715,7 +732,7 @@ Older entries: `changelog-archive.md`.
 ### Step 10 — Launch check on production
 - **Status:** IN PROGRESS (2026-10-23) — interim run: every signed-out check passes on production (`docs/launch-check-2026-10-23.md`); the real run waits on Steps 7–9, the owner's signed-in run, and Goal 2's last checks.
 - **Goal:** One dated record shows every check passing on production after Goals 2, 3 and 4's changes, with billing still closed.
-- **Depends on:** 6, 8, 9, 17, 21, 22 (19 superseded 2026-10-23; 7 now comes after this step)
+- **Depends on:** 6, 8, 9, 17, 21, 22, 23 (19 superseded 2026-10-23; 7 now comes after this step)
 - **Reversibility:** reversible
 - **Autorun:** yes
 - **What this step is:** The last pass before the owner spends on advertising: every check script, the monitor and screenshots of the key pages, in one report.
@@ -766,7 +783,5 @@ Older entries: `changelog-archive.md`.
 - **KPPC (624, Boursa Kuwait)** — Argaam has no page for it; no public notice found. Delisted or suspended? The owner may know; until then the app shows it stale (amber).
 - **Watch: one-off chart timeouts** — 4210, 4250, 4290 timed out in the same minute on 2026-10-23 (no retry in the TradingView fetch, `main_patched…:2524`). Once in the two nights on disk; propose a retry only if it recurs.
 
-- **The room's format (owner, 2026-10-23, with Step 22)** — the owner wants the council to give fully rounded, researched, independent answers rather than multiple choice, and asks whether rounds raise the quality. Today: the Chair frames 2–4 options, Round 1 openings (written in parallel), Round 2 debate, Round 3 votes 0–10 per option, then the Chair's verdict. Recommended (A): keep three rounds but change what they produce — R1 each advisor's full, independent answer written blind; R2 each challenges the answer they disagree with most and may concede; R3 a short final position with what changed and what data would change it (no 0–10 votes); the Chair writes the complete answer (agreement, splits and why, what the data cannot tell), framing options only when the question asks to choose. Alternatives: (B) keep today's format, change only the look; (C) one round, then the Chair. Not advice in any format (the lawyer's question (b), Step 7).
-
 ## 9. Next Up
-Goal 2: after the 2026-10-24 00:00 UTC daily run is published (from 05:00 UTC; daily runs end about 02:20), the price-file recount in Step 6 *Resume here* (≥ 679), GULFNAV's newest bar 2026/10/23 (F-A2), and Step 21's ownership/analyst count (≥ 600 / ≥ 300); add them to "After the nightly run" in the part-2 report. If all pass, Goal 2 is DONE (KPPC and TAQA have no source: TAQA delisted, KPPC open with the owner). Goal 4 waits on the owner (legal advice, portraits, `www`); then Step 10 (launch check) and Step 18 (open billing).
+Goal 2: after the 2026-10-24 00:00 UTC daily run is published (from 05:00 UTC), the price-file recount in Step 6 *Resume here* (≥ 679), GULFNAV's newest bar 2026/10/23 (F-A2), and Step 21's ownership/analyst count (≥ 600 / ≥ 300); add them to "After the nightly run" in the part-2 report; if all pass, Goal 2 is DONE. Then Goal 4, Step 23: change the debate engine's rounds (`api/app/debate/engine.py` `run`, the stage sections of `api/app/advisors/*.md`), then the web stages; Step 22 when the owner's images arrive.
