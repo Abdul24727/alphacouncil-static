@@ -541,3 +541,40 @@ with no "why this is missing" fallback left. (The same check run a few hours ear
 **Not fixed, and not fixable from Argaam** (owner's calls, carried out of this goal): KPPC (624) has
 no Argaam page at all; TAQA was delisted from ADX on 2026-09-01, so its last bar (2026-08-06) is
 correct; Tadawul disclosures stay stale because F-D was not built (owner's route 3).
+
+## What the owner decided about the three that could not be fixed (2026-10-24)
+
+The pipeline side of this audit is finished; these three were left as the owner's calls, and they
+answered them the same day.
+
+**TAQA (ADX) and KPPC (624, Boursa Kuwait) are dropped from the universe**, not marked on the stock
+page. The app's only vocabulary for a listing like these was an amber price with its last date, which
+reads as our data being late rather than as the company having gone; the owner chose dropping over
+adding a "delisted" marker (new UI, which "fully built" excludes). They are listed in
+`api/app/data/not_listed.json` with status, date, last bar, note and sources, and `api/app/universe.py`
+leaves them out: gone from search, the screener, markets, the Copilot and the advisors' room. The app
+now serves **714** of the pipeline's 716 rows. Nothing is deleted — the pipeline keeps writing their
+files, and removing an entry brings the listing back on the next reload (the file's own mtime triggers
+it). KPPC is recorded as `unconfirmed`, not `delisted`: no source was ever found for why it stopped,
+and the owner did not know either, so if it was only suspended and returns, its entry comes out.
+
+Checked before dropping: production holds **9 holdings, 0 alerts and 3 advisors' sessions in all, none
+of them on either listing**, so no member's saved data changes. (A holding in a dropped listing would
+keep its database row and simply stop being shown, `api/app/routers/portfolio.py`.)
+
+**GULFNAV shows its new name in both languages.** Gulf Navigation Holding became Etihad Energy Holding
+PJSC, in Arabic **اتحاد إنيرجي القابضة** — a transliteration of "Energy", not a translation, which is
+why it is recorded from sources (Al Khaleej 2026-04-27 and 2026-06-16, Al Bayan, Zawya's Arabic
+release) rather than derived. The English name goes in `names.SLUG_NAME_OVERRIDES`, the Arabic in the
+new `names.NAME_AR_OVERRIDES` (the Arabic name otherwise comes from the old pipeline's CSV, which this
+project does not edit). **The ticker key and symbol stay GULFNAV**: they are the app's primary key for
+the listing, in URLs, saved portfolios, alerts and past advisors' sessions, and DFM's own ETIHADENERGY
+would break all of them for no gain.
+
+**One defect found while checking this.** Dropping a listing routes its URL into the stock page's
+unknown-ticker path, and that path rendered the API's raw 404 detail as the page's heading: `/t/TAQA`
+read "Unknown ticker: TAQA" — an English server string, shown on Arabic pages too. It was there for any
+mistyped ticker before this change; the drop made it reachable on two real URLs. The header now shows
+the page's own wording for a 404 (`stock.unknown`: "Unknown ticker" / "رمز غير معروف") and keeps the
+API's words for every other failure. Checked in both languages at 1440 and 390 px
+(`docs/screenshots/not-listed-2026-10-24/`).
