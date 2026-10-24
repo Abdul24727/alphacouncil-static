@@ -70,9 +70,12 @@ made from are beside them in `docs/advisors-portraits/originals/`. That PNG fold
 The Chair needs no mouth-open image: it is a gavel, and a seat without one simply stays still while it
 writes (Step 22's default).
 
-## Prompt 1 — background removed (seven times, one per seat)
+## Prompt 1 — background removed (seven times, one per seat) — ⛔ SUPERSEDED 2026-10-25
 
-Attach the seat's existing image, then:
+**Do not use this.** The owner is running all seven through a background remover instead, which cannot
+alter a face and handles the black agal a colour key could not (see "Which tool for which half" below).
+Kept only in case the portraits are ever regenerated from scratch, when a model would be making them
+anyway. Attach the seat's existing image, then:
 
 > Remove the background from this image completely, so it is fully transparent (PNG with an alpha
 > channel). Keep the character exactly as it is: same face, same expression, same pose, same clothing,
@@ -115,6 +118,11 @@ and goes to beta for your approval.
 
 ## Which tool for which half (tested 2026-10-25)
 
+**Decided 2026-10-25 (owner): all seven cut-outs go through a background remover.** Claude's colour-key
+attempt is not used and its output has been deleted, so there is only one set of cut-outs to keep track
+of. The trial sheet stays below as the reason for the choice. What Claude is waiting for is at the end
+of this file.
+
 The two halves are not the same kind of job, and the same tool is wrong for both.
 
 ### The seven cut-outs: not a generative job at all
@@ -156,3 +164,25 @@ mouth, or the face will flicker twice a second when they swap.
 If the owner would rather not generate anything: the room already works without talk images. A seat with
 no `portrait_talk` simply stays still while it writes, and Step 22 still gains the large busts and the
 full names. Mouth movement is the part that needs the six images.
+
+---
+
+## What Claude is waiting for (2026-10-25)
+
+Three things. Step 22 cannot start without the first and third; the second only decides whether mouths move.
+
+1. **Seven cut-outs** — each of `buffett`, `lynch`, `dalio`, `marks`, `alwaleed`, `alrajhi`, `chair`
+   through a background remover. PNG with real transparency, square, 1024 × 1024 as they come out (the
+   sources in `png-for-chatgpt/` are that size). Any file name that makes the seat obvious is fine —
+   `buffett-cut.png` is ideal, `buffett-removebg-preview.png` is fine too; Claude renames them.
+   **Check the two hard ones before sending:** Alwaleed's and Al-Rajhi's black agal, and Al-Rajhi's dark
+   bisht, are what a colour key could not do. Hold the result over a bright background and make sure the
+   band is solid black, not see-through.
+2. **Six mouth-open images** — optional, and the only thing that needs a generative model. Without them
+   the room still gets its large busts and full names; the seats simply do not move their mouths.
+3. **The reference image** of how the room should look. Still outstanding, and still the thing that
+   decides the arc, the table and where the caption sits.
+
+When 1 and 3 arrive, Claude resizes to 512 × 512, converts to WebP under 200 KB keeping the alpha,
+replaces the files in `web/public/advisors/`, builds the room, and puts it on beta with Step 23 for the
+owner's approval.

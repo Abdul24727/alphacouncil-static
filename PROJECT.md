@@ -684,7 +684,7 @@ Older entries: `changelog-archive.md`.
   - *Stamp:* 2026-10-23; on `rebuild` (this commit)
 
 ### Step 22 — The advisors' room moves like the reference ("Roast Room")
-- **Status:** AWAITING CHECKPOINT (2026-10-23) — owner's request with the reference screenshot (the Roast Room from the brief); the owner will send one more image of exactly how it should look. Needs that image and the assets below.
+- **Status:** AWAITING CHECKPOINT (2026-10-25) — the image brief is written (`docs/advisors-portrait-prompts.md`) and the owner is running all seven portraits through a background remover (their choice, 2026-10-25, after Claude measured the flat graphite background and showed a colour key eating through the black agal). Waiting on: the seven cut-outs, the reference image of the finished look, and optionally the six mouth-open images — without those the room still gets large busts and full names, just no mouth movement.
 - **Goal:** The room looks and moves like the reference: large portraits standing round a table, full names under them, the speaker's mouth moving while their line is written, "···" over advisors still thinking, one speaker at a time.
 - **Depends on:** 8 (portraits live). Before 10 (the launch check).
 - **Reversibility:** reversible
