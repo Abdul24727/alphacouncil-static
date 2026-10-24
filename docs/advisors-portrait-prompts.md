@@ -45,3 +45,70 @@ the shared style line is refined once the owner's screenshot of the reference ("
 - Caricatures of living people: the lawyer reviews them at the end (PROJECT.md Step 7). Keep the prompts
   respectful; no endorsement, no logos of their companies.
 - The site shows them small (22–66 px), so a clear face and simple shapes matter more than detail.
+
+---
+
+# Step 22: the same seven, cut out and speaking
+
+Step 8's portraits are done and live. Step 22 needs two more things from the same seven characters, and
+**the faces must not change** — they are approved and the lawyer reviews these at Step 7. So do not
+regenerate them from the text prompts above. Attach the image you already have and ask for a change to it.
+
+**The files to attach are in `docs/advisors-portraits/png-for-chatgpt/`** — the seven approved portraits as
+1024 × 1024 PNG, ready to drag straight into ChatGPT (it often refuses WebP). The WebP originals they were
+made from are beside them in `docs/advisors-portraits/originals/`. That PNG folder is not in git (it is
+7.6 MB of the same pixels); if it is missing, ask Claude to make it again from the WebP originals.
+
+## What is needed: 13 images
+
+| For | File to send back | How many |
+|---|---|---|
+| Each of the six advisors, background removed | `buffett-cut.png`, `lynch-cut.png`, `dalio-cut.png`, `marks-cut.png`, `alwaleed-cut.png`, `alrajhi-cut.png` | 6 |
+| Each of the six advisors, mouth open | `buffett-talk.png`, `lynch-talk.png`, `dalio-talk.png`, `marks-talk.png`, `alwaleed-talk.png`, `alrajhi-talk.png` | 6 |
+| The Chair's gavel, background removed | `chair-cut.png` | 1 |
+
+The Chair needs no mouth-open image: it is a gavel, and a seat without one simply stays still while it
+writes (Step 22's default).
+
+## Prompt 1 — background removed (seven times, one per seat)
+
+Attach the seat's existing image, then:
+
+> Remove the background from this image completely, so it is fully transparent (PNG with an alpha
+> channel). Keep the character exactly as it is: same face, same expression, same pose, same clothing,
+> same lighting and colours. Do not redraw, restyle or re-light anything. Cut cleanly around the hair,
+> ears and shoulders. Export as PNG with transparency, square, at least 1024 × 1024.
+
+## Prompt 2 — mouth open (six times, advisors only)
+
+Attach the **same original** (not the cut-out), then:
+
+> Same character, same face, same framing, same pose, same clothing, same lighting — change only the
+> mouth: open as if speaking mid-sentence, a natural talking shape, not a wide grin or a shout. Teeth may
+> show a little. Everything else in the image must be identical to the original. Background fully
+> transparent (PNG with an alpha channel). Export as PNG with transparency, square, at least 1024 × 1024.
+
+If a result changes the face, say: "The face changed. Use the attached image again and change only the
+mouth." Two images that differ in anything but the mouth will flicker when they swap.
+
+## Also needed: the reference image
+
+The one image of **exactly how the room should look** — the second reference you mentioned on 2026-10-23.
+Without it, the arc, the table and where the caption sits are guesses, and guessing means building the
+look twice. Send it with the portraits.
+
+## What Claude does with them
+
+Resize to 512 × 512, convert to WebP under 200 KB keeping the alpha, put the cut-outs in
+`web/public/advisors/` (replacing the dark-background files there — the small circles look the same,
+because the disc draws its own background behind them), add the talk images as `<id>-talk.webp`, name them
+in each seat file (`portrait:` and `portrait_talk:`), and keep your PNGs in
+`docs/advisors-portraits/originals/`. Then the room gets its large busts, full names and mouth movement,
+and goes to beta for your approval.
+
+## Notes
+
+- Transparency is what makes the large busts possible: a dark square behind each head would sit on top of
+  the table instead of standing at it.
+- The mouth swap runs about every 150 ms while that advisor's line is typing, and is off entirely for
+  anyone who asks for reduced motion.
