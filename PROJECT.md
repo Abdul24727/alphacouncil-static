@@ -631,7 +631,7 @@ Older entries: `changelog-archive.md`.
 - **Autorun:** no — checkpoint: human-action (portrait files or the owner's go-ahead to make them, the lawyer's advice) and decision (opening billing, Step 18)
 - **Consumes:** `docs/advisors-portraits-brief.md` (the illustrator's brief); `api/app/advisors/*.md` (the six advisors and the Chair); `docs/qa-beta-2026-10/reaudit-<date>.md` (Goal 3).
 - **Steps:** in order 8, 9, 22 with 23, 10, 7, 18
-- **Goal outcome:** _(empty until the goal is worked)_
+- **Goal outcome:** _(empty until the goal is worked — but items 2 and 3 are already met, checked on production 2026-10-24: all seven portraits served from `/advisors/*.webp`; `www` answers 301 to the apex with the certificate covering `alphacouncil.tech`, `api.` and `www.`. Items 1, 4 and 5 wait on the lawyer, the launch check and billing.)_
 
 ### Step 7 — The lawyer reviews the finished site; apply the advice
 - **Status:** NOT STARTED — moved to the end on 2026-10-23 (owner: the lawyer tests the working site, then advises what it needs, what it does not, and how to write its legal papers and privacy terms). Waits on Step 10.
@@ -753,7 +753,7 @@ Older entries: `changelog-archive.md`.
   - *Stamp:* 2026-10-23; production `56476948f5`
 
 ### Step 10 — Launch check on production
-- **Status:** IN PROGRESS (2026-10-23) — interim run: every signed-out check passes on production (`docs/launch-check-2026-10-23.md`); the real run waits on Steps 7–9, the owner's signed-in run, and Goal 2's last checks.
+- **Status:** IN PROGRESS (2026-10-24) — interim run: every signed-out check passes on production (`docs/launch-check-2026-10-23.md`). Of its dependencies only **22 and 23** are left: 6 and 21 closed on 2026-10-24 (Goal 2 DONE), 8, 9 and 17 are live. The real run waits for those two to ship and for the owner's signed-in run.
 - **Goal:** One dated record shows every check passing on production after Goals 2, 3 and 4's changes, with billing still closed.
 - **Depends on:** 6, 8, 9, 17, 21, 22, 23 (19 superseded 2026-10-23; 7 now comes after this step)
 - **Reversibility:** reversible
@@ -774,7 +774,8 @@ Older entries: `changelog-archive.md`.
   - *Not done:* `check-all.mjs` and the signed-in checks (the owner runs them: they create test accounts); Steps 7–9's changes; Goal 2's 2026-10-24 checks and F-A2.
   - *Verification:* (1) NOT MET — `check-all` and the signed-in checks not run. (2) VERIFIED under the revised wording (13 ok + renewals "–"). (3) VERIFIED for today's pages; to be retaken after Steps 7–9. (4) VERIFIED signed out; signed in: the owner.
   - *Rulings:* (a) Ran the signed-out half now, while Steps 7–9 wait (this step's default: run anyway and mark the gap). Cost: the run repeats later. (b) No test accounts on production from Claude; the owner runs `check-all`. Cost: the launch check needs the owner at the keyboard for one command. (c) Monitor item reworded, not left impossible. Cost if the owner wants a literal 14/14: it can only come after billing opens (Step 18 checks it then).
-  - *Resume here:* once Steps 7–9 are live and Goal 2 is DONE: rerun the four signed-out scripts and the page screenshots into `docs/screenshots/launch-<date>/`, ask the owner to run `check-all.mjs` (and the signed-in advisors and Arabic checks) on production with output into that folder, then write `docs/launch-check-<date>.md` as the real record.
+  - *Resume here:* once Steps 22 and 23 are live on production (Goal 2 is DONE since 2026-10-24, and 8, 9 and 17 are live): rerun the four signed-out scripts and the page screenshots into `docs/screenshots/launch-<date>/`, ask the owner to run `check-all.mjs` (and the signed-in advisors and Arabic checks) on production with output into that folder, then write `docs/launch-check-<date>.md` as the real record. Note that `check-advisors.mjs` now also checks the three-round format, so run it after 22/23 ship, not before.
+  - *Checked again 2026-10-24 (not a rerun, just the cheap ones):* `check-data-fixes` SWEEP=1 all passed on production after Goal 2's night, 44 PASS / 0 FAIL, `vt_reason` 0; `curl -sI https://www.alphacouncil.tech/` → 301 to `https://alphacouncil.tech/` with the certificate covering `alphacouncil.tech`, `api.` and `www.` (Goal 4 item 3 **met**); all seven portraits served from `/advisors/*.webp` (item 2 live); `"checkout_open":false`, as it must stay until Step 18.
   - *Stamp:* 2026-10-23; production `56476948f5`
 
 ### Step 18 — Open Pro billing on production (the paid launch)
