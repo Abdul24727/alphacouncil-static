@@ -62,8 +62,9 @@ export default function Layout({ children, params }: LayoutProps<"/[locale]/t/[t
  * The response is still HTTP 200 (a soft 404). With cacheComponents on, the route's shell is sent
  * before this runs, and Next cannot change a status code already on the wire; `export const instant
  * = false`, and moving this check into the layout body or into the page, were all tried and none of
- * them changed it. The page is marked noindex, so search engines drop these URLs either way.
- * PROJECT.md, Open Questions.
+ * them changed it. The page is marked noindex, so search engines drop these URLs either way, and
+ * the owner settled on the soft 404 rather than pay for a real one in the proxy (PROJECT.md,
+ * Decisions, 2026-10-24).
  */
 async function StockLayout({
   params,
