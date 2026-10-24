@@ -71,10 +71,13 @@ NOT_LISTED_FILE = Path(__file__).parent / "data" / "not_listed.json"
 
 
 def load_not_listed(path: Path = NOT_LISTED_FILE) -> dict[str, dict]:
-    """Ticker keys that no longer trade and are left out of the universe (data/not_listed.json)."""
-    if not path.is_file():
-        return {}
-    return json.loads(path.read_text(encoding="utf-8"))["listings"]
+    """Ticker keys that no longer trade and are left out of the universe (data/not_listed.json).
+
+    Deliberately not guarded against a missing or malformed file, like the two loaders above it: a
+    deploy that loses this file would otherwise put delisted companies back in front of members with
+    no sign anything was wrong, and a loud failure is the better half of that choice.
+    """
+    return dict(json.loads(path.read_text(encoding="utf-8"))["listings"])
 
 
 def load_listing_currencies(path: Path = LISTING_CURRENCIES_FILE) -> dict[str, str]:
