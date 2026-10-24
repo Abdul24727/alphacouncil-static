@@ -457,3 +457,87 @@ Sweep over all 716 tickers: `{"tickers":716,"eps_shown":503,"eps_unconfirmed":18
 `"news_green_old":0,"news_green":451,"no_currency":7,"vt_reason":5}` — `eps_bad` 0 and `vt_reason` 5,
 both unchanged since the fixes landed. Report and screenshots:
 `docs/screenshots/data-fixes-production-20261024-pre/`.
+
+## After the 2026-10-24 daily night (the first with F-F and F-A2, and the like-for-like count)
+
+Run `[OK] 2026-10-24 02:21:06`, `mode=daily`, `dailyrun_20261024`, 716 tickers; published 05:03:17
+(`db_publish.log`: "published. /healthz/deep=ok  backup=…/dbpublish-20261024T050001Z"). All checks
+below are read-only on the server.
+
+### The run itself (Goal 2, item 4)
+
+The same success lines as before the fixes, in `cron.log`:
+
+```
+2026-10-24 02:21:06  ALERT [OK] OK - Scrape (mode=daily, dailyrun_20261024: 716 tickers) + rebuild
+                     + restart complete on VPS; /api/screening 200; disk 73%.
+2026-10-24 02:21:06  ===== DAILY PIPELINE SUCCESS =====
+```
+
+**Price files written: 684 of 691** (`find … -newermt "2026-10-24 00:00:00" | wc -l`), against the
+**679 baseline** of the 2026-10-22 daily run — five more than the baseline, so **item 4 is met**.
+The 7 not rewritten, each already known:
+
+| File | Last written | Why |
+|---|---|---|
+| `624_KSE` | 2026-07-24 | KPPC: no Argaam page found at all (F-A, *Debt*; still open) |
+| `BWPC_MSM`, `AKIC.AD_ADX`, `BILDCO_ADX` | 2026-08-18 / 2026-09-18 | long-stale chart failures, all three in the run's own `[charts]` line |
+| `ABRAAJ_BSE` | 2026-10-22 | thin history (`insufficient_range`, 1.8 years) |
+| `645_KSE`, `RCCI_MSM` | 2026-10-23 | written the previous night, not this one — the usual runs without a `financial_ratios.csv` |
+
+`[charts] no fresh price chart: **29**` — down from 33 before the fixes, and **GULFNAV_DFM has left
+the list** along with 2080, 4240 and AGILITY.
+
+### Each fault in the data (Goal 2, item 2)
+
+| Fault | Check | Result |
+|---|---|---|
+| **F-A** | the four tickers' newest bars | 2080 `22/10/2026`, 4240 `22/10/2026` (Tadawul's last session: Thursday 22 Oct), AGILITY `2026/10/23`, **GULFNAV `2026/10/23`** (DFM's Friday session) — **all four now fresh** |
+| **F-A2** | GULFNAV from the Etihad Energy Holding pages | `2026/10/23,2.50,(0.13),(4.94 %),"7,587,153","19,006,469",2.54,2.61,2.50` — a real session, from the renamed company's pages, on F-A2's first night |
+| **F-B** | sub-1 AED newest bars keep 3 decimals | INVESTB_ADX `0.025`, SHUAA_DFM `0.227` — 3 decimals |
+| **F-C** | no identical consecutive bars on MSM/BSE | AACT_MSM runs `2026/03/19` → `2026/03/24` (the 03/22 and 03/23 copies gone); a scan of **all 91 MSM + BSE files** over the last 12 months finds **0** identical consecutive bars |
+| **F-E** | Tadawul turnover | Aramco's newest bar `22/10/2026` has turnover `185595347`, not empty |
+
+**Item 2 is met in full**, including the GULFNAV gap that was NOT MET on 2026-10-23.
+
+### F-F: ownership and analysts through a daily night (Step 21)
+
+`ticker_insights` in the published DB, after the **first daily night** with F-F:
+
+```
+rows, ownership, analysts = (711, 682, 362)
+```
+
+**682 ≥ 600 and 362 ≥ 300**, so Step 21's last check is met. Before F-F a daily night left 0 and 0;
+after the 2026-10-23 **full** run it was 672 and 356, so a daily night now keeps *more* than the full
+run wrote, as the per-file fallback intends. Aramco still reads 23 analysts (12 buy, 11 hold) and a
+foreign-ownership series to 2026-09-30.
+
+### The app against production (Goal 2, item 3)
+
+`cd web && BASE_URL=https://alphacouncil.tech SHOTS_DIR=../../docs/screenshots/data-fixes-production-20261024 SWEEP=1 node scripts/check-data-fixes.mjs`
+→ **all passed, 44 PASS, 0 FAIL.** The sweep over all 716 tickers:
+
+```
+sweep {"tickers":716,"eps_shown":500,"eps_unconfirmed":182,"eps_bad":0,
+       "news_green_old":0,"news_green":450,"no_currency":7,"vt_reason":0}
+```
+
+`eps_bad` 0 as always, and **`vt_reason` is now 0** — it was 272 before the fixes, 5 after the
+2026-10-23 full run, and 0 after this night: every ticker the app shows now has a real value traded,
+with no "why this is missing" fallback left. (The same check run a few hours earlier, on the data the
+10-23 run had published, gave 44 PASS / 0 FAIL and `vt_reason` 5:
+`docs/screenshots/data-fixes-production-20261024-pre/`.)
+
+### Where Goal 2 stands after this night
+
+| Done-when | State |
+|---|---|
+| 1. A root cause with server evidence for each of the five faults | **met** — sections F-A, F-B, F-C, F-D, F-E above |
+| 2. Each fault the owner approved in Step 5 is gone in the data | **met** — the table above; GULFNAV, the last gap, closed on F-A2's first night |
+| 3. `SWEEP=1 check-data-fixes.mjs` passes on production | **met** — 44 PASS, 0 FAIL, `vt_reason` 0 |
+| 4. The nightly run still finishes, count no lower than the baseline | **met** — same success lines, 684 of 691 against 679 |
+
+**Not fixed, and not fixable from Argaam** (owner's calls, carried out of this goal): KPPC (624) has
+no Argaam page at all; TAQA was delisted from ADX on 2026-09-01, so its last bar (2026-08-06) is
+correct; Tadawul disclosures stay stale because F-D was not built (owner's route 3).
