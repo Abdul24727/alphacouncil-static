@@ -6,6 +6,7 @@ import { FreshnessLight } from "@/components/panel/Panel";
 import { CopilotOpenButton } from "@/components/shell/WorkHeader";
 import { TickerNames } from "@/components/ticker/TickerPicker";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { ApiError } from "@/lib/api/client";
 import { currencyLabel, fmtDate, fmtNumber, fmtPct, signClass } from "@/lib/format";
 import { useTickerDetail } from "@/lib/queries";
 import { priceDigits } from "./common";
@@ -92,7 +93,11 @@ function TickerHeader() {
           ) : loading ? (
             <span aria-busy className="inline-block h-5 w-40 animate-pulse rounded-chip bg-panel-raised align-middle" />
           ) : (
-            <span className="text-muted">{isError ? (error as Error).message : " "}</span>
+            // A ticker the universe does not have (a listing that stopped trading, a mistyped URL)
+            // says so in the page's language; any other failure keeps the API's own words.
+            <span className="text-muted">
+              {!isError ? " " : (error as ApiError).status === 404 ? t("unknown") : (error as Error).message}
+            </span>
           )}
         </h1>
         {ref && (

@@ -1,0 +1,23 @@
+{
+ "about": "Listings the pipeline still writes a `briefs` row for, but which no longer trade. Read by api/app/universe.py: these ticker_keys are left out of the universe entirely, so they do not appear in search, the screener, markets, the Copilot or the advisors' room. Nothing is deleted: the pipeline keeps its files, and a saved holding or alert for one of these keeps its database row and comes back if the listing is removed from here (api/app/routers/portfolio.py skips a holding whose ticker_key is not in the universe).",
+ "decided": "2026-10-24",
+ "decided_by": "owner",
+ "why": "The app had only one way to say anything about these: an amber price with its last date, which reads as our data being late rather than as the company no longer trading. The owner chose to drop them rather than add a 'delisted' marker to the stock page.",
+ "reversing": "Delete the entry and the listing is back the next time the API reloads the universe (the file's own mtime triggers it). Saved holdings and alerts reappear with it.",
+ "listings": {
+  "TAQA_ADX": {
+   "status": "delisted",
+   "since": "2026-09-01",
+   "last_bar": "2026-08-06",
+   "note": "Abu Dhabi Power Corporation took 100% and TAQA left ADX. Its last trade, 2.66 AED on 2026-08-06, is exactly our last bar, so the price history we hold is complete and correct.",
+   "sources": ["AGBI, The National and Khaleej Times, read 2026-10-23 (docs/data-audit-part2-2026-10-19.md, 'GULFNAV, TAQA and KPPC')"]
+  },
+  "624_KSE": {
+   "status": "unconfirmed",
+   "since": "2026-07-23",
+   "last_bar": "2026-07-23",
+   "note": "KPPC (التخصيص) stopped on 2026-07-23. Argaam has no page for it at all and no public notice was found, so whether it was delisted or suspended is unknown; the owner did not know either (2026-10-24). Dropped on the same decision as TAQA. If it is only suspended and trading resumes, remove this entry.",
+   "sources": ["No source found. Argaam's Boursa Kuwait menu (128 companies) has no KPPC page, and four guessed slugs answered 404 (docs/data-audit-part2-2026-10-19.md, F-A)."]
+  }
+ }
+}

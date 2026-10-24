@@ -1,0 +1,16 @@
+en 1440: /t/GULFNAV -> 200, heading "Etihad Energy Holding"
+en 1440: /t/TAQA -> 200 "AlphaCouncil Search Ctrl K Home My Portfolio Screener Markets Template"
+en 1440: /t/624_KSE -> 200 "AlphaCouncil Search Ctrl K Home My Portfolio Screener Markets Template"
+en 1440: search "TAQA" -> 0 hits
+en 390: /t/GULFNAV -> 200, heading "Etihad Energy Holding"
+en 390: /t/TAQA -> 200 "TAQA Unknown ticker No price Overview Financials Council Advisors Owne"
+en 390: /t/624_KSE -> 200 "624_KSE Unknown ticker No price Overview Financials Council Advisors O"
+en 390: search "TAQA" -> 0 hits
+ar 1440: /t/GULFNAV -> 200, heading "اتحاد إنيرجي القابضة"
+ar 1440: /t/TAQA -> 200 "AlphaCouncil بحث Ctrl K الرئيسية محفظتي فرز الأسهم الأسواق القوالب لوح"
+ar 1440: /t/624_KSE -> 200 "AlphaCouncil بحث Ctrl K الرئيسية محفظتي فرز الأسهم الأسواق القوالب لوح"
+ar 1440: search "TAQA" -> 0 hits
+ar 390: /t/GULFNAV -> 200, heading "اتحاد إنيرجي القابضة"
+ar 390: /t/TAQA -> 200 "TAQA رمز غير معروف لا يوجد سعر نظرة عامة القوائم المالية المجلس المستش"
+ar 390: /t/624_KSE -> 200 "624_KSE رمز غير معروف لا يوجد سعر نظرة عامة القوائم المالية المجلس الم"
+ar 390: search "TAQA" -> 0 hits

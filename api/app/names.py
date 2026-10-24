@@ -1,9 +1,9 @@
 """Company names per ticker_key, ported from llm-council/backend/ticker_names.py.
 
-name_ar comes from the universe CSV (`company_name`). name_en is derived:
-TADAWUL uses a brand override, then the curated Saudi CSV; the other GCC
-exchanges use the readable URL slug. When no real English name exists,
-name_en is None rather than an invented one.
+name_ar comes from the universe CSV (`company_name`), except where NAME_AR_OVERRIDES
+corrects it. name_en is derived: TADAWUL uses a brand override, then the curated
+Saudi CSV; the other GCC exchanges use the readable URL slug. When no real English
+name exists, name_en is None rather than an invented one.
 """
 
 import csv
@@ -41,6 +41,22 @@ SLUG_NAME_OVERRIDES: dict[str, str] = {
     "DU_DFM": "du",
     "827_KSE": "Boursa Kuwait",
     "BEYON_BSE": "Beyon",
+    # Renamed after the pipeline's CSV was written (see NAME_AR_OVERRIDES for the Arabic).
+    "GULFNAV_DFM": "Etihad Energy Holding",
+}
+
+# Arabic names the universe CSV has wrong or out of date. `name_ar` otherwise comes from the
+# pipeline's `company_name`, which we do not edit (it belongs to the old repo), so a company renamed
+# after that CSV was written keeps its old Arabic name until it is listed here.
+#
+# GULFNAV_DFM: Gulf Navigation Holding (الخليج للملاحة القابضة) became Etihad Energy Holding PJSC
+# on completing its acquisition of Brooge, and the DFM ticker became ETIHADENERGY after the close on
+# 2026-06-19. The Arabic name is a transliteration, "اتحاد إنيرجي القابضة", not a translation of
+# "Energy" — Al Khaleej (2026-04-27 and 2026-06-16), Al Bayan and Zawya's Arabic release of the
+# launch all give it that way. The ticker key and symbol stay GULFNAV: they are this app's primary
+# key for the listing, in URLs, saved portfolios, alerts and past advisors' sessions.
+NAME_AR_OVERRIDES: dict[str, str] = {
+    "GULFNAV_DFM": "اتحاد إنيرجي القابضة",
 }
 
 _ACRONYMS = {
@@ -100,9 +116,10 @@ def load_names(universe_csv: Path | None, saudi_en_csv: Path | None) -> dict[str
         exchange = (row.get("exchange") or "").strip()
         if not ticker or not exchange:
             continue
+        key = f"{ticker}_{exchange}"
         name_en = _derive_name_en(ticker, exchange, row.get("company_path") or "", saudi_en)
-        index[f"{ticker}_{exchange}"] = {
+        index[key] = {
             "name_en": name_en if name_en and name_en != ticker else None,
-            "name_ar": (row.get("company_name") or "").strip() or None,
+            "name_ar": NAME_AR_OVERRIDES.get(key) or (row.get("company_name") or "").strip() or None,
         }
     return index

@@ -608,7 +608,8 @@
     },
     "pagesNav": "الصفحات",
     "priceDateUnknown": "تاريخ السعر غير معروف",
-    "currencyUnconfirmed": "العملة غير مؤكدة"
+    "currencyUnconfirmed": "العملة غير مؤكدة",
+    "unknown": "رمز غير معروف"
   },
   "ticker": {
     "switch": "تغيير السهم لهذه المجموعة"

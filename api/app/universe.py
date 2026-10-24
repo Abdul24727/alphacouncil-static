@@ -1,4 +1,8 @@
-"""The 716-equity universe in memory, rebuilt when the pipeline rewrites its files."""
+"""The tradable universe in memory, rebuilt when the pipeline rewrites its files.
+
+The pipeline writes a `briefs` row per listing (716 on 2026-10-24); the universe is those less the
+listings in data/not_listed.json that no longer trade (714 today).
+"""
 
 import json
 import re
@@ -58,6 +62,19 @@ EXCHANGE_CURRENCIES: dict[str, set[str]] = {
 # Listings that trade in another currency than the pipeline gives them: the five US-dollar lines on
 # Bahrain Bourse, recorded with the owner's decision and its sources in data/listing_currencies.json.
 LISTING_CURRENCIES_FILE = Path(__file__).parent / "data" / "listing_currencies.json"
+
+# Listings that no longer trade. The pipeline still writes a `briefs` row for them, and the app's only
+# way to say anything about one was an amber price, which reads as our data being late rather than as
+# the company having gone. The owner chose (2026-10-24) to leave them out of the universe instead;
+# data/not_listed.json carries each one's status, date and sources, and removing an entry brings it back.
+NOT_LISTED_FILE = Path(__file__).parent / "data" / "not_listed.json"
+
+
+def load_not_listed(path: Path = NOT_LISTED_FILE) -> dict[str, dict]:
+    """Ticker keys that no longer trade and are left out of the universe (data/not_listed.json)."""
+    if not path.is_file():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))["listings"]
 
 
 def load_listing_currencies(path: Path = LISTING_CURRENCIES_FILE) -> dict[str, str]:
@@ -136,7 +153,8 @@ class Universe:
 
     def _file_stamp(self) -> tuple[float, ...]:
         s = self._settings
-        paths: list[Path | None] = [s.briefs_db, s.ticker_names_csv, s.saudi_en_names_csv]
+        # not_listed.json too, so editing it reloads the universe without a restart.
+        paths: list[Path | None] = [s.briefs_db, s.ticker_names_csv, s.saudi_en_names_csv, NOT_LISTED_FILE]
         return tuple(p.stat().st_mtime if p and p.is_file() else 0.0 for p in paths)
 
     def refresh(self) -> None:
@@ -162,14 +180,21 @@ class Universe:
         finally:
             conn.close()
 
+        # Counted over every row, including the listings dropped below: a symbol's count decides
+        # whether its slug is the bare symbol or the ticker key, and dropping one must not change
+        # another listing's URL.
         symbol_counts: dict[str, int] = {}
         for r in rows:
             symbol_counts[r["ticker"]] = symbol_counts.get(r["ticker"], 0) + 1
 
         official = load_tadawul_sectors()
         listed_in = load_listing_currencies()
+        # The module global, not the bound default, so the path can be pointed elsewhere in tests.
+        not_listed = load_not_listed(NOT_LISTED_FILE)
         tickers = []
         for r in rows:
+            if r["ticker_key"] in not_listed:
+                continue
             n = names.get(r["ticker_key"], {})
             if r["exchange"] == "TADAWUL":
                 sector_en, sector_ar = official.get(r["ticker"], (None, None))

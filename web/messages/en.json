@@ -608,7 +608,8 @@
     },
     "pagesNav": "Pages",
     "priceDateUnknown": "Price date unknown",
-    "currencyUnconfirmed": "Currency not confirmed"
+    "currencyUnconfirmed": "Currency not confirmed",
+    "unknown": "Unknown ticker"
   },
   "ticker": {
     "switch": "Change ticker for this group"
