@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { StockTemplate } from "@/components/stock/StockTemplate";
@@ -52,6 +53,18 @@ export default function Layout({ children, params }: LayoutProps<"/[locale]/t/[t
   );
 }
 
+/**
+ * A ticker the universe does not have — a mistyped symbol, or a listing that stopped trading
+ * (api/app/data/not_listed.json) — gets the not-found room instead of an empty stock shell, on
+ * every tab. Only when the API says 404: an API that cannot answer returns null and the page
+ * renders as usual, so an outage never turns every stock page into a not-found.
+ *
+ * The response is still HTTP 200 (a soft 404). With cacheComponents on, the route's shell is sent
+ * before this runs, and Next cannot change a status code already on the wire; `export const instant
+ * = false`, and moving this check into the layout body or into the page, were all tried and none of
+ * them changed it. The page is marked noindex, so search engines drop these URLs either way.
+ * PROJECT.md, Open Questions.
+ */
 async function StockLayout({
   params,
   children,
@@ -60,5 +73,7 @@ async function StockLayout({
   children: React.ReactNode;
 }) {
   const { ticker } = await params;
-  return <StockTemplate slug={decodeURIComponent(ticker)}>{children}</StockTemplate>;
+  const slug = decodeURIComponent(ticker);
+  if ((await getTickerRef(slug)) === "unknown") notFound();
+  return <StockTemplate slug={slug}>{children}</StockTemplate>;
 }

@@ -1110,5 +1110,15 @@
     "signup": "Create your AlphaCouncil account: a portfolio, price alerts and the Copilot for Gulf markets, in English and Arabic.",
     "forgot": "Set a new password for your AlphaCouncil account, including an account from the old AlphaCouncil site.",
     "private": "Your AlphaCouncil account."
+  },
+  "notFound": {
+    "title": "Nothing to discuss",
+    "heading": "The room has nothing to discuss.",
+    "body": "There is no page at this address. A symbol may be mistyped, or a listing may have stopped trading.",
+    "seatsLabel": "The advisors, with no question before them",
+    "search": "Search for a company",
+    "markets": "Markets",
+    "screener": "Screener",
+    "home": "Home"
   }
 }

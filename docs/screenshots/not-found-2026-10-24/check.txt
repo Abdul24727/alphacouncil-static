@@ -1,0 +1,4 @@
+en 1440: status 200, 7 seats, sideways 0px, "The room has nothing to discuss."
+en 390: status 200, 7 seats, sideways 0px, "The room has nothing to discuss."
+ar 1440: status 200, 7 seats, sideways 0px, "لا شيء لدى الغرفة لمناقشته."
+ar 390: status 200, 7 seats, sideways 0px, "لا شيء لدى الغرفة لمناقشته."
