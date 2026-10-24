@@ -1,0 +1,8 @@
+/pricing en 1440: 200, sideways 0px
+/home en 1440: 200, sideways 0px
+/pricing en 390: 200, sideways 0px
+/home en 390: 200, sideways 0px
+/pricing ar 1440: 200, sideways 0px
+/home ar 1440: 200, sideways 0px
+/pricing ar 390: 200, sideways 0px
+/home ar 390: 200, sideways 0px
