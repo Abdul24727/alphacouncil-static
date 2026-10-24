@@ -112,3 +112,47 @@ and goes to beta for your approval.
   the table instead of standing at it.
 - The mouth swap runs about every 150 ms while that advisor's line is typing, and is off entirely for
   anyone who asks for reduced motion.
+
+## Which tool for which half (tested 2026-10-25)
+
+The two halves are not the same kind of job, and the same tool is wrong for both.
+
+### The seven cut-outs: not a generative job at all
+
+Measured on the approved portraits: the background is a single flat colour, `rgb(20,21,24)` — the brand
+graphite — with a deviation of ±2 across the top corners. That means the background can be *removed*
+rather than *redrawn*, and nothing about the face can change. Asking any image model to "remove the
+background" risks it regenerating the portrait, which is the one thing that must not happen: these faces
+are approved and the lawyer reviews them at Step 7.
+
+Claude tried it here with a flood-fill colour key (no model, no credits). The result is
+`cutout-trial-2026-10-25.png`, every cut-out over bright orange so the flaws show:
+
+- **Good enough: Buffett, Lynch, Dalio, Marks, the Chair.** The only loss is a little chewing of wispy
+  hair, and because the page behind them is the same graphite the background was, it does not show.
+- **Broken: Alwaleed and Al-Rajhi.** Their black agal — and Al-Rajhi's dark bisht — are nearly the same
+  colour as the background and touch it, so the key eats through them. Orange shows through the band.
+
+That failure is exactly what a trained matting model handles and a colour threshold cannot. So:
+
+| Tool | For the cut-outs |
+|---|---|
+| **A background remover** (remove.bg, Photoshop "Remove Background", Pixelmator, `rembg`) | **Best.** Built for this, including dark hair and dark garments against a dark field. One click per image, no credits, and it cannot change a face |
+| Claude's colour key | Free and instant, and already good for five of the seven. Ask for it if you want those five now |
+| ChatGPT / any image model | **Avoid.** It redraws rather than cuts, and a redrawn face is the thing we cannot have |
+
+### The six mouth-open images: this half *is* generative
+
+Here something must be invented — the same face with a different mouth — so a model is unavoidable. What
+matters is character consistency: the talking frame and the closed frame must differ **only** at the
+mouth, or the face will flicker twice a second when they swap.
+
+| Tool | For the mouth-open set |
+|---|---|
+| **Nano Banana Pro** (Gemini 3 Pro Image, on Higgsfield) | **Best for a still.** Its strength is a targeted edit that leaves the rest of the character identical. 2 credits each, so 12 for the six — the account had 1.64 on 2026-10-23, so it needs topping up |
+| **A talking-head / image-to-video model**, then take one frame | **Best fidelity, and worth considering.** It animates the actual pixels of the portrait, so identity is preserved by construction rather than by instruction. Frames are softer and usually no more than 1080p, which is ample: the room draws these at 160–200 px. More work per advisor, and the mouth shape has to be picked by eye |
+| ChatGPT / GPT Image 2.5 | Cheapest (0.25 a go) and it made the originals, but it is the weakest of the three at *keeping* a face while changing one feature. If it is used, compare each result against the original before accepting it |
+
+If the owner would rather not generate anything: the room already works without talk images. A seat with
+no `portrait_talk` simply stays still while it writes, and Step 22 still gains the large busts and the
+full names. Mouth movement is the part that needs the six images.
