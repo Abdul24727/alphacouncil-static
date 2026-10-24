@@ -1,8 +1,9 @@
 # Launch check, interim run (2026-10-24)
 
-**Not the launch check Step 18 reads.** PROJECT.md Step 10 runs again once Steps 22 and 23 (the
-advisors' room's look and its three-round format) are live on production and the owner has run the
-signed-in checks. This run records what passes on production today, signed out.
+**Not yet the launch check Step 18 reads, but close.** Both halves have now run — Claude's signed-out
+scripts and the owner's signed-in `check-all.mjs` — and everything passes. What is left is Steps 22
+and 23 (the advisors' room's look and its three-round format) going live on production, after which
+PROJECT.md Step 10 runs once more, including the signed-in advisors check that cannot run until then.
 
 What changed since the 2026-10-23 interim run: **Goal 2 is DONE** (the 2026-10-24 daily night met
 every check), **Step 8** put the seven portraits live and **Step 9** made `www` work. Steps 7, 10,
@@ -15,8 +16,10 @@ every check), **Step 8** put the seven portraits live and **Step 9** made `www` 
   must be until Step 18).
 - Universe on production: **716 listings** — the two dropped ones (TAQA, KPPC) are on `rebuild` and
   not released, so they are still served here.
-- Run from the owner's computer, 16:2x–16:37 UTC. Signed out throughout: no account was created, no
-  form submitted, nothing written.
+- Claude's half ran 16:2x–16:37 UTC, signed out throughout: no account created, no form submitted,
+  nothing written. The owner then ran `check-all.mjs` from the same computer (21:5x UTC), which does
+  sign up test accounts (`phase*-<time>@example.com`, `audit-ar-<time>@example.com`) and asks the
+  Copilot one question.
 
 ## Scripts
 
@@ -26,11 +29,29 @@ every check), **Step 8** put the seven portraits live and **Step 9** made `www` 
 | `check-seo.mjs` | `BASE_URL=https://alphacouncil.tech` | "ALL PASS", 62 PASS, 0 FAIL | PASS (`screenshots/launch-2026-10-24/check-seo.txt`) |
 | `check-arabic.mjs` | signed out, `WIDTHS=1440,390` | "48 Arabic page view(s) signed out; 0 English string(s) outside the allow-list" | PASS (`…/check-arabic.txt`) |
 | `check-advisors.mjs` | `VISITOR=1` (signed out) | "all passed", 24 PASS, 0 FAIL | PASS (`…/check-advisors-visitor.txt`) |
-| `check-all.mjs` | — | not run | **Owner runs it**: it signs up test accounts, which Claude does not do on the live site (decision 2026-10-23) |
-| `check-advisors.mjs` signed in, `check-arabic.mjs SIGNED_IN=1` | — | not run | **Owner runs them**, same reason |
+| `check-all.mjs` | `BASE_URL=https://alphacouncil.tech`, **run by the owner** (it signs up test accounts, which Claude does not do on the live site — decision 2026-10-23) | all nine runs PASS: Phases 1–7, "Arabic, signed out", "Arabic, signed in". **264 PASS, 0 FAIL** | PASS (`screenshots/launch-2026-10-24/check-all.txt`) |
+| `check-arabic.mjs SIGNED_IN=1` | inside `check-all.mjs` | "15 Arabic page view(s) signed in; 0 English string(s) outside the allow-list" | PASS (same file) |
+| `check-advisors.mjs` signed in | — | **not run, deliberately** | The copy on `rebuild` checks the three-round format (Step 23), which production does not serve: it would fail on the missing `final` stage tab, not on anything wrong with production. It runs when 22 and 23 ship |
 
 `vt_reason` went 5 → **0** between the two interim runs: after the 10-24 night every ticker the app
 shows has a real value traded, with no "why this is missing" fallback left anywhere.
+
+Worth keeping from `check-all`, since these are the signed-in facts nothing else here covers:
+
+- **Phase 3**: 716 tickers, 691 with a price file; **charts drawn 691 of 691**, and the 25 without
+  history all say "Data unavailable" rather than drawing an empty frame.
+- **Phase 4**: the Copilot (`deepseek/deepseek-v3.2`) answered in **9 s**, cited the metrics panel,
+  offered three follow-ups, and its citation scrolled that panel into view and highlighted it.
+- **Phase 6**: every number on the landing page sits in a database value, and those values equal the
+  API — 7 exchanges, **716 equities**, Pro 79. The legal texts are full length in both languages and
+  their hashes match.
+- **Phase 2**: the stale light is the brand amber and its tooltip dates the data itself ("data as of
+  8 Aug 2018" on a long-stale ticker), which is the behaviour the audit asked for.
+- **Arabic**: 96 page views in Phase 7, 24 signed out and 15 signed in, **0 English strings** in any
+  of them.
+
+When Steps 22 and 23 ship, the landing page's "716 equities" becomes 714: the two dropped listings
+leave the universe, and Phase 6 compares the page against the API, so it stays consistent by itself.
 
 ## Monitor
 
@@ -71,8 +92,8 @@ stock page shows the seven portraits live on the Advisors tab (Step 8) and the c
 1. **Steps 22 and 23** — the advisors' room's look and its three-round format. 23 is built and proven
    on `rebuild` (`b8dc9c7`); 22 waits on the owner's images, and the two release together. This run
    therefore tested the options-and-votes room that production still serves.
-2. **The owner's signed-in run**: `cd web; $env:BASE_URL="https://alphacouncil.tech"; node scripts/check-all.mjs`
-   (and the signed-in advisors and Arabic checks), output into this folder.
+2. ~~The owner's signed-in run~~ — **done 2026-10-24**, all nine runs PASS (above). Only the
+   signed-in `check-advisors.mjs` is left, and it waits on gap 1 rather than on the owner.
 3. **Step 7**, the lawyer's review of the finished site, which now comes after this check.
 4. Not on production yet, all on `rebuild`: the two dropped listings and the Etihad Energy Holding
    rename, and the not-found room. `check-advisors.mjs` now also checks the three-round format, so
