@@ -169,6 +169,11 @@ full names. Mouth movement is the part that needs the six images.
 
 ## What Claude is waiting for (2026-10-25)
 
+**Working through them one at a time?** `docs/advisors-image-requests.md` has one self-contained
+request per image, ready to paste into a fresh chat — including why one chat each is safe here, and why
+Lynch needs a different request from the other five.
+
+
 Three things. Step 22 cannot start without the first and third; the second only decides whether mouths move.
 
 1. **Seven cut-outs** — each of `buffett`, `lynch`, `dalio`, `marks`, `alwaleed`, `alrajhi`, `chair`
