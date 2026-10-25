@@ -152,3 +152,34 @@ out will sometimes redraw instead, and a redrawn face is the one outcome that mu
 
 Send back whatever is done; the room can be built from the cut-outs and the reference alone, and the talk
 images can arrive later without rebuilding anything.
+
+---
+
+# How each one gets checked when it arrives
+
+Send them however suits — attached here one at a time is fine. Each is checked with
+`web/scripts/check-advisor-images.mjs` before it goes anywhere near the site:
+
+```
+cd web && node scripts/check-advisor-images.mjs ../docs/advisors-portraits/incoming
+```
+
+It reads `<id>-cut.png` and `<id>-talk.png`, compares each against the approved portrait in
+`docs/advisors-portraits/originals/`, and reports:
+
+- square, at least 512 px, and a real alpha channel;
+- the background is actually gone (not a white or black one baked in), and the middle of the image is
+  still opaque;
+- **what changed against the original, and where.** The candidate is composited onto the original's own
+  background colour first, so the transparency it gained is not counted as a change.
+
+For a talk image that is the whole point: the change must be small, central, and below the eyes. A face
+that has drifted shows up as a large change spanning the frame. Tested on fixtures before any real image
+arrived — a mouth-sized edit reports 1.4% changed within x 41–59%, y 63–73% and passes; an image nudged a
+few pixels reports 51.5% changed across the whole frame and fails four ways.
+
+For a cut-out the bar is different: **nothing** about the subject should differ, only the background, so
+anything above about 6% means it was redrawn rather than cut.
+
+A FAIL is not necessarily a reject — a wide grin legitimately changes more pixels than a small "oh". It
+is a reason to look at the two side by side before accepting.
