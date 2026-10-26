@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import {
@@ -14,12 +15,21 @@ import {
   type Room,
   type SeatInfo,
 } from "@/lib/debate";
-import { OptionId, SeatDisc, WritingMark, seatLens, seatShort, useSeats } from "./parts";
+import { OptionId, SeatDisc, WritingMark, seatLens, seatName, useSeats } from "./parts";
 
 /**
- * The advisors in a semicircle, the Chair at its head. Seats further from the ends sit higher,
- * as round a table seen from the front. Logical positions (inset-inline-start), so the order
- * runs right to left in Arabic.
+ * The room: the advisors standing round a table, the Chair at its head. Seats nearer the middle sit
+ * higher, as round a table seen from the front, and the table's edge passes in front of them so they
+ * stand at it rather than float above it. Logical positions, so the order runs right to left in Arabic.
+ *
+ * Built to the owner's reference (2026-10-26) within BRAND.md, which wins where they disagree
+ * (Step 22's own default). Dropped from the reference: the warm cove glow behind the panels, the
+ * backlit wall and the soft gradients on the table, all of which BRAND.md bans outright. Kept: the
+ * graphite room, the curved table, the arc of seats, the wall mark behind them, orange only where it
+ * carries meaning — here the seat that has the floor.
+ *
+ * Three passes, because the table has to sit between the busts and their names: busts, then the
+ * table, then the names on it. They share one `seatX` so the columns line up.
  */
 export function SeatArc({
   seats,
@@ -40,24 +50,35 @@ export function SeatArc({
   const order = [...advisors];
   if (chair) order.splice(Math.floor(advisors.length / 2), 0, chair);
   const n = order.length;
-  // Five or more advisors and the Chair: narrower seats, spread evenly, so name tags do not touch on a phone.
+  // Six seats and the Chair need a narrower column each, or the names touch on a phone.
   const crowded = n > 5;
+  // Across the arc, and how high this seat sits: 0 at the ends, 1 at the head.
+  const seatX = (i: number, inset: number) => `${(inset + (100 - 2 * inset) * (i / Math.max(n - 1, 1))).toFixed(2)}%`;
+  const lift = (i: number) => Math.sin(Math.PI * (i / Math.max(n - 1, 1)));
+  const state = (s: SeatInfo) => ({
+    writing: !!room?.writing.includes(s.id),
+    speaks: speaking === s.id,
+    addressed: addressee === s.id,
+  });
+  const dim = (s: SeatInfo) => {
+    const { writing, speaks, addressed } = state(s);
+    return speaking && !speaks && !addressed && !writing ? "opacity-50" : "";
+  };
+  const column = (i: number) =>
+    ({ "--x-sm": seatX(i, crowded ? 7 : 12), "--x-lg": seatX(i, 7) }) as React.CSSProperties;
+  const COL = "absolute -translate-x-1/2 [inset-inline-start:var(--x-sm)] rtl:translate-x-1/2 @3xl:[inset-inline-start:var(--x-lg)]";
 
   return (
-    <div className="relative h-[200px] overflow-x-clip @3xl:h-[232px]" role="list" aria-label={t("seatsLabel")}>
+    <div className="relative h-[232px] overflow-x-clip @3xl:h-[360px]" role="list" aria-label={t("seatsLabel")}>
+      {/* The wall behind the room: the brand mark, quiet, never competing with the seats. */}
+      <span aria-hidden className="absolute inset-x-0 top-2 flex items-center justify-center gap-1.5 opacity-25 @3xl:top-4">
+        <span className="block size-2 rounded-[2px] bg-signal @3xl:size-2.5" />
+        <span className="headline text-[13px] leading-none tracking-tight text-text @3xl:text-[16px]">AlphaCouncil</span>
+      </span>
+
+      {/* 1. The busts, standing behind the table. */}
       {order.map((s, i) => {
-        const step = i / Math.max(n - 1, 1);
-        const angle = Math.PI * (1.1 + 0.8 * step);
-        // Even steps across; a narrower spread on phones keeps the end seats' tags on screen.
-        const x = (from: number) => `${(from + (100 - 2 * from) * step).toFixed(2)}%`;
-        const lift = -Math.sin(angle); // 0 at the ends, 1 at the head
-        const writing = !!room?.writing.includes(s.id);
-        const speaks = speaking === s.id;
-        const addressed = addressee === s.id;
-        const lean = room ? leanOf(room, s.id) : null;
-        // A scored session shows the seat's top option and score; a new one, that it has had its final word.
-        const vote = room ? voteOf(room, s.id) : null;
-        const final = room ? finalOf(room, s.id) : null;
+        const { writing, speaks } = state(s);
         return (
           <div
             key={s.id}
@@ -65,28 +86,56 @@ export function SeatArc({
             data-seat={s.id}
             data-writing={writing || undefined}
             data-speaking={speaks || undefined}
-            className={`absolute flex -translate-x-1/2 flex-col items-center gap-1 transition-opacity duration-300 [inset-inline-start:var(--x-sm)] rtl:translate-x-1/2 @3xl:[inset-inline-start:var(--x-lg)] ${
-              crowded ? "w-[58px] @3xl:w-[104px]" : "w-[84px] @3xl:w-[120px]"
-            } ${speaking && !speaks && !addressed && !writing ? "opacity-60" : ""}`}
-            style={{ "--x-sm": x(crowded ? 8 : 13), "--x-lg": x(8), top: `${Math.round(78 - 64 * lift)}px` } as React.CSSProperties}
+            className={`${COL} z-0 flex flex-col items-center transition-opacity duration-300 ${dim(s)} ${
+              crowded ? "w-[64px] @3xl:w-[124px]" : "w-[86px] @3xl:w-[150px]"
+            }`}
+            style={{ ...column(i), top: `${Math.round(54 - 30 * lift(i))}px` }}
           >
             {speaks ? <SpeakingBars /> : <WritingMark on={writing} />}
-            <span className={`transition-transform duration-300 motion-reduce:transition-none ${speaks ? "-translate-y-1 scale-110" : ""}`}>
-              <span className="@3xl:hidden">
-                <SeatDisc seat={s} size={crowded ? (s.role === "chair" ? 36 : 42) : s.role === "chair" ? 46 : 52} active={writing || speaks} />
-              </span>
-              <span className="hidden @3xl:block">
-                <SeatDisc seat={s} size={crowded ? (s.role === "chair" ? 50 : 58) : s.role === "chair" ? 56 : 66} active={writing || speaks} />
-              </span>
-            </span>
             <span
-              className={`max-w-full truncate rounded-chip border py-px ${crowded ? "px-1 text-[11px]" : "px-1.5 text-[12px]"} ${
-                speaks ? "border-signal bg-signal text-signal-ink" : addressed ? "border-dashed border-signal/70 bg-panel text-text" : "border-line bg-panel text-text"
+              className={`transition-transform duration-300 motion-reduce:transition-none ${speaks ? "-translate-y-1 scale-105" : ""}`}
+            >
+              <SeatBust seat={s} active={writing || speaks} speaking={speaks} crowded={crowded} />
+            </span>
+          </div>
+        );
+      })}
+
+      {/* 2. The table, in front of the busts. A flat graphite surface with one lit edge — no gradient. */}
+      <div
+        aria-hidden
+        className="absolute inset-x-[-14%] bottom-0 z-10 h-[86px] rounded-t-[50%] border-t border-line bg-panel-raised @3xl:h-[128px]"
+      />
+
+      {/* 3. The names, printed on the table. */}
+      {order.map((s, i) => {
+        const { speaks, addressed } = state(s);
+        const lean = room ? leanOf(room, s.id) : null;
+        // A scored session shows the seat's top option and score; a new one, that it has had its final word.
+        const vote = room ? voteOf(room, s.id) : null;
+        const final = room ? finalOf(room, s.id) : null;
+        return (
+          <div
+            key={s.id}
+            className={`${COL} z-20 flex flex-col items-center gap-0.5 transition-opacity duration-300 ${dim(s)} ${
+              crowded ? "w-[72px] @3xl:w-[104px]" : "w-[92px] @3xl:w-[128px]"
+            }`}
+            style={{ ...column(i), top: `${Math.round(156 - 22 * lift(i))}px` }}
+          >
+            <span
+              className={`max-w-full text-balance rounded-chip border px-1.5 py-px text-center text-[10.5px] leading-[1.25] @3xl:text-[11.5px] ${
+                speaks
+                  ? "border-signal bg-signal text-signal-ink"
+                  : addressed
+                    ? "border-dashed border-signal/70 bg-panel text-text"
+                    : "border-line bg-panel text-text"
               }`}
             >
-              {s.role === "chair" ? t(crowded ? "chairShort" : "chair") : seatShort(s, locale)}
+              {s.role === "chair" ? t("chair") : seatName(s, locale)}
             </span>
-            <span className="hidden max-w-full truncate text-center text-[11px] leading-tight text-muted @3xl:block">{seatLens(s, locale)}</span>
+            <span className="hidden max-w-full truncate text-center text-[11px] leading-tight text-muted @3xl:block">
+              {seatLens(s, locale)}
+            </span>
             {s.role === "advisor" && (vote || lean || final) && (
               <span className="num text-[11px] text-text-soft" title={vote ? t("topVote") : final ? t("finalWord") : t("leaning")}>
                 {vote ? `${vote.top} · ${vote.scores[vote.top]}` : lean ? `→ ${lean}` : "✓"}
@@ -96,6 +145,48 @@ export function SeatArc({
         );
       })}
     </div>
+  );
+}
+
+/**
+ * One advisor as a bust: the portrait large and bottom-aligned, so the table's edge crosses the chest.
+ * A portrait that is missing or fails to load falls back to the seat's initials, as the discs do.
+ */
+function SeatBust({
+  seat,
+  active,
+  speaking,
+  crowded,
+}: {
+  seat: SeatInfo;
+  active: boolean;
+  speaking: boolean;
+  crowded: boolean;
+}) {
+  const [failed, setFailed] = useState<string | null>(null);
+  const portrait = seat.portrait && seat.portrait !== failed ? seat.portrait : null;
+  // Static classes both ways: Tailwind cannot see a width built from a variable.
+  const box = crowded ? "h-[74px] @3xl:h-[142px]" : "h-[86px] @3xl:h-[164px]";
+  const wide = crowded ? "w-[64px] @3xl:w-[124px]" : "w-[86px] @3xl:w-[150px]";
+  if (!portrait) {
+    return (
+      <span className={`flex items-end justify-center ${box}`}>
+        <SeatDisc seat={seat} size={crowded ? 52 : 60} active={active} />
+      </span>
+    );
+  }
+  return (
+    <span className={`flex items-end justify-center ${box}`}>
+      <Image
+        src={portrait}
+        alt=""
+        width={512}
+        height={512}
+        sizes="(min-width: 768px) 160px, 88px"
+        className={`${wide} h-full object-contain object-bottom ${speaking ? "" : "grayscale-[20%]"}`}
+        onError={() => setFailed(portrait)}
+      />
+    </span>
   );
 }
 

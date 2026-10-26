@@ -374,3 +374,32 @@ and 4% of frame height and fill 96–99%, centred at 50–51% — spreads of 3, 
 
 Still outstanding besides the Chair: **the reference image of how the room should look**, without which
 Step 22's arc, table and caption placement are guesses.
+
+---
+
+# Step 22 built, and the one thing the reference cannot have (2026-10-26)
+
+The seven portraits are installed (512 px WebP, alpha kept, 28–87 KB each) and the stage is rebuilt to
+the owner's reference: busts standing round a curved table, the Chair at its head, **full names** on the
+table instead of surnames, the brand mark quiet on the wall behind, and orange only where it carries
+meaning — the seat that has the floor.
+
+**Dropped from the reference, because BRAND.md wins where they disagree** (Step 22's own default): the
+warm cove glow behind the wall panels, the backlit wall, and the soft gradients on the table top.
+BRAND.md bans gradients and glow outright. Kept: the graphite room, the curved table, the arc, the wall
+mark, the olive-and-wood warmth expressed as the existing `panel-raised` surface rather than as light.
+
+## The busts cannot be 160–200 px in the current layout
+
+Step 22 asked for busts "about 160–200 px". Measured on the running app: **the stage column is 580 px
+wide at a 1440 px window** — the sidebar and the Copilot pane take the rest — which is **83 px per seat
+across seven**. They are drawn larger than that by overlapping, as people round a table do, but roughly
+120 px is the ceiling before faces collide.
+
+So the reference's scale needs more width than the room currently has. That is a layout decision, not a
+drawing one, and it is the owner's:
+
+- **Leave it** — busts about 80–120 px. Bigger than the 52–66 px discs they replace, full names fit,
+  everything passes. Just not the reference's scale.
+- **Give the room the full work area** on this tab — collapse or move Key Points, and the busts can
+  reach the reference's size. A larger change to the page, and Key Points has to go somewhere.

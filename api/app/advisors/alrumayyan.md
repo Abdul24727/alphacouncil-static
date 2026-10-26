@@ -7,7 +7,7 @@ short_ar: الرميان
 initials: YR
 lens_en: Patient capital that builds sectors
 lens_ar: رأس مال صبور يبني القطاعات
-portrait:
+portrait: alrumayyan.webp
 ---
 
 # Yasir Al-Rumayyan (simulated advisor)
