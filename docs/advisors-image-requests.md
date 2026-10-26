@@ -356,3 +356,21 @@ Attach the approved photo again each time.
 > framing, lighting and transparent background as the reference.
 
 **And the Chair is still to come** — the gavel, per message 7 of Part C.
+
+### Where the set stands (2026-10-26, evening)
+
+Six of seven in `docs/advisors-portraits/incoming/`, and they hold together: subjects start between 1%
+and 4% of frame height and fill 96–99%, centred at 50–51% — spreads of 3, 2 and 1 points.
+
+| Seat | State |
+|---|---|
+| buffett, dalio, marks | good |
+| lynch | good; lost the wide grin, owner's call |
+| alwaleed | **fixed** — white ghutra and black agal as in the approved portrait. One small drift left: the approved has tinted lenses, this has clear ones. Still plainly him; a third pass is probably not worth it |
+| alrumayyan | good — and the seat swap is done in code (`api/app/advisors/alrumayyan.md`) |
+| chair | **still to come** — the gavel, message 7 of Part C |
+
+`check-advisor-images.mjs` knows the new roster: its seat list is `alrumayyan`, not `alrajhi`.
+
+Still outstanding besides the Chair: **the reference image of how the room should look**, without which
+Step 22's arc, table and caption placement are guesses.

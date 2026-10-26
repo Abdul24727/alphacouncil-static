@@ -22,7 +22,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const arg = process.argv.slice(2).find((a) => !a.startsWith("--"));
 const IN = arg ? path.resolve(process.cwd(), arg) : path.resolve(here, "../../docs/advisors-portraits/incoming");
 const ORIG = path.resolve(here, "../../docs/advisors-portraits/originals");
-const SEATS = ["buffett", "lynch", "dalio", "marks", "alwaleed", "alrajhi", "chair"];
+const SEATS = ["buffett", "lynch", "dalio", "marks", "alwaleed", "alrumayyan", "chair"];
 const DIFF = 24; // per-channel difference counted as "this pixel changed"
 
 const failures = [];
