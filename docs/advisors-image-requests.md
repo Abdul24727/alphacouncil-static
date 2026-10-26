@@ -401,5 +401,23 @@ drawing one, and it is the owner's:
 
 - **Leave it** — busts about 80–120 px. Bigger than the 52–66 px discs they replace, full names fit,
   everything passes. Just not the reference's scale.
-- **Give the room the full work area** on this tab — collapse or move Key Points, and the busts can
-  reach the reference's size. A larger change to the page, and Key Points has to go somewhere.
+- ~~Give the room the full work area~~ — **chosen 2026-10-27.** The question and the room now span the
+  whole work area; the stage view and Key Points go back to two columns beneath them, so Key Points did
+  not have to move at all.
+
+### What that actually fixed
+
+The busts were not small because of a sizing choice. `@3xl` is 768 px and the column was 580 px, so the
+large-bust styles **never applied** — the room was rendering its phone layout on a 1440 px screen.
+Measured after the change: stage **870 px**, busts **168 × 182 px**, inside the 160–200 px the step asked
+for.
+
+Three things fell out of it:
+
+- The table's top edge now crosses their chests, so they stand at it rather than float above it.
+- A phone cannot carry seven full names: it shows surnames, and the full names appear from 768 px up.
+- Each seat's two vertical offsets ride as CSS variables, because an inline style cannot answer a
+  container query.
+
+Still open for the owner to judge on beta: the arc is shallow (heads rise about 40 px toward the
+middle), and there is no mouth movement, since the talk frames were never made.

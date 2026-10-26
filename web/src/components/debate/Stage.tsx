@@ -15,7 +15,7 @@ import {
   type Room,
   type SeatInfo,
 } from "@/lib/debate";
-import { OptionId, SeatDisc, WritingMark, seatLens, seatName, useSeats } from "./parts";
+import { OptionId, SeatDisc, WritingMark, seatLens, seatName, seatShort, useSeats } from "./parts";
 
 /**
  * The room: the advisors standing round a table, the Chair at its head. Seats nearer the middle sit
@@ -64,12 +64,20 @@ export function SeatArc({
     const { writing, speaks, addressed } = state(s);
     return speaking && !speaks && !addressed && !writing ? "opacity-50" : "";
   };
-  const column = (i: number) =>
-    ({ "--x-sm": seatX(i, crowded ? 7 : 12), "--x-lg": seatX(i, 7) }) as React.CSSProperties;
-  const COL = "absolute -translate-x-1/2 [inset-inline-start:var(--x-sm)] rtl:translate-x-1/2 @3xl:[inset-inline-start:var(--x-lg)]";
+  const COL =
+    "absolute -translate-x-1/2 [inset-inline-start:var(--x-sm)] [top:var(--y-sm)] rtl:translate-x-1/2 " +
+    "@3xl:[inset-inline-start:var(--x-lg)] @3xl:[top:var(--y-lg)]";
+  /** Where a seat sits: across the arc, and how far down at each size. */
+  const place = (i: number, smallTop: number, largeTop: number, smallDrop: number, largeDrop: number) =>
+    ({
+      "--x-sm": seatX(i, crowded ? 7 : 12),
+      "--x-lg": seatX(i, 7),
+      "--y-sm": `${Math.round(smallTop - smallDrop * lift(i))}px`,
+      "--y-lg": `${Math.round(largeTop - largeDrop * lift(i))}px`,
+    }) as React.CSSProperties;
 
   return (
-    <div className="relative h-[232px] overflow-x-clip @3xl:h-[360px]" role="list" aria-label={t("seatsLabel")}>
+    <div className="relative h-[242px] overflow-x-clip @3xl:h-[350px]" role="list" aria-label={t("seatsLabel")}>
       {/* The wall behind the room: the brand mark, quiet, never competing with the seats. */}
       <span aria-hidden className="absolute inset-x-0 top-2 flex items-center justify-center gap-1.5 opacity-25 @3xl:top-4">
         <span className="block size-2 rounded-[2px] bg-signal @3xl:size-2.5" />
@@ -87,9 +95,9 @@ export function SeatArc({
             data-writing={writing || undefined}
             data-speaking={speaks || undefined}
             className={`${COL} z-0 flex flex-col items-center transition-opacity duration-300 ${dim(s)} ${
-              crowded ? "w-[64px] @3xl:w-[124px]" : "w-[86px] @3xl:w-[150px]"
+              crowded ? "w-[64px] @3xl:w-[168px]" : "w-[86px] @3xl:w-[190px]"
             }`}
-            style={{ ...column(i), top: `${Math.round(54 - 30 * lift(i))}px` }}
+            style={place(i, 62, 44, 30, 40)}
           >
             {speaks ? <SpeakingBars /> : <WritingMark on={writing} />}
             <span
@@ -104,7 +112,7 @@ export function SeatArc({
       {/* 2. The table, in front of the busts. A flat graphite surface with one lit edge — no gradient. */}
       <div
         aria-hidden
-        className="absolute inset-x-[-14%] bottom-0 z-10 h-[86px] rounded-t-[50%] border-t border-line bg-panel-raised @3xl:h-[128px]"
+        className="absolute inset-x-[-14%] bottom-0 z-10 h-[106px] rounded-t-[50%] border-t border-line bg-panel-raised @3xl:h-[150px]"
       />
 
       {/* 3. The names, printed on the table. */}
@@ -118,12 +126,12 @@ export function SeatArc({
           <div
             key={s.id}
             className={`${COL} z-20 flex flex-col items-center gap-0.5 transition-opacity duration-300 ${dim(s)} ${
-              crowded ? "w-[72px] @3xl:w-[104px]" : "w-[92px] @3xl:w-[128px]"
+              crowded ? "w-[50px] @3xl:w-[104px]" : "w-[76px] @3xl:w-[128px]"
             }`}
-            style={{ ...column(i), top: `${Math.round(156 - 22 * lift(i))}px` }}
+            style={place(i, 142, 206, 14, 14)}
           >
             <span
-              className={`max-w-full text-balance rounded-chip border px-1.5 py-px text-center text-[10.5px] leading-[1.25] @3xl:text-[11.5px] ${
+              className={`max-w-full truncate rounded-chip border px-1 py-px text-center text-[9.5px] leading-[1.25] @3xl:overflow-visible @3xl:text-clip @3xl:whitespace-normal @3xl:text-balance @3xl:px-1.5 @3xl:text-[11.5px] ${
                 speaks
                   ? "border-signal bg-signal text-signal-ink"
                   : addressed
@@ -131,9 +139,11 @@ export function SeatArc({
                     : "border-line bg-panel text-text"
               }`}
             >
-              {s.role === "chair" ? t("chair") : seatName(s, locale)}
+              {/* Seven full names do not fit across a phone, so the surname carries it there. */}
+              <span className="@3xl:hidden">{s.role === "chair" ? t("chairShort") : seatShort(s, locale)}</span>
+              <span className="hidden @3xl:inline">{s.role === "chair" ? t("chair") : seatName(s, locale)}</span>
             </span>
-            <span className="hidden max-w-full truncate text-center text-[11px] leading-tight text-muted @3xl:block">
+            <span className="hidden max-w-full text-balance text-center text-[10.5px] leading-tight text-muted @3xl:line-clamp-2 @3xl:block">
               {seatLens(s, locale)}
             </span>
             {s.role === "advisor" && (vote || lean || final) && (
@@ -166,8 +176,8 @@ function SeatBust({
   const [failed, setFailed] = useState<string | null>(null);
   const portrait = seat.portrait && seat.portrait !== failed ? seat.portrait : null;
   // Static classes both ways: Tailwind cannot see a width built from a variable.
-  const box = crowded ? "h-[74px] @3xl:h-[142px]" : "h-[86px] @3xl:h-[164px]";
-  const wide = crowded ? "w-[64px] @3xl:w-[124px]" : "w-[86px] @3xl:w-[150px]";
+  const box = crowded ? "h-[74px] @3xl:h-[182px]" : "h-[86px] @3xl:h-[200px]";
+  const wide = crowded ? "w-[64px] @3xl:w-[168px]" : "w-[86px] @3xl:w-[190px]";
   if (!portrait) {
     return (
       <span className={`flex items-end justify-center ${box}`}>

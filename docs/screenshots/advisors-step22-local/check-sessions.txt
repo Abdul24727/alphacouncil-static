@@ -11,7 +11,7 @@ PASS  en: verdict headline is an assessment, not advice ("The room's answer to t
 INFO  en: figures marked as not found in the data: 0
 INFO  en: Took 0:00
 PASS  en: round 1 is a full answer from each advisor (6)
-INFO  en: stand-in room, so round 1 lengths are not checked (20, 21, 21, 20, 21, 23 words)
+INFO  en: stand-in room, so round 1 lengths are not checked (21, 20, 23, 21, 20, 21 words)
 INFO  en: round 1 answers outside 250–400 words: 6 of 6
 PASS  en: round 2 is a challenge from each advisor (6)
 INFO  en: advisors who conceded a point: 6
@@ -24,4 +24,32 @@ PASS  en: the Chair's answer is an assessment, not advice
 PASS  en 390: no sideways scroll (0px)
 PASS  en 390: disclaimer on screen
 PASS  en 390: citation chips name a dataset (9)
-PASS  en 390: "Play the debate" replays it in turn (chair, then dalio; 22 characters typed)
+PASS  en 390: "Play the debate" replays it in turn (chair, then lynch; 34 characters typed)
+INFO  ar: the room is the labelled stand-in, not a model
+PASS  ar idle: no sideways scroll (0px)
+PASS  ar idle: disclaimer on screen
+PASS  ar idle: citation chips name a dataset (0)
+PASS  ar: the verdict arrived (1 s on screen)
+INFO  ar: stand-in room, so the live rounds are not followed (1 s)
+PASS  ar verdict 1440: no sideways scroll (0px)
+PASS  ar verdict 1440: disclaimer on screen
+PASS  ar verdict 1440: citation chips name a dataset (9)
+PASS  ar: verdict headline is an assessment, not advice ("إجابة الغرفة على السؤال")
+PASS  ar: the verdict is in Arabic
+INFO  ar: figures marked as not found in the data: 0
+INFO  ar: استغرقت 0:00
+PASS  ar: round 1 is a full answer from each advisor (6)
+INFO  ar: stand-in room, so round 1 lengths are not checked (16, 16, 14, 14, 15, 14 words)
+INFO  ar: round 1 answers outside 250–400 words: 6 of 6
+PASS  ar: round 2 is a challenge from each advisor (6)
+INFO  ar: advisors who conceded a point: 6
+PASS  ar: round 3 is a final word from each advisor (6)
+PASS  ar: every final word says what changed (6 of 6)
+PASS  ar: the final word carries no scores
+PASS  ar: the Chair wrote the room's complete answer
+INFO  ar: the Chair's answer is 23 words (asked for 200–350)
+PASS  ar: the Chair's answer is an assessment, not advice
+PASS  ar 390: no sideways scroll (0px)
+PASS  ar 390: disclaimer on screen
+PASS  ar 390: citation chips name a dataset (9)
+PASS  ar 390: "Play the debate" replays it in turn (chair, then buffett; 74 characters typed)

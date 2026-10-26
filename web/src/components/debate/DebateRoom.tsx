@@ -151,30 +151,35 @@ export function DebateRoom() {
 
       {showPast && <PastSessions onOpen={openSaved} current={room.session?.id ?? null} />}
 
-      {/* Side by side from a mid-size work area; the column is its own container, so the seats
-          and the options size to the column, not to the window. */}
+      {/* The question and the room take the whole work area: seven busts round a table need the width,
+          and each is its own container, so they size to the area rather than to the window. Below them
+          the stage view and Key Points go back to two columns. */}
+      {room.session && (
+        <div className="@container">
+          <OnTheTable room={room} />
+        </div>
+      )}
+      <section className={`${PANEL} @container flex flex-col gap-3`} data-stage>
+        {room.session ? (
+          <SessionStage key={room.session.id} room={room} />
+        ) : (
+          <>
+            <SeatArc seats={seats} room={null} />
+            {sittingOut.length > 0 && (
+              <p className="text-center text-[12px] text-muted" data-sits-out>
+                {t("sitsOut", { names: sittingOut.map((s) => seatName(s, locale)).join(t("and")), n: sittingOut.length })}
+              </p>
+            )}
+            {shownId != null ? (
+              <p className="animate-pulse text-center text-muted">{t("loading")}</p>
+            ) : (
+              <QuestionForm onConvene={convene} error={startError} />
+            )}
+          </>
+        )}
+      </section>
       <div className="grid gap-2.5 @3xl:grid-cols-[minmax(0,1fr)_280px]">
         <div className="@container flex min-w-0 flex-col gap-2.5">
-          {room.session && <OnTheTable room={room} />}
-          <section className={`${PANEL} flex flex-col gap-3`} data-stage>
-            {room.session ? (
-              <SessionStage key={room.session.id} room={room} />
-            ) : (
-              <>
-                <SeatArc seats={seats} room={null} />
-                {sittingOut.length > 0 && (
-                  <p className="text-center text-[12px] text-muted" data-sits-out>
-                    {t("sitsOut", { names: sittingOut.map((s) => seatName(s, locale)).join(t("and")), n: sittingOut.length })}
-                  </p>
-                )}
-                {shownId != null ? (
-                  <p className="animate-pulse text-center text-muted">{t("loading")}</p>
-                ) : (
-                  <QuestionForm onConvene={convene} error={startError} />
-                )}
-              </>
-            )}
-          </section>
           {room.session && view && <StageView room={room} stage={view} />}
           {!room.session && shownId == null && <HowItWorks />}
         </div>
