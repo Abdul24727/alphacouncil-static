@@ -188,6 +188,13 @@ is a reason to look at the two side by side before accepting.
 
 # Correction, 2026-10-26: a cut-out is not a generation
 
+**Second correction, same day — the first version of this section overstated the problem.** Cropped to
+the head and scaled to match, the submitted Buffett and the approved one are the same character in the
+same style: same glasses, same smile, same treatment. The only real difference in the face is a higher
+hairline. The 53.9% figure was driven almost entirely by the **reframing** — the new one is pulled back
+to show the chest — not by the likeness changing. So the issue is not that it looks wrong. It does not.
+The issue is consistency, set out under "What the issue actually is" at the end of this section.
+
 The first submitted `buffett-cut.png` was a **new drawing**, not the approved portrait with its
 background removed: 53.9% of pixels differed across the whole frame, the framing had pulled back to show
 the chest, the solid orange tie had become a polka-dot one, the glasses had changed shape, and the file
@@ -216,3 +223,23 @@ too. Feed them the files in `docs/advisors-portraits/png-for-chatgpt/`.
 
 `node scripts/check-advisor-images.mjs ../docs/advisors-portraits/incoming` must report **under about 6%
 changed** for a cut-out. Above that it is a redraw, whatever it looks like.
+
+## What the issue actually is
+
+Not the likeness, and not the quality. Two things, both about the set rather than the picture:
+
+1. **Framing has to match across all seven.** The live portraits are tight head crops, made for 52–66 px
+   circles. The submitted one is pulled back to the chest. In an arc of busts round a table, one advisor
+   framed differently reads as standing further away than the rest. Mixing the two is the thing that
+   looks broken — either of them used consistently is fine.
+2. **Regeneration drifts, and separate chats drift independently.** Buffett's hairline moved between
+   these two. Across seven chats it will move in seven different directions, which is exactly why the
+   Step 8 brief insisted on one conversation for the whole set.
+
+And note what this means for the check: the ~6% bar in `check-advisor-images.mjs` is the right test for
+**cut-outs of these exact files**. If the decision is to regenerate instead, that test does not apply and
+is not a verdict on the art — what matters then is that the seven match each other.
+
+**If the new look is preferred**, which is reasonable since its framing suits the busts better than the
+live crops do: do all seven in one chat, and state the framing explicitly — "head and shoulders to
+mid-chest, the head about 55% of the image height, same distance for every one of the seven."
