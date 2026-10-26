@@ -23,7 +23,7 @@ and again small (22–36 px) beside each advisor's lines.
 | `marks.webp` | Howard Marks | |
 | `alwaleed.webp` | Prince Alwaleed bin Talal | Saudi; see the legal note |
 | `alrajhi.webp` | Abdullah bin Sulaiman Al-Rajhi | Saudi; see the legal note |
-| `chair.webp` | The Chair | Not a real person: a neutral, generic figure (or a gavel or table motif) |
+| `chair.webp` | The Chair | A seated figure, from 2026-10-26; before that a gavel. Not a likeness of any named person |
 
 ## Files
 

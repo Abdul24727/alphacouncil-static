@@ -114,7 +114,7 @@ Attach `alrajhi.png`, then paste:
 
 Save as `alrajhi-talk.png`. Check: the agal is solid black and the bisht's gold trim is unchanged.
 
-**The Chair needs nothing here.** It is a gavel, and a seat with no talking frame simply stays still while
+**The Chair needs nothing here.** A seat with no talking frame simply stays still while
 it writes.
 
 ---
@@ -287,7 +287,7 @@ Each time, attach that advisor's approved portrait and send one line:
 | 4 | `marks.png` | Same style and framing as the reference. Keep this man's own face, round glasses, grey suit, white shirt and dark tie. |
 | 5 | `alwaleed.png` | Same style and framing as the reference. Keep this man's own face, moustache and tinted glasses, white thobe, white ghutra and a **solid black agal**. |
 | 6 | `alrajhi.png` | Same style and framing as the reference. Keep this man's own face, white thobe, white ghutra, **solid black agal**, and the dark bisht with its gold trim. |
-| 7 | `chair.png` | Same style, lighting and background as the reference, but this one is **not a person**: a wooden judge's gavel resting on its round block, filling about the same share of the frame as a head and shoulders do, with a small orange band on the gavel. |
+| 7 | `chair.png` | ~~a gavel~~ — **superseded 2026-10-26**: the owner sent a seated figure instead, and the Chair is a person now. Cropped to the set's framing by Claude; no new image needed. |
 
 Save them as `buffett.png`, `lynch.png`, `dalio.png`, `marks.png`, `alwaleed.png`, `alrajhi.png`,
 `chair.png` — plain names, no `-cut` suffix, since these are the portraits themselves now.

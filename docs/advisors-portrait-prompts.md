@@ -37,8 +37,9 @@ the shared style line is refined once the owner's screenshot of the reference ("
 6. **Abdullah bin Sulaiman Al-Rajhi** (`alrajhi.png`): a respectful caricature of Abdullah bin Sulaiman Al-Rajhi,
    chairman of Al Rajhi Bank, as he looks in public photos: kind, composed expression; white thobe, white ghutra
    with a black agal, dark bisht. (If the face is not right, attach a public photo of him.)
-7. **The Chair** (`chair.png`): not a person. A wooden judge's gavel resting on a round dark table, same 3D cartoon
-   style and background, a small orange accent on the gavel's band.
+7. **The Chair** (`chair.png`): ~~a wooden judge's gavel~~ — **superseded 2026-10-26**: the Chair is now a person,
+   a seated figure in a dark bisht. The gavel art is still in `docs/advisors-portraits/originals/chair.webp` if the
+   decision is ever reversed.
 
 ## Notes
 
@@ -65,10 +66,10 @@ made from are beside them in `docs/advisors-portraits/originals/`. That PNG fold
 |---|---|---|
 | Each of the six advisors, background removed | `buffett-cut.png`, `lynch-cut.png`, `dalio-cut.png`, `marks-cut.png`, `alwaleed-cut.png`, `alrajhi-cut.png` | 6 |
 | Each of the six advisors, mouth open | `buffett-talk.png`, `lynch-talk.png`, `dalio-talk.png`, `marks-talk.png`, `alwaleed-talk.png`, `alrajhi-talk.png` | 6 |
-| The Chair's gavel, background removed | `chair-cut.png` | 1 |
+| The Chair, background removed | `chair-cut.png` | 1 |
 
-The Chair needs no mouth-open image: it is a gavel, and a seat without one simply stays still while it
-writes (Step 22's default).
+The Chair needed no mouth-open image while it was a gavel. Now that it is a person (2026-10-26) one would
+work, but a seat without one simply stays still while it writes (Step 22's default), so it stays optional.
 
 ## Prompt 1 — background removed (seven times, one per seat) — ⛔ SUPERSEDED 2026-10-25
 
