@@ -133,7 +133,9 @@ function SpeechItem({ room, turn }: { room: Room; turn: Turn }) {
           )}
         </div>
         {isAbsent(turn.data) ? (
-          <p className="text-muted">{t("noAnswer", { reason: t(`errors.${errKey(String(turn.data.error))}`) })}</p>
+          <p className="text-muted" data-absent={String(turn.data.error)}>
+            {t("noAnswer", { reason: t(`errors.${errKey(String(turn.data.error))}`) })}
+          </p>
         ) : (
           <>
             {d.headline && (

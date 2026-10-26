@@ -91,62 +91,83 @@ async function formatChecks(page, locale, standIn) {
     await page.waitForTimeout(250);
   };
   const words = (s) => s.replace(/\[(?:P\d+|DB)\]/g, " ").split(/\s+/).filter(Boolean).length;
+  // A seat whose reply could not be used twice is marked absent and the room carries on without it
+  // (engine.turn). Every round is meant to be a full answer from everyone, so an absence is reported
+  // here rather than counted as an answer: the turn card is there either way.
+  const roundTurns = async (stage) => {
+    const present = [];
+    const away = [];
+    for (const card of await page.locator(`[data-turn^="${stage}:"]`).all()) {
+      const seat = ((await card.getAttribute("data-turn")) ?? ":").split(":")[1];
+      const absent = card.locator("[data-absent]");
+      if (await absent.count()) away.push(`${seat}: ${await absent.first().getAttribute("data-absent")}`);
+      else present.push([seat, words(await card.innerText())]);
+    }
+    return { present, away, total: present.length + away.length };
+  };
+  const answered = (stage, { away, total }) => {
+    check(total >= 3, `${locale}: ${stage} is a turn from each advisor (${total})`);
+    check(away.length === 0, `${locale}: every advisor answered ${stage}${away.length ? ` — away: ${away.join("; ")}` : ""}`);
+  };
 
-  // The brief's mode: `choice` frames two to four options and the final leans are counted against them,
-  // `open` frames none and lists what the room must weigh instead.
-  await open("brief");
-  const options = await page.locator("[data-stage-view=brief] [data-option]").count();
+  // The brief's mode, off the "On the table" card (Stage.tsx OnTheTable): `choice` lists the readings with
+  // each one's count of final leans, `open` lists the things the room must weigh instead. Not the transcript
+  // panel — `data-stage-view` is Transcript.tsx, which carries neither.
+  const options = await page.locator("[data-on-table] [data-option]").count();
   const mode = options ? "choice" : "open";
   note(`INFO  ${locale}: the brief is a \`${mode}\` session (${options} options)`);
   if (MODE) check(mode === MODE, `${locale}: the brief is a \`${MODE}\` session as asked (${mode})`);
   if (mode === "choice") {
     check(options >= 2 && options <= 4, `${locale}: a choice session frames two to four options (${options})`);
-    // Where a choice session lands is the engine's arithmetic (engine.count_leans): the screen shows each
-    // option's tally out of the advisors who leaned, so the tallies must add up to them, not to a model's say-so.
-    const tallies = (await page.locator("[data-stage-view=brief] [data-option] [data-tally]").all()).map(
-      async (e) => Number(await e.getAttribute("data-tally")),
+    // Where a choice session lands is the engine's arithmetic (engine.count_leans), never a model's say-so:
+    // each option carries its own tally of the advisors who leaned to it, so read them off the screen.
+    const counted = await Promise.all(
+      (await page.locator("[data-on-table] [data-option] [data-tally]").all()).map(async (e) =>
+        Number(await e.getAttribute("data-tally")),
+      ),
     );
-    const counted = await Promise.all(tallies);
     check(
       counted.length === options && counted.some((n) => n > 0),
       `${locale}: every option carries its count of final leans (${counted.join(", ")})`,
     );
   } else {
-    check(
-      (await page.locator("[data-stage-view=brief] [data-focus-list]").count()) === 1,
-      `${locale}: an open session lists what the room must weigh instead of options`,
-    );
+    const focus = await page.locator("[data-on-table] [data-focus-list] li").count();
+    check(focus >= 2 && focus <= 4, `${locale}: an open session lists the two to four things to weigh (${focus})`);
   }
 
   await open("openings");
-  const answers = await page.locator('[data-turn^="openings:"]').allInnerTexts();
-  const lengths = answers.map(words);
-  check(answers.length >= 3, `${locale}: round 1 is a full answer from each advisor (${answers.length})`);
+  const r1 = await roundTurns("openings");
+  answered("round 1", r1);
+  const lengths = r1.present.map(([, n]) => n);
   // The stand-in writes one sentence per seat on purpose, so only a model's answers can be full ones.
   if (standIn) note(`INFO  ${locale}: stand-in room, so round 1 lengths are not checked (${lengths.join(", ")} words)`);
   else
     check(
-      lengths.every((n) => n >= 120),
+      lengths.length > 0 && lengths.every((n) => n >= 120),
       `${locale}: round 1 answers are full, not openings (${lengths.join(", ")} words)`,
     );
-  const outside = lengths.filter((n) => n < ANSWER_WORDS[0] || n > ANSWER_WORDS[1]).length;
-  note(`INFO  ${locale}: round 1 answers outside ${ANSWER_WORDS.join("–")} words: ${outside} of ${lengths.length}`);
+  // Over the band is kept whole and reported, never cut (Step 23's rule): name the seats so a prompt that
+  // runs long in one language shows up as that, rather than as a number with no owner.
+  const outside = r1.present.filter(([, n]) => n < ANSWER_WORDS[0] || n > ANSWER_WORDS[1]);
+  note(
+    `INFO  ${locale}: round 1 answers outside ${ANSWER_WORDS.join("–")} words: ${outside.length} of ${r1.present.length}` +
+      (outside.length ? ` (${outside.map(([s, n]) => `${s} ${n}`).join(", ")})` : ""),
+  );
 
   await open("debate");
-  const challenges = await page.locator('[data-turn^="debate:"]').allInnerTexts();
-  const conceded = await page.locator("[data-concedes]").count();
-  check(challenges.length >= 3, `${locale}: round 2 is a challenge from each advisor (${challenges.length})`);
-  note(`INFO  ${locale}: advisors who conceded a point: ${conceded}`);
+  const r2 = await roundTurns("debate");
+  answered("round 2", r2);
+  note(`INFO  ${locale}: advisors who conceded a point: ${await page.locator("[data-concedes]").count()}`);
 
   await open("final");
-  const finals = await page.locator('[data-turn^="final:"]').allInnerTexts();
+  const r3 = await roundTurns("final");
+  answered("round 3", r3);
   const changed = await page.locator('[data-turn^="final:"] [data-changed]').count();
-  check(finals.length >= 3, `${locale}: round 3 is a final word from each advisor (${finals.length})`);
-  check(changed === finals.length, `${locale}: every final word says what changed (${changed} of ${finals.length})`);
   check(
-    (await page.locator("[data-vote-table]").count()) === 0,
-    `${locale}: the final word carries no scores`,
+    changed === r3.present.length,
+    `${locale}: every final word says what changed (${changed} of ${r3.present.length})`,
   );
+  check((await page.locator("[data-vote-table]").count()) === 0, `${locale}: the final word carries no scores`);
 
   await open("verdict");
   const answer = (await page.locator("[data-answer]").textContent()) ?? "";
