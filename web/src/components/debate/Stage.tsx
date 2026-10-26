@@ -356,7 +356,7 @@ export function OnTheTable({ room, onStock }: { room: Room; onStock?: React.Reac
                   {o.label}
                 </span>
                 {tally != null ? (
-                  <span className="flex w-[118px] shrink-0 items-center gap-2" title={t("finalLeans")}>
+                  <span className="flex w-[118px] shrink-0 items-center gap-2" title={t("finalLeans")} data-tally={tally}>
                     <span className="h-1 flex-1 overflow-hidden rounded-full bg-line">
                       <span
                         className={`block h-full ${best ? "bg-signal" : "bg-neutral-seat"}`}

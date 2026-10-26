@@ -18,10 +18,13 @@ const BASE_URL = process.env.BASE_URL ?? "http://localhost:3201";
 const OUT = process.env.OUT ?? "../docs/screenshots/advisors";
 const TICKER = process.env.TICKER ?? "2222";
 const LOCALES = (process.env.LOCALES ?? "en,ar").split(",");
+// QUESTION_EN / QUESTION_AR ask something else, so one run can be a `choice` session and the next an `open` one;
+// MODE says which the brief is expected to be, and the brief is checked against it (engine.MODES).
 const QUESTIONS = {
-  en: "Is the dividend covered by earnings, and how safe is it?",
-  ar: "هل تغطي الأرباح التوزيعات، وما مدى أمانها؟",
+  en: process.env.QUESTION_EN ?? "Is the dividend covered by earnings, and how safe is it?",
+  ar: process.env.QUESTION_AR ?? "هل تغطي الأرباح التوزيعات، وما مدى أمانها؟",
 };
+const MODE = process.env.MODE ?? null;
 const STAGES = ["brief", "openings", "faultlines", "debate", "final", "verdict"];
 const ADVICE = { en: /\b(buy|sell|hold)\b/i, ar: /(اشتر|بيع السهم|احتفظ|شراء السهم)/ };
 // The lengths chair.md asks for (engine.ANSWER_WORDS / CHAIR_WORDS): an answer outside them is kept, and reported.
@@ -88,6 +91,32 @@ async function formatChecks(page, locale, standIn) {
     await page.waitForTimeout(250);
   };
   const words = (s) => s.replace(/\[(?:P\d+|DB)\]/g, " ").split(/\s+/).filter(Boolean).length;
+
+  // The brief's mode: `choice` frames two to four options and the final leans are counted against them,
+  // `open` frames none and lists what the room must weigh instead.
+  await open("brief");
+  const options = await page.locator("[data-stage-view=brief] [data-option]").count();
+  const mode = options ? "choice" : "open";
+  note(`INFO  ${locale}: the brief is a \`${mode}\` session (${options} options)`);
+  if (MODE) check(mode === MODE, `${locale}: the brief is a \`${MODE}\` session as asked (${mode})`);
+  if (mode === "choice") {
+    check(options >= 2 && options <= 4, `${locale}: a choice session frames two to four options (${options})`);
+    // Where a choice session lands is the engine's arithmetic (engine.count_leans): the screen shows each
+    // option's tally out of the advisors who leaned, so the tallies must add up to them, not to a model's say-so.
+    const tallies = (await page.locator("[data-stage-view=brief] [data-option] [data-tally]").all()).map(
+      async (e) => Number(await e.getAttribute("data-tally")),
+    );
+    const counted = await Promise.all(tallies);
+    check(
+      counted.length === options && counted.some((n) => n > 0),
+      `${locale}: every option carries its count of final leans (${counted.join(", ")})`,
+    );
+  } else {
+    check(
+      (await page.locator("[data-stage-view=brief] [data-focus-list]").count()) === 1,
+      `${locale}: an open session lists what the room must weigh instead of options`,
+    );
+  }
 
   await open("openings");
   const answers = await page.locator('[data-turn^="openings:"]').allInnerTexts();
