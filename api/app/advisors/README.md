@@ -4,7 +4,7 @@ One markdown file per seat. `app/debate/roster.py` reads them; nothing else abou
 
 - `chair.md`: the neutral Chair. Its "Stage: …" sections are the instructions for each step of a session: Brief,
   Answers, Fault lines, Challenges, Final word, The answer. Keep the headings; change the wording freely.
-- `buffett.md`, `lynch.md`, `dalio.md`, `marks.md`, `alwaleed.md`, `alrajhi.md`: the advisors. Each has the same sections: Who they are, Investing
+- `buffett.md`, `lynch.md`, `dalio.md`, `marks.md`, `alwaleed.md`, `alrumayyan.md`: the advisors. Each has the same sections: Who they are, Investing
   principles, What they look at first, How they argue and disagree, Blind spots, Voice. The whole file (front matter
   removed) is that advisor's brief.
 
@@ -21,7 +21,7 @@ advisor that does not speak for them. The screen says the same in both languages
    last word of the name, wrong for "Prince Alwaleed bin Talal"); `recuse`, ticker keys of listed companies the
    person runs or chairs (`1120_TADAWUL, 8230_TADAWUL`): the seat sits out sessions about them.
 3. List the seats in order with `DEBATE_ADVISORS` in the API's environment (default
-   `buffett,lynch,dalio,marks,alwaleed,alrajhi`; two to six advisors). Restart the API.
+   `buffett,lynch,dalio,marks,alwaleed,alrumayyan`; two to six advisors). Restart the API.
 
 Past sessions keep the names they were held with.
 

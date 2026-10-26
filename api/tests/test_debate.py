@@ -64,7 +64,7 @@ def test_every_seat_file_has_its_sections_and_says_it_is_simulated():
     assert set(roster.CHAIR_SECTIONS) <= set(chair.sections) and chair.info.role == "chair"
     # Each named portrait is the seat's own file, and it is in web/public/advisors (served at /advisors/<file>).
     public = Path(__file__).resolve().parents[2] / "web" / "public"
-    for seat in [*roster.advisors("buffett,lynch,dalio,marks,alwaleed,alrajhi"), chair]:
+    for seat in [*roster.advisors("buffett,lynch,dalio,marks,alwaleed,alrumayyan"), chair]:
         if seat.info.portrait:
             assert seat.info.portrait == f"/advisors/{seat.info.id}.webp"
             assert (public / seat.info.portrait.lstrip("/")).is_file(), seat.info.portrait
@@ -75,23 +75,29 @@ def test_six_seats_and_seats_tied_to_a_company_sit_out(room, monkeypatch):
     from app.settings import Settings
 
     default = Settings.model_fields["debate_advisors"].default
-    assert default == "buffett,lynch,dalio,marks,alwaleed,alrajhi"
+    assert default == "buffett,lynch,dalio,marks,alwaleed,alrumayyan"
     seats = roster.advisors(default)
-    alwaleed, alrajhi = roster.load("alwaleed").info, roster.load("alrajhi").info
+    alwaleed, alrumayyan = roster.load("alwaleed").info, roster.load("alrumayyan").info
     assert (alwaleed.short_en, alwaleed.short_ar, alwaleed.recuse) == ("Alwaleed", "الوليد", ["4280_TADAWUL"])
-    assert alrajhi.recuse == ["1120_TADAWUL", "8230_TADAWUL", "4340_TADAWUL"] and alrajhi.short_en == "Al-Rajhi"
+    # The Al-Rumayyan seat carries no recuse list (owner, 2026-10-26), so it sits on every company
+    # including the ones he chairs — unlike Alwaleed, who sits out Kingdom Holding. Deliberate, and one
+    # of the things the lawyer is asked about at Step 7.
+    assert alrumayyan.recuse == [] and alrumayyan.short_en == "Al-Rumayyan"
     assert roster.load("buffett").info.short_en == "Buffett"
-    assert [a.id for a in roster.sitting(seats, "1120_TADAWUL")] == ["buffett", "lynch", "dalio", "marks", "alwaleed"]
+    # Recusal still works where a seat has one: Alwaleed sits out Kingdom Holding.
+    assert [a.id for a in roster.sitting(seats, "4280_TADAWUL")] == ["buffett", "lynch", "dalio", "marks", "alrumayyan"]
+    # And it does not fire for Al-Rumayyan on the company he chairs, which is the owner's decision.
+    assert [a.id for a in roster.sitting(seats, "2222_TADAWUL")] == [a.id for a in seats]
 
     monkeypatch.setattr(room.app.state.settings, "debate_advisors", default)
     assert [x["id"] for x in room.get("/v1/debate/status").json()["seats"]] == [*default.split(","), "chair"]
     signup(room)
-    # Al Rajhi Bank: Al-Rajhi's seat sits out, and the session's roster says so.
-    events = convene(room, ticker="1120")
+    # Aramco: all seven seats sit, Al-Rumayyan included, though he chairs it.
+    events = convene(room, ticker="2222")
     session = events[0]["session"]
-    assert "alrajhi" not in [x["id"] for x in session["seats"]] and len(session["seats"]) == 6
+    assert [x["id"] for x in session["seats"]] == [*default.split(","), "chair"]
     openings = [e["turn"]["seat"] for e in events if e["type"] == "turn" and e["turn"]["stage"] == "openings"]
-    assert sorted(openings) == ["alwaleed", "buffett", "dalio", "lynch", "marks"]
+    assert sorted(openings) == ["alrumayyan", "alwaleed", "buffett", "dalio", "lynch", "marks"]
     # Aramco: all six.
     events = convene(room, ticker="2222")
     assert len([e for e in events if e["type"] == "turn" and e["turn"]["stage"] == "final"]) == 6

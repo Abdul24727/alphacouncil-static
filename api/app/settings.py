@@ -68,7 +68,7 @@ class Settings(BaseSettings):
     debate_advisor_model: str = "deepseek/deepseek-v4-pro"
     debate_chair_model: str = "anthropic/claude-sonnet-5.5"
     # The advisors, in seat order: app/advisors/<id>.md each (2 to 6).
-    debate_advisors: str = "buffett,lynch,dalio,marks,alwaleed,alrajhi"
+    debate_advisors: str = "buffett,lynch,dalio,marks,alwaleed,alrumayyan"
     # Debate rounds between the openings and the vote (1 or 2).
     debate_rounds: int = 1
     # Ask OpenRouter for the models' reasoning. Off: each seat answers in one pass (faster).
