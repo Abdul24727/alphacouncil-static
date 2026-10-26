@@ -183,3 +183,36 @@ anything above about 6% means it was redrawn rather than cut.
 
 A FAIL is not necessarily a reject — a wide grin legitimately changes more pixels than a small "oh". It
 is a reason to look at the two side by side before accepting.
+
+---
+
+# Correction, 2026-10-26: a cut-out is not a generation
+
+The first submitted `buffett-cut.png` was a **new drawing**, not the approved portrait with its
+background removed: 53.9% of pixels differed across the whole frame, the framing had pulled back to show
+the chest, the solid orange tie had become a polka-dot one, the glasses had changed shape, and the file
+was 1254 px rather than 1024. It is a good image; it is just not a cut-out.
+
+That is not a wording problem. Asked for a cut-out, an image generator draws a new picture that looks
+like the description — it has no way to return the original pixels. So the fix is to stop it generating:
+
+## If you want to stay in ChatGPT, ask it for code, not a picture
+
+> Do not generate or draw anything. Use Python — PIL, or rembg if it is available — to remove the
+> background from the file I attached, and give me back that exact file as a PNG with an alpha channel.
+> Every pixel of the subject must be byte-for-byte the one I uploaded; the only change is that the
+> background becomes transparent. Do not re-crop, resize or restyle it.
+
+That runs in its code tool rather than its image model, so the subject cannot drift, and the question of
+drawing a real person does not arise at all — nothing is being drawn.
+
+## Or use a background remover, which cannot do anything else
+
+No install needed, any of these: **Photopea** (free, in the browser, Image → Remove Background),
+**PowerPoint** (Picture Format → Remove Background), **Canva**, **remove.bg**. Windows 11's Paint has it
+too. Feed them the files in `docs/advisors-portraits/png-for-chatgpt/`.
+
+## Either way, the bar is the same
+
+`node scripts/check-advisor-images.mjs ../docs/advisors-portraits/incoming` must report **under about 6%
+changed** for a cut-out. Above that it is a redraw, whatever it looks like.
