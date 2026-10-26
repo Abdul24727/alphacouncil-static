@@ -310,3 +310,49 @@ transparency, opaque in the middle.
 The new set replaces `web/public/advisors/*.webp`, which means the live site's portraits change: Step 8's
 approval and screenshots are superseded and it needs its own release through beta. The lawyer's question
 (d) then covers the new art. The six mouth-open images from Part A come after that, made from these.
+
+---
+
+## Review of the first six (2026-10-26)
+
+**The anchor worked.** Framing is consistent across all six: subjects start between 1% and 4% of frame
+height and fill 96–99%, centred at 50–51% — a spread of 2 points. All are 1254 px square with real
+transparency and opaque centres. That was the thing most likely to go wrong, and it did not.
+
+**What slipped was fidelity to each person.** The model drifted toward its own defaults rather than the
+attached photos — everyone acquired a navy suit, and both Saudi advisors a red-and-white checked
+shemagh. The short per-advisor lines lost to the reference image's pull.
+
+| Seat | Against the approved portrait | Verdict |
+|---|---|---|
+| Buffett | the anchor, unchanged | keep |
+| Dalio | no glasses and no tie, as asked; the open-collar shirt went from dark to pale | keep |
+| Marks | round glasses kept; grey suit became navy, dark tie became navy with orange squares | keep |
+| Lynch | **lost his wide open grin**, which was his likeness; light grey suit became navy | owner's call |
+| Alwaleed | **white ghutra became a red-and-white checked shemagh** | redo |
+| Al-Rajhi | **red shemagh instead of white; a full beard added where he is clean-shaven; the dark bisht with gold trim gone entirely** | redo |
+| Chair | not produced | still needed |
+
+The suit homogenisation is arguably a gain: a set in matching navy reads better round one table than a
+mix of greys, and BRAND.md asks for neutral tones. The headwear and the beard are not — they are wrong
+about the person.
+
+### The two to send again, in the same chat
+
+Attach the approved photo again each time.
+
+**Al-Rajhi:**
+
+> This is wrong in three ways against the photo I attached. Use that photo again and fix all three:
+> (1) the headdress must be a plain **white** ghutra, not a red-and-white checked one; (2) he is
+> **clean-shaven** — remove the beard completely; (3) he wears a **dark bisht with wide gold trim**
+> over the shoulders, which is missing — put it back. Keep the same style, framing, lighting and
+> transparent background as the reference.
+
+**Alwaleed:**
+
+> The headdress must be a plain **white** ghutra, not a red-and-white checked one. Everything else
+> about him stays exactly as you have it. Use the attached photo again, and keep the same style,
+> framing, lighting and transparent background as the reference.
+
+**And the Chair is still to come** — the gavel, per message 7 of Part C.
