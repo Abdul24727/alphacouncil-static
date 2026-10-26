@@ -366,7 +366,7 @@ and 4% of frame height and fill 96–99%, centred at 50–51% — spreads of 3, 
 |---|---|
 | buffett, dalio, marks | good |
 | lynch | good; lost the wide grin, owner's call |
-| alwaleed | **fixed** — white ghutra and black agal as in the approved portrait. One small drift left: the approved has tinted lenses, this has clear ones. Still plainly him; a third pass is probably not worth it |
+| alwaleed | **fixed and accepted** — white ghutra and black agal as in the approved portrait, and the lenses are tinted, a little lighter and warmer than the approved. Claude first reported them as clear, which was wrong: that call was made from a 420 px downscale, where the tint washes out. **Judge image detail at native resolution.** |
 | alrumayyan | good — and the seat swap is done in code (`api/app/advisors/alrumayyan.md`) |
 | chair | **still to come** — the gavel, message 7 of Part C |
 
