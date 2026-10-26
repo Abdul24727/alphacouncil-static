@@ -684,7 +684,7 @@ Older entries: `changelog-archive.md`.
   - *Stamp:* 2026-10-23; on `rebuild` (this commit)
 
 ### Step 22 — The advisors' room moves like the reference ("Roast Room")
-- **Status:** AWAITING CHECKPOINT (2026-10-25) — the image brief is written (`docs/advisors-portrait-prompts.md`) and the owner is running all seven portraits through a background remover (their choice, 2026-10-25, after Claude measured the flat graphite background and showed a colour key eating through the black agal). Waiting on: the seven cut-outs, the reference image of the finished look, and optionally the six mouth-open images — without those the room still gets large busts and full names, just no mouth movement.
+- **Status:** AWAITING CHECKPOINT (2026-10-26) — **the portraits are being redrawn, not cut out** (owner, 2026-10-26): the first submission turned out to be a regeneration rather than a background removal, and its pulled-back framing suits the busts better than the live head crops, so the owner chose to adopt a new set. All seven come from one chat, anchored on the Buffett already made, per `docs/advisors-image-requests.md` Part C. Waiting on: the other six, the reference image of the finished look, and (after the new set settles) the six mouth-open images. Consequence: the live portraits change, so Step 8 needs a fresh release and its screenshots are superseded, and the lawyer's question (d) covers the new art.
 - **Goal:** The room looks and moves like the reference: large portraits standing round a table, full names under them, the speaker's mouth moving while their line is written, "···" over advisors still thinking, one speaker at a time.
 - **Depends on:** 8 (portraits live). Before 10 (the launch check).
 - **Reversibility:** reversible

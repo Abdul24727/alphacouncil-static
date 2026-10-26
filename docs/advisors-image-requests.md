@@ -243,3 +243,70 @@ is not a verdict on the art — what matters then is that the seven match each o
 **If the new look is preferred**, which is reasonable since its framing suits the busts better than the
 live crops do: do all seven in one chat, and state the framing explicitly — "head and shoulders to
 mid-chest, the head about 55% of the image height, same distance for every one of the seven."
+
+---
+
+# Part C — the decided route (2026-10-26): one chat, all seven, pulled back
+
+**This supersedes Part B, and Part A waits for it.** The owner chose to adopt the new look rather than
+cut out the live portraits. Parts A and B above are kept for the record; the mouth-open images in Part A
+must be made from the **new** portraits once this set is settled, not from the ones now live.
+
+The Buffett already produced is the anchor. It is in the target framing, so the other six are matched to
+it rather than described from scratch — that is the whole trick for keeping seven images consistent.
+
+## Before you start
+
+- **One chat for all seven.** Not seven chats. Style and framing hold because every image is made in
+  sight of the same reference; separate chats drift independently, which is what went wrong before.
+- Have ready: the Buffett you made (the pulled-back, transparent one), and the six approved portraits
+  from `docs/advisors-portraits/png-for-chatgpt/` — `lynch.png`, `dalio.png`, `marks.png`,
+  `alwaleed.png`, `alrajhi.png`, `chair.png`.
+- Do them in order. If one comes back off-framing, fix it before moving on, or the drift compounds.
+
+## Message 1 — set the reference
+
+Attach **the new Buffett**, then:
+
+> This image is the reference for a set of seven portraits. Every one must match it exactly in style,
+> framing and lighting: the same 3D cartoon caricature style, head and shoulders down to mid-chest, the
+> head about 55% of the image height, the same camera distance and the same straight-on angle, soft
+> studio lighting, and a fully transparent background (PNG with an alpha channel), square.
+> I will send you one person at a time. For each, keep their own face, hair and clothing exactly as in
+> the photo I attach — only the style, framing and background should match this reference.
+> Do not change anything about this Buffett image; it is already done.
+
+## Messages 2–7 — one advisor each, same chat
+
+Each time, attach that advisor's approved portrait and send one line:
+
+| Order | Attach | Say |
+|---|---|---|
+| 2 | `lynch.png` | Same style and framing as the reference. Keep this man's own face, thick white hair, thin silver glasses, light grey suit and white shirt. |
+| 3 | `dalio.png` | Same style and framing as the reference. Keep this man's own face and grey hair, **no glasses**, charcoal jacket over a dark open-collar shirt, **no tie**. |
+| 4 | `marks.png` | Same style and framing as the reference. Keep this man's own face, round glasses, grey suit, white shirt and dark tie. |
+| 5 | `alwaleed.png` | Same style and framing as the reference. Keep this man's own face, moustache and tinted glasses, white thobe, white ghutra and a **solid black agal**. |
+| 6 | `alrajhi.png` | Same style and framing as the reference. Keep this man's own face, white thobe, white ghutra, **solid black agal**, and the dark bisht with its gold trim. |
+| 7 | `chair.png` | Same style, lighting and background as the reference, but this one is **not a person**: a wooden judge's gavel resting on its round block, filling about the same share of the frame as a head and shoulders do, with a small orange band on the gavel. |
+
+Save them as `buffett.png`, `lynch.png`, `dalio.png`, `marks.png`, `alwaleed.png`, `alrajhi.png`,
+`chair.png` — plain names, no `-cut` suffix, since these are the portraits themselves now.
+
+## What gets checked when they arrive
+
+Not the 6% cut-out bar — that tested cut-outs of the old files and does not apply here. Instead:
+
+```
+cd web && node scripts/check-advisor-images.mjs --set ../docs/advisors-portraits/incoming
+```
+
+which reads the alpha of each and reports where the subject sits in its frame — how tall it is, where
+its top edge is, how far off centre — so a portrait shot closer or further than the rest shows up as a
+number rather than being noticed later on the stage. Plus the basics: square, at least 512 px, real
+transparency, opaque in the middle.
+
+## After they are in
+
+The new set replaces `web/public/advisors/*.webp`, which means the live site's portraits change: Step 8's
+approval and screenshots are superseded and it needs its own release through beta. The lawyer's question
+(d) then covers the new art. The six mouth-open images from Part A come after that, made from these.

@@ -19,7 +19,8 @@ import sharp from "sharp";
 const here = path.dirname(fileURLToPath(import.meta.url));
 // A folder given on the command line is relative to where you are standing, as a path argument should
 // be; the default is the repo's own incoming folder, wherever the script is run from.
-const IN = process.argv[2] ? path.resolve(process.cwd(), process.argv[2]) : path.resolve(here, "../../docs/advisors-portraits/incoming");
+const arg = process.argv.slice(2).find((a) => !a.startsWith("--"));
+const IN = arg ? path.resolve(process.cwd(), arg) : path.resolve(here, "../../docs/advisors-portraits/incoming");
 const ORIG = path.resolve(here, "../../docs/advisors-portraits/originals");
 const SEATS = ["buffett", "lynch", "dalio", "marks", "alwaleed", "alrajhi", "chair"];
 const DIFF = 24; // per-channel difference counted as "this pixel changed"
@@ -105,12 +106,58 @@ async function one(file) {
   }
 }
 
+/**
+ * `--set`: a freshly drawn set of portraits, where there is nothing to diff against — the old files are
+ * being replaced, not cut out. What matters instead is that the seven look like they are at the same
+ * table: a head shot closer or further than the rest reads as one advisor standing apart. Measured from
+ * the alpha, which is where the subject is.
+ */
+async function asSet(files) {
+  const rows = [];
+  for (const f of files) {
+    const id = path.basename(f).replace(/\.(png|webp)$/i, "").replace(/-cut$/, "");
+    if (!SEATS.includes(id)) { check(false, `${path.basename(f)}: "${id}" is not a seat`); continue; }
+    const meta = await sharp(f).metadata();
+    check(meta.width === meta.height, `${id}: square (${meta.width}x${meta.height})`);
+    check(meta.width >= 512, `${id}: at least 512 px (${meta.width})`);
+    check(meta.hasAlpha === true, `${id}: has an alpha channel`);
+    const { data, W, H } = await rgba(f);
+    let x0 = W, x1 = -1, y0 = H, y1 = -1, opaque = 0;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      if (data[(y * W + x) * 4 + 3] > 128) {
+        opaque++;
+        if (x < x0) x0 = x; if (x > x1) x1 = x;
+        if (y < y0) y0 = y; if (y > y1) y1 = y;
+      }
+    }
+    check(opaque > 0 && x1 >= 0, `${id}: has a visible subject`);
+    if (x1 < 0) continue;
+    const centre = (((H / 2) | 0) * W + ((W / 2) | 0)) * 4 + 3;
+    check(data[centre] > 250, `${id}: opaque in the middle (alpha ${data[centre]})`);
+    rows.push({ id, top: y0 / H, height: (y1 - y0 + 1) / H, cx: (x0 + x1) / 2 / W, fill: (opaque / (W * H)) * 100 });
+  }
+  if (rows.length < 2) return;
+  say("\n--- do they look like one set? ---");
+  say("  seat       top of subject   subject height   centred at   fills");
+  for (const r of rows) {
+    say(`  ${r.id.padEnd(10)} ${(r.top * 100).toFixed(0).padStart(9)}%  ${(r.height * 100).toFixed(0).padStart(13)}%  ${(r.cx * 100).toFixed(0).padStart(10)}%  ${r.fill.toFixed(0).padStart(4)}%`);
+  }
+  const span = (k) => Math.max(...rows.map((r) => r[k])) - Math.min(...rows.map((r) => r[k]));
+  const odd = (k, lim) => rows.filter((r) => Math.abs(r[k] - rows.reduce((s, x) => s + x[k], 0) / rows.length) > lim).map((r) => r.id);
+  check(span("height") < 0.18, `subjects are a similar size (spread ${(span("height") * 100).toFixed(0)} points)` + (odd("height", 0.09).length ? ` — out: ${odd("height", 0.09).join(", ")}` : ""));
+  check(span("top") < 0.15, `subjects start at a similar height (spread ${(span("top") * 100).toFixed(0)} points)` + (odd("top", 0.075).length ? ` — out: ${odd("top", 0.075).join(", ")}` : ""));
+  check(span("cx") < 0.12, `subjects are similarly centred (spread ${(span("cx") * 100).toFixed(0)} points)`);
+  if (rows.length < SEATS.length) note(`${rows.length} of ${SEATS.length} seats so far: missing ${SEATS.filter((s) => !rows.some((r) => r.id === s)).join(", ")}`);
+}
+
+const setMode = process.argv.includes("--set");
 const files = (await readdir(IN).catch(() => [])).filter((f) => /\.(png|webp)$/i.test(f)).sort();
 if (!files.length) {
   console.log(`Nothing to check in ${IN}\nDrop the images there as they arrive, named <id>-cut.png or <id>-talk.png.`);
   process.exit(0);
 }
-say(`Checking ${files.length} image(s) in ${IN}`);
-for (const f of files) await one(path.join(IN, f));
+say(`Checking ${files.length} image(s) in ${IN}${setMode ? " as one set" : ""}`);
+if (setMode) await asSet(files.map((f) => path.join(IN, f)));
+else for (const f of files) await one(path.join(IN, f));
 say(failures.length ? `\n${failures.length} FAILED` : "\nall passed");
 process.exit(failures.length ? 1 : 0);
