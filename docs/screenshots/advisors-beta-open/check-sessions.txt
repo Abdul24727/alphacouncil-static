@@ -1,0 +1,67 @@
+PASS  en idle: no sideways scroll (0px)
+PASS  en idle: disclaimer on screen
+PASS  en idle: citation chips name a dataset (0)
+PASS  en: the verdict arrived (76 s on screen)
+PASS  en: lines played in turn (chair, alwaleed, alrumayyan, marks, dalio, lynch, buffett)
+PASS  en: saw the stages live (brief, openings, faultlines, debate, final)
+PASS  en verdict 1440: no sideways scroll (0px)
+PASS  en verdict 1440: disclaimer on screen
+PASS  en verdict 1440: citation chips name a dataset (20)
+PASS  en: verdict headline is an assessment, not advice ("Trailing earnings cover the dividend, but safety rests on the balance sheet and untested cash flow.")
+INFO  en: figures marked as not found in the data: 10
+INFO  en: Took 1:14
+INFO  en: the brief is a `open` session (0 options)
+PASS  en: the brief is a `open` session as asked (open)
+PASS  en: an open session lists the two to four things to weigh (4)
+PASS  en: round 1 is a turn from each advisor (6)
+FAIL  en: every advisor answered round 1 — away: buffett: bad_output; dalio: bad_output
+PASS  en: round 1 answers are full, not openings (372, 387, 491, 457 words)
+INFO  en: round 1 answers outside 250–400 words: 2 of 4 (marks 491, lynch 457)
+PASS  en: round 2 is a turn from each advisor (6)
+PASS  en: every advisor answered round 2
+INFO  en: advisors who conceded a point: 5
+PASS  en: round 3 is a turn from each advisor (6)
+PASS  en: every advisor answered round 3
+PASS  en: every final word says what changed (6 of 6)
+PASS  en: the final word carries no scores
+PASS  en: the Chair wrote the room's complete answer
+INFO  en: the Chair's answer is 269 words (asked for 200–350)
+PASS  en: the Chair's answer is an assessment, not advice
+PASS  en 390: no sideways scroll (0px)
+PASS  en 390: disclaimer on screen
+PASS  en 390: citation chips name a dataset (20)
+PASS  en 390: "Play the debate" replays it in turn (chair, then alwaleed; 124 characters typed)
+PASS  ar idle: no sideways scroll (0px)
+PASS  ar idle: disclaimer on screen
+PASS  ar idle: citation chips name a dataset (0)
+PASS  ar: the verdict arrived (76 s on screen)
+PASS  ar: lines played in turn (chair, alwaleed, buffett, lynch, alrumayyan, marks, dalio)
+PASS  ar: saw the stages live (brief, openings, faultlines, debate, final)
+PASS  ar verdict 1440: no sideways scroll (0px)
+PASS  ar verdict 1440: disclaimer on screen
+PASS  ar verdict 1440: citation chips name a dataset (26)
+PASS  ar: verdict headline is an assessment, not advice ("الأرباح الحالية تفوق التوزيع ظاهرياً، لكن غياب نسبة التوزيع والتدفق النقدي يمنع الجزم بالأمان")
+PASS  ar: the verdict is in Arabic
+INFO  ar: figures marked as not found in the data: 1
+INFO  ar: استغرقت 1:15
+INFO  ar: the brief is a `open` session (0 options)
+PASS  ar: the brief is a `open` session as asked (open)
+PASS  ar: an open session lists the two to four things to weigh (4)
+PASS  ar: round 1 is a turn from each advisor (6)
+FAIL  ar: every advisor answered round 1 — away: dalio: bad_output
+PASS  ar: round 1 answers are full, not openings (293, 332, 290, 269, 346 words)
+INFO  ar: round 1 answers outside 250–400 words: 0 of 5
+PASS  ar: round 2 is a turn from each advisor (6)
+PASS  ar: every advisor answered round 2
+INFO  ar: advisors who conceded a point: 6
+PASS  ar: round 3 is a turn from each advisor (6)
+PASS  ar: every advisor answered round 3
+PASS  ar: every final word says what changed (6 of 6)
+PASS  ar: the final word carries no scores
+PASS  ar: the Chair wrote the room's complete answer
+INFO  ar: the Chair's answer is 228 words (asked for 200–350)
+PASS  ar: the Chair's answer is an assessment, not advice
+PASS  ar 390: no sideways scroll (0px)
+PASS  ar 390: disclaimer on screen
+PASS  ar 390: citation chips name a dataset (26)
+PASS  ar 390: "Play the debate" replays it in turn (chair, then alwaleed; 148 characters typed)
