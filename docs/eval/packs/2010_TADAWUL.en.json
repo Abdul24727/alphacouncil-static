@@ -1,0 +1,834 @@
+{
+ "ticker_key": "2010_TADAWUL",
+ "slug": "2010",
+ "header": "DATA PACK. Company: SABIC / سابك. Symbol 2010 on TADAWUL, listing currency SAR, sector Materials. Fetched 2026-10-27 14:28 UTC from AlphaCouncil's database. Units: market_cap_mn and statement lines are millions of the listing currency; fields ending in _pct are percents. A dataset holding an error has no data for this company.",
+ "fetched_at": "2026-10-27 14:28 UTC",
+ "data": {
+  "P1": {
+   "ticker": {
+    "ticker_key": "2010_TADAWUL",
+    "symbol": "2010",
+    "exchange": "TADAWUL",
+    "currency": "SAR",
+    "name_en": "SABIC",
+    "name_ar": "سابك",
+    "sector_en": "Materials",
+    "sector_ar": "المواد الأساسية",
+    "slug": "2010"
+   },
+   "quote": {
+    "as_of_date": "2026-10-13",
+    "freshness": {
+     "category": "prices",
+     "as_of": "2026-10-13T00:00:00+00:00",
+     "updated_at": "2026-10-14T00:05:53+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 2.0,
+     "stale": true
+    },
+    "source": "prices_file",
+    "last_price": 45.32,
+    "day_change_pct": -0.83,
+    "volume": 875798.0,
+    "value_traded": null,
+    "value_traded_reason": "not_in_price_file",
+    "market_cap_mn": 151650.0
+   },
+   "valuation": {
+    "pe": null,
+    "pb": 1.24,
+    "dividend_yield_pct": 5.86,
+    "roe_pct": -15.37,
+    "roa_pct": -8.24,
+    "ev_ebitda": null,
+    "eps_ttm": null,
+    "eps_ttm_reason": "unit_unconfirmed",
+    "book_value": 41.18,
+    "shares_out_mn": 3000.0
+   },
+   "returns": {
+    "return_1m_pct": -3.7142857143,
+    "return_3m_pct": -17.671009772,
+    "return_6m_pct": -12.1633362294,
+    "return_12m_pct": -6.3888888889,
+    "vol_1y_pct": 24.1350091449,
+    "max_drawdown_pct": -86.3107185869
+   },
+   "technicals": {
+    "as_of_date": "2026-08-11T00:00:00",
+    "rsi_14": 34.965034965034974,
+    "sma_50": 52.8242,
+    "sma_200": 55.7738,
+    "above_50d": false,
+    "above_200d": false,
+    "macd_bull": true,
+    "dist_to_52w_high": -19.999999999999996,
+    "dist_from_52w_low": 6.224066390041494
+   },
+   "has_price_history": true,
+   "freshness": [
+    {
+     "category": "disclosures",
+     "as_of": "2026-01-07T21:00:00+00:00",
+     "updated_at": "2026-08-07T00:12:50.669688+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 120.0,
+     "stale": true
+    },
+    {
+     "category": "fundamentals",
+     "as_of": "2026-08-12T01:43:13.138057+00:00",
+     "updated_at": "2026-08-12T01:43:13.138057+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 100.0,
+     "stale": false
+    },
+    {
+     "category": "news",
+     "as_of": "2026-01-07T21:00:00+00:00",
+     "updated_at": "2026-08-12T00:05:11.213678+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 30.0,
+     "stale": true
+    },
+    {
+     "category": "prices",
+     "as_of": "2026-08-11T00:00:00+00:00",
+     "updated_at": "2026-08-12T01:43:12.620873+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 2.0,
+     "stale": true
+    },
+    {
+     "category": "technical",
+     "as_of": "2026-08-11T00:00:00+00:00",
+     "updated_at": "2026-08-12T01:43:12.620873+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 2.0,
+     "stale": true
+    }
+   ]
+  },
+  "P2": {
+   "groups": [
+    {
+     "group": "valuation",
+     "metrics": [
+      {
+       "key": "pe",
+       "value": null,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      },
+      {
+       "key": "pb",
+       "value": 1.24,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "ev_ebitda",
+       "value": null,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "na_sector",
+       "sector_percentile": null
+      },
+      {
+       "key": "ps",
+       "value": null,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      }
+     ],
+     "score": null
+    },
+    {
+     "group": "profitability",
+     "metrics": [
+      {
+       "key": "roe",
+       "value": -15.37,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "roa",
+       "value": -8.24,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "roic",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      },
+      {
+       "key": "net_margin",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      },
+      {
+       "key": "gross_margin",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "na_sector",
+       "sector_percentile": null
+      }
+     ],
+     "score": null
+    },
+    {
+     "group": "health",
+     "metrics": [
+      {
+       "key": "debt_equity",
+       "value": 0.26061782975782133,
+       "unit": "ratio",
+       "higher_is_better": false,
+       "status": "ok",
+       "sector_percentile": 50.5
+      },
+      {
+       "key": "current_ratio",
+       "value": 1.8006209078026552,
+       "unit": "ratio",
+       "higher_is_better": true,
+       "status": "ok",
+       "sector_percentile": 63.4
+      },
+      {
+       "key": "interest_coverage",
+       "value": null,
+       "unit": "x",
+       "higher_is_better": true,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      },
+      {
+       "key": "fcf_yield",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "na_sector",
+       "sector_percentile": null
+      }
+     ],
+     "score": 56.95
+    },
+    {
+     "group": "income",
+     "metrics": [
+      {
+       "key": "div_yield",
+       "value": 5.86,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "payout",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": false,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      }
+     ],
+     "score": null
+    }
+   ],
+   "freshness": {
+    "category": "fundamentals",
+    "as_of": "2026-08-12T01:43:13.138057+00:00",
+    "updated_at": "2026-08-12T01:43:13.138057+00:00",
+    "next_at": "2026-10-28T00:00:00+00:00",
+    "max_age_days": 100.0,
+    "stale": false
+   }
+  },
+  "P3": {
+   "currency": "SAR",
+   "dividends": [
+    {
+     "announce_date": "2026-07-29",
+     "ex_date": "2026-08-11",
+     "pay_date": "2026-09-01",
+     "dps": 1.1,
+     "amount_mn": 3300.0,
+     "note": "H 1 _ 2026"
+    },
+    {
+     "announce_date": "2026-03-04",
+     "ex_date": "2026-03-08",
+     "pay_date": "2026-03-31",
+     "dps": 1.5,
+     "amount_mn": 4500.0,
+     "note": "H 2 _ 2025"
+    },
+    {
+     "announce_date": "2025-08-03",
+     "ex_date": "2025-08-19",
+     "pay_date": "2025-09-09",
+     "dps": 1.5,
+     "amount_mn": 4500.0,
+     "note": "H 1 _ 2025"
+    },
+    {
+     "announce_date": "2024-12-22",
+     "ex_date": "2025-02-11",
+     "pay_date": "2025-03-04",
+     "dps": 1.7,
+     "amount_mn": 5100.0,
+     "note": "H 2 _ 2024"
+    },
+    {
+     "announce_date": "2024-05-21",
+     "ex_date": "2024-09-03",
+     "pay_date": "2024-09-24",
+     "dps": 1.7,
+     "amount_mn": 5100.0,
+     "note": "H 1 _ 2024"
+    },
+    {
+     "announce_date": "2023-12-12",
+     "ex_date": "2024-02-12",
+     "pay_date": "2024-03-04",
+     "dps": 1.6,
+     "amount_mn": 4800.0,
+     "note": "H 2 _ 2023"
+    },
+    {
+     "announce_date": "2023-06-15",
+     "ex_date": "2023-09-12",
+     "pay_date": "2023-10-02",
+     "dps": 1.8,
+     "amount_mn": 5400.0,
+     "note": "H 1 _ 2023"
+    },
+    {
+     "announce_date": "2022-12-13",
+     "ex_date": "2023-03-13",
+     "pay_date": "2023-04-02",
+     "dps": 2.0,
+     "amount_mn": 6000.0,
+     "note": "H 2 _ 2022"
+    },
+    {
+     "announce_date": "2022-06-19",
+     "ex_date": "2022-09-11",
+     "pay_date": "2022-10-02",
+     "dps": 2.25,
+     "amount_mn": 6750.0,
+     "note": "H1 _ 2022"
+    },
+    {
+     "announce_date": "2021-12-15",
+     "ex_date": "2022-04-10",
+     "pay_date": "2022-04-25",
+     "dps": 2.25,
+     "amount_mn": 6750.0,
+     "note": "H2 _ 2021"
+    }
+   ],
+   "capital_changes": [
+    {
+     "date": "2008-03-29",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 25000.0,
+     "capital_after_mn": 30000.0,
+     "change_pct": 20.0,
+     "note": "The General Assembly approved increasing the company's capital by 20% to reach SAR 30bn through a 1:5 free shares distribution"
+    },
+    {
+     "date": "2006-04-22",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 20000.0,
+     "capital_after_mn": 25000.0,
+     "change_pct": 25.0,
+     "note": "The Company approved increasing its capital by 25% to reach SAR 25bn through a 1:4 free shares distribution"
+    },
+    {
+     "date": "2005-04-16",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 15000.0,
+     "capital_after_mn": 20000.0,
+     "change_pct": 33.33,
+     "note": "The Company approved increasing its capital by 33.3% to reach SAR 20bn through a 1:3 free shares distribution"
+    },
+    {
+     "date": "2001-04-14",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 13333.0,
+     "capital_after_mn": 15000.0,
+     "change_pct": 12.5,
+     "note": "The Company approved increasing its capital by 12.5% to reach SAR 15bn through a 1:8 free shares distribution"
+    },
+    {
+     "date": "2000-04-13",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 10000.0,
+     "capital_after_mn": 13333.0,
+     "change_pct": 33.33,
+     "note": "The Company approved increasing its capital by 33.3% to reach SAR 13.3bn through a 1:3 free shares distribution"
+    },
+    {
+     "date": "1990-01-01",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 7500.0,
+     "capital_after_mn": 10000.0,
+     "change_pct": 33.33,
+     "note": "The Company approved increasing its capital by 33.3% to reach SAR 10bn through a 1:3 free shares distribution"
+    },
+    {
+     "date": "1989-01-01",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 5000.0,
+     "capital_after_mn": 7500.0,
+     "change_pct": 50.0,
+     "note": "The Company approved increasing its capital by 50% to reach SAR 7.5bn through a 1:2 free shares distribution"
+    }
+   ]
+  },
+  "P4": {
+   "seats": [
+    {
+     "seat": "value",
+     "vote": "abstain",
+     "inputs": [
+      {
+       "name": "pe",
+       "value": null,
+       "unit": "x"
+      }
+     ],
+     "rule": "P/E below 10 bullish, below 16 neutral, else bearish; no or negative earnings abstains",
+     "thresholds": {
+      "pe_bullish_below": 10.0,
+      "pe_neutral_below": 16.0
+     }
+    },
+    {
+     "seat": "quality",
+     "vote": "bearish",
+     "inputs": [
+      {
+       "name": "roe",
+       "value": -15.37,
+       "unit": "%"
+      }
+     ],
+     "rule": "ROE above 20% bullish, above 12% neutral, else bearish",
+     "thresholds": {
+      "roe_bullish_above": 20.0,
+      "roe_neutral_above": 12.0
+     }
+    },
+    {
+     "seat": "income",
+     "vote": "bullish",
+     "inputs": [
+      {
+       "name": "dividend_yield",
+       "value": 5.86,
+       "unit": "%"
+      }
+     ],
+     "rule": "Dividend yield above 5% bullish, above 2.5% neutral, else bearish; no dividend abstains",
+     "thresholds": {
+      "yield_bullish_above": 5.0,
+      "yield_neutral_above": 2.5
+     }
+    },
+    {
+     "seat": "momentum",
+     "vote": "bearish",
+     "inputs": [
+      {
+       "name": "regime_score",
+       "value": 15.0,
+       "unit": "/100"
+      },
+      {
+       "name": "golden_cross",
+       "value": "no",
+       "unit": null
+      }
+     ],
+     "rule": "Trend regime above 65 with the 50-day above the 200-day bullish, above 45 neutral, else bearish",
+     "thresholds": {
+      "regime_bullish_above": 65.0,
+      "regime_neutral_above": 45.0
+     }
+    },
+    {
+     "seat": "risk",
+     "vote": "neutral",
+     "inputs": [
+      {
+       "name": "volatility_1y",
+       "value": 24.13500914485072,
+       "unit": "%"
+      },
+      {
+       "name": "dividend_yield",
+       "value": 5.86,
+       "unit": "%"
+      }
+     ],
+     "rule": "1-year volatility below 15% with a yield above 3% bullish, below 25% neutral, else bearish",
+     "thresholds": {
+      "vol_bullish_below": 15.0,
+      "yield_bullish_above": 3.0,
+      "vol_neutral_below": 25.0
+     }
+    },
+    {
+     "seat": "news",
+     "vote": "abstain",
+     "inputs": [
+      {
+       "name": "positive",
+       "value": 0.0,
+       "unit": null
+      },
+      {
+       "name": "negative",
+       "value": 0.0,
+       "unit": null
+      },
+      {
+       "name": "rated_items",
+       "value": 0.0,
+       "unit": null
+      }
+     ],
+     "rule": "Over the last 30 days of rated news: a majority positive bullish, a majority negative bearish, otherwise neutral; no rated news abstains",
+     "thresholds": {
+      "window_days": 30.0
+     }
+    }
+   ],
+   "counts": {
+    "bullish": 1,
+    "neutral": 1,
+    "bearish": 2,
+    "abstain": 2
+   },
+   "as_of_date": "2026-08-07",
+   "freshness": {
+    "category": "prices",
+    "as_of": "2026-08-07T00:00:00+00:00",
+    "updated_at": "2026-08-07T00:12:19+00:00",
+    "next_at": "2026-10-28T00:00:00+00:00",
+    "max_age_days": 2.0,
+    "stale": true
+   }
+  },
+  "P5": {
+   "basis": "sector_exchange",
+   "sector_en": "Materials",
+   "sector_ar": "المواد الأساسية",
+   "peers": [
+    {
+     "ticker": {
+      "ticker_key": "1211_TADAWUL",
+      "symbol": "1211",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Maaden",
+      "name_ar": "معادن",
+      "sector_en": "Materials",
+      "sector_ar": "المواد الأساسية",
+      "slug": "1211"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 60.45,
+     "day_change_pct": 1.43,
+     "market_cap_mn": 235075.54,
+     "pe": 32.58,
+     "dividend_yield_pct": null
+    },
+    {
+     "ticker": {
+      "ticker_key": "2020_TADAWUL",
+      "symbol": "2020",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "SABIC Agri-Nutrients Company",
+      "name_ar": "سابك للمغذيات الزراعية",
+      "sector_en": "Materials",
+      "sector_ar": "المواد الأساسية",
+      "slug": "2020"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 121.6,
+     "day_change_pct": 0.25,
+     "market_cap_mn": 57886.46,
+     "pe": 15.4,
+     "dividend_yield_pct": 5.57
+    },
+    {
+     "ticker": {
+      "ticker_key": "2223_TADAWUL",
+      "symbol": "2223",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Saudi Aramco Base Oil Company - Luberef",
+      "name_ar": "لوبريف",
+      "sector_en": "Materials",
+      "sector_ar": "المواد الأساسية",
+      "slug": "2223"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 126.7,
+     "day_change_pct": -0.94,
+     "market_cap_mn": 21380.63,
+     "pe": 15.16,
+     "dividend_yield_pct": 3.55
+    },
+    {
+     "ticker": {
+      "ticker_key": "2290_TADAWUL",
+      "symbol": "2290",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Yanbu National Petrochemical Company",
+      "name_ar": "ينساب",
+      "sector_en": "Materials",
+      "sector_ar": "المواد الأساسية",
+      "slug": "2290"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 29.9,
+     "day_change_pct": -2.73,
+     "market_cap_mn": 16818.75,
+     "pe": 58.93,
+     "dividend_yield_pct": 6.56
+    },
+    {
+     "ticker": {
+      "ticker_key": "2310_TADAWUL",
+      "symbol": "2310",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Sipchem",
+      "name_ar": "سبكيم العالمية",
+      "sector_en": "Materials",
+      "sector_ar": "المواد الأساسية",
+      "slug": "2310"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 13.01,
+     "day_change_pct": -2.03,
+     "market_cap_mn": 9540.62,
+     "pe": null,
+     "dividend_yield_pct": 7.57
+    },
+    {
+     "ticker": {
+      "ticker_key": "2250_TADAWUL",
+      "symbol": "2250",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Saudi Industrial Investment Group",
+      "name_ar": "المجموعة السعودية",
+      "sector_en": "Materials",
+      "sector_ar": "المواد الأساسية",
+      "slug": "2250"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 12.36,
+     "day_change_pct": -2.37,
+     "market_cap_mn": 8396.4,
+     "pe": null,
+     "dividend_yield_pct": 1.97
+    },
+    {
+     "ticker": {
+      "ticker_key": "2350_TADAWUL",
+      "symbol": "2350",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Saudi Kayan Petrochemical Company",
+      "name_ar": "كيان السعودية",
+      "sector_en": "Materials",
+      "sector_ar": "المواد الأساسية",
+      "slug": "2350"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 5.2,
+     "day_change_pct": -2.99,
+     "market_cap_mn": 7800.0,
+     "pe": null,
+     "dividend_yield_pct": null
+    },
+    {
+     "ticker": {
+      "ticker_key": "1322_TADAWUL",
+      "symbol": "1322",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Al Masane Al Kobra Mining Company",
+      "name_ar": "أماك",
+      "sector_en": "Materials",
+      "sector_ar": "المواد الأساسية",
+      "slug": "1322"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 78.3,
+     "day_change_pct": 4.4,
+     "market_cap_mn": 7047.0,
+     "pe": 32.47,
+     "dividend_yield_pct": null
+    }
+   ]
+  },
+  "P6": [
+   {
+    "date": "2026-01-07T21:00:00",
+    "section": "disclosures",
+    "title": "SABIC to sell Americas, Europe units; expects SAR 18.3B non-cash loss",
+    "title_en": null,
+    "impact": null,
+    "summary": null
+   },
+   {
+    "date": "2025-12-31T21:00:00",
+    "section": "disclosures",
+    "title": "SABIC EGM approves transferring SAR 110.9B general reserve to retained earnings",
+    "title_en": null,
+    "impact": null,
+    "summary": null
+   },
+   {
+    "date": "2025-04-09T21:00:00",
+    "section": "disclosures",
+    "title": "SABIC OGM approves Alba stake sale to Maaden for SAR 3.6B",
+    "title_en": null,
+    "impact": null,
+    "summary": "SABIC shareholders approved in the ordinary general meeting held on April 9, 2025, the transaction concluded by SABIC Industrial Investments Co., which sold its 20.62% stake in Bahrain’s Alba Co. to Maaden for BHD 363.08 million (approximately SAR 3.61 billion) without preferential terms. This is a related party transaction as Vice Chairman Mohammed Al-Qahtani has an indirect interest being a member of Maaden's board. The board was also authorized to distribute interim cash dividends for 2025, and new board members were elected for a three-year term starting April 10, 2025."
+   },
+   {
+    "date": "2025-02-18T21:00:00",
+    "section": "disclosures",
+    "title": "Maaden acquires 20.62% stake in Bahrain’s Alba",
+    "title_en": null,
+    "impact": null,
+    "summary": "Saudi Arabian Mining Co. (Maaden) announced the completion of its acquisition of a 20.62% stake in Aluminum Bahrain (Alba) from Saudi Basic Industries Corp. (SABIC) Industrial Investments. The closing transaction took place on February 17, 2025, amounting to BHD 363.08 million (SAR 3.61 billion). SABIC indicated that this transaction aligns with its strategy to optimize its portfolio and focus on core businesses."
+   },
+   {
+    "date": "2025-01-01T21:00:00",
+    "section": "disclosures",
+    "title": "SABIC says local affiliates notified of feedstock price increase",
+    "title_en": null,
+    "impact": null,
+    "summary": "SABIC announced that its affiliates in the Kingdom received an official notice from Saudi Aramco regarding the increase in feedstock prices. The total cost of sales is expected to increase by approximately 0.2% (around SAR 13.5 million) based on the audited financial statements as of September 30, 2024. The financial impact is anticipated to appear starting Q1 2025. However, this adjustment is expected not to significantly impact the company's net profit in the coming period. Luberef will work to enhance operational efficiencies and minimize the impact of the price hike."
+   },
+   {
+    "date": "2024-12-21T21:00:00",
+    "section": "disclosures",
+    "title": "SABIC updates interim dividend disclosure methodology",
+    "title_en": null,
+    "impact": null,
+    "summary": "SABIC announced a change in the methodology for disclosing the board of directors' decisions regarding interim dividend payments, which will apply from 2025, subject to ordinary general meeting approval. According to an announcement on Tadawul, decisions regarding interim dividends for the first half will be announced after the approval of the financial results for the second quarter, while interim dividends for the second half will be disclosed after the approval of the annual financial results. The total dividends amount to SAR 3.4 per share, with H1 2024 dividends distributed on May 21, 2024, and scheduled payments for H2 2024 set for March 4, 2025."
+   },
+   {
+    "date": "2024-09-16T21:00:00",
+    "section": "disclosures",
+    "title": "Maaden to acquire SABIC's 20.6% stake in Alba",
+    "title_en": null,
+    "impact": null,
+    "summary": "On September 17, 2024, Saudi Arabian Mining Company (Maaden) signed a share purchase agreement to acquire 20.62% of the shares from SABIC Industrial Investments, totaling 292.8 million shares in Alba. The acquisition value ranges between BHD 363.08 million and BHD 398.2 million. Maaden aims to significantly grow its aluminum business by 2040, making this deal a crucial part of its strategy. The completion of the transaction requires regulatory approvals and the general assembly's approval."
+   }
+  ],
+  "P7": {
+   "ticker": "2010_TADAWUL",
+   "currency": "SAR",
+   "range": "1Y",
+   "from": "2025-09-29",
+   "to": "2026-10-13",
+   "first_close": 61.75,
+   "last_close": 45.32,
+   "change_pct": -26.61,
+   "high_close": 62.3,
+   "low_close": 45.32,
+   "average_volume": 1681274,
+   "trading_days": 260
+  },
+  "P8": {
+   "ticker": "2010_TADAWUL",
+   "currency": "SAR",
+   "range": "5Y",
+   "from": "2021-07-29",
+   "to": "2026-10-13",
+   "first_close": 121.0,
+   "last_close": 45.32,
+   "change_pct": -62.55,
+   "high_close": 139.0,
+   "low_close": 45.32,
+   "average_volume": 1832835,
+   "trading_days": 1300
+  }
+ },
+ "sources": {
+  "P1": {
+   "title_en": "Quote, valuation, returns and technicals",
+   "title_ar": "السعر والتقييم والعوائد والمؤشرات الفنية",
+   "ok": true
+  },
+  "P2": {
+   "title_en": "Fundamentals with sector percentiles",
+   "title_ar": "الأساسيات ومقارنتها بالقطاع",
+   "ok": true
+  },
+  "P3": {
+   "title_en": "Dividends and capital changes",
+   "title_ar": "التوزيعات وتغيرات رأس المال",
+   "ok": true
+  },
+  "P4": {
+   "title_en": "Council seats (rule-based votes)",
+   "title_ar": "مقاعد المجلس (تصويت بالقواعد)",
+   "ok": true
+  },
+  "P5": {
+   "title_en": "Sector peers",
+   "title_ar": "الشركات المماثلة في القطاع",
+   "ok": true
+  },
+  "P6": {
+   "title_en": "Latest news and disclosures",
+   "title_ar": "آخر الأخبار والإفصاحات",
+   "ok": true
+  },
+  "P7": {
+   "title_en": "Price summary, 1 year",
+   "title_ar": "ملخص السعر، سنة",
+   "ok": true
+  },
+  "P8": {
+   "title_en": "Price summary, 5 years",
+   "title_ar": "ملخص السعر، خمس سنوات",
+   "ok": true
+  }
+ }
+}

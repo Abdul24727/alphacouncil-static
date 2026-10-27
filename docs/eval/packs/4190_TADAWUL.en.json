@@ -1,0 +1,826 @@
+{
+ "ticker_key": "4190_TADAWUL",
+ "slug": "4190",
+ "header": "DATA PACK. Company: Jarir / جرير. Symbol 4190 on TADAWUL, listing currency SAR, sector Consumer Discretionary Distribution & Retail. Fetched 2026-10-27 14:28 UTC from AlphaCouncil's database. Units: market_cap_mn and statement lines are millions of the listing currency; fields ending in _pct are percents. A dataset holding an error has no data for this company.",
+ "fetched_at": "2026-10-27 14:28 UTC",
+ "data": {
+  "P1": {
+   "ticker": {
+    "ticker_key": "4190_TADAWUL",
+    "symbol": "4190",
+    "exchange": "TADAWUL",
+    "currency": "SAR",
+    "name_en": "Jarir",
+    "name_ar": "جرير",
+    "sector_en": "Consumer Discretionary Distribution & Retail",
+    "sector_ar": "تجزئة وتوزيع السلع الكمالية",
+    "slug": "4190"
+   },
+   "quote": {
+    "as_of_date": "2026-10-13",
+    "freshness": {
+     "category": "prices",
+     "as_of": "2026-10-13T00:00:00+00:00",
+     "updated_at": "2026-10-14T00:18:45+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 2.0,
+     "stale": true
+    },
+    "source": "prices_file",
+    "last_price": 17.33,
+    "day_change_pct": 8.18,
+    "volume": 5397034.0,
+    "value_traded": null,
+    "value_traded_reason": "not_in_price_file",
+    "market_cap_mn": 20532.0
+   },
+   "valuation": {
+    "pe": 18.43,
+    "pb": 12.28,
+    "dividend_yield_pct": 5.16,
+    "roe_pct": 67.25,
+    "roa_pct": 25.88,
+    "ev_ebitda": null,
+    "eps_ttm": 0.94,
+    "eps_ttm_reason": null,
+    "book_value": 1.41,
+    "shares_out_mn": 1200.0
+   },
+   "returns": {
+    "return_1m_pct": -2.0045819015,
+    "return_3m_pct": 15.4520917679,
+    "return_6m_pct": 23.0935251799,
+    "return_12m_pct": 33.776387803,
+    "vol_1y_pct": 20.3281533556,
+    "max_drawdown_pct": -65.7190635452
+   },
+   "technicals": {
+    "as_of_date": "2026-08-11T00:00:00",
+    "rsi_14": 50.91463414634149,
+    "sma_50": 16.8432,
+    "sma_200": 14.658150000000001,
+    "above_50d": true,
+    "above_200d": true,
+    "macd_bull": true,
+    "dist_to_52w_high": -6.093579978237196,
+    "dist_from_52w_low": 40.78303425774878
+   },
+   "has_price_history": true,
+   "freshness": [
+    {
+     "category": "disclosures",
+     "as_of": "2026-04-08T21:00:00+00:00",
+     "updated_at": "2026-08-07T00:50:48.078240+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 120.0,
+     "stale": true
+    },
+    {
+     "category": "fundamentals",
+     "as_of": "2026-08-12T01:43:13.138057+00:00",
+     "updated_at": "2026-08-12T01:43:13.138057+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 100.0,
+     "stale": false
+    },
+    {
+     "category": "news",
+     "as_of": "2026-07-15T00:00:00+00:00",
+     "updated_at": "2026-08-12T00:18:21.805740+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 30.0,
+     "stale": true
+    },
+    {
+     "category": "prices",
+     "as_of": "2026-08-11T00:00:00+00:00",
+     "updated_at": "2026-08-12T01:43:12.620873+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 2.0,
+     "stale": true
+    },
+    {
+     "category": "technical",
+     "as_of": "2026-08-11T00:00:00+00:00",
+     "updated_at": "2026-08-12T01:43:12.620873+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 2.0,
+     "stale": true
+    }
+   ]
+  },
+  "P2": {
+   "groups": [
+    {
+     "group": "valuation",
+     "metrics": [
+      {
+       "key": "pe",
+       "value": 18.43,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "pb",
+       "value": 12.28,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "ev_ebitda",
+       "value": null,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "na_sector",
+       "sector_percentile": null
+      },
+      {
+       "key": "ps",
+       "value": null,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      }
+     ],
+     "score": null
+    },
+    {
+     "group": "profitability",
+     "metrics": [
+      {
+       "key": "roe",
+       "value": 67.25,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "roa",
+       "value": 25.88,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "roic",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      },
+      {
+       "key": "net_margin",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      },
+      {
+       "key": "gross_margin",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "na_sector",
+       "sector_percentile": null
+      }
+     ],
+     "score": null
+    },
+    {
+     "group": "health",
+     "metrics": [
+      {
+       "key": "debt_equity",
+       "value": 0.0,
+       "unit": "ratio",
+       "higher_is_better": false,
+       "status": "ok",
+       "sector_percentile": 89.7
+      },
+      {
+       "key": "current_ratio",
+       "value": 1.3732597502966177,
+       "unit": "ratio",
+       "higher_is_better": true,
+       "status": "ok",
+       "sector_percentile": 45.0
+      },
+      {
+       "key": "interest_coverage",
+       "value": null,
+       "unit": "x",
+       "higher_is_better": true,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      },
+      {
+       "key": "fcf_yield",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "na_sector",
+       "sector_percentile": null
+      }
+     ],
+     "score": 67.35
+    },
+    {
+     "group": "income",
+     "metrics": [
+      {
+       "key": "div_yield",
+       "value": 5.16,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "payout",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": false,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      }
+     ],
+     "score": null
+    }
+   ],
+   "freshness": {
+    "category": "fundamentals",
+    "as_of": "2026-08-12T01:43:13.138057+00:00",
+    "updated_at": "2026-08-12T01:43:13.138057+00:00",
+    "next_at": "2026-10-28T00:00:00+00:00",
+    "max_age_days": 100.0,
+    "stale": false
+   }
+  },
+  "P3": {
+   "currency": "SAR",
+   "dividends": [
+    {
+     "announce_date": "2026-08-10",
+     "ex_date": "2026-08-17",
+     "pay_date": "2026-08-26",
+     "dps": 0.2,
+     "amount_mn": 240.0,
+     "note": "Q 2 _ 2026"
+    },
+    {
+     "announce_date": "2026-05-11",
+     "ex_date": "2026-06-01",
+     "pay_date": "2026-06-10",
+     "dps": 0.21,
+     "amount_mn": 252.0,
+     "note": "Q 1 _ 2026"
+    },
+    {
+     "announce_date": "2026-03-31",
+     "ex_date": "2026-04-06",
+     "pay_date": "2026-04-15",
+     "dps": 0.26,
+     "amount_mn": 312.0,
+     "note": "Q 4 _ 2025"
+    },
+    {
+     "announce_date": "2025-11-05",
+     "ex_date": "2025-11-10",
+     "pay_date": "2025-11-19",
+     "dps": 0.28,
+     "amount_mn": 336.0,
+     "note": "Q 3 _ 2025"
+    },
+    {
+     "announce_date": "2025-08-06",
+     "ex_date": "2025-08-11",
+     "pay_date": "2025-08-20",
+     "dps": 0.16,
+     "amount_mn": 192.0,
+     "note": "Q 2 _ 2025"
+    },
+    {
+     "announce_date": "2025-05-11",
+     "ex_date": "2025-05-12",
+     "pay_date": "2025-05-21",
+     "dps": 0.19,
+     "amount_mn": 228.0,
+     "note": "Q 1 _ 2025"
+    },
+    {
+     "announce_date": "2025-03-24",
+     "ex_date": "2025-04-07",
+     "pay_date": "2025-04-16",
+     "dps": 0.23,
+     "amount_mn": 276.0,
+     "note": "Q 4 _ 2024"
+    },
+    {
+     "announce_date": "2024-11-07",
+     "ex_date": "2024-11-11",
+     "pay_date": "2024-11-20",
+     "dps": 0.26,
+     "amount_mn": 312.0,
+     "note": "Q 3 _ 2024"
+    },
+    {
+     "announce_date": "2024-08-08",
+     "ex_date": "2024-08-12",
+     "pay_date": "2024-08-21",
+     "dps": 0.15,
+     "amount_mn": 180.0,
+     "note": "Q 2 _ 2024"
+    },
+    {
+     "announce_date": "2024-05-13",
+     "ex_date": "2024-05-20",
+     "pay_date": "2024-05-29",
+     "dps": 0.19,
+     "amount_mn": 228.0,
+     "note": "Q 1 _ 2024"
+    }
+   ],
+   "capital_changes": [
+    {
+     "date": "2018-10-28",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 900.0,
+     "capital_after_mn": 1200.0,
+     "change_pct": 33.33,
+     "note": "The General Assembly approved a 33.33 % capital increase to reach SAR 1200mln through a 1:3 free shares distribution"
+    },
+    {
+     "date": "2013-11-27",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 600.0,
+     "capital_after_mn": 900.0,
+     "change_pct": 50.0,
+     "note": "The General Assembly approved a 50% capital increase to reach SAR 900 mn through a 1:2 free shares distribution."
+    },
+    {
+     "date": "2011-12-25",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 400.0,
+     "capital_after_mn": 600.0,
+     "change_pct": 50.0,
+     "note": "The General Assembly approved a 50% capital increase to reach SAR 600 mn through a 1:2 free shares distribution"
+    },
+    {
+     "date": "2009-06-03",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 300.0,
+     "capital_after_mn": 400.0,
+     "change_pct": 33.33,
+     "note": "The General Assembly approved a 33.3% capital increase to reach SAR 400 mn through a 1:3 free shares distribution"
+    },
+    {
+     "date": "2005-12-18",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 240.0,
+     "capital_after_mn": 300.0,
+     "change_pct": 25.0,
+     "note": "The General Assembly approved a 25% capital increase to reach SAR 300mn through a 1:4 free shares distribution"
+    }
+   ]
+  },
+  "P4": {
+   "seats": [
+    {
+     "seat": "value",
+     "vote": "bearish",
+     "inputs": [
+      {
+       "name": "pe",
+       "value": 18.43,
+       "unit": "x"
+      }
+     ],
+     "rule": "P/E below 10 bullish, below 16 neutral, else bearish; no or negative earnings abstains",
+     "thresholds": {
+      "pe_bullish_below": 10.0,
+      "pe_neutral_below": 16.0
+     }
+    },
+    {
+     "seat": "quality",
+     "vote": "bullish",
+     "inputs": [
+      {
+       "name": "roe",
+       "value": 67.25,
+       "unit": "%"
+      }
+     ],
+     "rule": "ROE above 20% bullish, above 12% neutral, else bearish",
+     "thresholds": {
+      "roe_bullish_above": 20.0,
+      "roe_neutral_above": 12.0
+     }
+    },
+    {
+     "seat": "income",
+     "vote": "bullish",
+     "inputs": [
+      {
+       "name": "dividend_yield",
+       "value": 5.16,
+       "unit": "%"
+      }
+     ],
+     "rule": "Dividend yield above 5% bullish, above 2.5% neutral, else bearish; no dividend abstains",
+     "thresholds": {
+      "yield_bullish_above": 5.0,
+      "yield_neutral_above": 2.5
+     }
+    },
+    {
+     "seat": "momentum",
+     "vote": "bullish",
+     "inputs": [
+      {
+       "name": "regime_score",
+       "value": 100.0,
+       "unit": "/100"
+      },
+      {
+       "name": "golden_cross",
+       "value": "yes",
+       "unit": null
+      }
+     ],
+     "rule": "Trend regime above 65 with the 50-day above the 200-day bullish, above 45 neutral, else bearish",
+     "thresholds": {
+      "regime_bullish_above": 65.0,
+      "regime_neutral_above": 45.0
+     }
+    },
+    {
+     "seat": "risk",
+     "vote": "neutral",
+     "inputs": [
+      {
+       "name": "volatility_1y",
+       "value": 20.328153355629734,
+       "unit": "%"
+      },
+      {
+       "name": "dividend_yield",
+       "value": 5.16,
+       "unit": "%"
+      }
+     ],
+     "rule": "1-year volatility below 15% with a yield above 3% bullish, below 25% neutral, else bearish",
+     "thresholds": {
+      "vol_bullish_below": 15.0,
+      "yield_bullish_above": 3.0,
+      "vol_neutral_below": 25.0
+     }
+    },
+    {
+     "seat": "news",
+     "vote": "abstain",
+     "inputs": [
+      {
+       "name": "positive",
+       "value": 0.0,
+       "unit": null
+      },
+      {
+       "name": "negative",
+       "value": 0.0,
+       "unit": null
+      },
+      {
+       "name": "rated_items",
+       "value": 0.0,
+       "unit": null
+      }
+     ],
+     "rule": "Over the last 30 days of rated news: a majority positive bullish, a majority negative bearish, otherwise neutral; no rated news abstains",
+     "thresholds": {
+      "window_days": 30.0
+     }
+    }
+   ],
+   "counts": {
+    "bullish": 3,
+    "neutral": 1,
+    "bearish": 1,
+    "abstain": 1
+   },
+   "as_of_date": "2026-08-07",
+   "freshness": {
+    "category": "prices",
+    "as_of": "2026-08-07T00:00:00+00:00",
+    "updated_at": "2026-08-07T00:50:25+00:00",
+    "next_at": "2026-10-28T00:00:00+00:00",
+    "max_age_days": 2.0,
+    "stale": true
+   }
+  },
+  "P5": {
+   "basis": "sector_exchange",
+   "sector_en": "Consumer Discretionary Distribution & Retail",
+   "sector_ar": "تجزئة وتوزيع السلع الكمالية",
+   "peers": [
+    {
+     "ticker": {
+      "ticker_key": "4200_TADAWUL",
+      "symbol": "4200",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Aldrees Petroleum and Transport Services Company",
+      "name_ar": "الدريس",
+      "sector_en": "Consumer Discretionary Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الكمالية",
+      "slug": "4200"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 119.7,
+     "day_change_pct": -0.42,
+     "market_cap_mn": 11970.0,
+     "pe": 26.07,
+     "dividend_yield_pct": 1.67
+    },
+    {
+     "ticker": {
+      "ticker_key": "4003_TADAWUL",
+      "symbol": "4003",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "United Electronics Company",
+      "name_ar": "إكسترا",
+      "sector_en": "Consumer Discretionary Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الكمالية",
+      "slug": "4003"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 67.9,
+     "day_change_pct": -0.8,
+     "market_cap_mn": 5432.0,
+     "pe": 10.43,
+     "dividend_yield_pct": 7.65
+    },
+    {
+     "ticker": {
+      "ticker_key": "4050_TADAWUL",
+      "symbol": "4050",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Saudi Automotive Services Company",
+      "name_ar": "ساسكو",
+      "sector_en": "Consumer Discretionary Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الكمالية",
+      "slug": "4050"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 38.02,
+     "day_change_pct": -3.06,
+     "market_cap_mn": 2661.4,
+     "pe": null,
+     "dividend_yield_pct": null
+    },
+    {
+     "ticker": {
+      "ticker_key": "4192_TADAWUL",
+      "symbol": "4192",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Al-Saif Stores for Development & Investment Company",
+      "name_ar": "السيف غاليري",
+      "sector_en": "Consumer Discretionary Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الكمالية",
+      "slug": "4192"
+     },
+     "as_of_date": "2026-08-12",
+     "last_price": 6.54,
+     "day_change_pct": -0.61,
+     "market_cap_mn": 2289.0,
+     "pe": 37.3,
+     "dividend_yield_pct": 0.92
+    },
+    {
+     "ticker": {
+      "ticker_key": "4240_TADAWUL",
+      "symbol": "4240",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "AFG International Company",
+      "name_ar": "سينومي ريتيل",
+      "sector_en": "Consumer Discretionary Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الكمالية",
+      "slug": "4240"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 12.26,
+     "day_change_pct": -0.97,
+     "market_cap_mn": 1407.45,
+     "pe": null,
+     "dividend_yield_pct": null
+    },
+    {
+     "ticker": {
+      "ticker_key": "4193_TADAWUL",
+      "symbol": "4193",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Nice One Beauty Digital Marketing Company",
+      "name_ar": "نايس ون",
+      "sector_en": "Consumer Discretionary Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الكمالية",
+      "slug": "4193"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 11.51,
+     "day_change_pct": -1.62,
+     "market_cap_mn": 1329.41,
+     "pe": null,
+     "dividend_yield_pct": null
+    },
+    {
+     "ticker": {
+      "ticker_key": "4191_TADAWUL",
+      "symbol": "4191",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Abdullah Saad Mohammed Abo Moati for Bookstores Company",
+      "name_ar": "أبو معطي",
+      "sector_en": "Consumer Discretionary Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الكمالية",
+      "slug": "4191"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 39.9,
+     "day_change_pct": -2.16,
+     "market_cap_mn": 798.0,
+     "pe": 33.62,
+     "dividend_yield_pct": 2.54
+    },
+    {
+     "ticker": {
+      "ticker_key": "4008_TADAWUL",
+      "symbol": "4008",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Saudi Company for Hardware SACO",
+      "name_ar": "ساكو",
+      "sector_en": "Consumer Discretionary Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الكمالية",
+      "slug": "4008"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 21.57,
+     "day_change_pct": -1.82,
+     "market_cap_mn": 776.52,
+     "pe": 41.45,
+     "dividend_yield_pct": 1.19
+    }
+   ]
+  },
+  "P6": [
+   {
+    "date": "2026-07-15",
+    "section": "news",
+    "title": "Jarir’s Gulf sales up 29%, ops unaffected by shipping disruptions: Chairman",
+    "title_en": null,
+    "impact": null,
+    "summary": null
+   },
+   {
+    "date": "2026-07-02",
+    "section": "news",
+    "title": "Riyad Capital previews Q2 2026 earnings for 8 listed companies",
+    "title_en": null,
+    "impact": null,
+    "summary": null
+   },
+   {
+    "date": "2026-06-07",
+    "section": "news",
+    "title": "Jarir opens new Jeddah store with SAR 32M investment",
+    "title_en": null,
+    "impact": null,
+    "summary": null
+   },
+   {
+    "date": "2026-04-08T21:00:00",
+    "section": "disclosures",
+    "title": "Jarir opens new showroom at Kuwait's Gate Mall",
+    "title_en": null,
+    "impact": null,
+    "summary": "Jarir Marketing Co. announced the opening of a new showroom at the Gate Mall in Kuwait, with a total investment of SAR 15 million. The new showroom, which replaces the previous one at Sama Mall, spans 2,310 square meters and features all Jarir’s product categories. It was developed to the highest standards to ensure a comprehensive shopping experience that meets customer expectations. The relevant financial impact is expected to appear starting Q1 2026."
+   },
+   {
+    "date": "2026-02-16T21:00:00",
+    "section": "disclosures",
+    "title": "Jarir opens new showroom in Al Baha with SAR 29M investments",
+    "title_en": null,
+    "impact": null,
+    "summary": "Jarir Marketing Co. announced the opening of a new showroom inside Al Baha Square complex in Al Baha with a total investment of SAR 29 million. This is the second showroom opened in 2026, spanning an area of 3,980 square meters, bringing the total number of showrooms in the Kingdom to 66 and globally to 77. The showroom contains all known Jarir products, with Saudi employees making up 60% of the total workforce. According to the company, the related financial impact will begin to appear in Q1 2026."
+   },
+   {
+    "date": "2026-01-26T21:00:00",
+    "section": "disclosures",
+    "title": "Jarir opens SAR 21M showroom in Madinah",
+    "title_en": null,
+    "impact": null,
+    "summary": "Jarir Marketing Co. opened a new showroom at Alia Mall in Madinah on January 26, with a total investment of SAR 21 million. The showroom covers an area of 2,324 square meters, with Saudi employees comprising 64% of its total workforce. Jarir expects the financial impact of this investment to begin in Q1 2026. This marks the company's first opening in 2026, making it the 65th showroom in Saudi Arabia and the 76th globally."
+   },
+   {
+    "date": "2025-12-13T21:00:00",
+    "section": "disclosures",
+    "title": "Jarir opens SAR 6M showroom at Clock Towers Mall in Makkah",
+    "title_en": null,
+    "impact": null,
+    "summary": "Jarir Marketing Co. opened a new showroom at The Clock Towers Mall in Makkah on December 11, with a total investment of SAR 6 million. The showroom covers 509 square meters and offers the full range of Jarir’s products, as stated in the company’s announcement to Tadawul. Saudi nationals represent 80% of the showroom’s workforce. The financial impact of the new showroom is expected to be reflected starting from Q1 2026. This showroom at Clock Towers Mall is the second to open in 2025, bringing the total number of bookstore locations to 64 across Saudi Arabia and 75 stores both within and outside the Kingdom."
+   },
+   {
+    "date": "2025-02-23T21:00:00",
+    "section": "disclosures",
+    "title": "Jarir opens new SAR 41M showroom in Jubail",
+    "title_en": null,
+    "impact": null,
+    "summary": "Jarir Marketing Co. opened a new showroom in Al-Fanateer neighborhood in Jubail Industrial City on February 24, replacing its previous showroom in Al-Huwailet. The investment in the showroom amounted to SAR 41 million, and its financial impact is expected to begin appearing in the first quarter of 2025. The land, covering 6,649 square meters, was leased from the Royal Commission for Jubail under an investment contract. The showroom was developed to the highest standards, featuring its full range of popular products."
+   }
+  ],
+  "P7": {
+   "ticker": "4190_TADAWUL",
+   "currency": "SAR",
+   "range": "1Y",
+   "from": "2025-09-29",
+   "to": "2026-10-13",
+   "first_close": 13.87,
+   "last_close": 17.33,
+   "change_pct": 24.95,
+   "high_close": 18.1,
+   "low_close": 12.38,
+   "average_volume": 2002601,
+   "trading_days": 260
+  },
+  "P8": {
+   "ticker": "4190_TADAWUL",
+   "currency": "SAR",
+   "range": "5Y",
+   "from": "2021-07-29",
+   "to": "2026-10-13",
+   "first_close": 20.12,
+   "last_close": 17.33,
+   "change_pct": -13.87,
+   "high_close": 21.66,
+   "low_close": 12.06,
+   "average_volume": 1770835,
+   "trading_days": 1300
+  }
+ },
+ "sources": {
+  "P1": {
+   "title_en": "Quote, valuation, returns and technicals",
+   "title_ar": "السعر والتقييم والعوائد والمؤشرات الفنية",
+   "ok": true
+  },
+  "P2": {
+   "title_en": "Fundamentals with sector percentiles",
+   "title_ar": "الأساسيات ومقارنتها بالقطاع",
+   "ok": true
+  },
+  "P3": {
+   "title_en": "Dividends and capital changes",
+   "title_ar": "التوزيعات وتغيرات رأس المال",
+   "ok": true
+  },
+  "P4": {
+   "title_en": "Council seats (rule-based votes)",
+   "title_ar": "مقاعد المجلس (تصويت بالقواعد)",
+   "ok": true
+  },
+  "P5": {
+   "title_en": "Sector peers",
+   "title_ar": "الشركات المماثلة في القطاع",
+   "ok": true
+  },
+  "P6": {
+   "title_en": "Latest news and disclosures",
+   "title_ar": "آخر الأخبار والإفصاحات",
+   "ok": true
+  },
+  "P7": {
+   "title_en": "Price summary, 1 year",
+   "title_ar": "ملخص السعر، سنة",
+   "ok": true
+  },
+  "P8": {
+   "title_en": "Price summary, 5 years",
+   "title_ar": "ملخص السعر، خمس سنوات",
+   "ok": true
+  }
+ }
+}

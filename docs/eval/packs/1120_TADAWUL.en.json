@@ -1,0 +1,866 @@
+{
+ "ticker_key": "1120_TADAWUL",
+ "slug": "1120",
+ "header": "DATA PACK. Company: Al Rajhi Bank / الراجحي. Symbol 1120 on TADAWUL, listing currency SAR, sector Banks. Fetched 2026-10-27 14:28 UTC from AlphaCouncil's database. Units: market_cap_mn and statement lines are millions of the listing currency; fields ending in _pct are percents. A dataset holding an error has no data for this company.",
+ "fetched_at": "2026-10-27 14:28 UTC",
+ "data": {
+  "P1": {
+   "ticker": {
+    "ticker_key": "1120_TADAWUL",
+    "symbol": "1120",
+    "exchange": "TADAWUL",
+    "currency": "SAR",
+    "name_en": "Al Rajhi Bank",
+    "name_ar": "الراجحي",
+    "sector_en": "Banks",
+    "sector_ar": "البنوك",
+    "slug": "1120"
+   },
+   "quote": {
+    "as_of_date": "2026-10-13",
+    "freshness": {
+     "category": "prices",
+     "as_of": "2026-10-13T00:00:00+00:00",
+     "updated_at": "2026-10-14T00:02:26+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 2.0,
+     "stale": true
+    },
+    "source": "prices_file",
+    "last_price": 62.1,
+    "day_change_pct": 0.24,
+    "volume": 4062350.0,
+    "value_traded": null,
+    "value_traded_reason": "not_in_price_file",
+    "market_cap_mn": 387300.0
+   },
+   "valuation": {
+    "pe": 14.51,
+    "pb": 3.19,
+    "dividend_yield_pct": 2.6,
+    "roe_pct": 23.49,
+    "roa_pct": 2.53,
+    "ev_ebitda": null,
+    "eps_ttm": 4.42,
+    "eps_ttm_reason": null,
+    "book_value": 20.11,
+    "shares_out_mn": 6000.0
+   },
+   "returns": {
+    "return_1m_pct": -1.3750954927,
+    "return_3m_pct": -4.5824094605,
+    "return_6m_pct": -10.6821641068,
+    "return_12m_pct": 2.4603174603,
+    "vol_1y_pct": 20.9372508032,
+    "max_drawdown_pct": -83.1175137585
+   },
+   "technicals": {
+    "as_of_date": "2026-08-11T00:00:00",
+    "rsi_14": 49.04458598726111,
+    "sma_50": 65.475,
+    "sma_200": 67.4426,
+    "above_50d": false,
+    "above_200d": false,
+    "macd_bull": true,
+    "dist_to_52w_high": -14.919033713830643,
+    "dist_from_52w_low": 6.655574043261225
+   },
+   "has_price_history": true,
+   "freshness": [
+    {
+     "category": "disclosures",
+     "as_of": "2026-01-06T21:00:00+00:00",
+     "updated_at": "2026-08-07T00:02:02.132902+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 120.0,
+     "stale": true
+    },
+    {
+     "category": "fundamentals",
+     "as_of": "2026-08-12T01:43:13.138057+00:00",
+     "updated_at": "2026-08-12T01:43:13.138057+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 100.0,
+     "stale": false
+    },
+    {
+     "category": "news",
+     "as_of": "2026-08-02T00:00:00+00:00",
+     "updated_at": "2026-08-12T00:02:05.625440+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 30.0,
+     "stale": true
+    },
+    {
+     "category": "prices",
+     "as_of": "2026-08-11T00:00:00+00:00",
+     "updated_at": "2026-08-12T01:43:12.620873+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 2.0,
+     "stale": true
+    },
+    {
+     "category": "technical",
+     "as_of": "2026-08-11T00:00:00+00:00",
+     "updated_at": "2026-08-12T01:43:12.620873+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 2.0,
+     "stale": true
+    }
+   ]
+  },
+  "P2": {
+   "groups": [
+    {
+     "group": "valuation",
+     "metrics": [
+      {
+       "key": "pe",
+       "value": 14.51,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "pb",
+       "value": 3.19,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "ev_ebitda",
+       "value": null,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "na_sector",
+       "sector_percentile": null
+      },
+      {
+       "key": "ps",
+       "value": null,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      }
+     ],
+     "score": null
+    },
+    {
+     "group": "profitability",
+     "metrics": [
+      {
+       "key": "roe",
+       "value": 23.49,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "roa",
+       "value": 2.53,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "roic",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "na_sector",
+       "sector_percentile": null
+      },
+      {
+       "key": "net_margin",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      },
+      {
+       "key": "gross_margin",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "na_sector",
+       "sector_percentile": null
+      }
+     ],
+     "score": null
+    },
+    {
+     "group": "health",
+     "metrics": [
+      {
+       "key": "debt_equity",
+       "value": 1.7165282723300337,
+       "unit": "ratio",
+       "higher_is_better": false,
+       "status": "ok",
+       "sector_percentile": 22.7
+      },
+      {
+       "key": "current_ratio",
+       "value": null,
+       "unit": "ratio",
+       "higher_is_better": true,
+       "status": "na_sector",
+       "sector_percentile": null
+      },
+      {
+       "key": "interest_coverage",
+       "value": null,
+       "unit": "x",
+       "higher_is_better": true,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      },
+      {
+       "key": "fcf_yield",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "na_sector",
+       "sector_percentile": null
+      }
+     ],
+     "score": 22.7
+    },
+    {
+     "group": "income",
+     "metrics": [
+      {
+       "key": "div_yield",
+       "value": 2.6,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "payout",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": false,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      }
+     ],
+     "score": null
+    }
+   ],
+   "freshness": {
+    "category": "fundamentals",
+    "as_of": "2026-08-12T01:43:13.138057+00:00",
+    "updated_at": "2026-08-12T01:43:13.138057+00:00",
+    "next_at": "2026-10-28T00:00:00+00:00",
+    "max_age_days": 100.0,
+    "stale": false
+   }
+  },
+  "P3": {
+   "currency": "SAR",
+   "dividends": [
+    {
+     "announce_date": "2026-01-27",
+     "ex_date": "2026-04-20",
+     "pay_date": "2026-04-30",
+     "dps": 1.17,
+     "amount_mn": 7000.0,
+     "note": "H 2 _ 2025"
+    },
+    {
+     "announce_date": "2025-09-15",
+     "ex_date": "2025-09-22",
+     "pay_date": "2025-10-02",
+     "dps": 0.5,
+     "amount_mn": 3000.0,
+     "note": "H 1 _ 2025"
+    },
+    {
+     "announce_date": "2025-01-29",
+     "ex_date": "2025-04-13",
+     "pay_date": "2025-04-24",
+     "dps": 0.97,
+     "amount_mn": 5840.0,
+     "note": "H 2 _ 2024"
+    },
+    {
+     "announce_date": "2024-08-05",
+     "ex_date": "2024-08-12",
+     "pay_date": "2024-08-26",
+     "dps": 0.83,
+     "amount_mn": 5000.0,
+     "note": "H 1 _ 2024"
+    },
+    {
+     "announce_date": "2024-02-25",
+     "ex_date": "2024-03-24",
+     "pay_date": "2024-04-03",
+     "dps": 0.77,
+     "amount_mn": 4600.0,
+     "note": "H 2 _ 2023"
+    },
+    {
+     "announce_date": "2023-07-24",
+     "ex_date": "2023-07-31",
+     "pay_date": "2023-08-14",
+     "dps": 0.77,
+     "amount_mn": 4600.0,
+     "note": "H 1 _ 2023"
+    },
+    {
+     "announce_date": "2023-01-15",
+     "ex_date": "2023-03-21",
+     "pay_date": "2023-04-02",
+     "dps": 0.83,
+     "amount_mn": 5000.0,
+     "note": "F Y _ 2022"
+    },
+    {
+     "announce_date": "2021-06-30",
+     "ex_date": "2021-07-06",
+     "pay_date": "2021-07-14",
+     "dps": 0.58,
+     "amount_mn": 3500.0,
+     "note": "H1 - 2021"
+    },
+    {
+     "announce_date": "2021-03-01",
+     "ex_date": "2021-03-29",
+     "pay_date": "2021-04-06",
+     "dps": 0.42,
+     "amount_mn": 2500.0,
+     "note": "FY 2020"
+    },
+    {
+     "announce_date": "2020-02-03",
+     "ex_date": "2020-03-29",
+     "pay_date": "2020-04-06",
+     "dps": 0.63,
+     "amount_mn": 3750.0,
+     "note": "H2-2019"
+    }
+   ],
+   "capital_changes": [
+    {
+     "date": "2026-04-20",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 40000.0,
+     "capital_after_mn": 60000.0,
+     "change_pct": 50.0,
+     "note": "The General Assembly approved the board of directors’ recommendation on increase in the capital from SAR 40 billion to SAR 60 billion by distributing 50% bonus shares at 1 share for every 2 shares outstanding ."
+    },
+    {
+     "date": "2022-05-08",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 25000.0,
+     "capital_after_mn": 40000.0,
+     "change_pct": 60.0,
+     "note": "The General Assembly approved the board of directors’ recommendation on a 60% capital increase to reach SAR 40000 mln through a 3:5 free shares distribution"
+    },
+    {
+     "date": "2019-04-03",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 16250.0,
+     "capital_after_mn": 25000.0,
+     "change_pct": 53.85,
+     "note": "The General assembly approved a capital increase to SAR 25 bn with 53.8 % bonus shares (Equivalent to 7: 13 Share)"
+    },
+    {
+     "date": "2014-04-14",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 15000.0,
+     "capital_after_mn": 16250.0,
+     "change_pct": 8.33,
+     "note": "The extra ordinary general assembly for Al Rajhi Bank approved the capital increase to SAR 16250 mn with 8 % bonus shares (Equivalent to 1/ 12 Share)"
+    },
+    {
+     "date": "2008-02-24",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 13500.0,
+     "capital_after_mn": 15000.0,
+     "change_pct": 11.11,
+     "note": "The extra ordinary general assembly for Al Rajhi Bank approved the capital increase with 11.1 % increase (Equivalent to 1/ 9 bonus Share)"
+    },
+    {
+     "date": "2007-03-03",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 6750.0,
+     "capital_after_mn": 13500.0,
+     "change_pct": 100.0,
+     "note": "The general assembly for Al Rajhi Bank approved the capital increase with 100% increase (Equivalent to 1/ 1 bonus Share)"
+    },
+    {
+     "date": "2006-03-04",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 4500.0,
+     "capital_after_mn": 6750.0,
+     "change_pct": 50.0,
+     "note": "The general assembly for Al Rajhi Bank approved the capital increase with 50% increase (Equivalent to 1/ 2 bonus Share) for the year 2005."
+    },
+    {
+     "date": "2005-03-12",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 2250.0,
+     "capital_after_mn": 4500.0,
+     "change_pct": 100.0,
+     "note": "The general assembly for Al Rajhi Bank approved the capital increase with 100% increase (Equivalent to 1/ 1 bonus Share) for the year 2004."
+    },
+    {
+     "date": "1998-03-06",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 1500.0,
+     "capital_after_mn": 2250.0,
+     "change_pct": 50.0,
+     "note": "The general assembly for Al Rajhi Bank approved the capital increase with 50% increase (Equivalent to 1/ 2 bonus Share)."
+    },
+    {
+     "date": "1991-06-06",
+     "change_type": "Bonus Shares",
+     "capital_before_mn": 750.0,
+     "capital_after_mn": 1500.0,
+     "change_pct": 100.0,
+     "note": "The general assembly for Al Rajhi Bank approved the capital increase with 100% increase (Equivalent to 1/ 1 bonus Share)."
+    }
+   ]
+  },
+  "P4": {
+   "seats": [
+    {
+     "seat": "value",
+     "vote": "neutral",
+     "inputs": [
+      {
+       "name": "pe",
+       "value": 14.51,
+       "unit": "x"
+      }
+     ],
+     "rule": "P/E below 10 bullish, below 16 neutral, else bearish; no or negative earnings abstains",
+     "thresholds": {
+      "pe_bullish_below": 10.0,
+      "pe_neutral_below": 16.0
+     }
+    },
+    {
+     "seat": "quality",
+     "vote": "bullish",
+     "inputs": [
+      {
+       "name": "roe",
+       "value": 23.49,
+       "unit": "%"
+      }
+     ],
+     "rule": "ROE above 20% bullish, above 12% neutral, else bearish",
+     "thresholds": {
+      "roe_bullish_above": 20.0,
+      "roe_neutral_above": 12.0
+     }
+    },
+    {
+     "seat": "income",
+     "vote": "neutral",
+     "inputs": [
+      {
+       "name": "dividend_yield",
+       "value": 2.6,
+       "unit": "%"
+      }
+     ],
+     "rule": "Dividend yield above 5% bullish, above 2.5% neutral, else bearish; no dividend abstains",
+     "thresholds": {
+      "yield_bullish_above": 5.0,
+      "yield_neutral_above": 2.5
+     }
+    },
+    {
+     "seat": "momentum",
+     "vote": "bearish",
+     "inputs": [
+      {
+       "name": "regime_score",
+       "value": 35.0,
+       "unit": "/100"
+      },
+      {
+       "name": "golden_cross",
+       "value": "no",
+       "unit": null
+      }
+     ],
+     "rule": "Trend regime above 65 with the 50-day above the 200-day bullish, above 45 neutral, else bearish",
+     "thresholds": {
+      "regime_bullish_above": 65.0,
+      "regime_neutral_above": 45.0
+     }
+    },
+    {
+     "seat": "risk",
+     "vote": "neutral",
+     "inputs": [
+      {
+       "name": "volatility_1y",
+       "value": 20.937250803220504,
+       "unit": "%"
+      },
+      {
+       "name": "dividend_yield",
+       "value": 2.6,
+       "unit": "%"
+      }
+     ],
+     "rule": "1-year volatility below 15% with a yield above 3% bullish, below 25% neutral, else bearish",
+     "thresholds": {
+      "vol_bullish_below": 15.0,
+      "yield_bullish_above": 3.0,
+      "vol_neutral_below": 25.0
+     }
+    },
+    {
+     "seat": "news",
+     "vote": "abstain",
+     "inputs": [
+      {
+       "name": "positive",
+       "value": 0.0,
+       "unit": null
+      },
+      {
+       "name": "negative",
+       "value": 0.0,
+       "unit": null
+      },
+      {
+       "name": "rated_items",
+       "value": 0.0,
+       "unit": null
+      }
+     ],
+     "rule": "Over the last 30 days of rated news: a majority positive bullish, a majority negative bearish, otherwise neutral; no rated news abstains",
+     "thresholds": {
+      "window_days": 30.0
+     }
+    }
+   ],
+   "counts": {
+    "bullish": 1,
+    "neutral": 3,
+    "bearish": 1,
+    "abstain": 1
+   },
+   "as_of_date": "2026-08-07",
+   "freshness": {
+    "category": "prices",
+    "as_of": "2026-08-07T00:00:00+00:00",
+    "updated_at": "2026-08-07T00:01:16+00:00",
+    "next_at": "2026-10-28T00:00:00+00:00",
+    "max_age_days": 2.0,
+    "stale": true
+   }
+  },
+  "P5": {
+   "basis": "sector_exchange",
+   "sector_en": "Banks",
+   "sector_ar": "البنوك",
+   "peers": [
+    {
+     "ticker": {
+      "ticker_key": "1180_TADAWUL",
+      "symbol": "1180",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Saudi National Bank (SNB)",
+      "name_ar": "الأهلي",
+      "sector_en": "Banks",
+      "sector_ar": "البنوك",
+      "slug": "1180"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 40.86,
+     "day_change_pct": 1.29,
+     "market_cap_mn": 245160.0,
+     "pe": 9.48,
+     "dividend_yield_pct": 5.26
+    },
+    {
+     "ticker": {
+      "ticker_key": "1010_TADAWUL",
+      "symbol": "1010",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Riyad Bank",
+      "name_ar": "الرياض",
+      "sector_en": "Banks",
+      "sector_ar": "البنوك",
+      "slug": "1010"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 20.42,
+     "day_change_pct": 0.59,
+     "market_cap_mn": 81680.0,
+     "pe": 7.78,
+     "dividend_yield_pct": 5.08
+    },
+    {
+     "ticker": {
+      "ticker_key": "1150_TADAWUL",
+      "symbol": "1150",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Alinma Bank",
+      "name_ar": "الإنماء",
+      "sector_en": "Banks",
+      "sector_ar": "البنوك",
+      "slug": "1150"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 23.91,
+     "day_change_pct": -0.91,
+     "market_cap_mn": 71730.0,
+     "pe": 10.97,
+     "dividend_yield_pct": 3.1
+    },
+    {
+     "ticker": {
+      "ticker_key": "1060_TADAWUL",
+      "symbol": "1060",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Saudi Awwal Bank",
+      "name_ar": "الأول",
+      "sector_en": "Banks",
+      "sector_ar": "البنوك",
+      "slug": "1060"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 33.08,
+     "day_change_pct": 0.24,
+     "market_cap_mn": 67972.78,
+     "pe": 7.82,
+     "dividend_yield_pct": 6.02
+    },
+    {
+     "ticker": {
+      "ticker_key": "1050_TADAWUL",
+      "symbol": "1050",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Banque Saudi Fransi",
+      "name_ar": "بي اس اف",
+      "sector_en": "Banks",
+      "sector_ar": "البنوك",
+      "slug": "1050"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 20.15,
+     "day_change_pct": -1.23,
+     "market_cap_mn": 50375.0,
+     "pe": 9.3,
+     "dividend_yield_pct": 5.23
+    },
+    {
+     "ticker": {
+      "ticker_key": "1080_TADAWUL",
+      "symbol": "1080",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Arab National Bank",
+      "name_ar": "العربي",
+      "sector_en": "Banks",
+      "sector_ar": "البنوك",
+      "slug": "1080"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 21.9,
+     "day_change_pct": -0.95,
+     "market_cap_mn": 43800.0,
+     "pe": 8.49,
+     "dividend_yield_pct": 5.94
+    },
+    {
+     "ticker": {
+      "ticker_key": "1140_TADAWUL",
+      "symbol": "1140",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Bank Albilad",
+      "name_ar": "البلاد",
+      "sector_en": "Banks",
+      "sector_ar": "البنوك",
+      "slug": "1140"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 24.68,
+     "day_change_pct": -0.4,
+     "market_cap_mn": 37020.0,
+     "pe": 11.94,
+     "dividend_yield_pct": 4.04
+    },
+    {
+     "ticker": {
+      "ticker_key": "1030_TADAWUL",
+      "symbol": "1030",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "The Saudi Investment Bank",
+      "name_ar": "الإستثمار",
+      "sector_en": "Banks",
+      "sector_ar": "البنوك",
+      "slug": "1030"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 13.72,
+     "day_change_pct": -0.58,
+     "market_cap_mn": 17150.0,
+     "pe": 9.03,
+     "dividend_yield_pct": 5.01
+    }
+   ]
+  },
+  "P6": [
+   {
+    "date": "2026-08-02",
+    "section": "news",
+    "title": "alrajhi bank Advances Saudization Goals Through Atmal With Signing of Two Memoranda of Understanding to Strengthen Human Capital Investment",
+    "title_en": null,
+    "impact": null,
+    "summary": null
+   },
+   {
+    "date": "2026-01-06T21:00:00",
+    "section": "disclosures",
+    "title": "Al Rajhi Bank issues USD-denominated AT1 capital sukuk",
+    "title_en": null,
+    "impact": null,
+    "summary": "Al Rajhi Bank announced the issuance of USD-denominated additional tier 1 (AT1) capital sukuk through a special purpose vehicle targeting eligible investors locally and internationally. The amount and terms will be determined based on market conditions, with the offer starting from January 7, 2026, to January 8, 2026. The minimum subscription is set at $200,000, and the sukuk will be listed on the London Stock Exchange's International Securities Market."
+   },
+   {
+    "date": "2026-01-05T21:00:00",
+    "section": "disclosures",
+    "title": "Al Rajhi Bank plans USD-denominated AT1 capital sukuk",
+    "title_en": null,
+    "impact": null,
+    "summary": "Al Rajhi Bank plans to issue US dollar-denominated Additional Tier 1 (AT1) capital sukuk under its international program established on April 18, 2024. The bank intends to issue the sukuk through a special purpose vehicle targeting qualified investors inside and outside the Kingdom. The amount and terms will depend on market conditions, aiming to strengthen AT1 capital and support general banking purposes, in alignment with the bank's sustainable financing framework. The bank will announce any other material developments in accordance with relevant rules and regulations."
+   },
+   {
+    "date": "2025-09-09T21:00:00",
+    "section": "disclosures",
+    "title": "Al Rajhi Bank completes $1B sukuk offering",
+    "title_en": null,
+    "impact": null,
+    "summary": "Al Rajhi Bank completed the issuance of $1 billion Tier 2 social sukuk under its international sukuk program. The sukuk is expected to be settled on September 16. The offering includes 5,000 sukuk, with a nominal value of $200,000, a return of 5.65% per annum, and a maturity period of 10.5 years, which may be redeemed after 5 years."
+   },
+   {
+    "date": "2025-09-08T21:00:00",
+    "section": "disclosures",
+    "title": "Al Rajhi Bank begins offering USD-denominated Tier 2 social sukuk",
+    "title_en": null,
+    "impact": null,
+    "summary": "Al Rajhi Bank announced the launch of USD-denominated Tier 2 social sukuk to be issued through a special purpose vehicle, available to qualified investors both domestically and internationally. The final value and terms of the sukuk issue will depend on market conditions. The subscription period starts on September 9, 2025, and ends on September 10, 2025, with a minimum subscription limit of $200,000. The sukuk will be listed on the London Stock Exchange's International Securities Market."
+   },
+   {
+    "date": "2025-09-07T21:00:00",
+    "section": "disclosures",
+    "title": "Al Rajhi Bank plans to issue USD-denominated Tier 2 social sukuk",
+    "title_en": null,
+    "impact": null,
+    "summary": "Al Rajhi Bank announced its plan to issue USD-denominated Tier 2 social sukuk as part of its updated international sukuk issuance program launched on May 29, 2025. The value and terms of the offering will be determined based on market conditions, and it is expected to be issued through a special purpose vehicle and offered to qualified investors inside and outside the Kingdom. The bank has appointed several major financial institutions as joint lead managers and bookrunners to support its financial and strategic objectives in line with its sustainable finance framework."
+   },
+   {
+    "date": "2025-01-14T21:00:00",
+    "section": "disclosures",
+    "title": "Al Rajhi Bank completes $1.5B sukuk offering",
+    "title_en": null,
+    "impact": null,
+    "summary": "Al Rajhi Bank has completed its issuance of $1.5 billion worth of additional Tier 1 capital sustainable sukuk under its international sukuk program. The sukuk will be settled on January 21, with a total of 7,500 sukuk issued, each with a nominal value of $200,000, offering an annual return of 6.25%. The maturity of these perpetual sukuk may allow for redemption after five years."
+   },
+   {
+    "date": "2025-01-13T21:00:00",
+    "section": "disclosures",
+    "title": "Al Rajhi Bank starts offer of AT1 capital sukuk",
+    "title_en": null,
+    "impact": null,
+    "summary": "Al Rajhi Bank started on January 14, 2025, the offer of USD-denominated Additional Tier 1 (AT1) capital sukuk, according to a statement to Tadawul. The sukuk issuance is conducted through a special purpose vehicle and will be offered to qualified investors both domestically and internationally. The minimum subscription limit is $200,000 with increments of $1,000. The sukuk is perpetual and may be redeemed after 5 years under certain conditions. The sukuk will be listed on the London Stock Exchange's International Securities Market (ISM)."
+   }
+  ],
+  "P7": {
+   "ticker": "1120_TADAWUL",
+   "currency": "SAR",
+   "range": "1Y",
+   "from": "2025-09-29",
+   "to": "2026-10-13",
+   "first_close": 70.2,
+   "last_close": 62.1,
+   "change_pct": -11.54,
+   "high_close": 73.34,
+   "low_close": 61.95,
+   "average_volume": 5567283,
+   "trading_days": 260
+  },
+  "P8": {
+   "ticker": "1120_TADAWUL",
+   "currency": "SAR",
+   "range": "5Y",
+   "from": "2021-07-29",
+   "to": "2026-10-13",
+   "first_close": 46.26,
+   "last_close": 62.1,
+   "change_pct": 34.24,
+   "high_close": 76.52,
+   "low_close": 42.34,
+   "average_volume": 6690978,
+   "trading_days": 1300
+  }
+ },
+ "sources": {
+  "P1": {
+   "title_en": "Quote, valuation, returns and technicals",
+   "title_ar": "السعر والتقييم والعوائد والمؤشرات الفنية",
+   "ok": true
+  },
+  "P2": {
+   "title_en": "Fundamentals with sector percentiles",
+   "title_ar": "الأساسيات ومقارنتها بالقطاع",
+   "ok": true
+  },
+  "P3": {
+   "title_en": "Dividends and capital changes",
+   "title_ar": "التوزيعات وتغيرات رأس المال",
+   "ok": true
+  },
+  "P4": {
+   "title_en": "Council seats (rule-based votes)",
+   "title_ar": "مقاعد المجلس (تصويت بالقواعد)",
+   "ok": true
+  },
+  "P5": {
+   "title_en": "Sector peers",
+   "title_ar": "الشركات المماثلة في القطاع",
+   "ok": true
+  },
+  "P6": {
+   "title_en": "Latest news and disclosures",
+   "title_ar": "آخر الأخبار والإفصاحات",
+   "ok": true
+  },
+  "P7": {
+   "title_en": "Price summary, 1 year",
+   "title_ar": "ملخص السعر، سنة",
+   "ok": true
+  },
+  "P8": {
+   "title_en": "Price summary, 5 years",
+   "title_ar": "ملخص السعر، خمس سنوات",
+   "ok": true
+  }
+ }
+}

@@ -1,0 +1,750 @@
+{
+ "ticker_key": "4061_TADAWUL",
+ "slug": "4061",
+ "header": "DATA PACK. Company: Anaam International Holding Group Company / أنعام القابضة. Symbol 4061 on TADAWUL, listing currency SAR, sector Consumer Staples Distribution & Retail. Fetched 2026-10-27 14:28 UTC from AlphaCouncil's database. Units: market_cap_mn and statement lines are millions of the listing currency; fields ending in _pct are percents. A dataset holding an error has no data for this company.",
+ "fetched_at": "2026-10-27 14:28 UTC",
+ "data": {
+  "P1": {
+   "ticker": {
+    "ticker_key": "4061_TADAWUL",
+    "symbol": "4061",
+    "exchange": "TADAWUL",
+    "currency": "SAR",
+    "name_en": "Anaam International Holding Group Company",
+    "name_ar": "أنعام القابضة",
+    "sector_en": "Consumer Staples Distribution & Retail",
+    "sector_ar": "تجزئة وتوزيع السلع الاستهلاكية",
+    "slug": "4061"
+   },
+   "quote": {
+    "as_of_date": "2026-10-13",
+    "freshness": {
+     "category": "prices",
+     "as_of": "2026-10-13T00:00:00+00:00",
+     "updated_at": "2026-10-14T00:15:50+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 2.0,
+     "stale": true
+    },
+    "source": "prices_file",
+    "last_price": 12.07,
+    "day_change_pct": -0.08,
+    "volume": 156119.0,
+    "value_traded": null,
+    "value_traded_reason": "not_in_price_file",
+    "market_cap_mn": 370.13
+   },
+   "valuation": {
+    "pe": null,
+    "pb": 1.53,
+    "dividend_yield_pct": null,
+    "roe_pct": -4.11,
+    "roa_pct": -1.85,
+    "ev_ebitda": null,
+    "eps_ttm": null,
+    "eps_ttm_reason": "unit_unconfirmed",
+    "book_value": 7.76,
+    "shares_out_mn": 31.5
+   },
+   "returns": {
+    "return_1m_pct": -2.5704809287,
+    "return_3m_pct": 5.0983899821,
+    "return_6m_pct": -5.6982343499,
+    "return_12m_pct": -20.6617150574,
+    "vol_1y_pct": 30.5512622506,
+    "max_drawdown_pct": -98.3897085282
+   },
+   "technicals": {
+    "as_of_date": "2026-08-11T00:00:00",
+    "rsi_14": 62.631578947368446,
+    "sma_50": 11.645999999999999,
+    "sma_200": 11.8097,
+    "above_50d": true,
+    "above_200d": true,
+    "macd_bull": true,
+    "dist_to_52w_high": -32.07762557077625,
+    "dist_from_52w_low": 27.819548872180455
+   },
+   "has_price_history": true,
+   "freshness": [
+    {
+     "category": "disclosures",
+     "as_of": "2026-04-11T21:00:00+00:00",
+     "updated_at": "2026-08-07T00:42:08.238259+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 120.0,
+     "stale": true
+    },
+    {
+     "category": "fundamentals",
+     "as_of": "2026-08-12T01:43:13.138057+00:00",
+     "updated_at": "2026-08-12T01:43:13.138057+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 100.0,
+     "stale": false
+    },
+    {
+     "category": "news",
+     "as_of": "2026-04-11T21:00:00+00:00",
+     "updated_at": "2026-08-12T00:15:35.357553+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 30.0,
+     "stale": true
+    },
+    {
+     "category": "prices",
+     "as_of": "2026-08-11T00:00:00+00:00",
+     "updated_at": "2026-08-12T01:43:12.620873+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 2.0,
+     "stale": true
+    },
+    {
+     "category": "technical",
+     "as_of": "2026-08-11T00:00:00+00:00",
+     "updated_at": "2026-08-12T01:43:12.620873+00:00",
+     "next_at": "2026-10-28T00:00:00+00:00",
+     "max_age_days": 2.0,
+     "stale": true
+    }
+   ]
+  },
+  "P2": {
+   "groups": [
+    {
+     "group": "valuation",
+     "metrics": [
+      {
+       "key": "pe",
+       "value": null,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      },
+      {
+       "key": "pb",
+       "value": 1.53,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "ev_ebitda",
+       "value": null,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "na_sector",
+       "sector_percentile": null
+      },
+      {
+       "key": "ps",
+       "value": 9.336239103362391,
+       "unit": "x",
+       "higher_is_better": false,
+       "status": "ok",
+       "sector_percentile": 9.6
+      }
+     ],
+     "score": 9.6
+    },
+    {
+     "group": "profitability",
+     "metrics": [
+      {
+       "key": "roe",
+       "value": -4.11,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "roa",
+       "value": -1.85,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "published",
+       "sector_percentile": null
+      },
+      {
+       "key": "roic",
+       "value": -1.9989916813713131,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "ok",
+       "sector_percentile": 14.8
+      },
+      {
+       "key": "net_margin",
+       "value": -49.91282689912827,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "ok",
+       "sector_percentile": 6.5
+      },
+      {
+       "key": "gross_margin",
+       "value": 56.31382316313823,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "ok",
+       "sector_percentile": 81.1
+      }
+     ],
+     "score": 34.13333333333333
+    },
+    {
+     "group": "health",
+     "metrics": [
+      {
+       "key": "debt_equity",
+       "value": 0.6035409677028175,
+       "unit": "ratio",
+       "higher_is_better": false,
+       "status": "ok",
+       "sector_percentile": 27.7
+      },
+      {
+       "key": "current_ratio",
+       "value": 0.17925698423011047,
+       "unit": "ratio",
+       "higher_is_better": true,
+       "status": "ok",
+       "sector_percentile": 0.9
+      },
+      {
+       "key": "interest_coverage",
+       "value": -0.6586936522539099,
+       "unit": "x",
+       "higher_is_better": true,
+       "status": "ok",
+       "sector_percentile": 14.9
+      },
+      {
+       "key": "fcf_yield",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "na_sector",
+       "sector_percentile": null
+      }
+     ],
+     "score": 14.5
+    },
+    {
+     "group": "income",
+     "metrics": [
+      {
+       "key": "div_yield",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": true,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      },
+      {
+       "key": "payout",
+       "value": null,
+       "unit": "%",
+       "higher_is_better": false,
+       "status": "missing_inputs",
+       "sector_percentile": null
+      }
+     ],
+     "score": null
+    }
+   ],
+   "freshness": {
+    "category": "fundamentals",
+    "as_of": "2026-08-12T01:43:13.138057+00:00",
+    "updated_at": "2026-08-12T01:43:13.138057+00:00",
+    "next_at": "2026-10-28T00:00:00+00:00",
+    "max_age_days": 100.0,
+    "stale": false
+   }
+  },
+  "P3": {
+   "currency": "SAR",
+   "dividends": [],
+   "capital_changes": [
+    {
+     "date": "2026-06-21",
+     "change_type": "Private Offering",
+     "capital_before_mn": 315.0,
+     "capital_after_mn": null,
+     "change_pct": -100.0,
+     "note": "-"
+    },
+    {
+     "date": "2025-01-05",
+     "change_type": "Right IssueCancelled",
+     "capital_before_mn": 315.0,
+     "capital_after_mn": 420.0,
+     "change_pct": 33.33,
+     "note": "On April 20, 2026, the company announced that its board of directors decided to withdraw its request to CMA for a capital increase through a SAR 105 million rights issue, noting its intention to reassess available financing options to support operations ."
+    },
+    {
+     "date": "2024-02-04",
+     "change_type": "Right IssueCancelled",
+     "capital_before_mn": 315.0,
+     "capital_after_mn": 551.25,
+     "change_pct": 75.0,
+     "note": "On July 30, 2024, shareholders rejected the board’s proposal to increase capital by 75% through a 472.5 million rights offering, valued at SAR 236.25 million."
+    },
+    {
+     "date": "2022-06-13",
+     "change_type": "Right Issue",
+     "capital_before_mn": 105.0,
+     "capital_after_mn": 315.0,
+     "change_pct": 200.0,
+     "note": "shareholders approved the board’s recommendation to increase capital to SAR 315.00 million from SAR 150.00 million via a SAR 210.00 million rights issue, during the extraordinary general meeting (EGM) held on 17/5/2022 ."
+    },
+    {
+     "date": "2020-11-22",
+     "change_type": "Right Issue",
+     "capital_before_mn": 15.0,
+     "capital_after_mn": 105.0,
+     "change_pct": 600.0,
+     "note": "-"
+    },
+    {
+     "date": "2019-12-31",
+     "change_type": "Reduction",
+     "capital_before_mn": 196.0,
+     "capital_after_mn": 15.0,
+     "change_pct": -92.35,
+     "note": "The General Assembly approved a 92.35% capital decrease from SAR 196mn to SAR 15mn, at a rate of 92.35:100."
+    },
+    {
+     "date": "2015-04-30",
+     "change_type": "Right IssueCancelled",
+     "capital_before_mn": 196.0,
+     "capital_after_mn": 306.0,
+     "change_pct": 56.12,
+     "note": "BOD recommended  110 million rights issue to raise its capital."
+    },
+    {
+     "date": "2012-12-01",
+     "change_type": "Right Issue",
+     "capital_before_mn": 109.0,
+     "capital_after_mn": 196.0,
+     "change_pct": 79.82,
+     "note": "The General Assembly approved a 79.8% capital increase to reach SAR 196mn through issuing 8.7mn shares for a rights issue subscription with a total value of SAR 87mn"
+    },
+    {
+     "date": "2007-08-19",
+     "change_type": "Reduction",
+     "capital_before_mn": 1200.0,
+     "capital_after_mn": 109.0,
+     "change_pct": -90.92,
+     "note": "The General Assembly approved a 90.92% capital decrease from SAR 1200mn to SAR 109mn, at a rate of 1:11 approximately. The capital decrease is backed by the accumulation of losses"
+    },
+    {
+     "date": "1995-01-02",
+     "change_type": "Private Offering",
+     "capital_before_mn": 500.0,
+     "capital_after_mn": 1200.0,
+     "change_pct": 140.0,
+     "note": "The company increased its capital by 140% to reach SAR 1200mn through issuing 7mn new shares in order to acquire Naser M. Al- Mukairsh & Co."
+    }
+   ]
+  },
+  "P4": {
+   "seats": [
+    {
+     "seat": "value",
+     "vote": "abstain",
+     "inputs": [
+      {
+       "name": "pe",
+       "value": null,
+       "unit": "x"
+      }
+     ],
+     "rule": "P/E below 10 bullish, below 16 neutral, else bearish; no or negative earnings abstains",
+     "thresholds": {
+      "pe_bullish_below": 10.0,
+      "pe_neutral_below": 16.0
+     }
+    },
+    {
+     "seat": "quality",
+     "vote": "bearish",
+     "inputs": [
+      {
+       "name": "roe",
+       "value": -4.11,
+       "unit": "%"
+      }
+     ],
+     "rule": "ROE above 20% bullish, above 12% neutral, else bearish",
+     "thresholds": {
+      "roe_bullish_above": 20.0,
+      "roe_neutral_above": 12.0
+     }
+    },
+    {
+     "seat": "income",
+     "vote": "abstain",
+     "inputs": [
+      {
+       "name": "dividend_yield",
+       "value": null,
+       "unit": "%"
+      }
+     ],
+     "rule": "Dividend yield above 5% bullish, above 2.5% neutral, else bearish; no dividend abstains",
+     "thresholds": {
+      "yield_bullish_above": 5.0,
+      "yield_neutral_above": 2.5
+     }
+    },
+    {
+     "seat": "momentum",
+     "vote": "neutral",
+     "inputs": [
+      {
+       "name": "regime_score",
+       "value": 70.0,
+       "unit": "/100"
+      },
+      {
+       "name": "golden_cross",
+       "value": "no",
+       "unit": null
+      }
+     ],
+     "rule": "Trend regime above 65 with the 50-day above the 200-day bullish, above 45 neutral, else bearish",
+     "thresholds": {
+      "regime_bullish_above": 65.0,
+      "regime_neutral_above": 45.0
+     }
+    },
+    {
+     "seat": "risk",
+     "vote": "bearish",
+     "inputs": [
+      {
+       "name": "volatility_1y",
+       "value": 30.5512622506186,
+       "unit": "%"
+      },
+      {
+       "name": "dividend_yield",
+       "value": null,
+       "unit": "%"
+      }
+     ],
+     "rule": "1-year volatility below 15% with a yield above 3% bullish, below 25% neutral, else bearish",
+     "thresholds": {
+      "vol_bullish_below": 15.0,
+      "yield_bullish_above": 3.0,
+      "vol_neutral_below": 25.0
+     }
+    },
+    {
+     "seat": "news",
+     "vote": "abstain",
+     "inputs": [
+      {
+       "name": "positive",
+       "value": 0.0,
+       "unit": null
+      },
+      {
+       "name": "negative",
+       "value": 0.0,
+       "unit": null
+      },
+      {
+       "name": "rated_items",
+       "value": 0.0,
+       "unit": null
+      }
+     ],
+     "rule": "Over the last 30 days of rated news: a majority positive bullish, a majority negative bearish, otherwise neutral; no rated news abstains",
+     "thresholds": {
+      "window_days": 30.0
+     }
+    }
+   ],
+   "counts": {
+    "bullish": 0,
+    "neutral": 1,
+    "bearish": 2,
+    "abstain": 3
+   },
+   "as_of_date": "2026-08-07",
+   "freshness": {
+    "category": "prices",
+    "as_of": "2026-08-07T00:00:00+00:00",
+    "updated_at": "2026-08-07T00:41:40+00:00",
+    "next_at": "2026-10-28T00:00:00+00:00",
+    "max_age_days": 2.0,
+    "stale": true
+   }
+  },
+  "P5": {
+   "basis": "sector_exchange",
+   "sector_en": "Consumer Staples Distribution & Retail",
+   "sector_ar": "تجزئة وتوزيع السلع الاستهلاكية",
+   "peers": [
+    {
+     "ticker": {
+      "ticker_key": "4164_TADAWUL",
+      "symbol": "4164",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Nahdi Medical Company",
+      "name_ar": "النهدي",
+      "sector_en": "Consumer Staples Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الاستهلاكية",
+      "slug": "4164"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 95.2,
+     "day_change_pct": -0.73,
+     "market_cap_mn": 12376.0,
+     "pe": 15.88,
+     "dividend_yield_pct": 5.82
+    },
+    {
+     "ticker": {
+      "ticker_key": "4161_TADAWUL",
+      "symbol": "4161",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "BinDawood Holding Company",
+      "name_ar": "بن داود",
+      "sector_en": "Consumer Staples Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الاستهلاكية",
+      "slug": "4161"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 4.65,
+     "day_change_pct": -0.64,
+     "market_cap_mn": 5314.95,
+     "pe": 19.04,
+     "dividend_yield_pct": 1.77
+    },
+    {
+     "ticker": {
+      "ticker_key": "4001_TADAWUL",
+      "symbol": "4001",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Abdullah Al-Othaim Markets Company",
+      "name_ar": "أسواق ع العثيم",
+      "sector_en": "Consumer Staples Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الاستهلاكية",
+      "slug": "4001"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 5.19,
+     "day_change_pct": -0.76,
+     "market_cap_mn": 4671.0,
+     "pe": 20.66,
+     "dividend_yield_pct": 8.04
+    },
+    {
+     "ticker": {
+      "ticker_key": "4162_TADAWUL",
+      "symbol": "4162",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Almunajem Foods Company",
+      "name_ar": "المنجم",
+      "sector_en": "Consumer Staples Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الاستهلاكية",
+      "slug": "4162"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 64.0,
+     "day_change_pct": 4.23,
+     "market_cap_mn": 3840.0,
+     "pe": 13.91,
+     "dividend_yield_pct": 3.19
+    },
+    {
+     "ticker": {
+      "ticker_key": "4163_TADAWUL",
+      "symbol": "4163",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Al-Dawaa Medical Services Company",
+      "name_ar": "الدواء",
+      "sector_en": "Consumer Staples Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الاستهلاكية",
+      "slug": "4163"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 40.62,
+     "day_change_pct": -1.6,
+     "market_cap_mn": 3452.7,
+     "pe": 15.95,
+     "dividend_yield_pct": 6.63
+    },
+    {
+     "ticker": {
+      "ticker_key": "4006_TADAWUL",
+      "symbol": "4006",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Saudi Marketing Company",
+      "name_ar": "أسواق المزرعة",
+      "sector_en": "Consumer Staples Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الاستهلاكية",
+      "slug": "4006"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 12.49,
+     "day_change_pct": -1.58,
+     "market_cap_mn": 562.05,
+     "pe": 22.89,
+     "dividend_yield_pct": null
+    },
+    {
+     "ticker": {
+      "ticker_key": "4160_TADAWUL",
+      "symbol": "4160",
+      "exchange": "TADAWUL",
+      "currency": "SAR",
+      "name_en": "Thimar Development Holding Company",
+      "name_ar": "ثمار",
+      "sector_en": "Consumer Staples Distribution & Retail",
+      "sector_ar": "تجزئة وتوزيع السلع الاستهلاكية",
+      "slug": "4160"
+     },
+     "as_of_date": "2026-08-07",
+     "last_price": 34.22,
+     "day_change_pct": -0.23,
+     "market_cap_mn": 222.43,
+     "pe": null,
+     "dividend_yield_pct": null
+    }
+   ]
+  },
+  "P6": [
+   {
+    "date": "2026-04-11T21:00:00",
+    "section": "disclosures",
+    "title": "Anaam sells stake in Wasit Saudi for SAR 38.2M",
+    "title_en": null,
+    "impact": null,
+    "summary": "أعلنت شركة عنام القابضة اليوم، 12 أبريل، أنها قامت ببيع حصتها الكاملة في شركة واسط السعودية للأنظمة الترفيهية والجمالية بمبلغ إجمالي قدره 38.18 مليون ريال. ستتلقى عنام دفعة أولى قدرها 25.2 مليون ريال في غضون 30 يوما من تاريخ توقيع العقد، بينما ستُدفع الدفعة الثانية وقدرها 3.25 مليون ريال بعد عام من توقيع العقد. وتستهدف هذه الصفقة تحسين الحالة المالية لشركة عنام في الربع الثاني من عام 2026."
+   },
+   {
+    "date": "2025-06-25T21:00:00",
+    "section": "disclosures",
+    "title": "Anaam shareholders reject discharging board members from liability for 2024",
+    "title_en": null,
+    "impact": null,
+    "summary": "Anaam International Holding Group's shareholders disapproved discharging board members from liability for 2024 during the ordinary general meeting held on June 25, 2025, according to a Tadawul statement. They also disapproved appointing an external auditor to review the company’s income statements for Q2, Q3, and Q4 2025, as well as Q1 2026. Additionally, they rejected the auditor's report for 2024 after reviewing it."
+   },
+   {
+    "date": "2025-02-12T21:00:00",
+    "section": "disclosures",
+    "title": "Anaam shareholders OK reverse stock split to SAR 10; trading suspended for 2 days",
+    "title_en": null,
+    "impact": null,
+    "summary": "Shareholders of Anaam International Holding Group approved a reverse stock split, increasing the nominal share value from SAR 0.50 to SAR 10, during the extraordinary general meeting on February 12. The decision will affect all shareholders of record at the end of the second trading day following the meeting. Trading will be suspended for two days starting February 13, with the suspension expected to be lifted by the end of trading on February 16."
+   },
+   {
+    "date": "2024-08-21T21:00:00",
+    "section": "disclosures",
+    "title": "Anaam sells hotel for SAR 19.1M",
+    "title_en": null,
+    "impact": null,
+    "summary": "Anaam International Holding Group announced the sale of the Hyatt Al Fursan Hotel in Al Qurayyat, Al-Jouf region to Khaled Mustafa Mohamed Moneim for SAR 19.11 million. The agreement includes all assets and liabilities of the hotel in its current state, with the full value being paid in annual installments. An advance payment of SAR 1.5 million has been agreed upon, and the remaining value of SAR 17.6 million will be paid in four equal annual installments. The deal involves additional securities including mortgages. The aim of the transaction is to finance the company’s activities and enhance liquidity. The hotel was purchased in December 2021 for SAR 16.5 million."
+   },
+   {
+    "date": "2024-07-30T21:00:00",
+    "section": "disclosures",
+    "title": "Anaam shareholders reject capital hike via SAR 236.2M rights issue",
+    "title_en": null,
+    "impact": null,
+    "summary": "Shareholders of Anaam International Holding Group rejected the board's recommendation for a 75% capital increase through a rights issue worth SAR 236.25 million during an extraordinary general meeting held on July 30. The current capital stands at SAR 315 million with 630 million shares, and the capital was intended to rise to SAR 551.25 million with new shares reaching 1.10 billion. The purpose of the capital hike was to finance working capital, reduce lending rates, and support future activities."
+   },
+   {
+    "date": "2024-07-13T21:00:00",
+    "section": "disclosures",
+    "title": "Anaam's subsidiary inks deal to set up, operate 42 kids entertainment, educational centers",
+    "title_en": null,
+    "impact": null,
+    "summary": "Anaam International Holding Group's subsidiary, Saudi Wasit Factory for Entertainment & Beauty Systems, signed an agreement with Saudi-based PAUSA to establish and operate 42 kids' entertainment and educational centers in Saudi Arabia. These centers will be set up in shopping malls, public parks, and schools, at a total cost of SAR 25 million, within 24 months. Anaam is expected to see a positive financial impact in 2024 and 2025 from this deal."
+   }
+  ],
+  "P7": {
+   "ticker": "4061_TADAWUL",
+   "currency": "SAR",
+   "range": "1Y",
+   "from": "2025-09-29",
+   "to": "2026-10-13",
+   "first_close": 16.3,
+   "last_close": 12.07,
+   "change_pct": -25.95,
+   "high_close": 16.3,
+   "low_close": 9.44,
+   "average_volume": 413451,
+   "trading_days": 260
+  },
+  "P8": {
+   "ticker": "4061_TADAWUL",
+   "currency": "SAR",
+   "range": "5Y",
+   "from": "2021-07-15",
+   "to": "2026-10-13",
+   "first_close": 42.82,
+   "last_close": 12.07,
+   "change_pct": -71.81,
+   "high_close": 43.41,
+   "low_close": 9.44,
+   "average_volume": 835904,
+   "trading_days": 1300
+  }
+ },
+ "sources": {
+  "P1": {
+   "title_en": "Quote, valuation, returns and technicals",
+   "title_ar": "السعر والتقييم والعوائد والمؤشرات الفنية",
+   "ok": true
+  },
+  "P2": {
+   "title_en": "Fundamentals with sector percentiles",
+   "title_ar": "الأساسيات ومقارنتها بالقطاع",
+   "ok": true
+  },
+  "P3": {
+   "title_en": "Dividends and capital changes",
+   "title_ar": "التوزيعات وتغيرات رأس المال",
+   "ok": true
+  },
+  "P4": {
+   "title_en": "Council seats (rule-based votes)",
+   "title_ar": "مقاعد المجلس (تصويت بالقواعد)",
+   "ok": true
+  },
+  "P5": {
+   "title_en": "Sector peers",
+   "title_ar": "الشركات المماثلة في القطاع",
+   "ok": true
+  },
+  "P6": {
+   "title_en": "Latest news and disclosures",
+   "title_ar": "آخر الأخبار والإفصاحات",
+   "ok": true
+  },
+  "P7": {
+   "title_en": "Price summary, 1 year",
+   "title_ar": "ملخص السعر، سنة",
+   "ok": true
+  },
+  "P8": {
+   "title_en": "Price summary, 5 years",
+   "title_ar": "ملخص السعر، خمس سنوات",
+   "ok": true
+  }
+ }
+}
