@@ -1,5 +1,8 @@
 # F-5 — the no-advice check: what it does now, and the three ways out
 
+> **SETTLED 2026-10-27 — the owner chose B.** It is live in `web/scripts/check-advisors.mjs`. The rule itself
+> did not change, and the pattern is reviewed again when the lawyer answers Step 7's question (a).
+
 **For the owner to decide**, before Step 10 runs `check-advisors.mjs` against production. Nothing here is
 applied: F-5 was left open on purpose because the no-advice rule carries legal weight and goes to the lawyer at
 Step 7. This file is the choice written out so it can be settled in one word.
@@ -94,3 +97,22 @@ would rather read every bare "hold" in the meantime, C does that for one extra l
 
 **The rule itself does not change under any of these.** "Never buy/sell/hold advice" stays exactly as it is in
 `engine.py`'s system prompt and in every advisor file; this is only about what the *checker* can recognise.
+
+## The 19 sentences
+
+The measurements above are against these, run through whatever is in `check-advisors.mjs` at the time. Seven
+are not advice (and must pass); twelve are (and must fail).
+
+**Not advice.** EN: "whether cover holds only while margins hold" · "The payout holds at 73 per cent while
+margins hold above 12 per cent." · "Earnings cover the dividend; the question is whether that cover holds."
+AR: "اشتراط تغطية التوزيعات بالأرباح" · "اشتراك العضوية الشهري" · "مشترك في الخدمة" · "الهوامش قائمة والتغطية
+مستمرة".
+
+**Advice.** EN: "We would buy the stock here." · "You should sell." · "Investors ought to hold." · "Trim the
+position into strength." · "Our price target is 42 riyals." · "I recommend buying at this level."
+AR: "بيع السهم الآن" · "شراء السهم عند هذا المستوى" · "ننصح بشراء السهم" · "احتفظ بالسهم" · "اشترِ السهم" ·
+"يجب بيع الأسهم".
+
+**Result with B live:** 19 of 19 right, read out of the file itself. Debt: there is no automated test holding
+this — the patterns live in a script with no exports, so the list above is the record. If the lawyer narrows
+or widens the rule at Step 7, re-measure against it.
