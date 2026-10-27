@@ -4,6 +4,10 @@
     uv run python -m eval run --arm A --repeats 1  # replay; --dry uses the stand-in and costs nothing
     uv run python -m eval report                   # read the results back and print the table
 
+One process per run is the safe way to drive this: `llm.ask` builds a fresh AsyncOpenAI client on
+every call and never closes it, so a process that runs several sessions accumulates connection pools
+and stalls after three or four (docs/beta-advisors-2026-10-27.md, F-11). --cell exists for that.
+
 Arms
     A  the room as it ships: six seats on one advisor model, the Chair on another
     B  the Chair's model alone, same pack, same question, same output shape
@@ -248,13 +252,13 @@ async def run_single(cell: Any, locale: str, repeat: int, model: str, plant: boo
 # --- the run ------------------------------------------------------------------------------------
 
 
-async def run(arms: list[str], repeats: int, locale: str, plant: bool, dry: bool, single_model: str, spread: tuple[str, ...], pause: float = 5.0) -> None:
+async def run(arms: list[str], repeats: int, locale: str, plant: bool, dry: bool, single_model: str, spread: tuple[str, ...], pause: float = 5.0, only_cell: str | None = None) -> None:
     settings = get_settings()
     RESULTS.parent.mkdir(parents=True, exist_ok=True)
     ids = [a.id for a in roster.advisors(settings.debate_advisors)]
     arm_c_models = {seat: spread[i % len(spread)] for i, seat in enumerate(ids)} | {"chair": settings.debate_chair_model}
     for repeat in range(1, repeats + 1):
-        for cell in CELLS:
+        for cell in (CELLS if only_cell is None else [c for c in CELLS if c.key == only_cell]):
             if not (PACKS / f"{cell.ticker}.{locale}.json").exists():
                 print(f"{cell.ticker}: no saved pack - run `snapshot` first")
                 continue
@@ -290,13 +294,14 @@ def main() -> None:
     r.add_argument("--single-model", default=get_settings().debate_chair_model)
     r.add_argument("--spread", default=",".join(SPREAD))
     r.add_argument("--pause", type=float, default=5.0, help="seconds between runs, so a burst is not read as a fault")
+    r.add_argument("--cell", default=None, help="one cell only (its key), so a caller can give every run its own process")
     sub.add_parser("report")
     a = p.parse_args()
 
     if a.cmd == "snapshot":
         asyncio.run(snapshot(a.locale))
     elif a.cmd == "run":
-        asyncio.run(run(a.arm or ["A", "B", "C"], a.repeats, a.locale, a.plant, a.dry, a.single_model, tuple(a.spread.split(",")), a.pause))
+        asyncio.run(run(a.arm or ["A", "B", "C"], a.repeats, a.locale, a.plant, a.dry, a.single_model, tuple(a.spread.split(",")), a.pause, a.cell))
     else:
         from .report import report
 

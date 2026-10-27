@@ -214,6 +214,23 @@ INFO  ar: the session did not finish, so the checks below it were skipped — th
       توقفت الجلسة: تعذّر الوصول إلى خدمة الذكاء الاصطناعي
 ```
 
+### F-11 — a new HTTP client per model call, never closed. OPEN, found by the bench.
+
+`llm.ask` opens with `client = make_client(settings)`, and `make_client` returns a **new**
+`openai.AsyncOpenAI` every time — each with its own httpx connection pool, and none of them is ever closed.
+A session makes about 21 calls, so it leaves about 21 pools behind.
+
+The bench made this visible because it runs sessions back to back in one process: the first three sessions
+ran normally (51.5 s, 9.1 s, 50.4 s) and the fourth never completed, with spend crawling to a stop. Run on
+its own, the very same cell and pack finished in **43.5 s**, so it is not the data and not the question — it
+is the process that has already opened sixty-odd pools.
+
+In a uvicorn worker this is slower to bite but it does not go away: the workers are long-lived, and nothing
+closes a client when its call ends. **Not changed here** — it is product code on a hot path and deserves its
+own decision. The fix is small: build the client once and reuse it, or close it when the call ends.
+
+The bench works around it instead: `--cell` lets a caller give every run its own process.
+
 ### F-10 — a transport blip ends a whole session, and nothing retries it. OPEN, and it reaches members.
 
 Two of the last four beta sessions died with `unreachable`, both of them the second session of their run:
