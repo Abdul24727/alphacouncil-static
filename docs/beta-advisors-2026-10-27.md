@@ -200,6 +200,43 @@ is a normal outcome the room already handles — the screen says so — and the 
 failure with the engine's reason, the way F-4 taught it to record an absent seat. Same family of bug: the
 check assuming the happy path.
 
+**Fixed, in two halves, and the second half was only found by running it.** `convene` now reports a failed
+session with what the room says on screen, takes a screenshot and returns `null`; the round card carries
+`data-room-status` so the detection is an attribute rather than matching the words "stopped" and
+"توقفت" (the text test is kept as a fallback for an older release). The first release of that fix still
+crashed, further down: `replayPhone` ran anyway and waited for `[data-past-toggle]` of a session that was
+never saved. The caller now skips the replay when `convene` returns `null`.
+
+What it printed when it worked, which is what this was for:
+
+```
+INFO  ar: the session did not finish, so the checks below it were skipped — the room says:
+      توقفت الجلسة: تعذّر الوصول إلى خدمة الذكاء الاصطناعي
+```
+
+### F-10 — a transport blip ends a whole session, and nothing retries it. OPEN, and it reaches members.
+
+Two of the last four beta sessions died with `unreachable`, both of them the second session of their run:
+
+| Session | Shape |
+| --- | --- |
+| `1331133244` ar | **18.6 s, 7 turns** (brief and six openings), $0.0782 spent, then failed |
+| `860795315` ar | **0.6 s, 0 turns** — the very first call |
+
+**Not credits:** the key has **$41.10 of $50** left ($8.90 used). Not the Arabic prompt either — the two
+failures have different shapes, and Arabic ran clean in every earlier run today.
+
+The part that is ours is in `llm.ask`: `openai.APIConnectionError`, `RateLimitError` and `APITimeoutError`
+each `raise SeatError(...)` **at once, with no second try**. Only a reply that parses badly is retried. So a
+single blip on one of the ~21 calls a session makes ends the whole session, throws away what it has already
+paid for, and shows the member "the session stopped". At 21 calls a session even a 1-in-500 failure rate
+loses about 4% of sessions.
+
+This matters more than it did this morning: once Step 18 opens billing these are paying members, and the
+runbook has no story for it. Worth deciding before then — a retry with a short backoff on the transport
+errors (not on `credentials`, which will never succeed), and perhaps resuming a session rather than failing
+it. **Not changed here:** it is a change to how money is spent on retries, so it is the owner's call.
+
 English round-one answers against the 250–400 band the seat files ask for: 403–453 (five of five over), then
 372–491, then 133–514. Arabic: 257–307 (all inside), 269–346, 198–340. Step 23's rule is to keep an over-long
 answer whole and flag it, never to cut it, and that is what happens — the check now names the seats and their

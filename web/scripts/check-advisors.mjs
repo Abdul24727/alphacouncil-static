@@ -270,7 +270,7 @@ async function convene(locale) {
     note(`INFO  ${locale}: the session did not finish, so the checks below it were skipped — the room says: ${said.slice(0, 200)}`);
     await shot(page, `failed-${locale}-1440`);
     await ctx.close();
-    return;
+    return null; // the caller skips the replay: there is no finished session to replay
   }
   // A stand-in session is over in about a second, so nothing can be caught mid-round: only a model's can.
   if (standIn) note(`INFO  ${locale}: stand-in room, so the live rounds are not followed (${seconds.toFixed(0)} s)`);
@@ -386,7 +386,7 @@ for (const locale of LOCALES) {
     continue;
   }
   const state = await convene(locale);
-  await replayPhone(locale, state);
+  if (state) await replayPhone(locale, state);
 }
 
 await browser.close();
