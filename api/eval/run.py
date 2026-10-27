@@ -10,7 +10,8 @@ Arms
     C  six seats spread across three models, the same Chair
 
 Every arm reads the SAME saved pack, so the data is not a variable. Results are appended to
-docs/eval/results.jsonl, one JSON object per run, so a run can be stopped and resumed.
+docs/eval/results.jsonl, one JSON object per run, so stopping a run loses nothing already measured.
+It does not skip work already done: a second invocation runs every cell again and appends.
 """
 
 import argparse
