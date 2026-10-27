@@ -184,5 +184,6 @@ figure** — understated most in the sessions that lost a seat.
 5. **The arc is shallow** — heads rise about 40 px toward the middle, flatter than the owner's reference.
    Left deliberately for the owner to judge on beta.
 6. **Production**, with the owner's go-ahead, after 1–3.
-7. `c5d68f6` and `4b3d04a` are committed on `rebuild` but **not pushed** — pushing is an "Always stop" in the
-   autorun policy and the owner has not been asked for this one.
+7. ~~`c5d68f6` and `4b3d04a` are committed on `rebuild` but not pushed~~ — **pushed since**: `origin/rebuild`
+   is at `1fcebba`, which contains both. The F-1 commits `ddf29d1` and `e9c339f` are **not** pushed; pushing
+   is an "Always stop" in the autorun policy and the owner has not been asked for these.
