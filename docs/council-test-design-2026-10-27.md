@@ -89,7 +89,7 @@ the error as one seat's round-one answer; the Chair alone gets it as an analyst'
 
 | # | Planted claim | What the pack supports |
 | --- | --- | --- |
-| 1 | payout ratio 97.4% | ~41% (P2, P3) |
+| 1 | payout ratio 97.4% | ~70-73% (P3 dividend rows against P1 eps_ttm) |
 | 2 | P/E 4.2 | ~14.5 (P1) |
 | 3 | debt to equity 2.9 | 0.20 (P2) |
 | 4 | dividend yield 11.8% | ~5.2% (P1) |
