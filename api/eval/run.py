@@ -41,6 +41,20 @@ RESULTS = ROOT / "docs" / "eval" / "results.jsonl"
 SPREAD = ("deepseek/deepseek-v4-pro", "anthropic/claude-sonnet-5.5", "openai/gpt-5.2")
 
 
+def describe(exc: BaseException) -> str:
+    """SeatError carries only a code, so the provider's own error is lost by the time it reaches here.
+    Walk the cause chain and keep it: `unreachable` could be DNS, a 402, a 5xx or a provider block, and
+    which one it is decides whether F-10 is a retry problem or a rate-limit problem."""
+    parts = [f"{type(exc).__name__}: {exc}"]
+    cause, seen = exc.__cause__, 0
+    while cause is not None and seen < 4:
+        status = getattr(cause, "status_code", None)
+        body = getattr(cause, "body", None)
+        parts.append(f"<- {type(cause).__module__}.{type(cause).__name__}" + (f" [{status}]" if status else "") + f": {str(cause)[:200]}" + (f" body={str(body)[:200]}" if body else ""))
+        cause, seen = cause.__cause__, seen + 1
+    return " ".join(parts)
+
+
 def request_for(app: Any) -> Request:
     """A Request good enough for the database tools: they read app.state and request.state.plan."""
     r = Request({"type": "http", "app": app, "headers": [], "method": "GET", "path": "/", "query_string": b""})
@@ -173,7 +187,7 @@ async def run_room(cell: Any, locale: str, repeat: int, arm: str, models: dict[s
         r.gaps, r.disagreements = list(v.get("gaps") or []), list(v.get("disagreements") or [])
         r.ok = bool(r.answer)
     except Exception as exc:  # a failed room is a result, not a crash
-        r.error = f"{type(exc).__name__}: {exc}"
+        r.error = describe(exc)
     r.seconds = round(time.monotonic() - started, 2)
     r.cost_usd, r.calls = round(calls["cost"], 6), calls["n"]
     r.absent = sorted({t["seat"] for t in turns if isinstance(t.get("data"), dict) and t["data"].get("absent")})
@@ -226,7 +240,7 @@ async def run_single(cell: Any, locale: str, repeat: int, model: str, plant: boo
         r.disagreements = [str(d) for d in (raw.get("disagreements") or [])]
         r.cost_usd, r.calls, r.ok = round(usage.cost_usd or 0.0, 6), 1, True
     except Exception as exc:
-        r.error = f"{type(exc).__name__}: {exc}"
+        r.error = describe(exc)
     r.seconds = round(time.monotonic() - started, 2)
     return score(r, pack)
 
@@ -234,7 +248,7 @@ async def run_single(cell: Any, locale: str, repeat: int, model: str, plant: boo
 # --- the run ------------------------------------------------------------------------------------
 
 
-async def run(arms: list[str], repeats: int, locale: str, plant: bool, dry: bool, single_model: str, spread: tuple[str, ...]) -> None:
+async def run(arms: list[str], repeats: int, locale: str, plant: bool, dry: bool, single_model: str, spread: tuple[str, ...], pause: float = 5.0) -> None:
     settings = get_settings()
     RESULTS.parent.mkdir(parents=True, exist_ok=True)
     ids = [a.id for a in roster.advisors(settings.debate_advisors)]
@@ -253,6 +267,7 @@ async def run(arms: list[str], repeats: int, locale: str, plant: bool, dry: bool
                     r = await run_single(cell, locale, repeat, single_model, plant, dry)
                 with RESULTS.open("a", encoding="utf-8") as fh:
                     fh.write(json.dumps(asdict(r), ensure_ascii=False) + "\n")
+                await asyncio.sleep(pause)
                 mark = "ok " if r.ok else "FAIL"
                 probe = f" plant[challenged={r.plant_challenged} in_answer={r.plant_in_answer}]" if r.planted else ""
                 print(
@@ -274,13 +289,14 @@ def main() -> None:
     r.add_argument("--dry", action="store_true", help="stand-in room: no model, no cost")
     r.add_argument("--single-model", default=get_settings().debate_chair_model)
     r.add_argument("--spread", default=",".join(SPREAD))
+    r.add_argument("--pause", type=float, default=5.0, help="seconds between runs, so a burst is not read as a fault")
     sub.add_parser("report")
     a = p.parse_args()
 
     if a.cmd == "snapshot":
         asyncio.run(snapshot(a.locale))
     elif a.cmd == "run":
-        asyncio.run(run(a.arm or ["A", "B", "C"], a.repeats, a.locale, a.plant, a.dry, a.single_model, tuple(a.spread.split(","))))
+        asyncio.run(run(a.arm or ["A", "B", "C"], a.repeats, a.locale, a.plant, a.dry, a.single_model, tuple(a.spread.split(",")), a.pause))
     else:
         from .report import report
 
