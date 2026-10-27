@@ -172,6 +172,34 @@ a single absence** — which says the fix was the JSON-escaping rule and the thi
 Against: asking for 400 may pull the lengths higher still. **So the release run checks F-1 first**: if round
 one loses anybody, or English goes past 400, the band goes back and this note says why.
 
+**The release run (beta `046e52bf41`) says the band is not a passive measurement.** English round one
+came back **372–460 words, 2 of 6 over 400**, against 296–404 under the 200–300 label. So the room writes
+roughly a fifth past whatever ceiling it is given, and widening the band to match what it writes simply moves
+what it writes:
+
+| What the prompt asks | What English round one does |
+| --- | --- |
+| 250–400 (original) | 372–514 |
+| 200–300 | 296–404 across three runs |
+| 200–400 | **372–460** |
+
+That is the argument against widening the **prompt**, and it was not visible before the run. The reporting
+threshold and the instruction are two different things and should stop being the same number.
+
+**F-1 did not return.** The Arabic session of that run failed, but the server says `failed (unreachable)` —
+an OpenRouter transport failure after 7 turns (brief and six openings, 18.6 s, $0.0782), not `bad_output` and
+not `too_few`. English lost nobody. Read off the screen alone it looked like F-1 returning; the journal says
+otherwise, which is why the journal is worth reading before reverting anything.
+
+### F-9 — the checker crashes on a failed session instead of reporting it. OPEN.
+
+When that Arabic session died, `check-advisors.mjs` did not report a failed session: it waited 30 s for
+`[data-verdict] .headline`, threw `TimeoutError` and **killed the whole run** (exit 1, uncaught), so the
+Arabic half produced no findings at all and the English half's summary never printed. A session that fails
+is a normal outcome the room already handles — the screen says so — and the check should record it as a
+failure with the engine's reason, the way F-4 taught it to record an absent seat. Same family of bug: the
+check assuming the happy path.
+
 English round-one answers against the 250–400 band the seat files ask for: 403–453 (five of five over), then
 372–491, then 133–514. Arabic: 257–307 (all inside), 269–346, 198–340. Step 23's rule is to keep an over-long
 answer whole and flag it, never to cut it, and that is what happens — the check now names the seats and their
