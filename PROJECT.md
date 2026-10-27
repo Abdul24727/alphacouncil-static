@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-27   **At version:** `45492eb` on branch `rebuild` (**beta `4b3d04a3e5`**, production still `a2e2c318bc`). Pushed to `origin/rebuild` on 2026-10-27 with the owner's go-ahead (`b915b36..f4bf898`), so the remote, this file and the local branch agree.
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-27   **At version:** the tip of branch `rebuild`, level with `origin/rebuild`. Deployed: **beta `4b3d04a3e5`**, production still `a2e2c318bc`. *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
