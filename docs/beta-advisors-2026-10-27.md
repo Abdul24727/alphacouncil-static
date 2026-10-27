@@ -104,6 +104,14 @@ Degradation is graceful — a lost seat still gives its challenge and final word
 `count_leans` only count who was actually there — but a member sees a seat with no answer, and Step 23's
 "Done when" asks for round-one answers from everyone. **This is not ready for production.**
 
+**Changed in `ddf29d1`, not yet proven.** Round one now asks for **200–300 words** (`engine.ANSWER_WORDS`, the
+Answers section of `chair.md`, and `ANSWER_WORDS` in this checker, which reads the same band off the screen);
+the shared Output rule in `engine.py` now says each text value is one JSON string with its quotes escaped and
+no line breaks; a seat gets **three tries** instead of two (`llm.ATTEMPTS`); and the retry after a malformed
+reply says what to escape rather than only asking again. `uv run pytest -q` 169 passed, `npm test` 28 passed.
+**None of that is evidence yet** — F-1 only shows up against a real model, so it stays OPEN until both modes
+are re-run on beta with the two commands above and the absences are gone.
+
 ### F-2 — English round one runs long; Arabic does not. OPEN, owner's call.
 
 English round-one answers against the 250–400 band the seat files ask for: 403–453 (five of five over), then
@@ -144,6 +152,11 @@ legal weight and goes to the lawyer at Step 7, so narrowing it is the owner's ca
 matters before Step 10: `check-advisors.mjs` runs against production, and a question containing the word
 "hold" would fail the launch check for no reason.
 
+**The choice is written out in `docs/advice-check-f5-2026-10-27.md`** (2026-10-27) — three options with the
+exact patterns, measured against 19 sentences: the pattern in use today gets 8 of them wrong (4 innocent
+sentences failed, 4 pieces of real advice passed), and the recommended one gets all 19 right. Still the
+owner's decision; nothing applied.
+
 ### F-6 — figures the checker could not match: 15 in English against 3 in Arabic. Watch.
 
 Marked on screen as not found in the data, which is the honest behaviour and not a BRAND violation: nothing is
@@ -159,9 +172,12 @@ figure** — understated most in the sessions that lost a seat.
 
 ## Still to do
 
-1. **F-1**, then re-run both modes. This is the blocker for production.
-2. **F-5** — the owner's decision on the advice wording, before Step 10 runs on production.
-3. **The owner approves the look on beta** — the checkpoint Steps 22 and 23 both wait on.
+1. **F-1 is changed in `ddf29d1` and not proven** — it needs a beta release and both modes re-run on a real
+   model. This is still the blocker for production.
+2. **F-5** — the owner's decision on the advice wording, before Step 10 runs on production. The options are
+   written out in `docs/advice-check-f5-2026-10-27.md`.
+3. ~~The owner approves the look on beta~~ — **DONE 2026-10-27**: approved in chat on `4b3d04a3e5`, judged at
+   1440 in both languages and at 390 on a phone, knowing no seat's mouth moves and the arc is shallow.
 4. **The mouth-open talk frames were never made**, so no seat's mouth moves. Step 22's "Done when" asks the
    mid-session screenshots to show the mouth-open frame; they cannot until those images exist. The seats hold
    still with the speaker's lift and ring instead.
