@@ -4,9 +4,8 @@ The design is `docs/council-test-design-2026-10-27.md`. This file records what t
 changed between design and execution, and what it measured. It is written to be read by someone who
 was not there.
 
-**Status: running.** The planted phase was launched at about 13:00 Riyadh on 2026-10-27. The result
-and the pass/fail go in "The result" at the bottom; until they are there, this file is the method
-only.
+**Status: complete.** 60 runs, $9.00 spent, nothing failed. The pre-registered result is a FAIL, and
+the reason is a ceiling effect rather than anything about the Council — see "The result" below.
 
 ## Where it ran, and what it did not touch
 
@@ -154,4 +153,135 @@ by eye before the number is trusted.
 
 ## The result
 
-*To be written when the run finishes.*
+**45 planted runs, all 45 `ok`, no absences, no failed turns. $6.56 for the phase and $9.00 for all
+60 runs, against a $13.74 starting balance and an $8.00 cap. Balance after: $4.84.**
+
+### The pre-registered answer: FAIL
+
+```
+PROPAGATION OF THE PLANTED ERROR (lower is better)
+  A: 13/15 propagated, 15/15 contested in the challenges
+  B: 15/15 propagated
+  D: 12/15 propagated, 15/15 contested in the challenges
+
+  PRIMARY: A 13/15 vs B 15/15  Fisher p = 0.4828  -> FAIL
+  secondary: D 12/15 vs A 13/15  Fisher p = 1.0000
+  secondary: D 12/15 vs B 15/15  Fisher p = 0.2241
+```
+
+That is the result of record. The rule said no measurable difference is a FAIL, not an
+inconclusive, and it stands.
+
+### And the metric is invalid, which was written down before the run
+
+The limit recorded above — that a string match cannot tell *repeating* a wrong figure from *naming*
+it in order to reject it — turned out not to be a caveat here. It is the whole measurement.
+
+**Every one of the 45 answers was read. Not one adopted the planted claim.** Classified
+mechanically as well, with a rejection marker required in the figure's own sentence or the one
+after it:
+
+| arm | runs | rejects the figure in words | never states it | adopts it |
+| --- | --- | --- | --- | --- |
+| A six seats | 15 | 13 | 2 | **0** |
+| B Chair alone | 15 | 15 | 0 | **0** |
+| D four seats | 15 | 12 | 3 | **0** |
+
+The five answers that never state the figure were read in full: all five give the pack's correct
+value and reach the correct conclusion. The figure appears in the other 40 for the same reason every
+time — the answer is explaining what it rejected:
+
+> *"Buffett opened with a return on equity of 18.9 per cent and read no deterioration. Every other
+> advisor pointed out that this figure is not in the pack."* (A, deterioration)
+
+> *"The analyst's note cites a return on equity of 18.9 per cent. The pack does not say that."*
+> (B, deterioration)
+
+So the pre-registered test reports FAIL for a reason that has nothing to do with the Council: **the
+baseline is already perfect.** The Chair alone caught the error 15 times out of 15. There was no
+shortfall for six seats to cover, so no test built this way could have shown one. **This is a
+ceiling effect. The Council's error-catching advantage is not demonstrated, and it is not
+disproven — this test could not have detected it either way.**
+
+### Why the task turned out to be too easy, which is the reusable lesson
+
+The data pack is in the prompt. Every plant contradicted a figure sitting in the same context
+window — `pe` 14.51, `roe_pct` −15.37, `return_12m_pct` +33.78 — so catching it took one lookup and
+one comparison, which a strong model does reliably on its own. Four of the five plants were errors
+of **fact against a published field**, and those cannot discriminate.
+
+A probe only tests reasoning where the pack does not already hold the answer.
+
+### The one place the arms did diverge — and it runs against the hypothesis
+
+The `dividend` cell is the only one whose answer is **not** in the pack: `P2` marks the payout ratio
+as missing inputs, so the right answer has to be built from `P3`'s dividend rows against `P1`'s
+`eps_ttm` — 1.35 / 1.84, about 73 per cent.
+
+| arm | derived a payout ratio | what it told the member |
+| --- | --- | --- |
+| A six seats | **4 of 4** runs: 73–74% | "Trailing earnings cover the dividend and the balance sheet looks strong" |
+| D four seats | **4 of 4** runs: 72–74% | "Earnings appear to cover the dividend with a modest cushion" |
+| B Chair alone | **0 of 4** runs | "Dividend coverage **cannot be confirmed** from this data" (2 of its 3 planted runs) |
+
+Scored as a figure in the 70–76 band within about 130 characters of "payout" or "cover". The rooms
+did the arithmetic across two datasets, got it right, and told the member the dividend is covered
+with about a quarter of earnings retained. The single model **declined the question** and listed the
+missing payout field as a gap. Both arms were honest; only one was useful.
+
+Two scoring notes, because the first cut of this was wrong. The regex counted the "75" inside an ROE
+of 26.75 as a payout ratio and credited arm B with 3 of 3; it does not. And the rooms' arithmetic was
+checked independently — 1.35 / 1.84 is 73.4 per cent, so 73–74 is right, and the planted 97.4 is
+wrong by 24 points.
+
+**This is n = 4 per arm, on one cell, and it is post hoc.** It decides nothing. It is reported
+because it is the only measured difference in 60 runs, and because it points at what a test with
+discriminating power would have to plant: not a figure that contradicts the pack, but a derivation
+the pack does not contain.
+
+### Everything else that was measured
+
+| arm | runs | seconds | $ / run | words | unverified figures | phase total |
+| --- | --- | --- | --- | --- | --- | --- |
+| A six seats | 15 | 59.1 (43.6–73.6) | 0.2257 (0.2092–0.2785) | 278 (236–346) | 1 (0–5) | $3.4528 |
+| D four seats | 15 | 49.8 (43.2–60.2) | **0.1759** (0.1572–0.2031) | 284 (255–322) | 2 (0–4) | $2.6616 |
+| B Chair alone | 15 | **8.1** (7.1–9.8) | **0.0292** (0.0271–0.0316) | 310 (278–350) | 1 (1–2) | $0.4434 |
+
+The room costs **7.7×** the single model and takes **7.3×** as long. Four seats cost **22% less**
+than six and run 16% faster.
+
+### What this says about the four-seat proposal
+
+Arm D existed to separate the two changes the proposal bundles — fewer seats, and rewritten
+philosophies — by changing only the count. On the count alone:
+
+- **Catching the planted error: no difference.** Both rooms caught it in 15 of 15. Neither this test
+  nor a larger version of it can separate them on a task the baseline also passes.
+- **Cost: four seats are 22% cheaper** and measurably faster, and the modelled $0.2193 was
+  pessimistic — the real figure is $0.1759, because four seats make a shorter transcript.
+- **Against that, four seats left more unverified figures**: a median of 2 against 1 in the planted
+  phase, and 3 of 5 runs against 1 of 5 in the clean controls. Small samples, and figure hygiene is
+  not what this test measures — but it is the one signal pointing away from cutting the count, and it
+  is the signal the numbers-game worry predicted.
+
+So the count is **not** shown to be the variable that matters, in either direction. Nothing here
+argues for rewriting the philosophies, and nothing here argues against it.
+
+### What would have to change to answer the original question
+
+The question — *does the Council catch material financial errors the Chair alone misses?* — is still
+open, and this run says why: it was asked with errors a single model catches on its own. A test with
+power would plant what the pack cannot settle by lookup:
+
+1. **A wrong derivation whose inputs are all in the pack and whose output is not** — the `dividend`
+   shape, which is the only cell that discriminated. A payout ratio, cash cover, a growth rate across
+   two datasets.
+2. **An error of inference on correct figures** — every number right, the conclusion not following
+   from them. "ROE of 26.75 per cent means the dividend is safe" conflates profitability with
+   coverage, and no field in the pack refutes it.
+3. **An error of omission** — a conclusion that ignores a figure in the pack contradicting it.
+   Nothing in the answer is false; what is missing is the thing that matters.
+
+All three are harder to score mechanically than a string match, and 2 and 3 may need a reader. That
+cost is worth weighing before buying another run: this one cost $9.00 and bought a ceiling effect
+and one suggestive cell.
