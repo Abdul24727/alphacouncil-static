@@ -359,12 +359,37 @@ def main() -> None:
     r.add_argument("--four-seats", default=FOUR_SEATS, help="arm D's roster")
     r.add_argument("--cap-usd", type=float, default=10.0, help="hard spending cap, checked against the live balance before every run")
     sub.add_parser("report")
+
+    # The discriminating run of 2026-10-28 lives beside the above, not inside it: `run` and its
+    # results file are what produced docs/council-test-run-2026-10-27.md, and a result stops being
+    # reproducible the moment the code behind it is edited to do something else.
+    q = sub.add_parser("probe")
+    q.add_argument("--arm", action="append", choices=["A", "B", "D", "E"], help="repeatable; default A B E")
+    q.add_argument("--repeats", type=int, default=2)
+    q.add_argument("--locale", default="en")
+    q.add_argument("--clean", action="store_true", help="the controls the validity gate reads: no plant")
+    q.add_argument("--dry", action="store_true", help="stand-in room: no model, no cost")
+    q.add_argument("--single-model", default=get_settings().debate_chair_model)
+    q.add_argument("--pause", type=float, default=5.0)
+    q.add_argument("--only", default=None, help="one probe id (D1) or one family (omission)")
+    q.add_argument("--four-seats", default=FOUR_SEATS)
+    q.add_argument("--cap-usd", type=float, default=10.0, help="hard cap, checked against the live balance before every run")
+    sub.add_parser("probe-report")
+
     a = p.parse_args()
 
     if a.cmd == "snapshot":
         asyncio.run(snapshot(a.locale))
     elif a.cmd == "run":
         asyncio.run(run(a.arm or ["A", "B", "D"], a.repeats, a.locale, a.plant, a.dry, a.single_model, tuple(a.spread.split(",")), a.pause, a.cell, a.four_seats, a.cap_usd))
+    elif a.cmd == "probe":
+        from .probe_run import run as probe_run
+
+        asyncio.run(probe_run(a.arm or ["A", "B", "E"], a.repeats, a.locale, a.clean, a.dry, a.single_model, a.pause, a.only, a.four_seats, a.cap_usd))
+    elif a.cmd == "probe-report":
+        from .probe_report import report as probe_report
+
+        probe_report()
     else:
         from .report import report, verdict
 
