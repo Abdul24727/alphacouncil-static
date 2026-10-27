@@ -461,3 +461,27 @@ def test_lookup_first_turn_keeps_every_tool_and_no_rule(client, monkeypatch):
     _ask_on_2222(client, "lookup@example.com")
     assert _offered(_FakeOpenAI.seen[0]) == [t["name"] for t in tools.ALL_TOOLS]
     assert "write the answer straight away" not in _FakeOpenAI.seen[0]["messages"][0]["content"]
+
+
+def test_one_http_client_per_event_loop_not_one_per_call(monkeypatch):
+    """F-11: every call used to build its own openai.AsyncOpenAI, each with its own connection
+    pool, and nothing closed them - about 21 per debate session. Sessions back to back then
+    slowed to a stop after three or four. The client is keyed by the running loop rather than
+    kept in one global, because an httpx client binds to the loop that made it and the tests and
+    the bench call asyncio.run more than once in a process."""
+    import asyncio
+
+    from app.copilot.openai_compat import make_client
+    from app.settings import get_settings
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-used")
+    settings = get_settings()
+
+    async def ids_on_one_loop(n: int) -> set[int]:
+        return {id(make_client(settings)) for _ in range(n)}
+
+    assert len(asyncio.run(ids_on_one_loop(20))) == 1, "one loop must share one client"
+    # A different loop must NOT reuse the first one: that is what a single global would get wrong.
+    assert asyncio.run(ids_on_one_loop(1)) != asyncio.run(ids_on_one_loop(1))
+    # A synchronous caller has no loop to key on and still gets a usable client.
+    assert make_client(settings) is not None

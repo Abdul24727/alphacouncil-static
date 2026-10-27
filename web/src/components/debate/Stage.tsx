@@ -283,6 +283,7 @@ export const ERROR_CODES = [
   "busy",
   "timeout",
   "unreachable",
+  "no_credit",
   "bad_output",
   "cut_off",
   "too_few",

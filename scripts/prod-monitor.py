@@ -74,6 +74,11 @@ OFFSITE_MAX_AGE = 3 * 86400  # seconds
 DISK_MAX = 85  # percent used; an alerted disk counts as fixed at DISK_CLEAR or below
 DISK_CLEAR = 83
 CERT_MIN_DAYS = 14
+# The model account behind the advisors' room and the Copilot. A session cost a median of $0.22 in
+# the beta runs of 2026-10-27, so $10 is roughly 45 sessions of warning. Without this the first
+# sign of an empty account is a member being told the room is unavailable (F-10).
+CREDIT_MIN_USD = 10.0
+CREDIT_URL = "https://openrouter.ai/api/v1/credits"
 RESTARTS_MAX = 3  # automatic restarts within RESTART_WINDOW = restarting in a loop
 RESTART_WINDOW = 15 * 60
 FAILS_BEFORE_ALERT = 2
@@ -346,6 +351,34 @@ def check_offsite() -> Result:
     return Result(name, age <= OFFSITE_MAX_AGE, detail)
 
 
+def check_credit() -> Result:
+    """What is left on the model account. The key's own limit is NOT this number: /auth/key reports a
+    spend cap on the key, /credits reports the money. Reading the first and concluding "not credits"
+    is exactly how F-10 stayed open for a day."""
+    name = "model account credit"
+    try:
+        key = read_env(API_ENV).get("OPENROUTER_API_KEY", "")
+    except OSError as exc:
+        return Result(name, None, f"cannot read {API_ENV}: {exc.strerror}")
+    if not key:
+        return Result(name, None, "OPENROUTER_API_KEY is not set, so there is nothing to check")
+    req = urllib.request.Request(CREDIT_URL, headers={"Authorization": f"Bearer {key}"})
+    try:
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+            data = json.load(resp).get("data", {})
+    except Exception as exc:  # the account is not worth an alert because its own endpoint blipped
+        return Result(name, None, f"could not read the credit balance: {type(exc).__name__}")
+    try:
+        left = float(data["total_credits"]) - float(data["total_usage"])
+    except (KeyError, TypeError, ValueError):
+        return Result(name, None, "the credit endpoint answered in a shape this check does not know")
+    detail = f"${left:,.2f} left on the model account"
+    if left < CREDIT_MIN_USD:
+        detail += (f" - below ${CREDIT_MIN_USD:,.0f}. The advisors' room and the Copilot stop when it runs out, "
+                   "and the provider refuses with 402. Add credit at openrouter.ai/credits.")
+    return Result(name, left >= CREDIT_MIN_USD, detail)
+
+
 def check_cert() -> Result:
     try:
         with socket.create_connection((SITE, 443), timeout=TIMEOUT) as sock:
@@ -395,7 +428,10 @@ def gather(state: dict, now: float) -> tuple[dict[str, Result], list[tuple[str, 
     res = guarded("certificate", check_cert)
     if res:
         results["cert"] = res
-    for group in ("site", *SERVICES, "billing", "backup", "offsite", "disk", "certificate"):
+    res = guarded("credit", check_credit)
+    if res:
+        results["credit"] = res
+    for group in ("site", *SERVICES, "billing", "backup", "offsite", "disk", "certificate", "credit"):
         if f"check:{group}" in state.get("keys", {}):  # it could not run before: now it did
             results.setdefault(f"check:{group}", Result(f"{group} check", True, "the check ran"))
     return results, events, cursor

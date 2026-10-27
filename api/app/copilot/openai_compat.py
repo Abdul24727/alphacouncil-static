@@ -11,6 +11,7 @@ import json
 import logging
 import os
 import time
+import weakref
 from collections.abc import AsyncIterator
 from typing import Any
 
@@ -76,8 +77,32 @@ SYSTEM_EXTRA = (
 PREFETCH = ("get_ticker_overview", "get_dividends", "get_fundamentals")
 
 
+# One client per event loop, not one per call. Each openai.AsyncOpenAI owns an httpx connection
+# pool, and nothing here ever closed them: a debate session makes about 21 calls, so it used to
+# leave about 21 pools behind. Sessions back to back then slowed to a stop after three or four
+# (docs/beta-advisors-2026-10-27.md, F-11). Keyed by the running loop rather than held in a single
+# global because an httpx client binds to the loop that created it, and the tests and the bench
+# call asyncio.run more than once in a process; a lone global would be reused across loops and
+# fail. The key is the loop itself, and the entry goes when the loop is collected.
+_clients: "weakref.WeakKeyDictionary[asyncio.AbstractEventLoop, openai.AsyncOpenAI]" = weakref.WeakKeyDictionary()
+
+
 def make_client(settings: Settings) -> openai.AsyncOpenAI:
-    """The OpenRouter (or OpenAI-compatible) client; the advisors' debate room uses it too."""
+    """The OpenRouter (or OpenAI-compatible) client; the advisors' debate room uses it too.
+    The same client comes back for every call on one event loop, so its connections are reused."""
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        # No loop (a synchronous caller): give it its own client rather than cache under no key.
+        return _new_client(settings)
+    client = _clients.get(loop)
+    if client is None:
+        client = _new_client(settings)
+        _clients[loop] = client
+    return client
+
+
+def _new_client(settings: Settings) -> openai.AsyncOpenAI:
     return openai.AsyncOpenAI(
         base_url=settings.openrouter_base_url,
         api_key=os.environ.get("OPENROUTER_API_KEY", ""),

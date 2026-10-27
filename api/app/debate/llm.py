@@ -2,6 +2,7 @@
 and the call's time, tokens and cost (OpenRouter's own figure, from its usage accounting)."""
 
 import json
+import logging
 import re
 import time
 from collections.abc import Callable
@@ -12,6 +13,9 @@ import openai
 
 from ..copilot.openai_compat import host_routing, make_client
 from ..settings import Settings
+
+# uvicorn's logger reaches the service journal (journalctl -u acp-api).
+log = logging.getLogger("uvicorn.error")
 
 TIMEOUT_S = 120
 # Tries per seat per stage. Two was not enough for round one's long answers (docs/beta-advisors-2026-10-27.md, F-1).
@@ -119,6 +123,12 @@ async def ask(
             if _refuses_no_reasoning(exc) and model not in REASONING_REQUIRED:
                 REASONING_REQUIRED.add(model)
                 continue  # the same request at the lowest effort; not an attempt
+            if exc.status_code == 402:
+                # Out of credit at the provider. Its own code, because "unreachable" sent a day of
+                # debugging after a network fault that was never there (F-10). Not retried either:
+                # asking three times for something unaffordable fails three times.
+                log.error("advisors' room: the model provider refused on credit (402): %s", str(exc.body or exc)[:300])
+                raise SeatError("no_credit", usage) from exc
             raise SeatError("unreachable", usage) from exc
         except openai.APIConnectionError as exc:
             raise SeatError("unreachable", usage) from exc

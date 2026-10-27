@@ -223,6 +223,7 @@
       "busy": "the AI service is busy; try again in a minute",
       "timeout": "a seat took too long to answer",
       "unreachable": "the AI service could not be reached",
+      "no_credit": "the room has run out of capacity for now",
       "bad_output": "a seat's answer could not be read",
       "cut_off": "a seat's answer was cut off",
       "too_few": "too few advisors answered",

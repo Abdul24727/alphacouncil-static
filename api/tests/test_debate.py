@@ -1,5 +1,6 @@
 """Advisors' debate room: seats, Pro gate and allowance, the stages, number and advice checks, sessions."""
 
+import asyncio
 import json
 import re
 from pathlib import Path
@@ -8,6 +9,7 @@ import pytest
 from sqlalchemy import select
 
 ORIGIN = {"Origin": "http://testserver"}
+WEB = Path(__file__).resolve().parents[2] / "web"
 STAGES = ["brief", "openings", "faultlines", "debate", "final", "verdict"]
 
 
@@ -542,3 +544,57 @@ def llm_attempts():
     from app.debate import llm
 
     return llm.ATTEMPTS
+
+
+def test_no_credit_is_its_own_code_and_is_not_retried(monkeypatch):
+    """F-10: OpenRouter answers 402 when the account cannot cover a request. That used to be caught
+    as APIStatusError and raised as `unreachable`, so a billing refusal reached the member as "the
+    AI service could not be reached" - and sent a day of debugging after a network fault that was
+    never there. It is also not retried: asking three times for something unaffordable fails three
+    times."""
+    import openai
+
+    from app.debate import llm
+    from app.settings import get_settings
+
+    calls = []
+
+    class _Refusing:
+        def __init__(self, **kw):
+            self.chat = _Obj(completions=_Obj(create=self._create))
+
+        async def _create(self, **body):
+            calls.append(body)
+            response = _Obj(status_code=402, headers={}, request=None)
+            body_ = {"message": "This request would exceed your available credits", "code": 402}
+            raise openai.APIStatusError("402", response=response, body=body_)
+
+    monkeypatch.setattr(llm, "make_client", lambda settings: _Refusing())
+    with pytest.raises(llm.SeatError) as caught:
+        asyncio.run(
+            llm.ask(
+                get_settings(),
+                "deepseek/deepseek-v4-pro",
+                [{"role": "user", "content": "x"}],
+                max_tokens=10,
+                temperature=0.0,
+                check=lambda d: d,
+            )
+        )
+    assert caught.value.code == "no_credit", "402 must not be reported as unreachable"
+    assert len(calls) == 1, "a 402 is not retried"
+
+
+def test_every_seat_error_code_has_words_in_both_languages():
+    """The screen words a failure from `debate.errors.<code>`. A code with no string shows the
+    "unknown" fallback, which is how a member would have met `no_credit`. Checked against the
+    screen's own list so the three cannot drift apart."""
+    stage = (WEB / "src" / "components" / "debate" / "Stage.tsx").read_text(encoding="utf-8")
+    block = re.search(r"export const ERROR_CODES = \[(.*?)\]", stage, re.S)
+    assert block, "ERROR_CODES not found in Stage.tsx"
+    codes = re.findall(r'"([a-z_]+)"', block.group(1))
+    assert "no_credit" in codes and "unreachable" in codes
+    for locale in ("en", "ar"):
+        words = json.loads((WEB / "messages" / f"{locale}.json").read_text(encoding="utf-8"))["debate"]["errors"]
+        missing = [c for c in codes if not words.get(c)]
+        assert not missing, f"{locale}.json has no words for: {missing}"
