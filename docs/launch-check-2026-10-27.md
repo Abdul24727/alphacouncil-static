@@ -16,7 +16,22 @@ run, this is not yet the record Step 18 reads.
 > accounting for a failed turn, a test, and the checker script. None of it touches the pages
 > `check-seo`, `check-arabic` or `check-data-fixes` read, so those results stand as recorded.
 > `check-advisors.mjs VISITOR=1` **was re-run against `3228ab57e9`** and is still "all passed", 24 PASS / 0
-> FAIL. The owner's two runs below should be made against `3228ab57e9`.
+> FAIL.
+>
+> **Updated again, 2026-10-27 21:27 UTC (00:27 Riyadh on the 28th): production moved on to `74ce427bf6`** on
+> the owner's go-ahead, to carry **F-10** (a provider refusal on credit reaching members as "the AI service
+> could not be reached") and **F-11** (a new HTTP client per model call, never closed). Six files differ from
+> `3228ab57e9` in anything a member can reach: `copilot/openai_compat.py`, `debate/engine.py`, `debate/llm.py`,
+> `web/messages/{en,ar}.json` and `web/src/components/debate/Stage.tsx`. None of them touches the pages
+> `check-seo`, `check-arabic` or `check-data-fixes` read, so those results stand as recorded.
+> `check-advisors.mjs VISITOR=1` **was re-run against `74ce427bf6`** — "all passed", **24 PASS / 0 FAIL**
+> (`advisors-visitor-74ce427bf6/check-visitor.txt`, with its eight screenshots beside it). **The owner's two
+> runs below should be made against `74ce427bf6`.**
+>
+> The monitor is now at **15 checks**, not 14: the fifteenth reads the model account's credit and is
+> **FAILING at $4.74, below its $10 floor**. It alerted by email on the second consecutive round. That line
+> cannot go green without a top-up at openrouter.ai/credits, and it is a second line — beside Moyasar's "–" —
+> that Step 10 cannot close by itself.
 
 | | |
 | --- | --- |
@@ -46,7 +61,9 @@ on 2026-10-24 (`api/app/data/not_listed.json`), as the owner decided.
 
 ## The monitor
 
-`python3 -I /usr/local/lib/acp-monitor/prod-monitor.py status`: **13 ok, 1 "–"**.
+`python3 -I /usr/local/lib/acp-monitor/prod-monitor.py status`: **13 ok, 1 "–"** when this was first run against
+14 checks. **Since 2026-10-27 21:27 UTC it is 15 checks: 13 ok, 1 "–" (Moyasar) and 1 FAILING (model account
+credit, $4.74 left against a $10 floor).** The reading below is the 14-check one, kept as it was recorded.
 
 ```
 ok  alphacouncil.tech/home: answered 200 in 50 ms
