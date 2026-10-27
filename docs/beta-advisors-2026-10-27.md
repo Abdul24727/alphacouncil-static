@@ -113,7 +113,27 @@ reply says what to escape rather than only asking again. `uv run pytest -q` 169 
 **None of that is evidence yet** — F-1 only shows up against a real model, so it stays OPEN until both modes
 are re-run on beta with the two commands above and the absences are gone.
 
-### F-2 — English round one runs long; Arabic does not. **Much smaller on `ec620968ac`**; left as it is.
+### F-2 — English round one runs long; Arabic does not. **A sentence was found and dropped, 2026-10-27.**
+
+Four samples of English round one, six answers each, against the band the seat files asked for at the time:
+
+| Release | Prompt | Band | English round one | Over |
+| --- | --- | --- | --- | --- |
+| `4b3d04a3e5` | original | 250–400 | 372–514 | 5 of 5, 6 of 6 |
+| `ec620968ac` | band cut, "use no line breaks" | 200–300 | 276–333 | **3 of 6** |
+| `3228ab57e9` | F-8 fix + "Paragraphs are welcome in the long texts." | 200–300 | 294–404 | 5 of 6 |
+| `3228ab57e9` again | the same | 200–300 | 303–371 | **6 of 6** |
+
+**Arabic was inside the band in every run with the shorter band** (0 of 6, twice), so this is an English
+effect, not a band that is simply too tight.
+
+Eleven of twelve English answers ran over 300 words with that last sentence in the prompt, against three of
+six without it. Three samples are not proof — model variance is wide, and the two prompts differ in the
+line-break rule as well — but the pattern is consistent, the sentence was never needed (the rule already
+tells the model that a blank line between paragraphs is an escaped `\n\n`), and dropping it is cheap and
+reversible. **Dropped.** What has to be re-checked when it ships is **both** numbers: that English comes back
+toward the band, and that the Chair's answer is still several paragraphs rather than one block — because the
+check counts words, not paragraphs, which is exactly how F-8 reached production unnoticed.
 
 English round-one answers against the 250–400 band the seat files ask for: 403–453 (five of five over), then
 372–491, then 133–514. Arabic: 257–307 (all inside), 269–346, 198–340. Step 23's rule is to keep an over-long

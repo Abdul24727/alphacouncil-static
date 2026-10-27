@@ -60,7 +60,7 @@ Personas. The advisor seats are simulated, built from each person's publicly doc
 Language. Write every text value in {language}. Keep company names as the data gives them. Refer to advisors by surname.
 
 Output. Reply with one JSON object in exactly the shape asked for, and nothing else: no Markdown, no code fence, no comments.
-Each text value is one JSON string: escape every double quote inside it, and write every line break as \\n (a blank line between paragraphs is \\n\\n), never a real one. Paragraphs are welcome in the long texts."""
+Each text value is one JSON string: escape every double quote inside it, and write every line break as \\n (a blank line between paragraphs is \\n\\n), never a real one."""
 
 # Room for the JSON per step; Arabic takes more tokens per word. The answers and the Chair's answer
 # are long on purpose (chair.md): their limits leave room for the whole text rather than cutting it.
