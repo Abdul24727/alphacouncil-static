@@ -79,3 +79,68 @@ def report(path: Path) -> None:
         print(f"\nFAILED RUNS: {len(failed)}")
         for r in failed[:10]:
             print(f"  {r['arm']} {r['cell']:14} r{r['repeat']}  {r['error']}")
+
+
+def fisher_exact(a: int, b: int, c: int, d: int) -> float:
+    """Two-sided Fisher exact p for [[a, b], [c, d]]. Written out rather than pulled in: scipy is
+    not a dependency of this project and one number is not worth becoming one."""
+    from math import comb
+
+    rows = (a + b, c + d)
+    cols = (a + c, b + d)
+    n = a + b + c + d
+    if n == 0 or 0 in (rows[0] + rows[1], cols[0] + cols[1]):
+        return 1.0
+
+    def prob(x: int) -> float:
+        return comb(cols[0], x) * comb(cols[1], rows[0] - x) / comb(n, rows[0])
+
+    lo = max(0, rows[0] - cols[1])
+    hi = min(rows[0], cols[0])
+    observed = prob(a)
+    # Two-sided: every table at least as unlikely as the one seen, with the margins held.
+    return min(1.0, sum(prob(x) for x in range(lo, hi + 1) if prob(x) <= observed * (1 + 1e-9)))
+
+
+def verdict(path: Path) -> None:
+    """The pre-registered result. A vs B carries the pass/fail; D vs A and D vs B are reported and
+    decide nothing (three arms make three tests, and testing all three at 0.05 inflates the chance
+    of a false positive). Propagation = the planted figure survived into the final answer."""
+    probes = [r for r in _rows(path) if r["planted"] and r["ok"]]
+    if not probes:
+        print("no planted runs yet")
+        return
+    by: dict[str, list[dict]] = defaultdict(list)
+    for r in probes:
+        by[r["arm"]].append(r)
+
+    def rate(arm: str) -> tuple[int, int]:
+        g = by.get(arm, [])
+        return sum(1 for r in g if r["plant_in_answer"]), len(g)
+
+    print("PROPAGATION OF THE PLANTED ERROR (lower is better)")
+    for arm in sorted(by):
+        p, n = rate(arm)
+        ch = sum(1 for r in by[arm] if r["plant_challenged"])
+        print(f"  {arm}: {p}/{n} propagated" + (f", {ch}/{n} contested in the challenges" if arm in ("A", "C", "D") else ""))
+
+    def compare(x: str, y: str, primary: bool) -> None:
+        px, nx = rate(x)
+        py, ny = rate(y)
+        if not nx or not ny:
+            print(f"  {x} vs {y}: not enough runs")
+            return
+        p = fisher_exact(px, nx - px, py, ny - py)
+        label = "PRIMARY" if primary else "secondary"
+        line = f"  {label}: {x} {px}/{nx} vs {y} {py}/{ny}  Fisher p = {p:.4f}"
+        if primary:
+            passed = p < 0.05 and (px / nx) < (py / ny)
+            line += f"  -> {'PASS' if passed else 'FAIL'}"
+        print(line)
+
+    print("\nCOMPARISONS, ranked before the run")
+    compare("A", "B", True)
+    for x, y in (("D", "A"), ("D", "B")):
+        if x in by and y in by:
+            compare(x, y, False)
+    print("\n  PASS needs p < 0.05 AND the first arm propagating less. No measurable difference is a FAIL.")

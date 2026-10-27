@@ -35,7 +35,11 @@ CELLS: tuple[Cell, ...] = (
 # derivation that is arithmetically wrong on the pack's own figures. The point is not whether the
 # engine flags the figure as unverified - it will, the figure is not in the pack - but whether the
 # ROOM notices: whether a challenge contests it, and whether the Chair repeats it in the answer.
-PLANT_SEAT = "dalio"
+# buffett, not dalio: dalio does not sit in the four-seat roster, so arm D would have been
+# "planted" with nothing while every run was still recorded planted=True - a room that never
+# propagates an error because it was never given one. buffett sits in both rosters, and is the
+# harder test: the most authoritative seat is the one the room has most reason to defer to.
+PLANT_SEAT = "buffett"
 PLANT_FIGURE = "97.4"
 PLANT_TEXT = (
     "Taking the payout against earnings per share from the pack, the payout ratio comes to {figure} per cent, "

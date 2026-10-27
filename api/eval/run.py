@@ -12,6 +12,7 @@ Arms
     A  the room as it ships: six seats on one advisor model, the Chair on another
     B  the Chair's model alone, same pack, same question, same output shape
     C  six seats spread across three models, the same Chair
+    D  four seats on today's prompts: the count changed, nothing else
 
 Every arm reads the SAME saved pack, so the data is not a variable. Results are appended to
 docs/eval/results.jsonl, one JSON object per run, so stopping a run loses nothing already measured.
@@ -21,7 +22,9 @@ It does not skip work already done: a second invocation runs every cell again an
 import argparse
 import asyncio
 import json
+import os
 import time
+import urllib.request
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
@@ -37,12 +40,22 @@ from app.settings import get_settings
 
 from .questions import CELLS, PLANT_FIGURE, PLANT_HEADLINE, PLANT_SEAT, PLANT_TEXT
 
+# Measured on beta, 2026-10-27, over 28 completed sessions: a run's cost by arm. Used only to
+# decide whether the NEXT run still fits under the cap, never to report a cost - the reported
+# figures are OpenRouter's own.
+RUN_COST = {"A": 0.2226, "C": 0.4327, "D": 0.2193, "B": 0.0295}
+CREDITS_URL = "https://openrouter.ai/api/v1/credits"
+
 ROOT = Path(__file__).resolve().parents[2]
 PACKS = ROOT / "docs" / "eval" / "packs"
 RESULTS = ROOT / "docs" / "eval" / "results.jsonl"
 
 # Arm C spreads the six seats over three models. Seats keep their own files; only the model moves.
 SPREAD = ("deepseek/deepseek-v4-pro", "anthropic/claude-sonnet-5.5", "openai/gpt-5.2")
+# Arm D is four seats on today's prompts and today's model: it changes the COUNT and nothing else,
+# so the count can be told apart from the philosophies before anyone rewrites them. No code is
+# needed for it - roster.MIN_ADVISORS is 2 - it is a different DEBATE_ADVISORS.
+FOUR_SEATS = "buffett,lynch,marks,alwaleed"
 
 
 def describe(exc: BaseException) -> str:
@@ -57,6 +70,21 @@ def describe(exc: BaseException) -> str:
         parts.append(f"<- {type(cause).__module__}.{type(cause).__name__}" + (f" [{status}]" if status else "") + f": {str(cause)[:200]}" + (f" body={str(body)[:200]}" if body else ""))
         cause, seen = cause.__cause__, seen + 1
     return " ".join(parts)
+
+
+def balance() -> float | None:
+    """Money left on the model account, or None if it cannot be read. /credits, not /auth/key:
+    auth/key reports a spend cap on the key, credits reports the money (F-10)."""
+    key = os.environ.get("OPENROUTER_API_KEY", "")
+    if not key:
+        return None
+    req = urllib.request.Request(CREDITS_URL, headers={"Authorization": f"Bearer {key}"})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            d = json.load(resp)["data"]
+        return float(d["total_credits"]) - float(d["total_usage"])
+    except Exception:
+        return None
 
 
 def request_for(app: Any) -> Request:
@@ -161,16 +189,21 @@ def council_asker(settings: Any, models: dict[str, str]):
     return ask, calls
 
 
-async def run_room(cell: Any, locale: str, repeat: int, arm: str, models: dict[str, str], plant: bool, dry: bool) -> Result:
+async def run_room(cell: Any, locale: str, repeat: int, arm: str, models: dict[str, str], plant: bool, dry: bool, roster_spec: str | None = None) -> Result:
     settings = get_settings()
     # No create_app() here on purpose: replaying a saved pack needs no market database and no app
     # state, so the bench runs anywhere the model key does - including on the server.
     pack = load_pack(cell.ticker, locale)
-    advisors = roster.sitting(roster.advisors(settings.debate_advisors), pack.ticker_key)
+    advisors = roster.sitting(roster.advisors(roster_spec or settings.debate_advisors), pack.ticker_key)
     chair = roster.chair()
     ctx = Context(settings=settings, pack=pack, question=cell.question, locale=locale, advisors=advisors, chair=chair, debate_rounds=1)
     r = Result(arm=arm, cell=cell.key, ticker=cell.ticker, repeat=repeat, planted=plant, ok=False)
 
+    if plant and PLANT_SEAT not in {a.id for a in advisors}:
+        # Loud, because the quiet version is worse than a crash: the run would be recorded
+        # planted=True, nothing would be planted, and the arm would look like the one room that
+        # never propagates an error. Same family as F-4 and F-9.
+        raise SystemExit(f"{arm}: the plant seat {PLANT_SEAT!r} does not sit in this roster ({[a.id for a in advisors]})")
     if dry:
         base, calls = make_asker(pack, advisors, locale, cell.question), {"n": 0, "cost": 0.0}
     else:
@@ -252,9 +285,13 @@ async def run_single(cell: Any, locale: str, repeat: int, model: str, plant: boo
 # --- the run ------------------------------------------------------------------------------------
 
 
-async def run(arms: list[str], repeats: int, locale: str, plant: bool, dry: bool, single_model: str, spread: tuple[str, ...], pause: float = 5.0, only_cell: str | None = None) -> None:
+async def run(arms: list[str], repeats: int, locale: str, plant: bool, dry: bool, single_model: str, spread: tuple[str, ...], pause: float = 5.0, only_cell: str | None = None,
+    four_seats: str = FOUR_SEATS, cap_usd: float = 10.0) -> None:
     settings = get_settings()
     RESULTS.parent.mkdir(parents=True, exist_ok=True)
+    started_at = None if dry else balance()
+    if started_at is not None:
+        print(f"balance ${started_at:.2f}; hard cap ${cap_usd:.2f} on this run")
     ids = [a.id for a in roster.advisors(settings.debate_advisors)]
     arm_c_models = {seat: spread[i % len(spread)] for i, seat in enumerate(ids)} | {"chair": settings.debate_chair_model}
     for repeat in range(1, repeats + 1):
@@ -263,10 +300,21 @@ async def run(arms: list[str], repeats: int, locale: str, plant: bool, dry: bool
                 print(f"{cell.ticker}: no saved pack - run `snapshot` first")
                 continue
             for arm in arms:
+                if not dry and started_at is not None:
+                    now = balance()
+                    spent = (started_at - now) if now is not None else 0.0
+                    if now is not None and spent + RUN_COST.get(arm, 0.45) > cap_usd:
+                        print(f"STOPPING: ${spent:.2f} spent, one more {arm} run would pass the ${cap_usd:.2f} cap")
+                        return
+                    if now is not None and now < RUN_COST.get(arm, 0.45) * 2:
+                        print(f"STOPPING: ${now:.2f} left on the account, too little for another {arm} run")
+                        return
                 if arm == "A":
                     r = await run_room(cell, locale, repeat, "A", {}, plant, dry)
                 elif arm == "C":
                     r = await run_room(cell, locale, repeat, "C", arm_c_models, plant, dry)
+                elif arm == "D":
+                    r = await run_room(cell, locale, repeat, "D", {}, plant, dry, roster_spec=four_seats)
                 else:
                     r = await run_single(cell, locale, repeat, single_model, plant, dry)
                 with RESULTS.open("a", encoding="utf-8") as fh:
@@ -286,7 +334,7 @@ def main() -> None:
     sub = p.add_subparsers(dest="cmd", required=True)
     sub.add_parser("snapshot").add_argument("--locale", default="en")
     r = sub.add_parser("run")
-    r.add_argument("--arm", action="append", choices=["A", "B", "C"], help="repeatable; default A B C")
+    r.add_argument("--arm", action="append", choices=["A", "B", "C", "D"], help="repeatable; default A B D")
     r.add_argument("--repeats", type=int, default=1)
     r.add_argument("--locale", default="en")
     r.add_argument("--plant", action="store_true", help="script one seat's round one with a wrong derivation")
@@ -295,14 +343,18 @@ def main() -> None:
     r.add_argument("--spread", default=",".join(SPREAD))
     r.add_argument("--pause", type=float, default=5.0, help="seconds between runs, so a burst is not read as a fault")
     r.add_argument("--cell", default=None, help="one cell only (its key), so a caller can give every run its own process")
+    r.add_argument("--four-seats", default=FOUR_SEATS, help="arm D's roster")
+    r.add_argument("--cap-usd", type=float, default=10.0, help="hard spending cap, checked against the live balance before every run")
     sub.add_parser("report")
     a = p.parse_args()
 
     if a.cmd == "snapshot":
         asyncio.run(snapshot(a.locale))
     elif a.cmd == "run":
-        asyncio.run(run(a.arm or ["A", "B", "C"], a.repeats, a.locale, a.plant, a.dry, a.single_model, tuple(a.spread.split(",")), a.pause, a.cell))
+        asyncio.run(run(a.arm or ["A", "B", "D"], a.repeats, a.locale, a.plant, a.dry, a.single_model, tuple(a.spread.split(",")), a.pause, a.cell, a.four_seats, a.cap_usd))
     else:
-        from .report import report
+        from .report import report, verdict
 
         report(RESULTS)
+        print()
+        verdict(RESULTS)

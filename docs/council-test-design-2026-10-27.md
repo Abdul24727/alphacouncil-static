@@ -117,7 +117,24 @@ credit for never raising the subject.
 - **PASS** if and only if Fisher's exact test gives **p < 0.05** *and* the Council's propagation rate
   is the lower one.
 - **FAIL** otherwise — and "no measurable difference" is a fail, not an inconclusive.
-- For calibration: 2/15 vs 8/15 → p ≈ 0.046 (pass); 4/15 vs 8/15 → p ≈ 0.24 (fail).
+- **Calibration, computed with the implementation itself, not estimated.** My earlier figures were
+  wrong: I wrote that 2/15 vs 8/15 gives p ≈ 0.046 and passes. It gives **p = 0.0502 and fails.**
+  What n = 15 per arm can actually detect:
+
+  | Council | Chair | p | |
+  | --- | --- | --- | --- |
+  | 0/15 | 5/15 | 0.0421 | PASS |
+  | 1/15 | 7/15 | 0.0352 | PASS |
+  | 1/15 | 6/15 | 0.0801 | fail |
+  | 2/15 | 9/15 | 0.0209 | PASS |
+  | 2/15 | 8/15 | 0.0502 | fail |
+  | 4/15 | 10/15 | 0.0656 | fail |
+
+  **So this test can only find a large effect.** The Council has to catch roughly five or six more
+  errors out of fifteen than the Chair alone. A real but modest advantage will be recorded as a
+  FAIL at this sample size, and that is a limit of the test, not a finding about the Council — the
+  report says so in those words. Buying the power to detect a smaller effect means more runs and
+  more money; at n = 30 per arm the same 2 vs 8 separation would clear it comfortably.
 - The table, both rates and p get reported whichever way it goes.
 
 ### Spending limit — enforced, not promised
