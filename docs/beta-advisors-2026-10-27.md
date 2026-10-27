@@ -165,6 +165,38 @@ presented as a database value when it is not one. They are the advisors' own ari
 "73", dividends summed to "1.35", "1.92" — derived from figures that are in the pack. It tracks F-2: the
 longer the English answers, the more derived numbers they carry, so F-1's fix should reduce it too.
 
+### F-8 — the fix for F-1 flattened every long answer into one paragraph. **FIXED, not yet released.**
+
+Found 2026-10-27 by comparing the two runs' screenshots. Part of the F-1 change was a line in the shared
+Output rule (`engine.RULES`): *"Each text value is one JSON string: escape every double quote inside it, and
+**use no line breaks**."* The second half was wrong. `DebateText` (`web/src/components/debate/parts.tsx`)
+splits a text on blank lines into separate `<p>` elements, so the long texts are **meant** to carry line
+breaks; what breaks JSON is a **raw** newline inside a string, not an escaped one.
+
+The effect is plain in the screenshots, same question, same model, same length:
+
+| | Chair's answer |
+| --- | --- |
+| `4b3d04a3e5`, before the change (`advisors-beta-open/stage-verdict-en-1440.png`) | 4 paragraphs |
+| `ec620968ac`, after it (`advisors-beta-f1-open/stage-verdict-en-1440.png`) | **1 block of 288 words** |
+
+Nothing failed: the check counts words, not paragraphs, so all four sessions passed and the wall of text went
+to production in `15f5bf8770`, where it is live now.
+
+**Fixed** (not released): the rule now reads *"write every line break as `\n` (a blank line between paragraphs is
+`\n\n`), never a real one. Paragraphs are welcome in the long texts."* Two guards went in with it, because this
+bug has two halves and the first one hid the second:
+
+- `test_the_output_rule_asks_for_escaped_line_breaks_not_none` — the escape is easy to get wrong in a non-raw
+  Python string: written with one backslash it becomes a real newline and **cuts the sentence in half**, which
+  is exactly what the first attempt at this fix did. The test fails on that form and on the shipped
+  "no line breaks" form, and was checked against both.
+- `check-advisors.mjs` now reports the Chair's answer's **paragraph count** as an INFO line. It is reported,
+  never failed: a short answer may honestly be one paragraph.
+
+**Still to prove:** a beta release and a re-run, to see the paragraphs come back on a real model. Then
+production, which is serving the flattened text until then.
+
 ### F-7 — a failed turn's tokens are not recorded. **FIXED 2026-10-27.**
 
 When a seat ends up absent the turn is saved with no usage (`engine.turn` passes `None`), so the attempts that

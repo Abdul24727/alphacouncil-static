@@ -104,6 +104,20 @@ def test_six_seats_and_seats_tied_to_a_company_sit_out(room, monkeypatch):
     assert events[-1]["status"] == "done"
 
 
+def test_the_output_rule_asks_for_escaped_line_breaks_not_none(): 
+    """The long texts are rendered as paragraphs (DebateText splits on blank lines), so the rule must ban a
+    RAW line break, not every line break. It said "use no line breaks" for one release (2026-10-27) and the
+    Chair's answer came back as one block. The escape is also easy to get wrong in a non-raw Python string:
+    written as a single backslash it becomes a real newline and cuts the sentence in half."""
+    from app.debate.engine import RULES
+
+    line = next(l for l in RULES.splitlines() if l.startswith("Each text value"))
+    assert chr(92) + "n" in line, "the escape became a real newline: the source needs two backslashes"
+    assert line.rstrip().endswith("."), "the sentence is cut short"
+    assert "no line breaks" not in line and "never a real one" in line
+    assert "escape every double quote" in line
+
+
 def test_the_roster_setting_is_checked():
     from app.debate import roster
 

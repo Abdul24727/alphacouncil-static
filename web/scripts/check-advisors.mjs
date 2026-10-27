@@ -175,6 +175,11 @@ async function formatChecks(page, locale, standIn) {
   const answer = (await page.locator("[data-answer]").textContent()) ?? "";
   check(answer.trim().length > 0, `${locale}: the Chair wrote the room's complete answer`);
   note(`INFO  ${locale}: the Chair's answer is ${words(answer)} words (asked for ${CHAIR_WORDS.join("–")})`);
+  // DebateText splits a text on blank lines into paragraphs, so a long answer in one block is a wall of
+  // text. It happened once: a system-prompt line reading "use no line breaks" flattened every long text
+  // (2026-10-27). Reported, never failed — a short answer may honestly be one paragraph.
+  const paras = await page.locator("[data-answer] p").count();
+  note(`INFO  ${locale}: the Chair's answer is ${paras} paragraph(s)`);
   check(!ADVICE[locale].test(answer), `${locale}: the Chair's answer is an assessment, not advice`);
 }
 
