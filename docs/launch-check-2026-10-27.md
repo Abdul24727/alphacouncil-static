@@ -82,6 +82,12 @@ valid to 2027-01-21. **Goal 4's third "Done when" is met.**
 English and Arabic, at 1440 and 390 px: **20 views, every one 200, no sideways scroll** (`pages.txt` has the
 line per view). `advisors-visitor/` holds the signed-out advisors' screenshots the check itself took.
 
+The two scripts that write to their own fixed folders — `check-data-fixes.mjs` into
+`docs/screenshots/data-fixes-local/` and `check-seo.mjs` into `docs/screenshots/seo-local/` — had their output
+moved into `launch-2026-10-27/data-fixes/` (34 files) and `launch-2026-10-27/seo/` (12 files), and the tracked
+local-build set was restored, so the repo keeps the local reference shots and this record keeps the production
+ones.
+
 ## Where this leaves Step 10 and Goal 4
 
 **Met:**
