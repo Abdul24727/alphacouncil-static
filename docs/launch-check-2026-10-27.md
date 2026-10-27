@@ -10,6 +10,14 @@ run, this is not yet the record Step 18 reads.
 
 ## The release
 
+> **Updated the same day:** production moved on from `15f5bf8770` to **`3228ab57e9`** after the signed-out
+> half below had run, to fix F-8 (the Chair's answer and the long round-one answers were coming out as one
+> block instead of paragraphs). What changed between the two: one line of the advisors' system prompt, the
+> accounting for a failed turn, a test, and the checker script. None of it touches the pages
+> `check-seo`, `check-arabic` or `check-data-fixes` read, so those results stand as recorded.
+> `check-advisors.mjs VISITOR=1` **was re-run against `3228ab57e9`** and is still "all passed", 24 PASS / 0
+> FAIL. The owner's two runs below should be made against `3228ab57e9`.
+
 | | |
 | --- | --- |
 | Production serves | `/opt/alphacouncil-platform/prod/releases/15f5bf8770`, `acp-prod-api` and `acp-prod-web` active |

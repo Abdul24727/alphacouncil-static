@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-27   **At version:** the tip of branch `rebuild`, level with `origin/rebuild`. Deployed: **beta and production both `15f5bf8770`** (Steps 22 and 23 went live on 2026-10-27). *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-27   **At version:** the tip of branch `rebuild`, level with `origin/rebuild`. Deployed: **beta and production both `3228ab57e9`** (Steps 22 and 23 went live on 2026-10-27; F-8 fixed the same day). *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -78,7 +78,7 @@ Older entries: `changelog-archive.md`.
 - 2026-10-27 — **Step 10 run again on the new production release; the signed-out half is all green** (`docs/launch-check-2026-10-27.md`). `check-seo` **62 PASS / 0 FAIL** ("ALL PASS"), `check-data-fixes` SWEEP=1 **44 PASS / 0 FAIL** (sweep 714 tickers, `eps_bad` 0, `vt_reason` 0, `news_green_old` 0), `check-arabic` signed out **48 Arabic views at 1440 and 390 with 0 English strings**, `check-advisors VISITOR=1` **24 PASS / 0 FAIL**; monitor **13 ok + renewals "–"**; 20 page views of `/`, `/pricing`, `/home`, `/t/2222` and `/t/2222/advisors` in both languages at 1440 and 390, **all 200, no sideways scroll** (`docs/screenshots/launch-2026-10-27/pages/`); `www` 301s to the apex and the certificate covers all three names. **Left to the owner:** `check-all.mjs` from their own computer and the **signed-in `check-advisors.mjs`** — the one check the 2026-10-24 interim run could not do at all, because production did not then serve the three-round format. Step 10 closes when both are in that file.
 - 2026-10-27 — **Step 7's questions drafted** (`docs/legal-questions-2026-10-27.md`), so the lawyer's visit needs no preparation from the owner beyond booking it. All five questions (the real names and personas; the CMA permit; telling Moyasar; the portraits; which legal papers the site needs) as facts → question → what the answer changes in the product. It states the two facts a lawyer would otherwise have to discover: **Al-Rumayyan is a serving public official** (PIF Governor, Aramco Chairman) and his seat's `recuse` list is **empty** while Alwaleed's sits out 4280 — the owner's decision of 2026-10-26, resting on no advice; and the published legal texts **predate the advisors' room** and are imported rather than hand-written. The visit and the advice remain the owner's.
 - 2026-10-27 — **F-7 fixed and F-5's test debt closed** — the last two in-repo items the beta record left open. **F-7:** `SeatError` now carries the `Usage` its failed attempts accumulated and `engine.turn` saves the absent turn with it instead of `None`, so money really spent reaches the turn row and the session total; the screen is unchanged. One case is deliberately left: a failed **Chair** re-raises without saving a row, so that session (which fails outright) still loses its tokens. **F-5's debt:** the advice patterns moved out of `check-advisors.mjs` into `web/scripts/lib/advice.mjs`, which the checker imports, with the nineteen sentences they were measured on as `advice.test.mjs` beside them — `npm test` now runs them, so a check that carries legal weight cannot be loosened or tightened by accident (`package.json`'s test glob gained `scripts/lib/*.test.mjs`). A new api test, `test_a_seat_that_never_answers_is_absent_and_its_failed_attempts_are_still_paid_for`, pins both F-7 and **F-1's third attempt**, which until now had no test at all. `uv run pytest -q` **170 passed**, `npm test` **32 passed**, `tsc --noEmit` and `eslint` clean, and `check-advisors.mjs VISITOR=1` still "all passed" against production after the refactor. Not released: production keeps `15f5bf8770`, whose behaviour these changes do not alter for a session where every seat answers.
-- 2026-10-27 — **F-8 found and fixed: my own F-1 change flattened every long answer into one paragraph.** Part of the F-1 fix added "...and **use no line breaks**" to the shared Output rule. That was wrong: `DebateText` splits a text on blank lines into `<p>` elements, so the long texts are meant to carry line breaks — what breaks JSON is a **raw** newline, not an escaped one. The screenshots show it plainly, same question and model: the Chair's answer was **4 paragraphs** on `4b3d04a3e5` and **one 288-word block** on `ec620968ac`. Nothing failed, because the check counts words and not paragraphs, so it reached production in `15f5bf8770` and **is live now**. The rule now says to write every line break as `\n` (\n\n between paragraphs), never a real one. Two guards: `test_the_output_rule_asks_for_escaped_line_breaks_not_none` (checked against both the shipped wording and the single-backslash mistake, which turns the escape into a real newline and cuts the sentence in half — the first attempt at this fix did exactly that), and an INFO line in `check-advisors.mjs` reporting the Chair's answer's paragraph count. `uv run pytest -q` **171 passed**. **Needs a beta release and a re-run to prove, then production.**
+- 2026-10-27 — **F-8 found and fixed: my own F-1 change flattened every long answer into one paragraph.** Part of the F-1 fix added "...and **use no line breaks**" to the shared Output rule. That was wrong: `DebateText` splits a text on blank lines into `<p>` elements, so the long texts are meant to carry line breaks — what breaks JSON is a **raw** newline, not an escaped one. The screenshots show it plainly, same question and model: the Chair's answer was **4 paragraphs** on `4b3d04a3e5` and **one 288-word block** on `ec620968ac`. Nothing failed, because the check counts words and not paragraphs, so it reached production in `15f5bf8770` and **is live now**. The rule now says to write every line break as `\n` (\n\n between paragraphs), never a real one. Two guards: `test_the_output_rule_asks_for_escaped_line_breaks_not_none` (checked against both the shipped wording and the single-backslash mistake, which turns the escape into a real newline and cuts the sentence in half — the first attempt at this fix did exactly that), and an INFO line in `check-advisors.mjs` reporting the Chair's answer's paragraph count. `uv run pytest -q` **171 passed**. **Proved and released the same day:** beta went to `3228ab57e9`, open mode re-ran in both languages (`all passed`, exit 0) and **the Chair's answer is 5 paragraphs in each**, against one block before; round one lost nobody, so F-1 holds. Production followed and serves `3228ab57e9`; `check-advisors.mjs VISITOR=1` re-run against it is still 24 PASS / 0 FAIL. **One honest side effect:** English round one came back at 294–404 words, 5 of 6 outside the band, against 276–333 and 3 of 6 before — possibly the added "Paragraphs are welcome", possibly variance (it was 372–514 before any of this). Arabic unaffected. Reported, not chased, per Step 23's own rule; watch it on the next run.
 
 ## 6. Current State
 - Live on alphacouncil.tech: release `a2e2c318bc` since 2026-10-23 21:28 UTC (advisor portraits; Copilot option (e)); beta runs the same; beta `check-all` 9/9 before the release. Pro checkout **closed** (early access, everyone has Pro; it reopens at Step 18; no one has paid).
@@ -844,13 +844,34 @@ Older entries: `changelog-archive.md`.
 - **Watch: one-off chart timeouts** — 4210, 4250, 4290 timed out in the same minute on 2026-10-23 (no retry in the TradingView fetch, `main_patched…:2524`). Once in the two nights on disk; propose a retry only if it recurs.
 
 ## 9. Next Up
-**Steps 22 and 23 are live on production** (`15f5bf8770`, 2026-10-27, on the owner's go-ahead): the advisors'
-room with the seven portraits round a table and the three-round format. F-1 and F-5 were fixed and closed on
-beta the same day — both modes re-ran on a real model, both `all passed`, **24 round-one answers and zero
-absences** across four sessions — and the app code released to production is byte-identical to what was proven
-there. Goals 1, 2 and 3 are closed; Steps 8 and 9 were already live. **One fault is open and it is live on production: F-8** — the F-1 change told every seat to "use no line breaks", which flattened the Chair's answer and the long round-one answers from several paragraphs into one block (4 paragraphs on `4b3d04a3e5`, one 288-word block on `ec620968ac` and so on `15f5bf8770`). It is **fixed in the repo with two guards and not released**; it needs a beta release, a re-run to see the paragraphs return, and then production. Separately: the last two in-repo ones, **F-7** (a failed turn's tokens never reached the session total) and **F-5's missing test**, were closed on 2026-10-27 and are committed but **not released** — production keeps `15f5bf8770`, and neither changes a session where every seat answers, so they can ride along with whatever goes out next.
+**Steps 22 and 23 are live on production** (`3228ab57e9`, 2026-10-27, on the owner's go-ahead): the advisors'
+room with the seven portraits round a table and the three-round format. Goals 1, 2 and 3 are closed; Steps 8
+and 9 were already live.
 
-**Step 10 is in progress and its signed-out half is all green** (`docs/launch-check-2026-10-27.md`):
+**No fault is open.** Four were closed on 2026-10-27, in this order:
+
+- **F-1** (round one lost advisors to `bad_output`) and **F-5** (the advice check fired on "margins hold")
+  — both modes re-ran on a real model on beta `ec620968ac`, both `all passed`, **24 round-one answers and
+  zero absences** across four sessions. Released to production as `15f5bf8770`.
+- **F-7** (a failed turn's tokens never reached the session total) and **F-5's missing test** — closed in the
+  repo with a new api test and `web/scripts/lib/advice.mjs` + `advice.test.mjs`.
+- **F-8**, which was mine: the F-1 change told every seat to "use no line breaks", and that flattened the
+  Chair's answer and the long round-one answers from several paragraphs into one block (4 paragraphs on
+  `4b3d04a3e5`, one 288-word block on `ec620968ac`, and so on `15f5bf8770`, where it was live for a few
+  hours). `DebateText` splits a text on blank lines, so the long texts are meant to carry line breaks; what
+  breaks JSON is a **raw** newline, not an escaped one. Fixed, guarded by a test and a paragraph-count INFO
+  line, proved on beta `3228ab57e9` (**5 paragraphs in both languages**) and released. That release carried
+  F-7 and the advice test with it.
+
+**Watch, not a fault:** English round one came back at 294–404 words on the last run, 5 of 6 outside the
+200–300 band, against 276–333 and 3 of 6 on the run before. Arabic is inside. It may be the added "Paragraphs
+are welcome in the long texts", or ordinary variance — the same seats ran 372–514 before any of this. Step 23's
+rule is to keep an over-long answer whole and report it, so nothing was changed to chase it; if English stays
+above the band on the next run, that sentence is the one to try removing.
+
+**Step 10 is in progress and its signed-out half is all green** (`docs/launch-check-2026-10-27.md`, which
+notes that production moved to `3228ab57e9` after that half ran; `check-advisors VISITOR=1` was re-run against
+it and the other three read pages the release did not touch):
 `check-seo` 62/0, `check-data-fixes` SWEEP=1 44/0, `check-arabic` 48 Arabic views with 0 English strings,
 `check-advisors VISITOR=1` 24/0, monitor 13 ok + renewals "–", and 20 page views across five pages, two
 languages and two widths, all 200 with no sideways scroll.
@@ -863,7 +884,8 @@ cd web; $env:BASE_URL="https://alphacouncil.tech"; node scripts/check-all.mjs
 ```
 
 1. **`check-all.mjs`** — 264 PASS / 0 FAIL on 2026-10-24; it has to run again because production's app
-   changed. Save the output into `docs/screenshots/launch-2026-10-27/check-all.txt`.
+   changed. Save the output into `docs/screenshots/launch-2026-10-27/check-all.txt`. Run it against the
+   current release, `3228ab57e9`.
 2. **The signed-in `check-advisors.mjs`** — the one check the 2026-10-24 interim run could not do at all,
    because production did not then serve the three-round format. It now will exercise the real room on a real
    model, as beta did four times today.

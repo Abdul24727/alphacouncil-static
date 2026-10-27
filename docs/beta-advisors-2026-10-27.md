@@ -194,8 +194,18 @@ bug has two halves and the first one hid the second:
 - `check-advisors.mjs` now reports the Chair's answer's **paragraph count** as an INFO line. It is reported,
   never failed: a short answer may honestly be one paragraph.
 
-**Still to prove:** a beta release and a re-run, to see the paragraphs come back on a real model. Then
-production, which is serving the flattened text until then.
+**Proved and released, same day.** Beta went to `3228ab57e9` and open mode ran again in both languages:
+`all passed`, exit 0, and **the Chair's answer is 5 paragraphs in each**, against the one block it had been
+(`advisors-beta-f8-open/`). Round one lost nobody, so F-1 still holds. Production followed and serves
+`3228ab57e9`.
+
+**One honest side effect.** English round one came back longer: **294–404 words, 5 of 6 outside the 200–300
+band**, against 276–333 and 3 of 6 on the run before. Arabic was unaffected (237–297, 0 of 6 outside). It may
+be the added "Paragraphs are welcome in the long texts", or it may be ordinary variance — before any of this
+the same seats ran 372–514 against a wider band, so the shorter band is still doing most of its work. One
+session is not evidence either way, and Step 23's rule is to keep an over-long answer whole and report it, so
+it is reported here and nothing was changed to chase it. **Watch it on the next run**; if English stays above
+the band, the sentence to try removing is that last one.
 
 ### F-7 — a failed turn's tokens are not recorded. **FIXED 2026-10-27.**
 
