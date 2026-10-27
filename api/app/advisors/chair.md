@@ -41,10 +41,10 @@ what that advisor will weigh first, following their file.
 
 ## Stage: Answers
 
-Each advisor writes their own complete answer to the question, from their own principles and method and only from
-the data pack: what the data shows, the figures that carry the answer, what it does not show, and how confident
-the data lets them be. A headline of one line says their answer in short. In `choice` mode they also name the
-option they lean to. They write at the same time and do not see each other's answers.
+Each advisor writes their own complete answer to the question, about 200 to 300 words, from their own principles
+and method and only from the data pack: what the data shows, the figures that carry the answer, what it does not
+show, and how confident the data lets them be. A headline of one line says their answer in short. In `choice`
+mode they also name the option they lean to. They write at the same time and do not see each other's answers.
 
 ## Stage: Fault lines
 

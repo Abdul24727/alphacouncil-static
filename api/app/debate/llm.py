@@ -14,6 +14,8 @@ from ..copilot.openai_compat import host_routing, make_client
 from ..settings import Settings
 
 TIMEOUT_S = 120
+# Tries per seat per stage. Two was not enough for round one's long answers (docs/beta-advisors-2026-10-27.md, F-1).
+ATTEMPTS = 3
 
 
 class SeatError(Exception):
@@ -80,13 +82,14 @@ async def ask(
     temperature: float,
     check: Callable[[dict[str, Any]], dict[str, Any]],
 ) -> tuple[dict[str, Any], Usage]:
-    """Ask once; if the reply is not usable JSON (check raises ValueError), ask once more saying why."""
+    """Ask once; if the reply is not usable JSON (check raises ValueError), ask again saying why, up to three
+    attempts in all: the long answers of round one fail the shape often enough that two was not enough."""
     client = make_client(settings)
     usage = Usage(model=model)
     msgs = list(messages)
     problem = "bad_output"
     attempts = 0
-    while attempts < 2:
+    while attempts < ATTEMPTS:
         extra: dict[str, Any] = {**host_routing(settings), "usage": {"include": True}}
         reasoning = _reasoning(settings, model)
         if reasoning is not None:
@@ -132,7 +135,7 @@ async def ask(
                 {
                     "role": "user",
                     "content": f"That reply could not be used ({exc}). Reply again with only the JSON object in the shape asked for"
-                    + (", shorter" if cut else "")
+                    + (", shorter" if cut else ", with every double quote inside a text value escaped and no line breaks in it")
                     + ".",
                 },
             ]

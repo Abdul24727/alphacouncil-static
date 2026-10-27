@@ -28,7 +28,7 @@ const MODE = process.env.MODE ?? null;
 const STAGES = ["brief", "openings", "faultlines", "debate", "final", "verdict"];
 const ADVICE = { en: /\b(buy|sell|hold)\b/i, ar: /(اشتر|بيع السهم|احتفظ|شراء السهم)/ };
 // The lengths chair.md asks for (engine.ANSWER_WORDS / CHAIR_WORDS): an answer outside them is kept, and reported.
-const ANSWER_WORDS = [250, 400];
+const ANSWER_WORDS = [200, 300];
 const CHAIR_WORDS = [200, 350];
 
 await mkdir(OUT, { recursive: true });

@@ -59,7 +59,8 @@ Personas. The advisor seats are simulated, built from each person's publicly doc
 
 Language. Write every text value in {language}. Keep company names as the data gives them. Refer to advisors by surname.
 
-Output. Reply with one JSON object in exactly the shape asked for, and nothing else: no Markdown, no code fence, no comments."""
+Output. Reply with one JSON object in exactly the shape asked for, and nothing else: no Markdown, no code fence, no comments.
+Each text value is one JSON string: escape every double quote inside it, and use no line breaks."""
 
 # Room for the JSON per step; Arabic takes more tokens per word. The answers and the Chair's answer
 # are long on purpose (chair.md): their limits leave room for the whole text rather than cutting it.
@@ -68,7 +69,7 @@ TEMPERATURE = {"chair": 0.3, "advisor": 0.7}
 
 # The length chair.md asks for, in words: an answer outside it is kept whole and counted in the turn's
 # flags (`words`), so check-advisors.mjs can report it. Nothing is ever cut to fit.
-ANSWER_WORDS = (250, 400)
+ANSWER_WORDS = (200, 300)
 CHAIR_WORDS = (200, 350)
 WORD = re.compile(r"[^\s]+")
 
