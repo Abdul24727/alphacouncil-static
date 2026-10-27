@@ -251,7 +251,7 @@ export function RoundCard({ room }: { room: Room }) {
   const state = room.status === "done" ? "done" : room.status === "failed" ? "failed" : stage;
 
   return (
-    <section className="mx-auto w-full max-w-[640px] rounded-panel border border-line bg-panel px-4 py-3" data-round-card aria-live="polite">
+    <section className="mx-auto w-full max-w-[640px] rounded-panel border border-line bg-panel px-4 py-3" data-round-card data-room-status={room.status} aria-live="polite">
       <div className="flex items-center gap-2">
         <span aria-hidden className={`size-1.5 rounded-full ${live ? "animate-pulse bg-signal" : "bg-muted"}`} />
         <span className="label-caps text-muted">

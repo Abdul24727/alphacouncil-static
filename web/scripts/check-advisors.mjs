@@ -29,8 +29,12 @@ const QUESTIONS = {
 const MODE = process.env.MODE ?? null;
 const STAGES = ["brief", "openings", "faultlines", "debate", "final", "verdict"];
 // What counts as advice on screen, with the sentences it was measured on: scripts/lib/advice.mjs
-// The lengths chair.md asks for (engine.ANSWER_WORDS / CHAIR_WORDS): an answer outside them is kept, and reported.
-const ANSWER_WORDS = [200, 400];
+// What the Chair is asked for (engine.CHAIR_WORDS), and what round one is REPORTED against. The reporting
+// threshold is deliberately looser than the 200-300 the seats are asked for: the room writes about a fifth
+// past whatever ceiling it is given, so at 200-300 this line named 5 or 6 of 6 every single run and would
+// have hidden a real change, and raising the ask instead simply moved the writing up with it
+// (docs/beta-advisors-2026-10-27.md, F-2). An answer outside it is kept whole and reported, never cut.
+const ANSWER_REPORT = [200, 400];
 const CHAIR_WORDS = [200, 350];
 
 await mkdir(OUT, { recursive: true });
@@ -150,9 +154,9 @@ async function formatChecks(page, locale, standIn) {
     );
   // Over the band is kept whole and reported, never cut (Step 23's rule): name the seats so a prompt that
   // runs long in one language shows up as that, rather than as a number with no owner.
-  const outside = r1.present.filter(([, n]) => n < ANSWER_WORDS[0] || n > ANSWER_WORDS[1]);
+  const outside = r1.present.filter(([, n]) => n < ANSWER_REPORT[0] || n > ANSWER_REPORT[1]);
   note(
-    `INFO  ${locale}: round 1 answers outside ${ANSWER_WORDS.join("–")} words: ${outside.length} of ${r1.present.length}` +
+    `INFO  ${locale}: round 1 answers outside ${ANSWER_REPORT.join("–")} words: ${outside.length} of ${r1.present.length}` +
       (outside.length ? ` (${outside.map(([s, n]) => `${s} ${n}`).join(", ")})` : ""),
   );
 
@@ -233,7 +237,9 @@ async function convene(locale) {
     const state = await page.evaluate(() => ({
       live: document.querySelector("[data-stage-tab][aria-current=step]")?.getAttribute("data-stage-tab") ?? null,
       done: !!document.querySelector("[data-verdict]"),
-      failed: /stopped|توقفت/i.test(document.querySelector("[data-round-card]")?.textContent ?? ""),
+      failed:
+        document.querySelector("[data-round-card]")?.getAttribute("data-room-status") === "failed" ||
+        /stopped|توقفت/i.test(document.querySelector("[data-round-card]")?.textContent ?? ""),
       writing: document.querySelectorAll("[data-seat][data-writing]").length,
       speaking: [...document.querySelectorAll("[data-seat][data-speaking]")].map((e) => e.getAttribute("data-seat")),
     }));
@@ -253,7 +259,19 @@ async function convene(locale) {
   }
   const seconds = (Date.now() - started) / 1000;
   const verdict = page.locator("[data-verdict]");
-  check((await verdict.count()) === 1, `${locale}: the verdict arrived (${seconds.toFixed(0)} s on screen)`);
+  const arrived = (await verdict.count()) === 1;
+  check(arrived, `${locale}: the verdict arrived (${seconds.toFixed(0)} s on screen)`);
+  // A session can fail (a seat unreachable, the Chair unusable) and the room says so on screen. Report it with
+  // what the room shows and move on: everything below reads the verdict, and waiting for one that will never
+  // come threw an uncaught timeout that killed the whole run and lost the other locale's findings too
+  // (F-9, 2026-10-27). Same lesson as F-4 — do not assume the happy path.
+  if (!arrived) {
+    const said = ((await page.locator("[data-round-card]").textContent()) ?? "").replace(/\s+/g, " ").trim();
+    note(`INFO  ${locale}: the session did not finish, so the checks below it were skipped — the room says: ${said.slice(0, 200)}`);
+    await shot(page, `failed-${locale}-1440`);
+    await ctx.close();
+    return;
+  }
   // A stand-in session is over in about a second, so nothing can be caught mid-round: only a model's can.
   if (standIn) note(`INFO  ${locale}: stand-in room, so the live rounds are not followed (${seconds.toFixed(0)} s)`);
   else {
