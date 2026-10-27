@@ -880,11 +880,18 @@ running the first.
 
 **F-10 is OPEN and reaches members: a transport blip ends a whole session, and nothing retries it.** Two of
 the last four beta sessions died `unreachable` — one after 7 turns and $0.078, one on the first call in 0.6 s.
-**Not credits** (the key has $41.10 of $50 left) and not the Arabic prompt (different shapes; Arabic ran clean
-all day). The part that is ours: `llm.ask` retries a badly parsed reply but **not** a transport failure —
-`APIConnectionError`, `RateLimitError` and `APITimeoutError` each raise at once. One blip on one of a
-session's ~21 calls ends it, discards what it has already paid for and tells the member the session stopped.
-**It needs the owner's decision before Step 18**, because that is when these become paying members.
+**CAUSE FOUND 2026-10-27, and it is credits after all — I had said it was not.** `/api/v1/auth/key` reports
+the **spend cap on the key** ($40.74 of $50 unused), not money. `/api/v1/credits` reports the **account**:
+**$79.78 used of $80.00, so $0.22 left.** OpenRouter refuses with **HTTP 402** ("This request would exceed
+your available credits given your current in-flight requests"), and `llm.ask` turns any such `APIStatusError`
+into `SeatError("unreachable")`, so **a billing condition reaches the member as "could not reach the AI
+service"**. That wording is the defect worth fixing whatever the balance is; it cost me an afternoon hunting
+a transport fault that did not exist. A retry would not have helped: retrying a 402 against an empty account
+fails three times instead of once.
+  - **The owner's action: top up OpenRouter.** Beta is certain. **Whether production shares the same account I
+    could not verify** — reading production's key was refused as credential exploration, which is correct and
+    I did not work around it. Production has run no sessions in 30 days, so no member has hit it yet; if it
+    shares the account, the next one who opens the room gets the misleading message.
 
 **Step 10 is in progress and its signed-out half is all green** (`docs/launch-check-2026-10-27.md`, which
 notes that production moved to `3228ab57e9` after that half ran; `check-advisors VISITOR=1` was re-run against

@@ -223,8 +223,38 @@ Two of the last four beta sessions died with `unreachable`, both of them the sec
 | `1331133244` ar | **18.6 s, 7 turns** (brief and six openings), $0.0782 spent, then failed |
 | `860795315` ar | **0.6 s, 0 turns** — the very first call |
 
-**Not credits:** the key has **$41.10 of $50** left ($8.90 used). Not the Arabic prompt either — the two
-failures have different shapes, and Arabic ran clean in every earlier run today.
+**It is credits, and I said it was not.** On 2026-10-27 I wrote "not credits: the key has $41.10 of $50
+left". That was the wrong number. `/api/v1/auth/key` reports the **spend cap on the key**, not money in the
+account. `/api/v1/credits` reports the account:
+
+```
+account   total_credits: 80.00   total_usage: 79.78   -> $0.22 left
+key cap   limit: 50              spend: 9.26          -> $40.74 of headroom under a cap, not money
+```
+
+The account is **exhausted**. The provider says so plainly, and the bench finally surfaced it because it
+records the cause chain that `SeatError` drops:
+
+```
+APIStatusError [402]: This request would exceed your available credits given your current
+in-flight requests. Retry after in-flight requests settle, or add credits.
+```
+
+That explains every symptom at once: the failures are **immediate** (0.3—0.7 s) because a 402 is a refusal,
+not a timeout; a tiny call still succeeds because it reserves almost nothing, while a council session with a
+~240k-token prompt cannot be afforded; and it bites the **second** session of a run first, while the first
+one's requests are still settling. Not the Arabic prompt: the two failures have different shapes, and Arabic
+ran clean earlier today.
+
+**The product defect, which is separate from the empty account:** `llm.ask` catches `APIStatusError` and
+raises `SeatError("unreachable")` for anything that is not a reasoning refusal. So a **billing condition is
+shown to the member as a network failure** — "the session stopped: could not reach the AI service". It is
+the wrong message, it sent me hunting for a transport fault that was never there, and it would send the
+owner the same way at 2am. A 402 deserves its own code and its own words.
+
+A retry would not have helped here, and that is worth saying before anyone adds one: retrying a 402 against
+an empty account just fails three times instead of once. The retry gap below is still real for genuine
+transport blips, but it is no longer the first thing to fix.
 
 The part that is ours is in `llm.ask`: `openai.APIConnectionError`, `RateLimitError` and `APITimeoutError`
 each `raise SeatError(...)` **at once, with no second try**. Only a reply that parses badly is retried. So a
