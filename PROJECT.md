@@ -80,6 +80,7 @@ Older entries: `changelog-archive.md`.
 - 2026-10-27 — **F-7 fixed and F-5's test debt closed** — the last two in-repo items the beta record left open. **F-7:** `SeatError` now carries the `Usage` its failed attempts accumulated and `engine.turn` saves the absent turn with it instead of `None`, so money really spent reaches the turn row and the session total; the screen is unchanged. One case is deliberately left: a failed **Chair** re-raises without saving a row, so that session (which fails outright) still loses its tokens. **F-5's debt:** the advice patterns moved out of `check-advisors.mjs` into `web/scripts/lib/advice.mjs`, which the checker imports, with the nineteen sentences they were measured on as `advice.test.mjs` beside them — `npm test` now runs them, so a check that carries legal weight cannot be loosened or tightened by accident (`package.json`'s test glob gained `scripts/lib/*.test.mjs`). A new api test, `test_a_seat_that_never_answers_is_absent_and_its_failed_attempts_are_still_paid_for`, pins both F-7 and **F-1's third attempt**, which until now had no test at all. `uv run pytest -q` **170 passed**, `npm test` **32 passed**, `tsc --noEmit` and `eslint` clean, and `check-advisors.mjs VISITOR=1` still "all passed" against production after the refactor. Not released: production keeps `15f5bf8770`, whose behaviour these changes do not alter for a session where every seat answers.
 - 2026-10-27 — **F-8 found and fixed: my own F-1 change flattened every long answer into one paragraph.** Part of the F-1 fix added "...and **use no line breaks**" to the shared Output rule. That was wrong: `DebateText` splits a text on blank lines into `<p>` elements, so the long texts are meant to carry line breaks — what breaks JSON is a **raw** newline, not an escaped one. The screenshots show it plainly, same question and model: the Chair's answer was **4 paragraphs** on `4b3d04a3e5` and **one 288-word block** on `ec620968ac`. Nothing failed, because the check counts words and not paragraphs, so it reached production in `15f5bf8770` and **is live now**. The rule now says to write every line break as `\n` (\n\n between paragraphs), never a real one. Two guards: `test_the_output_rule_asks_for_escaped_line_breaks_not_none` (checked against both the shipped wording and the single-backslash mistake, which turns the escape into a real newline and cuts the sentence in half — the first attempt at this fix did exactly that), and an INFO line in `check-advisors.mjs` reporting the Chair's answer's paragraph count. `uv run pytest -q` **171 passed**. **Proved and released the same day:** beta went to `3228ab57e9`, open mode re-ran in both languages (`all passed`, exit 0) and **the Chair's answer is 5 paragraphs in each**, against one block before; round one lost nobody, so F-1 holds. Production followed and serves `3228ab57e9`; `check-advisors.mjs VISITOR=1` re-run against it is still 24 PASS / 0 FAIL. **One honest side effect:** English round one came back at 294–404 words, 5 of 6 outside the band, against 276–333 and 3 of 6 before — possibly the added "Paragraphs are welcome", possibly variance (it was 372–514 before any of this). Arabic unaffected. Reported, not chased, per Step 23's own rule; watch it on the next run.
 - 2026-10-27 — **F-2 settled and the sentence dropped** (`a39dc09`, not released). A second open-mode run on beta `3228ab57e9` gave English round one 303–371 words, **6 of 6** outside the 200–300 band, after 294–404 and 5 of 6 on the first. With **"Paragraphs are welcome in the long texts."** in the prompt, **11 of 12** English answers ran over 300; the run without it was 276–333, 3 of 6. Arabic was inside the band in both runs with the shorter band (0 of 6), so it is an English effect, not too tight a band. Three samples are not proof and the two prompts differ in the line-break rule as well, but the sentence was never load-bearing — the rule still tells the model a blank line between paragraphs is an escaped newline — so it is gone. `uv run pytest -q` **171 passed**. **When it ships both numbers need re-checking:** English back toward the band, and the Chair's answer still several paragraphs — the check counts words, not paragraphs, which is how F-8 reached production unnoticed.
+- 2026-10-27 — **F-2 really settled, F-9 fixed, F-10 found** (beta `d0a12f3d20`; production still `3228ab57e9`). Two wrong turns first: dropping "Paragraphs are welcome" changed nothing (296–389, 5 of 6, the same as with it), and widening the **ask** to 200–400 moved the writing up with it (372–460, 2 of 6 past 400) — the room writes about a fifth past whatever ceiling it is given. **The answer was to split them:** ask 200–300, report against 200–400. On the split English wrote **295–321, 0 of 6 outside**, tighter than any run today, with 6 paragraphs. **F-9** (the checker crashing on a failed session) took two halves — the second only showed when the first was run. **F-10 is open and reaches members:** two of four sessions died `unreachable`, and `llm.ask` retries a badly parsed reply but not a transport failure, so one blip on one of ~21 calls ends a session. Not credits ($41.10 of $50 left). Needs the owner before Step 18.
 
 ## 6. Current State
 - Live on alphacouncil.tech: release `a2e2c318bc` since 2026-10-23 21:28 UTC (advisor portraits; Copilot option (e)); beta runs the same; beta `check-all` 9/9 before the release. Pro checkout **closed** (early access, everyone has Pro; it reopens at Step 18; no one has paid).
@@ -864,17 +865,26 @@ and 9 were already live.
   line, proved on beta `3228ab57e9` (**5 paragraphs in both languages**) and released. That release carried
   F-7 and the advice test with it.
 
-**F-2 settled, not yet released.** A second sample answered it: English round one on `3228ab57e9` came back
-303–371 words, **6 of 6** outside the 200–300 band, after 294–404 and 5 of 6 on the first. Across the two runs
-with **"Paragraphs are welcome in the long texts."** in the prompt, **eleven of twelve** English answers ran
-over 300; the run without it was 276–333, three of six. Arabic was inside the band in every run with the
-shorter band (0 of 6, twice), so this is an English effect, not a band that is too tight. Three samples are
-not proof, but the sentence was never load-bearing — the rule still tells the model that a blank line between
-paragraphs is an escaped `\n\n` — so it was **dropped** (`a39dc09`, api 171 passed). **Not released:**
-production and beta both serve `3228ab57e9`, which still has it. When it ships, **both** numbers need
-re-checking — that English comes back toward the band, and that the Chair's answer is still several
-paragraphs rather than one block, because the check counts words and not paragraphs, which is exactly how F-8
-reached production unnoticed.
+**F-2 settled (owner, 2026-10-27): the ask and the reporting threshold are now two numbers.** The seats are
+asked for **200–300** (`engine.ANSWER_WORDS`, `chair.md`); `check-advisors.mjs` reports against its own
+**`ANSWER_REPORT` of 200–400**. Two wrong turns got there, both worth keeping: dropping "Paragraphs are
+welcome in the long texts." changed nothing measurable (296–389, 5 of 6 — the same as with it), and widening
+the **ask** to 200–400 moved the writing up with it (372–460, 2 of 6 past 400). The room writes about a fifth
+past whatever ceiling it is given, so the ask stays low and the threshold stays loose. On the split the room
+wrote **295–321 words, 0 of 6 outside** — tighter than any run today.
+
+**F-9 fixed (two halves).** `check-advisors.mjs` crashed on a failed session instead of reporting it, losing
+the run and the other locale's findings. It now reports what the room says, screenshots it, returns `null`,
+and the caller skips the replay; the round card carries `data-room-status`. The second half was only found by
+running the first.
+
+**F-10 is OPEN and reaches members: a transport blip ends a whole session, and nothing retries it.** Two of
+the last four beta sessions died `unreachable` — one after 7 turns and $0.078, one on the first call in 0.6 s.
+**Not credits** (the key has $41.10 of $50 left) and not the Arabic prompt (different shapes; Arabic ran clean
+all day). The part that is ours: `llm.ask` retries a badly parsed reply but **not** a transport failure —
+`APIConnectionError`, `RateLimitError` and `APITimeoutError` each raise at once. One blip on one of a
+session's ~21 calls ends it, discards what it has already paid for and tells the member the session stopped.
+**It needs the owner's decision before Step 18**, because that is when these become paying members.
 
 **Step 10 is in progress and its signed-out half is all green** (`docs/launch-check-2026-10-27.md`, which
 notes that production moved to `3228ab57e9` after that half ran; `check-advisors VISITOR=1` was re-run against
