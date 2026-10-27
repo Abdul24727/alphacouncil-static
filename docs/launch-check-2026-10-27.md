@@ -112,3 +112,32 @@ ones.
 
 Once both are in this file, Step 10 closes, and **Step 7** (the lawyer reviews the finished site) and then
 **Step 18** (open Pro billing) are all that remain.
+
+## Before you run those two 
+
+Checked read-only on 2026-10-27, so there are no surprises in the middle of a run:
+
+- **A fresh account can convene.** Production's `api.env` sets none of `BILLING_OPEN`, `EARLY_ACCESS` or any
+  `DEBATE_*`, so every default applies and `billing_open` is `False`. `plans.plan_of` returns **`pro` for
+  everyone while billing is closed**, so a newly signed-up account has the room. The signed-in check will not
+  hit the Free lock.
+- **The allowance is not in the way.** Pro has 20 sessions a month, and the check **signs up a new account per
+  locale** (`advisors-<locale>-<timestamp>@example.com`), so it never spends an existing account's allowance
+  — yours included.
+- **What it costs.** The signed-in advisors check convenes **two sessions**, English and Arabic, on a real
+  model. On beta today those ran 59–96 s at about $0.30 each, so expect roughly **$0.60 and a few minutes**.
+- **The same script, the same code, already passed four times today** on beta `ec620968ac`, whose app code is
+  byte-identical to production's `15f5bf8770`. Those runs were the signed-up path, not the visitor one.
+
+## After them
+
+The two checks leave test accounts on the **live** site — `advisors-*@example.com` and `advisors-free-*@example.com`
+from the advisors check, and whatever `check-all.mjs` signs up. That is the accepted consequence of the
+2026-10-23 decision that the owner, not Claude, runs them there. They can be removed afterwards:
+
+```
+bash scripts/old-accounts.sh production forget advisors-
+```
+
+`forget` only ever removes `<prefix>*@example.com`, so it cannot reach a real member's account. Deleting data
+is an "Always stop" for Claude, so this one is the owner's to run or to skip.
