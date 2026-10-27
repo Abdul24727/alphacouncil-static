@@ -131,9 +131,33 @@ Eleven of twelve English answers ran over 300 words with that last sentence in t
 six without it. Three samples are not proof — model variance is wide, and the two prompts differ in the
 line-break rule as well — but the pattern is consistent, the sentence was never needed (the rule already
 tells the model that a blank line between paragraphs is an escaped `\n\n`), and dropping it is cheap and
-reversible. **Dropped.** What has to be re-checked when it ships is **both** numbers: that English comes back
-toward the band, and that the Chair's answer is still several paragraphs rather than one block — because the
-check counts words, not paragraphs, which is exactly how F-8 reached production unnoticed.
+reversible. **Dropped** in `a39dc09` and released to beta as `7554b93783` to check it.
+
+**The check says the hypothesis was wrong.** With the sentence gone, English round one was 296–389 words,
+**5 of 6** outside — indistinguishable from the two runs that had it. All four samples on this prompt:
+
+| Release | "Paragraphs are welcome" | English round one | Over |
+| --- | --- | --- | --- |
+| `ec620968ac` | — (and no line breaks at all) | 276–333 | 3 of 6 |
+| `3228ab57e9` | yes | 294–404 | 5 of 6 |
+| `3228ab57e9` again | yes | 303–371 | 6 of 6 |
+| `7554b93783` | **no** | 296–389 | 5 of 6 |
+
+So the sentence was not the cause. **What the three long runs share is that paragraphs are permitted at
+all.** The one short run is the one where the prompt said "use no line breaks" — the F-8 bug. Once the model
+may structure a long answer into paragraphs, it writes more of it. That is a **trade-off, not a fault**:
+
+- **paragraphs** — five readable blocks, English round one around 300–390 words;
+- **brevity** — one unbroken block, English round one around 276–333.
+
+The band exists so answers stay readable, and so does the paragraphing, so the two pull against each other.
+Step 23's rule — keep an over-long answer whole and report it — already covers the overshoot, and Arabic is
+inside the band in every run (0 of 6, three times), so nothing is broken either way. **This is the owner's
+call, and the sentence stays dropped meanwhile**: it changed nothing measurable and the rule already tells
+the model that a blank line between paragraphs is an escaped newline.
+
+**F-8 held in the same run:** the Chair's answer was 5 paragraphs in both languages, so dropping the sentence
+cost no structure. That was the number that had to hold, and it did.
 
 English round-one answers against the 250–400 band the seat files ask for: 403–453 (five of five over), then
 372–491, then 133–514. Arabic: 257–307 (all inside), 269–346, 198–340. Step 23's rule is to keep an over-long
