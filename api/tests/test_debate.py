@@ -330,6 +330,7 @@ class FakeRouter:
     calls: list = []  # requests answered
     refused = 0  # requests refused for switching reasoning off
     fail_chair = False
+    bad_seat = None  # this advisor answers with something that is not JSON, every time
 
     def __init__(self, **kw):
         self.chat = _Obj(completions=_Obj(create=self._create))
@@ -350,6 +351,11 @@ class FakeRouter:
             FakeRouter.refused += 1
             raise openai.BadRequestError(msg, response=response, body={"message": msg, "code": 400})
         FakeRouter.calls.append(body)
+        if seat == FakeRouter.bad_seat and step == "Answers":
+            # Prose where a JSON object was asked for: what F-1 looked like on beta.
+            usage = _Obj(prompt_tokens=1000, completion_tokens=100, cost=0.001)
+            text = "The dividend looks covered, and here is why at length."
+            return _Obj(choices=[_Obj(message=_Obj(content=text), finish_reason="stop")], usage=usage)
         reply = self.reply(seat, step, retry)
         usage = _Obj(prompt_tokens=1000, completion_tokens=100, cost=0.001)
         return _Obj(choices=[_Obj(message=_Obj(content=reply), finish_reason="stop")], usage=usage)
@@ -410,6 +416,7 @@ def router(room, monkeypatch):
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-used")
     monkeypatch.setattr(openai_compat.openai, "AsyncOpenAI", FakeRouter)
     FakeRouter.calls, FakeRouter.fail_chair, FakeRouter.refused = [], False, 0
+    FakeRouter.bad_seat = None
     from app.debate import llm
 
     llm.REASONING_REQUIRED.clear()
@@ -477,3 +484,47 @@ def test_a_session_the_chair_cannot_run_fails_and_does_not_count(router):
     assert events[-1]["status"] == "failed"
     assert router.get("/v1/debate/status").json()["used"] == 0
     assert router.get("/v1/debate/sessions").json()[0]["status"] == "failed"
+
+
+def test_a_seat_that_never_answers_is_absent_and_its_failed_attempts_are_still_paid_for(router):
+    """F-1 and F-7 of docs/beta-advisors-2026-10-27.md: a seat whose reply is not usable JSON is asked
+    three times, not two; the room carries on without it; and the attempts that failed reach the
+    session's cost, because they were really charged."""
+    signup(router)
+    FakeRouter.bad_seat = "dalio"
+    events = convene(router)
+    assert events[-1]["status"] == "done"  # the room finishes without the seat
+
+    turns = {(t["stage"], t["seat"]): t for t in (e["turn"] for e in events if e["type"] == "turn")}
+    assert turns[("openings", "dalio")]["data"] == {"absent": True, "error": "bad_output"}
+    # Three attempts, not two: the second and third carry the previous reply and what was wrong with it.
+    # The system prompt names the whole room, so the seat has to come off "YOUR SEAT", not off a bare id.
+    def seat_of(call):
+        m = re.search(r"YOUR SEAT: .*?\(id (\w+)\)", call["messages"][0]["content"])
+        return m.group(1) if m else "chair"
+
+    asked = [c for c in FakeRouter.calls if seat_of(c) == "dalio" and "(Answers)" in c["messages"][1]["content"]]
+    assert len(asked) == llm_attempts() == 3
+    assert [len(c["messages"]) for c in asked] == [2, 4, 6]  # each retry carries the bad reply and the complaint
+    assert "escaped" in asked[-1]["messages"][-1]["content"]  # the retry says what to fix
+    # Rounds two and three still come from every advisor, the absent one included.
+    assert turns[("debate", "dalio")]["data"]["headline"] == "No."
+    # The leans are counted off who gave a final word, so the seat that missed round one still counts.
+    result = next(e["result"] for e in events if e["type"] == "result")
+    assert result["voters"] == 4 and "dalio" in result["leans"]
+
+    from app.appdb import debate_sessions, debate_turns, engine_for
+
+    with engine_for(router.app.state.settings.database_url).connect() as conn:
+        absent = conn.execute(select(debate_turns).where(debate_turns.c.seat == "dalio", debate_turns.c.stage == "openings")).one()
+        session = conn.execute(select(debate_sessions)).one()
+    # F-7: the absent turn carries what its three attempts cost, and the session's total includes them.
+    assert absent.prompt_tokens == 3000 and absent.completion_tokens == 300
+    assert absent.cost_usd == pytest.approx(0.003) and absent.model == "deepseek/deepseek-v4-pro"
+    assert session.cost_usd == pytest.approx(0.001 * len(FakeRouter.calls))
+
+
+def llm_attempts():
+    from app.debate import llm
+
+    return llm.ATTEMPTS

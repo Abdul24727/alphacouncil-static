@@ -383,7 +383,9 @@ class Debate:
             if role == "chair":
                 raise
             turn = {"stage": stage, "round": rnd, "seat": seat.id, "data": {"absent": True, "error": exc.code}, "flags": None}
-            await self.save(turn, None)
+            # The attempts that failed still cost money, so they are saved with the absent turn and reach the
+            # session's total (F-7). The screen's turn is unchanged: there is still no answer to show.
+            await self.save(turn, exc.usage)
             self.emit({"type": "turn", "turn": turn})
             return turn["data"]
         turn = {"stage": stage, "round": rnd, "seat": seat.id, **checked, "seconds": round(usage.seconds, 2)}

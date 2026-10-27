@@ -165,11 +165,19 @@ presented as a database value when it is not one. They are the advisors' own ari
 "73", dividends summed to "1.35", "1.92" — derived from figures that are in the pack. It tracks F-2: the
 longer the English answers, the more derived numbers they carry, so F-1's fix should reduce it too.
 
-### F-7 — a failed turn's tokens are not recorded. Minor.
+### F-7 — a failed turn's tokens are not recorded. **FIXED 2026-10-27.**
 
 When a seat ends up absent the turn is saved with no usage (`engine.turn` passes `None`), so the attempts that
 failed cost money that never reaches `cost_usd`. **The $0.29 median above is therefore a floor, not an exact
 figure** — understated most in the sessions that lost a seat.
+
+**Fixed 2026-10-27.** `SeatError` now carries the `Usage` the failed attempts accumulated, and `engine.turn`
+saves the absent turn with it instead of `None`, so the tokens and cost reach the turn row and `store.finish`
+sums them into the session. The screen is unchanged: there is still no answer to show. One case is left and is
+not worth code — when the **Chair** fails, `turn` re-raises without saving a row at all, so that session (which
+fails entirely) still loses its tokens. A test covers the advisor case:
+`test_a_seat_that_never_answers_is_absent_and_its_failed_attempts_are_still_paid_for`, which also pins the
+third attempt from F-1. **The six figures above were measured before this fix and are not restated.**
 
 ## Still to do
 

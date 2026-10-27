@@ -19,11 +19,14 @@ ATTEMPTS = 3
 
 
 class SeatError(Exception):
-    """The seat gave no usable answer; `code` says why (the screen words it)."""
+    """The seat gave no usable answer; `code` says why (the screen words it). `usage` carries what the
+    failed attempts cost, where there were any: they are real money and belong in the session's total
+    (docs/beta-advisors-2026-10-27.md, F-7), even though the turn itself has no answer to show."""
 
-    def __init__(self, code: str):
+    def __init__(self, code: str, usage: "Usage | None" = None):
         super().__init__(code)
         self.code = code
+        self.usage = usage
 
 
 @dataclass
@@ -107,18 +110,18 @@ async def ask(
                 timeout=TIMEOUT_S,
             )
         except openai.AuthenticationError as exc:
-            raise SeatError("credentials") from exc
+            raise SeatError("credentials", usage) from exc
         except openai.RateLimitError as exc:
-            raise SeatError("busy") from exc
+            raise SeatError("busy", usage) from exc
         except openai.APITimeoutError as exc:
-            raise SeatError("timeout") from exc
+            raise SeatError("timeout", usage) from exc
         except openai.APIStatusError as exc:
             if _refuses_no_reasoning(exc) and model not in REASONING_REQUIRED:
                 REASONING_REQUIRED.add(model)
                 continue  # the same request at the lowest effort; not an attempt
-            raise SeatError("unreachable") from exc
+            raise SeatError("unreachable", usage) from exc
         except openai.APIConnectionError as exc:
-            raise SeatError("unreachable") from exc
+            raise SeatError("unreachable", usage) from exc
         finally:
             usage.seconds += time.monotonic() - started
         attempts += 1
@@ -139,4 +142,4 @@ async def ask(
                     + ".",
                 },
             ]
-    raise SeatError(problem)
+    raise SeatError(problem, usage)

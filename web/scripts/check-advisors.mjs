@@ -14,6 +14,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { chromium } from "playwright-core";
 
+import { ADVICE } from "./lib/advice.mjs";
+
 const BASE_URL = process.env.BASE_URL ?? "http://localhost:3201";
 const OUT = process.env.OUT ?? "../docs/screenshots/advisors";
 const TICKER = process.env.TICKER ?? "2222";
@@ -26,29 +28,7 @@ const QUESTIONS = {
 };
 const MODE = process.env.MODE ?? null;
 const STAGES = ["brief", "openings", "faultlines", "debate", "final", "verdict"];
-// Advice, not the ordinary words. `\b(buy|sell|hold)\b` failed both ways (F-5,
-// docs/advice-check-f5-2026-10-27.md, owner's choice of 2026-10-27, option B): it fired on "while margins
-// hold" and on `اشتر` inside اشتراط ("the stipulation of"), and it let "we recommend buying" and "يجب بيع
-// الأسهم" through. These match the words only where they instruct about the holding, where something is
-// recommended, or where a price target is given. The rule itself is unchanged: engine.py and every advisor
-// file still forbid buy/sell/hold advice outright — this is only what the checker can recognise.
-const ADVICE = {
-  en: new RegExp(
-    [
-      String.raw`\b(buy|sell|hold|add to|trim|exit|enter)\b[^.;:]{0,30}?\b(stock|shares?|position|holding|name|it|them)\b`,
-      String.raw`\b(recommend|advise|advice|suggest|should|ought to|must|worth)\b[^.;:]{0,30}?\b(buy|sell|hold|buying|selling|holding)\b`,
-      String.raw`\bprice target\b|\bfair value of\b|\btarget (of|price)\b`,
-    ].join("|"),
-    "i",
-  ),
-  ar: new RegExp(
-    [
-      String.raw`(اشتر[ِيواٍ]|شراء|بيع|بِع|احتفظ|تخلص)\s*(ب)?\s*(ال)?(سهم|أسهم|اسهم|حصة|مركز)`,
-      String.raw`(ننصح|نوصي|نصيحة|توصية|يجب|ينبغي)\s*\S{0,12}\s*(شراء|بيع|الاحتفاظ)`,
-      String.raw`السعر المستهدف|القيمة العادلة عند`,
-    ].join("|"),
-  ),
-};
+// What counts as advice on screen, with the sentences it was measured on: scripts/lib/advice.mjs
 // The lengths chair.md asks for (engine.ANSWER_WORDS / CHAIR_WORDS): an answer outside them is kept, and reported.
 const ANSWER_WORDS = [200, 300];
 const CHAIR_WORDS = [200, 350];

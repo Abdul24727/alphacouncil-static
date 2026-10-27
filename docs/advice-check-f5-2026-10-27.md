@@ -113,6 +113,8 @@ position into strength." · "Our price target is 42 riyals." · "I recommend buy
 AR: "بيع السهم الآن" · "شراء السهم عند هذا المستوى" · "ننصح بشراء السهم" · "احتفظ بالسهم" · "اشترِ السهم" ·
 "يجب بيع الأسهم".
 
-**Result with B live:** 19 of 19 right, read out of the file itself. Debt: there is no automated test holding
-this — the patterns live in a script with no exports, so the list above is the record. If the lawyer narrows
-or widens the rule at Step 7, re-measure against it.
+**Result with B live:** 19 of 19 right. The patterns now live in `web/scripts/lib/advice.mjs`, which
+`check-advisors.mjs` imports, and these nineteen sentences are the test beside it in `advice.test.mjs`,
+run by `npm test` — so the check cannot be loosened or tightened by accident. (Until 2026-10-27 the patterns
+sat inline in the script with no exports and no test; that debt is closed.) If the lawyer narrows or widens the
+rule at Step 7, change the patterns and the sentences together.
