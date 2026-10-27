@@ -49,3 +49,6 @@ The rebuilt AlphaCouncil: a dense research terminal for Gulf markets (Tadawul, A
 - Never show a number that is not from our database. Missing data = a labelled placeholder or "Data unavailable", never an estimate.
 - Before saying a step is done: run the app, screenshot the page at 1440px and 390px wide, and show it.
 - If something is unclear or risky, stop and ask instead of guessing.
+- Run a chat to the end of its room: hand over at about 80% of context, not when a goal finishes or the
+  obvious work runs out (owner, 2026-10-27). The full rule, and the `/goal` wording a handover block must
+  print, are in `~/.claude/CLAUDE.md`; they override the `project-loop` skill's budget gate and template.
