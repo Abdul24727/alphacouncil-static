@@ -113,7 +113,7 @@ async function formatChecks(page, locale, standIn) {
     await page.waitForTimeout(250);
   };
   const words = (s) => s.replace(/\[(?:P\d+|DB)\]/g, " ").split(/\s+/).filter(Boolean).length;
-  // A seat whose reply could not be used twice is marked absent and the room carries on without it
+  // A seat whose reply could not be used three times is marked absent and the room carries on without it
   // (engine.turn). Every round is meant to be a full answer from everyone, so an absence is reported
   // here rather than counted as an answer: the turn card is there either way.
   const roundTurns = async (stage) => {

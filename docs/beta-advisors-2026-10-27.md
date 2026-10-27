@@ -11,7 +11,8 @@ approving the look here**, and on the two open faults below.
 | --- | --- |
 | `b915b36996` | Step 22's portraits and the room round the table; Step 23's three-round format. The advisors' room takes the full work area. |
 | `c5d68f6466` | `data-tally` on each option, and the check able to ask for either mode (`QUESTION_EN` / `QUESTION_AR`, `MODE`). |
-| `4b3d04a3e5` | `data-absent` on a turn card, the round checks rewritten round it, and the brief's mode read off the right card. **This is what beta serves** (confirmed 2026-10-27: `current` → `releases/4b3d04a3e5`, api 200, web 200). |
+| `4b3d04a3e5` | `data-absent` on a turn card, the round checks rewritten round it, and the brief's mode read off the right card. What beta served for the morning's six sessions. |
+| `ec620968ac` | The F-1 change (`ddf29d1`) and the owner's F-5 choice (`ec62096`). **This is what beta serves** (2026-10-27: `current` → `releases/ec620968ac`, api 200, web 200). |
 
 Beta's room runs a real model, not the stand-in: `stand_in: false`, advisors on `deepseek/deepseek-v4-pro`,
 Chair on `anthropic/claude-sonnet-5.5`. All seven seats are seated, Al-Rumayyan with an empty `recuse` list
@@ -72,7 +73,7 @@ shortening it anyway, for a different reason.
 
 ## Faults
 
-### F-1 — round one loses advisors to `bad_output`. OPEN, and the one to fix first.
+### F-1 — round one loses advisors to `bad_output`. **CLOSED on `ec620968ac`** (see the re-run below).
 
 **Four absences across six sessions, every one of them in round one.** `engine.turn` marks the seat absent
 (`{"absent": true, "error": "bad_output"}`), the screen says "no answer this round", and the room carries on.
@@ -112,7 +113,7 @@ reply says what to escape rather than only asking again. `uv run pytest -q` 169 
 **None of that is evidence yet** — F-1 only shows up against a real model, so it stays OPEN until both modes
 are re-run on beta with the two commands above and the absences are gone.
 
-### F-2 — English round one runs long; Arabic does not. OPEN, owner's call.
+### F-2 — English round one runs long; Arabic does not. **Much smaller on `ec620968ac`**; left as it is.
 
 English round-one answers against the 250–400 band the seat files ask for: 403–453 (five of five over), then
 372–491, then 133–514. Arabic: 257–307 (all inside), 269–346, 198–340. Step 23's rule is to keep an over-long
@@ -136,7 +137,7 @@ who answered from the ones who are away, reports the away list with the engine's
 lengths over the answers alone. `data-absent` marks it on the turn card, beside `data-concedes` and
 `data-changed`.
 
-### F-5 — the advice check fires on innocent words, and misses real advice. OPEN, needs a decision.
+### F-5 — the advice check fires on innocent words, and misses real advice. **CLOSED: the owner chose option B.**
 
 Both choice sessions failed `the Chair's answer is an assessment, not advice`. **Both are false positives, and
 the Chair gave no advice in any of the six sessions.**
@@ -157,7 +158,7 @@ exact patterns, measured against 19 sentences: the pattern in use today gets 8 o
 sentences failed, 4 pieces of real advice passed), and the recommended one gets all 19 right. Still the
 owner's decision; nothing applied.
 
-### F-6 — figures the checker could not match: 15 in English against 3 in Arabic. Watch.
+### F-6 — figures the checker could not match: 15 in English against 3 in Arabic. **Much smaller on `ec620968ac`.**
 
 Marked on screen as not found in the data, which is the honest behaviour and not a BRAND violation: nothing is
 presented as a database value when it is not one. They are the advisors' own arithmetic — a payout ratio of
@@ -172,10 +173,11 @@ figure** — understated most in the sessions that lost a seat.
 
 ## Still to do
 
-1. **F-1 is changed in `ddf29d1` and not proven** — it needs a beta release and both modes re-run on a real
-   model. This is still the blocker for production.
-2. **F-5** — the owner's decision on the advice wording, before Step 10 runs on production. The options are
-   written out in `docs/advice-check-f5-2026-10-27.md`.
+1. ~~F-1~~ — **CLOSED**: changed in `ddf29d1`, released to beta as `ec620968ac`, and both modes re-run on a
+   real model with **zero round-one absences** in 24 answers across four sessions. See the re-run below.
+2. ~~F-5~~ — **CLOSED**: the owner chose option B on 2026-10-27 (`ec62096`); the patterns and the reasoning
+   are in `docs/advice-check-f5-2026-10-27.md`. Both choice sessions now pass the advice check with the same
+   question that failed in the morning.
 3. ~~The owner approves the look on beta~~ — **DONE 2026-10-27**: approved in chat on `4b3d04a3e5`, judged at
    1440 in both languages and at 390 on a phone, knowing no seat's mouth moves and the arc is shallow.
 4. **The mouth-open talk frames were never made**, so no seat's mouth moves. Step 22's "Done when" asks the
@@ -183,7 +185,67 @@ figure** — understated most in the sessions that lost a seat.
    still with the speaker's lift and ring instead.
 5. **The arc is shallow** — heads rise about 40 px toward the middle, flatter than the owner's reference.
    Left deliberately for the owner to judge on beta.
-6. **Production**, with the owner's go-ahead, after 1–3.
+6. **Production**, with the owner's go-ahead — now the only thing left for Steps 22 and 23. Items 1–3 are done.
 7. ~~`c5d68f6` and `4b3d04a` are committed on `rebuild` but not pushed~~ — **pushed since**: `origin/rebuild`
    is at `1fcebba`, which contains both. The F-1 commits `ddf29d1` and `e9c339f` are **not** pushed; pushing
    is an "Always stop" in the autorun policy and the owner has not been asked for these.
+
+## The F-1 re-run — release `ec620968ac`, both modes, all passed
+
+Beta was moved to `ec620968ac` (`scripts/deploy-staging.sh`, `current` → `releases/ec620968ac`, api 200, web
+200) on the owner's go-ahead of 2026-10-27, and both modes ran again against it with the same two commands,
+only the output folders changed:
+
+```
+BASE_URL=http://localhost:3201 OUT=../docs/screenshots/advisors-beta-f1-open MODE=open \
+  node scripts/check-advisors.mjs
+
+BASE_URL=http://localhost:3201 OUT=../docs/screenshots/advisors-beta-f1-choice MODE=choice \
+  QUESTION_EN="Is the dividend covered by earnings, or is it only covered while margins hold?" \
+  QUESTION_AR="هل التوزيعات مغطاة بالأرباح، أم أنها مغطاة فقط ما دامت الهوامش قائمة؟" \
+  node scripts/check-advisors.mjs
+```
+
+That release carries the F-1 change (`ddf29d1`: round one 200–300 words, the Output rule's JSON-string
+sentence, three tries per seat, a retry that says what to escape) and the owner's F-5 choice (`ec62096`,
+option B).
+
+**Both runs ended `all passed`, exit 0.** Four sessions, 45 files in each output folder.
+
+| Session | Mode | On screen | Round-one absences | Round-one words | Lean tally |
+| --- | --- | --- | --- | --- | --- |
+| en | open | 1:34 | **none** | 305, 296, 317, 291, 333, 280 | — |
+| ar | open | 1:15 | **none** | 249, 239, 262, 269, 265, 270 | — |
+| en | choice | 0:59 | **none** | 300, 293, 288, 302, 332, 276 | A 1, B 1, C 4 |
+| ar | choice | 1:24 | **none** | 189, 201, 223, 227, 211, 252 | A 0, B 2, C 4 |
+
+Rounds two and three lost nobody either; every final word says what changed; all six conceded a point in
+every session; no scores anywhere; the Chair's answer inside 200–350 in all four (288, 206, 296, 211).
+
+`python -m app.debate stats 1` now covers all ten of today's sessions — the morning's six and these four:
+**10 done, 0 failed, median 75.17 s, max 94.5 s, total $2.9423.** Taking the morning's $1.7379 off that, the
+four re-run sessions cost **$1.2044**, a mean of **$0.3011** — the same price per session as before, so the
+third attempt did not cost anything noticeable (nobody needed it in these four).
+
+### What that settles
+
+- **F-1 — CLOSED.** 24 round-one answers across four sessions, both modes, both languages, **zero absences**,
+  against four absences in the morning's six. Step 23's second "Done when" is met.
+- **F-5 — CLOSED by the owner's decision** (option B, `ec62096`). Both choice sessions passed
+  `the Chair's answer is an assessment, not advice` with the *same* question that failed in the morning —
+  the one containing "margins hold" and "ما دامت الهوامش قائمة".
+- **F-2 — much smaller, not gone.** English round one was 372–514 words against a 250–400 band; it is now
+  276–333 against 200–300. Three of twelve English answers are over 300, by 2 to 33 words; Arabic is inside
+  except one at 189. Step 23's rule is to keep an over-long answer whole and report it, and that is what the
+  INFO lines do. Not worth another prompt change on this evidence.
+- **F-6 — much smaller.** Figures the checker could not match: 6 and 0 in English (was 15), 4 and 0 in Arabic
+  (was 3). As predicted, shorter answers carry less of the advisors' own arithmetic.
+- **F-3, F-4** were already fixed in `4b3d04a3e5`. **F-7** (a failed turn's tokens unrecorded) is untouched and
+  now matters less: no turn failed.
+
+### What is left
+
+**The production release, and only that.** The look was approved on beta on 2026-10-27, the check passes clean
+in both modes and both languages, and `uv run pytest -q` (169) and `npm test` (28) pass. Steps 22 and 23 need
+the owner's go-ahead for the production release — an "Always stop" in the autorun policy — and then Step 10
+reruns the launch check against it.
