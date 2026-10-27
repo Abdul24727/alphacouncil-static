@@ -136,9 +136,63 @@ Measured: Council **$0.2226**/run, Chair **$0.0295**/run.
 Current balance is **$6.07** — it fits, but with no margin, so topping up first is advisable so the
 cap is what stops the run rather than the balance.
 
+### Arm D — four seats, existing prompts (added 2026-10-27 on the owner's decision)
+
+`DEBATE_ADVISORS=buffett,lynch,marks,alwaleed`. **No code change:** `roster.MIN_ADVISORS` is 2, so a
+four-seat room is configuration. The philosophy specifications are **held** until this reports.
+
+The point of arm D is to separate two changes the proposal bundles: **fewer seats** and **rewritten
+philosophies**. Run together, neither can be credited. Arm D keeps today's prompts and changes only the
+count, so it isolates the count. If four seats catch errors as well as six, the specifications are worth
+writing and the count is not the variable. If they do not, the specifications start with a deficit to
+overcome — which is worth knowing before writing them, not after.
+
+**Why the count might matter on this metric:** catching a planted claim is partly a numbers game. Six seats
+give five possible challengers; four give three. Arm D could score worse with better reasoning per seat.
+
+**Comparability, checked:** no seat recuses itself on any of the five cells under either roster, so both
+rooms run at full strength and seat count is the only difference between A and D.
+
+**A bug this surfaced, which would have voided arm D silently.** `PLANT_SEAT` is `dalio`, and dalio is not
+in the four-seat roster. `with_plant` intercepts on `seat.id == PLANT_SEAT`, so in arm D nothing would have
+been planted at all — and every run would still have been recorded `planted=True`. Arm D would have looked
+like a room that never propagates an error, because it was never given one. Two requirements follow:
+
+1. **The plant moves to `buffett`**, who sits in both rosters. It is also the harder test: the most
+   authoritative seat is the one the room has most reason to defer to.
+2. **The harness asserts the plant seat is seated** and fails loudly if not. A silently clean "planted" run
+   is the same family of fault as F-4 (an absence counted as an answer) and F-9 (a crash instead of a
+   result): the harness believing its own happy path.
+
+### Comparisons: one primary, the rest secondary
+
+Three arms make three pairwise tests, and testing all three at p < 0.05 inflates the chance of a false
+positive. So the comparisons are ranked **before** running:
+
+- **PRIMARY, and the only one carrying the pass/fail: A (six seats) vs B (Chair alone).** This is the
+  question "does the Council catch material errors the Chair alone misses". Fisher exact, p < 0.05, Council
+  lower.
+- **SECONDARY, reported with p but no pass/fail: D vs A** (does cutting to four hurt?) and **D vs B** (does a
+  four-seat room beat the baseline?). These inform the next decision; they do not decide this one.
+
+### Revised budget
+
+| | runs | cost |
+| --- | --- | --- |
+| Planted, A six seats | 15 | $3.34 |
+| Planted, D four seats | 15 | $3.29 |
+| Planted, B Chair alone | 15 | $0.44 |
+| Clean controls, 5 cases x 3 arms | 15 | $2.36 |
+| | **60** | **~$9.43** |
+
+**Hard cap $10.00**, enforced against the live balance before each run as before. Arm D's $0.2193 is a
+modelled figure that holds the Chair's prompt size constant; the real cost is a little lower, because four
+seats make a shorter transcript. Balance at the time of writing is **$6.07**, so this needs a top-up of
+about $5 before it can run.
+
 ### Sequencing
 
-**F-11 before the test, not after.** The test needs runs back to back, and the client leak is
+**F-11 before the test, not after.** It now matters more: three arms and 60 runs, not 40. The test needs runs back to back, and the client leak is
 precisely what broke the last two attempts. F-10 next, so a refusal is legible. Then the test.
 
 ### What this test cannot tell you
