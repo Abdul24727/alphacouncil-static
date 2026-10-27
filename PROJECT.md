@@ -867,6 +867,14 @@ cd web; $env:BASE_URL="https://alphacouncil.tech"; node scripts/check-all.mjs
    because production did not then serve the three-round format. It now will exercise the real room on a real
    model, as beta did four times today.
 
+`docs/launch-check-2026-10-27.md` has a **"Before you run those two"** section, checked read-only on
+2026-10-27, so nothing surprises the owner mid-run: production sets none of `BILLING_OPEN`, `EARLY_ACCESS` or
+`DEBATE_*`, so `plans.plan_of` returns `pro` for everyone while billing is closed and a fresh account has the
+room; the check signs up a new account per locale, so the 20-sessions-a-month allowance never bites; and the
+signed-in advisors check convenes two real-model sessions, so about **$0.60 and a few minutes**. It also names
+what is left behind — test accounts on the live site — and the one command that removes them
+(`scripts/old-accounts.sh production forget advisors-`, which only ever touches `<prefix>*@example.com`).
+
 Paste both summary lines into `docs/launch-check-2026-10-27.md` and **Step 10 closes**. Then:
 
 - **Step 7 — the lawyer reviews the finished site.** The owner's own action, and the last substantive one.
