@@ -38,7 +38,7 @@ from app.debate.standin import make_asker
 from app.main import create_app
 from app.settings import get_settings
 
-from .questions import CELLS, PLANT_FIGURE, PLANT_HEADLINE, PLANT_SEAT, PLANT_TEXT
+from .questions import CELLS, PLANT_SEAT
 
 # Measured on beta, 2026-10-27, over 28 completed sessions: a run's cost by arm. Used only to
 # decide whether the NEXT run still fits under the cap, never to report a cost - the reported
@@ -146,27 +146,27 @@ class Result:
     plant_in_answer: bool = False
 
 
-def score(r: Result, pack: Pack) -> Result:
+def score(r: Result, pack: Pack, cell: Any) -> Result:
     """The same treatment for every arm: the engine's own checks over the final answer."""
     c = checks.Checked(pack.numbers(), pack.seen())
     text = c.text(r.answer, limit=8_000)
     r.answer_words = len(text.split())
     r.unverified = c.unverified
     r.advice_removed = c.removed
-    r.plant_in_answer = PLANT_FIGURE in checks.normalize_digits(r.answer)
+    r.plant_in_answer = cell.figure in checks.normalize_digits(r.answer)
     return r
 
 
 # --- arm A and C: the room --------------------------------------------------------------------
 
 
-def with_plant(base: Any, plant: bool):
+def with_plant(base: Any, plant: bool, cell: Any):
     """Wraps any asker so one seat's round one is scripted with a wrong derivation instead of asked.
     It wraps the stand-in too, so the probe path can be exercised without spending anything."""
 
     async def ask(*, seat: Any, stage: str, state: Any, check: Any, **kw: Any):
         if plant and stage == "openings" and seat.id == PLANT_SEAT:
-            raw: dict[str, Any] = {"headline": PLANT_HEADLINE, "text": PLANT_TEXT.format(figure=PLANT_FIGURE)}
+            raw: dict[str, Any] = {"headline": cell.headline, "text": cell.text.format(figure=cell.figure)}
             if state.options():
                 raw["lean"] = state.options()[0]
             return check(raw), llm.Usage(model="scripted")
@@ -208,7 +208,7 @@ async def run_room(cell: Any, locale: str, repeat: int, arm: str, models: dict[s
         base, calls = make_asker(pack, advisors, locale, cell.question), {"n": 0, "cost": 0.0}
     else:
         base, calls = council_asker(settings, models)
-    ask = with_plant(base, plant)
+    ask = with_plant(base, plant, cell)
 
     turns: list[dict[str, Any]] = []
 
@@ -231,10 +231,10 @@ async def run_room(cell: Any, locale: str, repeat: int, arm: str, models: dict[s
     if plant:
         # Did anyone contest the planted figure in the round of challenges?
         r.plant_challenged = any(
-            t["stage"] == "debate" and PLANT_FIGURE in checks.normalize_digits(json.dumps(t.get("data") or {}, ensure_ascii=False))
+            t["stage"] == "debate" and cell.figure in checks.normalize_digits(json.dumps(t.get("data") or {}, ensure_ascii=False))
             for t in turns
         )
-    return score(r, pack)
+    return score(r, pack, cell)
 
 
 # --- arm B: one model, same pack, same shape ---------------------------------------------------
@@ -260,7 +260,7 @@ async def run_single(cell: Any, locale: str, repeat: int, model: str, plant: boo
     parts = [f"THE MEMBER'S QUESTION: {cell.question}", "THIS STEP:\n" + chair.sections["Stage: The answer"]]
     if plant:
         # The same wrong claim the room is given, so both arms face it: here as an analyst's note.
-        parts.append("AN ANALYST'S NOTE ON THIS COMPANY:\n" + PLANT_TEXT.format(figure=PLANT_FIGURE))
+        parts.append("AN ANALYST'S NOTE ON THIS COMPANY:\n" + cell.text.format(figure=cell.figure))
     parts += [f"REPLY with one JSON object in this shape:\n{SINGLE_SHAPE}", f"Write every text value in {LANGUAGE[locale]}."]
     messages = [{"role": "system", "content": system}, {"role": "user", "content": "\n\n".join(parts)}]
 
@@ -279,7 +279,7 @@ async def run_single(cell: Any, locale: str, repeat: int, model: str, plant: boo
     except Exception as exc:
         r.error = describe(exc)
     r.seconds = round(time.monotonic() - started, 2)
-    return score(r, pack)
+    return score(r, pack, cell)
 
 
 # --- the run ------------------------------------------------------------------------------------

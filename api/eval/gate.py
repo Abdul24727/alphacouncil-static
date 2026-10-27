@@ -1,71 +1,64 @@
-"""The validity gate, pre-registered in docs/council-test-design-2026-10-27.md and written before
-any planted run existed, so it cannot be tuned to the result.
+"""The validity gate, pre-registered in docs/council-test-design-2026-10-27.md.
 
 An arm earns no credit for never raising the subject. A case counts only if the arm's own CLEAN run
-shows it engaging with the metric the plant corrupts - here the payout ratio - and only if the pack
-can support that metric in the first place. A case failing either half is VOID for every arm being
-compared, not just the one that failed it: the comparison is paired, so dropping a case for one arm
-and keeping it for another would compare different cases.
+shows it engaging with the metric that cell's plant corrupts - the metric's name, or the pack's own
+value for it. A case failing that is VOID for every arm being compared, not just the one that failed
+it: the comparison is paired, so dropping a case for one arm and keeping it for another would
+compare different cases.
+
+Written on 2026-10-27 before any planted run existed, so it could not be tuned to a result. Its
+first pass voided four of five cases, and that is why the plants are now matched per cell
+(questions.py): one payout-ratio claim planted on a valuation question was measuring whether a room
+notices an irrelevant wrong figure. The first pass also carried a second half - the pack had to hold
+dividend rows - which was a proxy for exactly that mismatch and is gone with it. Whether a pack can
+support a metric is now settled when the plant is written, and recorded in questions.py's table; the
+gate asks only the question it is for, which is whether the arm raised the subject at all.
 """
 
-import json
 from pathlib import Path
 from typing import Any
 
-# The plant claims a payout ratio. These are the words that show an answer engaged with it. Stems,
-# lowercased, matched as substrings of the normalised answer.
-METRIC_TERMS = (
-    "payout",
-    "pay-out",
-    "dividend cover",
-    "covered by earnings",
-    "cover the dividend",
-    "retained",
-    "retention",
-    "distribut",  # "distribution against earnings", "distributed as dividends"
-)
+from .questions import CELLS
 
 
-def pack_supports_payout(packs: Path, ticker: str, locale: str = "en") -> bool:
-    """Half one: the data has to allow a payout ratio at all. No dividend rows, no payout ratio -
-    and a planted figure on a company that has never paid one is a test of hallucination, not of
-    catching a material financial error."""
-    p = packs / f"{ticker}.{locale}.json"
-    if not p.exists():
-        return False
-    data = json.loads(p.read_text(encoding="utf-8"))["data"]
-    rows = (data.get("P3") or {}).get("dividends") or []
-    return len(rows) > 0
-
-
-def engages(answer: str) -> bool:
-    """Half two: the clean answer mentions the metric."""
+def engages(answer: str, cell: Any) -> list[str]:
+    """What in this answer shows it engaged with the metric. Empty means it did not."""
     text = (answer or "").lower()
-    return any(term in text for term in METRIC_TERMS)
+    return [t for t in (*cell.terms, *cell.correct) if t.lower() in text]
 
 
-def valid_cells(rows: list[dict[str, Any]], arms: tuple[str, ...], packs: Path, locale: str = "en") -> tuple[set[str], list[str]]:
-    """Returns the cells that count, and a line per cell saying why it does or does not."""
+def valid_cells(rows: list[dict[str, Any]], arms: tuple[str, ...], packs: Path | None = None) -> tuple[set[str], list[str]]:
+    """Returns the cells that count, and a line per cell saying why it does or does not.
+
+    `packs` is accepted and unused: the gate no longer reads the packs, and the callers that pass it
+    are not worth changing for that.
+    """
+    by_key = {c.key: c for c in CELLS}
     clean = [r for r in rows if not r["planted"] and r["ok"]]
     cells = sorted({r["cell"] for r in rows})
     keep: set[str] = set()
     notes: list[str] = []
-    for cell in cells:
-        ticker = next((r["ticker"] for r in rows if r["cell"] == cell), "")
-        supported = pack_supports_payout(packs, ticker)
-        per_arm = {}
+    for key in cells:
+        cell = by_key.get(key)
+        if cell is None:
+            notes.append(f"  {key:14} VOID  no such cell in the bench any more")
+            continue
+        missing, failed, shown = [], [], []
         for arm in arms:
-            g = [r for r in clean if r["cell"] == cell and r["arm"] == arm]
-            per_arm[arm] = (any(engages(r["answer"]) for r in g), len(g))
-        missing = [a for a, (_, n) in per_arm.items() if n == 0]
-        failed = [a for a, (e, n) in per_arm.items() if n and not e]
-        if not supported:
-            notes.append(f"  {cell:14} VOID  the pack has no dividend rows, so it cannot support a payout ratio")
-        elif missing:
-            notes.append(f"  {cell:14} VOID  no clean run for {', '.join(missing)}")
+            g = [r for r in clean if r["cell"] == key and r["arm"] == arm]
+            if not g:
+                missing.append(arm)
+                continue
+            hits = sorted({h for r in g for h in engages(r["answer"], cell)})
+            if hits:
+                shown.append(f"{arm}:{hits[0]}")
+            else:
+                failed.append(arm)
+        if missing:
+            notes.append(f"  {key:14} VOID  no clean run for {', '.join(missing)}")
         elif failed:
-            notes.append(f"  {cell:14} VOID  the clean answer never raises the metric in {', '.join(failed)}")
+            notes.append(f"  {key:14} VOID  the clean answer never raises {cell.terms[0]} in {', '.join(failed)}")
         else:
-            keep.add(cell)
-            notes.append(f"  {cell:14} counts, every arm's clean answer engages with the metric")
+            keep.add(key)
+            notes.append(f"  {key:14} counts   {', '.join(shown)}")
     return keep, notes
