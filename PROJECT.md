@@ -74,7 +74,8 @@ Older entries: `changelog-archive.md`.
 - 2026-10-27 — **Steps 22 and 23 released to beta together** on the owner's go-ahead (`4b3d04a3e5`) and proven there on a real model: six sessions, both modes, both languages, 0 failed, median 69.9 s, median cost $0.29, total $1.74 (`docs/beta-advisors-2026-10-27.md`). Step 23's choice mode had never run on a model before — it lands on the engine's own arithmetic (tallies summing to the six who leaned), and the Arabic session came out a 3–3 tie the Chair reported as a tie. **F-1 blocks production**: round one loses advisors to `bad_output` four times in six sessions, every one in round one and never in rounds two or three, across three seats and both languages — malformed JSON rather than the token ceiling, which is what long prose in a JSON string field produces, and round one is the only round asking 250–400 words. Two faults were in the check itself and are fixed: an absence was being counted as a 15-word answer, and the mode check was scoped to the transcript panel, so it read every session as `open` and `MODE=open` passed by accident. **F-5** needs the owner: the advice check fails on "while margins hold" and on `اشتر` inside اشتراط, and no session contained advice.
 - 2026-10-27 — **The owner approved the look on beta**, judged on `4b3d04a3e5` from the mid-session room at 1440 in both languages and at 390 on a phone, knowing no seat's mouth moves and the arc is shallow. Step 22's decision checkpoint is cleared; the production release still needs its own go-ahead, and F-1 still blocks it.
 - 2026-10-27 — **F-1 changed, not yet proven** (`ddf29d1`). Round one now asks for **200–300 words** instead of 250–400 (`engine.ANSWER_WORDS`, the Answers section of `chair.md`, and `ANSWER_WORDS` in `check-advisors.mjs`, which reads the same band off the screen); the shared Output rule in `engine.py` now says each text value is one JSON string with its quotes escaped and no line breaks — malformed JSON was the diagnosis, and that rule speaks to it directly; a seat gets **three tries** instead of two (`llm.ATTEMPTS`), and the retry after a malformed reply says what to escape rather than only asking again. `uv run pytest -q` **169 passed**, `npm test` **28 passed**. **This is not evidence**: F-1 only appears against a real model, so it stays open until a beta release and both modes re-run. **F-5**'s three options are written out with their exact patterns in `docs/advice-check-f5-2026-10-27.md` — measured on 19 sentences the live pattern gets 8 wrong (4 innocent sentences failed, 4 pieces of real advice passed) and the recommended one gets all 19 right; nothing applied, it is the owner's call.
-- 2026-10-27 — **F-1 and F-5 CLOSED on beta `ec620968ac`.** The owner chose F-5's **option B** (`ec62096`: the advice check matches buy/sell/hold only where they instruct about the holding, recommend, or give a price target) and gave the go-ahead to release and re-run. Beta moved to `ec620968ac`, and both modes ran again on a real model with the same two commands: **both `all passed`, exit 0**. Four sessions, **24 round-one answers, zero absences**, against four absences in the morning's six — **F-1 is closed**, and Step 23's second "Done when" is met. Both choice sessions passed the advice check with the *same* question that failed in the morning, so **F-5 is closed** too. **F-2** shrank from 372–514 English words against a 250–400 band to 276–333 against 200–300 (three of twelve over, by 2 to 33 words) and **F-6** from 15 unmatched figures in English to 6 and 0 — both left as they are, reported not cut, per Step 23's rule. Ten sessions today: median 75.17 s, max 94.5 s, $2.9423 in all; the four re-run ones $1.2044, mean $0.3011. Record: `docs/beta-advisors-2026-10-27.md` ("The F-1 re-run"); 45 screenshots in each of `docs/screenshots/advisors-beta-f1-{open,choice}/`. **Steps 22 and 23 then went to production the same day** (`15f5bf8770`, on the owner's go-ahead): beta was first moved to HEAD so `deploy-production.sh`'s "beta must run exactly HEAD" guard passed (the app code was byte-identical to what had just been proven â only PROJECT.md, the screenshots and one comment in a dev script differed), then production went from `a2e2c318bc` to `15f5bf8770`. `acp-prod-api` and `acp-prod-web` active, `/` 200, the Arabic advisors' page 200, `"checkout_open":false` unchanged, monitor 13 ok + renewals "â".
+- 2026-10-27 — **F-1 and F-5 CLOSED on beta `ec620968ac`.** The owner chose F-5's **option B** (`ec62096`: the advice check matches buy/sell/hold only where they instruct about the holding, recommend, or give a price target) and gave the go-ahead to release and re-run. Beta moved to `ec620968ac`, and both modes ran again on a real model with the same two commands: **both `all passed`, exit 0**. Four sessions, **24 round-one answers, zero absences**, against four absences in the morning's six — **F-1 is closed**, and Step 23's second "Done when" is met. Both choice sessions passed the advice check with the *same* question that failed in the morning, so **F-5 is closed** too. **F-2** shrank from 372–514 English words against a 250–400 band to 276–333 against 200–300 (three of twelve over, by 2 to 33 words) and **F-6** from 15 unmatched figures in English to 6 and 0 — both left as they are, reported not cut, per Step 23's rule. Ten sessions today: median 75.17 s, max 94.5 s, $2.9423 in all; the four re-run ones $1.2044, mean $0.3011. Record: `docs/beta-advisors-2026-10-27.md` ("The F-1 re-run"); 45 screenshots in each of `docs/screenshots/advisors-beta-f1-{open,choice}/`. **Steps 22 and 23 then went to production the same day** (`15f5bf8770`, on the owner's go-ahead): beta was first moved to HEAD so `deploy-production.sh`'s "beta must run exactly HEAD" guard passed (the app code was byte-identical to what had just been proven — only PROJECT.md, the screenshots and one comment in a dev script differed), then production went from `a2e2c318bc` to `15f5bf8770`. `acp-prod-api` and `acp-prod-web` active, `/` 200, the Arabic advisors' page 200, `"checkout_open":false` unchanged, monitor 13 ok + renewals "–".
+- 2026-10-27 — **Step 10 run again on the new production release; the signed-out half is all green** (`docs/launch-check-2026-10-27.md`). `check-seo` **62 PASS / 0 FAIL** ("ALL PASS"), `check-data-fixes` SWEEP=1 **44 PASS / 0 FAIL** (sweep 714 tickers, `eps_bad` 0, `vt_reason` 0, `news_green_old` 0), `check-arabic` signed out **48 Arabic views at 1440 and 390 with 0 English strings**, `check-advisors VISITOR=1` **24 PASS / 0 FAIL**; monitor **13 ok + renewals "–"**; 20 page views of `/`, `/pricing`, `/home`, `/t/2222` and `/t/2222/advisors` in both languages at 1440 and 390, **all 200, no sideways scroll** (`docs/screenshots/launch-2026-10-27/pages/`); `www` 301s to the apex and the certificate covers all three names. **Left to the owner:** `check-all.mjs` from their own computer and the **signed-in `check-advisors.mjs`** — the one check the 2026-10-24 interim run could not do at all, because production did not then serve the three-round format. Step 10 closes when both are in that file.
 
 ## 6. Current State
 - Live on alphacouncil.tech: release `a2e2c318bc` since 2026-10-23 21:28 UTC (advisor portraits; Copilot option (e)); beta runs the same; beta `check-all` 9/9 before the release. Pro checkout **closed** (early access, everyone has Pro; it reopens at Step 18; no one has paid).
@@ -777,7 +778,7 @@ Older entries: `changelog-archive.md`.
   - *Stamp:* 2026-10-23; production `56476948f5`
 
 ### Step 10 — Launch check on production
-- **Status:** IN PROGRESS (2026-10-24) — second interim run, after Goal 2 closed: **every check passes on production**, signed out (Claude) and signed in (the owner ran `check-all.mjs`: 264 PASS / 0 FAIL) — `docs/launch-check-2026-10-24.md`. Of its dependencies only **22 and 23** are left; the step closes when they ship and the signed-in advisors check can run against them.
+- **Status:** IN PROGRESS (2026-10-27) — **all dependencies are live**: Steps 22 and 23 went to production on 2026-10-27 (`15f5bf8770`), so the real run has begun. `docs/launch-check-2026-10-27.md`: **the signed-out half is complete and all green** (`check-seo` 62/0, `check-data-fixes` SWEEP=1 44/0, `check-arabic` 48 views / 0 English strings, `check-advisors VISITOR=1` 24/0), monitor **13 ok + renewals "–"**, and 20 page views all 200 with no sideways scroll. **Two checks are left and both are the owner's:** `check-all.mjs` from their own computer, and the **signed-in `check-advisors.mjs`** — the one check the 2026-10-24 interim run could not do at all, since production did not then serve the three-round format.
 - **Goal:** One dated record shows every check passing on production after Goals 2, 3 and 4's changes, with billing still closed.
 - **Depends on:** 6, 8, 9, 17, 21, 22, 23 (19 superseded 2026-10-23; 7 now comes after this step)
 - **Reversibility:** reversible
@@ -801,7 +802,10 @@ Older entries: `changelog-archive.md`.
   - *Resume here:* once Steps 22 and 23 are live on production (Goal 2 is DONE since 2026-10-24, and 8, 9 and 17 are live): rerun the four signed-out scripts and the page screenshots into `docs/screenshots/launch-<date>/`, ask the owner to run `check-all.mjs` (and the signed-in advisors and Arabic checks) on production with output into that folder, then write `docs/launch-check-<date>.md` as the real record. Note that `check-advisors.mjs` now also checks the three-round format, so run it after 22/23 ship, not before.
   - *Done (2026-10-24, the second interim run — owner asked for it while Step 22 waits):* `docs/launch-check-2026-10-24.md`, on release `a2e2c318bc` with the 2026-10-24 night's data. Signed out on production: `check-seo` **62 PASS / 0 FAIL** ("ALL PASS"), `check-arabic` **48 Arabic views at 1440 and 390 with 0 English strings**, `check-advisors VISITOR=1` **24 PASS / 0 FAIL**, and `check-data-fixes` SWEEP=1 **44 PASS / 0 FAIL** with **`vt_reason` 0** (5 at the last run: after the 10-24 night every ticker has a real value traded). Monitor **13 ok + renewals "–"**; off-server copy 06:00 UTC, 33 files; TLS now to 2027-01-21 (reissued when Step 9 added `www`). `www` 301s to the apex. Screenshots of `/`, `/pricing`, `/home`, `/t/2222` and its advisors' page in EN and AR at 1440 and 390 (`docs/screenshots/launch-2026-10-24/`), all 200, no sideways scroll. `"checkout_open":false`.
   - *Done (2026-10-24, the owner's signed-in half):* the owner ran `check-all.mjs` against production from their own computer — **all nine runs PASS** (Phases 1–7, Arabic signed out, Arabic signed in), **264 PASS / 0 FAIL** (`docs/screenshots/launch-2026-10-24/check-all.txt`). Phase 3: charts drawn 691 of 691 tickers with price history, and the 25 without say "Data unavailable". Phase 4: the Copilot answered in 9 s with a working citation. Phase 6: every number on the landing page sits in a database value and equals the API (7 exchanges, 716 equities, Pro 79); the legal texts are full length in both languages. Arabic: 0 English strings across 96 + 24 + 15 page views. Only the signed-in `check-advisors.mjs` is left, and it waits on Steps 22 and 23 rather than on the owner: the copy on `rebuild` checks the three-round format and would fail on production's missing `final` tab.
-  - *Stamp:* 2026-10-23; production `56476948f5`
+  - *Done (2026-10-27, the real run begins — production `15f5bf8770`):* `docs/launch-check-2026-10-27.md`, the first launch check against the advisors' room with portraits round a table and the three-round format. Signed out on production: `check-seo` **62 PASS / 0 FAIL** ("ALL PASS"), `check-data-fixes` SWEEP=1 **44 PASS / 0 FAIL** (sweep **714** tickers now, not 716 — TAQA_ADX and 624_KSE were dropped on 2026-10-24 — with `eps_bad` 0, `vt_reason` 0, `news_green_old` 0), `check-arabic` signed out **48 Arabic views at 1440 and 390 with 0 English strings**, `check-advisors VISITOR=1` **24 PASS / 0 FAIL**. Monitor **13 ok + renewals "–"**. `www` 301s to the apex; the certificate covers `alphacouncil.tech`, `api.` and `www.` to 2027-01-21. `"checkout_open":false`. Screenshots: `docs/screenshots/launch-2026-10-27/pages/` — `/`, `/pricing`, `/home`, `/t/2222`, `/t/2222/advisors` in English and Arabic at 1440 and 390, **20 views, every one 200, no sideways scroll** (`pages.txt` has the line per view), plus `advisors-visitor/` from the check itself.
+  - *Not done (2026-10-27, and both are the owner's):* **`check-all.mjs` on production** from their own computer (`cd web; $env:BASE_URL="https://alphacouncil.tech"; node scripts/check-all.mjs`), output into `docs/screenshots/launch-2026-10-27/check-all.txt` — it was 264 PASS / 0 FAIL on 2026-10-24 and has to run again because production's app changed; and the **signed-in `check-advisors.mjs`**, which will exercise the real room on a real model, the same thing proven four times on beta today with zero round-one absences. Step 10 closes when both are in that file. Goal 4's "monitor at 14 of 14" is a **Step 18** check, not this one: with checkout closed there is no renewal run, so the fourteenth line cannot turn `ok` until billing opens.
+  - *Resume here:* ask the owner for those two runs, paste their summary lines into `docs/launch-check-2026-10-27.md`, and Step 10 closes. Then Step 7 (the lawyer) and Step 18 (billing).
+  - *Stamp:* 2026-10-27; production `15f5bf8770` (was 2026-10-23 on `56476948f5`)
 
 ### Step 18 — Open Pro billing on production (the paid launch)
 - **Status:** NOT STARTED
@@ -833,34 +837,46 @@ Older entries: `changelog-archive.md`.
 - **Watch: one-off chart timeouts** — 4210, 4250, 4290 timed out in the same minute on 2026-10-23 (no retry in the TradingView fetch, `main_patched…:2524`). Once in the two nights on disk; propose a retry only if it recurs.
 
 ## 9. Next Up
-Goal 4 is all that is left, and **Steps 22 and 23 are finished except for the production release.** On beta
-`ec620968ac` the look is approved (owner, 2026-10-27), `check-advisors.mjs` passes **clean in both modes and
-both languages** (`all passed`, exit 0), **no fault is open**, and `uv run pytest -q` (169) and `npm test` (28)
-pass. F-1 closed with 24 round-one answers and zero absences across four sessions; F-5 closed on the owner's
-choice of option B. Record: `docs/beta-advisors-2026-10-27.md` ("The F-1 re-run").
+**Steps 22 and 23 are live on production** (`15f5bf8770`, 2026-10-27, on the owner's go-ahead): the advisors'
+room with the seven portraits round a table and the three-round format. F-1 and F-5 were fixed and closed on
+beta the same day — both modes re-ran on a real model, both `all passed`, **24 round-one answers and zero
+absences** across four sessions — and the app code released to production is byte-identical to what was proven
+there. Goals 1, 2 and 3 are closed; Steps 8 and 9 were already live. **No fault is open.**
 
-**The next action needs the owner: the go-ahead to release Steps 22 and 23 to production** (an "Always stop";
-`scripts/deploy-production.sh`). Production still runs `a2e2c318bc`, the options-and-votes room.
+**Step 10 is in progress and its signed-out half is all green** (`docs/launch-check-2026-10-27.md`):
+`check-seo` 62/0, `check-data-fixes` SWEEP=1 44/0, `check-arabic` 48 Arabic views with 0 English strings,
+`check-advisors VISITOR=1` 24/0, monitor 13 ok + renewals "–", and 20 page views across five pages, two
+languages and two widths, all 200 with no sideways scroll.
 
-Then, in order:
+**The next action is the owner's: two checks on production, from their own computer.** Claude does not sign up
+test accounts on the live site (decision 2026-10-23), and these two do:
 
-1. **Step 10 — the launch check on production.** Claude reruns the signed-out scripts (`check-seo`,
-   `check-arabic` at 1440 and 390, `check-advisors VISITOR=1`, `check-data-fixes` with `SWEEP=1`), the monitor
-   and the page screenshots into `docs/screenshots/launch-<date>/`; the owner runs `check-all.mjs` and the
-   signed-in checks from their own computer (no test accounts on the live site). Then
-   `docs/launch-check-<date>.md` is the real record Step 18 reads. The signed-in `check-advisors.mjs` was the
-   one thing the 2026-10-24 interim run could not do, and the production release unblocks it.
-2. **Step 7 — the lawyer reviews the finished site.** The owner's own action: five questions in one visit
-   (the real names and personas, including Al-Rumayyan as a serving public official; the CMA permit question;
-   whether Moyasar must be told; the portraits; which legal papers the site needs). Their advice goes into
-   `docs/legal-advisors-<date>.md` and every change it asks for is applied and released.
-3. **Step 18 — open Pro billing**, on the owner's go-ahead after they have read the launch check, then their
-   own first real payment and its refund.
+```
+cd web; $env:BASE_URL="https://alphacouncil.tech"; node scripts/check-all.mjs
+```
 
-Production facts re-read 2026-10-27: `www` 301s to the apex, the certificate covers `alphacouncil.tech`,
-`api.` and `www.`, and `"checkout_open":false` — Goal 4's third "Done when" is met and the fifth is correctly
-still closed. `origin/rebuild` is at `1fcebba`; the five commits since (`ddf29d1`, `e9c339f`, `febbf4e`,
-`ec62096` and the record commit) are **not pushed** — pushing is an "Always stop" and the owner has not been
-asked for these.
+1. **`check-all.mjs`** — 264 PASS / 0 FAIL on 2026-10-24; it has to run again because production's app
+   changed. Save the output into `docs/screenshots/launch-2026-10-27/check-all.txt`.
+2. **The signed-in `check-advisors.mjs`** — the one check the 2026-10-24 interim run could not do at all,
+   because production did not then serve the three-round format. It now will exercise the real room on a real
+   model, as beta did four times today.
 
-Everything else is done: Goals 1, 2 and 3 are closed, and Steps 8 and 9 of Goal 4 are live on production.
+Paste both summary lines into `docs/launch-check-2026-10-27.md` and **Step 10 closes**. Then:
+
+- **Step 7 — the lawyer reviews the finished site.** The owner's own action, and the last substantive one:
+  five questions in one visit (the real names and personas, including Al-Rumayyan as a serving public official;
+  whether the Copilot and the room stay inside an information service needing no CMA permit; whether Moyasar
+  must be told, since the merchant account was approved on the representation that this is not robo-advisory;
+  the portraits as caricatures of living people; and which legal papers the site needs). The advice goes into
+  `docs/legal-advisors-<date>.md` and every change it asks for is applied and released.
+- **Step 18 — open Pro billing**, on the owner's go-ahead after they have read the launch check, then their
+  own first real payment and its refund. **Goal 4's "monitor at 14 of 14" belongs here, not to Step 10**: with
+  checkout closed there is no renewal run, so that line cannot turn `ok` before billing opens.
+
+Goal 4's "Done when", as it stands tonight: **(2) MET** — six real portraits in both languages at both widths;
+**(3) MET** — `www` 301s to the apex and the certificate covers all three names; **(4) PARTIAL** — every script
+Claude can run passes, `check-all.mjs` waits on the owner, and 14 of 14 waits on Step 18; **(5) NOT MET** —
+`"checkout_open":false`, deliberately, until Step 18; **(1) NOT STARTED** — Step 7, the lawyer.
+
+`origin/rebuild` is at `1fcebba`; everything since (`ddf29d1` through the latest) is **not pushed** — pushing is
+an "Always stop" and the owner has not been asked for these.
