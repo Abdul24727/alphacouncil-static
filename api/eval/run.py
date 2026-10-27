@@ -291,7 +291,20 @@ async def run(arms: list[str], repeats: int, locale: str, plant: bool, dry: bool
     RESULTS.parent.mkdir(parents=True, exist_ok=True)
     started_at = None if dry else balance()
     if started_at is not None:
-        print(f"balance ${started_at:.2f}; hard cap ${cap_usd:.2f} on this run")
+        cells_n = len(CELLS if only_cell is None else [c for c in CELLS if c.key == only_cell])
+        planned = repeats * cells_n * sum(RUN_COST.get(a, 0.45) for a in arms)
+        print(f"balance ${started_at:.2f}; hard cap ${cap_usd:.2f}; this run plans {repeats * cells_n * len(arms)} runs at about ${planned:.2f}")
+        if planned > cap_usd:
+            raise SystemExit(f"refusing to start: the plan costs about ${planned:.2f}, over the ${cap_usd:.2f} cap")
+        if planned > started_at:
+            # Starting anyway would spend the balance and stop part way, which buys a half-powered
+            # result for the price of a whole one. The point of the cap is not to spend less; it is
+            # not to spend at all on a test that cannot finish.
+            raise SystemExit(
+                f"refusing to start: the plan costs about ${planned:.2f} and only ${started_at:.2f} is left. "
+                f"Add about ${planned - started_at:.2f} first - a run that stops part way is a half-powered "
+                "result bought at full price."
+            )
     ids = [a.id for a in roster.advisors(settings.debate_advisors)]
     arm_c_models = {seat: spread[i % len(spread)] for i, seat in enumerate(ids)} | {"chair": settings.debate_chair_model}
     for repeat in range(1, repeats + 1):
