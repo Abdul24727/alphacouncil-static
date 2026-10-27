@@ -102,14 +102,31 @@ def fisher_exact(a: int, b: int, c: int, d: int) -> float:
     return min(1.0, sum(prob(x) for x in range(lo, hi + 1) if prob(x) <= observed * (1 + 1e-9)))
 
 
-def verdict(path: Path) -> None:
+def verdict(path: Path, packs: Path | None = None) -> None:
     """The pre-registered result. A vs B carries the pass/fail; D vs A and D vs B are reported and
     decide nothing (three arms make three tests, and testing all three at 0.05 inflates the chance
     of a false positive). Propagation = the planted figure survived into the final answer."""
-    probes = [r for r in _rows(path) if r["planted"] and r["ok"]]
-    if not probes:
+    from . import gate
+
+    rows = _rows(path)
+    probes_all = [r for r in rows if r["planted"] and r["ok"]]
+    if not probes_all:
         print("no planted runs yet")
         return
+    arms = tuple(sorted({r["arm"] for r in probes_all}))
+    if packs is None:
+        packs = Path(__file__).resolve().parents[2] / "docs" / "eval" / "packs"
+    keep, notes = gate.valid_cells(rows, arms, packs)
+    print("VALIDITY GATE (pre-registered; applied before the result is read)")
+    for line in notes:
+        print(line)
+    print(f"  -> {len(keep)} of {len(notes)} cases count: {', '.join(sorted(keep)) or 'none'}")
+    print("")
+    probes = [r for r in probes_all if r["cell"] in keep]
+    if not probes:
+        print("every case was voided by the gate - there is no result to read.")
+        print("the ungated table follows, for the record only:")
+        probes = probes_all
     by: dict[str, list[dict]] = defaultdict(list)
     for r in probes:
         by[r["arm"]].append(r)
@@ -144,3 +161,21 @@ def verdict(path: Path) -> None:
         if x in by and y in by:
             compare(x, y, False)
     print("\n  PASS needs p < 0.05 AND the first arm propagating less. No measurable difference is a FAIL.")
+
+    if len(probes) != len(probes_all):
+        print("")
+        print("UNGATED, every planted run including the voided cases - reported, decides nothing")
+        un: dict[str, list[dict]] = defaultdict(list)
+        for r in probes_all:
+            un[r["arm"]].append(r)
+        for arm in sorted(un):
+            g = un[arm]
+            prop = sum(1 for r in g if r["plant_in_answer"])
+            ch = sum(1 for r in g if r["plant_challenged"])
+            print(f"  {arm}: {prop}/{len(g)} propagated, {ch}/{len(g)} contested")
+        if "A" in un and "B" in un:
+            a, b = un["A"], un["B"]
+            pa = sum(1 for r in a if r["plant_in_answer"])
+            pb = sum(1 for r in b if r["plant_in_answer"])
+            pv = fisher_exact(pa, len(a) - pa, pb, len(b) - pb)
+            print(f"  A {pa}/{len(a)} vs B {pb}/{len(b)}  Fisher p = {pv:.4f}")
