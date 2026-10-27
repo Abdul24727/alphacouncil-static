@@ -30,7 +30,7 @@ const MODE = process.env.MODE ?? null;
 const STAGES = ["brief", "openings", "faultlines", "debate", "final", "verdict"];
 // What counts as advice on screen, with the sentences it was measured on: scripts/lib/advice.mjs
 // The lengths chair.md asks for (engine.ANSWER_WORDS / CHAIR_WORDS): an answer outside them is kept, and reported.
-const ANSWER_WORDS = [200, 300];
+const ANSWER_WORDS = [200, 400];
 const CHAIR_WORDS = [200, 350];
 
 await mkdir(OUT, { recursive: true });

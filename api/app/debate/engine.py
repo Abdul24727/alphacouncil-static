@@ -69,7 +69,11 @@ TEMPERATURE = {"chair": 0.3, "advisor": 0.7}
 
 # The length chair.md asks for, in words: an answer outside it is kept whole and counted in the turn's
 # flags (`words`), so check-advisors.mjs can report it. Nothing is ever cut to fit.
-ANSWER_WORDS = (200, 300)
+# 200-400 and not 200-300 since 2026-10-27: once the prompt let the long texts carry paragraphs, English
+# round one settled around 300-390 words over four runs, so the narrower band reported 5 or 6 of 6 'outside'
+# every time and would have hidden a real change (docs/beta-advisors-2026-10-27.md, F-2). Arabic sits inside
+# either way. The band is a reporting threshold, never a cut.
+ANSWER_WORDS = (200, 400)
 CHAIR_WORDS = (200, 350)
 WORD = re.compile(r"[^\s]+")
 

@@ -159,6 +159,19 @@ the model that a blank line between paragraphs is an escaped newline.
 **F-8 held in the same run:** the Chair's answer was 5 paragraphs in both languages, so dropping the sentence
 cost no structure. That was the number that had to hold, and it did.
 
+**Settled (owner, 2026-10-27): the band widens to 200–400** — `engine.ANSWER_WORDS`, the Answers section
+of `chair.md`, and `ANSWER_WORDS` in the checker. The band is a reporting threshold and never a cut, so this
+changes no text; it stops the check printing 5 or 6 of 6 "outside" on every run, which is how a real change
+would be missed — the F-8 lesson exactly.
+
+**The risk, stated: 400 is the ceiling F-1 originally appeared under.** The four dropouts of the morning came
+from a 250–400 band, and this puts 400 back in the prompt. Two things say it is acceptable, and one says to
+watch it. For: the room is **already** writing 296–404 under a 200–300 label, so the actual lengths are at that
+ceiling now, and across **four runs, eight sessions and 48 round-one answers since the fix there has not been
+a single absence** — which says the fix was the JSON-escaping rule and the third attempt, not the number.
+Against: asking for 400 may pull the lengths higher still. **So the release run checks F-1 first**: if round
+one loses anybody, or English goes past 400, the band goes back and this note says why.
+
 English round-one answers against the 250–400 band the seat files ask for: 403–453 (five of five over), then
 372–491, then 133–514. Arabic: 257–307 (all inside), 269–346, 198–340. Step 23's rule is to keep an over-long
 answer whole and flag it, never to cut it, and that is what happens — the check now names the seats and their
