@@ -194,9 +194,9 @@ third attempt from F-1. **The six figures above were measured before this fix an
 5. **The arc is shallow** — heads rise about 40 px toward the middle, flatter than the owner's reference.
    Left deliberately for the owner to judge on beta.
 6. **Production**, with the owner's go-ahead — now the only thing left for Steps 22 and 23. Items 1–3 are done.
-7. ~~`c5d68f6` and `4b3d04a` are committed on `rebuild` but not pushed~~ — **pushed since**: `origin/rebuild`
-   is at `1fcebba`, which contains both. The F-1 commits `ddf29d1` and `e9c339f` are **not** pushed; pushing
-   is an "Always stop" in the autorun policy and the owner has not been asked for these.
+7. ~~`c5d68f6` and `4b3d04a` are committed on `rebuild` but not pushed~~ — **all pushed**: on the owner's
+   go-ahead of 2026-10-27, `origin/rebuild` is at `db8539a`, which contains every commit of the day including
+   the F-1 and F-5 work.
 
 ## The F-1 re-run — release `ec620968ac`, both modes, all passed
 

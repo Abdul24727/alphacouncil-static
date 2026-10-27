@@ -895,5 +895,6 @@ Goal 4's "Done when", as it stands tonight: **(2) MET** — six real portraits i
 Claude can run passes, `check-all.mjs` waits on the owner, and 14 of 14 waits on Step 18; **(5) NOT MET** —
 `"checkout_open":false`, deliberately, until Step 18; **(1) NOT STARTED** — Step 7, the lawyer, though its questions are drafted and ready to take (`docs/legal-questions-2026-10-27.md`).
 
-`origin/rebuild` is at `1fcebba`; everything since (`ddf29d1` through the latest) is **not pushed** — pushing is
-an "Always stop" and the owner has not been asked for these.
+`origin/rebuild` is at **`db8539a`** — the owner gave the go-ahead on 2026-10-27 and all fourteen of the day's
+commits are pushed, so today's work is safe off this computer (Goal 1). `scripts/set-backup-bucket.sh` is still
+untracked on purpose (the bucket helper from the backups session; the bucket is not used).
