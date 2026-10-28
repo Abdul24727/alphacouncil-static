@@ -58,6 +58,25 @@ was paying for cannot happen any more.
 
 `RUN_BOUND` was **re-measured**, not scaled, by the command its own comment names.
 
+### The regression this would have introduced, closed at the cause
+
+Counting every request has one consequence worth stating rather than discovering later.
+`debate_reasoning` is **False by default**, so `_reasoning` asks for reasoning OFF, and the chair's
+model refuses exactly that with the 400 — once per process, until `REASONING_REQUIRED` learns it at
+runtime. With every issued request now counted, that refused request would have left **the chair's
+first call of each process with two attempts at usable JSON instead of three**, on the longest
+answers in the room. That is the shape of F-1.
+
+So the refusal is removed rather than paid for: `REASONING_REQUIRED` is **seeded** with the models
+known to refuse, making the steady state the start state. The runtime path still works and is still
+the authority — this is only a head start, and an entry comes out if the provider starts honouring
+`{"enabled": False}`. `test_the_chairs_model_spends_no_request_learning_it_needs_reasoning` asserts
+no request is spent being refused and that all three attempts reach the model.
+
+**This is a change to live application code** (`api/app/debate/llm.py`), on `rebuild` and
+**unreleased**. It needs the owner's go-ahead like any release, and it should go out with the room
+exercised once on beta, because it touches the retry path every seat uses.
+
 ## 3. Right and wrong in the same answer
 
 **Asked:** fix scoring for answers that simultaneously assert correct and incorrect financial

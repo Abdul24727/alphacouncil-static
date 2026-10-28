@@ -91,7 +91,17 @@ def parse_json(text: str) -> dict[str, Any]:
 
 # Models that refuse to answer with reasoning switched off (Claude Sonnet 5.5 on OpenRouter: "Reasoning
 # is mandatory for this endpoint"). They get the lowest effort instead, from then on.
-REASONING_REQUIRED: set[str] = set()
+#
+# SEEDED as of 2026-10-28, where it used to start empty and learn only by being refused. That cost
+# one refused request per model per process restart, and once every request this module issues is
+# counted against ATTEMPTS - the fifth review round's correction, directly above - that refused
+# request would also have cost the chair's FIRST call one of its three attempts at usable JSON,
+# which is the shape of failure F-1 was about. Seeding makes the steady state the start state:
+# nothing has to be learned by being refused. The runtime path below still works and is still the
+# authority; this is only a head start. Remove an entry if the provider starts honouring
+# `{"enabled": False}` for that model.
+REASONING_REFUSES_OFF = ("anthropic/claude-sonnet-5.5",)
+REASONING_REQUIRED: set[str] = set(REASONING_REFUSES_OFF)
 REASONING_ROOM = 2_048
 
 

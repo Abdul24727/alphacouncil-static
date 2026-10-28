@@ -483,12 +483,19 @@ class _Stub:
         self.__dict__.update(kw)
 
 
-def _llm_or_skip():
+def _llm_or_skip(clear: bool = True):
+    """`app.debate.llm`, or a skip naming why it does not import here.
+
+    `clear` empties REASONING_REQUIRED, which most of these tests want so the runtime
+    reasoning-refusal path is reachable. The seeding test passes False, because the seeded state is
+    exactly what it is testing.
+    """
     try:
         from app.debate import llm
     except Exception as exc:                 # pragma: no cover - the verification package's path
         pytest.skip(f"app.debate.llm does not import here - {type(exc).__name__}: {exc}")
-    llm.REASONING_REQUIRED.clear()
+    if clear:
+        llm.REASONING_REQUIRED.clear()
     return llm
 
 
@@ -574,3 +581,47 @@ def test_a_reasoning_refusal_cannot_buy_a_fourth_request(monkeypatch):
     assert SONNET in llm.REASONING_REQUIRED, "the reasoning-refusal path was never exercised"
     assert len(calls) == llm.ATTEMPTS, (
         f"{len(calls)} requests left for {llm.ATTEMPTS} attempts: a refusal is buying a request")
+
+
+def test_the_chairs_model_spends_no_request_learning_it_needs_reasoning(monkeypatch):
+    """The regression the attempt-count fix would otherwise have introduced, closed at the cause.
+
+    `debate_reasoning` is False by default, so `_reasoning` asks for reasoning OFF, and the chair's
+    model refuses that with a 400 - once per process, until `REASONING_REQUIRED` learns it. Now that
+    every issued request counts against ATTEMPTS, that one refused request would have left the
+    chair's first call of each process with two attempts at usable JSON instead of three, on the
+    longest answers in the room (F-1). Seeding the set removes the refusal instead of paying for it:
+    no 400, and the full attempt budget available for the answer."""
+    import openai
+
+    llm = _llm_or_skip(clear=False)
+
+    from app.settings import get_settings
+
+    # NOT cleared: the seeded state is what production starts from.
+    assert get_settings().debate_chair_model in llm.REASONING_REQUIRED
+
+    calls: list = []
+
+    async def create(**body):
+        calls.append(body)
+        if body["extra_body"].get("reasoning") == {"enabled": False}:
+            msg = "Reasoning is mandatory for this endpoint and cannot be disabled."
+            raise openai.BadRequestError(
+                msg, response=_Stub(status_code=400, headers={}, request=None),
+                body={"message": msg, "code": 400})
+        return _Stub(choices=[_Stub(message=_Stub(content="not json"), finish_reason="stop")],
+                     usage=_usage())
+
+    monkeypatch.setattr(llm, "make_client",
+                        lambda s: _Stub(chat=_Stub(completions=_Stub(create=create))))
+    monkeypatch.setattr(llm, "host_routing", lambda s: {})
+
+    with pytest.raises(llm.SeatError):
+        asyncio.run(llm.ask(_Stub(debate_reasoning=False), SONNET,
+                            [{"role": "system", "content": "s"}, {"role": "user", "content": "u"}],
+                            max_tokens=100, temperature=0.0, check=lambda o: o))
+
+    assert all(b["extra_body"].get("reasoning") != {"enabled": False} for b in calls), (
+        "a request was spent being refused for reasoning")
+    assert len(calls) == llm.ATTEMPTS, f"only {len(calls)} of {llm.ATTEMPTS} attempts reached the model"
