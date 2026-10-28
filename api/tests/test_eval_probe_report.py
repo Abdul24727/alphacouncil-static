@@ -168,3 +168,38 @@ def test_the_wrong_answer_outcomes_are_disjoint_from_the_correct_one():
         assert correct not in WRONG[fam], fam
     assert "MIXED" in WRONG["derivation"], "an answer that is right and wrong at once is a wrong one"
     assert "DECLINED" not in WRONG["inference"], "appropriate uncertainty is not a wrong answer"
+
+
+def test_b_is_reported_as_the_efficiency_baseline(tmp_path, capsys):
+    """The owner's item 3: A against D is the primary comparison and B is the EFFICIENCY baseline,
+    not a target to beat on accuracy alone. One call against twenty, so what the room has to justify
+    is the cost of each extra correct answer - which is a different number from the accuracy gap and
+    can point the other way.
+
+    Priced as a multiple of B because the absolute figures move with the provider's pricing and the
+    ratio does not."""
+    rows = []
+    cost = {"A": 0.2257, "B": 0.0292, "D": 0.1759}
+    for probe in ("D1", "D2", "D3"):
+        for arm in ("A", "B", "D"):
+            for rep in (1, 2, 3):
+                # the rooms handle two of three, B one of three
+                hit = rep < 3 if arm != "B" else rep == 1
+                r = row(probe, arm, True, "CORRECTED" if hit else "SILENT")
+                r["cost_usd"] = cost[arm]
+                rows.append(r)
+            r = row(probe, arm, False, "CORRECTED")
+            r["cost_usd"] = cost[arm]
+            rows.append(r)
+
+    out = _report_text(tmp_path, rows, capsys)
+    assert "EFFICIENCY, against B as the baseline" in out
+    block = out.split("EFFICIENCY, against B as the baseline")[1].split("CLEAN BASE RATE")[0]
+    for column in ("$ / run", "x B", "handled", "$ / handled", "x B per handled"):
+        assert column in block, column
+    # B is its own baseline, so it is 1.0x on both measures
+    b_line = next(l for l in block.splitlines() if l.strip().startswith("B "))
+    assert b_line.count("1.0x") == 2, b_line
+    # and a room costs a multiple of it per run
+    a_line = next(l for l in block.splitlines() if l.strip().startswith("A "))
+    assert "7.7x" in a_line, a_line

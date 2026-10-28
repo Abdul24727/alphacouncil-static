@@ -306,6 +306,32 @@ def report(path: Path | None = None) -> None:
     print("  and the arms cannot be separated on it - use 'incorrect', whose clean base rate is")
     print("  zero by construction. A high 'refused wrongly' is the cost of caution, not of error.")
 
+    # B IS THE EFFICIENCY BASELINE, not a target to beat on accuracy alone. One model answering
+    # once is what the room has to justify its cost against, so the question is not only whether a
+    # room handles more but what each extra correct answer costs. Printed as a multiple of B
+    # because the absolute figures move with the provider's pricing and the ratio does not.
+    print("\nEFFICIENCY, against B as the baseline (planted runs)")
+    base = [r for r in good if r["arm"] == "B"]
+    base_cost = sum(r["cost_usd"] for r in base) / len(base) if base else 0.0
+    base_hit, base_n = rate("B") if "B" in arms else (0, 0)
+    print(f"  {'arm':4}{'$ / run':>11}{'x B':>8}{'handled':>10}{'$ / handled':>14}{'x B per handled':>17}")
+    for arm in arms:
+        g = [r for r in good if r["arm"] == arm]
+        if not g:
+            continue
+        per_run = sum(r["cost_usd"] for r in g) / len(g)
+        hit, n = rate(arm)
+        per_hit = (per_run * n / hit) if hit else None
+        base_per_hit = (base_cost * base_n / base_hit) if base_hit else None
+        mult = f"{per_run / base_cost:.1f}x" if base_cost else "-"
+        mult_hit = (f"{per_hit / base_per_hit:.1f}x"
+                    if per_hit is not None and base_per_hit else "-")
+        print(f"  {arm:4}{per_run:>11.4f}{mult:>8}{f'{hit}/{n}':>10}"
+              f"{(f'{per_hit:.4f}' if per_hit is not None else 'never'):>14}{mult_hit:>17}")
+    print("\n  A room that handles more but costs more per correct answer has not earned its seats,")
+    print("  and a room that handles the same for more money has lost the argument outright. On a")
+    print("  dry run these costs are all zero and the columns are meaningless.")
+
     print("\nCLEAN BASE RATE PER PROBE (the correct outcome with nothing planted)")
     pids2 = sorted(keep)
     print(f"  {'arm':4}" + "".join(f"{pid:>8}" for pid in pids2))
@@ -396,8 +422,10 @@ def report(path: Path | None = None) -> None:
     print("      detect one at this sample size, and the sample is small by design. An equivalence")
     print("      claim needs a margin fixed in advance and far more runs than this plan buys.")
     print("      What this plan can do is rule out a LARGE loss from dropping two seats.")
-    print("  A vs B and D vs B are superiority tests: PASS needs p < 0.05 AND the room handling")
-    print("  more. If neither room beats the Chairman alone, seat count is not the question.")
+    print("  A vs B and D vs B ask whether either room beats the Chairman at all. B is the")
+    print("  EFFICIENCY BASELINE: one call against twenty, so a room that cannot beat it on")
+    print("  accuracy has not earned its cost, and seat count stops being the question. Read these")
+    print("  beside the efficiency table above, which prices each correct answer.")
     print("  A vs E, if E was run, is the architecture question: if E matches A, the second pass is")
     print("  doing the work rather than the seats.")
     print("\n  The Fisher lines above pool the runs and are reported for continuity with the earlier")

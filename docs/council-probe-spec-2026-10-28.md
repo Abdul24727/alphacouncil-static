@@ -168,6 +168,12 @@ without the rest:
 | refused wrongly | `DECLINED` on a clean run | the pack supports the figure, so this is a refusal to answer something answerable |
 | incorrect | a wrong outcome on a planted run | the failure that reaches the member |
 
+**And B is the efficiency baseline, not a target to beat on accuracy alone.** The report prices each
+arm against it: cost per run as a multiple of B, and cost per *correct answer* as a multiple of B.
+Those two can point opposite ways, and the second is the one that decides whether seats are worth
+paying for. A room that handles more while costing more per correct answer has not earned its seats;
+a room that handles the same for more money has lost the argument outright.
+
 This matters because on the evidence available the primary metric **is** at a ceiling for D1 and all
 three original inference probes, in every arm: their clean controls already score the correct
 outcome. The pooled line alone would have shown the arms close together and invited a reader to call
