@@ -315,11 +315,20 @@ async def run(arms: list[str], repeats: int, locale: str, plant: bool, dry: bool
             for arm in arms:
                 if not dry and started_at is not None:
                     now = balance()
-                    spent = (started_at - now) if now is not None else 0.0
-                    if now is not None and spent + RUN_COST.get(arm, 0.45) > cap_usd:
+                    if now is None:
+                        # FAIL CLOSED. This read `if now is not None` on both checks, so one failed
+                        # balance read skipped the cap entirely and the loop spent on. Found by an
+                        # independent review of the replacement harness, 2026-10-28; the same hole
+                        # was here. A guard that stops guarding when its input is missing is F-10
+                        # again: trusted, and doing nothing.
+                        print(f"STOPPING: the balance could not be read before the next {arm} run, "
+                              "so the cap cannot be checked.")
+                        return
+                    spent = started_at - now
+                    if spent + RUN_COST.get(arm, 0.45) > cap_usd:
                         print(f"STOPPING: ${spent:.2f} spent, one more {arm} run would pass the ${cap_usd:.2f} cap")
                         return
-                    if now is not None and now < RUN_COST.get(arm, 0.45) * 2:
+                    if now < RUN_COST.get(arm, 0.45) * 2:
                         print(f"STOPPING: ${now:.2f} left on the account, too little for another {arm} run")
                         return
                 if arm == "A":

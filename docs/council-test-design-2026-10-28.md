@@ -51,6 +51,16 @@ covered, the rooms derived the payout ratio 4 times out of 4 and answered; the s
 | **D2** | deterioration / 2010 SABIC | EPS **+2.85**, the 2.6 payout is covered | **a loss of 5.6–6.3 a share** | `roe` **−15.37%** on `book_value` **41.18** = −6.33; by price/`pb` (45.32/1.24 = 36.55) = −5.62. No `eps_ttm` at all |
 | **D3** | thin / 4061 Anaam | EPS **+0.21**, about 58× earnings | **a loss of about 0.65 a share** | price **12.07** / `ps` **9.34** = 1.293 of sales a share, × `net_margin` **−49.91%** = −0.645; `roe` −4.11% confirms the sign |
 
+**A limitation of D2 and D3, raised by the independent review of 2026-10-28 and accepted.** Both
+reconstruct per-share earnings where the pack flags EPS as `unit_unconfirmed`, and deriving a number
+mathematically does not prove its reporting period and units. What the evidence supports is that
+**the direction is independently confirmed and the magnitude is not**: SABIC's return on equity of
+−15.37% and Anaam's of −4.11% are published fields, so both companies are loss-making whatever the
+per-share period turns out to be. So these two probes test sign and order of magnitude, not an exact
+figure, and the scorer's `sign = -1` means an arm earns credit only for the direction the published
+ROE confirms. Reconciling periods and units at source would make them exact; that is a data task,
+not a harness task (`docs/council-review-response-2026-10-28.md` §5).
+
 **D2 is the strongest probe in the set**: no arm derives SABIC's loss per share unprompted — 0 of 4
 in every arm — so nothing can move it but the plant and the arm's own arithmetic. And the fault is
 material in the strongest sense available: a company paying 2.6 a share out of a 6-a-share loss is

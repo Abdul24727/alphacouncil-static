@@ -297,19 +297,34 @@ async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool
                 "result bought at full price."
             )
 
+    # What this process has actually been charged, summed from the per-call costs the provider
+    # returns with every response. It does not lag, and it does not depend on the account endpoint
+    # being reachable - which the balance does. Both caps apply; either one stops the run.
+    spent_local = 0.0
+
     for repeat in range(1, repeats + 1):
         for probe in chosen:
             for arm in arms:
                 if not dry and started_at is not None:
+                    if spent_local + RUN_COST.get(arm, 0.25) > cap_usd:
+                        print(f"STOPPING: ${spent_local:.2f} charged so far, one more {arm} run would pass the ${cap_usd:.2f} cap")
+                        return
                     now = balance()
-                    if now is not None:
-                        spent = started_at - now
-                        if spent + RUN_COST.get(arm, 0.25) > cap_usd:
-                            print(f"STOPPING: ${spent:.2f} spent, one more {arm} run would pass the ${cap_usd:.2f} cap")
-                            return
-                        if now < RUN_COST.get(arm, 0.25) * 2:
-                            print(f"STOPPING: ${now:.2f} left on the account, too little for another {arm} run")
-                            return
+                    if now is None:
+                        # FAIL CLOSED. The old code checked `if now is not None`, so a single failed
+                        # balance read silently skipped the cap and the loop spent on. Found by an
+                        # independent review, 2026-10-28. A guard that stops guarding when its
+                        # input is missing is the F-10 fault again: trusted, and doing nothing.
+                        print(f"STOPPING: the balance could not be read before the next {arm} run, "
+                              f"so the cap cannot be checked. ${spent_local:.2f} charged so far.")
+                        return
+                    spent = started_at - now
+                    if spent + RUN_COST.get(arm, 0.25) > cap_usd:
+                        print(f"STOPPING: ${spent:.2f} spent, one more {arm} run would pass the ${cap_usd:.2f} cap")
+                        return
+                    if now < RUN_COST.get(arm, 0.25) * 2:
+                        print(f"STOPPING: ${now:.2f} left on the account, too little for another {arm} run")
+                        return
                 planted = not clean
                 if arm == "A":
                     r = await run_room(probe, "A", repeat, locale, planted, dry)
@@ -319,6 +334,7 @@ async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool
                     r = await run_single(probe, "E", repeat, locale, single_model, planted, dry, second_pass=True)
                 else:
                     r = await run_single(probe, "B", repeat, locale, single_model, planted, dry, second_pass=False)
+                spent_local += r.cost_usd
                 with RESULTS.open("a", encoding="utf-8") as fh:
                     fh.write(json.dumps(asdict(r), ensure_ascii=False) + "\n")
                 await asyncio.sleep(pause)

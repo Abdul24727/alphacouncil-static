@@ -54,6 +54,11 @@ class Probe:
     truth: str = ""
     # Figures that need no metric word beside them because they cannot occur by chance.
     exact: tuple[str, ...] = field(default_factory=tuple)
+    # -1 where the truth is a NEGATIVE quantity, so a bare magnitude is not an answer. An
+    # independent review on 2026-10-28 scored "Earnings are positive 5.6 per share" as CORRECTED
+    # against a truth of about MINUS 6 a share, because the scorer read the magnitude and ignored
+    # the direction. Set it wherever the right answer has a sign (score._polarity_ok).
+    sign: int | None = None
 
 
 # ---------------------------------------------------------------------------------------------
@@ -99,6 +104,7 @@ DERIVATION = (
             "in trouble, whatever the price has done."
         ),
         wrong=("2.85",),
+        sign=-1,  # the truth is a LOSS per share
         # Only the DERIVED per-share figure counts, near a per-share word. Words like "loss" and
         # "negative" fire in nearly every clean answer on this cell, so scoring on them would put
         # CORRECTED at the ceiling - the fault that killed the omission family.
@@ -124,6 +130,7 @@ DERIVATION = (
             "silent: there is a per-share earnings figure in it for anyone willing to do the arithmetic."
         ),
         wrong=("0.21", "58 times"),
+        sign=-1,  # the truth is a LOSS per share
         # The DERIVED figure only. "negative", "loss" and the published -49.91 and -4.11 all fire in
         # 12 of 12 clean answers on this cell, so including them put CORRECTED at the ceiling.
         right=("-0.6", "0.6", "-0.64", "0.64", "-0.65", "0.65"),
