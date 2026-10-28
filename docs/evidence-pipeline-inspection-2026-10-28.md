@@ -163,6 +163,10 @@ One pack, fetched 2026-10-27, carries nine different as-of dates. Taking Aramco'
 | disclosures | 2026-03-09 | 232 d |
 | statements, where they exist | FY2025 only | one year |
 
+For contrast, and not in the pack: `ticker_insights` - analyst targets, ownership, seasonality -
+was written **2026-10-28**, this morning. The freshest data in the system is the data the room
+cannot reach (section 5).
+
 Three consequences, in order of how badly they mislead.
 
 **(a) The valuation ratios are priced off a price the pack does not show, and by a different
@@ -282,9 +286,31 @@ schema that exists and was never filled.
 | source | scale | what it holds | why it never arrives |
 |---|---|---|---|
 | `fundamentals_lineitems` via `GET /v1/tickers/{ref}/statements` | 123,413 rows, 649 tickers (2026-08-02) | balance sheet and, outside Tadawul, income statement | the endpoint exists and is served to the screen; **no Copilot tool exposes it**, so the pack cannot reach it |
-| `ticker_insights` via `GET /v1/tickers/{ref}/insights` | 700 rows, 1 per ticker | performance, seasonality, ownership, analyst coverage | same: served to the screen, no tool |
+| `ticker_insights` via `GET /v1/tickers/{ref}/insights` | 711 rows, **`updated_at` 2026-10-28** | performance, 6 years of monthly seasonality, foreign ownership, analyst coverage and price targets | same: served to the screen, no tool |
 | `fundamentals_gauges.inputs_json` | one per gauge per ticker | the inputs and labels behind every computed gauge | the column is not in `get_fundamentals`'s SELECT |
 | `sector_averages` | 30 rows | mean, median, n and stdev per bucket per gauge | not read by the API at all |
+
+**And the freshest dataset in the system is the one the room never sees.** `ticker_insights` was
+written **today**, `updated_at 2026-10-28T01:49:22Z`, by the same nightly run that logged the
+gauge warnings in section 1. For the three cases it holds, live:
+
+| | analysts | consensus | target low / avg / high | `last_price` | implied |
+|---|---:|---|---:|---:|---:|
+| Aramco | 23 rated, 12 buy / 11 hold | Buy | 25.50 / **30.24** / 41.82 | 25.78 | +17 % |
+| Al Rajhi | 22 rated, 10 buy / 12 hold | Hold | 63.87 / **74.47** / 83.34 | 62.10 | +20 % |
+| SABIC | 18 covering, 15 rated, 1 **sell** | Hold | 50.00 / **63.90** / 84.00 | 45.32 | +41 % |
+
+With dated recent actions naming the firm (AlJazira Capital, 2026-10-21, target 29.60 on Aramco),
+18 points of foreign-ownership history, the foreign limit and current percentage, major holders,
+and six years of month-by-month seasonality.
+
+So the room reasons from ratios struck on 2026-08-11 while the system holds analyst targets dated
+2026-10-21 and refreshed this morning. **There is a design question here that is the owner's, not
+mine:** feeding sell-side consensus to an advisory room risks the room echoing the street instead
+of reasoning, which is the opposite of what six distinct philosophies are for. The dispersion
+(SABIC 50.00 to 84.00 on a Hold with one Sell) is arguably the useful part and the single
+`target_avg` the dangerous one. Worth deciding deliberately rather than by omission, which is how
+it is decided today.
 
 ### Schema only, no rows anywhere (2026-08-02)
 
@@ -579,6 +605,17 @@ sections 6, 7 and 8 answerable rather than merely documented - but **only after 
 it would hand every Saudi room a balance sheet and nothing else. Worth sizing when A lands: a
 42-row balance sheet plus an 18-row income statement is roughly 2-4 KB of JSON against the
 12,000-character per-dataset budget, so it fits.
+
+### F2. The insights tool, which does not wait for A
+
+`ticker_insights` is fresh (written 2026-10-28) and needs nothing restored, so a `get_insights`
+tool is the one widening that could land immediately. Two cautions. The **analyst block carries
+the product question** raised in section 5 - consensus and a single `target_avg` invite a room to
+echo the street - so if it goes in, prefer the dispersion and the rating split over the average,
+or hold the analyst block back and expose performance, seasonality and ownership only. And this
+would be the **first current dataset in a pack of stale ones**, which makes section 9D's dating
+work a prerequisite rather than a nicety: a room weighing a 2026-10-21 price target against an
+August P/E, with neither dated, is worse off than one that sees neither.
 
 ### G. Four bank measures, no new table
 
