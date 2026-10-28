@@ -966,6 +966,17 @@ Goal 4's "Done when", as it stands tonight: **(2) MET** — six real portraits i
 Claude can run passes, `check-all.mjs` waits on the owner, and 14 of 14 waits on Step 18; **(5) NOT MET** —
 `"checkout_open":false`, deliberately, until Step 18; **(1) NOT STARTED** — Step 7, the lawyer, though its questions are drafted and ready to take (`docs/legal-questions-2026-10-27.md`).
 
-`origin/rebuild` is at **`db8539a`** — the owner gave the go-ahead on 2026-10-27 and all fourteen of the day's
-commits are pushed, so today's work is safe off this computer (Goal 1). `scripts/set-backup-bucket.sh` is still
-untracked on purpose (the bucket helper from the backups session; the bucket is not used).
+`origin/rebuild` is at **`db8539a`**, and **ten commits are now unpushed** — everything from 2026-10-28:
+the probe harness, four rounds of independent-review corrections and this file. Pushing is an **Always stop**
+item (§4), so it waits on the owner's go-ahead; until then today's work is on this computer only, which is a
+Goal 1 exposure and the reason to ask early rather than last. `scripts/set-backup-bucket.sh` **is tracked
+now**, committed unintentionally in `718eca0` by a `git add -A scripts`: it holds no secret values, committing
+on `rebuild` is pre-approved, it is unpushed so fully reversible, and `MANIFEST-COMMITS.txt` in every
+verification archive marks it rather than burying it. It can be untracked on request.
+
+**The one decision waiting on the owner** (see §6): the six-probe benchmark's honest maximum is **$93.71**
+against a **$5.94** forecast, so a cap that can be honoured as a hard cap must be about **$94**. The balance is
+**$4.74**, so a top-up is needed either way. The recommendation is a **dedicated OpenRouter key funded to
+about $95**, because every control in the harness runs inside the process doing the spending and a key with
+its own credit limit is the only cap that exists at the provider. Shorter plans and what each gives up are
+priced in `docs/council-review-response-2026-10-28-round4.md` §9.
