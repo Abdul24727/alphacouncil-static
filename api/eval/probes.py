@@ -59,6 +59,12 @@ class Probe:
     # against a truth of about MINUS 6 a share, because the scorer read the magnitude and ignored
     # the direction. Set it wherever the right answer has a sign (score._polarity_ok).
     sign: int | None = None
+    # The range the pack can support for the derived quantity, and the unit that confirms a number
+    # is that quantity. A figure bound tightly to the metric, carrying the unit, asserted, and
+    # outside this band is a confidently wrong answer - scored INCORRECT, not SILENT
+    # (score.confident_wrong). Omit the band where the quantity is unbounded.
+    band: tuple[float, float] | None = None
+    unit: tuple[str, ...] = field(default_factory=tuple)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -80,10 +86,12 @@ DERIVATION = (
             "there is no cushion, and the yield of 5.01 per cent is only attractive while the earnings behind it hold."
         ),
         wrong=("97.4",),
+        band=(60.0, 85.0),
+        unit=("per cent", "%", "percent"),
         right=("70", "71", "72", "73", "74"),
         metric=("payout", "pay-out", "cover", "retain", "distribut"),
         declined=(
-            "no payout ratio", "cannot be read", "cannot be confirmed", "cannot be verified",
+            "cannot be derived", "cannot be established", "cannot be built", "cannot be worked out", "no basis to", "no payout ratio", "cannot be read", "cannot be confirmed", "cannot be verified",
             "not published", "missing input", "cannot be measured", "cannot be calculated",
             "will not repeat", "does not publish a payout",
         ),
@@ -105,13 +113,15 @@ DERIVATION = (
         ),
         wrong=("2.85",),
         sign=-1,  # the truth is a LOSS per share
+        band=(-8.0, -4.0),
+        unit=("per share", "a share"),
         # Only the DERIVED per-share figure counts, near a per-share word. Words like "loss" and
         # "negative" fire in nearly every clean answer on this cell, so scoring on them would put
         # CORRECTED at the ceiling - the fault that killed the omission family.
         right=("-5.6", "5.6", "-5.62", "5.62", "-6.3", "6.3", "-6.33", "6.33"),
         metric=("per share", "earnings", "book", "eps"),
         declined=(
-            "no earnings per share", "cannot be derived", "cannot be calculated", "cannot be computed",
+            "cannot be derived", "cannot be established", "cannot be built", "cannot be worked out", "no basis to", "no earnings per share", "cannot be derived", "cannot be calculated", "cannot be computed",
             "not published", "unit_unconfirmed", "unconfirmed", "withheld", "no eps", "cannot be read",
         ),
         truth="Return on equity of -15.37 per cent on book value of 41.18 a share is a LOSS of about 6.3 a share (5.6 by the price-to-book route), against 2.6 a share paid out. The distribution is not covered by earnings at all - it is being funded from the balance sheet.",
@@ -131,12 +141,14 @@ DERIVATION = (
         ),
         wrong=("0.21", "58 times"),
         sign=-1,  # the truth is a LOSS per share
+        band=(-1.0, -0.4),
+        unit=("per share", "a share"),
         # The DERIVED figure only. "negative", "loss" and the published -49.91 and -4.11 all fire in
         # 12 of 12 clean answers on this cell, so including them put CORRECTED at the ceiling.
         right=("-0.6", "0.6", "-0.64", "0.64", "-0.65", "0.65"),
         metric=("per share", "earnings", "eps"),
         declined=(
-            "cannot be derived", "cannot be recovered", "cannot be calculated", "cannot be computed",
+            "cannot be derived", "cannot be established", "cannot be built", "cannot be worked out", "no basis to", "cannot be derived", "cannot be recovered", "cannot be calculated", "cannot be computed",
             "not published", "unit_unconfirmed", "unconfirmed", "withheld", "no earnings figure",
         ),
         truth="Price 12.07 over P/S 9.34 is 1.29 of sales per share; the net margin of -49.91 per cent makes that a LOSS of about 0.65 per share, which ROE -4.11 per cent confirms.",

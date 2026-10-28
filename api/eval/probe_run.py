@@ -35,6 +35,7 @@ from app.debate.standin import make_asker
 from app.settings import get_settings
 
 from . import score as S
+from .budget import Budget, BudgetExhausted
 from .probes import BY_ID, FAMILIES, PLANT_SEAT, PROBES
 from .questions import CELLS
 from .run import FOUR_SEATS, ROOT, balance, council_asker, describe, load_pack
@@ -104,6 +105,30 @@ def finish(r: ProbeResult, pack: Any, probe: Any) -> ProbeResult:
     return r
 
 
+def metered_asker(settings: Any, budget: Budget):
+    """llm.ask with the cap applied to every call. Replaces run.council_asker here, which counted
+    cost but never refused a call: it reserves the worst case before the call and settles the real
+    figure after, on the failure path too, because a failed attempt is still billed (F-7)."""
+    calls = {"n": 0, "cost": 0.0}
+
+    async def ask(*, seat: Any, messages: Any, model: str, max_tokens: int, temperature: float, check: Any, **_: Any):
+        budget.take(f"a call for seat {getattr(seat, 'id', 'chair')!r}")
+        usage = None
+        try:
+            checked, usage = await llm.ask(settings, model, messages, max_tokens=max_tokens, temperature=temperature, check=check)
+            return checked, usage
+        except Exception as exc:
+            usage = getattr(exc, "usage", None)
+            raise
+        finally:
+            cost = getattr(usage, "cost_usd", None)
+            budget.settle(cost)
+            calls["n"] += 1
+            calls["cost"] += float(cost or 0.0)
+
+    return ask, calls
+
+
 def with_plant(base: Any, probe: Any, planted: bool):
     """One seat's round one is replaced by the probe's scripted answer. Wraps the stand-in too, so
     --dry exercises the whole probe path without a model."""
@@ -122,7 +147,7 @@ def with_plant(base: Any, probe: Any, planted: bool):
 # --- the room: arms A and D --------------------------------------------------------------------
 
 
-async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool, dry: bool, roster_spec: str | None = None) -> ProbeResult:
+async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool, dry: bool, roster_spec: str | None = None, budget: Budget | None = None) -> ProbeResult:
     settings = get_settings()
     cell = CELL[probe.cell]
     pack = load_pack(cell.ticker, locale)
@@ -139,7 +164,7 @@ async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool
     if dry:
         base, calls = make_asker(pack, advisors, locale, cell.question), {"n": 0, "cost": 0.0}
     else:
-        base, calls = council_asker(settings, {})
+        base, calls = metered_asker(settings, budget) if budget else council_asker(settings, {})
     ask = with_plant(base, probe, planted)
 
     turns: list[dict[str, Any]] = []
@@ -181,7 +206,7 @@ def _note(probe: Any) -> str:
     return "AN ANALYST'S NOTE ON THIS COMPANY:\n" + probe.headline + "\n\n" + probe.text
 
 
-async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str, planted: bool, dry: bool, second_pass: bool) -> ProbeResult:
+async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str, planted: bool, dry: bool, second_pass: bool, budget: Budget | None = None) -> ProbeResult:
     settings = get_settings()
     cell = CELL[probe.cell]
     pack = load_pack(cell.ticker, locale)
@@ -209,10 +234,21 @@ async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str,
                 "disagreements": [],
             }
             return check(canned)
-        raw, usage = await llm.ask(settings, model, messages, max_tokens=MAX_TOKENS["verdict"], temperature=TEMPERATURE["chair"], check=check)
-        spend["n"] += 1
-        spend["cost"] += usage.cost_usd or 0.0
-        return raw
+        if budget:
+            budget.take(f"a {arm} pass")
+        usage = None
+        try:
+            raw, usage = await llm.ask(settings, model, messages, max_tokens=MAX_TOKENS["verdict"], temperature=TEMPERATURE["chair"], check=check)
+            return raw
+        except Exception as exc:
+            usage = getattr(exc, "usage", None)
+            raise
+        finally:
+            cost = getattr(usage, "cost_usd", None)
+            if budget:
+                budget.settle(cost)
+            spend["n"] += 1
+            spend["cost"] += float(cost or 0.0)
 
     started = time.monotonic()
     try:
@@ -301,6 +337,10 @@ async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool
     # returns with every response. It does not lag, and it does not depend on the account endpoint
     # being reachable - which the balance does. Both caps apply; either one stops the run.
     spent_local = 0.0
+    # One cap for the whole run, applied per CALL rather than per run, so retries and calls
+    # in flight are covered. It needs no provider endpoint: it is arithmetic over what this
+    # process has been billed (budget.py).
+    budget = None if dry else Budget(cap_usd)
 
     for repeat in range(1, repeats + 1):
         for probe in chosen:
@@ -327,14 +367,20 @@ async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool
                         return
                 planted = not clean
                 if arm == "A":
-                    r = await run_room(probe, "A", repeat, locale, planted, dry)
+                    r = await run_room(probe, "A", repeat, locale, planted, dry, budget=budget)
                 elif arm == "D":
-                    r = await run_room(probe, "D", repeat, locale, planted, dry, roster_spec=four_seats)
+                    r = await run_room(probe, "D", repeat, locale, planted, dry, roster_spec=four_seats, budget=budget)
                 elif arm == "E":
-                    r = await run_single(probe, "E", repeat, locale, single_model, planted, dry, second_pass=True)
+                    r = await run_single(probe, "E", repeat, locale, single_model, planted, dry, second_pass=True, budget=budget)
                 else:
-                    r = await run_single(probe, "B", repeat, locale, single_model, planted, dry, second_pass=False)
+                    r = await run_single(probe, "B", repeat, locale, single_model, planted, dry, second_pass=False, budget=budget)
                 spent_local += r.cost_usd
+                if budget and budget.refused:
+                    print(f"STOPPING: the per-call cap refused a call ({budget}). "
+                          f"Nothing further is attempted.")
+                    with RESULTS.open("a", encoding="utf-8") as fh:
+                        fh.write(json.dumps(asdict(r), ensure_ascii=False) + "\n")
+                    return
                 with RESULTS.open("a", encoding="utf-8") as fh:
                     fh.write(json.dumps(asdict(r), ensure_ascii=False) + "\n")
                 await asyncio.sleep(pause)
