@@ -5,8 +5,15 @@ demonstrate correct reporting modes, aggregation rules, preserved history and tr
 metrics, then propose the smallest API/pack change that exposes the repaired evidence. Models,
 personas, roster and rounds are untouched — nothing in this document goes near them.
 
-**Prepared, not applied.** The patch is `docs/pipeline-fix-statements-2026-10-28.patch`: 9 hunks,
-223 lines added, 27 removed. Nothing on the server was written. Both parsers were run here, over
+> **Superseded in part, 2026-10-29.** The repair was directionally accepted with six
+> requirements before application, and answering them changed the parser again. Read
+> `docs/ingestion-repair-preapplication-2026-10-29.md` alongside this: it is current wherever the
+> two differ, and it corrects two things here — Al Rajhi's bank metrics (§7, computed on a
+> mixed period here) and the claim that they are "unblocked" (true of the evidence, **not** of the
+> gauge stage). The three cases and the aggregation rules below still stand.
+
+**Prepared, not applied.** The patch is `docs/pipeline-fix-statements-2026-10-28.patch`: as of
+2026-10-29, 9 hunks, 320 lines added, 27 removed. Nothing on the server was written. Both parsers were run here, over
 pages copied read-only from the server, into local scratch databases that are thrown away. Applying
 it to the live pipeline is the owner's decision, by the project's own pattern — Step 4 prepares,
 Step 5 decides, Step 6 applies.
@@ -207,18 +214,24 @@ inspection recorded as blocked are blocked no longer.
 | measure | before | after | from |
 |---|---|---:|---|
 | **cost / income** | **blocked** | **23.4 %** | Operating Expenses 9,747.73 / Operating Income 41,703.95 |
-| **net financing margin** | **blocked** | **3.47 %** | net financing income 32,155.26 / earning assets 927,064.45 |
-| **cost of risk** | **blocked** | **0.36 %** | Debt Provisions 2,724.91 / Net Financing Investments 752,759.85 |
-| NPL ratio | derivable, never exposed | 0.75 % | balance sheet, unchanged by the repair |
-| NPL coverage | derivable, never exposed | 152.5 % | loss provision 8,682.89 / NPL 5,694.22 |
-| equity / assets | derivable, never exposed | 11.01 % | 114,854.17 / 1,043,268.30 |
-| loans / deposits | derivable, never exposed | 112.8 % | 752,759.85 / 667,287.50 |
-| return on equity | published only, 23.49 % | **23.07 %**, and *checkable* | Net Income TTM@2026-06 / equity FY@2025-12 |
+| **net financing margin** | **blocked** | **3.43 %** | net financing income 32,155.26 / earning assets 937,094.72 |
+| **cost of risk** | **blocked** | **0.36 %** | Debt Provisions 2,724.91 / Net Financing Investments 762,096.10 |
+| NPL ratio | derivable, never exposed | 0.74 % | NPL 5,729.46 / (performing 765,145.59 + NPL) |
+| NPL coverage | derivable, never exposed | 153.2 % | loss provision 8,778.95 / NPL 5,729.46 |
+| equity / assets | derivable, never exposed | 11.44 % | 120,673.26 / 1,054,772.50 |
+| loans / deposits | derivable, never exposed | 110.7 % | 762,096.10 / 688,359.50 |
+| return on equity | published only, 23.49 % | **21.96 %**, and *checkable* | Net Income and equity both at 2026-06 |
 
-Two things the repair makes visible rather than solves. **ROE here is a mixed-period ratio** —
-trailing-twelve-month earnings over a year-end equity — and that is now stated in the data instead
-of being invisible; the vendor's 23.49 % cannot be checked at all. And **for a bank the revenue
-line is `Operating Income`**, meaning total operating income, not `Sales`. The gauge's revenue
+> **Corrected 2026-10-29.** The figures above were first published against a balance sheet at
+> 2025-12 while the income statement ran to 2026-06, because my measurement script was not pinning
+> the fiscal year — after the repair a balance-sheet label exists under two years. Pinned, every
+> figure is struck at one date. The ROE caveat below is therefore **resolved**, not outstanding.
+> And "blocked no longer" is true of the EVIDENCE and not of the gauge stage, which still cannot
+> see a bank's revenue line: see §4 of the pre-application record.
+
+One thing the repair makes visible rather than solves. (The mixed-period ROE noted here was
+resolved on 2026-10-29 by aligning the balance-sheet snapshot to the flow window; the vendor's
+23.49 % still cannot be checked at all.) **For a bank the revenue line is `Operating Income`**, meaning total operating income, not `Sales`. The gauge's revenue
 search list contains `Sales`, `Total Revenue`, `Net Sales` and some Arabic equivalents, and none of
 them matches — so `net_margin` and `ps` will *still* fail for banks after this patch. That needs a
 sector-keyed revenue label (for `sector == "bank"`, revenue is `Operating Income`), and it cannot

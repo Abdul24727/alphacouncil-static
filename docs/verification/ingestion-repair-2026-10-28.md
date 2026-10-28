@@ -340,3 +340,334 @@ flow statements spanning MORE THAN ONE period_end (must be none for a quarterly 
 
 rows without source_json: 0
 ```
+
+---
+
+# Pre-application round, 2026-10-29
+
+Raw output behind `docs/ingestion-repair-preapplication-2026-10-29.md`. Same method: both
+parsers over the same pages, into two local scratch databases, nothing on the server written.
+
+## Standalone quarters and EPS share denominators
+
+```
+==========================================================================================
+1. STANDALONE QUARTERS
+==========================================================================================
+`quarter_windows` returns only runs of four CONSECUTIVE quarters. Fewer than four, or a
+gap, yields no window - and before this round that meant the row produced nothing at all,
+neither an annual figure nor a quarterly one. A company with three quarters of history
+lost its income statement in the same way the original bug lost everyone's.
+
+quarters available          windows  classified as
+one quarter                       0  -
+two quarters                      0  -
+three quarters                    0  -
+four, one fiscal year             1  FY@2025-12
+four, straddling                  1  TTM@2026-06
+five consecutive                  2  TTM@2026-03; TTM@2026-06
+four with a gap                   0  -
+
+And the quarters themselves are kept regardless. In the repaired run, counting income-
+statement rows that exist as single quarters against those that reached a window:
+  2222_TADAWUL      90 single-quarter rows,  36 TTM rows,  18 in the main table
+  1120_TADAWUL     113 single-quarter rows,  39 TTM rows,  24 in the main table
+
+flow lines that reached NO window and would have been lost entirely before this round:
+  2010_TADAWUL    Income Statement      28 quarter rows kept
+  4061_TADAWUL    Income Statement       6 quarter rows kept
+  4190_TADAWUL    Income Statement       3 quarter rows kept
+  1120_TADAWUL    Income Statement       2 quarter rows kept
+
+==========================================================================================
+2. EPS SHARE DENOMINATORS
+==========================================================================================
+Three aggregations inside a flow section, and the order of the tests matters: 'Average
+number of shares (Million)' contains 'number of shares', so an average row must be
+recognised before the position markers or it would take the end quarter.
+
+  sum   Sales
+  sum   Net Income
+  sum   Earning Per Share (Riyal)
+  sum   Earnings Per Share before unusual items (Riyal)
+  sum   ربح السهم (درهم)
+  end   Shares Outstanding (Million)
+  end   Par Value (Riyal)
+  mean  Average number of shares (Million)
+  mean  متوسط عدد الأسهم (مليون)
+  mean  Weighted average number of shares
+
+Why the distinction is not cosmetic. A window in which the share count moves - a bonus
+issue between Q2 and Q3, say - with quarterly net income of 100 each quarter:
+
+  quarterly share counts        [1000.0, 1000.0, 1200.0, 1200.0]
+  position rule (end quarter)   1,200.0  -> EPS 0.3333
+  average rule (mean of four)   1,100.0  -> EPS 0.3636
+  the two differ by             8.3 %
+  Taking the end quarter for an average-shares row would understate EPS by that much,
+  and the understatement is invisible: both are plausible numbers.
+
+On today's data the `mean` rule does not fire on the quarterly path, and that is worth
+stating rather than hiding: Tadawul grids carry 'Shares Outstanding (Million)', a
+position, while the average-shares rows appear on the GCC Arabic grids, which are
+annual_direct and need no window arithmetic. The rule is defensive, exercised above.
+
+The reconciliation that DOES run on today's data - summed quarterly EPS against net
+income over the window's own share count:
+
+ticker           EPS summed  NI / shares      shares                    rule
+2222_TADAWUL         1.6900       1.6875     242,000    end_quarter_position
+1120_TADAWUL         4.4200       4.4164       6,000    end_quarter_position
+2010_TADAWUL        -7.1100      -7.1074       3,000    end_quarter_position
+4061_TADAWUL        -0.3200      -0.3254          32    end_quarter_position
+4190_TADAWUL         0.9400       0.9365       1,200    end_quarter_position
+
+They agree because no share count moved in these windows - which is the only reason
+summing EPS and dividing net income land in the same place. The repair records which
+rule produced the denominator, so a window where they diverge can be told apart from
+one where they do not.
+```
+
+## The existing consumers, by running them
+
+The pipeline's own `compute_fundamental_gauges.py`, executed against both databases. It needs
+`stocks.market_cap_m`, seeded per ticker from the committed packs; dividend CSVs are absent, so
+`payout` reads `missing_inputs` in both columns and is not a result.
+
+```
+the pipeline's own gauge stage, run over both databases
+
+=== 2222_TADAWUL
+   gauge                                     before                       after
+   current_ratio                           1.999/ok                    2.003/ok   <-- changed
+   debt_equity                             0.201/ok                    0.189/ok   <-- changed
+   ev_ebitda                            -/na_sector                 -/na_sector
+   fcf_yield                            -/na_sector                 -/na_sector
+   gross_margin                         -/na_sector                   51.347/ok   <-- changed
+   interest_coverage               -/missing_inputs                   81.697/ok   <-- changed
+   net_margin                      -/missing_inputs                   22.395/ok   <-- changed
+   payout                          -/missing_inputs            -/missing_inputs
+   ps                              -/missing_inputs                    3.517/ok   <-- changed
+   roic                            -/missing_inputs                   23.902/ok   <-- changed
+
+=== 1120_TADAWUL
+   gauge                                     before                       after
+   current_ratio                        -/na_sector                 -/na_sector
+   debt_equity                             1.717/ok                    1.509/ok   <-- changed
+   ev_ebitda                            -/na_sector                 -/na_sector
+   fcf_yield                            -/na_sector                 -/na_sector
+   gross_margin                         -/na_sector                 -/na_sector
+   interest_coverage               -/missing_inputs            -/missing_inputs
+   net_margin                      -/missing_inputs            -/missing_inputs
+   payout                          -/missing_inputs            -/missing_inputs
+   ps                              -/missing_inputs            -/missing_inputs
+   roic                                 -/na_sector                 -/na_sector
+
+=== 2010_TADAWUL
+   gauge                                     before                       after
+   current_ratio                           1.801/ok                    2.430/ok   <-- changed
+   debt_equity                             0.261/ok                    0.368/ok   <-- changed
+   ev_ebitda                            -/na_sector                    9.780/ok   <-- changed
+   fcf_yield                            -/na_sector                 -/na_sector
+   gross_margin                         -/na_sector                   17.182/ok   <-- changed
+   interest_coverage               -/missing_inputs                    0.137/ok   <-- changed
+   net_margin                      -/missing_inputs                  -18.829/ok   <-- changed
+   payout                          -/missing_inputs            -/missing_inputs
+   ps                              -/missing_inputs                    1.339/ok   <-- changed
+   roic                            -/missing_inputs                   -0.621/ok   <-- changed
+
+=== 4061_TADAWUL
+   gauge                                     before                       after
+   current_ratio                           0.179/ok                    0.190/ok   <-- changed
+   debt_equity                             0.604/ok                    0.548/ok   <-- changed
+   ev_ebitda                            -/na_sector                 -/na_sector
+   fcf_yield                            -/na_sector                 -/na_sector
+   gross_margin                         -/na_sector                   61.697/ok   <-- changed
+   interest_coverage               -/missing_inputs                   -0.252/ok   <-- changed
+   net_margin                      -/missing_inputs                  -29.277/ok   <-- changed
+   payout                          -/missing_inputs            -/missing_inputs
+   ps                              -/missing_inputs                   10.572/ok   <-- changed
+   roic                            -/missing_inputs                   -0.817/ok   <-- changed
+
+=== 4190_TADAWUL
+   gauge                                     before                       after
+   current_ratio                           1.373/ok                    1.345/ok   <-- changed
+   debt_equity                             0.000/ok                    0.000/ok
+   ev_ebitda                            -/na_sector                 -/na_sector
+   fcf_yield                            -/na_sector                 -/na_sector
+   gross_margin                         -/na_sector                   12.748/ok   <-- changed
+   interest_coverage               -/missing_inputs                   23.550/ok   <-- changed
+   net_margin                      -/missing_inputs                    9.418/ok   <-- changed
+   payout                          -/missing_inputs            -/missing_inputs
+   ps                              -/missing_inputs                    1.721/ok   <-- changed
+   roic                            -/missing_inputs                   67.074/ok   <-- changed
+
+SECTOR DETECTION (is_bank is `gross_income is None and tca is None`, and tca is a
+balance-sheet row - so it misfires on any year holding an income statement alone)
+  2222_TADAWUL    before: year 2025, gross_income=None, tca=present -> non-bank
+                  after: year 2026, gross_income=present, tca=present -> non-bank
+  1120_TADAWUL    before: year 2025, gross_income=None, tca=None -> BANK
+                  after: year 2026, gross_income=None, tca=None -> BANK
+  2010_TADAWUL    before: year 2025, gross_income=None, tca=present -> non-bank
+                  after: year 2026, gross_income=present, tca=present -> non-bank
+  4061_TADAWUL    before: year 2025, gross_income=None, tca=present -> non-bank
+                  after: year 2026, gross_income=present, tca=present -> non-bank
+  4190_TADAWUL    before: year 2025, gross_income=None, tca=present -> non-bank
+                  after: year 2026, gross_income=present, tca=present -> non-bank
+```
+
+## Checks and the 33-ticker sweep, re-run after the four changes
+
+```
+1. BACKWARD COMPATIBILITY - nothing an existing reader sees may change
+  [PASS] 2222_TADAWUL every pre-existing balance-sheet row survives unchanged: 42 rows before, 84 after (42 added), none lost or changed
+  [PASS] 1120_TADAWUL every pre-existing balance-sheet row survives unchanged: 32 rows before, 64 after (32 added), none lost or changed
+  [PASS] 2010_TADAWUL every pre-existing balance-sheet row survives unchanged: 58 rows before, 95 after (37 added), none lost or changed
+  [PASS] 4061_TADAWUL every pre-existing balance-sheet row survives unchanged: 55 rows before, 103 after (48 added), none lost or changed
+  [PASS] 4190_TADAWUL every pre-existing balance-sheet row survives unchanged: 60 rows before, 108 after (48 added), none lost or changed
+  [PASS] ABNIC_ADX Income Statement byte-for-byte equal (annual grid adds nothing): 68 rows, identical
+  [PASS] ABNIC_ADX Balance Sheet byte-for-byte equal (annual grid adds nothing): 51 rows, identical
+  [PASS] ABNIC_ADX (none) byte-for-byte equal (annual grid adds nothing): 1 rows, identical
+
+2. THE 4x SHARE-COUNT ARTIFACT
+  [PASS] 2222_TADAWUL income-statement share count equals the balance sheet's: income statement 242000.0, balance sheet 242000.0, was 968000.0
+  [PASS] 2010_TADAWUL income-statement share count equals the balance sheet's: income statement 3000.0, balance sheet 3000.0, was 12000.0
+
+3. INTERNAL CONSISTENCY of the reconstructed income statement
+  [PASS] 2222_TADAWUL Sales + Cost of Sales = Gross Income: 936,306.00 vs 936,306.00
+  [PASS] 2222_TADAWUL pre-unusual + extraordinary = Net Income: 408,371.00 vs 408,371.00
+  [PASS] 2010_TADAWUL Sales + Cost of Sales = Gross Income: 19,457.32 vs 19,457.32
+  [PASS] 2010_TADAWUL pre-unusual + extraordinary = Net Income: -21,322.06 vs -21,322.06
+  [PASS] 4061_TADAWUL Sales + Cost of Sales = Gross Income: 21.60 vs 21.60
+  [PASS] 4061_TADAWUL pre-unusual + extraordinary = Net Income: -10.25 vs -10.25
+  [PASS] 2222_TADAWUL Net Income / shares reproduces the reported EPS: 1.69 vs reported 1.69
+  [PASS] 1120_TADAWUL Net Income / shares reproduces the reported EPS: 4.42 vs reported 4.42
+  [PASS] 2010_TADAWUL Net Income / shares reproduces the reported EPS: -7.11 vs reported -7.11
+  [PASS] 4061_TADAWUL Net Income / shares reproduces the reported EPS: -0.33 vs reported -0.32
+  [PASS] 4190_TADAWUL Net Income / shares reproduces the reported EPS: 0.94 vs reported 0.94
+
+4. AGAINST THE 2026-08-02 LOAD, which had four complete quarters of FY2025
+  [PASS] Aramco TTM sales exceed FY2025's 1,671,204 (a newer, overlapping window): TTM 1,823,483 against FY2025 1,671,204
+  [PASS] Aramco TTM EPS is close to the vendor's published eps_ttm of 1.68: reconstructed 1.6875 vs vendor 1.68
+
+5. PRESERVED HISTORY
+  [PASS] 2222_TADAWUL quarterly history kept: Q: 5 period ends, 300 rows, TTM: 2 period ends, 36 rows
+  [PASS] 1120_TADAWUL quarterly history kept: Q: 5 period ends, 253 rows, TTM: 2 period ends, 39 rows
+  [PASS] 2010_TADAWUL quarterly history kept: Q: 5 period ends, 307 rows, TTM: 2 period ends, 30 rows
+  [PASS] Aramco balance-sheet snapshots kept: 5: ['2025-06', '2025-09', '2025-12', '2026-03', '2026-06']
+
+6. TRACEABILITY - every stored value names its rule and its quarters
+  [PASS] every row carries source_json: 671 of 671
+         rules used: {'year_end_snapshot': 247, 'sum_quarters': 92, 'end_quarter_position': 5, 'quarter_end_snapshot': 207, 'annual_column': 120}
+
+FAILURES: none
+
+REGRESSIONS - a row an existing reader had, now missing or different
+  rows LOST:    0
+  rows CHANGED: 0
+
+modes (after, before): {('quarterly_reconstructed', 'quarterly_reconstructed'): 18, ('annual_direct', 'annual_direct'): 14, (None, None): 1}
+   of those, QUARTERLY-reconstructed (the ones that would be wrong): 0 
+rows without source_json: 0
+```
+
+## Derived metrics, re-run with the fiscal year pinned
+
+```
+==============================================================================================
+2222_TADAWUL  Saudi Aramco - dividend aggregation and earnings coverage
+==============================================================================================
+  net margin                         before: missing_inputs         after: 22.40 %
+        Net Income 408,371  <- TTM@2026-06 sum_quarters ['2025-09', '2025-12', '2026-03', '2026-06']
+        Sales      1,823,483  <- TTM@2026-06 sum_quarters ['2025-09', '2025-12', '2026-03', '2026-06']
+
+  interest coverage                  before: missing_inputs         after: 81.7 x
+        Operating Income  816,723  <- TTM@2026-06 sum_quarters ['2025-09', '2025-12', '2026-03', '2026-06']
+        Financing Expense -9,997  <- TTM@2026-06 sum_quarters ['2025-09', '2025-12', '2026-03', '2026-06']
+
+  dividend cover, cash basis         before: not derivable          after: 1.26 x
+        Net Income 408,371  <- TTM@2026-06 sum_quarters ['2025-09', '2025-12', '2026-03', '2026-06']
+        dividends with an ex-date in the SAME window 324,390
+          <- pack P3, ex-dates 2026-06-01, 2026-03-16, 2025-11-17, 2025-08-19
+
+  payout ratio, cash basis           before: missing_inputs         after: 79.4 %
+        the same two inputs, on one matched window - which is what the inspection could not
+        do: it reached 73.4 % by hand and 92.6 % from the gauge, neither on a matched window
+
+  payout ratio, declared basis       before: missing_inputs         after: 79.9 %
+        dividends declared FOR the four quarters 326,340
+          <- notes Q 2 _ 2026, Q 1 _ 2026, Q 4 _ 2025, Q 3 _ 2025 
+        the pipeline's gauge matches this way; the two bases differ because the ex-date lags
+        the quarter it is declared for, and neither is wrong - but they must not be mixed
+
+  share count in the income statement before: 968,000 mn (4x)        after: 242,000 mn
+        <- TTM@2026-06 end_quarter_position 2026-06
+        balance sheet says 242,000 mn - they now agree
+
+==============================================================================================
+1120_TADAWUL  Al Rajhi - the bank measures, three of which were blocked
+==============================================================================================
+  cost / income                      before: BLOCKED (no income statement) after: 23.4 %
+        Operating Expenses -9,747.73  <- TTM@2026-06 sum_quarters ['2025-09', '2025-12', '2026-03', '2026-06']
+        Operating Income   41,703.95  <- TTM@2026-06 sum_quarters ['2025-09', '2025-12', '2026-03', '2026-06']
+        note: for a bank the revenue line IS 'Operating Income' (total operating income),
+        not 'Sales' - which is why the gauge's revenue list still misses it (see the proposal)
+
+  net financing margin               before: BLOCKED                after: 3.43 %
+        Net financing income 32,155.26  <- TTM@2026-06 sum_quarters ['2025-09', '2025-12', '2026-03', '2026-06']
+        earning assets 937,094.72 = Net Financing Investments 762,096.10 + Investments 174,998.62
+           <- Q@2026-06 quarter_end_snapshot 2026-06
+
+  cost of risk                       before: BLOCKED                after: 0.36 %
+        Debt Provisions -2,724.91  <- TTM@2026-06 sum_quarters ['2025-09', '2025-12', '2026-03', '2026-06']
+        Net Financing Investments 762,096.10
+
+  NPL ratio                          before: derivable, never exposed after: 0.74 %
+        NPL 5,729.46 / (performing 765,145.59 + NPL)  <- balance sheet, unchanged by the repair
+
+  NPL coverage                       before: derivable, never exposed after: 153.2 %
+        loss provision -8,778.95 / NPL 5,729.46
+
+  equity / assets                    before: derivable, never exposed after: 11.44 %
+        equity 120,673.26 / assets 1,054,772.50
+
+  loans / deposits                   before: derivable, never exposed after: 110.7 %
+        net financing 762,096.10 / customer deposits 688,359.50
+
+  return on equity                   before: published only (23.49 %) after: 21.96 %
+        Net Income 26,498.39 (TTM) / equity 120,673.26 (FY2025)
+        a mixed-period ratio, and the repair is what makes that visible: TTM@2026-06 over
+        FY@2025-12. The vendor's 23.49 % cannot be checked at all
+
+==============================================================================================
+2010_TADAWUL  SABIC - the loss, and cyclical against structural
+==============================================================================================
+  net margin                         before: missing_inputs         after: -18.83 %
+        Net Income -21,322.06  <- TTM@2026-06 sum_quarters ['2025-09', '2025-12', '2026-03', '2026-06']
+        Sales 113,241.07
+
+  gross margin                       before: na_sector (wrongly)    after: 17.18 %
+        Gross Income 19,457.32 / Sales 113,241.07
+
+  operating margin                   before: not derivable          after: 0.43 %
+        Operating Income 486.64  <- TTM@2026-06 sum_quarters ['2025-09', '2025-12', '2026-03', '2026-06']
+        POSITIVE on a trailing-twelve-month basis, against -292.16 for FY2025
+
+  extraordinary share of the loss    before: not derivable          after: 78.8 %
+        Extraordinary -16,812.35 of Net Income -21,322.06
+        loss before unusual items -4,509.71; EBITDA still 16,960.00
+        the structural and headline pictures differ by 4.7x and point opposite ways
+
+  EPS                                before: null, reason 'unit_unconfirmed' after: -7.11 a share
+        <- TTM@2026-06 sum_quarters ['2025-09', '2025-12', '2026-03', '2026-06']
+        and -21,322.06 / 3,000 mn shares = -7.11, so it checks against
+        its own statement. The pack's -1.76 reconciles with nothing
+
+==============================================================================================
+4061_TADAWUL  the two probes that rested on orphaned gauges
+==============================================================================================
+  net margin after the repair      -29.28 %   (orphaned gauge: -49.91 %)
+  gross margin after the repair    61.70 %   (orphaned gauge: 56.31 %)
+  D6's pre-registered band is (-60, -40): OUTSIDE
+  inputs: Sales 35.01, Net Income -10.25, Gross 21.60  <- TTM@2026-06 sum_quarters ['2025-09', '2025-12', '2026-03', '2026-06']
+```
