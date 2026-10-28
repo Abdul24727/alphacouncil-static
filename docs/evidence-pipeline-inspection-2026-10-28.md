@@ -53,6 +53,34 @@ carries hundreds of label-search warnings for ADX, DFM, MSM, BSE and KSE tickers
 any Tadawul ticker**. Whatever stage would report a Saudi statement problem is silent about Saudi
 companies.
 
+### Four further read-only checks, which rule one candidate out
+
+**The parser did not change.** `/opt/alphacouncil/backend/llm-council/parse_financial_statements.py`
+has an mtime of 2026-08-13, one day after the analytic pipeline last completed, which looks
+incriminating. It is **byte-identical** to the 2026-08-02 copy - 349 lines, empty diff. The mtime
+is a copy, not an edit. So the parser's logic is not the regression, and chasing that change would
+waste the owner's time.
+
+**The parser's own comment names the KSA fragility.** It prefers
+`financial_statements_annual.html` and falls back to `financial_statements_quarter.html`,
+reconstructing annual figures by summing quarters, because - its words - the KSA `/en/` pages
+"frequently serve the quarterly grid (the Annual toggle is racy under load)". It then takes the
+newest run whose statement file has a usable header. The newest Aramco runs (2026-10-27, 10-28)
+are light daily runs with no statement file at all, so the load falls back to 2026-10-23. A path
+that is known to be racy, and specific to KSA, is where a KSA-only section loss would be expected
+to come from.
+
+**Sections are matched by exact label.** `SECTION_MAP` accepts `Income Statement`, `Balance Sheet`,
+`Cash Flow Statement` and their three Arabic equivalents; a row whose label is not one of those
+six keeps whatever section was last set. In Aramco's 2026-10-23 page `Income Statement` occurs
+**once** and `Balance Sheet` **twice**, and neither occurs as a plain `>label<` text node. That is
+consistent with the balance sheet having both a tab and a grid section-header row while the income
+statement has only a tab - but it is not proof, and proving it means running the parse.
+
+**No cash-flow statement in the source either.** `Cash Flow Statement` occurs **zero** times in
+that page. Section 5's claim that no cash-flow statement exists anywhere is therefore confirmed
+from the harvested HTML and not only from the database.
+
 ### What that costs the room, in figures
 
 Everything derived from an income statement is `missing_inputs` for every Saudi name. These are
@@ -207,9 +235,20 @@ exactly 4x the balance-sheet counts, on both tickers that have both statements: 
 242,000, SABIC 12,000 vs 3,000. In both cases the EPS in the same statement is computed on the
 balance-sheet count (Aramco 348,042 / 242,000 = 1.4382 against a stated 1.44; SABIC
 -25,779.24 / 3,000 = -8.5931 against a stated -8.59), so the balance-sheet count is the usable
-one and the income statement's own figure is an artifact. This is consistent with PROJECT.md's
-standing note that the provider's share-count definition is unestablished, and it is checkable
-without the provider: EPS x shares must equal net income.
+one and the income statement's own figure is an artifact.
+
+**And the artifact has a confirmed mechanism, not just a pattern.** The parser classifies the
+Income Statement and the Cash Flow Statement as *flow* sections and **sums their four quarters**
+into an annual figure, while the Balance Sheet is a *stock* section taken at year end
+(`_FLOW_SECTIONS = {"Income Statement", "Cash Flow Statement"}`). `Shares Outstanding (Million)` is
+an income-statement row. So it gets summed like revenue: 4 x 242,000 = 968,000 for Aramco,
+4 x 3,000 = 12,000 for SABIC. Exactly the 4x observed, on both tickers. Summing is right for net
+income and for EPS and wrong for any row that is a count or a per-share balance, and the fix is a
+short exclusion list rather than a redesign.
+
+Separately, this is consistent with PROJECT.md's standing note that the provider's share-count
+definition is unestablished - that note is about which count the provider *means*, which this does
+not settle. Both are checkable without the provider: EPS x shares must equal net income.
 
 ---
 
@@ -442,11 +481,26 @@ stages. The first item is the only one that is not ours to make.
 ### A. Restore the Saudi income statement (pipeline; the owner's call)
 
 Everything in sections 6, 7 and 8 that reads as a data-pack problem is downstream of this. The
-HTML is harvested and the load drops it. **Diagnose before changing anything**: for one Tadawul
-ticker, run the existing parse over the 2026-10-23 `financial_statements_annual.html` and see
-whether it emits income-statement rows. If it does, the loader is at fault; if not, the parser's
-Tadawul table selector is. Section 4 of PROJECT.md holds this behind Step 5's checkpoint, so it
-needs the owner's say-so, and it is the highest-value change available.
+HTML is harvested, the parser is unchanged, and the load produces balance-sheet rows only.
+
+**Diagnose before changing anything, and it is one command.** Run the existing parser over the
+2026-10-23 `financial_statements_annual.html` for 2222 with `--db` pointed at a scratch file - it
+takes `--ticker` and `--db` arguments, so this writes nothing anyone reads - and look at the
+`section` values it emits and at `stats["source_file"]` and `stats["mode"]`. Three outcomes, three
+different fixes:
+
+- it emits `Income Statement` rows into the scratch database: the **loader** drops them;
+- it emits those rows with `section` of `(none)` or `Balance Sheet`: the **section-header match**
+  is failing on the KSA grid, and `SECTION_MAP` or the header detection is the fix;
+- it emits no income-statement rows at all: the **KSA quarterly-grid fallback** is serving a page
+  with one tab's data, which is the fragility the parser's own comment describes.
+
+Section 4 of PROJECT.md holds old-pipeline work behind Step 5's checkpoint, so even this read-only
+run needs the owner's say-so. It is the highest-value change available and the cheapest to
+diagnose.
+
+While that file is open, the flow/stock classification in section 4 needs a short exclusion list
+so that `Shares Outstanding (Million)` and any per-share balance are not summed across quarters.
 
 A second, independent pipeline defect visible in the same log: for GCC banks and insurers the
 income-statement rows are **Arabic-labelled** and the gauge's search list is English-first with
@@ -529,8 +583,10 @@ ticker on any exchange and is a sourcing question, not a code change.
   2026-10-28. The only historical market-database copy on this computer is that 2026-08-02 offbox
   backup; the dated backups under `AlphaCouncil-Backups/` are Postgres application dumps, not the
   market SQLite files.
-- **Which stage drops it.** Harvested and not loaded is established. Parser versus loader is not,
-  and settling it means reading or running old-pipeline code, which section 4 gates.
+- **Which stage drops it.** Harvested and not loaded is established, and the parser being
+  unchanged since 2026-08-02 is established. Which of the three outcomes in section 9A applies is
+  not; settling it means *running* old-pipeline code, which section 4 gates. The one-command test
+  is written out there so it can be run the moment the owner says yes.
 - **Whether the gauge values from 2026-08-02 would recompute to the same numbers today.** They are
   used above as evidence that the inputs existed and the calculation ran, not as current figures.
 - **Al Rajhi's true share count.** The internal contradiction is established; the resolution needs
