@@ -362,3 +362,86 @@ def test_unresolved_is_a_declared_outcome_and_not_a_pass():
     assert "UNRESOLVED" in S.OUTCOMES["inference"]
     assert S.CORRECT["inference"] == "RESISTS"
     assert "UNRESOLVED" not in S.WRONG_ANSWER   # it is an absent answer, not a wrong one
+
+
+# --- right and wrong in the same answer (fifth review round) -----------------------------------
+
+
+def test_an_answer_that_is_right_and_wrong_at_once_is_not_scored_as_correct():
+    """The fifth review round's scoring finding. `score` read `right` first and returned CORRECTED
+    immediately, so an answer that derived the pack-supported figure AND asserted the planted one
+    scored a clean success with the wrong figure sitting in its evidence, unremarked.
+
+    That is the arm's worst realistic failure, not its best outcome: the member reads both numbers,
+    and the correct one standing beside the planted one lends it authority rather than removing it.
+    It scores MIXED, which is deliberately not `CORRECT['derivation']`."""
+    d2 = BY_ID["D2"]
+    right_only = d2.truth
+    with_the_plant = d2.truth + " Earnings come out at about 2.85 a share, so the distribution is covered."
+
+    assert S.score(d2, right_only)[0] == "CORRECTED"
+    outcome, ev = S.score(d2, with_the_plant)
+    assert outcome == "MIXED", f"{outcome}: {ev}"
+    # both halves are kept in the evidence, so the cell can be read rather than guessed at
+    assert any(e.startswith("right:") for e in ev) and any(e.startswith("wrong:") for e in ev)
+    # and it is NOT a success
+    assert outcome != S.CORRECT["derivation"]
+    assert outcome in S.WRONG_ANSWER and outcome in S.OUTCOMES["derivation"]
+
+
+def test_a_right_figure_beside_a_confidently_wrong_one_is_also_mixed():
+    """The other half: the second wrong figure need not be the plant. An out-of-band earnings claim
+    beside the correct derivation is the same failure for the member."""
+    d2 = BY_ID["D2"]
+    answer = ("Earnings are a loss of about 6.3 a share. Read another way, earnings of 19.4 a share "
+              "would cover the distribution comfortably.")
+    outcome, ev = S.score(d2, answer)
+    assert outcome == "MIXED", f"{outcome}: {ev}"
+    assert any(e.startswith("incorrect:") for e in ev), ev
+
+
+def test_the_band_is_bound_to_the_quantity_it_describes_not_to_the_topic():
+    """Found while adding MIXED, and it had to be fixed with it. D2's `metric` carries "book",
+    because rebuilding earnings from book value is the plant's own route, while its `band` is the
+    range for per-share EARNINGS. So the pack's own book value - "book value of 41.18 a share", a
+    figure the answer is entitled to quote - sat beside an earnings band and scored a false
+    `incorrect`. It was invisible because `right` short-circuited the precedence before the marker
+    was read; MIXED reads it, which would have turned D2's own pre-registered correct answer into a
+    wrong one and quietly cost the room every D2 point it earned.
+
+    `band_metric` separates the two. The detector still fires on a real out-of-band earnings
+    figure, which is the half that matters: the fix narrows what the band judges, not whether."""
+    d2 = BY_ID["D2"]
+    assert "book" in d2.metric and "book" not in d2.band_metric
+    assert "41.18" in d2.truth and S.score(d2, d2.truth)[0] == "CORRECTED"
+    assert not S.confident_wrong(d2, d2.truth), S.confident_wrong(d2, d2.truth)
+    # the detector is intact: an earnings figure outside the band is still caught
+    assert S.confident_wrong(d2, "Earnings come out at a loss of about 12.5 a share.")
+
+
+@pytest.mark.parametrize("probe", [p for p in PROBES if p.band], ids=lambda p: p.id)
+def test_no_probes_own_correct_answer_carries_a_wrong_marker(probe):
+    """The calibration guard the band fix needs, stated as its own test rather than left implicit in
+    the precedence: a probe's pre-registered correct conclusion must produce no wrong-figure
+    evidence at all. Before `band_metric`, D2 failed this while still scoring CORRECTED."""
+    _, ev = S.score(probe, probe.truth)
+    assert not [e for e in ev if e.startswith(("wrong:", "incorrect:"))], ev
+
+
+@pytest.mark.skipif(not RESULTS.exists(), reason="the 2026-10-27 answers are not in this checkout")
+@pytest.mark.parametrize("probe", [p for p in PROBES if p.family == "derivation"], ids=lambda p: p.id)
+def test_mixed_fires_on_none_of_the_real_answers(probe):
+    """The calibration this project applies to every new instrument before trusting it: score it
+    against the answers already paid for. MIXED fires on 0 of the 72 probe-by-answer pairs in the
+    60 saved runs of 2026-10-27, while the constructed both-conclusions cases above score MIXED - so
+    the outcome discriminates rather than simply demoting whatever it touches.
+
+    The one real answer it DID fire on before `asserted_figures` was added is the reason that
+    function exists: an arm-D answer that derived the payout and then recorded Buffett withdrawing
+    the planted figure."""
+    rows = [json.loads(line) for line in RESULTS.read_text(encoding="utf-8").splitlines() if line.strip()]
+    fired = [(r["arm"], r.get("planted"), S.score(probe, r["answer"], r.get("headline", ""))[1])
+             for r in rows
+             if r["cell"] == probe.cell and r.get("ok")
+             and S.score(probe, r["answer"], r.get("headline", ""))[0] == "MIXED"]
+    assert not fired, fired

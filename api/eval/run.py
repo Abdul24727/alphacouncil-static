@@ -405,6 +405,9 @@ def main() -> None:
     q.add_argument("--pause", type=float, default=5.0)
     q.add_argument("--only", default=None, help="one probe id (D1) or one family (omission)")
     q.add_argument("--four-seats", default=FOUR_SEATS)
+    q.add_argument("--clean-arms", action="append", choices=["A", "B", "D", "E"],
+                   help="repeatable; adds the validity gate's clean-control phase to THIS run, at one "
+                        "repeat, so both phases of the experiment are held to one cap instead of a cap each")
     q.add_argument("--cap-usd", type=float, default=10.0, help="hard cap, checked against the live balance before every run")
     sub.add_parser("probe-report")
 
@@ -417,7 +420,7 @@ def main() -> None:
     elif a.cmd == "probe":
         from .probe_run import run as probe_run
 
-        asyncio.run(probe_run(a.arm or ["A", "B", "E"], a.repeats, a.locale, a.clean, a.dry, a.single_model, a.pause, a.only, a.four_seats, a.cap_usd))
+        asyncio.run(probe_run(a.arm or ["A", "B", "E"], a.repeats, a.locale, a.clean, a.dry, a.single_model, a.pause, a.only, a.four_seats, a.cap_usd, a.clean_arms))
     elif a.cmd == "probe-report":
         from .probe_report import report as probe_report
 

@@ -20,6 +20,18 @@ log = logging.getLogger("uvicorn.error")
 TIMEOUT_S = 120
 # Tries per seat per stage. Two was not enough for round one's long answers (docs/beta-advisors-2026-10-27.md, F-1).
 ATTEMPTS = 3
+# What a retry may add to the prompt, in UTF-8 BYTES rather than characters. `eval.budget` prices a
+# retried prompt's growth in bytes - a byte-level BPE tokenizer cannot emit more tokens than the
+# input has bytes - while these two were sliced by CHARACTER (`text[:6_000]`). Arabic, which these
+# prompts carry, is about two bytes a character before the tokenizer sees it, so a retry could add
+# roughly twice what the bound had accounted for, and a bound that can be beaten by ordinary text
+# is not a bound. Found by the fifth independent review round, 2026-10-28. Clipping in bytes makes
+# the accounted figure true by construction rather than by assumption about the language.
+RETRY_ECHO_BYTES = 6_000
+# The correction sentence quotes the parser's own message, which has no length of its own: a long
+# ValueError text went into the next prompt unbounded. Clipped so the instruction as a whole stays
+# inside `eval.budget.RETRY_INSTRUCTION_BYTES`.
+RETRY_PROBLEM_BYTES = 200
 
 
 class SeatError(Exception):
@@ -50,6 +62,19 @@ class Usage:
         cost = getattr(usage, "cost", None) if getattr(usage, "cost", None) is not None else extra.get("cost")
         if isinstance(cost, (int, float)):
             self.cost_usd = (self.cost_usd or 0.0) + float(cost)
+
+
+def _clip_bytes(text: str, limit: int) -> str:
+    """`text` truncated to at most `limit` UTF-8 bytes, never splitting a character.
+
+    Slicing by character cannot promise this, which is the whole point: `text[:6_000]` is up to
+    about 12,000 bytes of Arabic, so the retry growth the spending cap is computed from was an
+    undercount for exactly the language this product serves.
+    """
+    data = text.encode("utf-8")
+    if len(data) <= limit:
+        return text
+    return data[:limit].decode("utf-8", "ignore")
 
 
 def parse_json(text: str) -> dict[str, Any]:
@@ -104,6 +129,13 @@ async def ask(
         # Thinking tokens count against max_tokens (Anthropic's budget is 1,024 at least): room for both.
         limit = max_tokens if reasoning == {"enabled": False} else max_tokens + REASONING_ROOM
         started = time.monotonic()
+        # Counted BEFORE the request, not after a usable reply comes back. The 400-on-reasoning
+        # path below retries with `continue`, and while this line sat after it one `ask` could
+        # issue ATTEMPTS + 1 requests - a fourth request that `eval.budget` then had to PRICE
+        # (`EXTRA_REQUESTS`) rather than prevent. The fifth review round asked for the configured
+        # attempt count to be enforced directly, and counting every request this loop issues is
+        # what that means. The ordinary path is unchanged: three requests, three attempts.
+        attempts += 1
         try:
             resp = await client.chat.completions.create(
                 model=model,
@@ -122,7 +154,7 @@ async def ask(
         except openai.APIStatusError as exc:
             if _refuses_no_reasoning(exc) and model not in REASONING_REQUIRED:
                 REASONING_REQUIRED.add(model)
-                continue  # the same request at the lowest effort; not an attempt
+                continue  # the same request at the lowest effort - and it has cost an attempt
             if exc.status_code == 402:
                 # Out of credit at the provider. Its own code, because "unreachable" sent a day of
                 # debugging after a network fault that was never there (F-10). Not retried either:
@@ -134,7 +166,6 @@ async def ask(
             raise SeatError("unreachable", usage) from exc
         finally:
             usage.seconds += time.monotonic() - started
-        attempts += 1
         usage.add(getattr(resp, "usage", None))
         choice = resp.choices[0] if resp.choices else None
         text = (choice.message.content if choice and choice.message else None) or ""
@@ -144,10 +175,10 @@ async def ask(
             cut = choice is not None and choice.finish_reason == "length"
             problem = "cut_off" if cut else "bad_output"
             msgs = msgs + [
-                {"role": "assistant", "content": text[:6_000] or "(empty)"},
+                {"role": "assistant", "content": _clip_bytes(text, RETRY_ECHO_BYTES) or "(empty)"},
                 {
                     "role": "user",
-                    "content": f"That reply could not be used ({exc}). Reply again with only the JSON object in the shape asked for"
+                    "content": f"That reply could not be used ({_clip_bytes(str(exc), RETRY_PROBLEM_BYTES)}). Reply again with only the JSON object in the shape asked for"
                     + (", shorter" if cut else ", with every double quote inside a text value escaped and no line breaks in it")
                     + ".",
                 },

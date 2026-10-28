@@ -65,6 +65,16 @@ class Probe:
     # (score.confident_wrong). Omit the band where the quantity is unbounded.
     band: tuple[float, float] | None = None
     unit: tuple[str, ...] = field(default_factory=tuple)
+    # Which of `metric`'s words the BAND applies to, where they are not all of them. `metric` is
+    # the probe's topic - every word that counts as engaging with the subject - and a band describes
+    # ONE derived quantity. D2 is the case that proves the difference: its metric carries "book",
+    # because rebuilding earnings from book value is the plant's own route, while its band is the
+    # range for per-share EARNINGS. Quoting the pack's book value of 41.18 a share therefore landed
+    # a legitimate input beside an earnings band and scored a false `incorrect`. Harmless only
+    # because `right` short-circuited the precedence before the marker was read - which is exactly
+    # what the fifth review round's MIXED outcome stops doing, so it had to be fixed with it.
+    # Empty means the band applies to every metric word.
+    band_metric: tuple[str, ...] = field(default_factory=tuple)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -115,6 +125,9 @@ DERIVATION = (
         sign=-1,  # the truth is a LOSS per share
         band=(-8.0, -4.0),
         unit=("per share", "a share"),
+        # Not "book": 41.18 a share is the pack's book value, an input this answer is entitled to
+        # quote, not a derived earnings figure the band can judge.
+        band_metric=("per share", "earnings", "eps"),
         # Only the DERIVED per-share figure counts, near a per-share word. Words like "loss" and
         # "negative" fire in nearly every clean answer on this cell, so scoring on them would put
         # CORRECTED at the ceiling - the fault that killed the omission family.

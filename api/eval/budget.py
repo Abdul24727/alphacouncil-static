@@ -51,16 +51,29 @@ PRICES: dict[str, tuple[float, float]] = {           # model: (prompt, completio
 # app.debate.llm wherever the application IS importable, so raising the reasoning allowance in
 # production cannot silently loosen the cap here.
 REASONING_ROOM = 2_048          # llm.REASONING_ROOM: added to max_tokens unless reasoning is OFF
-RETRY_ECHO_CHARS = 6_000        # llm.ask echoes the unusable reply back, text[:6_000]
-RETRY_INSTRUCTION_CHARS = 400   # plus the correction sentence, generously rounded up
-# llm.ask retries a 400 "reasoning is mandatory" WITHOUT incrementing its attempt counter, so one
-# call can issue ATTEMPTS + 1 requests. That request carries the original prompt, not a grown one.
-EXTRA_REQUESTS = 1
+# BYTES, and now true by construction. These were CHARACTER limits in llm.ask (`text[:6_000]`)
+# while this file spends them as bytes, so for Arabic - two bytes a character before the tokenizer
+# - a retry could add about twice the accounted growth and the bound could be beaten by ordinary
+# text in the product's own second language. The fifth review round asked for the limits to be
+# enforced in bytes; `llm._clip_bytes` now does the clipping, so the figures below are what a retry
+# can add rather than what it usually adds.
+RETRY_ECHO_BYTES = 6_000        # llm.RETRY_ECHO_BYTES: the unusable reply, clipped in bytes
+# The correction sentence, which quotes the parser's message. Measured, not rounded: the longest
+# fixed wording is 172 bytes and llm.RETRY_PROBLEM_BYTES clips the quoted message at 200, so the
+# instruction cannot exceed 372. Previously the quoted message had no limit at all.
+RETRY_INSTRUCTION_BYTES = 400
+# ZERO, because the fourth request is PREVENTED rather than priced. llm.ask retried a 400
+# "reasoning is mandatory" with `continue` placed before `attempts += 1`, so one call could issue
+# ATTEMPTS + 1 requests; the increment now happens as the request is issued, so the configured
+# attempt count bounds the requests directly. Kept as a named constant rather than deleted because
+# the arithmetic below has to say out loud that it is counting nothing extra, and because a
+# structural test pins llm.ask's ordering to it.
+EXTRA_REQUESTS = 0
 # Chat-template framing per message - role markers and separators. Generous: real templates spend
 # 3-4 tokens a message.
 MESSAGE_OVERHEAD_TOKENS = 8
 
-RETRY_GROWTH_BYTES = RETRY_ECHO_CHARS + RETRY_INSTRUCTION_CHARS
+RETRY_GROWTH_BYTES = RETRY_ECHO_BYTES + RETRY_INSTRUCTION_BYTES
 
 
 def token_bound(prompt_bytes: int, messages: int = 2) -> int:
@@ -106,9 +119,12 @@ def bound_for(model: str, prompt_bytes: int, max_output_tokens: int, attempts: i
       explicitly disabled, and Sonnet 5.5 on OpenRouter *refuses* the request with reasoning off, so
       the chair's own model takes the larger ceiling. The bound assumes the larger one.
     * **Retry prompt growth.** A retry is not the same request again: `llm.ask` appends the unusable
-      reply (up to 6,000 characters) and a correction instruction, so request 2 carries a bigger
-      prompt than request 1 and request 3 bigger still. Multiplying one prompt by three undercounts.
-    * **The fourth request.** The 400-on-reasoning retry does not increment the attempt counter.
+      reply (up to 6,000 BYTES - it was 6,000 characters until the fifth review round, which is
+      about twice as many bytes in Arabic) and a bounded correction instruction, so request 2
+      carries a bigger prompt than request 1 and request 3 bigger still. Multiplying one prompt by
+      three undercounts.
+    * **The fourth request**, which no longer exists: the 400-on-reasoning retry used to skip the
+      attempt counter, and `llm.ask` now counts every request it issues, so `EXTRA_REQUESTS` is 0.
 
     `prompt_bytes` is the prompt's length in UTF-8 bytes - see `token_bound` for why bytes.
 
@@ -126,8 +142,8 @@ def bound_for(model: str, prompt_bytes: int, max_output_tokens: int, attempts: i
 def _requests(prompt_bytes: int, attempts: int, messages: int,
               retries_grow: bool = True) -> list[tuple[int, int]]:
     """The (bytes, message count) every request one `llm.ask` may issue carries: EXTRA_REQUESTS at
-    the original size, then one per attempt, each grown by the echoed reply and its two extra
-    messages. Exact rather than loose - over-counting here would inflate the cap the owner has to
+    the original size - zero of them now that the attempt counter covers every request - then one
+    per attempt, each grown by the echoed reply and its two extra messages. Exact rather than loose - over-counting here would inflate the cap the owner has to
     authorise, and a bound padded with slack is a bound nobody will set."""
     grow, msgs = (RETRY_GROWTH_BYTES, 2) if retries_grow else (0, 0)
     return ([(prompt_bytes, messages)] * EXTRA_REQUESTS

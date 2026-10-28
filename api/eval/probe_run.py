@@ -70,7 +70,12 @@ RUN_COST = {"A": 0.2257, "D": 0.1759, "B": 0.0292, "E": 0.0640}
 # `llm.ask` can issue without counting it as an attempt - plus a token floor of 2 characters that
 # was an average rather than a bound. Correcting all four put these at 13-17x the forecast. The
 # number got much worse because it got honest; see docs/council-review-response-2026-10-28-round4.md.
-RUN_BOUND = {"A": 3.7805, "D": 2.8145, "B": 0.4066, "E": 0.8079}
+#
+# RE-MEASURED 2026-10-28 for the fifth review round, which asked for the fourth request to be
+# removed rather than priced. It is, so these fell to about 78% of the round-four figures - the
+# only legitimate way a bound may fall: the request it was paying for cannot be issued any more.
+# Round four's numbers were A 3.7805, D 2.8145, B 0.4066, E 0.8079.
+RUN_BOUND = {"A": 2.9423, "D": 2.1903, "B": 0.3146, "E": 0.6252}
 
 SHAPE = (
     '{"headline": "the answer in at most 16 words, no figures", '
@@ -317,7 +322,8 @@ async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str,
 
 
 async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool, single_model: str,
-              pause: float, only: str | None, four_seats: str, cap_usd: float) -> None:
+              pause: float, only: str | None, four_seats: str, cap_usd: float,
+              clean_arms: list[str] | None = None) -> None:
     out = DRY_RESULTS if dry else RESULTS
     out.parent.mkdir(parents=True, exist_ok=True)
     if dry:
@@ -337,9 +343,15 @@ async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool
     if not chosen:
         raise SystemExit(f"no probe matches {only!r}: ids are {[p.id for p in PROBES]}, families {list(FAMILIES)}")
 
-    planned = repeats * len(chosen) * sum(RUN_COST.get(a, 0.25) for a in arms)
-    worst = repeats * len(chosen) * sum(RUN_BOUND.get(a, 1.50) for a in arms)
-    n = repeats * len(chosen) * len(arms)
+    # (arms, repeats, planted) for each phase of ONE experiment. `--clean-arms` adds the validity
+    # gate's control phase to the same run instead of leaving it to a second command with a second
+    # cap; without it this is the single phase it always was.
+    phases: list[tuple[list[str], int, bool]] = [(arms, repeats, not clean)]
+    if clean_arms:
+        phases.append((clean_arms, 1, False))
+    planned = sum(reps * len(chosen) * sum(RUN_COST.get(a, 0.25) for a in ph) for ph, reps, _ in phases)
+    worst = sum(reps * len(chosen) * sum(RUN_BOUND.get(a, 1.50) for a in ph) for ph, reps, _ in phases)
+    n = sum(reps * len(chosen) * len(ph) for ph, reps, _ in phases)
 
     started_at = None if dry else balance()
     if not dry and started_at is None:
@@ -404,62 +416,74 @@ async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool
         expect_usd=None if dry else round(planned * 1.5, 4),
     )
 
-    for repeat in range(1, repeats + 1):
-        for probe in chosen:
-            for arm in arms:
-                if not dry and started_at is not None:
-                    if spent_local + RUN_COST.get(arm, 0.25) > cap_usd:
-                        print(f"STOPPING: ${spent_local:.2f} charged so far, one more {arm} run would pass the ${cap_usd:.2f} cap")
+    # TWO PHASES, ONE BUDGET. The pre-registered experiment is 54 planted runs and 12 clean
+    # controls (docs/council-test-design-2026-10-28.md), and until the fifth independent review
+    # round each phase was a separate invocation of this command - so each built its own Budget
+    # with its own cap and the combined spend was bounded by nothing at all. Two $94 caps are not
+    # a $94 cap. Both phases now run inside one Budget, and `planned`, `worst` and `n` above are
+    # summed over both, so the figure quoted to whoever authorises the run is the figure the run
+    # is actually held to.
+    for phase_arms, phase_repeats, planted in phases:
+        if len(phases) > 1:
+            label = "planted" if planted else "clean controls"
+            runs_here = phase_repeats * len(chosen) * len(phase_arms)
+            print()
+            print(f"--- {label}: arms {','.join(phase_arms)}, {phase_repeats} repeat(s), {runs_here} runs ---")
+        for repeat in range(1, phase_repeats + 1):
+            for probe in chosen:
+                for arm in phase_arms:
+                    if not dry and started_at is not None:
+                        if spent_local + RUN_COST.get(arm, 0.25) > cap_usd:
+                            print(f"STOPPING: ${spent_local:.2f} charged so far, one more {arm} run would pass the ${cap_usd:.2f} cap")
+                            return
+                        now = balance()
+                        if now is None:
+                            # FAIL CLOSED. The old code checked `if now is not None`, so a single failed
+                            # balance read silently skipped the cap and the loop spent on. Found by an
+                            # independent review, 2026-10-28. A guard that stops guarding when its
+                            # input is missing is the F-10 fault again: trusted, and doing nothing.
+                            print(f"STOPPING: the balance could not be read before the next {arm} run, "
+                                  f"so the cap cannot be checked. ${spent_local:.2f} charged so far.")
+                            return
+                        spent = started_at - now
+                        if spent + RUN_COST.get(arm, 0.25) > cap_usd:
+                            print(f"STOPPING: ${spent:.2f} spent, one more {arm} run would pass the ${cap_usd:.2f} cap")
+                            return
+                        if now < RUN_COST.get(arm, 0.25) * 2:
+                            print(f"STOPPING: ${now:.2f} left on the account, too little for another {arm} run")
+                            return
+                    if arm == "A":
+                        r = await run_room(probe, "A", repeat, locale, planted, dry, budget=budget)
+                    elif arm == "D":
+                        r = await run_room(probe, "D", repeat, locale, planted, dry, roster_spec=four_seats, budget=budget)
+                    elif arm == "E":
+                        r = await run_single(probe, "E", repeat, locale, single_model, planted, dry, second_pass=True, budget=budget)
+                    else:
+                        r = await run_single(probe, "B", repeat, locale, single_model, planted, dry, second_pass=False, budget=budget)
+                    spent_local += r.cost_usd
+                    bound_local += r.bound_usd
+                    # should_stop() is ENFORCED here, not consulted. It used to be neither: the loop
+                    # checked only `budget.refused`, so a recorded overrun - a charge above its own
+                    # bound, or a prompt denser than the token ceiling, either of which means the cap
+                    # has stopped being a guarantee - left the run going. Found by an independent
+                    # review, 2026-10-28. `Budget.take` now refuses on the same condition, so this is
+                    # the second of two gates rather than the only one.
+                    stop = budget.should_stop()
+                    if stop or budget.refused:
+                        print(f"STOPPING: {stop or f'the per-call cap refused a call ({budget})'}. "
+                              f"Nothing further is attempted.")
+                        with out.open("a", encoding="utf-8") as fh:
+                            fh.write(json.dumps(asdict(r), ensure_ascii=False) + "\n")
                         return
-                    now = balance()
-                    if now is None:
-                        # FAIL CLOSED. The old code checked `if now is not None`, so a single failed
-                        # balance read silently skipped the cap and the loop spent on. Found by an
-                        # independent review, 2026-10-28. A guard that stops guarding when its
-                        # input is missing is the F-10 fault again: trusted, and doing nothing.
-                        print(f"STOPPING: the balance could not be read before the next {arm} run, "
-                              f"so the cap cannot be checked. ${spent_local:.2f} charged so far.")
-                        return
-                    spent = started_at - now
-                    if spent + RUN_COST.get(arm, 0.25) > cap_usd:
-                        print(f"STOPPING: ${spent:.2f} spent, one more {arm} run would pass the ${cap_usd:.2f} cap")
-                        return
-                    if now < RUN_COST.get(arm, 0.25) * 2:
-                        print(f"STOPPING: ${now:.2f} left on the account, too little for another {arm} run")
-                        return
-                planted = not clean
-                if arm == "A":
-                    r = await run_room(probe, "A", repeat, locale, planted, dry, budget=budget)
-                elif arm == "D":
-                    r = await run_room(probe, "D", repeat, locale, planted, dry, roster_spec=four_seats, budget=budget)
-                elif arm == "E":
-                    r = await run_single(probe, "E", repeat, locale, single_model, planted, dry, second_pass=True, budget=budget)
-                else:
-                    r = await run_single(probe, "B", repeat, locale, single_model, planted, dry, second_pass=False, budget=budget)
-                spent_local += r.cost_usd
-                bound_local += r.bound_usd
-                # should_stop() is ENFORCED here, not consulted. It used to be neither: the loop
-                # checked only `budget.refused`, so a recorded overrun - a charge above its own
-                # bound, or a prompt denser than the token ceiling, either of which means the cap
-                # has stopped being a guarantee - left the run going. Found by an independent
-                # review, 2026-10-28. `Budget.take` now refuses on the same condition, so this is
-                # the second of two gates rather than the only one.
-                stop = budget.should_stop()
-                if stop or budget.refused:
-                    print(f"STOPPING: {stop or f'the per-call cap refused a call ({budget})'}. "
-                          f"Nothing further is attempted.")
                     with out.open("a", encoding="utf-8") as fh:
                         fh.write(json.dumps(asdict(r), ensure_ascii=False) + "\n")
-                    return
-                with out.open("a", encoding="utf-8") as fh:
-                    fh.write(json.dumps(asdict(r), ensure_ascii=False) + "\n")
-                await asyncio.sleep(pause)
-                mark = "ok " if r.ok else "FAIL"
-                tail = f" {r.outcome:12} {','.join(r.evidence[:3])}" if r.planted else f" gate:{','.join(r.gate_hits[:3]) or 'NONE'}"
-                print(
-                    f"{mark} {arm} {probe.id} {probe.family[:5]:5} {r.cell:14} r{repeat} {r.seconds:>6.1f}s "
-                    f"${r.cost_usd:>7.4f} {r.answer_words:>4}w{tail}" + (f"  {r.error}" if r.error else "")
-                )
+                    await asyncio.sleep(pause)
+                    mark = "ok " if r.ok else "FAIL"
+                    tail = f" {r.outcome:12} {','.join(r.evidence[:3])}" if r.planted else f" gate:{','.join(r.gate_hits[:3]) or 'NONE'}"
+                    print(
+                        f"{mark} {arm} {probe.id} {probe.family[:5]:5} {r.cell:14} r{repeat} {r.seconds:>6.1f}s "
+                        f"${r.cost_usd:>7.4f} {r.answer_words:>4}w{tail}" + (f"  {r.error}" if r.error else "")
+                    )
 
     # The plan's maximum, measured rather than asserted: every stand-in call above took the same
     # reservation a paid call would, so this total IS the sum of the reservations the runner would

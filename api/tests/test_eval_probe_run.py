@@ -272,3 +272,34 @@ def test_a_second_dry_run_rebuilds_its_outputs_instead_of_doubling_them(monkeypa
     assert second == first, (
         f"a second identical dry run left {second[0]} rows and {second[1]} characters rather than "
         f"{first[0]} and {first[1]}: the dry outputs are appended to, not rebuilt")
+
+
+@needs_packs
+def test_both_phases_of_the_experiment_run_under_one_budget(monkeypatch, tmp_path, capsys):
+    """The fifth review round's budget finding. The pre-registered experiment is 54 planted runs
+    AND 12 clean controls, and each phase used to be a separate invocation of `eval probe` - so each
+    built its own `Budget` with its own cap and the combined spend was bounded by nothing. Two $90
+    caps are not a $90 cap, and the figure quoted to whoever authorises the run has to be the figure
+    the run is held to.
+
+    `--clean-arms` puts the control phase in the same invocation. This drives both phases and reads
+    the run's own summary back: the bound is reported over every run of both phases, totalled from
+    one accumulator."""
+    import json
+
+    from eval import probe_run
+    from eval.run import FOUR_SEATS
+
+    results = tmp_path / "dry-probe-results.jsonl"
+    monkeypatch.setattr(probe_run, "DRY_RESULTS", results)
+    monkeypatch.setattr(probe_run, "DRY", tmp_path / "dry-prompts.txt")
+
+    asyncio.run(probe_run.run(["B"], 1, "en", False, True, "anthropic/claude-sonnet-5.5", 0.0,
+                              "D1", FOUR_SEATS, 1.0, ["B"]))
+
+    rows = [json.loads(line) for line in results.read_text(encoding="utf-8").strip().splitlines()]
+    assert [r["planted"] for r in rows] == [True, False], rows
+    out = capsys.readouterr().out
+    assert "over 2 runs" in out, out
+    # one accumulator across both phases, not one per phase
+    assert f"${sum(r['bound_usd'] for r in rows):.4f}" in out, out

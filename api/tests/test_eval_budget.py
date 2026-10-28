@@ -25,8 +25,9 @@ from eval.budget import (
     EXTRA_REQUESTS,
     MESSAGE_OVERHEAD_TOKENS,
     REASONING_ROOM,
-    RETRY_ECHO_CHARS,
+    RETRY_ECHO_BYTES,
     RETRY_GROWTH_BYTES,
+    RETRY_INSTRUCTION_BYTES,
     Budget,
     BudgetExhausted,
     PriceUnknown,
@@ -157,11 +158,16 @@ def test_the_bound_is_built_from_pricing_tokens_and_retries():
 
     sonnet-5.5 is $2/M prompt and $10/M completion. 2,000 prompt bytes in two messages bound at
     2,000 + 2x8 = 2,016 tokens = $0.004032. The output ceiling is 1,000 + 2,048 of reasoning room =
-    3,048 tokens = $0.030480. One attempt means two requests (the attempt, plus the reasoning
-    rejection `llm.ask` does not count), so 2 x $0.034512 = $0.069024.
+    3,048 tokens = $0.030480. One attempt is now exactly one request, so $0.034512.
+
+    It was $0.069024 until the fifth review round: `llm.ask` could issue a request that its attempt
+    counter did not count, and round four priced that fourth request rather than removing it, which
+    doubled a one-attempt bound. The counter now covers every request it issues, so the extra
+    request is gone from the arithmetic because it is gone from the code. This is the one direction
+    in which a bound may fall - the request it was paying for cannot happen any more.
     """
     one = bound_for(SONNET, 2000, 1000, attempts=1)
-    assert one == pytest.approx(0.069024)
+    assert one == pytest.approx(0.034512)
     # more attempts, a bigger prompt and a bigger output ceiling each raise it
     assert bound_for(SONNET, 2000, 1000, 3) > bound_for(SONNET, 2000, 1000, 2) > one
     assert bound_for(SONNET, 4000, 1000, 1) > one
@@ -185,7 +191,8 @@ def test_the_bound_includes_the_reasoning_allowance():
 
 def test_the_bound_grows_with_each_retry_because_the_prompt_does():
     """Round four, finding on retry prompt growth. A retry is not the same request again: `llm.ask`
-    appends the unusable reply (up to 6,000 characters) and a correction instruction, so request 2
+    appends the unusable reply (up to 6,000 BYTES since the fifth review round) and a bounded
+    correction instruction, so request 2
     carries a bigger prompt than request 1. Multiplying one prompt by three undercounts - which is
     what the first bound did."""
     flat = bound_for(SONNET, 2000, 1000, 3, retries_grow=False)
@@ -196,17 +203,22 @@ def test_the_bound_grows_with_each_retry_because_the_prompt_does():
     extra_bytes = (0 + 1 + 2) * RETRY_GROWTH_BYTES
     extra_messages = (0 + 2 + 4) * MESSAGE_OVERHEAD_TOKENS
     assert grown - flat == pytest.approx((extra_bytes + extra_messages) * 2.000e-6)
-    assert RETRY_GROWTH_BYTES >= RETRY_ECHO_CHARS
+    assert RETRY_GROWTH_BYTES >= RETRY_ECHO_BYTES
 
 
-def test_the_bound_counts_the_request_llm_ask_does_not_count_as_an_attempt():
-    """`llm.ask` retries a 400 "reasoning is mandatory" with `continue`, BEFORE incrementing its
-    attempt counter, so one call can issue ATTEMPTS + 1 requests. A bound that trusts the attempt
-    counter is short by one whole request."""
-    assert EXTRA_REQUESTS == 1
-    per_request = bound_for(SONNET, 2000, 1000, 1, retries_grow=False) / 2
-    # three attempts with no growth is four requests, not three
-    assert bound_for(SONNET, 2000, 1000, 3, retries_grow=False) == pytest.approx(per_request * 4)
+def test_the_fourth_request_is_prevented_rather_than_priced():
+    """`llm.ask` retried a 400 "reasoning is mandatory" with `continue` placed BEFORE
+    `attempts += 1`, so one call could issue ATTEMPTS + 1 requests, and round four priced that
+    fourth request instead of removing it. The fifth review round asked for the configured attempt
+    count to be enforced directly. It now is - every issued request is counted as it is issued - so
+    the bound counts exactly `attempts` requests and nothing extra.
+
+    The behavioural half of this is `test_a_reasoning_refusal_cannot_buy_a_fourth_request`, which
+    drives the real call path and counts the requests that actually leave."""
+    assert EXTRA_REQUESTS == 0
+    per_request = bound_for(SONNET, 2000, 1000, 1, retries_grow=False)
+    # three attempts with no growth is three requests, not four
+    assert bound_for(SONNET, 2000, 1000, 3, retries_grow=False) == pytest.approx(per_request * 3)
 
 
 def test_the_token_bound_is_bytes_not_characters():
@@ -236,20 +248,23 @@ def test_an_unpriced_model_refuses_rather_than_guesses():
 
 def test_the_bound_is_far_above_the_forecast_and_that_is_the_point():
     """Measured on a real arm-B call: 21,971 bytes of prompt, a 2,200-token output ceiling and three
-    attempts bound at about $0.38, where the run actually cost $0.0292. A cap set to the forecast is
-    not a guarantee; a cap set to the bound is, and it is **thirteen times** larger. The first
-    version of this bound said 4.5x, and the difference between those two numbers is the reasoning
-    allowance, the retried prompt and the fourth request."""
+    attempts bound at about $0.30, where the run actually cost $0.0292. A cap set to the forecast is
+    not a guarantee; a cap set to the bound is, and it is **ten times** larger. The first version of
+    this bound said 4.5x, and the difference is the reasoning allowance and the retried prompt.
+
+    It read $0.3843 and thirteen times until the fifth review round removed the fourth request
+    `llm.ask` could issue. The guarantee is unchanged; one request that used to be possible is
+    not."""
     bound = bound_for(SONNET, 21971, 2200, 3)
-    assert bound == pytest.approx(0.3843, abs=0.0005)
-    assert bound / 0.0292 > 13
+    assert bound == pytest.approx(0.297858, abs=0.0005)
+    assert bound / 0.0292 > 10
 
 
 def test_the_hard_cap_holds_even_when_every_call_bills_its_full_bound():
     """Round three's exact worry: if calls are admitted and each costs far more than reserved, the
     bill can pass the cap. With the bound as the reservation that cannot happen - a call billed at
     its full bound still leaves the total inside the cap, with no slack term in the assertion."""
-    bound = bound_for(SONNET, 2000, 1000, 3)                   # 0.176544
+    bound = bound_for(SONNET, 2000, 1000, 3)                   # 0.142032
     b = Budget(cap_usd=0.50, attempts=3)
     admitted = []
     for _ in range(10):
@@ -257,7 +272,7 @@ def test_the_hard_cap_holds_even_when_every_call_bills_its_full_bound():
             admitted.append(b.take("a call", bound))
         except BudgetExhausted:
             break
-    assert len(admitted) == 2, f"admitted {len(admitted)}"      # a third would pass 0.50
+    assert len(admitted) == 3, f"admitted {len(admitted)}"      # a fourth would pass 0.50
     for amount in admitted:
         b.settle(amount, amount)                               # billed at the FULL bound
     assert b.spent <= b.cap                                    # no slack: a true hard cap
@@ -447,5 +462,115 @@ def test_the_mirrored_llm_constants_still_match_the_application():
         pytest.skip(f"app.debate.llm does not import here - {type(exc).__name__}: {exc}")
     assert REASONING_ROOM == llm.REASONING_ROOM
     assert Budget(0).attempts == llm.ATTEMPTS
-    # the echoed reply is sliced at text[:6_000] in llm.ask's retry
-    assert RETRY_ECHO_CHARS == 6_000
+    # The echo limit is now a named constant on both sides and the same unit on both sides - it was
+    # a literal 6,000 CHARACTER slice in llm.ask against 6,000 bytes spent here.
+    assert RETRY_ECHO_BYTES == llm.RETRY_ECHO_BYTES
+    # The correction sentence quotes the parser's message. Its longest fixed wording is 172 bytes,
+    # and llm clips the quoted message, so the whole instruction fits what is accounted for here.
+    assert RETRY_INSTRUCTION_BYTES >= 172 + llm.RETRY_PROBLEM_BYTES
+
+
+# --- the retry limits, against the real model-call path ----------------------------------------
+#
+# The fifth review round asked for these two limits to be tested "against the real model-call
+# path", not against the mirrored constants - which is the right ask, because every defect in this
+# family was a disagreement between what `llm.ask` does and what this file priced. These two drive
+# `llm.ask` itself with a stand-in transport and count what actually leaves.
+
+
+class _Stub:
+    def __init__(self, **kw):
+        self.__dict__.update(kw)
+
+
+def _llm_or_skip():
+    try:
+        from app.debate import llm
+    except Exception as exc:                 # pragma: no cover - the verification package's path
+        pytest.skip(f"app.debate.llm does not import here - {type(exc).__name__}: {exc}")
+    llm.REASONING_REQUIRED.clear()
+    return llm
+
+
+def _usage():
+    return _Stub(prompt_tokens=10, completion_tokens=1, cost=0.0)
+
+
+def test_the_retry_limits_hold_on_the_real_call_path(monkeypatch):
+    """Arabic prose and an unbounded parser message, through `llm.ask`.
+
+    The echo was `text[:6_000]` - six thousand CHARACTERS, spent here as six thousand BYTES - and
+    Arabic is about two bytes a character, so the retry could carry roughly twice the accounted
+    growth in the product's own second language. The correction sentence quoted the parser's
+    message, which had no limit at all. Both are clipped in bytes now, and this test reads the
+    messages the client was actually handed."""
+    llm = _llm_or_skip()
+    # 24,000 characters, 48,000 bytes: eight times the echo limit either way round.
+    arabic = "ولا" * 8_000
+    sent: list = []
+
+    async def create(**body):
+        sent.append(body["messages"])
+        return _Stub(choices=[_Stub(message=_Stub(content=arabic), finish_reason="stop")],
+                     usage=_usage())
+
+    monkeypatch.setattr(llm, "make_client",
+                        lambda s: _Stub(chat=_Stub(completions=_Stub(create=create))))
+    monkeypatch.setattr(llm, "host_routing", lambda s: {})
+
+    def check(_obj):
+        raise ValueError("the parser's own message, which used to go into the next prompt whole: "
+                         + "x" * 5_000)
+
+    with pytest.raises(llm.SeatError):
+        asyncio.run(llm.ask(_Stub(debate_reasoning=True), SONNET,
+                            [{"role": "system", "content": "s"}, {"role": "user", "content": "u"}],
+                            max_tokens=100, temperature=0.0, check=check))
+
+    assert len(sent) == llm.ATTEMPTS, f"{len(sent)} requests for {llm.ATTEMPTS} attempts"
+    echo, instruction = sent[-1][-2]["content"], sent[-1][-1]["content"]
+    assert len(echo.encode("utf-8")) <= RETRY_ECHO_BYTES
+    assert len(instruction.encode("utf-8")) <= RETRY_INSTRUCTION_BYTES
+    # The old character slice would have broken the byte limit on this very reply, so the test
+    # discriminates rather than passing on text that happens to be ASCII.
+    assert len(arabic[:RETRY_ECHO_BYTES].encode("utf-8")) > RETRY_ECHO_BYTES
+    # And the whole prompt grew by no more than the bound accounts for per retry.
+    grown = sum(len(m["content"].encode("utf-8")) for m in sent[-1])
+    first = sum(len(m["content"].encode("utf-8")) for m in sent[0])
+    assert grown - first <= (llm.ATTEMPTS - 1) * RETRY_GROWTH_BYTES
+
+
+def test_a_reasoning_refusal_cannot_buy_a_fourth_request(monkeypatch):
+    """The behavioural half of `test_the_fourth_request_is_prevented_rather_than_priced`.
+
+    A 400 "reasoning is mandatory" is retried with `continue`, and while that sat before the
+    attempt counter one `ask` could issue ATTEMPTS + 1 requests. On the old code this test counts
+    four."""
+    import openai
+
+    llm = _llm_or_skip()
+    calls: list = []
+
+    async def create(**body):
+        calls.append(body)
+        if len(calls) == 1:
+            # Claude Sonnet 5.5 on OpenRouter, verbatim in effect: reasoning cannot be switched off.
+            msg = "Reasoning is mandatory for this endpoint and cannot be disabled."
+            raise openai.BadRequestError(
+                msg, response=_Stub(status_code=400, headers={}, request=None),
+                body={"message": msg, "code": 400})
+        return _Stub(choices=[_Stub(message=_Stub(content="not json"), finish_reason="stop")],
+                     usage=_usage())
+
+    monkeypatch.setattr(llm, "make_client",
+                        lambda s: _Stub(chat=_Stub(completions=_Stub(create=create))))
+    monkeypatch.setattr(llm, "host_routing", lambda s: {})
+
+    with pytest.raises(llm.SeatError):
+        asyncio.run(llm.ask(_Stub(debate_reasoning=False), SONNET,
+                            [{"role": "system", "content": "s"}, {"role": "user", "content": "u"}],
+                            max_tokens=100, temperature=0.0, check=lambda o: o))
+
+    assert SONNET in llm.REASONING_REQUIRED, "the reasoning-refusal path was never exercised"
+    assert len(calls) == llm.ATTEMPTS, (
+        f"{len(calls)} requests left for {llm.ATTEMPTS} attempts: a refusal is buying a request")

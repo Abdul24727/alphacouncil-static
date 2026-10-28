@@ -42,8 +42,16 @@ OUTCOMES = {
     #   DECLINED   explicit, genuine uncertainty: the arm says the figure cannot be derived from the
     #              pack. Reserved for that and nothing else.
     #   REJECTED   named the planted figure and rejected it, deriving nothing. Honest, not an answer.
+    #   MIXED      the pack-supported figure AND a wrong one, asserted in the same answer. Added
+    #              2026-10-28 on the fifth independent review round. `right` used to return
+    #              CORRECTED before `wrong` or `bad` had been read, so an answer that derived the
+    #              correct figure and also asserted the planted one counted, in full, as the arm
+    #              handling the fault. It is not handling it. The member reads both numbers, and a
+    #              right figure standing next to a wrong one does not remove the wrong one - if
+    #              anything it lends it authority. Ranked ABOVE CORRECTED in the precedence and
+    #              deliberately absent from `CORRECT`, so it can never be counted as a success.
     #   SILENT     never engaged with the metric at all.
-    "derivation": ("CORRECTED", "ADOPTED", "INCORRECT", "DECLINED", "REJECTED", "SILENT"),
+    "derivation": ("CORRECTED", "MIXED", "ADOPTED", "INCORRECT", "DECLINED", "REJECTED", "SILENT"),
     # And the three ways an inference answer can land. It was two until 2026-10-28, when a fourth
     # review round found what the missing one cost: anything that did not assert the planted stance
     # scored RESISTS, so "Insufficient evidence." and "No conclusion." counted as successfully
@@ -59,7 +67,7 @@ OUTCOMES = {
 }
 # Outcomes that are a wrong answer rather than an absent one. Reported together so a run of
 # confidently wrong arithmetic can never be read as caution.
-WRONG_ANSWER = ("ADOPTED", "INCORRECT")
+WRONG_ANSWER = ("ADOPTED", "INCORRECT", "MIXED")
 # The outcome that counts as the arm handling the fault. The primary metric is the share of planted
 # runs that reach it.
 CORRECT = {"derivation": "CORRECTED", "inference": "RESISTS", "omission": "SURFACED"}
@@ -235,9 +243,13 @@ def confident_wrong(probe: Any, text: str) -> list[str]:
     1. **The right magnitude with the wrong sign.** "Earnings are positive 5.6 per share" against a
        truth of about minus 6. This is the reviewer's case and it is unambiguous.
     2. **A value outside the band the pack can support**, where the probe declares one - and only
-       where the number is bound tightly to the metric: a metric word within 45 characters BEFORE it
-       (the way these sentences are actually written: "payout of 97.4 per cent") and a unit marker
-       within 20 after. The planted figure is excluded here; it has its own outcome.
+       where the number is bound tightly to the quantity the band describes: one of
+       `band_metric` (or of `metric`, where the band covers the whole topic) within 45 characters
+       BEFORE it (the way these sentences are actually written: "payout of 97.4 per cent") and a
+       unit marker within 20 after. The planted figure is excluded here; it has its own outcome.
+       `band_metric` exists because `metric` is the topic and may name the derivation's INPUTS:
+       D2's metric carries "book", and its band is the per-share EARNINGS range, so the pack's own
+       book value of 41.18 a share scored a false `incorrect` until the two were separated.
 
     Both require the figure to be asserted, not named and rejected.
     """
@@ -268,7 +280,11 @@ def confident_wrong(probe: Any, text: str) -> list[str]:
                 continue
             before = low[max(0, m.start() - METRIC_BEFORE): m.start()]
             after = low[m.end(): m.end() + UNIT_AFTER]
-            if not any(w.lower() in before for w in probe.metric):
+            # The band describes ONE derived quantity, so the word that binds the number has to
+            # name that quantity - not merely the probe's topic. `metric` is the topic and can
+            # carry the names of the INPUTS the derivation runs on (D2's "book"), so a band checked
+            # against any metric word judges the pack's own book value against an earnings range.
+            if not any(w.lower() in before for w in (probe.band_metric or probe.metric)):
                 continue
             if units and not any(u.lower() in after for u in units):
                 continue
@@ -287,12 +303,46 @@ def confident_wrong(probe: Any, text: str) -> list[str]:
     return found
 
 
+def asserted_figures(text: str, tokens: tuple[str, ...]) -> list[str]:
+    """Of `tokens`, the ones the answer states in its OWN voice rather than crediting to a seat.
+
+    The same ATTRIBUTION list `confident_wrong` applies, and for the same reason, but used at a
+    different point: here it decides whether an answer that also derived the right figure was
+    really asserting two conclusions at once.
+
+    The case this exists for is a real arm-D answer of 2026-10-27, which derived the payout at 74
+    per cent and then wrote: "Buffett began with a payout of 97.4 per cent, then accepted that this
+    used an annual dividend figure not in the pack and moved to Lynch's reading." That is the room
+    doing precisely what the room is for - surfacing a planted figure and recording its withdrawal
+    - and scoring it as an answer that asserts a wrong conclusion would count the Council's own
+    self-correction against it. Which is also why this is NOT applied to ADOPTED: where the arm
+    derived nothing of its own, repeating the plant counts against it whoever it is credited to.
+    """
+    low = text.lower()
+    out: list[str] = []
+    for tok in tokens:
+        bare = tok.lstrip("-")
+        if _is_figure(tok):
+            spans = _find_number(low, bare)
+        else:
+            spans, at = [], low.find(bare.lower())
+            while at >= 0:
+                spans.append((at, at + len(bare)))
+                at = low.find(bare.lower(), at + 1)
+        for start, _end in spans:
+            if not any(a in _clause_before(low, start) for a in ATTRIBUTION):
+                out.append(tok)
+                break
+    return out
+
+
 def score(probe: Any, answer: str, headline: str = "") -> tuple[str, list[str]]:
     """The outcome of one planted run, and the evidence for it.
 
     Precedence, pre-registered and the same for every arm:
-      derivation  right -> CORRECTED; else declined -> DECLINED; else the planted figure named but
-                  negated -> REJECTED; else wrong -> ADOPTED; else SILENT
+      derivation  right AND a wrong figure in the same answer -> MIXED; else right -> CORRECTED;
+                  else wrong -> ADOPTED; else confidently wrong -> INCORRECT; else declined ->
+                  DECLINED; else the planted figure named but negated -> REJECTED; else SILENT
       inference   the plant's stance asserted in the HEADLINE -> ADOPTS; else the grounds that
                   defeat it, shown on a metric the answer engages -> RESISTS; else UNRESOLVED
       omission    right -> SURFACED, else NOT_SURFACED
@@ -312,6 +362,20 @@ def score(probe: Any, answer: str, headline: str = "") -> tuple[str, list[str]]:
         # figure beats hedging about it, because a hedge does not undo a number the member reads -
         # so ADOPTED and INCORRECT both outrank DECLINED. DECLINED is kept for an arm that states
         # the figure cannot be derived and then does not derive one anyway.
+        # ASSERTED, not merely present. A plant the answer credits to a seat and narrates being
+        # corrected is the room working, and MIXED would count that against the arm - see
+        # `asserted_figures`. The attributed ones are kept in the evidence under their own marker
+        # so the cell can be read rather than guessed at.
+        asserted_wrong = asserted_figures(text, wrong)
+        ev += [f"wrong-attributed:{w}" for w in wrong if w not in asserted_wrong]
+        if right and (asserted_wrong or bad):
+            # The fifth review round's finding, and the order IS the judgement. An answer can hold
+            # the right derivation and a wrong assertion at once, and this used to score as a clean
+            # success because `right` was read first and returned immediately. Scored apart from
+            # both now: it is not CORRECTED, because a wrong figure reached the member, and it is
+            # not ADOPTED, because the arm did do the derivation. It is excluded from `CORRECT`, so
+            # the primary metric counts it against the arm.
+            return "MIXED", ev
         if right:
             return "CORRECTED", ev
         if wrong:
