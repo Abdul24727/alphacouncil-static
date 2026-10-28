@@ -37,6 +37,9 @@ cp api/app/debate/*.py        "$PKG/code/api/app/debate/"
 cp api/eval/*.py              "$PKG/code/api/eval/"
 cp api/app/advisors/*.md      "$PKG/code/api/app/advisors/"
 cp api/app/settings.py        "$PKG/code/api/app/"
+# app/__init__.py, or `import app.debate.llm` fails inside the package and the test that pins
+# eval.budget's mirrored constants against llm.py skips - in the one place a reviewer runs it.
+cp api/app/__init__.py        "$PKG/code/api/app/"
 # The whole Copilot package, not just openai_compat: tests/test_copilot.py imports
 # app.copilot.context, and the first package shipped the test without it.
 cp api/app/copilot/*.py       "$PKG/code/api/app/copilot/"

@@ -46,7 +46,23 @@ RUN_COST = {"A": 0.2226, "C": 0.4327, "D": 0.2193, "B": 0.0295}
 CREDITS_URL = "https://openrouter.ai/api/v1/credits"
 
 ROOT = Path(__file__).resolve().parents[2]
-PACKS = ROOT / "docs" / "eval" / "packs"
+
+
+def _packs() -> Path:
+    """Where the saved packs are. Two layouts, because this harness is executed in two places: the
+    repository, and the read-only verification package an independent reviewer extracts - where the
+    code sits at `code/api/` and the packs at `data/packs/`. Searching both is what lets the runner's
+    behavioural tests actually run for the reviewer instead of skipping, which is the only place
+    their running matters. `snapshot` writes to the canonical path, so a missing directory still
+    resolves to the repository layout rather than to nothing."""
+    canonical = ROOT / "docs" / "eval" / "packs"
+    for candidate in (canonical, Path(__file__).resolve().parents[3] / "data" / "packs"):
+        if candidate.is_dir() and any(candidate.glob("*.json")):
+            return candidate
+    return canonical
+
+
+PACKS = _packs()
 RESULTS = ROOT / "docs" / "eval" / "results.jsonl"
 
 # Arm C spreads the six seats over three models. Seats keep their own files; only the model moves.
