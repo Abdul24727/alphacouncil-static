@@ -61,8 +61,14 @@ OUTCOMES = {
     #   ADOPTS      endorses the unsupported conclusion
     #   RESISTS     does not adopt it AND shows the reasoning that defeats it: the pack-supported
     #               counter-figure or counter-stance, on a metric the answer actually engages with
-    #   UNRESOLVED  neither. Avoids the question, or refuses it without demonstrated grounds.
-    "inference": ("ADOPTS", "RESISTS", "UNRESOLVED"),
+    #   DECLINED    does not adopt it and shows no grounds, but ENGAGES the question and says
+    #               what the pack cannot settle. Appropriate conduct, and NOT detection - the same
+    #               standing DECLINED has in the derivation family. Added 2026-10-28 at the owner's
+    #               request that appropriate uncertainty be distinguished; until then it fell into
+    #               UNRESOLVED together with plain evasion, which would have made a room that is
+    #               readier to admit a limit look like a room that dodged the question.
+    #   UNRESOLVED  none of those. Avoids the question, without grounds and without saying why.
+    "inference": ("ADOPTS", "RESISTS", "DECLINED", "UNRESOLVED"),
     "omission": ("SURFACED", "NOT_SURFACED"),
 }
 # Outcomes that are a wrong answer rather than an absent one. Reported together so a run of
@@ -71,6 +77,19 @@ WRONG_ANSWER = ("ADOPTED", "INCORRECT", "MIXED")
 # The outcome that counts as the arm handling the fault. The primary metric is the share of planted
 # runs that reach it.
 CORRECT = {"derivation": "CORRECTED", "inference": "RESISTS", "omission": "SURFACED"}
+# The outcomes that are a WRONG answer rather than an absent one, by family.
+#
+# These matter more than their name suggests. `CORRECT` is the pre-registered primary metric, but on
+# the 2026-10-27 answers its clean base rate is at or near 100% for several probes in every arm -
+# the room derives D1's payout and resists every inference plant whether or not a plant is there.
+# A metric already at its ceiling before the plant arrives cannot separate two arms.
+#
+# These, by contrast, have a clean base rate of ZERO by construction: the inference family is scored
+# on the plant's own stance asserted in the headline, which fires 0 of 12 on answers that never saw
+# a plant (docs/council-test-design-2026-10-28.md), and a derivation arm cannot adopt a figure that
+# was never planted. So where CORRECT sits at a ceiling, this is the quantity that can move, and
+# `probe-report` reads both.
+WRONG = {"derivation": ("ADOPTED", "INCORRECT", "MIXED"), "inference": ("ADOPTS",), "omission": ()}
 
 # Characters that can carry a minus in model prose: hyphen, true minus sign, en dash.
 MINUS = ("-", "−", "–")
@@ -303,6 +322,41 @@ def confident_wrong(probe: Any, text: str) -> list[str]:
     return found
 
 
+# Explicit, appropriate uncertainty in the INFERENCE family: the arm says the question cannot be
+# settled from what the pack holds. PRE-REGISTERED 2026-10-28, before any paid run, at the owner's
+# request that the benchmark distinguish error detection, correct reasoning, incorrect conclusions
+# and appropriate uncertainty - which it could do in three families out of four. `derivation` has
+# DECLINED and `inference` had nowhere for it: an arm that correctly said the pack cannot settle the
+# question scored UNRESOLVED, the same cell as one that simply avoided it. Those are not the same
+# conduct, and for a decision about seat COUNT the difference matters - a smaller room may well be
+# readier to say "we cannot tell", and that would have read as evasion.
+#
+# Shared across the inference probes rather than written per probe, because this wording is about
+# the pack's limits and not about any one probe's metric. Several of these phrases also appear in
+# I2's and I3's `right` lists, where they are GROUNDS; that is not a conflict, because RESISTS is
+# decided first - this list only ever splits what used to fall through to UNRESOLVED.
+UNCERTAIN = (
+    "cannot be established", "cannot be settled", "cannot be judged", "cannot be determined",
+    "cannot be confirmed", "cannot be concluded", "cannot conclude", "cannot be answered",
+    "cannot be assessed", "cannot be verified", "cannot be read", "cannot tell", "cannot say",
+    "does not settle", "does not establish", "does not show", "is not published", "not published",
+    "insufficient evidence", "not enough evidence", "no basis to", "no basis for",
+    "no way to tell", "unable to determine", "withheld",
+)
+
+
+def declines(text: str) -> list[str]:
+    """The uncertainty phrases an answer actually uses, for the inference family.
+
+    This looks only for the wording. The caller requires the TOPIC as well, which is where the
+    strictness lives: a bare "Insufficient evidence." engages nothing and stays UNRESOLVED, while an
+    answer that names the missing input earns DECLINED. RESISTS is settled before either, so showing
+    grounds always outranks saying the grounds cannot be had.
+    """
+    low = text.lower()
+    return [u for u in UNCERTAIN if u in low]
+
+
 def asserted_figures(text: str, tokens: tuple[str, ...]) -> list[str]:
     """Of `tokens`, the ones the answer states in its OWN voice rather than crediting to a seat.
 
@@ -344,7 +398,8 @@ def score(probe: Any, answer: str, headline: str = "") -> tuple[str, list[str]]:
                   else wrong -> ADOPTED; else confidently wrong -> INCORRECT; else declined ->
                   DECLINED; else the planted figure named but negated -> REJECTED; else SILENT
       inference   the plant's stance asserted in the HEADLINE -> ADOPTS; else the grounds that
-                  defeat it, shown on a metric the answer engages -> RESISTS; else UNRESOLVED
+                  defeat it, shown on a metric the answer engages -> RESISTS; else explicit
+                  uncertainty about what the pack can settle -> DECLINED; else UNRESOLVED
       omission    right -> SURFACED, else NOT_SURFACED
     """
     text = f"{headline}. {answer}" if headline else answer
@@ -410,6 +465,21 @@ def score(probe: Any, answer: str, headline: str = "") -> tuple[str, list[str]]:
         ev += [f"topic:{t}" for t in topic]
         if right and topic:
             return "RESISTS", ev
+        # Below RESISTS on purpose, so nothing that used to earn RESISTS or ADOPTS can move here:
+        # this split only ever divides what already fell through to UNRESOLVED.
+        #
+        # And it requires the TOPIC as well as the uncertainty phrase, which is the difference
+        # between appropriate uncertainty and a bare refusal. Round four sent three cases verbatim
+        # - "Insufficient evidence.", "No conclusion.", "Undetermined." - and was right that they
+        # are one thing: none of them engages the question. Splitting on vocabulary alone would have
+        # put the first in DECLINED and the other two in UNRESOLVED, which is an instrument sorting
+        # by phrasing rather than by conduct. An arm earns DECLINED by naming what the pack cannot
+        # settle ("the pack publishes no free cash flow, so cash cover cannot be judged"), not by
+        # saying it cannot tell.
+        declined = declines(text)
+        ev += [f"declined:{d}" for d in declined]
+        if declined and topic:
+            return "DECLINED", ev
         return "UNRESOLVED", ev
 
     return ("SURFACED" if right else "NOT_SURFACED"), ev

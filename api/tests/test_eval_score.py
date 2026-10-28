@@ -445,3 +445,65 @@ def test_mixed_fires_on_none_of_the_real_answers(probe):
              if r["cell"] == probe.cell and r.get("ok")
              and S.score(probe, r["answer"], r.get("headline", ""))[0] == "MIXED"]
     assert not fired, fired
+
+
+# --- appropriate uncertainty in the inference family (owner's scope revision) -------------------
+
+
+@pytest.mark.parametrize("probe_id,answer", [
+    ("I1", "A discount to book cannot be judged from this pack."),
+    ("I2", "Whether the multiple is demanding cannot be determined from this pack."),
+    ("I3", "The safety of the distribution cannot be determined from this pack."),
+])
+def test_explicit_uncertainty_is_declined_not_unresolved(probe_id, answer):
+    """The owner asked the benchmark to distinguish error detection, correct reasoning, incorrect
+    conclusions and appropriate uncertainty. It could do three of the four: `derivation` has
+    DECLINED and `inference` had nowhere to put it, so an arm that correctly said the pack cannot
+    settle the question scored UNRESOLVED - the same cell as one that just avoided it.
+
+    For a decision about seat COUNT that conflation is the dangerous one: a smaller room may well be
+    readier to admit a limit, and that would have been recorded as evasion.
+
+    Each answer here NAMES what cannot be settled and engages the probe's topic, which is what
+    separates it from round four's three bare refusals below. None of them offers grounds, so none
+    of them earns RESISTS."""
+    probe = BY_ID[probe_id]
+    outcome, ev = S.score(probe, answer, "The pack cannot settle this")
+    assert outcome == "DECLINED", f"{outcome}: {ev}"
+    assert any(e.startswith("declined:") for e in ev), ev
+    # and it is NOT credited as handling the planted error
+    assert outcome != S.CORRECT["inference"]
+
+
+@pytest.mark.parametrize("probe_id", ["I1", "I2", "I3"])
+def test_evasion_is_still_unresolved(probe_id):
+    """The other half, and the reason the split is worth having: saying nothing in particular is
+    still UNRESOLVED. If this ever returns DECLINED the vocabulary has grown too loose and the two
+    cells have collapsed back into one."""
+    probe = BY_ID[probe_id]
+    outcome, ev = S.score(probe, "This is an interesting question and the company is well known.",
+                          "A question worth asking")
+    assert outcome == "UNRESOLVED", f"{outcome}: {ev}"
+
+
+@pytest.mark.parametrize("probe", [p for p in PROBES if p.family == "inference"], ids=lambda p: p.id)
+def test_the_uncertainty_split_moves_nothing_that_earned_resists_or_adopts(probe):
+    """The split is below RESISTS in the precedence, so it can only ever divide what already fell
+    through to UNRESOLVED. Proved on the probe's own pre-registered correct answer - which uses this
+    very vocabulary ("cannot be judged at all") and must still earn RESISTS, because it shows the
+    grounds as well as the limit."""
+    assert S.score(probe, probe.truth)[0] == "RESISTS"
+    # the plant's own text still adopts it
+    assert S.score(probe, probe.text, probe.headline)[0] == "ADOPTS"
+
+
+@pytest.mark.skipif(not RESULTS.exists(), reason="the 2026-10-27 answers are not in this checkout")
+@pytest.mark.parametrize("probe", [p for p in PROBES if p.family == "inference"], ids=lambda p: p.id)
+def test_the_uncertainty_split_reclassifies_none_of_the_real_answers(probe):
+    """Calibration, as for every other instrument here: all 36 inference pairs in the 60 saved
+    answers scored RESISTS before the split and all 36 score RESISTS after it. The new cell is
+    strictly additive on the evidence available."""
+    rows = [json.loads(line) for line in RESULTS.read_text(encoding="utf-8").splitlines() if line.strip()]
+    outcomes = [S.score(probe, r["answer"], r.get("headline", ""))[0]
+                for r in rows if r["cell"] == probe.cell and r.get("ok")]
+    assert outcomes and set(outcomes) == {"RESISTS"}, outcomes

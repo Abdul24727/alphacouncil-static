@@ -1,19 +1,32 @@
 """Reading the discriminating run back: the validity gate, the three families, and the verdict.
 
-Pre-registered before any probe ran, and not revisited afterwards:
+**Re-registered 2026-10-28, before any probe ran, on the owner's instruction.** The principal
+decision is whether to keep six advisors or move to four, so:
 
-* **PRIMARY, carrying the pass/fail: A (the room) vs B (the Chair's model, one pass).** The metric is
-  the share of planted runs the arm HANDLED - CORRECTED for a derivation, REJECTS for an inference,
-  SURFACED for an omission - pooled over all nine probes. **Higher is better**, which is the opposite
-  direction from the run of 2026-10-27, where the metric was propagation.
-  PASS if and only if Fisher exact gives p < 0.05 and the room's rate is the higher one.
-* **SECOND, reported with p and deciding nothing: A vs E** (the same model given a second pass). This
-  is the comparison that says WHICH of the room's two differences from B is doing the work, and it is
-  the one most likely to change the architecture. It is second because testing both at 0.05 inflates
-  the chance of a false positive, and the owner's question was about the room against one model.
-* **Per family: descriptive only.** Three probes by two repeats is n = 6 an arm; nothing at that size
-  carries a p value worth printing, and the families are reported as counts so the pooled number can
-  never hide a split.
+* **PRIMARY: A (six advisors + Chairman) vs D (four + Chairman, existing prompts).** The metric is
+  the share of planted runs the arm HANDLED - CORRECTED for a derivation, RESISTS for an inference,
+  SURFACED for an omission - pooled over the probes that survive the gate.
+  **Read as a difference test, not a pass/fail.** A difference at p < 0.05 is a reason not to drop
+  two seats. No measurable difference is NOT equivalence: at n = 18 an arm, Fisher needs a gap of 6
+  of 18 before it is visible, so the absence of one is a failure to detect, not a finding of parity.
+  Labelling that PASS would be the worst misreading this report could invite, so it does not.
+* **SECOND and THIRD, superiority tests: A vs B and D vs B** (the Chair's model, one pass). PASS
+  needs p < 0.05 AND the room handling more. These come after the primary but they condition it: if
+  neither room beats one model, seat count is not the question and the finding is about the Council.
+* **LATER, if arm E is ever run: A vs E** (the same model given a second pass), the comparison that
+  says which of the room's two differences from B is doing the work. Deferred by the owner.
+* **Per family: descriptive only.** Six probes by three repeats is n = 18 an arm pooled, but far less
+  per family; nothing at that size carries a p value worth printing, and the families are reported
+  as counts so the pooled number can never hide a split.
+
+**Until 2026-10-28 the primary was A vs B**, which answers a different question - whether the Council
+beats one model at all. It is kept as the second comparison rather than dropped.
+
+**The paired reading exists because the primary metric is at a ceiling on half the probes.** On the
+clean controls, the three inference probes score RESISTS in every arm and D1 scores CORRECTED in A
+and D, so the planted share alone cannot separate two arms there. What is printed is the pair - the
+clean control beside the planted run, the change between them, and the wrong-answer rate, whose
+clean base rate is zero by construction (score.WRONG).
 """
 
 import statistics
@@ -23,7 +36,7 @@ from typing import Any
 
 from .probes import BY_ID, FAMILIES
 from .report import _rows, fisher_exact
-from .score import CORRECT
+from .score import CORRECT, WRONG
 
 
 def gate(rows: list[dict[str, Any]], arms: tuple[str, ...]) -> tuple[set[str], list[str]]:
@@ -143,25 +156,104 @@ def report(path: Path | None = None) -> None:
             extra = f", {ch}/{n} contested in the round of challenges"
         print(f"  {arm}: {h}/{n} handled{extra}")
 
-    def compare(x: str, y: str, primary: bool) -> None:
+    # --- the paired reading --------------------------------------------------------------------
+    #
+    # Added 2026-10-28, because "handled" on its own can be read as a result when it is a ceiling.
+    # On the answers available, CORRECT's clean base rate is at or near 100% for D1 and for all
+    # three inference probes, in EVERY arm: the room derives the payout and resists the planted
+    # inference whether or not anything was planted. A metric at its ceiling before the plant
+    # arrives separates nothing, and the pooled line above would have shown three arms tied and
+    # called it a finding.
+    #
+    # The design is paired - same pack, same question, plant or no plant - so what is printed here
+    # is the pair: the clean control beside the planted run, the CHANGE between them, and the
+    # wrong-answer rate, whose clean base rate is zero by construction (score.WRONG). Where the
+    # change is zero and the wrong-answer rate is zero, the probe measured nothing in that arm, and
+    # that has to be visible rather than inferred.
+    print("\nPAIRED: the clean control beside the planted run (same pack, same question)")
+    print(f"  {'arm':4}{'clean':>14}{'planted':>14}{'change':>10}{'wrong answers':>16}")
+    for arm in arms:
+        # arm E shares arm B's clean control, as the gate does
+        ctrl_arm = "B" if arm == "E" else arm
+        cl = [r for r in clean if r["probe"] in keep and r["arm"] == ctrl_arm]
+        pl = [r for r in good if r["arm"] == arm]
+        if not pl:
+            continue
+        ch = sum(1 for r in cl if r["outcome"] == CORRECT[r["family"]])
+        ph = sum(1 for r in pl if r["outcome"] == CORRECT[r["family"]])
+        wrong = sum(1 for r in pl if r["outcome"] in WRONG[r["family"]])
+        clean_rate = ch / len(cl) if cl else None
+        planted_rate = ph / len(pl)
+        delta = f"{(planted_rate - clean_rate) * 100:+.0f}pp" if clean_rate is not None else "-"
+        shown = f"{ch}/{len(cl)}" if cl else "-"
+        print(f"  {arm:4}{shown:>14}{f'{ph}/{len(pl)}':>14}{delta:>10}"
+              f"{f'{wrong}/{len(pl)}':>16}")
+    print("\n  A probe whose clean control already reaches the correct outcome in every arm is at a")
+    print("  ceiling: read the wrong-answer column, not 'handled'. Zero in both columns for every")
+    print("  arm means the plant changed nothing anywhere, which is a finding about the PROBE.")
+
+    print("\nCLEAN BASE RATE PER PROBE (the correct outcome with nothing planted)")
+    pids2 = sorted(keep)
+    print(f"  {'arm':4}" + "".join(f"{p:>8}" for p in pids2))
+    for arm in arms:
+        ctrl_arm = "B" if arm == "E" else arm
+        line = f"  {arm:4}"
+        for pid in pids2:
+            g = [r for r in clean if r["probe"] == pid and r["arm"] == ctrl_arm]
+            fam = BY_ID[pid].family
+            hit = sum(1 for r in g if r["outcome"] == CORRECT[fam])
+            line += f"{(f'{hit}/{len(g)}') if g else '-':>8}"
+        print(line)
+
+    def compare(x: str, y: str, label: str, reading: str | None = None) -> None:
+        """One comparison. `reading` says how it is to be READ, which is not the same for all of them.
+
+        `superiority` asks whether x does better than y, and no measurable difference is a FAIL -
+        the room has not earned its cost. `difference` asks only whether the two differ, because for
+        six seats against four a difference is the thing that would STOP a change, and the absence
+        of one is not a pass or a fail but a failure to detect at this sample size. Labelling the
+        second as PASS would be the worst misreading this report could invite.
+        """
         hx, nx = rate(x)
         hy, ny = rate(y)
         if not nx or not ny:
-            print(f"  {x} vs {y}: not enough runs")
+            print(f"  {label}: {x} vs {y}: not enough runs")
             return
         p = fisher_exact(hx, nx - hx, hy, ny - hy)
-        line = f"  {'PRIMARY' if primary else 'second '}: {x} {hx}/{nx} vs {y} {hy}/{ny}  Fisher p = {p:.4f}"
-        if primary:
+        line = f"  {label}: {x} {hx}/{nx} vs {y} {hy}/{ny}  Fisher p = {p:.4f}"
+        if reading == "superiority":
             line += f"  -> {'PASS' if (p < 0.05 and hx / nx > hy / ny) else 'FAIL'}"
+        elif reading == "difference":
+            if p < 0.05:
+                line += f"  -> DIFFERENCE: {x if hx / nx > hy / ny else y} is higher"
+            else:
+                line += "  -> no measurable difference (NOT equivalence - read the note)"
         print(line)
 
     print("\nCOMPARISONS, ranked before the run")
-    compare("A", "B", True)
-    for x, y in (("A", "E"), ("E", "B"), ("D", "A")):
+    # RANKED AS THE OWNER PUT IT, 2026-10-28: the principal decision is six advisors or four, so
+    # A vs D is primary. It was A vs B until then, which answers a different question - whether the
+    # Council beats the Chairman at all - and that is kept directly below, because if neither room
+    # beats B then seat count is moot and the finding is about the Council rather than its size.
+    if "D" in arms:
+        compare("A", "D", "PRIMARY", "difference")
+    compare("A", "B", "second ", "superiority")
+    if "D" in arms:
+        compare("D", "B", "third  ", "superiority")
+    for x, y in (("A", "E"), ("E", "B")):
         if x in arms and y in arms:
-            compare(x, y, False)
-    print("\n  PASS needs p < 0.05 AND the room handling MORE. No measurable difference is a FAIL.")
-    print("  A vs E is the architecture question: if E matches A, the second pass is doing the work, not the seats.")
+            compare(x, y, "later  ", None)
+    print("\n  PRIMARY is six advisors against four, on identical packs and identical questions.")
+    print("  Read it differently from the rest, on purpose:")
+    print("    - a DIFFERENCE (p < 0.05) is a reason NOT to drop two seats;")
+    print("    - no measurable difference is NOT proof that four match six. It is a failure to")
+    print("      detect one at this sample size, and the sample is small by design. An equivalence")
+    print("      claim needs a margin fixed in advance and far more runs than this plan buys.")
+    print("      What this plan can do is rule out a LARGE loss from dropping two seats.")
+    print("  A vs B and D vs B are superiority tests: PASS needs p < 0.05 AND the room handling")
+    print("  more. If neither room beats the Chairman alone, seat count is not the question.")
+    print("  A vs E, if E was run, is the architecture question: if E matches A, the second pass is")
+    print("  doing the work rather than the seats.")
 
     failed = [r for r in rows if not r["ok"]]
     if failed:
