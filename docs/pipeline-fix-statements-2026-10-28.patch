@@ -1,0 +1,357 @@
+--- a/llm-council/parse_financial_statements.py
++++ b/llm-council/parse_financial_statements.py
+@@ -13,7 +13,29 @@
+ the raw label for downstream gauge lookup. GENERIC: whatever labels the grid has are
+ captured; nothing hardcoded.
+ 
+-NON-DESTRUCTIVE: CREATE TABLE IF NOT EXISTS + idempotent upsert. Only this table.
++NON-DESTRUCTIVE: CREATE TABLE IF NOT EXISTS + idempotent upsert. Only these two tables.
++
++REPAIRED 2026-10-28 (Tadawul income statements were absent market-wide). Argaam's KSA pages serve
++the QUARTERLY grid under the annual URL, so this script reconstructs annual figures by summing
++quarters. It required all four quarters of one fiscal year, and those pages carry only a rolling
++five-quarter window, so no fiscal year was ever complete and EVERY flow row was dropped - the
++whole income statement, for every Saudi ticker. Stock rows survived on the single month-12 column.
++The same summing also added `Shares Outstanding (Million)` across four quarters, reporting 4x the
++real count. Four changes, each labelled REPAIR below:
++
++  REPORTING MODE   every row now records `period` (FY | TTM | Q) and `period_end`, so a
++                   trailing-twelve-month figure is never presented as a fiscal year.
++  AGGREGATION      flows are summed over four CONSECUTIVE populated quarters, per row, whether or
++                   not they align to a fiscal year; stocks take a quarter-end snapshot; and share
++                   COUNTS are never summed - they take the window's end quarter.
++  HISTORY          `fundamentals_lineitems_quarterly` (new, additive, read by nothing yet) keeps
++                   every populated quarter and every TTM window, instead of one figure per year.
++  TRACEABILITY     every stored value carries `source_json` naming the rule and the exact quarters
++                   it was built from, so a derived figure can be audited without re-running this.
++
++`fundamentals_lineitems` keeps its primary key and one row per (ticker, fiscal year, section,
++item), because the gauge stage and the API read it: at most one TTM window reaches it (the newest),
++and the full series goes to the new table.
+ 
+ Usage:
+     python parse_financial_statements.py [--universe ../argaam/default_universe]
+@@ -22,6 +44,7 @@
+ from __future__ import annotations
+ 
+ import argparse
++import json
+ import logging
+ import re
+ import sqlite3
+@@ -58,22 +81,83 @@
+     item_index       INTEGER,   -- 0-based ordinal within (section), source order (stable template)
+     line_item_label  TEXT,
+     value            REAL,
++    -- REPAIR (reporting mode + traceability). `period` is FY (a real fiscal year) or TTM (four
++    -- consecutive quarters that are not one); `period_end` is the last month in the window,
++    -- "2026-06"; `source_json` names the rule and the quarters the value was built from. The
++    -- primary key is unchanged, so every existing reader sees one row per year as before.
++    period           TEXT,
++    period_end       TEXT,
++    source_json      TEXT,
+     PRIMARY KEY (ticker_key, fiscal_year, section, item_index)
+ );
+ """
++
++# REPAIR (history). Additive and read by nothing yet: every populated quarter and every TTM
++# window, so a trend survives instead of a single figure per year. Separate table on purpose -
++# putting several periods per year into fundamentals_lineitems would return four rows where the
++# gauge stage and the API expect one.
++SQL_CREATE_Q = """
++CREATE TABLE IF NOT EXISTS fundamentals_lineitems_quarterly (
++    ticker_key       TEXT,
++    ticker           TEXT,
++    exchange         TEXT,
++    fiscal_year      INTEGER,
++    period           TEXT,      -- Q (one quarter end) | TTM (four consecutive quarters)
++    period_end       TEXT,      -- "2026-06"
++    section          TEXT,
++    item_index       INTEGER,
++    line_item_label  TEXT,
++    value            REAL,
++    source_json      TEXT,
++    PRIMARY KEY (ticker_key, period, period_end, section, item_index)
++);
++"""
++SQL_INDEX_Q = """
++CREATE INDEX IF NOT EXISTS idx_lineitems_q_lookup
++    ON fundamentals_lineitems_quarterly(ticker_key, line_item_label, period_end);
++"""
++
++
++def migrate(conn) -> None:
++    """REPAIR: add the three new columns to a table that predates them. CREATE TABLE IF NOT
++    EXISTS cannot, and the primary key is unchanged, so no table rebuild is needed."""
++    have = {r[1] for r in conn.execute("PRAGMA table_info(fundamentals_lineitems)")}
++    if not have:
++        return
++    for col in ("period", "period_end", "source_json"):
++        if col not in have:
++            conn.execute(f"ALTER TABLE fundamentals_lineitems ADD COLUMN {col} TEXT")
++            logger.info(f"migrated: fundamentals_lineitems.{col} added")
+ SQL_INDEX = """
+ CREATE INDEX IF NOT EXISTS idx_lineitems_lookup
+     ON fundamentals_lineitems(ticker_key, fiscal_year, line_item_label);
+ """
+ SQL_UPSERT = """
+ INSERT INTO fundamentals_lineitems
+-    (ticker_key, ticker, exchange, fiscal_year, section, item_index, line_item_label, value)
+-VALUES (?, ?, ?, ?, ?, ?, ?, ?)
++    (ticker_key, ticker, exchange, fiscal_year, section, item_index, line_item_label, value,
++     period, period_end, source_json)
++VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+ ON CONFLICT(ticker_key, fiscal_year, section, item_index) DO UPDATE SET
+     line_item_label = excluded.line_item_label,
+     value           = excluded.value,
+     ticker          = excluded.ticker,
+-    exchange        = excluded.exchange
++    exchange        = excluded.exchange,
++    period          = excluded.period,
++    period_end      = excluded.period_end,
++    source_json     = excluded.source_json
++"""
++SQL_UPSERT_Q = """
++INSERT INTO fundamentals_lineitems_quarterly
++    (ticker_key, ticker, exchange, fiscal_year, period, period_end, section, item_index,
++     line_item_label, value, source_json)
++VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
++ON CONFLICT(ticker_key, period, period_end, section, item_index) DO UPDATE SET
++    line_item_label = excluded.line_item_label,
++    value           = excluded.value,
++    fiscal_year     = excluded.fiscal_year,
++    ticker          = excluded.ticker,
++    exchange        = excluded.exchange,
++    source_json     = excluded.source_json
+ """
+ 
+ 
+@@ -159,6 +243,62 @@
+ # figure); Balance Sheet is a STOCK measure (take the year-end snapshot).
+ _FLOW_SECTIONS = {"Income Statement", "Cash Flow Statement"}
+ 
++# REPAIR (aggregation). A row inside a FLOW section that is a share COUNT is not a flow: summing
++# four quarters of "Shares Outstanding (Million)" reported 4x the real count (Aramco 968,000
++# against 242,000; SABIC 12,000 against 3,000, both contradicting their own balance sheets). These
++# take the window's END quarter instead. Per-share EARNINGS are genuinely per-period and are still
++# summed, which is what makes four quarterly EPS figures add to the annual one. Both Arabic
++# spellings of "number of shares" occur in the GCC grids, with and without the hamza.
++_COUNT_MARKERS = (
++    "shares outstanding", "number of shares", "par value",
++    "\u0639\u062f\u062f \u0627\u0644\u0623\u0633\u0647\u0645",
++    "\u0639\u062f\u062f \u0627\u0644\u0627\u0633\u0647\u0645",
++)
++_QUARTER_MONTHS = (3, 6, 9, 12)
++
++
++def is_count_row(label: str) -> bool:
++    """A count or a constant, not a flow: never summed across quarters."""
++    low = (label or "").lower()
++    return any(m in low for m in _COUNT_MARKERS)
++
++
++def month_label(year: int, month: int) -> str:
++    return f"{year}-{month:02d}"
++
++
++def quarter_windows(keys) -> list:
++    """Every run of four CONSECUTIVE populated quarters, oldest window first.
++
++    `keys` are the (year, month) pairs this row actually has a value for, so a row with a gap -
++    or with only part of the newest quarter published - yields no window rather than a wrong sum.
++    """
++    order = sorted(keys)
++    windows = []
++    for i in range(len(order) - 3):
++        run = order[i:i + 4]
++        ok = True
++        for a, b in zip(run, run[1:]):
++            step = (b[0] - a[0]) * 12 + (b[1] - a[1])
++            if step != 3:
++                ok = False
++                break
++        if ok:
++            windows.append(run)
++    return windows
++
++
++def window_period(run) -> tuple:
++    """(period, fiscal_year, period_end) for a four-quarter window: FY when it is exactly one
++    fiscal year, TTM otherwise. A TTM figure must never be labelled a fiscal year - that is the
++    difference between "the business earned this in 2025" and "this is the last twelve months"."""
++    years = {y for y, _m in run}
++    months = {m for _y, m in run}
++    end_y, end_m = run[-1]
++    if len(years) == 1 and months == set(_QUARTER_MONTHS):
++        return "FY", end_y, month_label(end_y, 12)
++    return "TTM", end_y, month_label(end_y, end_m)
++
+ 
+ def ingest_one(conn, ticker_key: str, universe: Path) -> dict:
+     stats = {"rows": 0, "years": 0, "skipped_nonempty": 0, "skips": [], "ok": False,
+@@ -204,6 +344,10 @@
+     stats["mode"] = "quarterly_reconstructed" if is_quarterly else "annual_direct"
+ 
+     upserts = []
++    qupserts = []   # REPAIR (history): rows for fundamentals_lineitems_quarterly
++    # REPAIR (reporting mode): flow candidates, chosen per SECTION after the row loop so that one
++    # statement covers one period. section -> (period, period_end) -> item_index -> (fy, v, src)
++    flow_candidates = {}
+     years_seen = set()
+     section = ""
+     section_counter = {}
+@@ -214,10 +358,13 @@
+             section = SECTION_MAP[label]   # canonical English (handles Arabic UAE headers)
+             continue
+ 
+-        # Gather this row's values keyed by period descriptor.
++        # Gather this row's values keyed by period descriptor. Each emit is
++        # (fiscal_year, period, period_end, value, source): `emits` goes to
++        # fundamentals_lineitems, one per fiscal year as before; `qemits` to the quarterly table.
++        emits = []
++        qemits = []
+         if not is_quarterly:
+             # ANNUAL grid: one value per year column (UAE/portal + old KSA /en/).
+-            annual = {}
+             for i, meta in col_meta.items():
+                 if meta[0] != "Y" or i >= len(cells):
+                     continue
+@@ -230,12 +377,15 @@
+                     if len(stats["skips"]) < 20:
+                         stats["skips"].append((meta[1], label[:30], raw[:30]))
+                     continue
+-                annual[meta[1]] = v
++                # An annual column needs no reconstruction: it is the figure as published.
++                emits.append((meta[1], "FY", month_label(meta[1], 12), v,
++                              {"rule": "annual_column", "year": meta[1],
++                               "mode": "annual_direct"}))
+         else:
+-            # QUARTERLY grid: reconstruct an annual figure per fiscal year.
+-            #   FLOW (income/cash-flow) -> sum the 4 standard quarters (months
+-            #     3,6,9,12); require all four so a partial year is never reported.
+-            #   STOCK (balance sheet)   -> the year-end (month 12) snapshot.
++            # QUARTERLY grid: reconstruct from quarters.
++            #   FLOW (income/cash-flow) -> sum four CONSECUTIVE populated quarters, which may or
++            #     may not be one fiscal year; a share COUNT inside a flow section is not summed.
++            #   STOCK (balance sheet)   -> a quarter-end snapshot.
+             by_ym = {}  # (year, month) -> value
+             for i, meta in col_meta.items():
+                 if meta[0] != "Q" or i >= len(cells):
+@@ -248,31 +398,90 @@
+                     stats["skipped_nonempty"] += 1
+                     continue
+                 by_ym[(meta[1], meta[2])] = v
+-            annual = {}
+-            years = {y for (y, _m) in by_ym}
+             flow = (section in _FLOW_SECTIONS)
+-            for y in years:
+-                if flow:
+-                    q = [by_ym.get((y, mo)) for mo in (3, 6, 9, 12)]
+-                    if all(v is not None for v in q):
+-                        annual[y] = round(sum(q), 4)
+-                else:
+-                    if (y, 12) in by_ym:
+-                        annual[y] = by_ym[(y, 12)]
++            if flow:
++                # REPAIR (aggregation + reporting mode). The old rule demanded all four quarters
++                # of ONE fiscal year. Argaam's KSA pages carry a rolling five-quarter window, so
++                # no fiscal year was ever complete and every flow row was dropped. Take any four
++                # consecutive quarters instead, and SAY which kind of period the result is.
++                count_row = is_count_row(label)
++                for run in quarter_windows(by_ym):
++                    period, fy, end = window_period(run)
++                    quarters = [month_label(y, m) for y, m in run]
++                    if count_row:
++                        v = by_ym[run[-1]]
++                        src = {"rule": "end_quarter_count", "quarter": quarters[-1],
++                               "window": quarters, "mode": "quarterly_reconstructed",
++                               "why": "a share count is a position, not a flow"}
++                    else:
++                        v = round(sum(by_ym[k] for k in run), 4)
++                        src = {"rule": "sum_quarters", "quarters": quarters,
++                               "mode": "quarterly_reconstructed"}
++                    qemits.append((fy, period, end, v, src))
++                # The window is NOT chosen here. Choosing per row gave Al Rajhi an income
++                # statement with nine lines to June and fifteen to September, because Argaam
++                # publishes the newest quarter for some lines before others - and a margin built
++                # across two such lines would mix periods. The candidates are collected and one
++                # window is chosen for the whole section after the row loop.
++                pass
++            else:
++                # A balance sheet is a position. The year-end snapshot keeps its place in
++                # fundamentals_lineitems exactly as before, so no existing reader changes;
++                # REPAIR (history) sends every populated quarter end to the new table, where
++                # five snapshots survive instead of one.
++                for (y, m), v in sorted(by_ym.items()):
++                    qemits.append((y, "Q", month_label(y, m), v,
++                                   {"rule": "quarter_end_snapshot", "quarter": month_label(y, m),
++                                    "mode": "quarterly_reconstructed"}))
++                    if m == 12:
++                        emits.append((y, "FY", month_label(y, 12), v,
++                                      {"rule": "year_end_snapshot",
++                                       "quarter": month_label(y, 12),
++                                       "mode": "quarterly_reconstructed"}))
+ 
+-        if not annual:
+-            continue  # sub-header / all-empty / partial-year-only row
++        if not emits and not qemits:
++            continue  # sub-header / all-empty row
+         idx = section_counter.get(section, 0)
+         section_counter[section] = idx + 1
+-        for year, v in annual.items():
++        sec = section or "(none)"
++        for year, period, end, v, src in emits:
++            years_seen.add(year)
++            upserts.append((ticker_key, ticker, exchange, year, sec, idx, label, v,
++                            period, end, json.dumps(src, ensure_ascii=False)))
++        for year, period, end, v, src in qemits:
++            qupserts.append((ticker_key, ticker, exchange, year, period, end, sec, idx, label, v,
++                             json.dumps(src, ensure_ascii=False)))
++            if sec in _FLOW_SECTIONS:
++                flow_candidates.setdefault(sec, {}).setdefault((period, end), {})[idx] = (
++                    year, v, src, label)
++
++    # REPAIR (reporting mode): one window per flow section. Prefer the window that covers the most
++    # lines, then the newest, and a real fiscal year over a trailing one on an exact tie. The
++    # windows not chosen are not lost - every one of them is in the quarterly table.
++    for sec, windows in sorted(flow_candidates.items()):
++        if not windows:
++            continue
++        def rank(item):
++            (period, end), items = item
++            return (len(items), end, period == "FY")
++        (period, end), items = max(windows.items(), key=rank)
++        stats.setdefault("period_chosen", {})[sec] = f"{period}@{end}"
++        stats.setdefault("periods_offered", {})[sec] = sorted(
++            f"{p}@{e} ({len(i)} lines)" for (p, e), i in windows.items())
++        for idx, (year, v, src, label) in sorted(items.items()):
+             years_seen.add(year)
+-            upserts.append((ticker_key, ticker, exchange, year, section or "(none)", idx, label, v))
++            upserts.append((ticker_key, ticker, exchange, year, sec, idx, label, v,
++                            period, end, json.dumps(src, ensure_ascii=False)))
+ 
+-    if not upserts:
++    if not upserts and not qupserts:
+         stats["reason"] = "no_line_items"; return stats
+-    conn.executemany(SQL_UPSERT, upserts)
++    if upserts:
++        conn.executemany(SQL_UPSERT, upserts)
++    if qupserts:
++        conn.executemany(SQL_UPSERT_Q, qupserts)
+     conn.commit()
+     stats["rows"] = len(upserts)
++    stats["quarterly_rows"] = len(qupserts)
+     stats["years"] = len(years_seen)
+     stats["ok"] = True
+     return stats
+@@ -308,6 +517,10 @@
+     conn = sqlite3.connect(str(db_path))
+     conn.execute(SQL_CREATE)
+     conn.execute(SQL_INDEX)
++    # REPAIR: the quarterly table, and the three new columns on a table that predates them.
++    migrate(conn)
++    conn.execute(SQL_CREATE_Q)
++    conn.execute(SQL_INDEX_Q)
+     conn.commit()
+ 
+     ticker_keys = [args.ticker] if args.ticker else discover_ticker_keys(universe)

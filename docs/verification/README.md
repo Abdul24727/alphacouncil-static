@@ -296,3 +296,31 @@ Nothing was lost — the paid probe run has never happened.
 **The limit of all of it**: every control here runs inside the process doing the spending. The only
 true external cap is a dedicated provider key with its own credit limit, funded with the plan's
 maximum and no more. That needs the owner's hands and is recommended, not done.
+
+---
+
+## The ingestion repair, 2026-10-28
+
+`ingestion-repair-2026-10-28.md` is the raw output of the before/after run behind
+`docs/ingestion-repair-reconciliation-2026-10-28.md`: both parsers over the same pages, into two
+local scratch databases, with the checks and the derived metrics. Nothing on the server was written
+and the patch is prepared, not applied.
+
+**What the checks establish**, in the order they are worth trusting:
+
+1. **Backward compatibility, row by row** — every `(fiscal_year, item_index, label, value)` tuple
+   of every balance sheet is identical before and after, and so is all of ABNIC_ADX, the annual
+   control. Checked per row and not per label, because labels repeat (`Other` many times) and a
+   label-keyed comparison would have collapsed rows and looked cleaner than it was.
+2. **An outside check on the arithmetic** — the reconstructed trailing-twelve-month EPS is 1.6875
+   for Aramco against the vendor's independently published 1.68, and 4.42 for Al Rajhi against the
+   pack's 4.42. Self-consistency would have proved only that the sum was a sum.
+3. **The 4x share count** — 968,000 to 242,000 for Aramco, 12,000 to 3,000 for SABIC, each now
+   agreeing with its own balance sheet, and every one of the five tickers' reported EPS reproduced
+   from its own net income and share count.
+4. **Traceability** — 464 of 464 rows carry `source_json` naming the rule and the quarters used.
+
+**The limit of all of it**: six tickers, five on the bench plus one ADX control. A dry run over all
+714 — row counts before and after, per exchange — is the step that would catch a ticker whose grid
+is shaped differently again, and it needs the owner's go-ahead, because it means running pipeline
+code on the server.
