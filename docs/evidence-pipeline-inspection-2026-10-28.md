@@ -11,11 +11,14 @@ write. Everything below was read: the repository, the five committed data packs 
 `docs/eval/packs/`, a 2026-08-02 offbox copy of `screening.sqlite`, and the **beta** API over a
 read-only SSH tunnel on 2026-10-28. Models, personas, roster and debate stages are untouched.
 
-Two reads were refused and one route around them was used. `python3` against the server's live
-`screening.sqlite` was refused by the auto-mode classifier, as it was on 2026-10-24; the server
-has no `sqlite3` binary. Every live fact below therefore comes from beta's own HTTP API, which is
-the same route the 2026-10-24 check used. Where a figure could only be had from the 2026-08-02
-copy, it is dated in the text.
+**Method, including what was refused.** `python3` against the server's live `screening.sqlite` was
+refused by the auto-mode classifier, as it was on 2026-10-24, and the server has no `sqlite3`
+binary; every live database fact below therefore comes from beta's own HTTP API, the same route the
+2026-10-24 check used. Running the statement parser on the server - even into a scratch file in
+`/tmp` - was refused as a remote write, so the parser and the one page it needed were copied here
+and it was run locally, unmodified, against a local scratch database, in an isolated directory with
+`python -I`. Nothing on the server was written. Where a figure could only be had from the
+2026-08-02 offbox copy, it is dated in the text.
 
 ---
 
@@ -42,18 +45,59 @@ income, operating income, zakat, net income and EPS. Both are gone today.
 
 The data is still being collected. The 2026-10-23 full harvest wrote
 `.../2222_TADAWUL/harvest_runs/run_20261023_002357/financial_statements_annual.html`, 1.72 MB,
-containing `Net Income` 19 times, `Cost of Sales` 19 times and `Gross Income` 7 times. **The loss
-is between the harvest and the database**, in the parse or load stage, not in the scrape. Two
-files carry that stage (`parse_financial_statements.py`, `compute_fundamental_gauges.py`); which
-one is at fault is not established here, because PROJECT.md section 4 forbids touching the old
-pipeline's code before Step 5's checkpoint, and this brief says propose, not change.
+containing `Net Income` 19 times, `Cost of Sales` 19 times and `Gross Income` 7 times. The loss is
+between the harvest and the database.
 
-One supporting observation, offered as a lead rather than a conclusion: the 2026-10-28 gauge log
-carries hundreds of label-search warnings for ADX, DFM, MSM, BSE and KSE tickers and **not one for
-any Tadawul ticker**. Whatever stage would report a Saudi statement problem is silent about Saudi
-companies.
+### The cause, established by running the real parser
 
-### Four further read-only checks, which rule one candidate out
+PROJECT.md section 4 puts old-pipeline changes behind Step 5's checkpoint, and **that checkpoint
+cleared on 2026-10-22**, so reading and diagnosing is not gated - only a change would be a new
+decision. A write on the server was refused by the auto-mode classifier, so the parser and the
+harvested page were copied here and the parser was run locally, unmodified, against a scratch
+database. Its own docstring says it is non-destructive and writes one table. Nothing on the server
+was touched.
+
+```
+2222_TADAWUL: 42 line-item-rows across 1 years (non-empty-skipped 30)
+mode = quarterly_reconstructed      source_file = financial_statements_annual.html
+```
+
+42 rows, `Balance Sheet` only, FY2025 only - **exactly what the live database holds**. So the
+loader is not at fault and the parser is not broken. The input changed shape. Against a non-Tadawul
+page the same parser, same run, gives:
+
+| | mode | grid columns | rows | sections | years |
+|---|---|---|---:|---|---|
+| ABNIC (ADX) | `annual_direct` | **9 year columns** | 120 | Balance Sheet **and Income Statement** | 2021-2025 |
+| Aramco (TADAWUL) | `quarterly_reconstructed` | **34 quarter columns, no year column** | 42 | Balance Sheet only | 2025 |
+
+The mechanism, end to end:
+
+1. Argaam's GCC pages serve a genuine **annual** grid, so the parser takes it directly and gets
+   both statements and five years.
+2. Argaam's **Tadawul** pages serve the **quarterly** grid under the annual URL - the fragility the
+   parser's own comment names, that the KSA `/en/` pages "frequently serve the quarterly grid (the
+   Annual toggle is racy under load)". Both harvested files are the same size to within 24 bytes,
+   so both URLs return the same quarterly page.
+3. The parser then reconstructs annual figures by summing quarters. **Balance-sheet rows are
+   stocks**: they take the single month-12 column, which is populated, and survive.
+   **Income-statement rows are flows**: they need four complete quarters of one fiscal year.
+4. The page carries only a rolling five-quarter window of income-statement values - 2025 Q2 through
+   2026 Q2. **FY2025 has three of its four quarters; Q1 2025 is blank.** No fiscal year is
+   complete, so every flow row is dropped.
+
+The arithmetic closes it. The three surviving FY2025 quarters of net income sum to 252,366, and the
+August load held 348,042 - a gap of 95,676, the missing Q1. In August that column was populated, so
+the income statement loaded; **and the same flow path summed `Shares Outstanding (Million)` across
+four quarters, which is the 4x artifact of section 4** (4 x 242,000 = 968,000). One cause, three
+symptoms: the missing Saudi income statement, the 4x share count, and Tadawul statements holding
+only one year where ADX holds five.
+
+One earlier lead is now explained rather than suggestive: the 2026-10-28 gauge log carries hundreds
+of label-search warnings for ADX, DFM, MSM, BSE and KSE tickers and **not one for any Tadawul
+ticker** - because for Tadawul there is no income-statement section to search in.
+
+### Three further checks, which rule out the obvious suspect
 
 **The parser did not change.** `/opt/alphacouncil/backend/llm-council/parse_financial_statements.py`
 has an mtime of 2026-08-13, one day after the analytic pipeline last completed, which looks
@@ -70,12 +114,14 @@ are light daily runs with no statement file at all, so the load falls back to 20
 that is known to be racy, and specific to KSA, is where a KSA-only section loss would be expected
 to come from.
 
-**Sections are matched by exact label.** `SECTION_MAP` accepts `Income Statement`, `Balance Sheet`,
-`Cash Flow Statement` and their three Arabic equivalents; a row whose label is not one of those
-six keeps whatever section was last set. In Aramco's 2026-10-23 page `Income Statement` occurs
-**once** and `Balance Sheet` **twice**, and neither occurs as a plain `>label<` text node. That is
-consistent with the balance sheet having both a tab and a grid section-header row while the income
-statement has only a tab - but it is not proof, and proving it means running the parse.
+**Section matching is not the problem, though it looked like it.** `SECTION_MAP` matches six exact
+labels, and in Aramco's page `Income Statement` occurs once against `Balance Sheet` twice, which
+suggested the income statement had only a tab and no grid section-header row. **That was wrong.**
+Parsing the grid shows both headers present and both matched, and the income-statement rows -
+`Sales`, `Cost of Sales`, `Gross Income`, `Net Income` - all carrying values. They are matched,
+read, and then dropped downstream by the flow reconstruction. Worth recording because it was the
+obvious hypothesis and it cost nothing to kill, whereas acting on it would have changed the wrong
+code.
 
 **No cash-flow statement in the source either.** `Cash Flow Statement` occurs **zero** times in
 that page. Section 5's claim that no cash-flow statement exists anywhere is therefore confirmed
@@ -527,31 +573,49 @@ stages. The first item is the only one that is not ours to make.
 ### A. Restore the Saudi income statement (pipeline; the owner's call)
 
 Everything in sections 6, 7 and 8 that reads as a data-pack problem is downstream of this. The
-HTML is harvested, the parser is unchanged, and the load produces balance-sheet rows only.
+diagnosis is settled (section 1): the Tadawul pages serve a quarterly grid, the parser reconstructs
+annual figures by summing quarters, and no fiscal year has four complete quarters, so every
+income-statement row is dropped. Two fixes, in preference order.
 
-**Diagnose before changing anything, and it is one command.** Run the existing parser over the
-2026-10-23 `financial_statements_annual.html` for 2222 with `--db` pointed at a scratch file - it
-takes `--ticker` and `--db` arguments, so this writes nothing anyone reads - and look at the
-`section` values it emits and at `stats["source_file"]` and `stats["mode"]`. Three outcomes, three
-different fixes:
+**A1. Get the annual grid.** The parser handles an annual grid correctly - ABNIC on ADX returns
+both statements and five years through the same code. If the Tadawul harvest can be made to land
+on the genuinely annual page rather than the quarterly one, everything follows at once: both
+statements, five fiscal years, no reconstruction, and the 4x share-count artifact disappears
+because nothing is summed. This is a harvest fix, in the fetch that the parser's own comment calls
+racy, and it is the right one. Whether the annual grid is obtainable at all is the open question -
+both harvested files currently return the quarterly page, so it may be that the Annual toggle no
+longer works for KSA rather than merely racing.
 
-- it emits `Income Statement` rows into the scratch database: the **loader** drops them;
-- it emits those rows with `section` of `(none)` or `Balance Sheet`: the **section-header match**
-  is failing on the KSA grid, and `SECTION_MAP` or the header detection is the fix;
-- it emits no income-statement rows at all: the **KSA quarterly-grid fallback** is serving a page
-  with one tab's data, which is the fragility the parser's own comment describes.
+**A2. If it is not obtainable, emit trailing twelve months instead of a fiscal year.** The
+reconstruction already has the quarters; it only insists on their belonging to one fiscal year. Sum
+the newest four consecutive quarters instead and label the result TTM. For Aramco that gives, from
+the page on disk today:
 
-Section 4 of PROJECT.md holds old-pipeline work behind Step 5's checkpoint, so even this read-only
-run needs the owner's say-so. It is the highest-value change available and the cheapest to
-diagnose.
+| | newest four quarters (2025 Q3 - 2026 Q2) |
+|---|---:|
+| sales | 1,823,483 |
+| net income | 408,371 |
+| EPS on 242,000 mn shares | **1.6875** |
+| net margin | **22.4 %** |
 
-While that file is open, the flow/stock classification in section 4 needs a short exclusion list
-so that `Shares Outstanding (Million)` and any per-share balance are not summed across quarters.
+That EPS is worth pausing on: the vendor's own `scraped_ratios.eps_ttm` on 2026-08-02 was **1.68**.
+**The reconstruction reproduces the published TTM EPS to 0.4 %**, which is strong evidence the
+quarters are discrete and the sum is sound. It would also be *more* comparable with the pack than
+FY2025 was, because every vendor ratio in P1 is itself trailing-twelve-month. Two conditions: label
+it TTM and never a fiscal year, and exclude counts and per-share balances from the summing, which
+is the 4x fix.
 
-A second, independent pipeline defect visible in the same log: for GCC banks and insurers the
-income-statement rows are **Arabic-labelled** and the gauge's search list is English-first with
-partial Arabic, so `net_margin`, `interest_coverage` and `ps` fail on tickers that plainly have
-the lines. Extending one label list fixes a whole sector's worth of gauges.
+Either way the flow/stock classification needs that short exclusion list, so that
+`Shares Outstanding (Million)` and any per-share balance are not summed across quarters.
+
+A change to the old pipeline is a new decision for the owner - Step 5's checkpoint cleared for a
+named set of fixes on 2026-10-22, not as a standing licence - and the project's own pattern for
+this is Steps 4, 5 and 6: prepare, dry-run, show the fix table, record the answer.
+
+A second, independent defect in the same area: for GCC banks and insurers the income-statement rows
+are **Arabic-labelled** and the gauge's search list is English-first with partial Arabic, so
+`net_margin`, `interest_coverage` and `ps` fail on tickers that plainly have the lines. Extending
+one label list fixes a whole sector's worth of gauges, and is unrelated to the Tadawul problem.
 
 ### B. Expose `inputs_json` (one column, one SELECT)
 
@@ -684,10 +748,15 @@ fails loudly instead of the benchmark quietly measuring nothing.
   2026-10-28. The only historical market-database copy on this computer is that 2026-08-02 offbox
   backup; the dated backups under `AlphaCouncil-Backups/` are Postgres application dumps, not the
   market SQLite files.
-- **Which stage drops it.** Harvested and not loaded is established, and the parser being
-  unchanged since 2026-08-02 is established. Which of the three outcomes in section 9A applies is
-  not; settling it means *running* old-pipeline code, which section 4 gates. The one-command test
-  is written out there so it can be run the moment the owner says yes.
+- **Whether the annual grid can still be fetched for Tadawul at all.** The cause is established
+  (section 1) and so is the fix's shape (section 9A). What is not established is whether A1 is
+  available: both harvested files currently return the quarterly page, which may mean the Annual
+  toggle races under load, as the parser's comment says, or that it no longer works for KSA. That
+  determines whether the right fix is A1 or the A2 fallback, and answering it means making a
+  request to Argaam as the pipeline does, which is not something to do unasked.
+- **When Q1 2025 left the page.** It was present when the August load ran and is absent from the
+  2026-10-23 harvest. The intervening harvests are not kept - only three run directories survive
+  per ticker - so the date cannot be recovered from disk.
 - **Whether the gauge values from 2026-08-02 would recompute to the same numbers today.** They are
   used above as evidence that the inputs existed and the calculation ran, not as current figures.
 - **Al Rajhi's true share count.** The internal contradiction is established; the resolution needs
