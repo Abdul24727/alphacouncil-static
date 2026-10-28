@@ -166,6 +166,36 @@ experiment's figure. Two corrections pulled in opposite directions and both are 
 including the clean phase raised the honest bound, and removing the fourth request lowered it. Had
 only the first been done, the figure would have been **$115.03**.
 
+### The shorter plans, re-priced
+
+Round four's §9 table is now wrong twice over: its caps still pay for the fourth request, and every
+row is **planted only** — none includes a control phase, which is the omission that made "$94" look
+like the experiment. Those rows, corrected:
+
+| planted phase | runs | forecast | bound | cap | round four said |
+| --- | --- | --- | --- | --- | --- |
+| A, B, D, E x 2 | 48 | $5.94 | $72.87 | **$73** | $94 |
+| A, B, D x 2 | 36 | $5.17 | $65.37 | **$66** | $84 |
+| A, B, E x 2 | 36 | $3.83 | $46.59 | **$47** | $60 |
+| A, B, D, E x 1 | 24 | $2.97 | $36.43 | **$37** | $47 |
+| A, B, E x 1 | 18 | $1.91 | $23.29 | **$24** | $30 |
+| B, E x 2 | 24 | $1.12 | $11.28 | **$12** | $15 |
+
+**Every one of these still needs its control phase added**, and I have deliberately not invented one
+for plans the design document never specified — it chose 12 clean runs of A and B for the full plan,
+and which controls a shortened plan needs is a design decision about what the validity gate can
+still report, not arithmetic. For the pre-registered plan that phase is +12 runs, +$1.53 forecast
+and +$19.54 of bound, which is how $7.27 / $86.70 / **$90** comes about.
+
+So the figure for any plan is whatever its own dry run prints, both phases in one invocation:
+
+```
+cd api; uv run python -m eval probe --dry --arm ... --repeats N --clean-arms A --clean-arms B --pause 0
+```
+
+That is the point of measuring the bound rather than tabulating it: the table above is already a
+derived figure, and the derived figure is what has been wrong three rounds running.
+
 ## What I have not done
 
 - **The benchmark has still not been run against live models.** Nothing here answers whether four
