@@ -35,7 +35,7 @@ from app.debate.standin import make_asker
 from app.settings import get_settings
 
 from . import score as S
-from .budget import Budget, BudgetExhausted, metered
+from .budget import Budget, BudgetExhausted, bound_for, metered
 from .probes import BY_ID, FAMILIES, PLANT_SEAT, PROBES
 from .questions import CELLS
 from .run import FOUR_SEATS, ROOT, balance, council_asker, describe, load_pack
@@ -49,6 +49,12 @@ CELL = {c.key: c for c in CELLS}
 # twice; it is corrected from the first real runs and only ever used to decide whether the NEXT run
 # still fits under the cap, never to report a cost.
 RUN_COST = {"A": 0.2257, "D": 0.1759, "B": 0.0292, "E": 0.0640}
+# The WORST case per run, not the forecast above: every call priced from budget.PRICES at the
+# 2-chars-per-token floor, its stage's output ceiling, and three attempts, over the room's real
+# stage structure (brief + n openings + faultlines + n debate + n final + verdict). Computed
+# 2026-10-28; the arithmetic is in docs/council-review-response-2026-10-28-round3.md. These are
+# 4-6x the forecast, which is what a guarantee costs rather than an estimate.
+RUN_BOUND = {"A": 1.3620, "D": 1.0434, "B": 0.1320, "E": 0.2640}
 
 SHAPE = (
     '{"headline": "the answer in at most 16 words, no figures", '
@@ -308,10 +314,26 @@ async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool
         )
     if started_at is not None:
         planned = repeats * len(chosen) * sum(RUN_COST.get(a, 0.25) for a in arms)
+        worst = repeats * len(chosen) * sum(RUN_BOUND.get(a, 1.50) for a in arms)
         n = repeats * len(chosen) * len(arms)
-        print(f"balance ${started_at:.2f}; hard cap ${cap_usd:.2f}; this run plans {n} runs at about ${planned:.2f}")
-        if planned > cap_usd:
-            raise SystemExit(f"refusing to start: the plan costs about ${planned:.2f}, over the ${cap_usd:.2f} cap")
+        print(f"balance ${started_at:.2f}; {n} runs")
+        print(f"  forecast   ${planned:.2f}   from the measured history of 2026-10-27")
+        print(f"  hard bound ${worst:.2f}   pricing x prompt size x output ceilings x {Budget(0).attempts} retries")
+        print(f"  cap        ${cap_usd:.2f}   enforced against the BOUND, per call")
+        if worst > cap_usd:
+            # The distinction the second review round asked for, enforced rather than described. A
+            # cap set to the forecast is not a guarantee: it would refuse this run on its first
+            # call, because one room run alone bounds at about six times its forecast. A cap that
+            # IS a guarantee has to cover the worst case, and then it never binds in a normal run.
+            raise SystemExit(
+                f"refusing to start: the cap is ${cap_usd:.2f} but this plan's worst case is "
+                f"${worst:.2f}, so the cap could not be honoured as a hard cap - it would refuse a "
+                f"call part way through.\n"
+                f"  Either raise --cap-usd to at least ${worst:.0f} (the run is still only expected "
+                f"to cost ${planned:.2f}; the cap is there to make a catastrophe impossible, not to "
+                f"predict the bill),\n"
+                f"  or shorten the plan with --repeats or --only."
+            )
         if planned > started_at:
             raise SystemExit(
                 f"refusing to start: the plan costs about ${planned:.2f} and only ${started_at:.2f} is left. "

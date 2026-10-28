@@ -55,7 +55,7 @@ done
 echo "== docs"
 for d in council-test-design-2026-10-27.md council-test-run-2026-10-27.md \
          council-test-design-2026-10-28.md council-review-response-2026-10-28.md \
-         council-review-response-2026-10-28-round2.md beta-advisors-2026-10-27.md; do
+         council-review-response-2026-10-28-round2.md council-review-response-2026-10-28-round3.md \n         beta-advisors-2026-10-27.md; do
   [[ -f "docs/$d" ]] && cp "docs/$d" "$PKG/docs/"
 done
 [[ -f docs/eval/README.md ]] && cp docs/eval/README.md "$PKG/docs/eval-README.md"
