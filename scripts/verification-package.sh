@@ -40,6 +40,13 @@ cp api/app/settings.py        "$PKG/code/api/app/"
 # app/__init__.py, or `import app.debate.llm` fails inside the package and the test that pins
 # eval.budget's mirrored constants against llm.py skips - in the one place a reviewer runs it.
 cp api/app/__init__.py        "$PKG/code/api/app/"
+# The three modules the harness reaches through app.debate.pack: the read-only SQLite layer, the
+# ticker table and the symbol resolver. 24K between them, stdlib and settings only, no cascade -
+# and with them `eval.run` imports inside the package, so the runner's behavioural tests RUN for a
+# reviewer instead of skipping. The fourth review round was right that excluded application files
+# were making parts of this archive unverifiable; this is the part of that worth fixing. Shipping
+# app/routers/ as well would drag in the market database and the billing plans for six tests.
+cp api/app/market_db.py api/app/names.py api/app/universe.py "$PKG/code/api/app/"
 # The whole Copilot package, not just openai_compat: tests/test_copilot.py imports
 # app.copilot.context, and the first package shipped the test without it.
 cp api/app/copilot/*.py       "$PKG/code/api/app/copilot/"

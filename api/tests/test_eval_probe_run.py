@@ -99,18 +99,28 @@ def test_every_arm_goes_through_the_one_metering_wrapper():
 # --- behavioural: what the budget actually receives ---------------------------------------------
 
 
-def _packs_available() -> bool:
+def _why_not_runnable() -> str | None:
+    """Why the behavioural tests cannot run here, quoting the actual failure - or None.
+
+    The first version of this guard caught every exception and reported "the saved packs are not on
+    this path". That was a guess, and inside the verification package it was the wrong one: the packs
+    ARE there, and what fails is importing `eval.run`, because `app.copilot.openai_compat` reaches
+    into `app.routers` at module scope and the archive does not carry the application's routes.
+
+    A skip that states the wrong reason is the same fault as a guard that quietly does nothing - it
+    is read, and believed, and it sends whoever reads it somewhere else.
+    """
     try:
         from eval.run import PACKS
+    except Exception as exc:
+        return f"the harness does not import here - {type(exc).__name__}: {exc}"
+    if not any(PACKS.glob("*.json")):
+        return f"no saved packs at {PACKS}"
+    return None
 
-        return any(PACKS.glob("*.json"))
-    except Exception:
-        return False
 
-
-needs_packs = pytest.mark.skipif(
-    not _packs_available(), reason="the saved packs are not on this path (they are in data/packs "
-                                   "inside the verification package)")
+_WHY_NOT = _why_not_runnable()
+needs_packs = pytest.mark.skipif(_WHY_NOT is not None, reason=_WHY_NOT or "")
 
 
 class FakeUsage:

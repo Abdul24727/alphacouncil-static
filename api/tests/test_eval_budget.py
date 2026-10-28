@@ -438,7 +438,13 @@ def test_the_mirrored_llm_constants_still_match_the_application():
     cap silently - so where the application IS importable, the copies are pinned to it. Raising the
     reasoning allowance in production now fails this test instead of quietly making every bound too
     low."""
-    llm = pytest.importorskip("app.debate.llm", reason="the application is not on the path here")
+    try:
+        from app.debate import llm
+    except Exception as exc:                 # pragma: no cover - the verification package's path
+        # Named precisely rather than "the application is not available": inside the verification
+        # package this is `app.routers`, which `copilot.openai_compat` imports at module scope, and
+        # saying so is what stops a reader looking for a missing file that is not missing.
+        pytest.skip(f"app.debate.llm does not import here - {type(exc).__name__}: {exc}")
     assert REASONING_ROOM == llm.REASONING_ROOM
     assert Budget(0).attempts == llm.ATTEMPTS
     # the echoed reply is sliced at text[:6_000] in llm.ask's retry

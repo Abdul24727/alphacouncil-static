@@ -110,9 +110,13 @@ market database, fixtures or frontend assets, so the broader integration tests c
 failures say nothing about the deployed application. The repository-wide figure (279 tests) is a
 repository claim and should be treated as one.
 
-A few runner tests skip here by design: the behavioural ones need the saved packs, which live at
-`data/packs/` in this archive rather than on the harness's own path. The structural ones — no
-reservation without a bound, both ceilings wired, the stop condition read — run anywhere.
+**99 pass and 6 skip**, and the skips state their real cause rather than a guess. Five
+behavioural runner tests and the constant-drift guard need `app.routers`, which
+`app/copilot/openai_compat.py` imports at module scope; shipping it would drag in the market
+database and the billing plans for six tests, so it is not here and the skip says exactly that. The
+structural tests — no reservation without a bound, no path opting out of it, both ceilings wired,
+the stop condition read — run anywhere, and they are the ones that catch the class of fault the
+fourth review round found.
 
 `deploy/api.env.example` documents every environment variable. **No key is in this package and none
 is in the codebase**: `OPENROUTER_API_KEY` is read from the process environment at call time

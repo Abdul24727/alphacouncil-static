@@ -14,7 +14,6 @@ from fastapi import Request
 from pydantic import BaseModel
 from starlette.concurrency import run_in_threadpool
 
-from ..copilot import tools
 from ..copilot.context import numbers_in
 from ..universe import Ticker
 
@@ -103,6 +102,13 @@ def _news(items: Any, locale: str) -> Any:
 
 async def build(request: Request, t: Ticker, locale: str = "en") -> Pack:
     """Every dataset for one ticker, read in parallel through the Copilot's tools."""
+    # Imported here, not at module scope. `copilot.tools` reaches into app.routers and through it
+    # the market database, which made `app.debate.pack` - and so the whole eval harness -
+    # unimportable without the full application. `tools` is used on one line in this function and
+    # nowhere else in the module, so the import belongs where it is used. No behaviour changes:
+    # `build` runs at request time, with the application already loaded.
+    from ..copilot import tools
+
     calls = [(tag, name, {"ticker": t.ticker_key, **args}) for tag, name, args, _, _ in DATASETS]
     results = await asyncio.gather(*(run_in_threadpool(tools.run, request, name, args) for _, name, args in calls))
     data: dict[str, Any] = {}

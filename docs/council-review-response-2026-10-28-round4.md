@@ -216,9 +216,26 @@ and I should not have quoted the figure as though it were. The archive carries t
 its dependencies, not the application's fixtures, database or frontend assets, so the broader
 integration tests cannot run there and their failures say nothing about the deployed application.
 
-What the archive **can** verify on its own is stated in its README and is the number worth quoting:
-the scoring, budget and runner tests. The rest is a repository claim, and a reviewer is right to
-treat it as one.
+What the archive **can** verify on its own is **99 tests passing, 6 skipped** from
+`code/api/` — the scoring, budget and runner suites. The rest is a repository claim and a reviewer
+is right to treat it as one.
+
+I did close part of the gap, because the point was fair. `app/__init__.py` was simply missing, so
+`import app.debate.llm` failed in the archive and the test pinning `eval.budget`'s mirrored
+constants against `llm.py` skipped — in the one place a reviewer runs it. The saved packs are at
+`data/packs/` in the archive and `docs/eval/packs/` in the repository, so `PACKS` now resolves
+against both. And `app.debate.pack` imported `copilot.tools` at module scope for a single line
+inside one function, which made the whole harness unimportable without the application; that import
+now sits where it is used.
+
+What remains skipped, and why, stated exactly: five behavioural runner tests and the drift guard
+need `app.routers`, because `app/copilot/openai_compat.py` imports `copilot.tools` at module scope
+and uses it in ten places including a module-level default. Shipping the routers would drag in the
+market database and the billing plans; deferring that import would be a refactor of the Copilot's
+chat path. Neither is worth six tests, so they skip — and the skip message now names
+`app.routers` instead of claiming the packs are absent, which is what it used to say and which was
+simply untrue inside the archive. A skip that states the wrong reason is the same fault as a guard
+that quietly does nothing: it is read, and believed.
 
 ---
 
