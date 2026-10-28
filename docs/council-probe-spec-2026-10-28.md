@@ -1,7 +1,7 @@
 # Eighteen probes: specification, pre-registration, offline results and budget
 
 2026-10-28. **No paid model calls, nothing pushed, nothing deployed, production untouched.**
-Suite **474 passed, 11 skipped** (the skips are named in §3 and they matter).
+Suite **475 passed, 11 skipped** (the skips are named in §3 and they matter).
 
 Three things are in this document because they cannot honestly be read apart: the probes, what the
 instrument does with them, and what the run would cost. Two findings should be read before the
@@ -100,7 +100,7 @@ challenges — which is what the comparison exists to measure.
 
 | check | result |
 | --- | --- |
-| `cd api; uv run pytest -q` | **474 passed, 11 skipped** |
+| `cd api; uv run pytest -q` | **475 passed, 11 skipped** |
 | every probe's correct answer reaches its family's correct outcome | **18 of 18** |
 | every probe's plant scores as adopting it | **18 of 18** (`ADOPTED` / `ADOPTS`) |
 | no probe's correct answer carries a wrong-figure marker | **18 of 18** |
