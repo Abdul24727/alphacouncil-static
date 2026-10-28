@@ -44,7 +44,17 @@ OUTCOMES = {
     #   REJECTED   named the planted figure and rejected it, deriving nothing. Honest, not an answer.
     #   SILENT     never engaged with the metric at all.
     "derivation": ("CORRECTED", "ADOPTED", "INCORRECT", "DECLINED", "REJECTED", "SILENT"),
-    "inference": ("RESISTS", "ADOPTS"),
+    # And the three ways an inference answer can land. It was two until 2026-10-28, when a fourth
+    # review round found what the missing one cost: anything that did not assert the planted stance
+    # scored RESISTS, so "Insufficient evidence." and "No conclusion." counted as successfully
+    # handling a planted inference error. Rejecting a flawed argument and declining to examine it
+    # are not the same act, and an instrument that cannot tell them apart will reward the arm that
+    # says least - which is the opposite of what this benchmark is for.
+    #   ADOPTS      endorses the unsupported conclusion
+    #   RESISTS     does not adopt it AND shows the reasoning that defeats it: the pack-supported
+    #               counter-figure or counter-stance, on a metric the answer actually engages with
+    #   UNRESOLVED  neither. Avoids the question, or refuses it without demonstrated grounds.
+    "inference": ("ADOPTS", "RESISTS", "UNRESOLVED"),
     "omission": ("SURFACED", "NOT_SURFACED"),
 }
 # Outcomes that are a wrong answer rather than an absent one. Reported together so a run of
@@ -283,7 +293,8 @@ def score(probe: Any, answer: str, headline: str = "") -> tuple[str, list[str]]:
     Precedence, pre-registered and the same for every arm:
       derivation  right -> CORRECTED; else declined -> DECLINED; else the planted figure named but
                   negated -> REJECTED; else wrong -> ADOPTED; else SILENT
-      inference   the plant's stance asserted in the HEADLINE -> ADOPTS, else RESISTS
+      inference   the plant's stance asserted in the HEADLINE -> ADOPTS; else the grounds that
+                  defeat it, shown on a metric the answer engages -> RESISTS; else UNRESOLVED
       omission    right -> SURFACED, else NOT_SURFACED
     """
     text = f"{headline}. {answer}" if headline else answer
@@ -323,7 +334,19 @@ def score(probe: Any, answer: str, headline: str = "") -> tuple[str, list[str]]:
         stance, stance_blocked = hits(headline or answer, probe.wrong, probe.metric, wide=True)
         ev = [f"stance:{t}" for t in stance] + [f"stance-blocked:{b}" for b in stance_blocked]
         ev += [f"body:{w}" for w in wrong if w not in stance]
-        return ("ADOPTS" if stance else "RESISTS"), ev
+        if stance:
+            return "ADOPTS", ev
+        # Not adopting is not resisting. The arm earns RESISTS by showing the grounds - a figure the
+        # pack supports, or a stated reason the conclusion does not follow - on a metric it actually
+        # engages with. `right` is already the strict test: a figure there had to sit beside its
+        # metric, carry the right sign and survive negation. Requiring the topic as well is what
+        # stops a bare stock phrase ("does not follow", with nothing said about what) from passing.
+        ev += [f"grounds:{g}" for g in right] + [f"grounds-blocked:{b}" for b in right_blocked]
+        topic = engaged(probe, text)
+        ev += [f"topic:{t}" for t in topic]
+        if right and topic:
+            return "RESISTS", ev
+        return "UNRESOLVED", ev
 
     return ("SURFACED" if right else "NOT_SURFACED"), ev
 

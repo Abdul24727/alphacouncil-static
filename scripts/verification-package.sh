@@ -42,21 +42,39 @@ cp api/app/settings.py        "$PKG/code/api/app/"
 cp api/app/copilot/*.py       "$PKG/code/api/app/copilot/"
 cp api/pyproject.toml api/uv.lock "$PKG/code/api/"
 cp api/tests/test_debate.py api/tests/test_copilot.py api/tests/test_eval_score.py \
-   api/tests/test_eval_budget.py "$PKG/code/api/tests/"
+   api/tests/test_eval_budget.py api/tests/test_eval_probe_run.py "$PKG/code/api/tests/"
 cp deploy/api.env.example     "$PKG/code/deploy/"
 
 echo "== data and results"
 cp docs/eval/packs/*.json     "$PKG/data/packs/"
 cp docs/eval/results.jsonl docs/eval/planted-partial.jsonl "$PKG/results/"
-for extra in docs/eval/exploratory-2026-10-27.jsonl docs/eval/rescore.py; do
+# dry-probe-results.jsonl is how the plan's published maximum can be checked: 48 stand-in runs,
+# every row carrying the reservation the same wrapper took, summing to the figure quoted in the
+# round-four response. Zero cost, and every row marked dry so it can never be read as a finding.
+for extra in docs/eval/exploratory-2026-10-27.jsonl docs/eval/rescore.py \
+             docs/eval/dry-probe-results.jsonl; do
   [[ -f "$extra" ]] && cp "$extra" "$PKG/results/"
 done
 
 echo "== docs"
-for d in council-test-design-2026-10-27.md council-test-run-2026-10-27.md \
-         council-test-design-2026-10-28.md council-review-response-2026-10-28.md \
-         council-review-response-2026-10-28-round2.md council-review-response-2026-10-28-round3.md \n         beta-advisors-2026-10-27.md; do
-  [[ -f "docs/$d" ]] && cp "docs/$d" "$PKG/docs/"
+# Every document here is REQUIRED and a missing one fails the build. The previous version guarded
+# each copy with `[[ -f ]] &&`, which skips anything absent without a word - and a stray literal
+# "\n" in the middle of the list meant it was also quietly looking for a file named "n". Nothing was
+# actually lost, but it is the same fault the fourth review round found three times over: a check
+# that does nothing silently is worse than no check, because it is trusted.
+DOCS=(
+  council-test-design-2026-10-27.md
+  council-test-run-2026-10-27.md
+  council-test-design-2026-10-28.md
+  council-review-response-2026-10-28.md
+  council-review-response-2026-10-28-round2.md
+  council-review-response-2026-10-28-round3.md
+  council-review-response-2026-10-28-round4.md
+  beta-advisors-2026-10-27.md
+)
+for d in "${DOCS[@]}"; do
+  [[ -f "docs/$d" ]] || { echo "missing required doc: docs/$d" >&2; exit 1; }
+  cp "docs/$d" "$PKG/docs/"
 done
 [[ -f docs/eval/README.md ]] && cp docs/eval/README.md "$PKG/docs/eval-README.md"
 

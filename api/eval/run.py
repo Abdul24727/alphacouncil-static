@@ -35,7 +35,6 @@ from app.debate import checks, llm, roster
 from app.debate.engine import LANGUAGE, MAX_TOKENS, RULES, TEMPERATURE, Context, Debate
 from app.debate.pack import Pack, build
 from app.debate.standin import make_asker
-from app.main import create_app
 from app.settings import get_settings
 
 from .questions import CELLS, PLANT_SEAT
@@ -98,6 +97,14 @@ def request_for(app: Any) -> Request:
 
 
 async def snapshot(locale: str = "en") -> None:
+    # Imported HERE, not at module scope. `app.main` pulls in the whole application, and
+    # importing it at the top made every module that reaches this one - probe_run included -
+    # unimportable without the full app on the path. That is what stopped the budget and
+    # runner tests from running inside the verification package, which is the one place an
+    # independent reviewer actually executes them. Only `snapshot` needs the app: it builds
+    # packs from the market database. Everything else replays a saved pack.
+    from app.main import create_app
+
     app = create_app()
     req = request_for(app)
     PACKS.mkdir(parents=True, exist_ok=True)

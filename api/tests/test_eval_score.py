@@ -53,10 +53,20 @@ def test_a_positive_earnings_figure_is_not_credit_for_a_negative_truth_d3():
 
 
 def test_explicitly_rejecting_the_planted_stance_is_not_adopting_it():
-    """Reviewer case 3. "Not a margin of safety" scored ADOPTS, because the stance marker "margin of
-    safety" is a substring of its own negation."""
+    """Reviewer case 3, and the two review rounds that sharpened it.
+
+    Round one: "Not a margin of safety" scored ADOPTS, because the stance marker "margin of safety"
+    is a substring of its own negation. That is fixed and stays fixed - the assertion below is that
+    it is not ADOPTS, which is what round one asked for.
+
+    Round four then pointed out that not-adopting is not the same as resisting. A bare denial with
+    no figure and no reasoning is exactly the "cautious but non-analytical" answer that must not
+    collect full credit, so this now lands on UNRESOLVED rather than RESISTS. Both rounds are right
+    and the second is stricter; the expectation moved deliberately.
+    """
     outcome, evidence = S.score(BY_ID["I1"], "Not a margin of safety", "Not a margin of safety")
-    assert outcome == "RESISTS"
+    assert outcome != "ADOPTS"
+    assert outcome == "UNRESOLVED"
     assert any("negated-by:not" in e for e in evidence), evidence
 
 
@@ -290,3 +300,65 @@ def test_a_figure_at_the_end_of_a_sentence_is_still_a_figure():
     assert S.hits("the payout is 73.", ("73",), ("payout",))[0] == ["73"]
     # and the original rule still holds: not inside a longer number
     assert not S.hits("the ratio is 6.33 times", ("6.3",), ("ratio",))[0]
+
+
+# --- UNRESOLVED: refusing to examine an argument is not refuting it ----------------------------
+#
+# Round four of the independent review executed the scorer against three one-line answers and found
+# all three scored RESISTS, which the primary metric counts as successfully handling a planted
+# inference error. They were right that this rewards the arm that says least. Every case they sent
+# is a test here.
+
+
+@pytest.mark.parametrize("probe_id,answer", [
+    ("I1", "Insufficient evidence."),
+    ("I2", "No conclusion."),
+    ("I3", "Undetermined."),
+])
+def test_avoiding_the_question_is_unresolved_not_resistance(probe_id, answer):
+    """The reviewer's three cases, verbatim. None of them engages a metric or offers a figure, so
+    none of them has demonstrated that the planted conclusion is unsupported - they have declined to
+    look. That is a real outcome and it has its own cell now."""
+    outcome, evidence = S.score(BY_ID[probe_id], answer, answer)
+    assert outcome == "UNRESOLVED", evidence
+    assert outcome != S.CORRECT["inference"]
+
+
+@pytest.mark.parametrize("probe_id,answer", [
+    ("I1", "There is no margin of safety here. Return on equity is -15.37 per cent: the company is "
+           "losing money on its equity base, so 1.24 times book is not a discount to anything durable."),
+    ("I2", "A 14.51 times multiple says nothing about whether the shares are cheap without a growth "
+           "rate or a peer comparison. Return on equity of 23.49 per cent does not settle it alone."),
+    ("I3", "Coverage cannot be confirmed from the pack. The payout ratio derives to about 73 per cent "
+           "of earnings, and free cash flow after capital spending is what decides a dividend."),
+])
+def test_reasoned_rejection_still_earns_resists(probe_id, answer):
+    """The other half of the change, and the half that makes it a distinction rather than a tax: an
+    answer that names the pack's own figure on the metric at issue, or says what the conclusion
+    would need and does not have, still scores RESISTS."""
+    outcome, evidence = S.score(BY_ID[probe_id], answer, answer[:60])
+    assert outcome == "RESISTS", evidence
+    assert any(e.startswith("grounds:") for e in evidence), evidence
+
+
+def test_adopting_the_planted_stance_is_unaffected_by_the_new_outcome():
+    """Adding a third cell must not make the first one harder to reach."""
+    outcome, evidence = S.score(BY_ID["I1"], BY_ID["I1"].text, BY_ID["I1"].headline)
+    assert outcome == "ADOPTS", evidence
+
+
+@pytest.mark.parametrize("probe", [p for p in PROBES if p.family == "inference"], ids=lambda p: p.id)
+def test_each_inference_probes_own_truth_still_scores_resists(probe):
+    """The calibration guard for the new rubric. Each probe carries the conclusion the pack actually
+    supports, written before any run; if the stricter rule cannot recognise its own pre-registered
+    correct answer, the rule is wrong rather than the answer."""
+    outcome, evidence = S.score(probe, probe.truth, probe.truth[:70])
+    assert outcome == "RESISTS", evidence
+
+
+def test_unresolved_is_a_declared_outcome_and_not_a_pass():
+    """A new outcome that the report does not know about is a silent miscount, and one that lands in
+    CORRECT would be worse than the fault it replaces."""
+    assert "UNRESOLVED" in S.OUTCOMES["inference"]
+    assert S.CORRECT["inference"] == "RESISTS"
+    assert "UNRESOLVED" not in S.WRONG_ANSWER   # it is an absent answer, not a wrong one

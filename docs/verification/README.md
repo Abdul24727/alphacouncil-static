@@ -100,7 +100,19 @@ a settled one.
 `app/settings.py` (every tunable, with defaults), `app/copilot/openai_compat.py` (the HTTP client all
 model calls share — one client per event loop; the fault that made it one per call is F-11),
 `pyproject.toml` and `uv.lock` (dependencies; `[tool.pytest.ini_options] testpaths = ["tests"]`), and
-`tests/test_debate.py` / `tests/test_copilot.py`.
+`tests/test_debate.py`, `tests/test_copilot.py`, `tests/test_eval_score.py`,
+`tests/test_eval_budget.py`, `tests/test_eval_probe_run.py`.
+
+**What this archive can verify on its own**, and the figure worth quoting: the scoring, budget and
+runner tests, run from `code/api/`. The fourth review round was right that the *application* suite
+cannot be checked here — this package carries the evaluation code and its dependencies, not the
+market database, fixtures or frontend assets, so the broader integration tests cannot run and their
+failures say nothing about the deployed application. The repository-wide figure (279 tests) is a
+repository claim and should be treated as one.
+
+A few runner tests skip here by design: the behavioural ones need the saved packs, which live at
+`data/packs/` in this archive rather than on the harness's own path. The structural ones — no
+reservation without a bound, both ceilings wired, the stop condition read — run anywhere.
 
 `deploy/api.env.example` documents every environment variable. **No key is in this package and none
 is in the codebase**: `OPENROUTER_API_KEY` is read from the process environment at call time
@@ -237,3 +249,45 @@ neither is built, because both change the application.
 
 The `unit_unconfirmed` criticism is accepted as a stated limitation: D2 and D3 test the **direction**
 of per-share earnings, which published ROE confirms independently, not an exact figure.
+
+---
+
+## Round four — 2026-10-28
+
+Six findings, all reproduced, all real. Full write-up in
+`docs/council-review-response-2026-10-28-round4.md`.
+
+The spending cap I had described in round three was bypassed by two of the four arms, its stop
+condition stopped nothing, and the bound itself omitted three things it was meant to bound. Fixing
+all of it raised the plan's true maximum from **$33.62 to $93.71** — the number got much worse
+because it got honest.
+
+| What the review found | What it was |
+| --- | --- |
+| Arms B and E reserve a forecast, not the bound | `budget.take(f"a {arm} pass")` with no bound: a flat $0.09 where the real bound is $0.41–0.81 |
+| 2-characters-per-token not established | It was an average, not a bound. Arabic beats it before the tokenizer is reached |
+| Reasoning allowance not priced | `llm.ask` sends `max_tokens + 2048` on every call to the chair's model |
+| `expect_usd` never activated | Computed, used for the balance check, then dropped: `Budget(cap_usd)` |
+| Overrun detection does not stop anything | The loop read `budget.refused` and never `should_stop()` |
+| Retry prompt growth unaccounted | A retry appends the unusable reply, up to 6,000 characters |
+
+**The bound is now measured, not asserted.** `eval probe --dry` routes every stand-in call through
+the same `metered` wrapper a paid call uses and prints the total of the reservations it took, so the
+published maximum and the enforced reservations are the same arithmetic.
+`results/dry-probe-results.jsonl` is that run: 48 rows, every one marked `dry`, every one at zero
+cost, each carrying its `bound_usd`.
+
+**`UNRESOLVED`** joins the inference outcomes. "Insufficient evidence." used to score `RESISTS` and
+count as successfully handling a planted error; an arm now earns `RESISTS` only by showing the
+grounds on a metric it engages with.
+
+**`tests/test_eval_probe_run.py`** tests the wiring rather than the helpers, which is where every
+fault in this round lived: no helper was broken.
+
+**One finding of ours**, found while measuring the bound: `--dry` and a paid run appended to the same
+results file with no field distinguishing them. Dry runs now write elsewhere and every row is marked.
+Nothing was lost — the paid probe run has never happened.
+
+**The limit of all of it**: every control here runs inside the process doing the spending. The only
+true external cap is a dedicated provider key with its own credit limit, funded with the plan's
+maximum and no more. That needs the owner's hands and is recommended, not done.

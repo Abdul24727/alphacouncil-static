@@ -41,6 +41,12 @@ from .questions import CELLS
 from .run import FOUR_SEATS, ROOT, balance, council_asker, describe, load_pack
 
 RESULTS = ROOT / "docs" / "eval" / "probe-results.jsonl"
+# A dry run writes HERE, not into the results file. Both used to append to the same place with no
+# field telling them apart, so previewing the plan with --dry and then running it for real would
+# have mixed 48 stand-in answers into the record and `probe-report` would have scored them as
+# findings. Noticed while measuring the plan's bound with --dry, before any paid run existed - so
+# nothing was lost, which is the only reason this is a note and not an incident.
+DRY_RESULTS = ROOT / "docs" / "eval" / "dry-probe-results.jsonl"
 # Where --dry writes the prompts it assembled, so they can be read before any of them is paid for.
 DRY = ROOT / "docs" / "eval" / "dry-prompts.txt"
 CELL = {c.key: c for c in CELLS}
@@ -49,12 +55,22 @@ CELL = {c.key: c for c in CELLS}
 # twice; it is corrected from the first real runs and only ever used to decide whether the NEXT run
 # still fits under the cap, never to report a cost.
 RUN_COST = {"A": 0.2257, "D": 0.1759, "B": 0.0292, "E": 0.0640}
-# The WORST case per run, not the forecast above: every call priced from budget.PRICES at the
-# 2-chars-per-token floor, its stage's output ceiling, and three attempts, over the room's real
-# stage structure (brief + n openings + faultlines + n debate + n final + verdict). Computed
-# 2026-10-28; the arithmetic is in docs/council-review-response-2026-10-28-round3.md. These are
-# 4-6x the forecast, which is what a guarantee costs rather than an estimate.
-RUN_BOUND = {"A": 1.3620, "D": 1.0434, "B": 0.1320, "E": 0.2640}
+# The WORST case per run, not the forecast above. MEASURED, not calculated beside the runner: these
+# are the largest reservations `eval probe --dry` actually took over the whole plan, arm by arm,
+# with every stand-in call going through the same `metered` wrapper a paid call does. Re-measure
+# with:
+#
+#     uv run python -m eval probe --dry --arm A --arm B --arm D --arm E --repeats 2 --pause 0
+#
+# which prints the plan's total beside this prediction and says so if they have parted company.
+#
+# Round three asked for a bound from pricing x input size x output ceiling x retries, and got one
+# that was 4-6x the forecast. Round four found three things missing from it - the 2,048-token
+# reasoning allowance on every call, the growth of a retried prompt, and the fourth request
+# `llm.ask` can issue without counting it as an attempt - plus a token floor of 2 characters that
+# was an average rather than a bound. Correcting all four put these at 13-17x the forecast. The
+# number got much worse because it got honest; see docs/council-review-response-2026-10-28-round4.md.
+RUN_BOUND = {"A": 3.7805, "D": 2.8145, "B": 0.4066, "E": 0.8079}
 
 SHAPE = (
     '{"headline": "the answer in at most 16 words, no figures", '
@@ -75,9 +91,14 @@ class ProbeResult:
     repeat: int
     planted: bool
     ok: bool
+    dry: bool = False
     error: str | None = None
     seconds: float = 0.0
     cost_usd: float = 0.0
+    # What the hard cap reserved for this run, summed over its calls. Saved beside the real cost so
+    # the bound can be checked against the bill from the record itself rather than recomputed, and
+    # so --dry publishes the plan's maximum from the same arithmetic a paid run enforces.
+    bound_usd: float = 0.0
     calls: int = 0
     headline: str = ""
     answer: str = ""
@@ -115,7 +136,7 @@ def metered_asker(settings: Any, budget: Budget):
     """The cap applied to every llm.ask. The wrapper itself lives in budget.py with the call
     injected, so it can be tested without importing the application."""
 
-    async def call(model: str, messages: Any, max_tokens: int, temperature: float, check: Any):
+    async def call(*, model: str, messages: Any, max_tokens: int, temperature: float, check: Any, **_: Any):
         return await llm.ask(settings, model, messages, max_tokens=max_tokens, temperature=temperature, check=check)
 
     return metered(call, budget)
@@ -145,7 +166,7 @@ async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool
     pack = load_pack(cell.ticker, locale)
     advisors = roster.sitting(roster.advisors(roster_spec or settings.debate_advisors), pack.ticker_key)
     chair = roster.chair()
-    r = ProbeResult(arm=arm, probe=probe.id, family=probe.family, cell=cell.key, ticker=cell.ticker, repeat=repeat, planted=planted, ok=False)
+    r = ProbeResult(arm=arm, probe=probe.id, family=probe.family, cell=cell.key, ticker=cell.ticker, repeat=repeat, planted=planted, ok=False, dry=dry)
 
     if planted and PLANT_SEAT not in {a.id for a in advisors}:
         # Loud, because the quiet version is worse than a crash: the run would be recorded planted,
@@ -153,8 +174,13 @@ async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool
         raise SystemExit(f"{arm}/{probe.id}: the plant seat {PLANT_SEAT!r} does not sit in this roster ({[a.id for a in advisors]})")
 
     ctx = Context(settings=settings, pack=pack, question=cell.question, locale=locale, advisors=advisors, chair=chair, debate_rounds=1)
+    # ONE metering path, dry or paid. The engine assembles its real prompts either way and hands
+    # them to the asker, so wrapping the stand-in meters the true prompt sizes at no cost - which is
+    # what lets --dry report the plan's hard bound as the sum of the reservations a paid run would
+    # actually take, rather than as a figure computed alongside the runner and liable to drift.
     if dry:
-        base, calls = make_asker(pack, advisors, locale, cell.question), {"n": 0, "cost": 0.0}
+        base, calls = metered(make_asker(pack, advisors, locale, cell.question), budget) if budget \
+            else (make_asker(pack, advisors, locale, cell.question), {"n": 0, "cost": 0.0})
     else:
         base, calls = metered_asker(settings, budget) if budget else council_asker(settings, {})
     ask = with_plant(base, probe, planted)
@@ -174,7 +200,8 @@ async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool
     except Exception as exc:  # a failed room is a result, not a crash
         r.error = describe(exc)
     r.seconds = round(time.monotonic() - started, 2)
-    r.cost_usd, r.calls = round(calls["cost"], 6), calls["n"]
+    r.cost_usd, r.calls = round(calls["cost"], 6), int(calls["n"])
+    r.bound_usd = round(calls.get("bound", 0.0), 6)
     r.absent = sorted({t["seat"] for t in turns if isinstance(t.get("data"), dict) and t["data"].get("absent")})
     if planted:
         blob = json.dumps([t.get("data") for t in turns if t["stage"] == "debate"], ensure_ascii=False)
@@ -198,24 +225,22 @@ def _note(probe: Any) -> str:
     return "AN ANALYST'S NOTE ON THIS COMPANY:\n" + probe.headline + "\n\n" + probe.text
 
 
-async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str, planted: bool, dry: bool, second_pass: bool, budget: Budget | None = None) -> ProbeResult:
+async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str, planted: bool, dry: bool, second_pass: bool, budget: Budget) -> ProbeResult:
     settings = get_settings()
     cell = CELL[probe.cell]
     pack = load_pack(cell.ticker, locale)
     chair = roster.chair()
-    r = ProbeResult(arm=arm, probe=probe.id, family=probe.family, cell=cell.key, ticker=cell.ticker, repeat=repeat, planted=planted, ok=False)
+    r = ProbeResult(arm=arm, probe=probe.id, family=probe.family, cell=cell.key, ticker=cell.ticker, repeat=repeat, planted=planted, ok=False, dry=dry)
     system = _system(pack, locale)
-    spend = {"n": 0, "cost": 0.0}
 
-    async def ask(messages: list[dict[str, str]], check: Any) -> dict[str, Any]:
+    async def call(*, model: str, messages: Any, max_tokens: int, temperature: float, check: Any, **_: Any):
         if dry:
             # No model, and still the whole path: the prompts are assembled for real and written
             # out, the critique is threaded into the second pass, and the answer is scored. Without
             # this, --dry left arm E - the newest and most important arm - entirely unexercised.
-            spend["n"] += 1
             DRY.parent.mkdir(parents=True, exist_ok=True)
             with DRY.open("a", encoding="utf-8") as fh:
-                fh.write(f"\n{'=' * 100}\n{arm} {probe.id} {'planted' if planted else 'clean'} pass {spend['n']}\n")
+                fh.write(f"\n{'=' * 100}\n{arm} {probe.id} {'planted' if planted else 'clean'} pass {int(spend['n']) + 1}\n")
                 for m in messages:
                     fh.write(f"--- {m['role']} ({len(m['content'])} chars) ---\n{m['content']}\n")
             canned: dict[str, Any] = {
@@ -225,22 +250,20 @@ async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str,
                 "gaps": ["stand-in gap"],
                 "disagreements": [],
             }
-            return check(canned)
-        if budget:
-            budget.take(f"a {arm} pass")
-        usage = None
-        try:
-            raw, usage = await llm.ask(settings, model, messages, max_tokens=MAX_TOKENS["verdict"], temperature=TEMPERATURE["chair"], check=check)
-            return raw
-        except Exception as exc:
-            usage = getattr(exc, "usage", None)
-            raise
-        finally:
-            cost = getattr(usage, "cost_usd", None)
-            if budget:
-                budget.settle(cost)
-            spend["n"] += 1
-            spend["cost"] += float(cost or 0.0)
+            return check(canned), llm.Usage(model="stand-in")
+        return await llm.ask(settings, model, messages, max_tokens=max_tokens, temperature=temperature, check=check)
+
+    # The SAME wrapper arms A and D use. These two arms used to meter themselves inline, and that is
+    # how they came to call budget.take() with no bound at all - reserving a flat $0.09 where the
+    # real upper bound is several times that, which an independent review found on 2026-10-28. The
+    # fix is structural rather than a corrected argument: there is one metering path now, so there
+    # is nowhere left to forget the bound.
+    asker, spend = metered(call, budget)
+
+    async def ask(messages: list[dict[str, str]], check: Any) -> dict[str, Any]:
+        raw, _usage = await asker(messages=messages, model=model, max_tokens=MAX_TOKENS["verdict"],
+                                  temperature=TEMPERATURE["chair"], check=check)
+        return raw
 
     started = time.monotonic()
     try:
@@ -285,7 +308,8 @@ async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str,
     except Exception as exc:
         r.error = describe(exc)
     r.seconds = round(time.monotonic() - started, 2)
-    r.cost_usd, r.calls = round(spend["cost"], 6), spend["n"]
+    r.cost_usd, r.calls = round(spend["cost"], 6), int(spend["n"])
+    r.bound_usd = round(spend.get("bound", 0.0), 6)
     return finish(r, pack, probe)
 
 
@@ -294,10 +318,15 @@ async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str,
 
 async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool, single_model: str,
               pause: float, only: str | None, four_seats: str, cap_usd: float) -> None:
-    RESULTS.parent.mkdir(parents=True, exist_ok=True)
+    out = DRY_RESULTS if dry else RESULTS
+    out.parent.mkdir(parents=True, exist_ok=True)
     chosen = [p for p in PROBES if only is None or p.id == only or p.family == only]
     if not chosen:
         raise SystemExit(f"no probe matches {only!r}: ids are {[p.id for p in PROBES]}, families {list(FAMILIES)}")
+
+    planned = repeats * len(chosen) * sum(RUN_COST.get(a, 0.25) for a in arms)
+    worst = repeats * len(chosen) * sum(RUN_BOUND.get(a, 1.50) for a in arms)
+    n = repeats * len(chosen) * len(arms)
 
     started_at = None if dry else balance()
     if not dry and started_at is None:
@@ -313,9 +342,6 @@ async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool
             "--dry to run the whole plan with no model and no cost."
         )
     if started_at is not None:
-        planned = repeats * len(chosen) * sum(RUN_COST.get(a, 0.25) for a in arms)
-        worst = repeats * len(chosen) * sum(RUN_BOUND.get(a, 1.50) for a in arms)
-        n = repeats * len(chosen) * len(arms)
         print(f"balance ${started_at:.2f}; {n} runs")
         print(f"  forecast   ${planned:.2f}   from the measured history of 2026-10-27")
         print(f"  hard bound ${worst:.2f}   pricing x prompt size x output ceilings x {Budget(0).attempts} retries")
@@ -345,10 +371,25 @@ async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool
     # returns with every response. It does not lag, and it does not depend on the account endpoint
     # being reachable - which the balance does. Both caps apply; either one stops the run.
     spent_local = 0.0
+    bound_local = 0.0
     # One cap for the whole run, applied per CALL rather than per run, so retries and calls
     # in flight are covered. It needs no provider endpoint: it is arithmetic over what this
     # process has been billed (budget.py).
-    budget = None if dry else Budget(cap_usd)
+    #
+    # BOTH ceilings are passed. The forecast ceiling is 1.5x the measured history - high enough not
+    # to trip on ordinary variance, low enough to stop a retry storm or a repriced model long before
+    # the hard cap would. The third review round found it was never passed to the Budget at all:
+    # this function computed `planned` and then built `Budget(cap_usd)`, so the second ceiling
+    # existed in the class, in its tests and in the documentation, and nowhere in a run. A control
+    # that is described but not wired is worse than one that was never claimed.
+    #
+    # In dry mode the cap is set out of reach on purpose: --dry's job is to report the plan's hard
+    # bound, and it can only do that if every stand-in call takes the same reservation a paid call
+    # would. Nothing is spent either way.
+    budget = Budget(
+        max(worst, cap_usd) * 10 if dry else cap_usd,
+        expect_usd=None if dry else round(planned * 1.5, 4),
+    )
 
     for repeat in range(1, repeats + 1):
         for probe in chosen:
@@ -383,13 +424,21 @@ async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool
                 else:
                     r = await run_single(probe, "B", repeat, locale, single_model, planted, dry, second_pass=False, budget=budget)
                 spent_local += r.cost_usd
-                if budget and budget.refused:
-                    print(f"STOPPING: the per-call cap refused a call ({budget}). "
+                bound_local += r.bound_usd
+                # should_stop() is ENFORCED here, not consulted. It used to be neither: the loop
+                # checked only `budget.refused`, so a recorded overrun - a charge above its own
+                # bound, or a prompt denser than the token ceiling, either of which means the cap
+                # has stopped being a guarantee - left the run going. Found by an independent
+                # review, 2026-10-28. `Budget.take` now refuses on the same condition, so this is
+                # the second of two gates rather than the only one.
+                stop = budget.should_stop()
+                if stop or budget.refused:
+                    print(f"STOPPING: {stop or f'the per-call cap refused a call ({budget})'}. "
                           f"Nothing further is attempted.")
-                    with RESULTS.open("a", encoding="utf-8") as fh:
+                    with out.open("a", encoding="utf-8") as fh:
                         fh.write(json.dumps(asdict(r), ensure_ascii=False) + "\n")
                     return
-                with RESULTS.open("a", encoding="utf-8") as fh:
+                with out.open("a", encoding="utf-8") as fh:
                     fh.write(json.dumps(asdict(r), ensure_ascii=False) + "\n")
                 await asyncio.sleep(pause)
                 mark = "ok " if r.ok else "FAIL"
@@ -398,3 +447,24 @@ async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool
                     f"{mark} {arm} {probe.id} {probe.family[:5]:5} {r.cell:14} r{repeat} {r.seconds:>6.1f}s "
                     f"${r.cost_usd:>7.4f} {r.answer_words:>4}w{tail}" + (f"  {r.error}" if r.error else "")
                 )
+
+    # The plan's maximum, measured rather than asserted: every stand-in call above took the same
+    # reservation a paid call would, so this total IS the sum of the reservations the runner would
+    # enforce. Priority 6 of the third review round asked for exactly this agreement, and the drift
+    # line below is what keeps it - RUN_BOUND is a published constant, and a published constant that
+    # nothing checks is a comment.
+    if dry:
+        print(f"\nplan bound ${bound_local:.4f} over {n} runs, measured from the reservations taken")
+        print(f"  RUN_BOUND predicts ${worst:.4f}")
+        # One-sided on purpose. RUN_BOUND holds each arm's WORST run, so the prediction should sit a
+        # little above a plan's total and that is correct. The dangerous direction is the other one:
+        # a measured total above the published maximum means the figure quoted to whoever authorised
+        # the spend was too low, and that is a failure of the guarantee rather than a rounding note.
+        if bound_local > worst:
+            print(f"  TOO LOW: the published maximum is ${worst:.2f} and this plan reserves "
+                  f"${bound_local:.2f}. Update RUN_BOUND before quoting a maximum to anyone.")
+        elif worst > bound_local * 1.2:
+            print(f"  loose by {(worst / bound_local - 1) * 100:.0f}%: still a bound, but it asks for "
+                  f"more headroom than the plan needs. Worth re-measuring.")
+        else:
+            print("  consistent: the published maximum covers this plan and is not padded")
