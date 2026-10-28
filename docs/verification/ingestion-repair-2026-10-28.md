@@ -258,3 +258,85 @@ FAILURES: none
   D6's pre-registered band is (-60, -40): OUTSIDE
   inputs: Sales 35.01, Net Income -10.25, Gross 21.60  <- TTM@2026-06 sum_quarters ['2025-09', '2025-12', '2026-03', '2026-06']
 ```
+
+## The wider dry run: 33 tickers, seven exchanges
+
+Six tickers is thin for a market-wide parser change, so the same before/after was run over a
+spread of 33: eighteen Tadawul (banks, insurers, industrials), and fifteen on the six other
+exchanges as controls. Both parsers, same pages, two local scratch databases.
+
+```
+33 tickers, both parsers, same pages
+
+crashes in the repaired parser: none
+crashes in the original:        none
+
+REGRESSIONS - a row an existing reader had, now missing or different
+  rows LOST:    0
+  rows CHANGED: 0
+
+modes (after, before): {('quarterly_reconstructed', 'quarterly_reconstructed'): 18, ('annual_direct', 'annual_direct'): 14, (None, None): 1}
+
+ticker            before   after   gain  quarterly  mode
+1010_TADAWUL          33      61     28        189  quarterly_reconstructed
+101_KSE              319     319      0          0  annual_direct
+1020_TADAWUL          33      61     28        189  quarterly_reconstructed
+102_KSE              146     146      0          0  annual_direct
+1030_TADAWUL          33      61     28        190  quarterly_reconstructed
+103_KSE              135     135      0          0  annual_direct
+1050_TADAWUL          33      61     28        190  quarterly_reconstructed
+1060_TADAWUL          33      61     28        188  quarterly_reconstructed
+1080_TADAWUL          33      61     28        189  quarterly_reconstructed
+1111_TADAWUL          47      71     24        283  quarterly_reconstructed
+1120_TADAWUL          32      56     24        179  quarterly_reconstructed
+1140_TADAWUL          32      56     24        180  quarterly_reconstructed
+1150_TADAWUL          32      56     24        180  quarterly_reconstructed
+1180_TADAWUL          32      59     27        190  quarterly_reconstructed
+1182_TADAWUL           0      53     53        106  quarterly_reconstructed
+1183_TADAWUL           0      54     54        108  quarterly_reconstructed
+1201_TADAWUL          55      76     21        315  quarterly_reconstructed
+2010_TADAWUL          58      73     15        234  quarterly_reconstructed
+2222_TADAWUL          42      60     18        246  quarterly_reconstructed
+2POINTZERO_ADX       454     454      0          0  annual_direct
+4061_TADAWUL          55      75     20        294  quarterly_reconstructed
+4190_TADAWUL          60      80     20        246  quarterly_reconstructed
+AACT_MSM             450     450      0          0  annual_direct
+AAIC_MSM               0       0      0          0  None
+ABC.BH_BSE           102     102      0          0  annual_direct
+ABNIC_ADX            120     120      0          0  annual_direct
+ABQK_QSE             335     335      0          0  annual_direct
+ABRAAJ_BSE            51      51      0          0  annual_direct
+ADAV.AD_ADX          535     535      0          0  annual_direct
+AGLTY_DFM            440     440      0          0  annual_direct
+AHCS_QSE             445     445      0          0  annual_direct
+AIRARABIA_DFM        415     415      0          0  annual_direct
+AJMANBAN_DFM         319     319      0          0  annual_direct
+
+INCOME STATEMENT, by exchange
+  ADX          3 tickers   before   3   after   3
+  BSE          2 tickers   before   2   after   2
+  DFM          3 tickers   before   3   after   3
+  KSE          3 tickers   before   3   after   3
+  MSM          2 tickers   before   1   after   1
+  QSE          2 tickers   before   2   after   2
+  TADAWUL     18 tickers   before   0   after  18
+
+PERIODS chosen, after
+  FY     30 tickers,  4909 rows
+  TTM    18 tickers,   492 rows
+
+flow statements spanning MORE THAN ONE period_end (must be none for a quarterly grid ticker; an annual grid legitimately has one per year): 14
+   101_KSE Income Statement: 5 period ends  mode=annual_direct
+   102_KSE Income Statement: 5 period ends  mode=annual_direct
+   103_KSE Income Statement: 5 period ends  mode=annual_direct
+   2POINTZERO_ADX Income Statement: 5 period ends  mode=annual_direct
+   AACT_MSM Income Statement: 5 period ends  mode=annual_direct
+   ABC.BH_BSE Income Statement: 5 period ends  mode=annual_direct
+   ABNIC_ADX Income Statement: 5 period ends  mode=annual_direct
+   ABQK_QSE Income Statement: 5 period ends  mode=annual_direct
+   ABRAAJ_BSE Income Statement: 3 period ends  mode=annual_direct
+   ADAV.AD_ADX Income Statement: 5 period ends  mode=annual_direct
+   of those, QUARTERLY-reconstructed (the ones that would be wrong): 0 
+
+rows without source_json: 0
+```

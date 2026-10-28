@@ -344,7 +344,44 @@ call**, not mine. Re-registering a criterion after reading the data is what pre-
 to prevent, so the honest options are to retire both, or to move them to a ticker whose evidence is
 not about to change, and to record the decision before any paid run.
 
-## 10. What this does not do
+## 10. The wider dry run: 33 tickers, seven exchanges
+
+Six tickers is thin for a market-wide parser change, so the same before/after was run over a
+spread of 33 — eighteen Tadawul names including banks, insurers and industrials, and fifteen on the
+six other exchanges as controls. Both parsers, same pages, two local scratch databases.
+Raw output: `docs/verification/ingestion-repair-2026-10-28.md`.
+
+| | result |
+|---|---|
+| **rows lost** (a row an existing reader had, now missing) | **0** |
+| **rows changed** (same key, different label or value) | **0** |
+| crashes, either parser | **none** |
+| `mode` changed for any ticker | **none** — 18 `quarterly_reconstructed`, 14 `annual_direct`, 1 with no usable grid |
+| rows gained by an **annual-grid** ticker | **0**, and 0 quarterly rows — the annual path is provably untouched |
+| rows gained by a **Tadawul** ticker | 24–28 each, plus 188–283 rows of quarterly history |
+| rows without `source_json` | **0** |
+
+**Income statement, by exchange:**
+
+| exchange | tickers | had one before | has one after |
+|---|---:|---:|---:|
+| **TADAWUL** | 18 | **0** | **18** |
+| ADX | 3 | 3 | 3 |
+| BSE | 2 | 2 | 2 |
+| DFM | 3 | 3 | 3 |
+| KSE | 3 | 3 | 3 |
+| MSM | 2 | 1 | 1 |
+| QSE | 2 | 2 | 2 |
+
+Nothing outside Tadawul moved, in either direction. MSM's 1-of-2 is pre-existing and unchanged.
+
+**And the invariant that matters most, asserted rather than eyeballed:** of the 14 tickers whose
+income statement spans more than one `period_end`, **every one is `annual_direct`**, where one
+period end per fiscal year is exactly right. **Zero quarterly-reconstructed tickers span more than
+one window** — the sweep now fails outright if any does, because a ratio across two windows of one
+statement is the defect this repair exists to avoid.
+
+## 11. What this does not do
 
 - **It does not apply anything.** The patch is prepared and dry-run. The live pipeline is untouched.
 - **It does not get the annual grid.** A1 from the inspection — making the Tadawul harvest land on
@@ -355,7 +392,5 @@ not about to change, and to record the decision before any paid run.
 - **It does not produce a cash-flow statement.** None exists for any ticker on any exchange.
 - **It does not fix the share-count contradiction** in Al Rajhi's balance sheet, which needs the
   provider's definition.
-- **It has not been run over the whole universe.** Six tickers were tested: the five on the bench
-  and one ADX control. A full dry run over all 714 — row counts before and after, per exchange —
-  is the natural next step and needs the owner's go-ahead, since it means running pipeline code on
-  the server.
+- **It has not been run over the whole universe.** 33 tickers were tested (section 10), not 714.
+  A full dry run needs the owner's go-ahead, because it means running pipeline code on the server.
