@@ -243,3 +243,32 @@ def test_the_room_meters_its_stand_in_so_dry_reports_a_real_bound(monkeypatch):
     assert r.bound_usd > 0.5, f"a dry room run reserved only {r.bound_usd}"
     assert budget.calls >= 10, f"only {budget.calls} calls metered in a six-seat room"
     assert not budget.overruns
+
+@needs_packs
+def test_a_second_dry_run_rebuilds_its_outputs_instead_of_doubling_them(monkeypatch, tmp_path):
+    """Both dry outputs were opened "a", like the paid record, so previewing the plan twice doubled
+    them - taking the committed results file from 48 rows to 96 and the prompt dump from 816K to
+    1.6M. That file is committed precisely so the published maximum can be checked against it, so a
+    reviewer re-running --dry to verify the bound was corrupting the record they were verifying."""
+    from eval import probe_run
+    from eval.run import FOUR_SEATS
+
+    results = tmp_path / "dry-probe-results.jsonl"
+    prompts = tmp_path / "dry-prompts.txt"
+    monkeypatch.setattr(probe_run, "DRY_RESULTS", results)
+    monkeypatch.setattr(probe_run, "DRY", prompts)
+
+    def preview() -> tuple[int, int]:
+        # A priced model name rather than the settings default, so the test does not depend on
+        # which chair model this checkout is configured for. No call is made: dry is True.
+        asyncio.run(probe_run.run(["B"], 1, "en", False, True, "anthropic/claude-sonnet-5.5",
+                                  0.0, "D1", FOUR_SEATS, 1.0))
+        return (len(results.read_text(encoding="utf-8").strip().splitlines()),
+                len(prompts.read_text(encoding="utf-8")))
+
+    first = preview()
+    assert first[0] == 1, f"one arm, one probe, one repeat wrote {first[0]} rows"
+    second = preview()
+    assert second == first, (
+        f"a second identical dry run left {second[0]} rows and {second[1]} characters rather than "
+        f"{first[0]} and {first[1]}: the dry outputs are appended to, not rebuilt")

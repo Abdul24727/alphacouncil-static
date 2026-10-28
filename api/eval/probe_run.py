@@ -320,6 +320,19 @@ async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool
               pause: float, only: str | None, four_seats: str, cap_usd: float) -> None:
     out = DRY_RESULTS if dry else RESULTS
     out.parent.mkdir(parents=True, exist_ok=True)
+    if dry:
+        # REBUILT, not appended to. .gitignore has always said this of the prompt dump - "rebuilt
+        # by any dry run" - and the results file has to be rebuilt too, because it is committed so
+        # that the published hard bound can be checked against it. Both were opened "a", like the
+        # paid record, so every preview of the plan doubled them: a second --dry took the committed
+        # results from 48 rows to 96 and the prompt dump from 816K to 1.6M, which means a reviewer
+        # re-running --dry to verify the bound was corrupting the record they were verifying. Found
+        # 2026-10-28 by running --dry to re-check the bound before quoting it to the owner. Done
+        # once here rather than at each open, which would leave only the last probe's rows. The
+        # PAID record still appends: a run that stops part way has bought what it already wrote.
+        out.write_text("", encoding="utf-8")
+        DRY.parent.mkdir(parents=True, exist_ok=True)
+        DRY.write_text("", encoding="utf-8")
     chosen = [p for p in PROBES if only is None or p.id == only or p.family == only]
     if not chosen:
         raise SystemExit(f"no probe matches {only!r}: ids are {[p.id for p in PROBES]}, families {list(FAMILIES)}")
