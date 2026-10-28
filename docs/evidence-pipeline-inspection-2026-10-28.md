@@ -99,6 +99,20 @@ percentile, beside what the room was handed in the 2026-10-27 pack:
 Six of Aramco's ten computed gauges. The room is told they are missing. They were computed, and
 the inputs they were computed from are recorded.
 
+### And the gauge layer is in a mixed state, which is worse than uniformly missing
+
+Not every Saudi ticker reports the same way. Of the five committed packs, four carry
+`net_margin: missing_inputs` - and **Anaam (4061) carries `net_margin: -49.913` with status `ok`**,
+alongside `gross_margin: 56.314`, `ps: 9.336`, `roic: -1.999` and `interest_coverage: -0.659`, all
+`ok`. Anaam has **no `Income Statement` section in the live database** either. So those five values
+were computed from an income statement that no longer exists and have not been recomputed since,
+while Aramco's, SABIC's and Jarir's were recomputed and flipped to `missing_inputs`.
+
+That makes some of the pack's gauge values **orphaned**: correct when struck, unreconcilable
+against any statement now, and indistinguishable in the pack from a value whose inputs are still
+there. It also raises the stakes on exposing `inputs_json` (section 9B), because for those values
+it is the **only surviving record of what they were computed from**.
+
 ---
 
 ## 2. Where every material input comes from
@@ -151,18 +165,24 @@ One pack, fetched 2026-10-27, carries nine different as-of dates. Taking Aramco'
 
 Three consequences, in order of how badly they mislead.
 
-**(a) Every valuation ratio is priced off a price the pack does not show.** The ratios are
-internally consistent with each other and with a price that is not `last_price`:
+**(a) The valuation ratios are priced off a price the pack does not show, and by a different
+amount for each ticker.** The ratios are internally consistent with each other and with a price
+that is not `last_price`. Across all five committed packs:
 
 | | P/E x EPS | P/B x book | market cap / shares | `last_price` | gap |
 |---|---:|---:|---:|---:|---:|
-| Aramco | 26.62 | 26.61 | 26.50 | 25.78 | **+3.3 %** |
-| Al Rajhi | 64.13 | 64.15 | 64.55 | 62.10 | **+3.3 %** |
-| SABIC | - | 51.06 | 50.55 | 45.32 | **+12.7 %** |
+| Aramco (2222) | 26.62 | 26.61 | 26.50 | 25.78 | **+3.2 %** |
+| Al Rajhi (1120) | 64.13 | 64.15 | 64.55 | 62.10 | **+3.3 %** |
+| SABIC (2010) | - | 51.06 | 50.55 | 45.32 | **+12.7 %** |
+| Anaam (4061) | - | 11.87 | 11.75 | 12.07 | **-1.6 %** |
+| Jarir (4190) | 17.32 | 17.31 | 17.11 | 17.33 | **-0.1 %** |
 
-Three independent cross-products agree to within 0.4 % in each row, which makes the stale block
-*more* convincing to a reader, not less. A seat asked whether SABIC is cheap at 1.24x book is
-reading a multiple struck at about 50.80. At 45.32 against the same book value it is 1.10.
+Within each row the independent cross-products agree to within 0.4 %, which makes each block
+*more* convincing to a reader, not less. But the gap to `last_price` ranges from -1.6 % to
++12.7 %, so **a reader cannot learn a rule**: two of these five are effectively current and one is
+nearly 13 % out, with nothing in the pack to tell them apart. A seat asked whether SABIC is cheap
+at 1.24x book is reading a multiple struck at about 50.80; at 45.32 against the same book value it
+is 1.10. The same seat reading Jarir's 12.28x is reading a current number.
 
 **(b) The subject's price is newer than every peer's.** P5's peers are priced 2026-08-07, the
 subject 2026-10-13. A relative-value question answered from prices is wrong by construction;
@@ -577,7 +597,51 @@ ticker on any exchange and is a sourcing question, not a code change.
 
 ---
 
-## 10. What this inspection does not establish
+## 10. What this bears on the benchmark, which is about to be funded
+
+The eighteen probes run on these same five packs, so three of the findings above land directly on
+work the owner is deciding whether to pay for. I checked every probe's pre-registered answer
+against the pack it actually runs on.
+
+**Two probes depend on gauge values that the next analytic run may delete.** D3 and D6 both run on
+Anaam (4061) and both derive their correct answer from `net_margin: -49.913` and `ps: 9.336` -
+two of the five **orphaned** gauges described in section 1. D3's registered derivation is price
+12.07 over P/S 9.34 = 1.29 of sales per share, times a net margin of -49.91 %, giving a loss of
+about 0.65 a share, inside its band of (-1.0, -0.4). D6's is the net margin itself.
+
+Recompute 4061 - which any analytic run does, and which already happened to Aramco, SABIC and
+Jarir - and both values become `missing_inputs`. The pack then has **no revenue figure for 4061 at
+all**, so net margin is not merely different, it is underivable, and the only remaining per-share
+route (ROE -4.11 % x book 7.76 = -0.32) falls **outside** D3's band. **D3 and D6 would become
+unanswerable, and the scorer would record the failure as the arm's.** That is two of the nine
+derivation probes.
+
+**One probe inverts if fix A succeeds.** D1 asks whether Aramco's dividend is covered by earnings.
+Its registered band is 60-85 % and its correct answers are 70-74 %, which is the 73.4 % a seat
+reaches from the pack (TTM DPS 1.35 over EPS 1.84). The pipeline's own payout gauge says
+**92.6 %**. Today that does not matter, because net income is not in the pack and 73.4 % is the
+only derivable answer. **Restore the income statement and `payout` arrives in the pack at about
+92.6 %** - outside D1's band, absent from its correct list, and 4.8 points from the planted
+"error" of 97.4 %. D1 would then score the pack's own stated figure as wrong and the plant as
+nearly right.
+
+**Every probe's ratio reasoning inherits the undisclosed ratio price.** The gap ranges from -1.6 %
+to +12.7 % across the five packs (section 3), and the probes do not know which they are on.
+
+**What I have not done, deliberately.** I have not changed a probe. Re-registering a scoring
+criterion after reading the data is the thing pre-registration exists to prevent, and D1 in
+particular would have to be re-registered *because* I now know the answer, which is the worst
+possible reason. These are the owner's calls, and they are cheap: D1 needs its band widened or the
+probe retired before fix A lands; D3 and D6 need a different ticker or a figure that is not
+orphaned.
+
+What I have done is add a guard: `test_eval_probes.py` now asserts that every band-scored probe's
+registered derivation is still supported by its pack, so the day 4061 is recomputed the suite
+fails loudly instead of the benchmark quietly measuring nothing.
+
+---
+
+## 11. What this inspection does not establish
 
 - **When the Saudi income statement disappeared.** It was present 2026-08-02 and absent
   2026-10-28. The only historical market-database copy on this computer is that 2026-08-02 offbox

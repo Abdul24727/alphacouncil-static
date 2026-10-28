@@ -173,3 +173,73 @@ def test_no_advisor_recuses_on_any_probe_ticker(probe):
     four = roster.advisors(FOUR_SEATS)
     assert len(roster.sitting(six, pack.ticker_key)) == 6, f"{probe.id}: arm A is not six seats"
     assert len(roster.sitting(four, pack.ticker_key)) == 4, f"{probe.id}: arm D is not four seats"
+
+# --- the pack must still support each band-scored derivation -----------------------------------
+#
+# The pack fields each band-scored probe's registered derivation rests on, written down because
+# `docs/evidence-pipeline-inspection-2026-10-28.md` found some Tadawul gauge values ORPHANED:
+# computed from an income statement that is no longer in the database, and not recomputed since.
+# 4061's `net_margin` and `ps` are two of them, and D3 and D6 derive their whole answer from them.
+# The day 4061 is recomputed those two go to `missing_inputs`, the pack then holds no revenue
+# figure for 4061 at all, net margin stops being derivable rather than merely changing, and the
+# only remaining per-share route (ROE -4.11% x book 7.76 = -0.32) falls OUTSIDE D3's band. Both
+# probes would become unanswerable while the scorer recorded the failure as the arm's.
+#
+# This is the alarm. It is not a scoring criterion and it changes no registration: it asserts only
+# that the inputs the registration already quotes are still present. A probe that loses its inputs
+# must be re-registered or retired by the owner BEFORE a paid run, not silently scored.
+DERIVATION_INPUTS = {
+    "D1": ("valuation.eps_ttm", "dividends>=4"),
+    "D2": ("valuation.roe_pct", "valuation.book_value", "valuation.pb"),
+    "D3": ("quote.last_price", "gauge.ps", "gauge.net_margin", "valuation.roe_pct"),
+    "D4": ("valuation.roe_pct", "valuation.roa_pct", "gauge.debt_equity"),
+    "D5": ("quote.last_price", "valuation.book_value", "valuation.pb"),
+    "D6": ("gauge.gross_margin", "gauge.net_margin", "valuation.roe_pct"),
+    "D8": ("quote.last_price", "valuation.dividend_yield_pct", "dividends>=4"),
+}
+
+
+def _pack_field(pack, path: str):
+    """Resolve one DERIVATION_INPUTS key against a loaded pack. Returns the value, or None when
+    the field is absent, null, or (for a gauge) carries any status other than `ok`/`published` -
+    which is the case this test exists to catch."""
+    if path == "dividends>=4":
+        rows = (pack.data.get("P3") or {}).get("dividends") or []
+        return len(rows) if len(rows) >= 4 else None
+    where, key = path.split(".", 1)
+    if where in ("quote", "valuation"):
+        return ((pack.data.get("P1") or {}).get(where) or {}).get(key)
+    if where == "gauge":
+        for group in (pack.data.get("P2") or {}).get("groups") or []:
+            for metric in group.get("metrics") or []:
+                if metric.get("key") == key:
+                    if metric.get("status") not in ("ok", "published"):
+                        return None
+                    return metric.get("value")
+        return None
+    raise AssertionError(f"unknown derivation input {path!r}")
+
+
+@pytest.mark.parametrize("probe", [p for p in PROBES if p.band], ids=[p.id for p in PROBES if p.band])
+def test_the_pack_still_supports_each_band_scored_derivation(probe):
+    from eval.run import load_pack
+
+    inputs = DERIVATION_INPUTS.get(probe.id)
+    assert inputs, f"{probe.id} is band-scored but its derivation inputs are not registered"
+    pack = load_pack(CELL[probe.cell].ticker, "en")
+    missing = [path for path in inputs if _pack_field(pack, path) is None]
+    assert not missing, (
+        f"{probe.id} on {CELL[probe.cell].ticker}: its registered derivation quotes "
+        f"{', '.join(missing)}, which the pack no longer carries. The probe cannot be answered "
+        f"from the pack, so a paid run would score every arm's failure as the arm's. "
+        f"Re-register or retire it before spending."
+    )
+
+
+def test_every_band_scored_probe_has_registered_derivation_inputs():
+    """A new band-scored probe added without an entry above would be guarded by nothing."""
+    banded = {p.id for p in PROBES if p.band}
+    assert banded == set(DERIVATION_INPUTS), (
+        f"band-scored without inputs: {sorted(banded - set(DERIVATION_INPUTS))}; "
+        f"registered but no longer band-scored: {sorted(set(DERIVATION_INPUTS) - banded)}"
+    )
