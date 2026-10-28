@@ -13,7 +13,7 @@ import asyncio
 
 import pytest
 
-from eval.budget import Budget, BudgetExhausted
+from eval.budget import Budget, BudgetExhausted, metered
 
 
 def test_a_call_reserves_its_worst_case_not_its_average():
@@ -111,22 +111,24 @@ def test_the_cap_needs_no_account_endpoint():
     assert b.spent == 0.0 and b.calls == 0
 
 
-def test_the_metered_asker_settles_on_the_failure_path():
-    """End to end through the harness's own wrapper, with a stand-in for the model call that always
-    raises after being billed. The budget must still advance, or a retry storm would be free."""
-    from eval import probe_run
+def test_the_metered_wrapper_settles_on_the_failure_path():
+    """End to end through the harness's own wrapper, with a stand-in model call that always raises
+    after being billed. The budget must still advance, or a retry storm would be free.
 
+    The call function is injected, so this needs nothing from the application - which is the point:
+    the first version imported the harness, that imported `app.main`, and the test could not run
+    from a verification package carrying only part of `app`."""
     class FakeUsage:
         cost_usd = 0.07
 
     class FakeError(Exception):
         usage = FakeUsage()
 
-    async def fake_ask(*_a, **_k):
+    async def always_raises(_model, _messages, _max_tokens, _temperature, _check):
         raise FakeError("the provider refused")
 
     budget = Budget(cap_usd=0.30, per_call_usd=0.03, attempts=3)
-    ask, calls = probe_run.metered_asker(object(), budget)
+    ask, calls = metered(always_raises, budget)
 
     async def main():
         for _ in range(3):
@@ -134,15 +136,30 @@ def test_the_metered_asker_settles_on_the_failure_path():
                 await ask(seat=type("S", (), {"id": "buffett"})(), messages=[], model="m",
                           max_tokens=10, temperature=0.0, check=lambda x: x)
 
-    original = probe_run.llm.ask
-    probe_run.llm.ask = fake_ask
-    try:
-        asyncio.run(main())
-    finally:
-        probe_run.llm.ask = original
+    asyncio.run(main())
 
     assert budget.calls == 3
     assert budget.spent == pytest.approx(0.21)
     assert calls["cost"] == pytest.approx(0.21)
     with pytest.raises(BudgetExhausted):
         budget.take()
+
+
+def test_the_metered_wrapper_settles_the_real_cost_on_success():
+    class FakeUsage:
+        cost_usd = 0.05
+
+    async def succeeds(_model, _messages, _max_tokens, _temperature, _check):
+        return {"ok": True}, FakeUsage()
+
+    budget = Budget(cap_usd=1.00, per_call_usd=0.03, attempts=3)
+    ask, calls = metered(succeeds, budget)
+
+    async def main():
+        return await ask(messages=[], model="m", max_tokens=10, temperature=0.0, check=lambda x: x)
+
+    checked, usage = asyncio.run(main())
+    assert checked == {"ok": True}
+    assert budget.spent == pytest.approx(0.05)
+    assert budget.reserved == 0.0
+    assert calls["n"] == 1

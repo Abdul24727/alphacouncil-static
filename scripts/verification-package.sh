@@ -41,7 +41,8 @@ cp api/app/settings.py        "$PKG/code/api/app/"
 # app.copilot.context, and the first package shipped the test without it.
 cp api/app/copilot/*.py       "$PKG/code/api/app/copilot/"
 cp api/pyproject.toml api/uv.lock "$PKG/code/api/"
-cp api/tests/test_debate.py api/tests/test_copilot.py api/tests/test_eval_score.py "$PKG/code/api/tests/"
+cp api/tests/test_debate.py api/tests/test_copilot.py api/tests/test_eval_score.py \
+   api/tests/test_eval_budget.py "$PKG/code/api/tests/"
 cp deploy/api.env.example     "$PKG/code/deploy/"
 
 echo "== data and results"
@@ -54,7 +55,7 @@ done
 echo "== docs"
 for d in council-test-design-2026-10-27.md council-test-run-2026-10-27.md \
          council-test-design-2026-10-28.md council-review-response-2026-10-28.md \
-         beta-advisors-2026-10-27.md; do
+         council-review-response-2026-10-28-round2.md beta-advisors-2026-10-27.md; do
   [[ -f "docs/$d" ]] && cp "docs/$d" "$PKG/docs/"
 done
 [[ -f docs/eval/README.md ]] && cp docs/eval/README.md "$PKG/docs/eval-README.md"
@@ -78,6 +79,31 @@ s = re.sub(r"\b[a-z_][a-z0-9_.-]*@alphacouncil\.tech\b",
 p.write_text(s, encoding="utf-8", newline="\n")
 PY
 fi
+
+echo "== commit manifest"
+# Asked for by the second review round: the exact commits, path by path, with anything that went in
+# unintentionally marked rather than buried.
+{ echo "Commits behind this package, newest first. Branch: $(git rev-parse --abbrev-ref HEAD)"
+  echo "HEAD: $(git rev-parse HEAD)"
+  echo
+  git log --format='%h  %ad  %s' --date=short -12
+  echo
+  echo "Files changed per commit (A added, M modified):"
+  for c in $(git log --format=%h -8); do
+    echo
+    echo "  $c  $(git log -1 --format=%s "$c")"
+    git show --stat --format="" --name-status "$c" | sed 's/^/    /'
+  done
+  echo
+  echo "UNINTENTIONAL INCLUSION, identified separately:"
+  echo "  718eca0  scripts/set-backup-bucket.sh"
+  echo "    Not part of the benchmark change. Staged by a 'git add -A scripts' while adding"
+  echo "    scripts/verification-package.sh; it had been untracked in the working tree beforehand."
+  echo "    Holds no secret values: every credential is read at runtime and unset after use."
+  echo "    Committing on this branch is pre-approved by PROJECT.md section 4. Pushing is NOT, and"
+  echo "    this commit has not been pushed, so the inclusion is fully reversible."
+  echo "    See docs/council-review-response-2026-10-28-round2.md section 5."
+} > "$PKG/MANIFEST-COMMITS.txt"
 
 echo "== manifest"
 # Built from a list that EXCLUDES the manifest: a file cannot hash itself.

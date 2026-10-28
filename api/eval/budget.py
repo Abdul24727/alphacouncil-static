@@ -21,6 +21,7 @@ not the lower bound of what is finished.
 from __future__ import annotations
 
 import threading
+from typing import Any
 
 
 class BudgetExhausted(RuntimeError):
@@ -70,3 +71,33 @@ class Budget:
     def __str__(self) -> str:
         return (f"${self.spent:.4f} billed over {self.calls} calls, ${self.reserved:.4f} in flight, "
                 f"cap ${self.cap:.2f}" + (f", {self.refused} calls refused" if self.refused else ""))
+
+
+def metered(ask_fn: Any, budget: Budget) -> tuple[Any, dict[str, float]]:
+    """Wrap a model-call function so the cap applies to every call.
+
+    `ask_fn(model, messages, max_tokens, temperature, check)` returns `(checked, usage)` and may
+    raise; a raised error carrying `.usage` is still settled, because a failed attempt is billed
+    (F-7). The call function is INJECTED rather than imported so this module - and its tests - need
+    nothing from the application: importing the harness used to pull in `app.main` and through it
+    `app.routers`, which made the test unrunnable from a partial verification package.
+    """
+    calls = {"n": 0.0, "cost": 0.0}
+
+    async def ask(*, seat: Any = None, messages: Any, model: str, max_tokens: int,
+                  temperature: float, check: Any, **_: Any):
+        budget.take(f"a call for seat {getattr(seat, 'id', 'chair')!r}")
+        usage = None
+        try:
+            checked, usage = await ask_fn(model, messages, max_tokens, temperature, check)
+            return checked, usage
+        except Exception as exc:
+            usage = getattr(exc, "usage", None)
+            raise
+        finally:
+            cost = getattr(usage, "cost_usd", None)
+            budget.settle(cost)
+            calls["n"] += 1
+            calls["cost"] += float(cost or 0.0)
+
+    return ask, calls

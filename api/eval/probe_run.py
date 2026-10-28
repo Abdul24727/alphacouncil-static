@@ -35,7 +35,7 @@ from app.debate.standin import make_asker
 from app.settings import get_settings
 
 from . import score as S
-from .budget import Budget, BudgetExhausted
+from .budget import Budget, BudgetExhausted, metered
 from .probes import BY_ID, FAMILIES, PLANT_SEAT, PROBES
 from .questions import CELLS
 from .run import FOUR_SEATS, ROOT, balance, council_asker, describe, load_pack
@@ -106,27 +106,13 @@ def finish(r: ProbeResult, pack: Any, probe: Any) -> ProbeResult:
 
 
 def metered_asker(settings: Any, budget: Budget):
-    """llm.ask with the cap applied to every call. Replaces run.council_asker here, which counted
-    cost but never refused a call: it reserves the worst case before the call and settles the real
-    figure after, on the failure path too, because a failed attempt is still billed (F-7)."""
-    calls = {"n": 0, "cost": 0.0}
+    """The cap applied to every llm.ask. The wrapper itself lives in budget.py with the call
+    injected, so it can be tested without importing the application."""
 
-    async def ask(*, seat: Any, messages: Any, model: str, max_tokens: int, temperature: float, check: Any, **_: Any):
-        budget.take(f"a call for seat {getattr(seat, 'id', 'chair')!r}")
-        usage = None
-        try:
-            checked, usage = await llm.ask(settings, model, messages, max_tokens=max_tokens, temperature=temperature, check=check)
-            return checked, usage
-        except Exception as exc:
-            usage = getattr(exc, "usage", None)
-            raise
-        finally:
-            cost = getattr(usage, "cost_usd", None)
-            budget.settle(cost)
-            calls["n"] += 1
-            calls["cost"] += float(cost or 0.0)
+    async def call(model: str, messages: Any, max_tokens: int, temperature: float, check: Any):
+        return await llm.ask(settings, model, messages, max_tokens=max_tokens, temperature=temperature, check=check)
 
-    return ask, calls
+    return metered(call, budget)
 
 
 def with_plant(base: Any, probe: Any, planted: bool):

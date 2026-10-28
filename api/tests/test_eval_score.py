@@ -18,7 +18,20 @@ import pytest
 from eval import score as S
 from eval.probes import BY_ID, PROBES
 
-RESULTS = Path(__file__).resolve().parents[2] / "docs" / "eval" / "results.jsonl"
+def _results() -> Path:
+    """The 60 saved answers, wherever this is run from: the repository, or a verification package
+    where they sit at results/results.jsonl beside code/. Without this the calibration guards
+    silently SKIPPED inside the package, which is the one place a reviewer runs them."""
+    here = Path(__file__).resolve()
+    for candidate in (here.parents[2] / "docs" / "eval" / "results.jsonl",
+                      here.parents[3] / "results" / "results.jsonl",
+                      here.parents[4] / "results" / "results.jsonl"):
+        if candidate.exists():
+            return candidate
+    return here.parents[2] / "docs" / "eval" / "results.jsonl"
+
+
+RESULTS = _results()
 
 
 # --- the reviewer's four cases, 2026-10-28 ----------------------------------------------------
