@@ -971,7 +971,7 @@ Goal 4's "Done when", as it stands tonight: **(2) MET** — six real portraits i
 Claude can run passes, `check-all.mjs` waits on the owner, and 14 of 14 waits on Step 18; **(5) NOT MET** —
 `"checkout_open":false`, deliberately, until Step 18; **(1) NOT STARTED** — Step 7, the lawyer, though its questions are drafted and ready to take (`docs/legal-questions-2026-10-27.md`).
 
-`origin/rebuild` is at **`9dcc4a1`** - verified against the remote with `git ls-remote` on 2026-10-28; the `db8539a` this line named until then is **40 commits behind HEAD**, so the exposure was larger than it read - and **thirteen commits are now unpushed** — everything from 2026-10-28:
+`origin/rebuild` is at **`9dcc4a1`** - verified against the remote with `git ls-remote` on 2026-10-28; the `db8539a` this line named until then is **40 commits behind HEAD**, so the exposure was larger than it read - and **every commit from 2026-10-28 is unpushed** — fifteen of them as this line was written, though the live figure is `git rev-list --count origin/rebuild..HEAD` and that is what to trust, because this count has been wrong twice already — everything from 2026-10-28:
 the probe harness, four rounds of independent-review corrections and this file. Pushing is an **Always stop**
 item (§4), so it waits on the owner's go-ahead; until then today's work is on this computer only, which is a
 Goal 1 exposure and the reason to ask early rather than last. `scripts/set-backup-bucket.sh` **is tracked
