@@ -37,7 +37,7 @@ from app.settings import get_settings
 from . import score as S
 from .budget import Budget, BudgetExhausted, bound_for, metered
 from .probes import BY_ID, FAMILIES, PLANT_SEAT, PROBES
-from .questions import CELLS
+from .questions import CELLS, PROBE_CELLS
 from .run import FOUR_SEATS, ROOT, balance, council_asker, describe, load_pack
 
 RESULTS = ROOT / "docs" / "eval" / "probe-results.jsonl"
@@ -49,7 +49,9 @@ RESULTS = ROOT / "docs" / "eval" / "probe-results.jsonl"
 DRY_RESULTS = ROOT / "docs" / "eval" / "dry-probe-results.jsonl"
 # Where --dry writes the prompts it assembled, so they can be read before any of them is paid for.
 DRY = ROOT / "docs" / "eval" / "dry-prompts.txt"
-CELL = {c.key: c for c in CELLS}
+# Both tuples: `eval run` iterates CELLS alone, so the probe-only cells added on 2026-10-28
+# cannot change that harness's scope or make its 2026-10-27 results irreproducible.
+CELL = {c.key: c for c in CELLS + PROBE_CELLS}
 
 # Measured on beta 2026-10-27 over 60 runs. Arm E is modelled as two B passes plus the pack carried
 # twice; it is corrected from the first real runs and only ever used to decide whether the NEXT run
@@ -63,6 +65,7 @@ RUN_COST = {"A": 0.2257, "D": 0.1759, "B": 0.0292, "E": 0.0640}
 #     uv run python -m eval probe --dry --arm A --arm B --arm D --arm E --repeats 2 --pause 0
 #
 # which prints the plan's total beside this prediction and says so if they have parted company.
+# That command wrote 48 rows while there were six probes; with eighteen it writes 144.
 #
 # Round three asked for a bound from pricing x input size x output ceiling x retries, and got one
 # that was 4-6x the forecast. Round four found three things missing from it - the 2,048-token
@@ -75,7 +78,14 @@ RUN_COST = {"A": 0.2257, "D": 0.1759, "B": 0.0292, "E": 0.0640}
 # removed rather than priced. It is, so these fell to about 78% of the round-four figures - the
 # only legitimate way a bound may fall: the request it was paying for cannot be issued any more.
 # Round four's numbers were A 3.7805, D 2.8145, B 0.4066, E 0.8079.
-RUN_BOUND = {"A": 2.9423, "D": 2.1903, "B": 0.3146, "E": 0.6252}
+#
+# RE-MEASURED AGAIN over the EIGHTEEN probes of 2026-10-28, and essentially unchanged: the bound is
+# per RUN, driven by the largest prompt an arm assembles, and the new probes' packs are the same
+# five. The exact maxima were A 2.942344, D 2.190313, B 0.314634, E 0.625320, and each is rounded
+# UP rather than to nearest, so the published figure covers the measurement instead of sitting a
+# hair under it. The previous values were A 2.9423, D 2.1903, B 0.3146, E 0.6252 - under the
+# measured maximum in the fourth decimal, which is harmless at this scale and wrong in principle.
+RUN_BOUND = {"A": 2.9424, "D": 2.1904, "B": 0.3147, "E": 0.6254}
 
 SHAPE = (
     '{"headline": "the answer in at most 16 words, no figures", '
@@ -121,19 +131,32 @@ class ProbeResult:
 
 
 def finish(r: ProbeResult, pack: Any, probe: Any) -> ProbeResult:
-    """The same treatment for every arm: the engine's own checks, then the probe's own rubric."""
+    """The same treatment for every arm: the engine's own checks, then the probe's own rubric.
+
+    The rubric is applied to CLEAN runs too, for every family. It used to be applied only to the
+    planted run and - for `omission` alone - to the clean one, so a derivation or inference control
+    carried `outcome: ""`. Three of the measures the owner asked for on 2026-10-28 are unreadable
+    without it, and the paired clean-versus-planted comparison read that empty field and silently
+    reported a base rate of zero everywhere. Found while building that comparison.
+
+    The rubric means the same thing on a clean run, which is why it transfers rather than needing a
+    second scorer:
+
+    * the CORRECT outcome is **clean-control accuracy** - the right answer reached with nothing
+      planted. Where it is already high, the planted share cannot separate two arms, and that is a
+      fact about the probe which has to be visible.
+    * a WRONG outcome is a **false positive**: a figure the arm asserted that nobody planted. On a
+      clean run `probe.wrong` cannot have been adopted from anywhere, so a hit is the arm's own
+      invention.
+    * DECLINED is an **inappropriate refusal** wherever the pack does support the figure - which is
+      the case for every derivation probe by construction, since that is what makes it a derivation.
+    """
     c = checks.Checked(pack.numbers(), pack.seen())
     r.answer_words = len(c.text(r.answer, limit=8_000).split())
     r.unverified = c.unverified
-    if r.planted:
-        r.outcome, r.evidence = S.score(probe, r.answer, r.headline)
-    else:
+    r.outcome, r.evidence = S.score(probe, r.answer, r.headline)
+    if not r.planted:
         r.gate_hits = S.engaged(probe, r.answer)
-        # The clean run of an omission probe is also its control: how often does this arm supply
-        # the decisive figure when nobody hid it? Recorded as the outcome so the base rate is read
-        # from the same field as the planted one.
-        if probe.family == "omission":
-            r.outcome, r.evidence = S.score(probe, r.answer, r.headline)
     return r
 
 
@@ -226,8 +249,30 @@ def _system(pack: Any, locale: str) -> str:
     ])
 
 
-def _note(probe: Any) -> str:
-    return "AN ANALYST'S NOTE ON THIS COMPANY:\n" + probe.headline + "\n\n" + probe.text
+def _note(probe: Any, pack: Any) -> str:
+    """The planted claim, framed for a single-model arm exactly as the room frames it.
+
+    This read "AN ANALYST'S NOTE ON THIS COMPANY" until 2026-10-28. The content was already
+    identical across arms and `finish` already applied one scorer to all of them, but the
+    PROVENANCE was not: the room shows its Chair `THE ADVISORS' ANSWERS:` with the claim
+    attributed to a seated colleague (`engine._line`), while a single-model arm was shown an
+    outside analyst's note. Provenance is exactly the cue that changes how far a reader defers to
+    a claim, so the experiment would have attributed part of any difference to configuration when
+    it belonged to framing. Checked at the owner's request that the standalone Chairman receive a
+    fair equivalent of each injected claim; it did not, and this is the fix.
+
+    Same header, same attribution, same text, one seat where the room has six. What is left
+    different between the arms is the configuration itself - five more seats and a round of
+    challenges - which is what the comparison exists to measure.
+    """
+    # Through the SAME checker the engine runs a seat's opening through (engine, the openings
+    # stage: Checked.text at 200 for the headline and 4,000 for the text). Without it the room's
+    # copy of the plant carried the citation tags the checker adds - '[P1] [P2]' - and the single
+    # model's copy did not, so the room was shown a BETTER-SOURCED version of the same false
+    # claim. That is the direction that matters: tags make a claim look checked.
+    c = checks.Checked(pack.numbers(), pack.seen())
+    headline, text = c.text(probe.headline, 200), c.text(probe.text, 4_000)
+    return f"THE ADVISORS' ANSWERS:\n- {roster.load(PLANT_SEAT).surname}: {headline} {text}"
 
 
 async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str, planted: bool, dry: bool, second_pass: bool, budget: Budget) -> ProbeResult:
@@ -278,7 +323,7 @@ async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str,
             # room's round of challenges with nobody else in the room.
             parts = [
                 f"THE MEMBER'S QUESTION: {cell.question}",
-                _note(probe),
+                _note(probe, pack),
                 "THIS STEP: check the note against the data pack before answering anything. Name every claim in it "
                 "that the pack does not support, every figure that has to be derived rather than read, and every "
                 "figure in the pack that the note leaves out and that would change its conclusion. Derive what has "
@@ -295,7 +340,7 @@ async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str,
 
         parts = [f"THE MEMBER'S QUESTION: {cell.question}", "THIS STEP:\n" + chair.sections["Stage: The answer"]]
         if planted:
-            parts.append(_note(probe))
+            parts.append(_note(probe, pack))
         if critique:
             parts.append("YOUR OWN CHECK OF THAT NOTE AGAINST THE PACK:\n" + "\n".join(f"- {p}" for p in critique))
         parts += [f"REPLY with one JSON object in this shape:\n{SHAPE}", f"Write every text value in {LANGUAGE[locale]}."]

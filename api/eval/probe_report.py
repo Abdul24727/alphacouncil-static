@@ -29,6 +29,7 @@ clean control beside the planted run, the change between them, and the wrong-ans
 clean base rate is zero by construction (score.WRONG).
 """
 
+import math
 import statistics
 from collections import defaultdict
 from pathlib import Path
@@ -37,6 +38,98 @@ from typing import Any
 from .probes import BY_ID, FAMILIES
 from .report import _rows, fisher_exact
 from .score import CORRECT, WRONG
+
+
+# PRE-REGISTERED 2026-10-28, before any model comparison, at the owner's instruction to "define an
+# acceptable non-inferiority margin for four advisors before testing".
+#
+# Four advisors are NON-INFERIOR to six if the one-sided 95% upper bound on (A - D) is below this
+# margin. 15 points is the business judgement, not an arithmetic convenience: a four-seat room costs
+# about 30% less per session, and a loss of more than about one answer in seven is more than that
+# saving is worth.
+#
+# WHAT THE PLANNED RUN CAN ACTUALLY ESTABLISH, stated here because the number is uncomfortable.
+# Simulated over the probe-level paired design, the upper bound you can expect to beat 80% of the
+# time is:
+#
+#     6 probes x 3 repeats    42 points     18 probes x 6 repeats   15 points
+#     18 probes x 2 repeats   26 points     36 probes x 3 repeats   15 points
+#     18 probes x 3 repeats   22 points     36 probes x 6 repeats   11 points
+#
+# So the 18 x 3 plan is UNDERPOWERED against this margin and will most likely return
+# "inconclusive". That is not a reason to move the margin to fit the budget - it is the reason the
+# verdict below never prints a pass when the bound does not clear the margin, and why a
+# non-significant difference is reported as a failure to detect rather than as equivalence.
+NON_INFERIORITY_MARGIN = 0.15
+
+# One-sided 95% t critical values by degrees of freedom. A table rather than a dependency: this
+# module is importable with no application and no scipy on the path, which is what makes these
+# numbers checkable from inside the verification package.
+_T95 = {1: 6.314, 2: 2.920, 3: 2.353, 4: 2.132, 5: 2.015, 6: 1.943, 7: 1.895, 8: 1.860, 9: 1.833,
+        10: 1.812, 11: 1.796, 12: 1.782, 13: 1.771, 14: 1.761, 15: 1.753, 16: 1.746, 17: 1.740,
+        19: 1.729, 23: 1.714, 29: 1.699, 35: 1.690, 47: 1.678, 59: 1.671, 119: 1.658}
+
+
+def t95(df: int) -> float:
+    """The one-sided 95% critical value, rounded UP to the nearest tabulated df.
+
+    Rounding up is deliberate: it takes the WIDER interval, so an unlisted df can only make the
+    bound more conservative and never fake precision the sample does not have.
+    """
+    if df < 1:
+        return float("inf")
+    for key in sorted(_T95):
+        if df <= key:
+            return _T95[key]
+    return 1.645
+
+
+def paired_rates(rows: list[dict[str, Any]], keep: set[str], arm: str,
+                 planted: bool) -> dict[str, float]:
+    """This arm's rate of the correct outcome, PER PROBE, over that probe's repeats.
+
+    Aggregating to the probe before comparing is the whole point. Three repeats of one probe are not
+    three independent observations of the room: they are one question asked three times, and pooling
+    them as if they were independent overstates the precision of every comparison built on them.
+    The owner's instruction was a paired analysis that accounts for repeated runs, and this is where
+    that accounting happens.
+    """
+    out: dict[str, float] = {}
+    for pid in sorted(keep):
+        runs = [r for r in rows
+                if r["probe"] == pid and r["arm"] == arm and bool(r["planted"]) == planted and r["ok"]]
+        if runs:
+            fam = BY_ID[pid].family
+            out[pid] = sum(1 for r in runs if r["outcome"] == CORRECT[fam]) / len(runs)
+    return out
+
+
+def non_inferiority(x_rates: dict[str, float], y_rates: dict[str, float],
+                    margin: float) -> tuple[str, float, float, float, int]:
+    """Is y non-inferior to x within `margin`, on the probes both arms answered?
+
+    Paired by PROBE, because both arms saw the identical pack and the identical question - which is
+    what makes the pairing legitimate and what removes probe difficulty from the difference.
+
+    Returns (verdict, mean difference, upper bound, margin, n probes). The verdict is deliberately
+    one of three, never two: a bound that clears the margin is non-inferiority, a difference that
+    excludes zero on the wrong side is inferiority, and anything else is INCONCLUSIVE. There is no
+    outcome here that reads as "equivalent", because this design cannot establish equivalence.
+    """
+    shared = sorted(set(x_rates) & set(y_rates))
+    diffs = [x_rates[k] - y_rates[k] for k in shared]
+    n = len(diffs)
+    if n < 2:
+        return "NOT ENOUGH PROBES", 0.0, float("inf"), margin, n
+    mean = statistics.mean(diffs)
+    sd = statistics.stdev(diffs)
+    upper = mean + t95(n - 1) * sd / math.sqrt(n) if sd > 0 else mean
+    if upper < margin:
+        return "NON-INFERIOR", mean, upper, margin, n
+    lower = mean - t95(n - 1) * sd / math.sqrt(n) if sd > 0 else mean
+    if lower > 0:
+        return "INFERIOR", mean, upper, margin, n
+    return "INCONCLUSIVE", mean, upper, margin, n
 
 
 def gate(rows: list[dict[str, Any]], arms: tuple[str, ...]) -> tuple[set[str], list[str]]:
@@ -170,40 +263,89 @@ def report(path: Path | None = None) -> None:
     # wrong-answer rate, whose clean base rate is zero by construction (score.WRONG). Where the
     # change is zero and the wrong-answer rate is zero, the probe measured nothing in that arm, and
     # that has to be visible rather than inferred.
-    print("\nPAIRED: the clean control beside the planted run (same pack, same question)")
-    print(f"  {'arm':4}{'clean':>14}{'planted':>14}{'change':>10}{'wrong answers':>16}")
+    # THE FIVE MEASURES, side by side. The owner asked for planted-error performance reported
+    # alongside clean-control accuracy, false positives, inappropriate refusals and actual
+    # incorrect conclusions - and the reason to put them in one table is that the first number is
+    # unreadable without the rest:
+    #
+    #   handled (planted)  the pre-registered primary metric
+    #   handled (clean)    the same rubric with nothing planted. Where this is already high the
+    #                      planted figure is at a ceiling and cannot separate two arms.
+    #   false positive     a WRONG outcome on a CLEAN run: a figure the arm asserted that nobody
+    #                      planted, so it is the arm's own invention. Base rate zero by
+    #                      construction.
+    #   refused wrongly    DECLINED on a clean run. For a derivation probe the pack supports the
+    #                      figure by construction - that is what makes it a derivation - so a
+    #                      refusal there is a refusal to answer something answerable, which is a
+    #                      cost to the member even though it is not a wrong answer.
+    #   incorrect          a WRONG outcome on a planted run: the failure that reaches the member.
+    print("\nTHE FIVE MEASURES (same packs, same questions, plant or no plant)")
+    head = f"  {'arm':4}{'handled/planted':>17}{'handled/clean':>15}{'false pos':>11}{'refused wrongly':>17}{'incorrect':>11}"
+    print(head)
     for arm in arms:
-        # arm E shares arm B's clean control, as the gate does
-        ctrl_arm = "B" if arm == "E" else arm
-        cl = [r for r in clean if r["probe"] in keep and r["arm"] == ctrl_arm]
+        ctrl = "B" if arm == "E" else arm           # arm E shares arm B's control, as the gate does
         pl = [r for r in good if r["arm"] == arm]
+        cl = [r for r in clean if r["probe"] in keep and r["arm"] == ctrl and r["ok"]]
         if not pl:
             continue
-        ch = sum(1 for r in cl if r["outcome"] == CORRECT[r["family"]])
-        ph = sum(1 for r in pl if r["outcome"] == CORRECT[r["family"]])
-        wrong = sum(1 for r in pl if r["outcome"] in WRONG[r["family"]])
-        clean_rate = ch / len(cl) if cl else None
-        planted_rate = ph / len(pl)
-        delta = f"{(planted_rate - clean_rate) * 100:+.0f}pp" if clean_rate is not None else "-"
-        shown = f"{ch}/{len(cl)}" if cl else "-"
-        print(f"  {arm:4}{shown:>14}{f'{ph}/{len(pl)}':>14}{delta:>10}"
-              f"{f'{wrong}/{len(pl)}':>16}")
-    print("\n  A probe whose clean control already reaches the correct outcome in every arm is at a")
-    print("  ceiling: read the wrong-answer column, not 'handled'. Zero in both columns for every")
-    print("  arm means the plant changed nothing anywhere, which is a finding about the PROBE.")
+
+        def share(rows_in: list[dict[str, Any]], want: str) -> str:
+            if not rows_in:
+                return "-"
+            if want == "correct":
+                n = sum(1 for r in rows_in if r["outcome"] == CORRECT[r["family"]])
+            elif want == "wrong":
+                n = sum(1 for r in rows_in if r["outcome"] in WRONG[r["family"]])
+            else:
+                n = sum(1 for r in rows_in if r["outcome"] == "DECLINED")
+            return f"{n}/{len(rows_in)}"
+
+        print(f"  {arm:4}{share(pl, 'correct'):>17}{share(cl, 'correct'):>15}"
+              f"{share(cl, 'wrong'):>11}{share(cl, 'declined'):>17}{share(pl, 'wrong'):>11}")
+    print("\n  Read 'handled/clean' first. Where it is already high, 'handled/planted' is a ceiling")
+    print("  and the arms cannot be separated on it - use 'incorrect', whose clean base rate is")
+    print("  zero by construction. A high 'refused wrongly' is the cost of caution, not of error.")
 
     print("\nCLEAN BASE RATE PER PROBE (the correct outcome with nothing planted)")
     pids2 = sorted(keep)
-    print(f"  {'arm':4}" + "".join(f"{p:>8}" for p in pids2))
+    print(f"  {'arm':4}" + "".join(f"{pid:>8}" for pid in pids2))
     for arm in arms:
-        ctrl_arm = "B" if arm == "E" else arm
+        ctrl = "B" if arm == "E" else arm
         line = f"  {arm:4}"
         for pid in pids2:
-            g = [r for r in clean if r["probe"] == pid and r["arm"] == ctrl_arm]
+            g = [r for r in clean if r["probe"] == pid and r["arm"] == ctrl and r["ok"]]
             fam = BY_ID[pid].family
             hit = sum(1 for r in g if r["outcome"] == CORRECT[fam])
             line += f"{(f'{hit}/{len(g)}') if g else '-':>8}"
         print(line)
+
+    # --- the paired, probe-level comparison ----------------------------------------------------
+    #
+    # Three repeats of one probe are ONE question asked three times, not three independent
+    # observations, so every rate here is computed per probe first and the comparison is paired
+    # across probes. The owner's instruction was a paired analysis that accounts for repeated runs;
+    # pooling the runs instead would overstate the precision of the primary comparison, which is
+    # the one the whole decision rests on.
+    if "D" in arms and "A" in arms:
+        a_rates = paired_rates(rows, keep, "A", planted=True)
+        d_rates = paired_rates(rows, keep, "D", planted=True)
+        verdict, mean, upper, margin, n_probes = non_inferiority(a_rates, d_rates, NON_INFERIORITY_MARGIN)
+        print(f"\nSIX SEATS AGAINST FOUR, paired by probe (n = {n_probes} probes, not runs)")
+        print(f"  mean difference A - D      {mean * 100:+.1f} points")
+        print(f"  one-sided 95% upper bound  {upper * 100:+.1f} points"
+              if upper != float("inf") else "  one-sided 95% upper bound  -")
+        print(f"  pre-registered margin      {margin * 100:.0f} points")
+        print(f"  -> {verdict}")
+        if verdict == "INCONCLUSIVE":
+            print("     The bound does not clear the margin and the difference does not exclude")
+            print("     zero. This is a FAILURE TO DETECT at this sample size, not equivalence:")
+            print("     18 probes x 3 repeats can be expected to bound at about 22 points, so it")
+            print("     cannot establish a 15-point margin. Do not read it as four matching six.")
+        elif verdict == "NON-INFERIOR":
+            print(f"     Four seats lose less than {margin * 100:.0f} points against six, on these probes.")
+        elif verdict == "INFERIOR":
+            print("     Six seats handle measurably more. This is the result that says do not drop")
+            print("     two seats.")
 
     def compare(x: str, y: str, label: str, reading: str | None = None) -> None:
         """One comparison. `reading` says how it is to be READ, which is not the same for all of them.
@@ -213,18 +355,22 @@ def report(path: Path | None = None) -> None:
         six seats against four a difference is the thing that would STOP a change, and the absence
         of one is not a pass or a fail but a failure to detect at this sample size. Labelling the
         second as PASS would be the worst misreading this report could invite.
+
+        These pool the runs. The paired block above is the one that accounts for repeats, and it is
+        the one the six-against-four decision should be read from; these are kept for continuity
+        with the earlier rounds, which reported them.
         """
         hx, nx = rate(x)
         hy, ny = rate(y)
         if not nx or not ny:
             print(f"  {label}: {x} vs {y}: not enough runs")
             return
-        p = fisher_exact(hx, nx - hx, hy, ny - hy)
-        line = f"  {label}: {x} {hx}/{nx} vs {y} {hy}/{ny}  Fisher p = {p:.4f}"
+        pval = fisher_exact(hx, nx - hx, hy, ny - hy)
+        line = f"  {label}: {x} {hx}/{nx} vs {y} {hy}/{ny}  Fisher p = {pval:.4f}"
         if reading == "superiority":
-            line += f"  -> {'PASS' if (p < 0.05 and hx / nx > hy / ny) else 'FAIL'}"
+            line += f"  -> {'PASS' if (pval < 0.05 and hx / nx > hy / ny) else 'FAIL'}"
         elif reading == "difference":
-            if p < 0.05:
+            if pval < 0.05:
                 line += f"  -> DIFFERENCE: {x if hx / nx > hy / ny else y} is higher"
             else:
                 line += "  -> no measurable difference (NOT equivalence - read the note)"
@@ -254,6 +400,10 @@ def report(path: Path | None = None) -> None:
     print("  more. If neither room beats the Chairman alone, seat count is not the question.")
     print("  A vs E, if E was run, is the architecture question: if E matches A, the second pass is")
     print("  doing the work rather than the seats.")
+    print("\n  The Fisher lines above pool the runs and are reported for continuity with the earlier")
+    print("  rounds. The PAIRED block above them is the one to read for the six-against-four")
+    print("  decision: it aggregates each probe before comparing, so three repeats of one question")
+    print("  count as one question answered three times rather than three independent findings.")
 
     failed = [r for r in rows if not r["ok"]]
     if failed:

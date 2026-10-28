@@ -141,4 +141,175 @@ CELLS: tuple[Cell, ...] = (
     ),
 )
 
+# ---------------------------------------------------------------------------------------------
+# PROBE CELLS, added 2026-10-28
+# ---------------------------------------------------------------------------------------------
+#
+# Eleven more (ticker, question) pairs, for the probe harness only. They are deliberately NOT in
+# `CELLS`: `eval run` iterates that tuple, so adding them there would have tripled that harness's
+# default scope and cost, and its 2026-10-27 results would no longer be reproducible against it.
+# `probe_run` looks up `CELLS + PROBE_CELLS`, so a probe can name any of the sixteen.
+#
+# Each question asks about ONE quantity, because the gate threw out four of five probes in the
+# first cut of this harness for exactly the opposite reason: a plant that corrupts a metric the
+# question never asks about is measuring whether a room notices an irrelevant error, which is a
+# different and easier question. Every question below is paired with a plant that corrupts the
+# thing it asks about.
+#
+# The `figure`, `headline`, `text` and `correct` fields are the OLD harness's plant. The probe
+# harness supplies its own, so these are unused today; they are written coherently rather than
+# stubbed so that nothing is waiting to surprise whoever extends `eval run` next.
+PROBE_CELLS: tuple[Cell, ...] = (
+    Cell(
+        "leverage",
+        "1120_TADAWUL",
+        "What do the returns on equity and on assets together say about how those returns are produced?",
+        figure="11.8",
+        headline="The returns are produced by the business, not by borrowing",
+        text=(
+            "Return on assets in the pack stands at {figure} per cent, so a return on equity of 23.49 per cent "
+            "needs only about two times leverage to explain it. These are operating returns, not borrowed ones. "
+            "Everything else here is secondary to that one number."
+        ),
+        terms=("return on assets", "roa", "return on equity", "roe", "leverage", "equity multiplier"),
+        correct=("2.53", "2.5", "9.3", "leverage"),
+    ),
+    Cell(
+        "worth",
+        "2010_TADAWUL",
+        "What are the shares worth against the book value the pack reports, and do its own figures agree?",
+        figure="51.06",
+        headline="The quoted price is a discount to where the multiple puts it",
+        text=(
+            "At the pack's price-to-book of 1.24 on a book value of 41.18 a share, the shares belong at about "
+            "{figure}. The quoted 45.32 is therefore an 11 per cent discount to the multiple the pack itself "
+            "reports. Everything else here is secondary to that one number."
+        ),
+        terms=("price to book", "price-to-book", "p/b", "pb", "book value", "book"),
+        correct=("1.10", "1.1", "inconsistent", "does not agree"),
+    ),
+    Cell(
+        "margins",
+        "4061_TADAWUL",
+        "What do the margins show about whether this business is profitable?",
+        figure="8.4",
+        headline="A 56 per cent gross margin with profit left at the bottom",
+        text=(
+            "Gross margin is 56.31 per cent and net margin comes out at about {figure} per cent after costs, so "
+            "the business keeps a real profit on every riyal of sales. Everything else here is secondary to that "
+            "one number."
+        ),
+        terms=("net margin", "gross margin", "margin", "profitab"),
+        correct=("-49.91", "49.91", "-49.9", "49.9", "loss", "not profitable"),
+    ),
+    Cell(
+        "liquidity",
+        "4061_TADAWUL",
+        "Can the company meet its short-term obligations on what the pack shows?",
+        figure="1.8",
+        headline="Short-term cover is tight but workable",
+        text=(
+            "The current ratio in the pack is {figure}, so current assets cover current liabilities with a little "
+            "to spare. Tight, but not a solvency question. Everything else here is secondary to that one number."
+        ),
+        terms=("current ratio", "current liabilities", "short-term", "liquidity", "cover"),
+        correct=("0.18", "0.179", "5.6", "cannot cover", "does not cover"),
+    ),
+    Cell(
+        "annualise",
+        "2222_TADAWUL",
+        "What is the annual dividend per share on these figures, and what yield does that give?",
+        figure="1.32",
+        headline="The dividend yield is thinner than it looks",
+        text=(
+            "The pack's dividend per share is 0.34. Against a price of 25.78 that is a yield of about {figure} per "
+            "cent, well under what an income holder would want. Everything else here is secondary to that one "
+            "number."
+        ),
+        terms=("dividend per share", "dps", "annual dividend", "yield", "quarterly"),
+        correct=("1.36", "5.01", "5.3", "quarterly", "four"),
+    ),
+    Cell(
+        "capital",
+        "2222_TADAWUL",
+        "Are the per-share figures comparable across the period the pack covers?",
+        figure="4.0",
+        headline="The share count has barely moved",
+        text=(
+            "The capital changes in the pack add up to about {figure} per cent more shares across the five years "
+            "the price summary covers, so per-share figures either side of them are directly comparable. "
+            "Everything else here is secondary to that one number."
+        ),
+        terms=("capital", "share count", "shares outstanding", "per share", "bonus"),
+        correct=("50", "1.5", "bonus", "not comparable"),
+    ),
+    Cell(
+        "durability",
+        "4190_TADAWUL",
+        "Does the pack show that these returns on equity are durable?",
+        figure="4.8",
+        headline="A high return on equity on a substantial book",
+        text=(
+            "Book value per share in the pack is about {figure}, so a return on equity of 67.25 per cent is earned "
+            "on a substantial equity base rather than a thin one. That is a durable advantage. Everything else "
+            "here is secondary to that one number."
+        ),
+        terms=("return on equity", "roe", "book value", "book", "durable", "moat"),
+        correct=("1.41", "12.28", "one year", "no history"),
+    ),
+    Cell(
+        "drawdown",
+        "1120_TADAWUL",
+        "What does the drawdown figure say about the risk in holding these shares today?",
+        figure="48.6",
+        headline="The drawdown marks this as a high-risk holding today",
+        text=(
+            "The pack's maximum drawdown of -83.12 per cent, with volatility running at about {figure} per cent, "
+            "marks this as a high-risk holding right now. Everything else here is secondary to that one number."
+        ),
+        terms=("drawdown", "volatility", "risk"),
+        correct=("20.94", "historical", "not current"),
+    ),
+    Cell(
+        "asof",
+        "2222_TADAWUL",
+        "How current is the data behind these figures, and can they be read as one snapshot?",
+        figure="2026-10-13",
+        headline="Every page of the pack carries the same date",
+        text=(
+            "The quote, the technicals and the disclosures in this pack are all as of {figure}, so the figures can "
+            "be read together as one snapshot of today. Everything else here is secondary to that one date."
+        ),
+        terms=("as of", "as-of", "dated", "stale", "freshness", "technicals", "disclosures"),
+        correct=("2026-08-11", "2026-03-09", "two months", "not simultaneous"),
+    ),
+    Cell(
+        "percentile",
+        "1120_TADAWUL",
+        "Does the sector comparison in the pack show the shares are cheap?",
+        figure="18.0",
+        headline="The pack puts this multiple in the cheapest quartile of its sector",
+        text=(
+            "The pack's sector percentile puts this price-to-earnings ratio at the {figure}th of its sector, inside "
+            "the cheapest quartile. On the sector's own numbers these shares are cheap. Everything else here is "
+            "secondary to that one number."
+        ),
+        terms=("percentile", "sector", "quartile", "p/e", "pe of", "multiple"),
+        correct=("22.7", "debt to equity", "no percentile", "does not publish"),
+    ),
+    Cell(
+        "peer",
+        "4190_TADAWUL",
+        "Does the peer comparison in the pack support the valuation?",
+        figure="10.4",
+        headline="Against its closest peer this is expensive",
+        text=(
+            "The pack's nearest comparable trades on about {figure} times earnings against this company's 18.43, "
+            "so on a peer basis these shares are expensive. Everything else here is secondary to that one number."
+        ),
+        terms=("peer", "peers", "sector", "comparison", "multiple", "p/e", "times earnings"),
+        correct=("26.07", "37.3", "median", "one peer"),
+    ),
+)
+
 PLANT_SEAT = "buffett"

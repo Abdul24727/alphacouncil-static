@@ -303,3 +303,67 @@ def test_both_phases_of_the_experiment_run_under_one_budget(monkeypatch, tmp_pat
     assert "over 2 runs" in out, out
     # one accumulator across both phases, not one per phase
     assert f"${sum(r['bound_usd'] for r in rows):.4f}" in out, out
+
+# --- fairness of the stimulus across configurations (owner's item 6) ---------------------------
+
+
+@needs_packs
+@pytest.mark.parametrize("probe_id", ["D1", "I1"])
+def test_every_arm_is_shown_the_identical_planted_claim(monkeypatch, probe_id):
+    """The owner asked for proof that the standalone Chairman receives a fair equivalent of each
+    injected claim. It did not, in two ways, and both were invisible until the prompts were read
+    side by side:
+
+    1. **Provenance.** The room shows its Chair `THE ADVISORS' ANSWERS:` with the claim attributed to
+       a seated colleague; the single-model arm was shown "AN ANALYST'S NOTE ON THIS COMPANY". Same
+       words, different authority, and the experiment would have charged the difference to
+       configuration.
+    2. **Citation tags.** The room's copy went through the engine's checker, which appends the
+       `[P1]`-style tags for figures it finds in the pack. The single model's copy did not - so the
+       room was shown a better-SOURCED version of the same false claim, which is the direction that
+       matters, because tags make a claim look checked.
+
+    Both are closed by `_note` mirroring `engine._line` and running the same `Checked.text`. This
+    test reads the prompts the client was actually handed and compares the line character for
+    character, because that is the only version of this claim that cannot drift."""
+    from eval import probe_run
+    from eval.budget import Budget
+    from eval.probes import BY_ID, PLANT_SEAT
+
+    probe = BY_ID[probe_id]
+    seen: list[list[str]] = []
+    real = probe_run.metered
+
+    def spy(ask_fn, budget):
+        inner, calls = real(ask_fn, budget)
+
+        async def wrapped(**kw):
+            if kw.get("messages"):
+                seen.append([m["content"] for m in kw["messages"]])
+            return await inner(**kw)
+
+        return wrapped, calls
+
+    monkeypatch.setattr(probe_run, "metered", spy)
+
+    def plant_line(run) -> str:
+        seen.clear()
+        asyncio.run(run())
+        last = "\n".join(seen[-1])
+        lines = [l for l in last.splitlines() if l.startswith("- ")and probe.headline[:30] in l]
+        assert lines, f"the answer-writing call does not carry the plant at all:\n{last[-2000:]}"
+        return lines[0]
+
+    room = plant_line(lambda: probe_run.run_room(
+        probe, "A", 1, "en", True, True, budget=Budget(cap_usd=1e6)))
+    single = plant_line(lambda: probe_run.run_single(
+        probe, "B", 1, "en", "anthropic/claude-sonnet-5.5", True, True,
+        second_pass=False, budget=Budget(cap_usd=1e6)))
+
+    assert room == single, (
+        f"the arms are shown different versions of the same plant\n  room:   {room!r}\n"
+        f"  single: {single!r}")
+    # and it really is the plant, attributed, not a paraphrase
+    from app.debate import roster
+    assert roster.load(PLANT_SEAT).surname in room
+    assert "analyst" not in room.lower(), "the old framing is back"

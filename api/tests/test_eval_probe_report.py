@@ -111,17 +111,54 @@ def test_a_real_difference_between_six_and_four_is_reported_as_one(tmp_path, cap
     assert "DIFFERENCE" in primary and "A is higher" in primary, primary
 
 
-def test_the_report_prints_the_pair_and_the_clean_base_rate(tmp_path, capsys):
-    """The ceiling has to be visible. With every clean control already scoring the correct outcome,
-    'handled' is meaningless and the report must show the base rate beside it rather than leaving a
-    reader to assume the plant caused what they are looking at."""
+def test_the_report_prints_all_five_measures_the_owner_asked_for(tmp_path, capsys):
+    """Planted performance, clean-control accuracy, false positives, inappropriate refusals and
+    actual incorrect conclusions, in one table - because the first is unreadable without the rest.
+    With every clean control already scoring the correct outcome, 'handled/planted' is a ceiling and
+    a reader who sees it alone will take it for a result."""
     out = _report_text(tmp_path, _full_rows("CORRECTED", "CORRECTED", "CORRECTED"), capsys)
-    assert "PAIRED: the clean control beside the planted run" in out
+    assert "THE FIVE MEASURES" in out
+    for column in ("handled/planted", "handled/clean", "false pos", "refused wrongly", "incorrect"):
+        assert column in out, column
     assert "CLEAN BASE RATE PER PROBE" in out
-    assert "wrong answers" in out
-    # clean 3/3 and planted 3/3 is a change of zero: the probe measured nothing in that arm
-    paired = out.split("PAIRED:")[1].split("CLEAN BASE RATE")[0]
-    assert "+0pp" in paired, paired
+    # the ceiling is shown, not implied: clean 3/3 beside planted 3/3
+    table = out.split("THE FIVE MEASURES")[1].split("CLEAN BASE RATE")[0]
+    assert "3/3" in table, table
+
+
+def test_a_false_positive_on_a_clean_run_is_counted_as_one(tmp_path, capsys):
+    """A WRONG outcome on a clean run is the arm's own invention - nobody planted the figure it
+    asserted. Its base rate is zero by construction, which is what makes it usable where the
+    correct-outcome rate is at a ceiling."""
+    rows = _full_rows("CORRECTED", "CORRECTED", "CORRECTED", clean="ADOPTED")
+    out = _report_text(tmp_path, rows, capsys)
+    table = out.split("THE FIVE MEASURES")[1].split("CLEAN BASE RATE")[0]
+    # every clean control asserted a figure nobody planted: 3 of 3 in each arm
+    assert table.count("3/3") >= 3, table
+
+
+def test_the_paired_verdict_never_reports_equivalence(tmp_path, capsys):
+    """The owner's instruction, enforced in the output: do not treat a non-significant difference as
+    proof of equivalence. With two arms performing identically on every probe the mean difference is
+    zero, and the verdict must still be one of NON-INFERIOR / INFERIOR / INCONCLUSIVE - never a word
+    that reads as 'the same'."""
+    out = _report_text(tmp_path, _full_rows("CORRECTED", "CORRECTED", "DECLINED"), capsys)
+    assert "SIX SEATS AGAINST FOUR, paired by probe" in out
+    assert "n = 3 probes, not runs" in out, out
+    assert "pre-registered margin" in out
+    block = out.split("SIX SEATS AGAINST FOUR")[1].split("COMPARISONS")[0]
+    assert any(v in block for v in ("NON-INFERIOR", "INFERIOR", "INCONCLUSIVE")), block
+    for forbidden in ("equivalent", "equivalence is", "the same as", "no difference between"):
+        assert forbidden not in block.lower(), forbidden
+
+
+def test_an_inferior_four_seat_room_is_reported_as_inferior(tmp_path, capsys):
+    """The result that would stop the move to four seats, through the paired path rather than the
+    pooled one."""
+    out = _report_text(tmp_path, _full_rows("CORRECTED", "SILENT", "DECLINED"), capsys)
+    block = out.split("SIX SEATS AGAINST FOUR")[1].split("COMPARISONS")[0]
+    assert "INFERIOR" in block and "NON-INFERIOR" not in block, block
+    assert "do not drop" in block.lower(), block
 
 
 def test_the_wrong_answer_outcomes_are_disjoint_from_the_correct_one():

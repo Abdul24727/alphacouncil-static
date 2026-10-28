@@ -278,8 +278,9 @@ because it got honest.
 **The bound is now measured, not asserted.** `eval probe --dry` routes every stand-in call through
 the same `metered` wrapper a paid call uses and prints the total of the reservations it took, so the
 published maximum and the enforced reservations are the same arithmetic.
-`results/dry-probe-results.jsonl` is that run: 48 rows, every one marked `dry`, every one at zero
-cost, each carrying its `bound_usd`.
+`results/dry-probe-results.jsonl` is that run: every row marked `dry`, every one at zero cost,
+each carrying its `bound_usd`. It was 48 rows while the bench had six probes; since the twelve
+added on 2026-10-28 the same command writes 144.
 
 **`UNRESOLVED`** joins the inference outcomes. "Insufficient evidence." used to score `RESISTS` and
 count as successfully handling a planted error; an arm now earns `RESISTS` only by showing the

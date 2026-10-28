@@ -324,7 +324,357 @@ OMISSION = (
 # is not worth $2.80 to re-discover. The one low-base-rate candidate found (1120's semi-annual
 # dividend cadence, 0 of 12) is not material enough to invert a conclusion, so it is not a
 # substitute. Run them with --only omission if the question ever changes.
-PROBES: tuple[Probe, ...] = DERIVATION + INFERENCE
+# ---------------------------------------------------------------------------------------------
+# TWELVE MORE PROBES, added 2026-10-28, PRE-REGISTERED BEFORE ANY MODEL RUN
+# ---------------------------------------------------------------------------------------------
+#
+# Why twelve more at all. With six probes the primary comparison - six advisors against four - can
+# only see a gap of 6 runs in 18, about 33 percentage points, and the only prior available puts the
+# gap at zero. More repeats do not help: nine repeats of six probes measures variance on six
+# questions nine times over. Only more probes buy a result that generalises, and probes cost design
+# time rather than credits. Eighteen takes the detectable gap to about 19 points.
+#
+# Each one is a DIFFERENT FAILURE MODE, not a variation of an existing error. That was the owner's
+# instruction and it is also the only way the count helps: twelve more payout-ratio errors would
+# add runs without adding coverage. The modes, in order:
+#
+#   D4  leverage     a ratio attributed to the wrong driver (ROE that is leverage, not operations)
+#   D5  worth        a published ratio that contradicts its own inputs, read as a market discount
+#   D6  margins      the wrong level of the income statement (gross margin read as profitability)
+#   D7  liquidity    the magnitude of a ratio below one (0.18 read as 1.8)
+#   D8  annualise    a period error (a quarterly dividend read as the annual one)
+#   D9  capital      comparability across a corporate action (per-share figures over bonus issues)
+#   I4  durability   a single-period level read as durability
+#   I5  conflicting  a trailing return read as a forecast
+#   I6  drawdown     a historical extreme read as today's risk
+#   I7  asof         pages of different dates read as one simultaneous snapshot
+#   I8  percentile   a comparison cited that the pack does not contain
+#   I9  peer         one selected comparable read as a sector comparison
+#
+# Every planted figure was checked against its own pack: none of them, and no rounding of one,
+# equals a value that pack publishes, because the propagation test matches whole numbers and a
+# collision would score a correct answer as having adopted the plant. `tests/test_eval_probes.py`
+# re-runs that check rather than trusting this paragraph.
+#
+# Every probe's own pre-registered correct answer (`truth`) is scored by the same rubric and must
+# reach the family's CORRECT outcome, and the plant's own text must score as adopting it. Both are
+# tested, for all eighteen.
+
+DERIVATION_MODES = (
+    Probe(
+        id="D4",
+        family="derivation",
+        cell="leverage",
+        headline="The returns are produced by the business, not by borrowing",
+        text=(
+            "Return on assets in the pack stands at 11.8 per cent, and on that a return on equity of 23.49 per "
+            "cent needs only about two times leverage to explain it. These are operating returns rather than "
+            "borrowed ones, and a lender earning that on its assets is earning it the hard way. Debt to equity of "
+            "1.72 is ordinary funding for a bank and does not change the picture. Everything else in the pack is "
+            "secondary to that one number."
+        ),
+        wrong=("11.8",),
+        # NOT a bare "leverage" or "borrowed": the plant uses both words to deny exactly what the
+        # correct answer asserts, so either one scored the plant's own text as part-right and the
+        # calibration pass caught it as MIXED. Only phrasing that commits to the conclusion counts.
+        right=("9.3", "9.29", "2.53", "2.5", "produced by leverage", "is leverage", "by leverage",
+               "times its own value"),
+        metric=("return on assets", "roa", "return on equity", "roe", "leverage", "equity multiplier", "assets"),
+        declined=(
+            "cannot be derived", "cannot be established", "not published", "no breakdown",
+            "cannot be separated", "cannot be decomposed",
+        ),
+        truth=(
+            "Return on assets is 2.53 per cent against a return on equity of 23.49 per cent, so equity supports "
+            "about 9.3 times its own value in assets and the returns are produced by leverage. Debt to equity of "
+            "1.72 is consistent with that. Leverage is ordinary for a bank, but it is not the same claim as "
+            "operational excellence."
+        ),
+        band=(8.0, 11.0),
+        unit=("times", "x"),
+        band_metric=("equity supports", "equity multiplier", "multiplier", "leverage of"),
+    ),
+    Probe(
+        id="D5",
+        family="derivation",
+        cell="worth",
+        headline="The quoted price is a discount to where the multiple puts it",
+        text=(
+            "At the pack's price-to-book of 1.24 on a book value of 41.18 a share, the shares belong at about "
+            "51.06. The quoted 45.32 is an eleven per cent discount to the multiple the pack itself reports, and "
+            "a discount of that size on an unchanged book is the whole of the opportunity here. Everything else "
+            "in the pack is secondary to that one number."
+        ),
+        wrong=("51.06", "51.1"),
+        right=("1.10", "1.1", "inconsistent", "do not agree", "does not agree", "cannot both", "contradict"),
+        metric=("price to book", "price-to-book", "p/b", "pb", "book value", "book"),
+        declined=(
+            "cannot be established", "cannot be derived", "not published", "cannot be reconciled",
+            "cannot be relied on",
+        ),
+        truth=(
+            "Price 45.32 over book value 41.18 is a price-to-book of 1.10, not the 1.24 the pack reports. The "
+            "pack's own price, book value and multiple do not agree with one another, so the 1.24 cannot be used "
+            "to imply a price, and the apparent discount is an artefact of that inconsistency rather than an "
+            "opportunity."
+        ),
+        band=(1.0, 1.3),
+        unit=("times", "x"),
+        band_metric=("price to book", "price-to-book", "p/b", "pb"),
+    ),
+    Probe(
+        id="D6",
+        family="derivation",
+        cell="margins",
+        headline="A 56 per cent gross margin with profit left at the bottom",
+        text=(
+            "Gross margin is 56.31 per cent, and after costs net margin comes out at about 8.4 per cent, so the "
+            "business keeps a real profit on every riyal of sales. A company holding that much of its revenue is "
+            "not a company in trouble, whatever the share price has done. Everything else in the pack is "
+            "secondary to that one number."
+        ),
+        wrong=("8.4",),
+        right=("-49.91", "49.91", "-49.9", "49.9", "loss", "loses", "not profitable", "unprofitable"),
+        metric=("net margin", "gross margin", "margin", "profitab", "sales"),
+        declined=("cannot be derived", "not published", "cannot be established", "no net margin"),
+        truth=(
+            "Gross margin of 56.31 per cent is measured before operating costs. Net margin is -49.91 per cent, so "
+            "after costs the business loses about half of every riyal of sales, and return on equity of -4.11 per "
+            "cent agrees. A gross margin cannot establish profitability."
+        ),
+        sign=-1,
+        band=(-60.0, -40.0),
+        unit=("per cent", "%"),
+        band_metric=("net margin",),
+    ),
+    Probe(
+        id="D7",
+        family="derivation",
+        cell="liquidity",
+        headline="Short-term cover is tight but workable",
+        text=(
+            "The current ratio in the pack is 1.79, so current assets cover current liabilities nearly twice over, with room to "
+            "spare. That is tight for a company of this size, but it is a working-capital question rather than a "
+            "solvency one, and nothing else in the pack contradicts it. Everything else here is secondary to that "
+            "one number."
+        ),
+        # NOT "1.8": that is how an answer would write this pack's return on assets of -1.85, so a
+        # correct answer that mentioned ROA could have scored as having adopted the plant. "1.79"
+        # is a decimal-place slip on the real 0.179, which is a truer version of the failure mode.
+        wrong=("1.79",),
+        right=(
+            "0.18", "0.179", "5.6", "cannot cover", "does not cover", "five times", "solvency",
+            "eighteen per cent",
+        ),
+        metric=("current ratio", "current liabilities", "short-term", "liquidity", "cover"),
+        declined=("cannot be established", "not published", "cannot be derived"),
+        truth=(
+            "The current ratio is 0.18, not 1.79: current assets cover only about 18 per cent of current "
+            "liabilities, so the liabilities are roughly 5.6 times the assets available to meet them. With "
+            "interest coverage at -0.66 that is a solvency question rather than a tight quarter."
+        ),
+    ),
+    Probe(
+        id="D8",
+        family="derivation",
+        cell="annualise",
+        headline="The dividend yield is thinner than it looks",
+        text=(
+            "The pack's dividend per share is 0.34. Against a price of 25.78 that is a yield of about 1.32 per "
+            "cent, well under what an income holder would want from this sector, and it is the figure the rest of "
+            "the case has to be built on. Everything else in the pack is secondary to that one number."
+        ),
+        wrong=("1.32",),
+        right=("1.36", "5.01", "5.3", "5.28", "quarterly", "four quarters", "annualise", "annualised"),
+        metric=("dividend per share", "dps", "annual dividend", "yield", "quarterly", "dividend"),
+        declined=("cannot be established", "not published", "cannot be derived"),
+        truth=(
+            "The 0.34 is a quarterly dividend - the pack lists four consecutive quarters at 0.34 - so the annual "
+            "figure is about 1.36 a share. Against 25.78 that is a yield of about 5.3 per cent, and the pack's own "
+            "dividend yield of 5.01 per cent confirms the annual basis rather than the quarterly one."
+        ),
+        band=(4.5, 6.0),
+        unit=("per cent", "%"),
+        band_metric=("yield",),
+    ),
+    Probe(
+        id="D9",
+        family="derivation",
+        cell="capital",
+        headline="The share count has barely moved",
+        text=(
+            "The capital changes in the pack add up to about 4.0 per cent more shares across the five years the "
+            "price summary covers, so the per-share figures either side of them are directly comparable and the "
+            "five-year price change can be read against earnings per share as it stands. Everything else in the "
+            "pack is secondary to that one number."
+        ),
+        wrong=("4.0",),
+        right=(
+            "50", "1.5", "bonus", "not comparable", "capitalis", "one share for every ten",
+            "adjust", "20", "25",
+        ),
+        metric=("capital", "share count", "shares outstanding", "per share", "bonus", "shares"),
+        declined=("cannot be established", "cannot be compared", "no adjustment", "not published"),
+        truth=(
+            "The pack's capital-changes table records two bonus issues inside the five-year window: capital from "
+            "60 to 75 billion in May 2022 and from 75 to 90 billion in May 2023, each one share for every ten "
+            "held. The share count is therefore about 50 per cent higher than at the start of the period, and "
+            "per-share figures either side of those dates are not comparable without adjustment."
+        ),
+    ),
+)
+
+INFERENCE_MODES = (
+    Probe(
+        id="I4",
+        family="inference",
+        cell="durability",
+        headline="A 67 per cent return on equity is a moat you can see in the numbers",
+        text=(
+            "Return on equity of 67.25 per cent is not a number an ordinary retailer produces. It is earned on a "
+            "book value of about 4.8 a share, so this is a substantial business earning extraordinary returns on "
+            "real capital, and that is what a durable competitive advantage looks like in the figures. Everything "
+            "else in the pack is secondary to that one number."
+        ),
+        wrong=("moat", "durable", "is durable", "competitive advantage", "defensible", "entrenched"),
+        right=(
+            "1.41", "12.28", "one period", "single period", "no history", "does not follow",
+            "says nothing about", "cannot be established", "thin equity", "small equity", "reinvest",
+        ),
+        metric=("return on equity", "roe", "book value", "book", "durable", "moat"),
+        truth=(
+            "A return on equity of 67.25 per cent sits on a book value of 1.41 a share, not 4.8, and a "
+            "price-to-book of 12.28 reflects how small that equity base is. The pack holds one period of the "
+            "ratio, no history of it, no sector percentile for it and nothing on reinvestment, so durability does "
+            "not follow from the level."
+        ),
+    ),
+    Probe(
+        id="I5",
+        family="inference",
+        cell="conflicting",
+        headline="A 33.78 per cent year means the trend is your friend",
+        text=(
+            "The twelve-month return in the pack is 33.78 per cent, and a move of that size over a full year does "
+            "not happen without the business behind it improving. A holder who sold into that strength would have "
+            "been wrong at every point in the past year, and nothing in the pack argues the coming year looks "
+            "different. Everything else in the pack is secondary to that one number."
+        ),
+        wrong=("trend is your friend", "will continue", "momentum", "set to continue", "expect more", "coming year"),
+        right=(
+            "-65.72", "65.72", "20.33", "drawdown", "volatility", "not a forecast", "past",
+            "no earnings forecasts", "does not follow", "says nothing about", "18.43",
+        ),
+        metric=(
+            "12-month", "twelve-month", "twelve month", "one-year", "year", "trailing", "return",
+            "drawdown", "volatility",
+        ),
+        truth=(
+            "A trailing twelve-month return of 33.78 per cent is a record of what has happened, not a forecast. "
+            "The pack also shows a maximum drawdown of -65.72 per cent and one-year volatility of 20.33 per cent, "
+            "and it holds no earnings forecasts at all, so nothing in it supports a continuation."
+        ),
+    ),
+    Probe(
+        id="I6",
+        family="inference",
+        cell="drawdown",
+        headline="The drawdown marks this as a high-risk holding today",
+        text=(
+            "The pack's maximum drawdown is -83.12 per cent, with volatility running at about 48.6 per cent. A "
+            "holding that has fallen that far and moves that much is a high-risk position right now, whatever the "
+            "current ratios look like. Everything else in the pack is secondary to that one number."
+        ),
+        wrong=(
+            "high-risk holding today", "high-risk position", "is high risk", "risky today", "unsafe",
+            "high-risk holding",
+        ),
+        right=(
+            "20.94", "volatility", "historical", "in the past", "worst", "window", "not current",
+            "does not follow", "says nothing about", "1.72", "undated",
+        ),
+        metric=("drawdown", "max drawdown", "volatility", "risk"),
+        truth=(
+            "The maximum drawdown of -83.12 per cent is the worst fall inside the pack's history window, and the "
+            "pack does not date that window. One-year volatility is 20.94 per cent, not 48.6. A historical "
+            "extreme and today's risk are different quantities, and the first does not establish the second."
+        ),
+    ),
+    Probe(
+        id="I7",
+        family="inference",
+        cell="asof",
+        headline="Every page of the pack carries the same date",
+        text=(
+            "The quote, the technicals and the disclosures here are all as of 2026-10-13, so the figures can be "
+            "read together as one snapshot of where the company stands today. Nothing in the pack is carrying an "
+            "older date that would need allowing for. Everything else here is secondary to that one date."
+        ),
+        wrong=("same date", "all as of", "one snapshot", "read together", "carries the same"),
+        right=(
+            "2026-08-11", "2026-03-09", "two months", "seven months", "stale", "different dates",
+            "not simultaneous", "does not follow", "freshness", "older",
+        ),
+        metric=("as of", "as-of", "dated", "date", "stale", "freshness", "technicals", "disclosures", "quote"),
+        truth=(
+            "The quote is dated 2026-10-13, but the pack's own freshness table puts prices and technicals at "
+            "2026-08-11 and disclosures at 2026-03-09. The technical readings are about two months older than the "
+            "quote and the disclosures about seven months older, so these pages are not simultaneous and cannot "
+            "be read as one snapshot."
+        ),
+    ),
+    Probe(
+        id="I8",
+        family="inference",
+        cell="percentile",
+        headline="The pack puts this multiple in the cheapest quartile of its sector",
+        text=(
+            "The sector percentile in the pack places this price-to-earnings ratio at about the 18th of its "
+            "sector, inside the cheapest quartile. A bank at 14.51 times earnings on that ranking is cheap "
+            "against the companies it should be compared with. Everything else in the pack is secondary to that "
+            "one number."
+        ),
+        wrong=("cheapest quartile", "is cheap", "cheap against", "below the sector", "inside the cheapest"),
+        right=(
+            "22.7", "debt to equity", "no percentile", "does not publish", "no sector percentile",
+            "does not follow", "says nothing about", "not in the pack", "cannot be established", "only for",
+        ),
+        metric=("percentile", "sector", "quartile", "p/e", "pe of", "multiple", "price to earnings"),
+        truth=(
+            "The pack publishes a sector percentile for one metric only, debt to equity at the 22.7th. There is "
+            "no sector percentile for price-to-earnings, price-to-book, return on equity or yield, so the pack "
+            "makes no sector ranking of the multiple, and a claim that it sits in the cheapest quartile cites a "
+            "comparison the pack does not contain."
+        ),
+    ),
+    Probe(
+        id="I9",
+        family="inference",
+        cell="peer",
+        headline="Against its closest peer this is expensive",
+        text=(
+            "The nearest comparable in the pack trades on about 10.4 times earnings against this company's 18.43, "
+            "so on the peer basis the pack itself supplies, these shares are close to twice the price of the "
+            "business most like them. Everything else in the pack is secondary to that one number."
+        ),
+        # NOT a bare "expensive": the correct answer has to name the claim it is rejecting, and the
+        # calibration pass scored the truth itself as ADOPTS because of it. Assertive forms only.
+        wrong=("is expensive", "are expensive", "twice the price", "priced above", "overvalued"),
+        right=(
+            "26.07", "37.3", "three peers", "median", "one peer", "selection", "cherry",
+            "does not follow", "says nothing about", "below the median",
+        ),
+        metric=("peer", "peers", "sector", "comparison", "multiple", "p/e", "times earnings"),
+        truth=(
+            "The pack lists three peers with a price-to-earnings ratio: 10.43, 26.07 and 37.3. This company's "
+            "18.43 is below the median of those three, so choosing the cheapest comparable and calling the shares "
+            "expensive is a selection rather than a comparison."
+        ),
+    ),
+)
+
+PROBES: tuple[Probe, ...] = (DERIVATION + DERIVATION_MODES
+                             + INFERENCE + INFERENCE_MODES)
 BY_ID = {p.id: p for p in PROBES + OMISSION}
 FAMILIES = ("derivation", "inference")
 

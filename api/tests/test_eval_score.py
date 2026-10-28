@@ -34,6 +34,31 @@ def _results() -> Path:
 RESULTS = _results()
 
 
+def _answers_for(probe) -> list:
+    """The saved answers on this probe's cell, or a skip that names why there are none.
+
+    The 60 answers on disk were collected on 2026-10-27. Twelve probes were added on 2026-10-28 and
+    eleven of them sit on cells that run never touched, so there is nothing on disk to calibrate
+    their detectors against. That is a real limit on the pre-registration rather than a gap in these
+    tests: those twelve are calibrated against their own pre-registered truth and plant text (see
+    `tests/test_eval_probes.py`, which covers all eighteen) and against nothing a model actually
+    wrote. Establishing their clean base rates is the first thing the live pilot buys.
+
+    Stated rather than skipped quietly, because a skip that does not say why is read as a pass.
+    """
+    import json as _json
+
+    if not RESULTS.exists():
+        pytest.skip("the 2026-10-27 answers are not in this checkout")
+    rows = [_json.loads(line) for line in RESULTS.read_text(encoding="utf-8").splitlines() if line.strip()]
+    answers = [r for r in rows if r["cell"] == probe.cell and r["ok"]]
+    if not answers:
+        pytest.skip(
+            f"no saved answer on cell {probe.cell!r}: probe {probe.id} postdates the 2026-10-27 "
+            f"corpus, so its base rate is uncalibrated until the pilot runs")
+    return answers
+
+
 # --- the reviewer's four cases, 2026-10-28 ----------------------------------------------------
 
 
@@ -178,9 +203,7 @@ def test_no_clean_headline_adopts_an_inference_stance(probe):
     """The inference probes are only usable because their stance markers never fire on an answer
     that saw no plant. If this starts failing, the instrument is measuring the arm's vocabulary
     rather than the plant, and the probe has to be rebuilt before it is run."""
-    rows = [json.loads(line) for line in RESULTS.read_text(encoding="utf-8").splitlines() if line.strip()]
-    clean = [r for r in rows if r["cell"] == probe.cell and r["ok"]]
-    assert clean, f"no answers on cell {probe.cell}"
+    clean = _answers_for(probe)
     fired = [r["headline"] for r in clean if S.hits(r["headline"], probe.wrong, probe.metric, wide=True)[0]]
     assert not fired, fired
 
@@ -286,9 +309,7 @@ def test_a_figure_attributed_to_a_seat_is_not_the_answers_own_derivation():
 def test_the_incorrect_detector_fires_on_none_of_the_real_answers(probe):
     """A detector that fires on answers which saw no plant is measuring vocabulary, not arithmetic.
     Zero of 12 per probe when this was written."""
-    rows = [json.loads(line) for line in RESULTS.read_text(encoding="utf-8").splitlines() if line.strip()]
-    answers = [r for r in rows if r["cell"] == probe.cell and r["ok"]]
-    assert answers
+    answers = _answers_for(probe)
     flagged = [(r["arm"], S.confident_wrong(probe, r["answer"])) for r in answers]
     assert not [f for _, f in flagged if f], [f for f in flagged if f[1]]
 
@@ -498,12 +519,15 @@ def test_the_uncertainty_split_moves_nothing_that_earned_resists_or_adopts(probe
 
 
 @pytest.mark.skipif(not RESULTS.exists(), reason="the 2026-10-27 answers are not in this checkout")
-@pytest.mark.parametrize("probe", [p for p in PROBES if p.family == "inference"], ids=lambda p: p.id)
-def test_the_uncertainty_split_reclassifies_none_of_the_real_answers(probe):
-    """Calibration, as for every other instrument here: all 36 inference pairs in the 60 saved
-    answers scored RESISTS before the split and all 36 score RESISTS after it. The new cell is
-    strictly additive on the evidence available."""
-    rows = [json.loads(line) for line in RESULTS.read_text(encoding="utf-8").splitlines() if line.strip()]
-    outcomes = [S.score(probe, r["answer"], r.get("headline", ""))[0]
-                for r in rows if r["cell"] == probe.cell and r.get("ok")]
+@pytest.mark.parametrize("probe_id", ["I1", "I2", "I3"])
+def test_the_uncertainty_split_reclassifies_none_of_the_real_answers(probe_id):
+    """Calibration: all 36 inference pairs in the 60 saved answers scored RESISTS before the split
+    and all 36 score RESISTS after it. The new cell is strictly additive on the evidence available.
+
+    I1-I3 by name, not every inference probe, because this test is about a BEFORE and an AFTER and
+    only these three have a before - they are the inference probes that existed when the corpus was
+    scored. I5 shares a cell with saved answers and scores 11 RESISTS and 1 DECLINED under its own
+    new rubric, which is not a reclassification: there was no prior outcome for it to move from."""
+    probe = BY_ID[probe_id]
+    outcomes = [S.score(probe, r["answer"], r.get("headline", ""))[0] for r in _answers_for(probe)]
     assert outcomes and set(outcomes) == {"RESISTS"}, outcomes
