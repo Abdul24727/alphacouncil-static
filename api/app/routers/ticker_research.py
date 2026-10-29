@@ -359,9 +359,16 @@ def get_statements(request: Request, ref: str, years: int = 5) -> Statements:
         raise unavailable(exc) from exc
 
     by_section: dict[str, dict[int, StatementRow]] = {}
-    for c in items.rows:
+    # Oldest year first, so a line relabelled between years is shown under its NEWEST label.
+    # `load_items` orders by (section, item_index) with no year term, so taking the label from
+    # whichever row arrived first left it to SQLite: the figures came from every year and the
+    # label from an arbitrary one of them. No ticker on the published database relabels a line
+    # within five years, so this changes nothing today; it stops the answer depending on row
+    # order the first time one does.
+    for c in sorted(items.rows, key=lambda r: r.fiscal_year):
         sec = by_section.setdefault(c.section, {})
         row = sec.setdefault(c.item_index, StatementRow(index=c.item_index, label=c.label, values={}))
+        row.label = c.label
         row.values[str(c.fiscal_year)] = c.value
 
     def rank(name: str) -> tuple[int, str]:

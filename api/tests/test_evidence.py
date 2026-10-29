@@ -1165,3 +1165,66 @@ def test_every_bank_measure_appears_with_a_value_or_a_reason(tmp_path, conn):
         for name in expected:
             m = metrics[name]
             assert m.value is not None or m.missing, f"{name} says neither a value nor why not"
+
+
+# --- the statements path, reviewed after the acceptance round ---------------------------------
+
+
+def test_a_relabelled_line_is_shown_under_its_newest_label(repaired, data_files, monkeypatch):
+    """`/statements` merges a line across fiscal years by `item_index`, and `load_items` orders by
+    `(section, item_index)` with no year term - so the label used to come from whichever row
+    SQLite returned first. A line Argaam renames between years then showed the figures of every
+    year under an arbitrary one of its labels, and which one could change between two rebuilds of
+    the same database with no change to the data. Nothing on the published database relabels a
+    line inside five years, so this fixes no figure on screen; it stops the answer depending on
+    row order the first time one does."""
+    c = sqlite3.connect(repaired)
+    # Inserted oldest-first, which is the order that used to decide the label.
+    c.executemany(
+        "INSERT INTO fundamentals_lineitems VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        [("2222_TADAWUL", "2222", "TADAWUL", 2025, "Balance Sheet", 900,
+          "Long-Term Debt", 10.0, "FY", "2025-12", ANNUAL_SRC),
+         ("2222_TADAWUL", "2222", "TADAWUL", 2026, "Balance Sheet", 900,
+          "Term Loans and Sukuk", 12.0, "FY", "2026-12", ANNUAL_SRC)],
+    )
+    c.commit()
+    c.close()
+
+    settings = data_files.model_copy(update={"screening_db": repaired})
+    monkeypatch.setattr(main, "get_settings", lambda: settings)
+    s = get(TestClient(main.create_app()), "/v1/tickers/2222/statements")
+
+    sheet = next(x for x in s["statements"] if x["section"] == "Balance Sheet")
+    row = next(r for r in sheet["rows"] if r["index"] == 900)
+    assert row["label"] == "Term Loans and Sukuk", "the newest year names the line"
+    # Both years' figures are still there - the label changed, the row did not split.
+    assert row["values"]["2025"] == 10.0
+    assert row["values"]["2026"] == 12.0
+
+
+def test_a_section_whose_rows_disagree_reports_the_same_window_either_way(tmp_path):
+    """`Items.period()` resolves a section's window and rule with `max()`, which on a tie returns
+    whichever key was inserted first - SQLite's row order again. A tie means the rows disagree and
+    the parser's one-window-per-section invariant has broken; the pick is arbitrary either way,
+    but an arbitrary answer that is the same answer every time can be checked against the
+    statements, and one that moves cannot. 0 ties were found over the 213 section-years on this
+    machine, so this changes no reported window today."""
+    from app.evidence import Cell
+
+    def cell(label, end, rule):
+        return Cell(label=label, section="Income Statement", fiscal_year=2026, item_index=0,
+                    value=1.0, period="Q" if end.endswith("06") else "FY", period_end=end,
+                    rule=rule)
+
+    cells = [cell("A", "2026-06", "sum_quarters"), cell("B", "2026-06", "sum_quarters"),
+             cell("C", "2026-12", "mean_of_quarters"), cell("D", "2026-12", "mean_of_quarters")]
+    forward = Items(cells, []).period("Income Statement", 2026)
+    backward = Items(list(reversed(cells)), []).period("Income Statement", 2026)
+
+    assert (forward.period, forward.period_end) == (backward.period, backward.period_end), (
+        f"a 2-2 tie reported {forward.period_end} one way and {backward.period_end} the other")
+    assert forward.aggregation == backward.aggregation, (
+        f"a 2-2 rule tie reported {forward.aggregation!r} and {backward.aggregation!r}")
+    # And the tie is broken by the text, so the answer is predictable from the data alone.
+    assert (forward.period, forward.period_end) == ("FY", "2026-12")
+    assert forward.aggregation == "mean_of_quarters"

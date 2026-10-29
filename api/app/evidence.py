@@ -386,14 +386,21 @@ class Items:
             counts[(c.period, c.period_end)] = counts.get((c.period, c.period_end), 0) + 1
             if c.rule:
                 rules[c.rule] = rules.get(c.rule, 0) + 1
-        (period, end), _n = max(counts.items(), key=lambda kv: kv[1])
+        # Most rows wins, and a TIE is broken by the window's own text rather than by the order
+        # the rows arrived in: `max()` alone returns the first key inserted, which is SQLite's row
+        # order. A tie means the rows disagree and the one-window-per-section invariant above has
+        # broken, so there is no commonest window to report - the pick is arbitrary either way,
+        # and an arbitrary answer that is at least the same answer every time can be checked
+        # against the statements. 0 ties over the 213 section-years on this machine.
+        (period, end), _n = min(counts.items(), key=lambda kv: (-kv[1], str(kv[0][0]), str(kv[0][1])))
         columns: list[str] = []
         for c in cells:
             if c.period == period and c.period_end == end and len(c.window) > len(columns):
                 columns = c.window
+        top = max(rules.values()) if rules else 0
         return Period(
             period=period, period_end=end,
-            aggregation=max(rules.items(), key=lambda kv: kv[1])[0] if rules else None,
+            aggregation=min((r for r, n in rules.items() if n == top), default=None),
             source_columns=columns,
         )
 
