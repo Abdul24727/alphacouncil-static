@@ -256,19 +256,19 @@ ticker           P1-P8 chars  P9 chars    total    +%  P1-P8 bytes  P9 bytes    
 2222_TADAWUL          17,473    10,972   29,117   67%       17,588    10,974   29,234
 1120_TADAWUL          20,043    14,937   35,660   78%       20,172    14,941   35,793
 2010_TADAWUL          18,421     9,672   28,780   56%       18,654     9,674   29,015
-4061_TADAWUL          18,123     8,197   26,933   49%       18,751     8,199   27,563
-4190_TADAWUL          18,325     8,303   27,280   49%       18,639     8,305   27,596
+4061_TADAWUL          18,123     9,028   27,764   53%       18,751     9,030   28,394
+4190_TADAWUL          18,325     9,134   28,111   53%       18,639     9,136   28,427
 
 PER CALL, mean of the five
-  characters   18,477 -> 29,554   (+10,416, +56%)
-  UTF-8 bytes  18,761 -> 29,840   (+10,419, +56%)
+  characters   18,477 -> 29,886   (+10,749, +58%)
+  UTF-8 bytes  18,761 -> 30,173   (+10,751, +57%)
 
 PER DEBATE, 21 calls
-  characters added   218,740
-  UTF-8 bytes added  218,791  <- a CEILING on the added input tokens:
+  characters added   225,721
+  UTF-8 bytes added  225,771  <- a CEILING on the added input tokens:
                         no byte-level BPE tokenizer emits more tokens than bytes
-  chars/4 would say  54,685  <- the old assumption, not a measurement
-  so the added input tokens per debate are between about 54,685 and 218,791.
+  chars/4 would say  56,430  <- the old assumption, not a measurement
+  so the added input tokens per debate are between about 56,430 and 225,771.
   The true figure is the provider's reported prompt_tokens and needs a paid run.
 
 THE HARD BOUND, independent of any ticker
@@ -278,9 +278,9 @@ THE HARD BOUND, independent of any ticker
 DOES THE PACK'S TRUNCATION EVER FIRE? (it must not: it cuts mid-row)
   fit() drops whole statement rows while over budget and never a calculation, a limitation
   or a row a calculation divides by; Pack.prompt()'s [:budget] is the backstop behind it.
-  653 tickers: 0 over the 16,000-character budget; largest 10,776 (QNBK_QSE)
+  653 tickers: 0 over the 16,000-character budget; largest 11,563 (QNBK_QSE)
   limitations intact after fit(): 653 of 653
-  headroom at the largest: 5,224 characters
+  headroom at the largest: 4,437 characters
 ```
 
 ---
@@ -298,7 +298,7 @@ measured over all 653 tickers in section 4.
 2222_TADAWUL  Saudi Aramco
 ========================================================================================================
 
---- BEFORE (today's parser, the pages as they are served): 4,298 characters of a 16,000 budget  (fits: True), sector=non_bank, peer class recorded by the pipeline=non_bank
+--- BEFORE (today's parser, the pages as they are served): 4,993 characters of a 16,000 budget  (fits: True), sector=non_bank, peer class recorded by the pipeline=non_bank
     Balance Sheet       None@None  34 rows (+8 omitted)  aggregation=None
     quarters: none
     calculations:
@@ -309,6 +309,12 @@ measured over all 653 tickers in section 4.
       roe_on_period_end_common_equity  NO VALUE
         no net income line
       payout_cash  NO VALUE
+        there is no income statement, so there is no earnings window to match dividends to and no payout
+          ratio can be computed
+      payout_declared  NO VALUE
+        there is no income statement, so there is no earnings window to match dividends to and no payout
+          ratio can be computed
+      dps_window  NO VALUE
         there is no income statement, so there is no earnings window to match dividends to and no payout
           ratio can be computed
     limitations:
@@ -408,7 +414,7 @@ measured over all 653 tickers in section 4.
 1120_TADAWUL  Al Rajhi Bank
 ========================================================================================================
 
---- BEFORE (today's parser, the pages as they are served): 7,215 characters of a 16,000 budget  (fits: True), sector=bank, peer class recorded by the pipeline=bank
+--- BEFORE (today's parser, the pages as they are served): 8,160 characters of a 16,000 budget  (fits: True), sector=bank, peer class recorded by the pipeline=bank
     Balance Sheet       None@None  32 rows (+0 omitted)  aggregation=None
     quarters: none
     calculations:
@@ -434,7 +440,15 @@ measured over all 653 tickers in section 4.
       financing_to_deposits                         112.8089 %
         denominator: customer deposits only, excluding due to banks and term sukuk: the measure is about
           deposit funding
+      net_income_to_operating_income  NO VALUE
+        no net income or no operating income line
       payout_cash  NO VALUE
+        there is no income statement, so there is no earnings window to match dividends to and no payout
+          ratio can be computed
+      payout_declared  NO VALUE
+        there is no income statement, so there is no earnings window to match dividends to and no payout
+          ratio can be computed
+      dps_window  NO VALUE
         there is no income statement, so there is no earnings window to match dividends to and no payout
           ratio can be computed
     limitations:
@@ -563,7 +577,7 @@ measured over all 653 tickers in section 4.
 2010_TADAWUL  SABIC
 ========================================================================================================
 
---- BEFORE (today's parser, the pages as they are served): 4,253 characters of a 16,000 budget  (fits: True), sector=non_bank, peer class recorded by the pipeline=non_bank
+--- BEFORE (today's parser, the pages as they are served): 4,948 characters of a 16,000 budget  (fits: True), sector=non_bank, peer class recorded by the pipeline=non_bank
     Balance Sheet       None@None  34 rows (+24 omitted)  aggregation=None
     quarters: none
     calculations:
@@ -574,6 +588,12 @@ measured over all 653 tickers in section 4.
       roe_on_period_end_common_equity  NO VALUE
         no net income line
       payout_cash  NO VALUE
+        there is no income statement, so there is no earnings window to match dividends to and no payout
+          ratio can be computed
+      payout_declared  NO VALUE
+        there is no income statement, so there is no earnings window to match dividends to and no payout
+          ratio can be computed
+      dps_window  NO VALUE
         there is no income statement, so there is no earnings window to match dividends to and no payout
           ratio can be computed
     limitations:
@@ -658,7 +678,6 @@ measured over all 653 tickers in section 4.
       interest_coverage         0.1371              ok       -  inputs  
       fcf_yield                      -       na_sector       -  period  
       payout                         -  missing_inputs       -  period  
-
 ```
 
 ---

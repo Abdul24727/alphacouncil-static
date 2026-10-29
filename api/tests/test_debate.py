@@ -176,6 +176,28 @@ def test_an_opening_citing_none_of_its_own_datasets_is_flagged_and_still_kept():
     assert uncovered("a [P1]", ["P1", "P9"]) == ["P9"]
 
 
+def test_coverage_counts_the_tags_the_seat_wrote_not_the_ones_the_engine_added():
+    """The engine inserts a citation for every figure it can place in the pack, so reading
+    coverage off the finished text credited a seat for the engine's work. Worse, it credited the
+    WRONG dataset: `missing_citations` attributes a figure to the first panel that holds it, in
+    DATASETS order, so a figure carried by both P2 and P9 is always tagged P2 - and five of the
+    six seated advisors own P9. The flag is the only instrument for Priority Two, and it read P9
+    low and P2 high by construction.
+
+    A high `cited` beside an `uncovered` is still visible, and it is a different fault from not
+    reading the evidence at all: the seat used its figures and did not attribute them."""
+    debate = a_room()
+    buffett = next(a for a in debate.ctx.advisors if a.id == "buffett")
+    untagged = debate.check_opening(buffett, {"headline": "h", "text": "The margin is 2.0."})
+    assert untagged["flags"]["cited"] == 1, "the engine still adds the citation"
+    assert "[P2]" in untagged["data"]["text"], "and the reader still sees where the figure is from"
+    assert untagged["flags"]["uncovered"] == ["P2", "P9"], "but the seat attributed nothing"
+
+    tagged = debate.check_opening(buffett, {"headline": "h", "text": "The margin is 2.0 [P2]."})
+    assert tagged["flags"]["cited"] == 0
+    assert tagged["flags"]["uncovered"] == ["P9"]
+
+
 def test_coverage_is_measured_on_the_opening_and_not_on_a_reply():
     """A challenge is a reply: reaching for another seat's dataset there is the debate working."""
     debate = a_room()

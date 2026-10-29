@@ -96,7 +96,14 @@ def tags_in(text: str) -> list[str]:
 
 def uncovered(text: str, owns: list[str]) -> list[str]:
     """The seat's own datasets that this text does not cite."""
-    cited = set(tags_in(text))
+    return uncovered_in(set(tags_in(text)), owns)
+
+
+def uncovered_in(cited: set[str], owns: list[str]) -> list[str]:
+    """The seat's own datasets that are not in this set of cited tags.
+
+    Separate from `uncovered` because the set that matters is the one the MODEL wrote, which
+    `Checked` records before the engine adds citations of its own."""
     return [t for t in owns if t not in cited]
 
 
@@ -119,6 +126,13 @@ class Checked:
         self.unverified: list[str] = []
         self.cited = 0
         self.removed = 0
+        # The dataset tags the MODEL wrote, recorded before `add_citations` inserts any of the
+        # engine's own. Mandate coverage is measured from this and not from the finished text:
+        # `missing_citations` attributes a figure to the first panel that holds it, in DATASETS
+        # order, so a figure carried by both P2 and P9 is always tagged `[P2]` - and five of the
+        # six seated advisors own P9. Reading coverage off the tagged text made the one
+        # instrument for Priority Two read P9 low and P2 high, by construction.
+        self.written: set[str] = set()
 
     def text(self, value: Any, limit: int = 2_000) -> str:
         if not isinstance(value, str):
@@ -126,6 +140,7 @@ class Checked:
         text = normalize_digits(value).strip()[:limit]
         text, removed = drop_advice(text)
         self.removed += removed
+        self.written.update(tags_in(text))
         cites = missing_citations(text, self.numbers, set())
         self.cited += len(cites)
         text = add_citations(text, cites)

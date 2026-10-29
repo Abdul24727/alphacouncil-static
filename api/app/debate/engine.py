@@ -21,7 +21,7 @@ from typing import Any
 
 from ..settings import Settings
 from ..copilot.context import TAG, numbers_in
-from .checks import Checked, advice_in, uncovered
+from .checks import Checked, advice_in, uncovered_in
 from .llm import SeatError, Usage
 from .pack import Pack
 from .roster import Seat
@@ -314,8 +314,16 @@ class Debate:
         # complete answer, written without seeing the others', so it is the one turn where
         # citing nothing of your own part means your part went unread. A challenge or a final
         # word is a reply, and reaching for another seat's dataset there is the debate working.
+        #
+        # Measured from the tags the SEAT wrote (`c.written`), not from the finished text: the
+        # engine inserts a citation for every figure it can place in the pack, and it places a
+        # figure in the first dataset that holds it, so a figure in both P2 and P9 is always
+        # tagged P2. Reading coverage off the tagged text credited P2 for P9's work on five of
+        # the six seated advisors. `flags.cited` counts the citations the engine had to add, so
+        # a seat that used its evidence without attributing it is still visible - as a high
+        # `cited` beside an `uncovered`, which is a different fault from not reading it at all.
         return {"data": data, "flags": {**c.flags(), "words": words_in(text),
-                                        "uncovered": uncovered(text, seat.info.owns)}}
+                                        "uncovered": uncovered_in(c.written, seat.info.owns)}}
 
     def check_faultlines(self, raw: dict[str, Any]) -> dict[str, Any]:
         c = Checked(self.numbers, self.seen)

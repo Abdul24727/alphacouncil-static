@@ -154,7 +154,7 @@ from the closeout; the only addition is the ranking limitation.
 
 | | Aramco `2222` | Al Rajhi `1120` | SABIC `2010` |
 |---|---|---|---|
-| P9 before → after | 4,298 → **10,898** chars | 7,215 → **14,863** | 4,253 → **9,598** |
+| P9 before → after | 4,993 → **10,898** chars | 8,160 → **14,863** | 4,948 → **9,598** |
 | budget headroom (16,000) | 5,102 | **1,137** | 6,402 |
 | income statement | TTM@2026-06, 18 rows, `sum_quarters` | TTM@2026-06, 24 rows | TTM@2026-06, 15 rows |
 | balance sheet | Q@2026-06 | **Q@2026-06 — the same date** | Q@2026-06 |
@@ -317,12 +317,12 @@ place of `alrumayyan`. That is the owner's decision and I have not taken it. If 
 for — the extraordinary split and the bank measures — and that is worth deciding rather than
 leaving.
 
-**What P9 costs, with the counting method.** Per call, mean of five real packs: **18,477 → 29,554
-characters**, +10,416, **+56%**; in UTF-8 bytes 18,761 → 29,840. Across 21 calls that is
-**+218,740 characters** a debate, and the pack is in every call's system prompt with no prompt
-caching on the debate path. In tokens: the byte count, **218,791**, is a hard ceiling — no
+**What P9 costs, with the counting method.** Per call, mean of five real packs: **18,477 → 29,886
+characters**, +10,749, **+58%**; in UTF-8 bytes 18,761 → 30,173. Across 21 calls that is
+**+225,721 characters** a debate, and the pack is in every call's system prompt with no prompt
+caching on the debate path. In tokens: the byte count, **225,771**, is a hard ceiling — no
 byte-level BPE tokenizer emits more tokens than bytes — and the chars/4 divisor my earlier figure
-used would say 54,685. **So the added input tokens are between about 55,000 and 219,000, and the
+used would say 56,430. **So the added input tokens are between about 56,000 and 226,000, and the
 true figure is the provider's reported `prompt_tokens`, which needs a paid run.** `audit_tokens`
 already compares the provider's count against the byte ceiling on every call.
 
@@ -332,18 +332,21 @@ limitation, or a row a calculation divides by (protected rows are taken first �
 balance sheet the share count is the **last** row, and taking the first N dropped the denominator
 of every per-share measure in the same dataset). `Pack.prompt()`'s `[:budget]`, which would cut
 mid-row, is the backstop behind it. Measured: **0 of 653 datasets over the 16,000-character budget**
-(largest 10,776 on the published database; and on the repaired parse, measured against **all four
+(largest 11,563 on the published database; and on the repaired parse, measured against **all four
 peer classes for every company** so that each one carries the longest limitation it could, 128
-datasets with 0 over and a largest of **13,142** — Al Rajhi as a bank — leaving 2,858 of
-headroom), and **limitations intact 653 of 653**. The
+datasets with 0 over and a largest of **13,973** — Al Rajhi as a bank — leaving **2,027** of
+headroom), and **limitations intact 653 of 653**. **That headroom is the number to watch**: it was
+2,858 before this round's fixes, which added about 830 characters to the tightest pack by stating
+absences that used to be silent. Nothing is near the budget, but the movement is one-directional.
+The
 single lever is `evidence.DATASET_BUDGET`.
 
 ---
 
 ## 8. Offline checks passed, and what is still unmeasured
 
-**Passed.** API suite **557 passed, 11 skipped** — 531 before this work, 544 after the three
-closures, 557 after the review of them (§9), each round carrying 13 new tests. Web typecheck clean, `openapi.json` and the web client types regenerated. Both
+**Passed.** API suite **562 passed, 11 skipped** — 531 before this work, 544 after the three
+closures, 557 after the review of them, 562 after reviewing the rest of the prepared code (§9). Web typecheck clean, `openapi.json` and the web client types regenerated. Both
 pipeline patches apply clean to the files now on the server, reproduce the tested files byte for
 byte, and `patch -R` restores the originals byte for byte — re-verified today against fresh copies.
 **One defect found in the prepared patch while re-verifying it:** its ranking comment and its log
@@ -447,3 +450,49 @@ series that exists; and `EPS_BASES_UNSUPPORTED` was dead.
 before calling a step done — a screenshot of this very panel is what would have caught the UI
 finding — and `~/.claude/CLAUDE.md` says to write each step's outcome as it finishes rather than
 batching it. Both were done this round.
+
+---
+
+## 10. Reviewing the rest of the prepared code: three more defects, all live
+
+§9 reviewed the acceptance commit. It is one of the four commits being presented, so the same
+pass was run over the Priority One and Priority Two code. **Three more defects, every one
+reproduced on the live universe**, and the suite went 557 → **562**.
+
+**1. A bank ratio over a negative denominator.** `_returns` has guarded against a loss over
+negative equity since the universe sweep; `_bank_measures` had the identical trap and no guard.
+**BMEB.BH_BSE reported net income / operating income as +912.86%** — a loss of 0.639 over
+operating income of −0.070, which reads as an extraordinary conversion and is the opposite of
+what happened, from a bank losing money on both lines, which is the case the measure matters for
+most. All eight measures now name their denominator and refuse a negative one with its value in
+the text. Negative *equity* keeps its figure, because there the arithmetic is sound and the fact
+is real — the liabilities exceed the assets — but it gains a check saying so, since the
+denominator note alone left −2,371% standing as a leverage ratio to compare with other banks.
+
+**2. Measures that vanished instead of saying why.** `net_income_to_operating_income` was appended
+behind a guard, so it was **absent for 32 of the 64 corroborated banks** with no value and no
+reason. Worse, the same shape in `_dividend_measures`: each early return emitted `payout_cash`
+alone, so `payout_declared` and `dps_window` disappeared — and **every one of the 653 tickers in
+the published database reaches one of those returns**, because Tadawul has no income statement and
+the GCC tickers that do have one have no dividend history. A seat comparing two companies saw
+eight measures for one and seven for the other, four dividend entries for one and one for the
+other, with nothing to say why. Both now report like the rest. This is the difference between a
+gap a seat can argue about and a gap it cannot see.
+
+**3. The mandate-coverage flag was measuring the engine's own citations.** `Checked.text` runs
+`add_citations`, which inserts a `[Pn]` tag for every figure it can place in the pack, and
+`check_opening` then asked `uncovered()` about that already-tagged text — so a seat that wrote
+"The margin is 2.0." with no tag was credited with covering P2. And the credit went to the wrong
+dataset: `missing_citations` attributes a figure to the **first** panel that holds it, in DATASETS
+order, so a figure carried by both P2 and P9 is always tagged `[P2]`. **Five of the six seated
+advisors own P9**, so the one instrument for Priority Two read P9 coverage low and P2 high by
+construction. Coverage is now the tags the seat itself wrote; `flags.cited` already counts what
+the engine added, so a seat that used its evidence without attributing it shows as a high `cited`
+beside an `uncovered` — a different fault from not reading it at all, and now distinguishable.
+
+**What this says about the rest.** Two review passes over four commits found 18 defects, 8 of
+which changed what somebody is shown. The pattern in the last three is one thing: **a measure that
+cannot be computed must say so, every time, or the room cannot tell an absent figure from one
+nobody computed.** The parts still unreviewed at this depth are the statements endpoint, the
+bounded-dataset assembly and the web transcript; nothing there produces a figure a seat reads as a
+fact, which is why they came last, not because they were checked.

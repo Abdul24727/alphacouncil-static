@@ -527,8 +527,35 @@ def test_without_an_income_statement_there_is_no_window_and_so_no_payout(tmp_pat
                   "dividends": DIVIDENDS})
     c = sqlite3.connect(path)
     c.row_factory = sqlite3.Row
-    payout = metric(dataset(c, "2222_TADAWUL"), "payout_cash")
+    ds = dataset(c, "2222_TADAWUL")
+    payout = metric(ds, "payout_cash")
     assert payout.value is None and "no earnings window" in payout.missing[0]
+    # Every dividend measure says it, not just the first. Emitting `payout_cash` alone here meant
+    # `payout_declared` and `dps_window` VANISHED - and every one of the 653 tickers in the
+    # published database reaches one of these returns, so a seat never saw them at all.
+    for name in ("payout_declared", "dps_window"):
+        other = metric(ds, name)
+        assert other.value is None, name
+        assert "no earnings window" in other.missing[0], name
+    c.close()
+
+
+def test_a_company_with_no_dividend_history_is_told_that_rather_than_shown_a_window(tmp_path):
+    """"No dividend records between 2025-01-01 and 2025-12-31" says the company pays dividends at
+    other times. Outside Tadawul the history is not collected at all, which is a different fact
+    and the ordinary case for 423 of the 653 tickers."""
+    path = tmp_path / "no-dividends.sqlite"
+    main_rows, quarter_rows = _flows("2222_TADAWUL", INDUSTRIAL_QUARTERLY)
+    _write(path, {"fundamentals_lineitems": [*main_rows,
+                                             *_balance("2222_TADAWUL", INDUSTRIAL_BALANCE)],
+                  "fundamentals_lineitems_quarterly": quarter_rows})
+    c = sqlite3.connect(path)
+    c.row_factory = sqlite3.Row
+    ds = dataset(c, "2222_TADAWUL")
+    for name in ("payout_cash", "payout_declared", "dps_window"):
+        m = metric(ds, name)
+        assert m.value is None, name
+        assert "carries no records for this company at all" in m.missing[0], name
     c.close()
 
 

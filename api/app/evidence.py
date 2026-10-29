@@ -1194,25 +1194,43 @@ def _dividend_measures(items: Items, dividends: list[dict], price: float | None)
     p = items.period("Income Statement")
     window = window_label(p)
     out: list[Calculation] = []
+
+    def absent(reason: str) -> list[Calculation]:
+        """Every dividend measure, each saying why there is none.
+
+        These returns used to emit `payout_cash` alone, so `payout_declared`, `dps_window` and the
+        yield VANISHED - no value, no reason - and every one of the 653 tickers in the published
+        database reaches one of them: Tadawul has no income statement, and the GCC tickers that do
+        have one have no dividend history. A seat comparing two companies saw four dividend
+        entries for one and one for the other with nothing to say why, which is the difference
+        between a gap it can argue about and a gap it cannot see."""
+        measures = [(m, f) for m, f in (
+            ("payout_cash", "dividends paid in the earnings window / net income over that"
+                            " window x 100"),
+            ("payout_declared", "dividends declared in the earnings window / net income over that"
+                                " window x 100"),
+            ("dps_window", "sum of per-share dividends with an ex-date inside the earnings"
+                           " window"),
+            ("dividend_yield_on_window", "dividends per share over the earnings window /"
+                                         " price x 100"),
+        ) if m != "dividend_yield_on_window" or price]
+        return [Calculation(metric=m, formula=f, window=window, missing=[reason])
+                for m, f in measures]
+
     if not items.section_of("Income Statement"):
-        return [Calculation(
-            metric="payout_cash",
-            formula="dividends paid in the earnings window / net income over that window x 100",
-            missing=["there is no income statement, so there is no earnings window to match"
-                     " dividends to and no payout ratio can be computed"])]
+        return absent("there is no income statement, so there is no earnings window to match"
+                      " dividends to and no payout ratio can be computed")
     win = window_of(p.period, p.period_end, items.latest)
     if win is None:
-        return [Calculation(
-            metric="payout_cash",
-            formula="dividends paid in the earnings window / net income over that window x 100",
-            missing=["the income statement records no reporting period, so no dividend window"
-                     " can be matched to it"])]
+        return absent("the income statement records no reporting period, so no dividend window"
+                      " can be matched to it")
     start, end = win
     if not dividends:
-        return [Calculation(
-            metric="payout_cash",
-            formula="dividends paid in the earnings window / net income over that window x 100",
-            window=window, missing=[f"no dividend records between {start} and {end}"])]
+        # Not "none between start and end": the history is empty for this company, which is a
+        # different thing to tell a seat and the ordinary case outside Tadawul, where dividends
+        # are not collected at all.
+        return absent("the dividend history carries no records for this company at all, so"
+                      f" nothing can be matched to the window {start}..{end}")
 
     for metric, field, basis in (("payout_cash", "pay_date", "paid"),
                                  ("payout_declared", "announce_date", "declared")):
