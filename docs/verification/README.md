@@ -339,3 +339,20 @@ costs a seat's prompt.
 **What it still does not cover**: a full parse of all 714 tickers, which needs the harvest pages on
 the server. The gauge, sector-average and ranking stages were run over every ticker that has line
 items; the parser itself was run over 33.
+
+## Acceptance review, 2026-10-29
+
+`review-package-2026-10-29.md` is the raw output behind `docs/review-package-2026-10-29.md`, which
+is the single document to read for the acceptance review. Six sections: both pipeline ranking
+stages replayed over the published database (the replay reproduces every one of the 1,954 published
+scores exactly, which is what makes the corrected run worth reading); what the vintage check can
+read back gauge by gauge and what it can never reach; whether a simple mean of quarterly
+average-share columns is the window's weighted average; the three closures validated over all 653
+tickers, including 20 companies deliberately revised inside their own period; what P9 costs a
+debate in characters and in UTF-8 bytes with the call count read off the run loop; and the three
+cases' P9 packs before and after with nothing truncated.
+
+**What it does not cover**: no model was called, so nothing here measures the quality of the room's
+reasoning — whether six mandated seats differentiate, or whether the Chair's rulings evaluate
+arguments rather than satisfy the schema. Both need a paid session, and §8 of the package says what
+to read first when one is run.

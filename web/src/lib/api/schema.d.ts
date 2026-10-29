@@ -1521,6 +1521,10 @@ export interface components {
              * @default false
              */
             stale: boolean;
+            /** Peer Class */
+            peer_class?: string | null;
+            /** Ranking Note */
+            ranking_note?: string | null;
         };
         /** GaugeGroup */
         GaugeGroup: {
@@ -1556,6 +1560,8 @@ export interface components {
                 [key: string]: unknown;
             } | null;
             as_of?: components["schemas"]["Period"] | null;
+            /** Vintage */
+            vintage?: string | null;
             /** Note */
             note?: string | null;
         };

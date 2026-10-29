@@ -116,6 +116,31 @@ BANK_INVESTMENTS = ("Investments", "\u0625\u0633\u062a\u062b\u0645\u0627\u0631\u
 BANK_DUE_FROM_BANKS = ("Due from Banks", "Due from Banks & Other FI's",
                        "\u0623\u0631\u0635\u062f\u0629 \u0644\u062f\u0649 \u0627\u0644\u0628\u0646\u0648\u0643 \u0648 \u0627\u0644\u0645\u0624\u0633\u0633\u0627\u062a \u0627\u0644\u0645\u0627\u0644\u064a\u0629 \u0627\u0644\u0623\u062e\u0631\u0649")
 
+# THE SHARE COUNTS A DERIVED EARNINGS PER SHARE MAY BE STRUCK ON.
+#
+# Finding an average-share row establishes coverage, not correctness: 408 tickers carry one, and
+# that says nothing about whether the figure is the weighted average this window needs. A share
+# count reaches a window by one of four routes, and only three of them support a derivation.
+#
+#   annual_column        the filer's own annual weighted average, read from the annual column.
+#                        Nothing is constructed. 136 of the 165 share rows in the repaired dry
+#                        run arrive this way, and it is the ordinary case.
+#   unchanged position   a closing count ('Shares Outstanding') identical in every quarter of the
+#                        window. The mean of identical numbers is that number, so the position is
+#                        the window's average. Measured: not one share count in the repaired
+#                        parse moves, 0 of 16, so this is the whole of the Tadawul case today.
+#   single_quarter       one quarter's own average, against that quarter's earnings.
+#   mean_of_quarters     a mean this pipeline took over four quarterly columns. NOT SUPPORTED -
+#                        see `_per_share`. It is the one route that constructs the denominator
+#                        rather than reading it, and the three things that would justify it are
+#                        all unestablished.
+#
+# A moved closing position is the fourth case and was already withheld. Nothing here extends to
+# a general treatment of corporate actions: the rule is that the basis is named or the figure is
+# not given.
+EPS_BASES_SUPPORTED = ("annual_column", "unchanged position", "single_quarter")
+EPS_BASES_UNSUPPORTED = ("mean_of_quarters", "moved end-of-period position")
+
 # What the fundamentals strip shows, and what each number actually is. The pipeline computes some
 # of these from statements and publishes others from the data source; a reader cannot recover a
 # formula from a name, so the formula travels with the number.
@@ -459,11 +484,7 @@ def sector_of(items: Items, gauge_inputs: dict[str, dict]) -> str:
     A bank claim the balance sheet does not corroborate yields `unknown`, which suppresses nothing:
     we know from the statements that this is not a bank, and the absence of two labels does not say
     what it is instead."""
-    recorded = next(
-        (str(i["sector"]) for i in gauge_inputs.values() if isinstance(i, dict) and i.get("sector")),
-        None,
-    )
-    sector = recorded or _detected(items)
+    sector = recorded_peer_class(gauge_inputs) or _detected(items)
     if sector != "bank":
         return sector
     lends = items.find(BANK_FINANCING, "Balance Sheet") is not None
@@ -485,34 +506,186 @@ def _detected(items: Items) -> str:
     return "non_bank"
 
 
-# --- staleness --------------------------------------------------------------------------------
+# --- vintage: is this gauge still a statement about these figures? ---------------------------
+
+# The one dict key in inputs_json whose keys are line-item labels. Everything else that happens
+# to be a dict there - `fcf_components`, `tax_gap` - is keyed by something else, so a general
+# "dict of numbers means label to value" rule would read diagnostics as statement lines.
+LABELLED_PARTS = ("debt_parts",)
+
+# `<x>_label` names the operand `<x>` everywhere but one: roic writes "taxes" and labels it
+# "tax_label". Measured consequence of not knowing that: the tax line was read back for 0 of 653
+# tickers instead of 216, and the gap was invisible because a check that never runs reports
+# nothing. Pluralising by rule would be guessing; this is the one case the data has.
+OPERAND_ALIASES = {"tax": "taxes"}
+
+
+def named_operands(inputs: dict[str, Any]) -> list[tuple[str, float]]:
+    """(line-item label, recorded value) for every operand the gauge named its source line for.
+
+    Two shapes carry a name: `<x>_label` gives the exact label behind operand `<x>`, and
+    `debt_parts` is a label-to-value map. An operand recorded as a bare number -
+    `current_ratio`'s current assets, `payout`'s net income - names no line, and nothing can be
+    read back for it. Guessing the line from the key would compare against whatever a label group
+    happens to resolve to and call a fresh gauge revised, which is worse than not checking."""
+    out: list[tuple[str, float]] = []
+    if not isinstance(inputs, dict):
+        return out
+    for key, val in inputs.items():
+        if key.endswith("_label") and isinstance(val, str) and val:
+            stem = key[: -len("_label")]
+            got = inputs.get(stem)
+            if got is None:
+                got = inputs.get(OPERAND_ALIASES.get(stem, stem))
+            if isinstance(got, (int, float)) and not isinstance(got, bool):
+                out.append((val, float(got)))
+        elif key in LABELLED_PARTS and isinstance(val, dict):
+            for label, v in val.items():
+                if isinstance(v, (int, float)) and not isinstance(v, bool):
+                    out.append((str(label), float(v)))
+    return out
+
+
+def stamped_year(inputs: dict[str, Any]) -> int | None:
+    """The fiscal year the gauge says it read, or None.
+
+    Without it there is no year to read the operands back in. Taking the latest year instead
+    would compare a gauge that legitimately read 2024 against 2025's figures and call every one
+    of them revised."""
+    if not isinstance(inputs, dict):
+        return None
+    for key in ("fiscal_year", "year"):
+        v = inputs.get(key)
+        if isinstance(v, int) and not isinstance(v, bool):
+            return v
+    return None
+
+
+def vintage_basis(inputs: dict[str, Any]) -> str:
+    """How far this gauge's freshness can be checked: "inputs" or "period".
+
+    "inputs" means at least one operand names its line item AND the row says which year it read,
+    so the figure the gauge divided can be read back against the statement as it stands and a
+    correction inside the same period is caught. "period" means one of the two is missing, so the
+    check is the year and the window only - and a source figure corrected inside the same period
+    keeps both. That is a real limit, not a formality, and it is reported rather than left for a
+    reader to assume away."""
+    return "inputs" if (named_operands(inputs) and stamped_year(inputs) is not None) else "period"
+
+
+def revised_operand(inputs: dict[str, Any], items: Items) -> str | None:
+    """An operand whose figure has changed since the gauge read it, or None.
+
+    This is the gap a date check cannot see. A source figure corrected inside the same period -
+    a restated equity, a reclassified borrowing - keeps the fiscal year and the window, so the
+    vintage check passes and a gauge computed from the old number is shown beside the new one.
+    Reading the operand back against the line it came from is the only check that sees it.
+
+    A label that resolves to no row, or to rows that disagree, is not a revision: it is a figure
+    this check cannot read, and it is skipped rather than guessed at.
+
+    The comparison is exact to float round-tripping, not to a materiality threshold. Both sides
+    read the same column - the gauge stage records the line item it divided and does not round it
+    - so any difference at all is a revision, and 0 of the 6,237 gauge rows in the published
+    database are flagged. A threshold would have to be in the reporting currency's millions, and
+    0.01 of those swallowed a 3% revision on a company whose revenue is 0.19 when this was
+    measured on 20 deliberately revised companies: 19 of 20 caught, and the one missed was the
+    smallest. Materiality is the reader's judgement, which is why both figures are in the text."""
+    year = stamped_year(inputs)
+    if year is None:
+        return None
+    for label, recorded in named_operands(inputs):
+        cells = [r for r in items.rows
+                 if r.fiscal_year == year and r.value is not None and _norm(r.label) == _norm(label)]
+        if len({c.value for c in cells}) != 1:
+            continue
+        now = cells[0].value or 0.0
+        if abs(now - recorded) > max(1e-9, abs(now) * 1e-9):
+            return (f"computed from '{label}' = {recorded:,.2f} while the statements now carry"
+                    f" {now:,.2f} for the same fiscal year {year}: the figure was revised after"
+                    " the gauge stage last ran, which a check on the period alone cannot see")
+    return None
 
 
 def stale_reason(inputs: dict[str, Any], items: Items) -> str | None:
     """Why a gauge must not be shown beside these statements, or None.
 
-    The gauge stage reads one fiscal year per ticker and stamps the row with it. If the
-    statements have moved on and the gauges have not, the number on the screen was computed from
-    figures that are no longer the ones beside it — the exact accident a refreshed statement
-    invites. A gauge from a database with no stamp cannot be dated, and is left alone rather than
-    called stale on a guess."""
+    Three ways a gauge can be out of date, and they need three different checks. The gauge stage
+    reads one fiscal year per ticker and stamps the row with it: if the statements have moved on
+    to a later year and the gauges have not, the number on the screen was computed from figures
+    that are no longer the ones beside it. The window can move inside a year - a TTM to March
+    becomes a TTM to June - and the stamp catches that too. And a figure can be CORRECTED inside
+    the same window, which keeps both stamps: only reading the operand back against its own line
+    sees that one. A gauge from a database with no stamp cannot be dated, and is left alone
+    rather than called stale on a guess."""
     if not isinstance(inputs, dict) or items.latest is None:
         return None
     year = inputs.get("fiscal_year")
-    if not isinstance(year, int):
-        return None
-    if year < items.latest:
-        return (
-            f"computed from fiscal year {year} while the statements now carry {items.latest}:"
-            " the gauge stage has not run since the statements were refreshed"
-        )
-    stamped = inputs.get("period_end")
-    if stamped:
-        current = items.period("Income Statement", items.latest).period_end
-        if current and stamped != current:
-            return (f"computed from the window ending {stamped} while the income statement now"
-                    f" ends {current}")
-    return None
+    if isinstance(year, int):
+        if year < items.latest:
+            return (
+                f"computed from fiscal year {year} while the statements now carry {items.latest}:"
+                " the gauge stage has not run since the statements were refreshed"
+            )
+        stamped = inputs.get("period_end")
+        if stamped:
+            current = items.period("Income Statement", items.latest).period_end
+            if current and stamped != current:
+                return (f"computed from the window ending {stamped} while the income statement now"
+                        f" ends {current}")
+    return revised_operand(inputs, items)
+
+
+# --- the peer group a percentile ranks inside ------------------------------------------------
+
+# A percentile is a statement about a POPULATION, and an endpoint that reads one company cannot
+# verify one. Measured over the published database on 2026-10-29: the pipeline's stage 4 ranks
+# each value inside the peer class stage 3 bucketed it into, and the `bank` bucket holds 204
+# tickers, of which 53 are in the Banks sector the site shows and 64 have a balance sheet that
+# corroborates a bank at all. Replaying both stages reproduces every one of the 1,954 published
+# scores exactly; moving the 140 uncorroborated members out then shifts the bank bucket's 196
+# scored rows by a median of 4.8 and up to 18.2 percentile points.
+#
+# So a rank inside that bucket is not a rank against banks - neither for a real bank nor for a
+# company that was never one - and it is withheld. The other buckets move by at most 4.7 points
+# (non_bank, which was short those 140 members) and not at all (insurance), and are kept with the
+# shortfall stated rather than withheld on a measured non-effect.
+#
+# This cannot be derived from one ticker: the API sees one company and the contamination is a
+# fact about the other 203. It is therefore a dated measurement, and lifting it belongs with the
+# pipeline fix that corrects the bucketing, not with a later reading of this one company.
+DISPUTED_PEER_CLASS = "bank"
+DISPUTED_PEER_NOTE = (
+    "no sector ranking: the pipeline ranks this value inside its `bank` peer class, which on"
+    " 2026-10-29 held 204 tickers of which 53 are banks. Correcting the membership moves the"
+    " ranks in that class by up to 18.2 percentile points, so the rank is withheld until the"
+    " pipeline's bank detection is fixed. The value itself is unaffected"
+)
+PEER_SHORTFALL_NOTE = (
+    "a sector ranking here is a rank inside the pipeline's own peer class, which on 2026-10-29"
+    " was short the 140 tickers it had misfiled as banks; adding them back moves these ranks by"
+    " at most 4.7 percentile points"
+)
+
+
+def recorded_peer_class(gauge_inputs: dict[str, dict]) -> str | None:
+    """The peer class the pipeline put this ticker in, by its own vote.
+
+    compute_sector_averages.ticker_sector_class takes the commonest `sector` across the ticker's
+    gauge rows, and compute_gauge_scores imports that same function - so this is the bucket the
+    percentile was actually ranked in, which is the only thing that decides whether the rank is
+    a statement about banks."""
+    votes: dict[str, int] = {}
+    for i in gauge_inputs.values():
+        if isinstance(i, dict) and i.get("sector"):
+            key = str(i["sector"])
+            votes[key] = votes.get(key, 0) + 1
+    return max(votes.items(), key=lambda kv: kv[1])[0] if votes else None
+
+
+def peer_group_reason(peer_class: str | None) -> str | None:
+    """Why a sector ranking computed in this peer class must not be shown, or None."""
+    return DISPUTED_PEER_NOTE if peer_class == DISPUTED_PEER_CLASS else None
 
 
 # --- the calculations -------------------------------------------------------------------------
@@ -622,9 +795,12 @@ def _per_share(items: Items) -> list[Calculation]:
 
     The denominator is the whole question. A share count is a position, so a window's figure is
     the count at its end; an average-share row is a mean over the window. The two differ exactly
-    when the count moved, and the difference is invisible in the result. Where only an
-    end-of-period position is available AND the count moved inside the window, this derivation is
-    withheld: there is no supported denominator, and a plausible wrong number is worse than a gap.
+    when the count moved, and the difference is invisible in the result.
+
+    So the rule is that the basis is NAMED or the figure is not given. The three supported bases
+    and the two unsupported ones are listed at EPS_BASES_SUPPORTED, with what was measured for
+    each; every figure here carries the one it was struck on, and every withheld figure says
+    which unsupported route it would have had to take.
     """
     out: list[Calculation] = []
     ni = items.find(NET_INCOME, "Income Statement")
@@ -636,14 +812,45 @@ def _per_share(items: Items) -> list[Calculation]:
     denominator: Cell | None = None
     basis: str | None = None
     missing: list[str] = []
-    if avg is not None:
+    if avg is not None and avg.rule == "mean_of_quarters":
+        # The one route that CONSTRUCTS the denominator instead of reading it, and three things
+        # would have to hold for the construction to be the weighted average this window needs:
+        # each quarterly column is that quarter's own average rather than a year-to-date one; the
+        # four quarters are of equal length; and no corporate action fell inside one. None is
+        # established, and no amount of looking at the current data can establish the first,
+        # because every share count in the universe is flat - the data where the two readings
+        # differ does not exist. The quarterly columns are not retained either (one window per
+        # section keeps this row and discards the quarters it was built from), so the mean cannot
+        # be checked against its own inputs. A plausible wrong denominator is the worst kind.
+        quarters = ", ".join(avg.window) if avg.window else "four quarterly columns"
+        missing = [
+            f"the only average-share line is '{avg.label}', which this pipeline constructed by"
+            f" taking the mean of {quarters}. That mean is the window's weighted average only if"
+            " each quarterly column is that quarter's own average rather than a year-to-date"
+            " one, and the quarters are of equal length with no share issue inside one. Neither"
+            " is established, and the quarterly columns are not retained, so the mean cannot be"
+            f" checked against its inputs. Supported bases are {', '.join(EPS_BASES_SUPPORTED)}"
+        ]
+    elif avg is not None:
         denominator = avg
-        basis = (f"'{avg.label}', the mean share count over the window — the denominator a"
-                 " per-share flow requires")
+        basis = (f"'{avg.label}', the average share count the source itself reports for this"
+                 f" window, read from its {avg.rule or 'annual'} column — the denominator a"
+                 " per-share flow requires, with nothing constructed")
     elif shares is not None:
         series = items.quarter_series(SHARES, shares.section)
         counts = [q.value for q in series if q.value is not None]
-        if len(set(counts)) > 1 and p.period in ("TTM", "FY"):
+        if shares.rule == "mean_of_quarters":
+            # A mean of CLOSING positions is not a weighted average at any time: it ignores when
+            # inside each quarter the shares were issued. The parser routes positions to the end
+            # quarter, so this should be unreachable - the branch is here so that if that routing
+            # ever changes, the consequence is a withheld figure and not a quiet wrong one.
+            missing = [
+                f"the only share count is '{shares.label}', an end-of-period position, and this"
+                " window's figure is a mean of four such positions: a mean of closing counts is"
+                " not a weighted average, because it says nothing about when inside each quarter"
+                " the shares were issued"
+            ]
+        elif len(set(counts)) > 1 and p.period in ("TTM", "FY"):
             moved = ", ".join(f"{q.period_end}={q.value:,.0f}" for q in series if q.value is not None)
             missing = [
                 f"the only share count is '{shares.label}', an end-of-period position, and it"
@@ -654,7 +861,8 @@ def _per_share(items: Items) -> list[Calculation]:
             denominator = shares
             basis = (f"'{shares.label}', a position at {shares.period_end or 'the period end'}"
                      + (", unchanged through every quarter of the window, so it equals the"
-                        " window's mean" if counts and len(set(counts)) == 1 else ""))
+                        " window's mean" if counts and len(set(counts)) == 1 else
+                        ", and the window carries no quarterly series to test it against"))
     else:
         missing = ["no share count in either the income statement or the balance sheet"]
     if ni is None:
@@ -1087,7 +1295,26 @@ def bounded_quarters(items: Items) -> QuarterSeries | None:
         columns=["label", *ends], rows=rows)
 
 
-def limitations_of(items: Items, sector: str) -> list[str]:
+# What a seat has to be told about a percentile it reads in P2. The pipeline's peer classes
+# and what is wrong with them are measured at DISPUTED_PEER_NOTE; these say it in the terms a
+# seat is reading, and name the one dataset the contamination does NOT touch, because a seat told
+# that a peer group is wrong will otherwise distrust the peer LIST as well.
+RANKING_WITHHELD = (
+    "NO SECTOR RANKINGS FOR THIS COMPANY: the pipeline ranks its gauges inside the `bank` peer"
+    " class, which on 2026-10-29 held 204 tickers of which 53 are banks. A rank in that class is"
+    " not a rank against banks, so P2 carries the values with no percentiles. The peer LIST in P5"
+    " is unaffected - it comes from the exchange's own sector classification, not from this"
+    " detection."
+)
+RANKING_NARROWED = (
+    "A SECTOR PERCENTILE IN P2 IS A RANK INSIDE THE PIPELINE'S OWN `{cls}` PEER CLASS, not inside"
+    " the sector the exchange publishes. On 2026-10-29 that class was short the 140 tickers the"
+    " pipeline had misfiled as banks; adding them back moves these ranks by at most 4.7"
+    " percentile points."
+)
+
+
+def limitations_of(items: Items, sector: str, peer_class: str | None = None) -> list[str]:
     """What this evidence cannot answer. Said plainly, because a seat that does not know a gap
     exists will argue around it."""
     out: list[str] = []
@@ -1115,6 +1342,10 @@ def limitations_of(items: Items, sector: str) -> list[str]:
             " interest coverage, return on invested capital, EV/EBITDA and free cash flow yield"
             " are not defined for this company and are not supplied. What it is read on is in"
             " `calculations`. Equity to assets there is leverage, not regulatory capital.")
+    if peer_class == DISPUTED_PEER_CLASS:
+        out.append(RANKING_WITHHELD)
+    elif peer_class:
+        out.append(RANKING_NARROWED.format(cls=peer_class))
     return out
 
 
@@ -1157,6 +1388,7 @@ def dataset_of(
     ticker_key: str,
     sector: str,
     currency: str | None,
+    peer_class: str | None = None,
     dividends: list[dict] | None = None,
     price: float | None = None,
     budget: int = DATASET_BUDGET,
@@ -1179,5 +1411,5 @@ def dataset_of(
         quarters=bounded_quarters(items),
         calculations=calculations(items, sector=sector, dividends=dividends, price=price,
                                   currency=currency),
-        limitations=limitations_of(items, sector),
+        limitations=limitations_of(items, sector, peer_class),
     ), budget)

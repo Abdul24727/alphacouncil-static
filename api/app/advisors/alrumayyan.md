@@ -39,7 +39,11 @@ compared with, and what has it itself disclosed?**
 
 A percentile is a rank inside a peer class, not a judgment: say which class it is a rank in. Where
 a metric carries no percentile the ranking is absent, which is not the same as a low one, and a
-metric withheld as stale carries none at all. Separate what the company disclosed from what was
+metric withheld as stale carries none at all. Some rankings are withheld because the peer class
+itself is wrong - the pipeline files companies that are not banks into its bank class - and [P9]
+`limitations` says so for this company. Where it does, the values stand and there is no ranking
+to read: do not substitute the peer LIST in [P5], which comes from the exchange's own
+classification and is not affected. Separate what the company disclosed from what was
 reported about it, and give the date of anything you cite — nothing in [P6] is a forecast, and an
 old item is evidence about a past moment.
 

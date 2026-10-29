@@ -17,14 +17,21 @@ from fastapi.testclient import TestClient
 from app import main
 from app.evidence import (
     DATASET_BUDGET,
+    DISPUTED_PEER_NOTE,
+    EPS_BASES_SUPPORTED,
+    EQUITY_COMMON,
+    Items,
+    PEER_SHORTFALL_NOTE,
     bounded_statements,
     calculations,
     dataset_of,
     encoded_length,
     load_items,
     period_aware,
+    recorded_peer_class,
     sector_of,
     stale_reason,
+    vintage_basis,
     window_of,
 )
 
@@ -94,7 +101,8 @@ def _write(path, rows):
     conn.close()
 
 
-def _flows(tk, quarterly, *, shares_moved=False, average_shares=None):
+def _flows(tk, quarterly, *, shares_moved=False, average_shares=None,
+           average_rule="annual_column", shares_rule=None):
     """One income statement reconstructed from four quarters, plus the quarters themselves."""
     main_rows, quarter_rows = [], []
     for index, (label, values) in enumerate(quarterly):
@@ -102,8 +110,12 @@ def _flows(tk, quarterly, *, shares_moved=False, average_shares=None):
         if position and shares_moved:
             values = [values[0], values[1], values[2] * 1.2, values[3] * 1.2]
         total = values[-1] if position else sum(values)
+        src = END_SRC if position else SUM_SRC
+        if position and shares_rule:
+            src = json.dumps({"rule": shares_rule, "window": QUARTERS,
+                              "mode": "quarterly_reconstructed"})
         main_rows.append((tk, tk.split("_")[0], "TADAWUL", 2026, "Income Statement", index, label,
-                          total, "TTM", "2026-06", END_SRC if position else SUM_SRC))
+                          total, "TTM", "2026-06", src))
         for end, value in zip(QUARTERS, values, strict=True):
             quarter_rows.append((tk, tk.split("_")[0], "TADAWUL", int(end[:4]), "Q", end,
                                  "Income Statement", index, label, value,
@@ -112,7 +124,7 @@ def _flows(tk, quarterly, *, shares_moved=False, average_shares=None):
         main_rows.append((tk, tk.split("_")[0], "TADAWUL", 2026, "Income Statement",
                           len(quarterly), "Average number of shares (Million)", average_shares,
                           "TTM", "2026-06",
-                          json.dumps({"rule": "mean_of_quarters", "window": QUARTERS})))
+                          json.dumps({"rule": average_rule, "window": QUARTERS})))
     return main_rows, quarter_rows
 
 
@@ -316,20 +328,59 @@ def test_derived_eps_is_given_when_the_count_held_still(conn):
     assert eps.checks and "within 2%" in eps.checks[0]
 
 
-def test_an_average_share_row_is_preferred_to_a_closing_position(tmp_path):
-    """"Average number of shares" contains "number of shares", so the test order matters: an
-    average row must be recognised before any position marker."""
-    path = tmp_path / "average.sqlite"
-    main_rows, quarter_rows = _flows("2222_TADAWUL", INDUSTRIAL_QUARTERLY, shares_moved=True,
-                                     average_shares=110.0)
+def _eps_on(tmp_path, name, **flows):
+    path = tmp_path / f"{name}.sqlite"
+    main_rows, quarter_rows = _flows("2222_TADAWUL", INDUSTRIAL_QUARTERLY, **flows)
     _write(path, {"fundamentals_lineitems": [*main_rows, *_balance("2222_TADAWUL", INDUSTRIAL_BALANCE)],
                   "fundamentals_lineitems_quarterly": quarter_rows})
     c = sqlite3.connect(path)
     c.row_factory = sqlite3.Row
-    eps = metric(dataset(c, "2222_TADAWUL"), "eps_derived")
+    try:
+        return metric(dataset(c, "2222_TADAWUL"), "eps_derived")
+    finally:
+        c.close()
+
+
+def test_an_average_share_row_the_source_reports_is_preferred_to_a_closing_position(tmp_path):
+    """"Average number of shares" contains "number of shares", so the test order matters: an
+    average row must be recognised before any position marker. Read from the source's own column
+    it is the weighted average the filer struck, and the basis says so."""
+    eps = _eps_on(tmp_path, "average", shares_moved=True, average_shares=110.0,
+                  average_rule="annual_column")
     assert eps.value == pytest.approx(240.0 / 110.0, abs=1e-4)
-    assert "mean share count over the window" in eps.denominator
-    c.close()
+    assert "the average share count the source itself reports" in eps.denominator
+    assert "nothing constructed" in eps.denominator
+
+
+def test_an_average_share_count_this_pipeline_built_is_not_a_supported_denominator(tmp_path):
+    """Finding an average-share row establishes coverage, not correctness. Where the figure is a
+    mean this pipeline took over four quarterly columns, three things would have to hold for it
+    to be the window's weighted average, and the figure is withheld until they do."""
+    eps = _eps_on(tmp_path, "constructed", shares_moved=True, average_shares=110.0,
+                  average_rule="mean_of_quarters")
+    assert eps.value is None
+    why = " ".join(eps.missing)
+    assert "constructed by taking the mean" in why
+    assert "year-to-date" in why, "the reading that would make the mean wrong is named"
+    assert "equal length" in why and "share issue inside one" in why
+    assert "not retained, so the mean cannot be checked against its inputs" in why
+    for basis in EPS_BASES_SUPPORTED:
+        assert basis in why, f"a withheld figure names the supported bases: {basis}"
+
+
+def test_a_mean_of_closing_positions_is_never_a_denominator(tmp_path):
+    """The parser routes a position to the window's end quarter, so this should be unreachable.
+    The branch exists so that if that routing ever changes, the result is a withheld figure and
+    not a quiet wrong one."""
+    eps = _eps_on(tmp_path, "meaned_position", shares_rule="mean_of_quarters")
+    assert eps.value is None
+    assert "a mean of closing counts is not a weighted average" in " ".join(eps.missing)
+
+
+def test_a_position_that_held_still_is_named_as_the_windows_mean(tmp_path):
+    eps = _eps_on(tmp_path, "held", shares_moved=False)
+    assert eps.value == pytest.approx(240.0 / 100.0, abs=1e-4)
+    assert "unchanged through every quarter of the window" in eps.denominator
 
 
 def test_the_roe_denominator_is_named_and_is_not_the_one_including_minority_interest(conn):
@@ -661,3 +712,149 @@ def test_the_evidence_endpoint_is_the_dataset_the_tool_returns(repaired_client):
     e = get(repaired_client, "/v1/tickers/2222/evidence")
     assert e["ticker"] == "2222_TADAWUL" and e["currency"] == "SAR"
     assert {s["section"] for s in e["statements"]} == {"Income Statement", "Balance Sheet"}
+
+
+# --- the vintage check, and what it cannot see ------------------------------------------------
+
+
+def test_a_figure_revised_inside_the_same_period_is_caught(conn):
+    """The gap a date check cannot see. A source figure corrected inside the same window keeps
+    the fiscal year and the period end, so the vintage stamps still agree; only reading the
+    operand back against the line it came from sees that the gauge divided by a figure the
+    statements no longer carry."""
+    items = load_items(conn, "2222_TADAWUL", years=2)
+    equity = items.find(EQUITY_COMMON, "Balance Sheet")
+    fresh = json.loads(vintage(equity=equity.value, equity_label=equity.label))
+    assert stale_reason(fresh, items) is None
+
+    revised = json.loads(vintage(equity=equity.value * 0.9, equity_label=equity.label))
+    why = stale_reason(revised, items)
+    assert why, "a revision inside the same period must be caught"
+    assert equity.label in why and "revised after the gauge stage last ran" in why
+    assert "a check on the period alone cannot see" in why
+
+
+def test_the_date_stamps_alone_would_not_have_caught_it(conn):
+    """The same revision, with the operand's line unnamed: nothing to read back, so nothing is
+    claimed. This is the narrowing, stated as a test rather than as a paragraph."""
+    items = load_items(conn, "2222_TADAWUL", years=2)
+    equity = items.find(EQUITY_COMMON, "Balance Sheet")
+    unnamed = json.loads(vintage(equity=equity.value * 0.9))
+    assert stale_reason(unnamed, items) is None
+    assert vintage_basis(unnamed) == "period"
+
+
+def test_vintage_basis_says_how_far_the_check_reached(conn):
+    items = load_items(conn, "2222_TADAWUL", years=2)
+    equity = items.find(EQUITY_COMMON, "Balance Sheet")
+    assert vintage_basis(json.loads(vintage(equity=1.0, equity_label=equity.label))) == "inputs"
+    assert vintage_basis(json.loads(vintage(current_assets=600.0))) == "period"
+    # Named but undated: there is no year to read the operand back in, so the check cannot be made.
+    undated = {"equity": 1.0, "equity_label": equity.label}
+    assert vintage_basis(undated) == "period"
+    assert stale_reason(undated, items) is None
+
+
+def test_each_part_of_a_summed_operand_is_read_back_on_its_own(conn):
+    """`debt_parts` is a label-to-value map, so a revision to one borrowing is visible even
+    though the gauge recorded only their total as a bare number."""
+    items = load_items(conn, "1120_TADAWUL", years=2)
+    sukuk = items.find(("Term Sukuk",), "Balance Sheet")
+    banks = items.find(("Due to Banks",), "Balance Sheet")
+    parts = {sukuk.label: sukuk.value, banks.label: banks.value}
+    assert stale_reason(json.loads(vintage(sector="bank", debt_parts=parts)), items) is None
+    why = stale_reason(json.loads(
+        vintage(sector="bank", debt_parts={**parts, sukuk.label: sukuk.value + 50})), items)
+    assert why and sukuk.label in why, "the revised borrowing is named, not just the total"
+
+
+def test_a_revision_is_not_claimed_where_the_line_cannot_be_read_back(conn):
+    """A label that resolves to no row, or to rows that disagree, is a figure this check cannot
+    read - not a revision. Calling a fresh gauge stale is the one failure worse than missing a
+    stale one, because it withholds a correct number."""
+    items = load_items(conn, "2222_TADAWUL", years=2)
+    absent = json.loads(vintage(equity=1.0, equity_label="A Line No Statement Carries"))
+    assert stale_reason(absent, items) is None
+
+    equity = items.find(EQUITY_COMMON, "Balance Sheet")
+    twice = Items(
+        rows=[*items.rows, equity.model_copy(update={"value": equity.value + 1, "item_index": 99})],
+        quarterly=items.quarterly)
+    ambiguous = json.loads(vintage(equity=equity.value, equity_label=equity.label))
+    assert stale_reason(ambiguous, twice) is None
+
+
+# --- the peer group a percentile ranks inside ------------------------------------------------
+
+
+def test_the_recorded_peer_class_is_the_pipelines_own_vote(conn):
+    """compute_sector_averages buckets by the commonest `sector` across a ticker's gauges and
+    compute_gauge_scores imports that same function, so this has to agree with it or the rank
+    being judged is not the rank that was computed."""
+    assert recorded_peer_class({}) is None
+    assert recorded_peer_class({"a": {"sector": "bank"}}) == "bank"
+    assert recorded_peer_class({"a": {"sector": "bank"}, "b": {"sector": "bank"},
+                                "c": {"sector": "non_bank"}}) == "bank"
+    assert recorded_peer_class({"a": {}, "b": {"note": "no sector here"}}) is None
+
+
+def _with_gauge(path, ticker, gauge, value, score, inputs):
+    c = sqlite3.connect(path)
+    c.execute("INSERT INTO fundamentals_gauges VALUES (?,?,?,?,?,?)",
+              (ticker, gauge, value, "ok", inputs, score))
+    c.commit()
+    c.close()
+
+
+def test_a_rank_inside_the_disputed_bank_peer_class_is_withheld(repaired_client, repaired):
+    """The value is arithmetic on this company's own statements and survives. The RANK is a
+    statement about 203 other companies, 140 of which are not banks, and does not."""
+    # The operands have to be the bank's own figures, or the vintage check withholds the value
+    # before the peer-group rule is ever reached - which is itself the two rules not colliding.
+    _with_gauge(repaired, "1120_TADAWUL", "debt_equity", 1.72, 22.1,
+                vintage(sector="bank", equity=130.0, equity_label="Total Shareholders' Equity",
+                        debt_parts={"Term Sukuk": 70.0, "Due to Banks": 100.0}))
+    f = get(repaired_client, "/v1/tickers/1120/fundamentals")
+    assert f["peer_class"] == "bank"
+    de = next(m for g in f["groups"] for m in g["metrics"] if m["key"] == "debt_equity")
+    assert de["status"] == "ok" and de["value"] == pytest.approx(1.72)
+    assert de["sector_percentile"] is None, "a rank inside that class is not a rank against banks"
+    assert "204 tickers of which 53 are banks" in de["note"]
+    assert f["ranking_note"] == DISPUTED_PEER_NOTE
+    assert next(g for g in f["groups"] if g["group"] == "health")["score"] is None
+
+
+def test_a_rank_in_another_peer_class_is_kept_with_the_shortfall_stated(repaired_client):
+    """The non_bank class was short the 140 it had misfiled, which moves its ranks by at most 4.7
+    percentile points. Withholding 1,673 rows over a measured non-effect would cost more than it
+    buys, so they are kept and the shortfall is stated once."""
+    f = get(repaired_client, "/v1/tickers/2222/fundamentals")
+    assert f["peer_class"] == "non_bank"
+    net_margin = next(m for g in f["groups"] for m in g["metrics"] if m["key"] == "net_margin")
+    assert net_margin["sector_percentile"] == 61.0
+    assert f["ranking_note"] == PEER_SHORTFALL_NOTE
+
+
+def test_the_council_is_told_in_p9_which_rankings_it_must_not_use(conn):
+    """A seat reads P2's percentiles and P9's limitations in the same prompt. The limitation names
+    the one dataset the contamination does not touch, because a seat told that a peer group is
+    wrong will otherwise distrust the peer list as well."""
+    bank = dataset(conn, "1120_TADAWUL", peer_class="bank")
+    assert any("NO SECTOR RANKINGS FOR THIS COMPANY" in x for x in bank.limitations)
+    assert any("The peer LIST in P5 is unaffected" in x for x in bank.limitations)
+
+    other = dataset(conn, "2222_TADAWUL", peer_class="non_bank")
+    said = " ".join(other.limitations)
+    assert "`non_bank` PEER CLASS" in said and "at most 4.7" in said
+    assert "NO SECTOR RANKINGS" not in said
+
+    silent = dataset(conn, "2222_TADAWUL")
+    assert not any("PEER CLASS" in x for x in silent.limitations), \
+        "a database with no recorded class claims nothing about peer groups"
+
+
+def test_the_dataset_still_fits_with_the_ranking_limitation(conn):
+    for tk in ("2222_TADAWUL", "1120_TADAWUL", "2010_TADAWUL"):
+        ds = dataset(conn, tk, peer_class="bank")
+        assert encoded_length(ds) <= DATASET_BUDGET, tk
+        assert any("SECTOR RANKINGS" in x for x in ds.limitations), tk

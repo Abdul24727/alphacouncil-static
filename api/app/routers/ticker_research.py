@@ -120,6 +120,10 @@ class GaugeMetric(BaseModel):
     operands: dict[str, Any] | None = None
     # The window and the date behind those operands.
     as_of: evidence.Period | None = None
+    # How far this gauge's freshness could be checked: "inputs" where an operand names its
+    # line item and the row says which year it read, so a figure corrected inside the same
+    # period is caught; "period" where only the year and the window could be compared.
+    vintage: str | None = None
     # Why there is no number, or why this one must not be compared.
     note: str | None = None
 
@@ -137,6 +141,12 @@ class Fundamentals(BaseModel):
     # Set when at least one gauge was computed from statements that have since been refreshed.
     # Values for those gauges are withheld rather than shown beside figures they do not match.
     stale: bool = False
+    # The peer class the pipeline ranked this ticker inside, by its own vote, and what is known
+    # to be wrong with that class's membership. A percentile is a statement about a population:
+    # this endpoint reads one company, so it reports the population it was ranked against rather
+    # than implying it verified it.
+    peer_class: str | None = None
+    ranking_note: str | None = None
 
 
 # Operand keys that are provenance or diagnostics rather than inputs: they are reported in their
@@ -196,6 +206,8 @@ def get_fundamentals(request: Request, ref: str) -> Fundamentals:
             parsed = {}
         audit[key] = parsed if isinstance(parsed, dict) else {}
     sector = evidence.sector_of(items, audit)
+    peer_class = evidence.recorded_peer_class(audit)
+    peer_reason = evidence.peer_group_reason(peer_class)
 
     # Ratios shown on Key metrics too: one value everywhere (app/ratios.py).
     published = {
@@ -245,15 +257,21 @@ def get_fundamentals(request: Request, ref: str) -> Fundamentals:
             # A computed gauge with a value wins (it carries the sector percentile); otherwise
             # the shared published ratio, so Financials and Key metrics agree.
             if g is not None and (g["status"] == "ok" or published.get(key) is None):
+                # A percentile means something only for the value it ranked, AND only for the
+                # population it ranked it in. The pipeline clears the score when a recomputed
+                # value moves, so an absent one here is the sector stage not having run yet; a
+                # rank withheld by `peer_reason` is a rank inside a peer class whose membership
+                # is known to be wrong, which is a different failure and says so.
+                ranked = g["score"] if g["status"] == "ok" else None
+                why = [x for x in (_note_of(inputs, key, g["status"]),
+                                   peer_reason if ranked is not None else None) if x]
                 rows.append(GaugeMetric(
                     **common, value=g["value"], status=g["status"],
-                    # A percentile means something only for the value it ranked. The pipeline
-                    # clears it when a recomputed value moves, so an absent one here is the
-                    # sector stage not having run yet, not a missing ranking.
-                    sector_percentile=g["score"] if g["status"] == "ok" else None,
+                    sector_percentile=None if peer_reason else ranked,
                     source=definition.get("source"),
                     operands={k: v for k, v in inputs.items() if k not in _NOT_OPERANDS} or None,
-                    as_of=_as_of(inputs), note=_note_of(inputs, key, g["status"]),
+                    as_of=_as_of(inputs), vintage=evidence.vintage_basis(inputs),
+                    note="; ".join(why) or None,
                 ))
             else:
                 v = published.get(key)
@@ -265,7 +283,10 @@ def get_fundamentals(request: Request, ref: str) -> Fundamentals:
                 ))
         scored = [m.sector_percentile for m in rows if m.sector_percentile is not None]
         groups.append(GaugeGroup(group=group, metrics=rows, score=sum(scored) / len(scored) if scored else None))
-    return Fundamentals(groups=groups, freshness=fresh, sector=sector, stale=any_stale)
+    return Fundamentals(
+        groups=groups, freshness=fresh, sector=sector, stale=any_stale, peer_class=peer_class,
+        ranking_note=peer_reason or (evidence.PEER_SHORTFALL_NOTE if peer_class else None),
+    )
 
 
 def _as_of(inputs: dict[str, Any]) -> evidence.Period | None:
@@ -446,6 +467,7 @@ def get_evidence(request: Request, ref: str) -> evidence.EvidenceDataset:
         ticker_key=t.ticker_key,
         sector=evidence.sector_of(items, audit),
         currency=t.report_currency,
+        peer_class=evidence.recorded_peer_class(audit),
         dividends=dividends,
         price=price,
     )
