@@ -658,3 +658,45 @@ measured over all 653 tickers in section 4.
       payout                         -  missing_inputs       -  period  
 
 ```
+
+---
+
+## 7. After the review: the sweeps re-run against the fixed code
+
+The readback changed (a repeated label is no longer skipped) and the year stamp changed (both
+checks now read `stamped_year`), so the two measurements that matter were taken again. The first
+also closes the gap the review found in the original sweep: only `net_margin` carried a year
+stamp on the published database, so five of the six gauges that name their lines were never
+exercised there. Here every row is stamped the way the prepared gauge patch stamps it, which
+takes the readback from 293 rows to 1,891 across six gauges.
+
+```
+stamped 6530 gauge rows with the fiscal year the gauge stage reads
+vintage basis now: {'period': 4639, 'inputs': 1891}
+gauges the vintage check withholds: 0
+by gauge: {}
+```
+
+And the 20 companies revised inside their own fiscal year and period, re-run: still 20 of 20, now
+naming the section each figure was read from.
+
+```
+1. THE REVISION CHECK ON AN UNMODIFIED DATABASE (it must flag nothing)
+--- the published database, 653 tickers: 653 tickers
+    vintage basis: {'period': 6237, 'inputs': 293}
+    gauges the vintage check withholds: 0
+    peer classes: {'bank': 204, 'non_bank': 408, 'insurance': 41}
+    sector ranks: 196 withheld, 1758 kept
+    false positives: 0
+
+    gauges the vintage check withholds: 20  {'net_margin': 20}
+      2010_KSE net_margin: computed from 'الايرادات' = 23.64 while the statements now carry 24.35 (Income Statement) for the same fiscal year 2025: the figure was revised after 
+      2012_KSE net_margin: computed from 'الايرادات' = 0.19 while the statements now carry 0.20 (Income Statement) for the same fiscal year 2025: the figure was revised after th
+      202_KSE net_margin: computed from 'الايرادات' = 14.97 while the statements now carry 15.42 (Income Statement) for the same fiscal year 2025: the figure was revised after 
+      205_KSE net_margin: computed from 'الايرادات' = 1,485.06 while the statements now carry 1,529.61 (Income Statement) for the same fiscal year 2025: the figure was revised 
+      235_KSE net_margin: computed from 'الايرادات' = 3.07 while the statements now carry 3.16 (Income Statement) for the same fiscal year 2025: the figure was revised after th
+    peer classes: {'bank': 204, 'non_bank': 408, 'insurance': 41}
+    sector ranks: 196 withheld, 1758 kept
+    expected 20, caught 20
+
+```

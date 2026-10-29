@@ -28,7 +28,7 @@ DATASET_CHARS_BY_TAG = {"P9": 16_000}
 # tag, tool, arguments, title (en, ar)
 DATASETS: tuple[tuple[str, str, dict[str, Any], str, str], ...] = (
     ("P1", "get_ticker_overview", {}, "Quote, valuation, returns and technicals", "السعر والتقييم والعوائد والمؤشرات الفنية"),
-    ("P2", "get_fundamentals", {}, "Fundamentals, with sector percentiles where the peer group supports one", "الأساسيات ومقارنتها بالقطاع"),
+    ("P2", "get_fundamentals", {}, "Fundamentals, with sector percentiles where the peer group supports one", "الأساسيات، ومقارنتها بالقطاع حيث تسمح مجموعة المقارنة بذلك"),
     ("P3", "get_dividends", {}, "Dividends and capital changes", "التوزيعات وتغيرات رأس المال"),
     ("P4", "get_council", {}, "Council seats (rule-based votes)", "مقاعد المجلس (تصويت بالقواعد)"),
     ("P5", "get_peers", {}, "Sector peers", "الشركات المماثلة في القطاع"),

@@ -146,6 +146,11 @@ class Fundamentals(BaseModel):
     # this endpoint reads one company, so it reports the population it was ranked against rather
     # than implying it verified it.
     peer_class: str | None = None
+    # "withheld" (no rank is shown for this company) | "narrowed" (the ranks are shown, with a
+    # caveat) | None. `ranking_note` says the same thing in English prose for the Council; a
+    # client with its own languages switches on this instead of parsing that or re-deriving the
+    # rule from `peer_class`.
+    ranking: str | None = None
     ranking_note: str | None = None
 
 
@@ -262,9 +267,13 @@ def get_fundamentals(request: Request, ref: str) -> Fundamentals:
                 # value moves, so an absent one here is the sector stage not having run yet; a
                 # rank withheld by `peer_reason` is a rank inside a peer class whose membership
                 # is known to be wrong, which is a different failure and says so.
+                # The reason goes with the metric whenever this is a metric that WOULD carry
+                # a rank - not only when a rank already exists. Keying it on `ranked` meant that
+                # a gauge whose score the pipeline had cleared, or had not written yet, showed no
+                # rank and no reason, which is exactly the confusion this note exists to prevent.
                 ranked = g["score"] if g["status"] == "ok" else None
                 why = [x for x in (_note_of(inputs, key, g["status"]),
-                                   peer_reason if ranked is not None else None) if x]
+                                   peer_reason if g["status"] == "ok" else None) if x]
                 rows.append(GaugeMetric(
                     **common, value=g["value"], status=g["status"],
                     sector_percentile=None if peer_reason else ranked,
@@ -285,7 +294,8 @@ def get_fundamentals(request: Request, ref: str) -> Fundamentals:
         groups.append(GaugeGroup(group=group, metrics=rows, score=sum(scored) / len(scored) if scored else None))
     return Fundamentals(
         groups=groups, freshness=fresh, sector=sector, stale=any_stale, peer_class=peer_class,
-        ranking_note=peer_reason or (evidence.PEER_SHORTFALL_NOTE if peer_class else None),
+        ranking="withheld" if peer_reason else ("narrowed" if peer_class else None),
+        ranking_note=peer_reason or evidence.peer_shortfall_note(peer_class),
     )
 
 

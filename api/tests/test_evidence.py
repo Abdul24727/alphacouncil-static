@@ -17,17 +17,19 @@ from fastapi.testclient import TestClient
 from app import main
 from app.evidence import (
     DATASET_BUDGET,
+    TOTAL_ASSETS,
     DISPUTED_PEER_NOTE,
     EPS_BASES_SUPPORTED,
     EQUITY_COMMON,
     Items,
-    PEER_SHORTFALL_NOTE,
     bounded_statements,
     calculations,
     dataset_of,
     encoded_length,
     load_items,
     period_aware,
+    named_operands,
+    peer_shortfall_note,
     recorded_peer_class,
     sector_of,
     stale_reason,
@@ -102,7 +104,7 @@ def _write(path, rows):
 
 
 def _flows(tk, quarterly, *, shares_moved=False, average_shares=None,
-           average_rule="annual_column", shares_rule=None):
+           average_rule="annual_column", shares_rule=None, period="TTM"):
     """One income statement reconstructed from four quarters, plus the quarters themselves."""
     main_rows, quarter_rows = [], []
     for index, (label, values) in enumerate(quarterly):
@@ -115,7 +117,7 @@ def _flows(tk, quarterly, *, shares_moved=False, average_shares=None,
             src = json.dumps({"rule": shares_rule, "window": QUARTERS,
                               "mode": "quarterly_reconstructed"})
         main_rows.append((tk, tk.split("_")[0], "TADAWUL", 2026, "Income Statement", index, label,
-                          total, "TTM", "2026-06", src))
+                          total, period, "2026-06", src))
         for end, value in zip(QUARTERS, values, strict=True):
             quarter_rows.append((tk, tk.split("_")[0], "TADAWUL", int(end[:4]), "Q", end,
                                  "Income Statement", index, label, value,
@@ -123,7 +125,7 @@ def _flows(tk, quarterly, *, shares_moved=False, average_shares=None,
     if average_shares is not None:
         main_rows.append((tk, tk.split("_")[0], "TADAWUL", 2026, "Income Statement",
                           len(quarterly), "Average number of shares (Million)", average_shares,
-                          "TTM", "2026-06",
+                          period, "2026-06",
                           json.dumps({"rule": average_rule, "window": QUARTERS})))
     return main_rows, quarter_rows
 
@@ -355,17 +357,74 @@ def test_an_average_share_row_the_source_reports_is_preferred_to_a_closing_posit
 def test_an_average_share_count_this_pipeline_built_is_not_a_supported_denominator(tmp_path):
     """Finding an average-share row establishes coverage, not correctness. Where the figure is a
     mean this pipeline took over four quarterly columns, three things would have to hold for it
-    to be the window's weighted average, and the figure is withheld until they do."""
+    to be the window's weighted average, and the figure is withheld until they do.
+
+    Here the position has moved too, so BOTH candidates are refused and both reasons are given:
+    a reader who is told only about the average line would reasonably ask why the share count
+    sitting beside it was not used."""
     eps = _eps_on(tmp_path, "constructed", shares_moved=True, average_shares=110.0,
                   average_rule="mean_of_quarters")
     assert eps.value is None
     why = " ".join(eps.missing)
-    assert "constructed by taking the mean" in why
+    assert "`mean_of_quarters`" in why
     assert "year-to-date" in why, "the reading that would make the mean wrong is named"
-    assert "equal length" in why and "share issue inside one" in why
+    assert "equal length" in why and "share issue fell inside one" in why
     assert "not retained, so the mean cannot be checked against its inputs" in why
+    assert "moved inside the window" in why, "the position was refused for its own reason"
     for basis in EPS_BASES_SUPPORTED:
         assert basis in why, f"a withheld figure names the supported bases: {basis}"
+
+
+def test_a_supported_position_carries_the_figure_when_the_average_row_cannot(tmp_path):
+    """The refusal of one candidate is not the refusal of both. An unchanged share count is a
+    supported basis in its own right, so a company whose average-share row was CONSTRUCTED still
+    gets its earnings per share - withholding it because a different row was unusable would
+    withhold it from a company whose denominator is perfectly good."""
+    eps = _eps_on(tmp_path, "fallback", shares_moved=False, average_shares=110.0,
+                  average_rule="mean_of_quarters")
+    assert eps.value == pytest.approx(240.0 / 100.0, abs=1e-4)
+    assert "unchanged through every quarter of the window" in eps.denominator
+    said = " ".join(eps.checks)
+    assert "not used as the denominator" in said, "the row that was skipped is named"
+    assert "`mean_of_quarters`" in said
+
+
+def test_a_summed_share_count_is_refused_by_the_allowlist(tmp_path):
+    """`sum_quarters` on a count row is the 4x share count the 2026-10-28 repair fixed. A check
+    that named `mean_of_quarters` and accepted everything else would have let it back in."""
+    eps = _eps_on(tmp_path, "summed_position", shares_rule="sum_quarters")
+    assert eps.value is None
+    why = " ".join(eps.missing)
+    assert "four times the real count" in why
+    assert "2026-10-28" in why
+
+
+def test_a_summed_average_share_row_is_refused_by_the_allowlist(tmp_path):
+    eps = _eps_on(tmp_path, "summed_average", shares_moved=False, average_shares=110.0,
+                  average_rule="sum_quarters")
+    assert eps.value == pytest.approx(240.0 / 100.0, abs=1e-4), "the position is still supported"
+    assert "four times the average it is labelled as" in " ".join(eps.checks)
+
+
+def test_an_aggregation_rule_nobody_has_seen_is_refused_by_name(tmp_path):
+    """The point of an allowlist: a rule this module has never met is refused with its name,
+    rather than accepted because it is not on a list of known-bad ones."""
+    eps = _eps_on(tmp_path, "unknown_rule", shares_moved=True, average_shares=110.0,
+                  average_rule="some_future_rule")
+    assert eps.value is None
+    why = " ".join(eps.missing)
+    assert "`some_future_rule`" in why
+    assert "not one of the supported bases" in why
+
+
+def test_movement_in_other_quarters_does_not_disqualify_a_one_quarter_window(tmp_path):
+    """A count that moved across the year says nothing about a single quarter's own count, and
+    the basis text must not claim there is no quarterly series when there is one that moved."""
+    eps = _eps_on(tmp_path, "quarterly", shares_moved=True, period="Q")
+    assert eps.value is not None
+    assert "the count moved across the quarters" in eps.denominator
+    assert "window of one quarter is not affected by" in eps.denominator
+    assert "no quarterly series" not in eps.denominator
 
 
 def test_a_mean_of_closing_positions_is_never_a_denominator(tmp_path):
@@ -830,9 +889,30 @@ def test_a_rank_in_another_peer_class_is_kept_with_the_shortfall_stated(repaired
     buys, so they are kept and the shortfall is stated once."""
     f = get(repaired_client, "/v1/tickers/2222/fundamentals")
     assert f["peer_class"] == "non_bank"
+    assert f["ranking"] == "narrowed"
     net_margin = next(m for g in f["groups"] for m in g["metrics"] if m["key"] == "net_margin")
     assert net_margin["sector_percentile"] == 61.0
-    assert f["ranking_note"] == PEER_SHORTFALL_NOTE
+    assert f["ranking_note"] == peer_shortfall_note("non_bank")
+
+
+def test_the_shortfall_quotes_the_figure_measured_for_its_own_class():
+    """4.7 percentile points is `non_bank`'s number. The 140 tickers the pipeline misfiled as
+    banks would be bucketed to `non_bank` when the misfiling is corrected and never to
+    `insurance`, whose scored rows do not move at all - so serving one class's measurement to
+    every class turns a measured figure into a wrong one."""
+    non_bank = peer_shortfall_note("non_bank")
+    assert "4.7" in non_bank and "`non_bank`" in non_bank
+
+    insurance = peer_shortfall_note("insurance")
+    assert "4.7" not in insurance, "insurance ranks do not move; its caveat must not say they do"
+    assert "unchanged when the misfiling is corrected" in insurance
+
+    unmeasured = peer_shortfall_note("reit")
+    assert "4.7" not in unmeasured
+    assert "unknown rather than small" in unmeasured, "a class nobody measured says so"
+
+    assert peer_shortfall_note("bank") is None, "the disputed class has its own, stronger note"
+    assert peer_shortfall_note(None) is None
 
 
 def test_the_council_is_told_in_p9_which_rankings_it_must_not_use(conn):
@@ -858,3 +938,125 @@ def test_the_dataset_still_fits_with_the_ranking_limitation(conn):
         ds = dataset(conn, tk, peer_class="bank")
         assert encoded_length(ds) <= DATASET_BUDGET, tk
         assert any("SECTOR RANKINGS" in x for x in ds.limitations), tk
+
+
+# --- what the review of 2026-10-29 found ------------------------------------------------------
+
+
+def test_a_gauge_dated_only_by_year_still_gets_the_year_check(conn):
+    """`stamped_year` accepts `year` as well as `fiscal_year`, and the year-drift check has to
+    read the same stamp. Reading only `fiscal_year` there meant every live `net_margin` row - the
+    only rows the operand readback reaches today - was reported as checked against its inputs
+    while getting no year check at all, so a gauge a year behind the statements read as fresh."""
+    items = load_items(conn, "2222_TADAWUL", years=2)
+    revenue = items.find(("Sales",), "Income Statement")
+    dated_by_year = {"year": items.latest - 1, "revenue": revenue.value,
+                     "revenue_label": revenue.label}
+    assert vintage_basis(dated_by_year) == "inputs"
+    why = stale_reason(dated_by_year, items)
+    assert why and "has not run since the statements were refreshed" in why
+    assert str(items.latest) in why
+
+
+def test_a_label_that_repeats_across_sections_is_still_checked(conn):
+    """This schema's own note says labels repeat across sections. Skipping a repeated label, which
+    an earlier version did, meant the check silently did nothing for exactly those labels."""
+    items = load_items(conn, "2222_TADAWUL", years=2)
+    equity = items.find(EQUITY_COMMON, "Balance Sheet")
+    elsewhere = equity.model_copy(update={"section": "Cash Flow Statement",
+                                          "value": equity.value + 7, "item_index": 99})
+    both = Items(rows=[*items.rows, elsewhere], quarterly=items.quarterly)
+
+    # One of the two rows still holds the figure the gauge divided: the gauge read that one.
+    kept = json.loads(vintage(equity=equity.value, equity_label=equity.label))
+    assert stale_reason(kept, both) is None
+    other = json.loads(vintage(equity=elsewhere.value, equity_label=equity.label))
+    assert stale_reason(other, both) is None
+
+    # Neither row holds it, so the figure was revised whichever section the gauge read.
+    gone = json.loads(vintage(equity=equity.value + 1000, equity_label=equity.label))
+    why = stale_reason(gone, both)
+    assert why, "a revision no candidate row matches is still a revision"
+    assert "Balance Sheet" in why and "Cash Flow Statement" in why, "both lines are named"
+
+
+def test_every_shape_of_named_operand_is_read_back(conn):
+    """The published-database sweep could only exercise `net_margin`, because it is the one gauge
+    carrying a year stamp there. The other five name their lines through the same two shapes, and
+    all of them go live the moment the prepared gauge patch stamps every row - so each shape is
+    exercised here rather than waiting for the patch to exercise it in production."""
+    items = load_items(conn, "2222_TADAWUL", years=2)
+    sales = items.find(("Sales",), "Income Statement")
+    equity = items.find(EQUITY_COMMON, "Balance Sheet")
+    assets = items.find(TOTAL_ASSETS, "Balance Sheet")
+    shapes = {
+        "revenue (net_margin, ps, gross_margin)": {"revenue": sales.value,
+                                                   "revenue_label": sales.label},
+        "equity (debt_equity, roic)": {"equity": equity.value, "equity_label": equity.label},
+        "taxes (roic, through OPERAND_ALIASES)": {"taxes": assets.value, "tax_label": assets.label},
+        "finance_expense (interest_coverage)": {"finance_expense": sales.value,
+                                                "finance_expense_label": sales.label},
+        "debt_parts (debt_equity)": {"debt_parts": {equity.label: equity.value,
+                                                    assets.label: assets.value}},
+    }
+    for name, operands in shapes.items():
+        fresh = json.loads(vintage(**operands))
+        assert vintage_basis(fresh) == "inputs", f"{name}: the shape must be readable"
+        assert stale_reason(fresh, items) is None, f"{name}: a false positive here is the worst case"
+
+    # And each shape catches a revision, not just the one the sweep happened to exercise.
+    for name, operands in shapes.items():
+        moved = {k: ({label: v * 1.01 for label, v in val.items()} if isinstance(val, dict)
+                     else (val * 1.01 if isinstance(val, (int, float)) else val))
+                 for k, val in operands.items()}
+        why = stale_reason(json.loads(vintage(**moved)), items)
+        assert why and "revised after the gauge stage last ran" in why, f"{name}: missed"
+
+
+def test_the_tax_operand_alias_is_exercised():
+    """`tax_label` names the operand `taxes`, not `tax`. Its absence cost roic's tax line 216 of
+    653 tickers, silently, because a check that never runs reports nothing - so the alias needs a
+    test of its own or deleting it leaves the suite green."""
+    assert named_operands({"taxes": 12.5, "tax_label": "Zakat and income tax"}) == [
+        ("Zakat and income tax", 12.5)]
+    assert named_operands({"revenue": 3.0, "revenue_label": "Sales"}) == [("Sales", 3.0)]
+    # A label naming an operand that is not there yields nothing rather than an exception.
+    assert named_operands({"tax_label": "Zakat and income tax"}) == []
+
+
+def test_sector_of_follows_the_pipelines_majority_vote(conn):
+    """`sector_of` used to take the sector of the first gauge that carried one; it now takes the
+    pipeline's own majority, which is what decides the bucket a percentile was ranked in. That
+    changes the answer wherever a ticker's gauges disagree, so the vote is pinned here and not
+    only in `recorded_peer_class`."""
+    items = load_items(conn, "1120_TADAWUL", years=2)
+    mostly_bank = {"a": {"sector": "bank"}, "b": {"sector": "bank"}, "c": {"sector": "non_bank"}}
+    assert sector_of(items, mostly_bank) == "bank", "corroborated by the balance sheet"
+    mostly_not = {"a": {"sector": "non_bank"}, "b": {"sector": "non_bank"}, "c": {"sector": "bank"}}
+    assert sector_of(items, mostly_not) == "non_bank", "the majority decides, not the first row"
+
+
+def test_a_tied_vote_resolves_the_same_way_every_time(conn):
+    """The pipeline breaks its own tie by whatever order an unordered SELECT returned, so there is
+    no order here to reproduce faithfully. A tie is broken by name, lowest first, which puts
+    `bank` first - the class whose ranks are withheld - so a tie resolves toward withholding a
+    rank we cannot vouch for rather than toward showing one."""
+    assert recorded_peer_class({"a": {"sector": "non_bank"}, "b": {"sector": "bank"}}) == "bank"
+    assert recorded_peer_class({"b": {"sector": "bank"}, "a": {"sector": "non_bank"}}) == "bank"
+    tie = {"x": {"sector": "non_bank"}, "y": {"sector": "insurance"}}
+    assert recorded_peer_class(tie) == "insurance"
+    assert recorded_peer_class(dict(reversed(list(tie.items())))) == "insurance"
+
+
+def test_a_withheld_rank_says_why_even_before_a_score_exists(repaired_client, repaired):
+    """Keying the reason on an existing score meant a gauge whose score the pipeline had cleared,
+    or had not written yet, showed no rank and no reason - indistinguishable from the sector stage
+    not having run, which is the confusion the note exists to prevent."""
+    _with_gauge(repaired, "1120_TADAWUL", "debt_equity", 1.72, None,
+                vintage(sector="bank", equity=130.0, equity_label="Total Shareholders' Equity",
+                        debt_parts={"Term Sukuk": 70.0, "Due to Banks": 100.0}))
+    f = get(repaired_client, "/v1/tickers/1120/fundamentals")
+    assert f["ranking"] == "withheld"
+    de = next(m for g in f["groups"] for m in g["metrics"] if m["key"] == "debt_equity")
+    assert de["status"] == "ok" and de["sector_percentile"] is None
+    assert "204 tickers of which 53 are banks" in de["note"]

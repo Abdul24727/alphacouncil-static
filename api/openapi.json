@@ -3834,6 +3834,17 @@
             ],
             "title": "Peer Class"
           },
+          "ranking": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ranking"
+          },
           "ranking_note": {
             "anyOf": [
               {

@@ -1523,6 +1523,8 @@ export interface components {
             stale: boolean;
             /** Peer Class */
             peer_class?: string | null;
+            /** Ranking */
+            ranking?: string | null;
             /** Ranking Note */
             ranking_note?: string | null;
         };

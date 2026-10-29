@@ -489,7 +489,9 @@
         "published": "Published (Argaam, TTM)",
         "missing_inputs": "Missing inputs",
         "na_sector": "Not meaningful for this sector",
-        "undefined_nonpositive": "Undefined (non-positive base)"
+        "undefined_nonpositive": "Undefined (non-positive base)",
+        "stale": "Withheld: computed from statements that have since been refreshed",
+        "not_meaningful": "Not a measure this company is read on"
       },
       "keys": {
         "pe": "P/E",
@@ -508,7 +510,10 @@
         "div_yield": "Dividend yield",
         "payout": "Payout ratio"
       },
-      "noScore": "No sector percentile"
+      "noScore": "No sector percentile",
+      "rankWithheld": "No sector percentile: the peer group is disputed",
+      "rankingWithheld": "Sector percentiles are withheld for this company: the pipeline ranks it inside a peer class whose membership is known to be wrong. The values themselves are unaffected.",
+      "rankingNarrowed": "Sector percentiles are ranks inside the pipeline's own peer class, not inside the sector the exchange publishes."
     },
     "statements": {
       "unit": "Millions of {currency}",

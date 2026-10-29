@@ -83,25 +83,50 @@ export function FundamentalsPanel({ className }: { className?: string }) {
                   )}
                 </header>
                 <ul className="flex flex-col gap-1.5">
-                  {g.metrics.map((m) => (
-                    <li key={m.key} title={t(`fundamentals.status.${m.status}`)}>
-                      <div className="flex items-baseline justify-between gap-2">
-                        <span className="truncate text-text-soft">{t(`fundamentals.keys.${m.key}`)}</span>
-                        <Num value={metricValue(m)} />
-                      </div>
-                      <div className="mt-1 flex items-center gap-2">
-                        <PercentileBar value={m.sector_percentile} />
-                        <span className="num w-8 shrink-0 text-end text-[10.5px] text-muted">
-                          {m.sector_percentile != null ? t("fundamentals.pctShort", { n: fmtNumber(m.sector_percentile, 0) ?? "" }) : ""}
-                        </span>
-                      </div>
-                    </li>
-                  ))}
+                  {g.metrics.map((m) => {
+                    // A rank the API withheld is not the same absence as a rank that was never
+                    // computed, and an empty cell cannot say which. The dash is the placeholder
+                    // CLAUDE.md asks for ("Missing data = a labelled placeholder"), and the
+                    // reason rides in the tooltip beside the status, with the whole sentence
+                    // under the panel.
+                    const withheld = f.ranking === "withheld" && m.status === "ok";
+                    const status = t.has(`fundamentals.status.${m.status}`)
+                      ? t(`fundamentals.status.${m.status}`)
+                      : m.status;
+                    return (
+                      <li
+                        key={m.key}
+                        title={withheld ? `${status} \u2014 ${t("fundamentals.rankWithheld")}` : status}
+                      >
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="truncate text-text-soft">{t(`fundamentals.keys.${m.key}`)}</span>
+                          <Num value={metricValue(m)} />
+                        </div>
+                        <div className="mt-1 flex items-center gap-2">
+                          <PercentileBar value={m.sector_percentile} />
+                          <span
+                            className="num w-8 shrink-0 text-end text-[10.5px] text-muted"
+                            title={m.sector_percentile == null ? t("fundamentals.noScore") : t("fundamentals.percentile")}
+                            data-rank={withheld ? "withheld" : undefined}
+                          >
+                            {m.sector_percentile != null
+                              ? t("fundamentals.pctShort", { n: fmtNumber(m.sector_percentile, 0) ?? "" })
+                              : "\u2014"}
+                          </span>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               </section>
             ))}
           </div>
         )}
+        {f?.ranking ? (
+          <p className="mt-3 border-t border-line pt-2 text-[12px] text-muted" data-ranking-note>
+            {f.ranking === "withheld" ? t("fundamentals.rankingWithheld") : t("fundamentals.rankingNarrowed")}
+          </p>
+        ) : null}
       </QueryState>
     </Panel>
   );

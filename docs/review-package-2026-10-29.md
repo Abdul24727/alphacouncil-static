@@ -387,3 +387,51 @@ is no second implementation to keep, and that job is dead weight to repair or re
 collection beyond Tadawul (230 tickers, all Saudi), without which payout and yield cannot be
 computed for any GCC company whatever the repair does; and having the four unreachable gauges
 record their line labels.
+
+---
+
+## 9. What a review of this package found, and what was done about it
+
+This package was reviewed at extra-high effort after it was written. **Fifteen findings, all
+fixed**; the suite went 544 → **557**. Four of them changed what somebody is shown and are worth
+naming here, because the package above would otherwise describe code that no longer exists.
+
+1. **Derived EPS was over-withheld.** The `mean_of_quarters` branch consumed `avg is not None`,
+   so the share-count fallback became unreachable and a company carrying a constructed
+   average-share row *and* a perfectly good unchanged position got no EPS at all — though §3 of
+   this package calls an unchanged position a supported basis. The two candidates are now tried
+   in order, a refusal of one is not a refusal of both, and a row that was skipped is named in
+   `checks`.
+2. **Both rule checks were denylists.** They refused the literal `mean_of_quarters` and accepted
+   everything else — including `sum_quarters`, **the 4× share count the 2026-10-28 repair was
+   written to fix**. Now an allowlist per kind of row, with the refusal reason keyed by (kind,
+   rule) because a mean of quarterly averages and a mean of quarterly closing positions are wrong
+   for different reasons.
+3. **The 4.7-point figure was served to the wrong populations.** It is `non_bank`'s number;
+   `insurance` was measured at 85 of 85 scored rows unmoved. Each class now quotes its own
+   measurement, and a class nobody measured says the effect on it is unknown rather than small.
+4. **The two freshness checks disagreed about which stamp counts** — `stale_reason` read
+   `fiscal_year` only while `stamped_year` accepted `year`, so the 293 live `net_margin` rows
+   (the only rows the readback reaches today) were reported `vintage: "inputs"` with no year check
+   at all. Both now read the same stamp.
+
+And the one that was about the product rather than the module: **the Financials panel dropped the
+reason**. The API withheld a bank's percentiles *with* a reason and the panel rendered an empty
+string, with the row tooltip still reading `Computed`. `ranking_note` is English prose written for
+the Council, so the fix was not to print it: the API gained a machine-readable `ranking` field
+(`withheld` | `narrowed` | `None`) and the panel renders its own localized sentence. Screenshots
+at 1440 and 390, English and Arabic: `docs/screenshots/ranking-withheld/`.
+
+The rest: the peer note was attached only where a score already existed; the operand readback
+skipped every repeated label (so it silently did nothing for exactly the labels this schema says
+repeat); `sector_of`'s tie-break changed inside a refactor and was untested; the tie-break itself
+was non-deterministic and now resolves toward withholding; the one operand alias had no test; the
+false-positive sweep reached one gauge of six (closed by a test over all five named-operand
+shapes, and by re-running the universe sweep with every row stamped — **0 flagged of 1,891
+reachable**); P2's Arabic title still promised a percentile; a basis text denied a quarterly
+series that exists; and `EPS_BASES_UNSUPPORTED` was dead.
+
+**Two were conventions, both mine.** CLAUDE.md says to run the app and screenshot at 1440 and 390
+before calling a step done — a screenshot of this very panel is what would have caught the UI
+finding — and `~/.claude/CLAUDE.md` says to write each step's outcome as it finishes rather than
+batching it. Both were done this round.

@@ -139,7 +139,41 @@ BANK_DUE_FROM_BANKS = ("Due from Banks", "Due from Banks & Other FI's",
 # a general treatment of corporate actions: the rule is that the basis is named or the figure is
 # not given.
 EPS_BASES_SUPPORTED = ("annual_column", "unchanged position", "single_quarter")
-EPS_BASES_UNSUPPORTED = ("mean_of_quarters", "moved end-of-period position")
+
+# ALLOWLISTS, one per kind of row, because a denylist only refuses the bad rule somebody has
+# already thought of. `sum_quarters` on a count row IS the 4x share count the 2026-10-28 parser
+# repair was written to fix: a check that named `mean_of_quarters` and accepted everything else
+# would have let that straight back in, with the basis text claiming the source reported it.
+#
+# `None` is the rule a database parsed before the repair carries, because it has no `source_json`
+# at all; there the row is a plain annual column, which is the ordinary supported case - 382 of
+# the 653 live tickers reach their derived EPS that way.
+AVERAGE_RULES_SUPPORTED: tuple[str | None, ...] = (None, "annual_column", "single_quarter")
+POSITION_RULES_SUPPORTED: tuple[str | None, ...] = (
+    None, "annual_column", "year_end_snapshot", "quarter_end_snapshot", "end_quarter_position",
+    "single_quarter")
+# Why a rule is refused, keyed by (kind of row, rule) - because the same rule is wrong for
+# different reasons depending on what it was applied to. A mean of quarterly AVERAGES and a mean
+# of quarterly CLOSING POSITIONS are both refused, and a map keyed by the rule alone had to
+# describe one of them wrongly. A rule in neither the allowlist above nor this map is still
+# refused, by name: the rule is that the basis is named.
+EPS_RULES_UNSUPPORTED: dict[tuple[str, str], str] = {
+    ("average-share line", "mean_of_quarters"):
+        "this pipeline took the mean of the quarterly columns rather than reading an average the"
+        " source reports, and that mean is the window's weighted average only if each column is"
+        " that quarter's own average rather than a year-to-date one, the quarters are of equal"
+        " length, and no share issue fell inside one. None of the three is established, and the"
+        " quarterly columns are not retained, so the mean cannot be checked against its inputs",
+    ("average-share line", "sum_quarters"):
+        "the quarterly columns were added together, so the figure is about four times the average"
+        " it is labelled as",
+    ("share count", "mean_of_quarters"):
+        "a mean of closing counts is not a weighted average at any time, because it says nothing"
+        " about when inside each quarter the shares were issued",
+    ("share count", "sum_quarters"):
+        "four quarterly share counts were added together, which is four times the real count -"
+        " the defect the 2026-10-28 parser repair was written to fix",
+}
 
 # What the fundamentals strip shows, and what each number actually is. The pipeline computes some
 # of these from statements and publishes others from the data source; a reader cannot recover a
@@ -581,29 +615,41 @@ def revised_operand(inputs: dict[str, Any], items: Items) -> str | None:
     vintage check passes and a gauge computed from the old number is shown beside the new one.
     Reading the operand back against the line it came from is the only check that sees it.
 
-    A label that resolves to no row, or to rows that disagree, is not a revision: it is a figure
-    this check cannot read, and it is skipped rather than guessed at.
+    A label that resolves to no row is a figure this check cannot read, and is skipped rather
+    than guessed at. A label that resolves to SEVERAL rows is the ordinary case rather than an
+    obstacle: this schema's own note says labels repeat across sections ("Net Income" appears in
+    both the income statement and the cash-flow statement) and the gauge stage recorded the value
+    without recording which section it read. So every row carrying the label is a candidate, and
+    the operand counts as unrevised if ANY of them still holds the figure the gauge divided - the
+    gauge read one of these lines, and one of them still agrees. Skipping a repeated label
+    outright, which an earlier version did, meant the check silently did nothing for exactly the
+    labels that repeat.
 
     The comparison is exact to float round-tripping, not to a materiality threshold. Both sides
     read the same column - the gauge stage records the line item it divided and does not round it
     - so any difference at all is a revision, and 0 of the 6,237 gauge rows in the published
-    database are flagged. A threshold would have to be in the reporting currency's millions, and
-    0.01 of those swallowed a 3% revision on a company whose revenue is 0.19 when this was
-    measured on 20 deliberately revised companies: 19 of 20 caught, and the one missed was the
-    smallest. Materiality is the reader's judgement, which is why both figures are in the text."""
+    database are flagged (0 of 1,891 once every row carries a year stamp, which is the state the
+    prepared gauge patch leaves). A threshold would have to be in the reporting currency's
+    millions, and 0.01 of those swallowed a 3% revision on a company whose revenue is 0.19 when
+    this was measured on 20 deliberately revised companies: 19 of 20 caught, and the one missed
+    was the smallest. Materiality is the reader's judgement, which is why both figures are in the
+    text."""
     year = stamped_year(inputs)
     if year is None:
         return None
     for label, recorded in named_operands(inputs):
         cells = [r for r in items.rows
                  if r.fiscal_year == year and r.value is not None and _norm(r.label) == _norm(label)]
-        if len({c.value for c in cells}) != 1:
+        if not cells:
+            continue
+        if any(abs((c.value or 0.0) - recorded) <= max(1e-9, abs(c.value or 0.0) * 1e-9)
+               for c in cells):
             continue
         now = cells[0].value or 0.0
-        if abs(now - recorded) > max(1e-9, abs(now) * 1e-9):
-            return (f"computed from '{label}' = {recorded:,.2f} while the statements now carry"
-                    f" {now:,.2f} for the same fiscal year {year}: the figure was revised after"
-                    " the gauge stage last ran, which a check on the period alone cannot see")
+        where = " and ".join(sorted({c.section for c in cells}))
+        return (f"computed from '{label}' = {recorded:,.2f} while the statements now carry"
+                f" {now:,.2f} ({where}) for the same fiscal year {year}: the figure was revised"
+                " after the gauge stage last ran, which a check on the period alone cannot see")
     return None
 
 
@@ -617,11 +663,17 @@ def stale_reason(inputs: dict[str, Any], items: Items) -> str | None:
     becomes a TTM to June - and the stamp catches that too. And a figure can be CORRECTED inside
     the same window, which keeps both stamps: only reading the operand back against its own line
     sees that one. A gauge from a database with no stamp cannot be dated, and is left alone
-    rather than called stale on a guess."""
+    rather than called stale on a guess.
+
+    All three read the year through `stamped_year`, which accepts `year` as well as `fiscal_year`.
+    They have to agree on which stamp counts: reading only `fiscal_year` here while the operand
+    check read either meant every live `net_margin` row - 293 of them, and the only rows the
+    readback reaches today - was reported as checked against its inputs while getting no
+    year-drift check at all, so a gauge a year behind the statements was shown as fresh."""
     if not isinstance(inputs, dict) or items.latest is None:
         return None
-    year = inputs.get("fiscal_year")
-    if isinstance(year, int):
+    year = stamped_year(inputs)
+    if year is not None:
         if year < items.latest:
             return (
                 f"computed from fiscal year {year} while the statements now carry {items.latest}:"
@@ -661,26 +713,60 @@ DISPUTED_PEER_NOTE = (
     " ranks in that class by up to 18.2 percentile points, so the rank is withheld until the"
     " pipeline's bank detection is fixed. The value itself is unaffected"
 )
-PEER_SHORTFALL_NOTE = (
-    "a sector ranking here is a rank inside the pipeline's own peer class, which on 2026-10-29"
-    " was short the 140 tickers it had misfiled as banks; adding them back moves these ranks by"
-    " at most 4.7 percentile points"
+# WHAT THE REPLAY MEASURED, PER CLASS, so a caveat quotes the figure for the class it is
+# attached to. "At most 4.7 percentile points" is `non_bank`'s number and nobody else's: the 140
+# tickers the pipeline misfiled as banks would be bucketed to `non_bank` when the misfiling is
+# corrected and never to `insurance`, whose 85 scored rows do not move at all. Serving one
+# class's measurement to every class is how a measured number becomes a wrong one.
+PEER_MOVE_MEASURED: dict[str, str] = {
+    "non_bank": "was short the 140 tickers the pipeline had misfiled as banks; adding them back"
+                " moves these ranks by at most 4.7 percentile points, and 1,343 of its 1,673"
+                " scored rows do not move at all",
+    "insurance": "held none of the 140 tickers the pipeline misfiled as banks, and all 85 of its"
+                 " scored rows are unchanged when the misfiling is corrected",
+}
+PEER_MOVE_UNMEASURED = (
+    "held no scored rows when this was measured, so the effect of the pipeline's bank misfiling"
+    " on this class is unknown rather than small"
 )
 
 
+def peer_shortfall_note(peer_class: str | None) -> str | None:
+    """The caveat for a rank that is KEPT in this peer class, or None.
+
+    None for the disputed class, which has `peer_group_reason` instead, and None where no class
+    was recorded at all - a database whose gauges carry no sector says nothing about peer groups,
+    so neither does this."""
+    if not peer_class or peer_class == DISPUTED_PEER_CLASS:
+        return None
+    return (f"a sector ranking here is a rank inside the pipeline's own `{peer_class}` peer class,"
+            " which on 2026-10-29 "
+            + PEER_MOVE_MEASURED.get(peer_class, PEER_MOVE_UNMEASURED))
+
+
 def recorded_peer_class(gauge_inputs: dict[str, dict]) -> str | None:
-    """The peer class the pipeline put this ticker in, by its own vote.
+    """The peer class the pipeline's own vote puts this ticker in.
 
     compute_sector_averages.ticker_sector_class takes the commonest `sector` across the ticker's
-    gauge rows, and compute_gauge_scores imports that same function - so this is the bucket the
-    percentile was actually ranked in, which is the only thing that decides whether the rank is
-    a statement about banks."""
+    gauge rows and compute_gauge_scores imports that same function, so where one class has a
+    clear majority this is the bucket the percentile was ranked in - the only thing that decides
+    whether the rank is a statement about banks.
+
+    A TIE is broken by name, lowest first, which puts `bank` ahead of every other class the
+    pipeline emits. Not for elegance: the pipeline breaks its own tie by whatever order an
+    unordered SELECT happened to return, so there is no order here to reproduce faithfully, and
+    pretending otherwise would be the overclaim. `bank` is the class whose ranks are withheld, so
+    resolving a tie toward it resolves toward withholding a rank we cannot vouch for rather than
+    toward showing one."""
     votes: dict[str, int] = {}
     for i in gauge_inputs.values():
         if isinstance(i, dict) and i.get("sector"):
             key = str(i["sector"])
             votes[key] = votes.get(key, 0) + 1
-    return max(votes.items(), key=lambda kv: kv[1])[0] if votes else None
+    if not votes:
+        return None
+    most = max(votes.values())
+    return min(k for k, n in votes.items() if n == most)
 
 
 def peer_group_reason(peer_class: str | None) -> str | None:
@@ -789,6 +875,61 @@ def _earnings_quality(items: Items) -> list[Calculation]:
     )]
 
 
+def _column_of(rule: str | None) -> str:
+    """How to name the column an average-share figure was read from, inside a sentence."""
+    return {None: "annual column", "annual_column": "annual column",
+            "single_quarter": "single-quarter column"}.get(rule, f"`{rule}` column")
+
+
+def _refused(cell: Cell, kind: str) -> str:
+    """Why a row carrying this aggregation rule cannot be a per-share denominator."""
+    why = EPS_RULES_UNSUPPORTED.get((kind, cell.rule or ""))
+    columns = ", ".join(cell.window) if cell.window else ""
+    return (f"the {kind} '{cell.label}' reached this window by `{cell.rule}`"
+            + (f" over {columns}" if columns else "")
+            + (f": {why}" if why else ", which is not one of the supported bases")
+            + f". Supported: {', '.join(EPS_BASES_SUPPORTED)}")
+
+
+def _average_basis(avg: Cell) -> tuple[Cell | None, str | None, str | None]:
+    """The average-share row as a denominator, or the reason it cannot be one."""
+    if avg.rule not in AVERAGE_RULES_SUPPORTED:
+        return None, None, _refused(avg, "average-share line")
+    return avg, (f"'{avg.label}', the average share count the source itself reports for this"
+                 f" window, read from its {_column_of(avg.rule)} — the denominator a per-share"
+                 " flow requires, with nothing constructed"), None
+
+
+def _position_basis(items: Items, shares: Cell,
+                    period: str | None) -> tuple[Cell | None, str | None, str | None]:
+    """The share-count position as a denominator, or the reason it cannot be one.
+
+    A position equals the window's average exactly when the count did not move, which is why the
+    quarterly series is consulted rather than assumed. Where it moved and the window is longer
+    than a quarter there is no supported denominator; where the window IS one quarter, movement
+    across the other quarters says nothing about that quarter's own count."""
+    if shares.rule not in POSITION_RULES_SUPPORTED:
+        return None, None, _refused(shares, "share count")
+    series = items.quarter_series(SHARES, shares.section)
+    counts = [q.value for q in series if q.value is not None]
+    moved = len(set(counts)) > 1
+    seen = ", ".join(f"{q.period_end}={q.value:,.0f}" for q in series if q.value is not None)
+    if moved and period in ("TTM", "FY"):
+        return None, None, (
+            f"the share count '{shares.label}' is an end-of-period position and it moved inside"
+            f" the window ({seen}): a flow over a closing count is not a supported earnings per"
+            " share, and no average-share line is available instead")
+    if counts and not moved:
+        note = ", unchanged through every quarter of the window, so it equals the window's mean"
+    elif moved:
+        note = (f", and the count moved across the quarters ({seen}), which a window of one"
+                " quarter is not affected by")
+    else:
+        note = ", and the window carries no quarterly series to test it against"
+    at = shares.period_end or "the period end"
+    return shares, f"'{shares.label}', a position at {at}{note}", None
+
+
 def _per_share(items: Items) -> list[Calculation]:
     """Earnings per share derived from the statements, and the unit check that makes the reported
     per-share figure usable.
@@ -797,10 +938,11 @@ def _per_share(items: Items) -> list[Calculation]:
     the count at its end; an average-share row is a mean over the window. The two differ exactly
     when the count moved, and the difference is invisible in the result.
 
-    So the rule is that the basis is NAMED or the figure is not given. The three supported bases
-    and the two unsupported ones are listed at EPS_BASES_SUPPORTED, with what was measured for
-    each; every figure here carries the one it was struck on, and every withheld figure says
-    which unsupported route it would have had to take.
+    So the rule is that the basis is NAMED or the figure is not given, and the aggregation rules
+    that count as named are an ALLOWLIST per kind of row (AVERAGE_RULES_SUPPORTED,
+    POSITION_RULES_SUPPORTED) rather than a list of bad rules to refuse. Every figure here carries
+    the basis it was struck on; every withheld figure names the rule it would have had to accept;
+    and a row refused here does not withhold the figure when the other candidate is supported.
     """
     out: list[Calculation] = []
     ni = items.find(NET_INCOME, "Income Statement")
@@ -809,62 +951,28 @@ def _per_share(items: Items) -> list[Calculation]:
     shares = items.find(SHARES, "Income Statement") or items.find(SHARES, "Balance Sheet")
     p = items.period("Income Statement")
 
+    # TWO CANDIDATES, IN ORDER, AND A REFUSAL OF THE FIRST IS NOT A REFUSAL OF BOTH. An average
+    # the source reports is the better denominator, so it is tried first - but where the average
+    # row cannot be used, a share count that did not move through the window is a supported basis
+    # in its own right (EPS_BASES_SUPPORTED), and withholding the figure because a DIFFERENT row
+    # was unusable would withhold it from companies whose denominator is perfectly good.
     denominator: Cell | None = None
     basis: str | None = None
+    refused: list[str] = []
+    if avg is not None:
+        denominator, basis, why = _average_basis(avg)
+        if why:
+            refused.append(why)
+    if denominator is None and shares is not None:
+        denominator, basis, why = _position_basis(items, shares, p.period)
+        if why:
+            refused.append(why)
+
     missing: list[str] = []
-    if avg is not None and avg.rule == "mean_of_quarters":
-        # The one route that CONSTRUCTS the denominator instead of reading it, and three things
-        # would have to hold for the construction to be the weighted average this window needs:
-        # each quarterly column is that quarter's own average rather than a year-to-date one; the
-        # four quarters are of equal length; and no corporate action fell inside one. None is
-        # established, and no amount of looking at the current data can establish the first,
-        # because every share count in the universe is flat - the data where the two readings
-        # differ does not exist. The quarterly columns are not retained either (one window per
-        # section keeps this row and discards the quarters it was built from), so the mean cannot
-        # be checked against its own inputs. A plausible wrong denominator is the worst kind.
-        quarters = ", ".join(avg.window) if avg.window else "four quarterly columns"
-        missing = [
-            f"the only average-share line is '{avg.label}', which this pipeline constructed by"
-            f" taking the mean of {quarters}. That mean is the window's weighted average only if"
-            " each quarterly column is that quarter's own average rather than a year-to-date"
-            " one, and the quarters are of equal length with no share issue inside one. Neither"
-            " is established, and the quarterly columns are not retained, so the mean cannot be"
-            f" checked against its inputs. Supported bases are {', '.join(EPS_BASES_SUPPORTED)}"
-        ]
-    elif avg is not None:
-        denominator = avg
-        basis = (f"'{avg.label}', the average share count the source itself reports for this"
-                 f" window, read from its {avg.rule or 'annual'} column — the denominator a"
-                 " per-share flow requires, with nothing constructed")
-    elif shares is not None:
-        series = items.quarter_series(SHARES, shares.section)
-        counts = [q.value for q in series if q.value is not None]
-        if shares.rule == "mean_of_quarters":
-            # A mean of CLOSING positions is not a weighted average at any time: it ignores when
-            # inside each quarter the shares were issued. The parser routes positions to the end
-            # quarter, so this should be unreachable - the branch is here so that if that routing
-            # ever changes, the consequence is a withheld figure and not a quiet wrong one.
-            missing = [
-                f"the only share count is '{shares.label}', an end-of-period position, and this"
-                " window's figure is a mean of four such positions: a mean of closing counts is"
-                " not a weighted average, because it says nothing about when inside each quarter"
-                " the shares were issued"
-            ]
-        elif len(set(counts)) > 1 and p.period in ("TTM", "FY"):
-            moved = ", ".join(f"{q.period_end}={q.value:,.0f}" for q in series if q.value is not None)
-            missing = [
-                f"the only share count is '{shares.label}', an end-of-period position, and it"
-                f" moved inside the window ({moved}): a flow over a closing count is not a"
-                " supported earnings per share, and there is no average-share line"
-            ]
-        else:
-            denominator = shares
-            basis = (f"'{shares.label}', a position at {shares.period_end or 'the period end'}"
-                     + (", unchanged through every quarter of the window, so it equals the"
-                        " window's mean" if counts and len(set(counts)) == 1 else
-                        ", and the window carries no quarterly series to test it against"))
-    else:
+    if avg is None and shares is None:
         missing = ["no share count in either the income statement or the balance sheet"]
+    elif denominator is None:
+        missing = refused
     if ni is None:
         missing.append("no net income line")
 
@@ -875,7 +983,10 @@ def _per_share(items: Items) -> list[Calculation]:
             operands=_ops(ni, denominator), missing=missing or ["the share count is zero"]))
     else:
         value = round((ni.value or 0.0) / denominator.value, 4)
-        checks = []
+        # A row that is there and was not used is worth naming: a seat reading the statements can
+        # see an average-share line sitting in them, and should know why the derivation did not
+        # use it rather than assume the derivation missed it.
+        checks = [f"not used as the denominator: {why}" for why in refused]
         if eps is not None and eps.value is not None:
             close = abs(value - eps.value) <= max(0.01, abs(eps.value) * 0.02)
             checks.append(
@@ -1308,9 +1419,7 @@ RANKING_WITHHELD = (
 )
 RANKING_NARROWED = (
     "A SECTOR PERCENTILE IN P2 IS A RANK INSIDE THE PIPELINE'S OWN `{cls}` PEER CLASS, not inside"
-    " the sector the exchange publishes. On 2026-10-29 that class was short the 140 tickers the"
-    " pipeline had misfiled as banks; adding them back moves these ranks by at most 4.7"
-    " percentile points."
+    " the sector the exchange publishes. On 2026-10-29 that class {moved}."
 )
 
 
@@ -1345,7 +1454,9 @@ def limitations_of(items: Items, sector: str, peer_class: str | None = None) -> 
     if peer_class == DISPUTED_PEER_CLASS:
         out.append(RANKING_WITHHELD)
     elif peer_class:
-        out.append(RANKING_NARROWED.format(cls=peer_class))
+        out.append(RANKING_NARROWED.format(
+            cls=peer_class,
+            moved=PEER_MOVE_MEASURED.get(peer_class, PEER_MOVE_UNMEASURED)))
     return out
 
 
