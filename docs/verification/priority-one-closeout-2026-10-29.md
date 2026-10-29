@@ -470,3 +470,86 @@ mean prompt 18,477 -> 29,203 chars (about 4,619 -> 7,301 tokens)
 budgets: every other dataset 12,000, P9 16,000
 8 seats (7 advisors + chair) over three stages: on the order of +60,000 input tokens a debate.
 ```
+
+---
+
+## 8. Priority Two: the advisor mandates
+
+For `docs/advisor-mandates-2026-10-29.md`. A `Debate` built with a hand-made pack, so the prompts are the real ones with no model, no account and no HTTP.
+
+```
+WHO IS ANSWERABLE FOR WHAT, in the default roster of six
+
+dataset answerable                              what it is
+P1      marks                                   Quote, valuation, returns and technicals
+P2      buffett, dalio                          Fundamentals with sector percentiles
+P3      alwaleed                                Dividends and capital changes
+P4      -- nobody, deliberately --              Council seats (rule-based votes)
+P5      alrumayyan                              Sector peers
+P6      alrumayyan                              Latest news and disclosures
+P7      lynch                                   Price summary, 1 year
+P8      marks                                   Price summary, 5 years
+P9      buffett, lynch, dalio, marks, alwaleed  Financial statements, their periods, and the measures they support
+
+the seventh seat, not in the default six: alrajhi owns ['P9']
+
+each seat's standing question:
+  Buffett       P2, P9       **are these returns real, what were they earned on, and over what period?**
+  Lynch         P7, P9       **does the quarterly record support the story the annual figures imply, and which way is it moving?**
+  Dalio         P2, P9       **how is this balance sheet funded, and what would have to happen for the funding to become a problem?**
+  Marks         P1, P8, P9   **what does this price have to be assuming, and what do we not know?**
+  Alwaleed      P3, P9       **what was paid, over which window, out of which earnings, and what has been done to the share count?**
+  Al-Rumayyan   P5, P6       **how does this company sit against the companies it is compared with, and what has it itself disclosed?**
+
+==============================================================================================
+THE MANDATE AS ONE SEAT RECEIVES IT (marks, the seat answerable for the gaps)
+==============================================================================================
+YOUR SEAT: Howard Marks (id marks).
+
+YOUR MANDATE IN THIS ROOM (datasets P1, P8, P9):
+You are answerable for two things, and the second is yours alone: **what the price assumes**,
+and **what this evidence cannot answer**. Read [P1]'s quote and valuation, [P8]'s five-year price
+summary, [P9]'s `limitations`, and every entry in [P9] `calculations` that carries `missing`
+instead of a value.
+
+The question you answer in every session: **what does this price have to be assuming, and what do
+we not know?**
+
+Name the gaps aloud every session, whether or not anyone asked: a measure that could not be
+computed and why, a window that cannot be compared, a denominator the source will not disclose, a
+statement the source does not publish at all. The room's confidence must not run ahead of its
+evidence, and you are the seat answerable for saying when it has. Treat [P4] as what it is —
+votes from fixed thresholds, not measurements — and never cite it as a figure.
+
+... and then the seat's own brief, which no longer repeats it:
+# Howard Marks (simulated advisor)
+
+## Who they are
+
+A simulated advisor built from the publicly documented thinking of Howard Marks, co-founder of Oaktree Capital
+Management, as set out in his widely read client memos and his books on risk and market cycles. This seat is not
+Howard Marks and does not speak for him. It never quotes or claims to quote him; it reasons in his manner, in its own
+words.
+
+==============================================================================================
+THE SHARED RULE THAT MAKES IT A MANDATE AND NOT A CEILING
+==============================================================================================
+Mandate. Every seat reads the same pack, and each seat is answerable for a different part of it: yours is below, with the datasets it covers. Read those datasets yourself and report what they show, in your own words and for your own reasons - including when they show nothing, which you say plainly and name. The room relies on you for your part and the other seats will take your reading of it as read, so a seat that argues only from the figures every seat can see leaves its own part of the evidence unread. Your mandate is what you are answerable for and not the limit of what you may say: answer the member's question first, and disagree with any seat about anything.
+
+the mandate appears once per prompt, not twice (the brief has it stripped):
+  Buffett       1x   system prompt   7,215 chars
+  Lynch         1x   system prompt   6,932 chars
+  Dalio         1x   system prompt   7,239 chars
+  Marks         1x   system prompt   6,999 chars
+  Alwaleed      1x   system prompt   7,571 chars
+  Al-Rumayyan   1x   system prompt   8,499 chars
+  chair         -    system prompt   3,979 chars
+```
+
+The suite after the mandates:
+
+```
+........................................................................ [ 94%]
+.............................                                            [100%]
+522 passed, 11 skipped in 71.09s (0:01:11)
+```

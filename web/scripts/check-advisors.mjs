@@ -11,7 +11,7 @@
 //     account needs Pro first: `python -m app.billing grant <email> 1` (docs/production.md, Pro billing).
 //
 // Test accounts are advisors-<locale>-<time>@example.com (no email is sent to example.com).
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { chromium } from "playwright-core";
 
 import { ADVICE } from "./lib/advice.mjs";
@@ -36,6 +36,22 @@ const STAGES = ["brief", "openings", "faultlines", "debate", "final", "verdict"]
 // (docs/beta-advisors-2026-10-27.md, F-2). An answer outside it is kept whole and reported, never cut.
 const ANSWER_REPORT = [200, 400];
 const CHAIR_WORDS = [200, 350];
+
+// Each seat is answerable for part of the pack (advisors/<id>.md, `owns`), and round one is the
+// only step where a seat writes without replying to anyone, so it is the step where citing none of
+// your own datasets means your part of the evidence went unread. Reported, never failed: a seat may
+// honestly find its evidence absent for this company, and saying so covers the mandate.
+const MANDATES = Object.fromEntries(
+  await Promise.all(
+    (await readdir("../api/app/advisors"))
+      .filter((f) => f.endsWith(".md") && f !== "README.md" && f !== "chair.md")
+      .map(async (f) => {
+        const text = await readFile(`../api/app/advisors/${f}`, "utf8");
+        const owns = /^owns:\s*(.+)$/m.exec(text)?.[1] ?? "";
+        return [f.replace(/\.md$/, ""), owns.split(",").map((t) => t.trim()).filter(Boolean)];
+      }),
+  ),
+);
 
 await mkdir(OUT, { recursive: true });
 const browser = await chromium.launch({ channel: "chrome" });
@@ -107,7 +123,10 @@ async function formatChecks(page, locale, standIn) {
       const seat = ((await card.getAttribute("data-turn")) ?? ":").split(":")[1];
       const absent = card.locator("[data-absent]");
       if (await absent.count()) away.push(`${seat}: ${await absent.first().getAttribute("data-absent")}`);
-      else present.push([seat, words(await card.innerText())]);
+      else {
+        const text = await card.innerText();
+        present.push([seat, words(text), [...new Set([...text.matchAll(/\[(P\d+|DB)\]/g)].map((m) => m[1]))]]);
+      }
     }
     return { present, away, total: present.length + away.length };
   };
@@ -158,6 +177,23 @@ async function formatChecks(page, locale, standIn) {
   note(
     `INFO  ${locale}: round 1 answers outside ${ANSWER_REPORT.join("–")} words: ${outside.length} of ${r1.present.length}` +
       (outside.length ? ` (${outside.map(([s, n]) => `${s} ${n}`).join(", ")})` : ""),
+  );
+  // Mandate coverage, per seat and then for the room. A seat that cited none of its own datasets is
+  // named; the room's line says which parts of the evidence no seat reached for at all, which is the
+  // thing a room of seven seats arguing from the same three figures would show up as.
+  const uncovered = r1.present
+    .map(([seat, , tags]) => [seat, (MANDATES[seat] ?? []).filter((t) => !tags.includes(t))])
+    .filter(([, missing]) => missing.length);
+  note(
+    `INFO  ${locale}: round 1 seats not citing their own datasets: ${uncovered.length} of ${r1.present.length}` +
+      (uncovered.length ? ` (${uncovered.map(([s, m]) => `${s} missing ${m.join("/")}`).join(", ")})` : ""),
+  );
+  const reached = new Set(r1.present.flatMap(([, , tags]) => tags));
+  const owned = [...new Set(r1.present.flatMap(([seat]) => MANDATES[seat] ?? []))];
+  const unread = owned.filter((t) => !reached.has(t));
+  note(
+    `INFO  ${locale}: datasets some seat is answerable for that round 1 never cited: ` +
+      (unread.length ? unread.join(", ") : "none") + ` (of ${owned.length} owned)`,
   );
 
   await open("debate");

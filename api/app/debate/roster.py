@@ -16,6 +16,12 @@ ADVISORS_DIR = Path(__file__).resolve().parent.parent / "advisors"
 
 ADVISOR_SECTIONS = (
     "Who they are",
+    # What this seat is answerable for in the room, and the standing question it owns. Every seat
+    # reads the same pack, so without a mandate seven seats are asked the same thing of the same
+    # data and reach for the same three headline figures; the evidence nobody is answerable for
+    # goes unread. The mandate is a property of the seat, not of the step, so it travels in the
+    # seat's own part of the prompt.
+    "Mandate",
     "Investing principles",
     "What they look at first",
     "How they argue and disagree",
@@ -33,10 +39,12 @@ CHAIR_SECTIONS = (
     "Voice",
 )
 FIELDS = ("id", "name_en", "name_ar", "initials", "lens_en", "lens_ar", "portrait")
-# Optional: short_en / short_ar (the name in tags and in the debate; default the last word of the name) and
-# recuse (ticker keys of companies the person is tied to: the seat sits out sessions about them).
-OPTIONAL = ("short_en", "short_ar", "recuse")
+# Optional: short_en / short_ar (the name in tags and in the debate; default the last word of the name),
+# recuse (ticker keys of companies the person is tied to: the seat sits out sessions about them) and
+# owns (the pack's dataset tags this seat's mandate is answerable for, e.g. `owns: P3, P9`).
+OPTIONAL = ("short_en", "short_ar", "recuse", "owns")
 TICKER_KEY = re.compile(r"^[A-Z0-9.]{1,12}_[A-Z]{2,10}$")
+DATASET_TAG = re.compile(r"^P[1-9][0-9]?$")
 SEAT_ID = re.compile(r"^[a-z][a-z0-9_-]{1,30}$")
 MIN_ADVISORS, MAX_ADVISORS = 2, 6
 
@@ -61,6 +69,10 @@ class SeatInfo(BaseModel):
     short_ar: str = ""
     # Companies the person is tied to (ticker keys): the seat sits out sessions about them.
     recuse: list[str] = []
+    # Dataset tags this seat's mandate is answerable for. An opening that cites none of them is
+    # flagged (debate/checks.uncovered) rather than refused: a seat may honestly find that its
+    # own evidence is absent for this company, and saying so is covering the mandate.
+    owns: list[str] = []
 
 
 class Seat(BaseModel):
@@ -79,6 +91,14 @@ class Seat(BaseModel):
     @property
     def surname(self) -> str:
         return self.info.short_en
+
+    @property
+    def brief(self) -> str:
+        """The body without the Mandate section. The mandate is handed to the seat first and on
+        its own (engine.system), so leaving it in the brief as well would put it in the prompt
+        twice - and the second copy is the one that reads as another line of character notes,
+        which is exactly what hoisting it was for."""
+        return re.sub(r"\n## Mandate\n.*?(?=\n## )", "", self.body, flags=re.S)
 
 
 def parse(text: str) -> tuple[dict[str, str], str]:
@@ -123,6 +143,11 @@ def load(seat_id: str) -> Seat:
     recuse = [k.strip() for k in meta.get("recuse", "").split(",") if k.strip()]
     if any(not TICKER_KEY.match(k) for k in recuse):
         raise RosterError(f"{path.name}: recuse lists ticker keys like 1120_TADAWUL")
+    owns = [t.strip().upper() for t in meta.get("owns", "").split(",") if t.strip()]
+    if any(not DATASET_TAG.match(t) for t in owns):
+        raise RosterError(f"{path.name}: owns lists the pack's dataset tags like P2, P9")
+    if role == "advisor" and not owns:
+        raise RosterError(f"{path.name}: owns must name the datasets this seat's mandate covers")
     portrait = meta["portrait"] or None
     if portrait and not re.match(r"^[a-z0-9_-]+\.(webp|png|jpg)$", portrait):
         raise RosterError(f"{path.name}: portrait must be a file name in web/public/advisors")
@@ -138,6 +163,7 @@ def load(seat_id: str) -> Seat:
         short_en=meta.get("short_en") or meta["name_en"].split()[-1],
         short_ar=meta.get("short_ar") or meta["name_ar"].split()[-1],
         recuse=recuse,
+        owns=owns,
     )
     return Seat(info=info, body=body, sections=sections)
 

@@ -46,6 +46,11 @@ and method and only from the data pack: what the data shows, the figures that ca
 show, and how confident the data lets them be. A headline of one line says their answer in short. In `choice`
 mode they also name the option they lean to. They write at the same time and do not see each other's answers.
 
+Each seat also covers its own mandate here: the room has no other chance to hear what that seat is answerable
+for, since every later step is a reply to something already said. Answering the member's question comes first;
+covering the mandate is part of answering it, not a second task after it. A seat whose own evidence is absent for
+this company covers the mandate by saying so and naming what is absent.
+
 ## Stage: Fault lines
 
 Read the answers. Name the two or three places where the advisors genuinely disagree: which advisors, on what, and

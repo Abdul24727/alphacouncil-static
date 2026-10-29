@@ -21,7 +21,7 @@ from typing import Any
 
 from ..settings import Settings
 from ..copilot.context import TAG, numbers_in
-from .checks import Checked, advice_in
+from .checks import Checked, advice_in, uncovered
 from .llm import SeatError, Usage
 from .pack import Pack
 from .roster import Seat
@@ -56,6 +56,8 @@ Numbers. Quote values exactly as the pack gives them, with units and the listing
 Scope. Assess what the data shows. Never tell the member or anyone else to buy, sell or hold anything, give no price targets and no personal investment advice. This holds for every seat, in character or not.
 
 Personas. The advisor seats are simulated, built from each person's publicly documented principles; they are not the people. Never claim to be the person, quote them or describe their private views, holdings or actions. Reason in their manner, in your own words.
+
+Mandate. Every seat reads the same pack, and each seat is answerable for a different part of it: yours is below, with the datasets it covers. Read those datasets yourself and report what they show, in your own words and for your own reasons - including when they show nothing, which you say plainly and name. The room relies on you for your part and the other seats will take your reading of it as read, so a seat that argues only from the figures every seat can see leaves its own part of the evidence unread. Your mandate is what you are answerable for and not the limit of what you may say: answer the member's question first, and disagree with any seat about anything.
 
 Language. Write every text value in {language}. Keep company names as the data gives them. Refer to advisors by surname.
 
@@ -173,7 +175,16 @@ class Debate:
         if seat.info.role == "chair":
             you = "YOUR SEAT: the Chair.\n\n" + seat.sections["Who the Chair is"] + "\n\nVoice: " + seat.sections["Voice"]
         else:
-            you = f"YOUR SEAT: {seat.name} (id {seat.id}).\n\n{seat.body}"
+            owns = ", ".join(seat.info.owns)
+            # First and on its own, before the brief it belongs to: it is the one thing in
+            # this prompt that differs by seat rather than by step, and the point of it is
+            # that it is not read as another line of character notes.
+            you = (
+                f"YOUR SEAT: {seat.name} (id {seat.id}).\n\n"
+                f"YOUR MANDATE IN THIS ROOM (datasets {owns}):\n"
+                + seat.sections["Mandate"]
+                + f"\n\n{seat.brief}"
+            )
         return f"{head}\n\n{you}"
 
     def transcript(self) -> str:
@@ -280,7 +291,7 @@ class Debate:
         }
         return {"data": data, "flags": c.flags()}
 
-    def check_opening(self, raw: dict[str, Any]) -> dict[str, Any]:
+    def check_opening(self, seat: Seat, raw: dict[str, Any]) -> dict[str, Any]:
         """Round 1: an advisor's own complete answer, written without seeing the others'."""
         c = Checked(self.numbers, self.seen)
         # 4,000 characters holds the longest answer chair.md asks for: an over-long one is counted, never cut.
@@ -288,7 +299,12 @@ class Debate:
         if not text:
             raise ValueError("the text is empty")
         data = {"lean": self._lean(raw.get("lean")), "headline": c.text(raw.get("headline"), 200), "text": text}
-        return {"data": data, "flags": {**c.flags(), "words": words_in(text)}}
+        # Mandate coverage is measured here and nowhere else. An opening is the seat's own
+        # complete answer, written without seeing the others', so it is the one turn where
+        # citing nothing of your own part means your part went unread. A challenge or a final
+        # word is a reply, and reaching for another seat's dataset there is the debate working.
+        return {"data": data, "flags": {**c.flags(), "words": words_in(text),
+                                        "uncovered": uncovered(text, seat.info.owns)}}
 
     def check_faultlines(self, raw: dict[str, Any]) -> dict[str, Any]:
         c = Checked(self.numbers, self.seen)
@@ -453,7 +469,7 @@ class Debate:
             + lean
             + '"headline": "your answer in at most 15 words", '
             + f'"text": "your own complete answer to the question, {low} to {high} words"}}',
-            lambda a: self.check_opening,
+            lambda a: lambda raw, a=a: self.check_opening(a, raw),
         )
 
         self.stage("faultlines")

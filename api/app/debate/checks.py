@@ -7,6 +7,11 @@
    screen marks it (the Copilot's unverified_cells rule, applied to text).
 4. Advice: a sentence that tells someone to buy, sell or hold, or names a price target, is
    removed (legal/ai-financial-disclaimer; the same rule as the Copilot's SYSTEM prompt).
+5. Mandate: an opening that cites none of the datasets the seat is answerable for is flagged, so
+   a room where every seat argued from the same two figures can be seen rather than guessed at.
+   Flagged, never refused: a seat may honestly find its own evidence absent for this company, and
+   saying so is covering the mandate - the flag is a question for whoever reads the session, not
+   a verdict on the answer.
 """
 
 import re
@@ -77,6 +82,22 @@ def add_citations(text: str, cites: list[dict[str, Any]]) -> str:
         at = end - 1 if re.search(r"[.!?؟]$", c["sentence"]) else end
         out = out[:at] + "".join(f" [{t}]" for t in c["tags"]) + out[at:]
     return out
+
+
+def tags_in(text: str) -> list[str]:
+    """The dataset tags cited in a piece of text, in first-seen order."""
+    out: list[str] = []
+    for m in TAG.finditer(text):
+        tag = m.group(0)[1:-1]
+        if tag not in out:
+            out.append(tag)
+    return out
+
+
+def uncovered(text: str, owns: list[str]) -> list[str]:
+    """The seat's own datasets that this text does not cite."""
+    cited = set(tags_in(text))
+    return [t for t in owns if t not in cited]
 
 
 def unverified_figures(text: str, seen: set[str]) -> list[str]:

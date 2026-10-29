@@ -10,6 +10,7 @@ from sqlalchemy import select
 
 ORIGIN = {"Origin": "http://testserver"}
 WEB = Path(__file__).resolve().parents[2] / "web"
+ADVISORS = Path(__file__).resolve().parents[1] / "app" / "advisors"
 STAGES = ["brief", "openings", "faultlines", "debate", "final", "verdict"]
 
 
@@ -70,6 +71,138 @@ def test_every_seat_file_has_its_sections_and_says_it_is_simulated():
         if seat.info.portrait:
             assert seat.info.portrait == f"/advisors/{seat.info.id}.webp"
             assert (public / seat.info.portrait.lstrip("/")).is_file(), seat.info.portrait
+
+
+def a_room(advisors="buffett,lynch,dalio,marks"):
+    """A Debate with a hand-made pack: enough for the prompts and the per-turn checks, with no
+    model, no account and no HTTP. The pack's tags are what the coverage flag reads."""
+    from app.debate import roster
+    from app.debate.engine import Context, Debate
+    from app.debate.pack import Pack, Source
+    from app.settings import Settings
+
+    data = {t: {"value": float(i + 1)} for i, t in enumerate(["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9"])}
+    pack = Pack(
+        ticker_key="2222_TADAWUL", slug="aramco", header="DATA PACK.", fetched_at="2026-10-29 00:00 UTC",
+        data=data, sources={t: Source(title_en=t, title_ar=t, ok=True) for t in data},
+    )
+    ctx = Context(
+        settings=Settings(_env_file=None), pack=pack, question="Is the dividend covered?", locale="en",
+        advisors=roster.advisors(advisors), chair=roster.chair(), debate_rounds=1,
+    )
+    return Debate(ctx, ask=None, emit=lambda _e: None, save=None)
+
+
+def test_every_advisor_is_answerable_for_part_of_the_pack():
+    """A mandate that names no dataset is a line of character notes, so the roster refuses it."""
+    from app.debate import roster
+
+    for a in roster.advisors("buffett,lynch,dalio,marks,alwaleed,alrumayyan"):
+        assert a.info.owns, a.id
+        mandate = a.sections["Mandate"]
+        assert "answerable for" in mandate, a.id
+        # the standing question this seat answers whatever it is asked
+        assert "every session" in mandate, a.id
+        for tag in a.info.owns:
+            assert f"[{tag}]" in mandate, f"{a.id} owns {tag} without saying what to read in it"
+    assert roster.load("chair").info.owns == [], "the Chair is answerable for the room, not a dataset"
+
+
+def test_the_mandates_between_them_cover_the_evidence():
+    """Seven seats reading one pack with nothing to divide between them reach for the same three
+    headline figures. The point of a mandate is that every dataset has a seat answerable for it.
+    P4 is the deliberate exception: rule-based votes are opinion, and nobody owns an opinion."""
+    from app.debate import roster
+    from app.debate.pack import DATASETS
+
+    owned: dict[str, list[str]] = {}
+    for a in roster.advisors("buffett,lynch,dalio,marks,alwaleed,alrumayyan"):
+        for tag in a.info.owns:
+            owned.setdefault(tag, []).append(a.id)
+    tags = [d[0] for d in DATASETS]
+    assert [t for t in tags if t not in owned] == ["P4"]
+    assert all(t in tags for t in owned), "a seat is answerable for a dataset the pack does not carry"
+    # the statements, which this room did not have before today, are read across most of the room
+    assert len(owned["P9"]) >= 4
+
+
+def test_only_one_seat_is_answerable_for_what_the_evidence_cannot_answer():
+    """The gaps need an owner, or they are nobody's line to say out loud."""
+    from app.debate import roster
+
+    mandate = roster.load("marks").sections["Mandate"]
+    assert "yours alone" in mandate
+    assert "limitations" in mandate and "missing" in mandate
+    assert "never cite it as a figure" in mandate, "the seat that reads P4 says what it is"
+    others = roster.advisors("buffett,lynch,dalio,alwaleed,alrumayyan")
+    assert not any("yours alone" in a.sections["Mandate"] for a in others)
+
+
+def test_the_mandate_reaches_the_seat_first_and_the_rules_explain_it():
+    """A mandate buried in the brief reads as more character notes, so it goes first and alone."""
+    from app.debate.engine import RULES
+
+    debate = a_room()
+    buffett = next(a for a in debate.ctx.advisors if a.id == "buffett")
+    system = debate.system(buffett)
+    assert "YOUR MANDATE IN THIS ROOM (datasets P2, P9):" in system
+    assert system.index("YOUR MANDATE") < system.index("## Investing principles")
+    assert "answerable for **earning power**" in system
+    assert "YOUR MANDATE" not in debate.system(debate.ctx.chair), "the Chair runs the room"
+    # once, not twice: the mandate is lifted out of the brief rather than copied above it, or the
+    # second copy sits back among the character notes and undoes the hoisting
+    for a in debate.ctx.advisors:
+        opening = a.sections["Mandate"].splitlines()[0]
+        assert debate.system(a).count(opening) == 1, a.id
+        assert "## Mandate" not in a.brief and "## Mandate" in a.body, a.id
+    # and the rules say what a mandate is, including that it is not a ceiling on what a seat says
+    assert "Mandate." in RULES and "answer the member's question first" in RULES
+    assert "not the limit of what you may say" in RULES
+
+
+def test_an_opening_citing_none_of_its_own_datasets_is_flagged_and_still_kept():
+    """A seat may honestly find its evidence absent, and saying so covers the mandate. The flag is
+    a question for whoever reads the session, never a reason to throw an answer away."""
+    from app.debate.checks import tags_in, uncovered
+
+    debate = a_room()
+    buffett = next(a for a in debate.ctx.advisors if a.id == "buffett")
+    covered = debate.check_opening(buffett, {"headline": "h", "text": "Earnings are 9.0 [P9] on a 2.0 margin [P2]."})
+    assert covered["flags"]["uncovered"] == []
+    missed = debate.check_opening(buffett, {"headline": "h", "text": "The price is 1.0 [P1]."})
+    assert missed["flags"]["uncovered"] == ["P2", "P9"]
+    assert missed["data"]["text"], "the answer is kept whole"
+    assert tags_in("a [P1] b [P9] c [P1]") == ["P1", "P9"]
+    assert uncovered("a [P1]", ["P1", "P9"]) == ["P9"]
+
+
+def test_coverage_is_measured_on_the_opening_and_not_on_a_reply():
+    """A challenge is a reply: reaching for another seat's dataset there is the debate working."""
+    debate = a_room()
+    reply = debate.check_debate("buffett", {"responds_to": "lynch", "headline": "h", "text": "Agreed, 1.0 [P1]."})
+    assert "uncovered" not in reply["flags"]
+    final = debate.check_final("buffett", {"headline": "h", "text": "Unchanged, 1.0 [P1].", "changed": ""})
+    assert "uncovered" not in final["flags"]
+
+
+def test_a_mandate_without_datasets_is_refused(tmp_path, monkeypatch):
+    """`owns` is what makes a mandate checkable, so a seat file without it does not load."""
+    from app.debate import roster
+
+    body = (ADVISORS / "buffett.md").read_text(encoding="utf-8")
+    seats = tmp_path / "advisors"
+    seats.mkdir()
+    (seats / "nodata.md").write_text(
+        body.replace("id: buffett", "id: nodata").replace("owns: P2, P9\n", ""), encoding="utf-8"
+    )
+    monkeypatch.setattr(roster, "ADVISORS_DIR", seats)
+    roster.load.cache_clear()
+    with pytest.raises(roster.RosterError, match="owns must name the datasets"):
+        roster.load("nodata")
+    (seats / "badtag.md").write_text(body.replace("id: buffett", "id: badtag").replace("owns: P2, P9", "owns: quote"), encoding="utf-8")
+    with pytest.raises(roster.RosterError, match="owns lists the pack's dataset tags"):
+        roster.load("badtag")
+    roster.load.cache_clear()
 
 
 def test_six_seats_and_seats_tied_to_a_company_sit_out(room, monkeypatch):

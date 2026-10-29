@@ -4,9 +4,30 @@ One markdown file per seat. `app/debate/roster.py` reads them; nothing else abou
 
 - `chair.md`: the neutral Chair. Its "Stage: …" sections are the instructions for each step of a session: Brief,
   Answers, Fault lines, Challenges, Final word, The answer. Keep the headings; change the wording freely.
-- `buffett.md`, `lynch.md`, `dalio.md`, `marks.md`, `alwaleed.md`, `alrumayyan.md`: the advisors. Each has the same sections: Who they are, Investing
-  principles, What they look at first, How they argue and disagree, Blind spots, Voice. The whole file (front matter
-  removed) is that advisor's brief.
+- `buffett.md`, `lynch.md`, `dalio.md`, `marks.md`, `alwaleed.md`, `alrumayyan.md`: the advisors. Each has the same sections: Who they are, Mandate,
+  Investing principles, What they look at first, How they argue and disagree, Blind spots, Voice. The whole file (front
+  matter removed) is that advisor's brief, and the Mandate is also handed to the seat on its own, first (engine.system).
+
+## Mandates
+
+Every seat reads the same data pack. Without a mandate each one is asked the same thing of the same data, so seven
+seats reach for the same three headline figures and the evidence nobody is answerable for goes unread. So each
+advisor's `## Mandate` says what that seat is answerable for in the room, which datasets it must read, the standing
+question it answers in every session, and what to say when its own evidence is absent — which is itself a way of
+covering the mandate, not a failure to.
+
+`owns` in the front matter names the pack's dataset tags that mandate covers (`owns: P2, P9`). It is required for an
+advisor, and it is what makes coverage checkable: a round-one answer citing none of its own datasets is flagged in
+the turn's `flags.uncovered` and reported by `web/scripts/check-advisors.mjs`. Flagged, never refused.
+
+Between them the mandates cover every dataset in the pack except **P4**, and that is deliberate: P4 is the
+rule-based council seats, which are votes from fixed thresholds rather than measurements. Nobody is answerable for
+an opinion, and the seat that reads it (`marks`) is told to say what it is. A test holds this shape
+(`test_the_mandates_between_them_cover_the_evidence`), so changing a mandate means deciding again who owns what.
+
+Coverage is measured on round one only. An opening is the seat's own complete answer, written without seeing the
+others', so citing nothing of your own part there means your part went unread. A challenge or a final word is a
+reply, and reaching for another seat's dataset there is the debate working.
 
 Every advisor file is written in our own words from the person's publicly documented principles. Never paste text
 from their books, letters or memos, and never make a seat claim to be the person: each file says it is a simulated
@@ -16,11 +37,15 @@ advisor that does not speak for them. The screen says the same in both languages
 
 1. Copy one advisor file to `<id>.md` (lower-case letters, e.g. `munger.md`) and rewrite every section.
 2. Fill the front matter: `id` (same as the file name), `name_en`, `name_ar`, `initials` (two letters for the
-   placeholder disc), `lens_en` / `lens_ar` (the short line under the name tag), `portrait` (see below; leave empty
-   until the art exists). Optional: `short_en` / `short_ar`, the name on the tag and in the debate (default: the
-   last word of the name, wrong for "Prince Alwaleed bin Talal"); `recuse`, ticker keys of listed companies the
-   person runs or chairs (`1120_TADAWUL, 8230_TADAWUL`): the seat sits out sessions about them.
-3. List the seats in order with `DEBATE_ADVISORS` in the API's environment (default
+   placeholder disc), `lens_en` / `lens_ar` (the short line under the name tag), `owns` (the dataset tags this seat's
+   mandate covers, `P2, P9`), `portrait` (see below; leave empty until the art exists). Optional: `short_en` /
+   `short_ar`, the name on the tag and in the debate (default: the last word of the name, wrong for "Prince Alwaleed
+   bin Talal"); `recuse`, ticker keys of listed companies the person runs or chairs (`1120_TADAWUL, 8230_TADAWUL`):
+   the seat sits out sessions about them.
+3. Write the `## Mandate`: what this seat is answerable for, the datasets in `owns` and what to read in each, the
+   standing question, and what to say when that evidence is absent. Check what the seat you replaced owned, so the
+   pack still has an answerable seat for every dataset.
+4. List the seats in order with `DEBATE_ADVISORS` in the API's environment (default
    `buffett,lynch,dalio,marks,alwaleed,alrumayyan`; two to six advisors). Restart the API.
 
 Past sessions keep the names they were held with.
