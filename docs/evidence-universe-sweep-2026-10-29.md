@@ -146,3 +146,54 @@ see; SHPS_MSM earns 16.78 on 3.23 of book equity and its balance sheet foots.
 - **No gross income line on the Arabic grids**, so gross margin is a Saudi-only measure.
 
 Suite: **531 passed, 11 skipped**.
+
+---
+
+## Addendum: the same sweep against a repaired parse
+
+The sweep above ran on the published database, where `period_aware` is false — so the
+period-aware half of the module was never exercised at scale. Repeated over the 32 tickers of the
+33-ticker dry run, parsed by the repaired parser and gauged by the patched gauge stage, which is
+the state the owner will have after applying both patches:
+
+```
+32 tickers from the repaired parse; period_aware=True
+exceptions: 0
+budget 16,000: over it 0; median 8,188  largest 12,769
+sectors {'bank': 16, 'non_bank': 12, 'unknown': 3, 'insurance': 1}
+datasets carrying a quarterly series: 18 of 32
+sections carrying the source columns they were summed from: 27
+
+reporting modes seen, by section        aggregation rules recorded
+   Balance Sheet FY          14            annual_column               28
+   Balance Sheet Q           16            sum_quarters                18
+   Income Statement FY       14            quarter_end_snapshot        16
+   Income Statement TTM      18            row:end_quarter_position     9
+                                           row:mean_of_quarters         2
+```
+
+Both statement shapes appear and are labelled as what they are: the GCC annual grids give a real
+fiscal year, the repaired Tadawul grids a trailing twelve months over a quarter-end balance sheet.
+27 of 32 sections carry the quarter ends they were summed from. The per-row exceptions are
+recorded where a row is aggregated differently from its section — nine share counts held at the
+end quarter, and **two averaged over the window**.
+
+**That second one settles a claim I had hedged twice.** The pre-application record said the `mean`
+share-count rule was "implemented and untestable on current data". It is exercised in a real
+repaired parse, and 408 tickers in the live database carry an average-share row. Both halves of
+that statement were wrong, in the same direction: I had looked for the row in the income statement
+of the Saudi grids, and it lives in the balance sheet of the Arabic ones.
+
+The measures on the 16 banks land where they should: equity to assets median **11.46%**,
+non-performing **0.93%**, provision coverage **160.30%**, cost of risk **0.30%**, financing to
+deposits **102.88%**, net financing margin **2.99%**. Return on equity across the 29 companies that
+support one has a median of **12.18%**. Every one of the 16 banks' per-share figures is confirmed
+against its own net income.
+
+Two things this run does not show: `payout` resolves nowhere, because the scratch database has no
+dividend history seeded (the three cases cover that path with the real history); and the largest
+dataset is 12,769 characters, which is the measurement behind P9 having its own budget rather than
+the uniform 12,000.
+
+**The three cases were re-run after every fix in this document and are byte-for-byte identical**,
+so every figure in `docs/priority-one-closeout-2026-10-29.md` still holds.

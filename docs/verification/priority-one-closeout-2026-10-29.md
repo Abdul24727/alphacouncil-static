@@ -850,3 +850,53 @@ WHY NO PAYOUT RESOLVES ANYWHERE
 ......................................                                   [100%]
 531 passed, 11 skipped in 73.95s (0:01:13)
 ```
+
+### 10g. The same sweep against a repaired parse (period_aware=True)
+
+`python sweep_repaired.py` — the 32 tickers of the dry run, parsed by the repaired parser and
+gauged by the patched stage, which is the state after both patches are applied.
+
+```
+32 tickers from the repaired parse; period_aware=True
+
+exceptions: 0
+budget 16,000: over it 0; median 8,188  largest 12,769
+sectors {'bank': 16, 'non_bank': 12, 'unknown': 3, 'insurance': 1}
+datasets carrying a quarterly series: 18 of 32
+sections carrying the source columns they were summed from: 27
+
+reporting modes seen, by section:
+   Balance Sheet FY          14
+   Balance Sheet Q           16
+   Income Stateme FY         14
+   Income Stateme TTM        18
+
+aggregation rules recorded:
+   annual_column               28
+   sum_quarters                18
+   quarter_end_snapshot        16
+   row:end_quarter_position     9
+   row:mean_of_quarters         2
+
+metric                               offered withheld  value   median
+extraordinary_share_of_earnings           32       10     22   0.00
+eps_derived                               32        3     29   0.37
+roe_on_period_end_common_equity           32        3     29   12.18
+payout_cash                               32       32      0   -
+eps_unit_confirmation                     16        0     16   5,240.00
+net_financing_margin                      16       11      5   2.99
+cost_to_income                            16       10      6   38.45
+cost_of_risk                              16        2     14   0.30
+npl_ratio                                 16        6     10   0.93
+npl_coverage                              16        6     10   160.30
+equity_to_assets                          16        0     16   11.46
+financing_to_deposits                     16        1     15   102.88
+net_income_to_operating_income             8        0      8   53.65
+```
+
+### 10h. The three cases, re-run after every fix above
+
+```
+$ diff demo_packs_before_sweep.out demo_packs.out
+IDENTICAL: the three cases are unchanged by the sweep's fixes
+```
