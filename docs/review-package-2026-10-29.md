@@ -138,6 +138,13 @@ This is not extended into a general treatment of corporate actions. The rule is 
 is named or the figure is not given.** All three demonstration companies use the unchanged-position
 basis, and their derived EPS is confirmed against the statement's own per-share line to within 2%.
 
+**What an allowlist risks is refusing something legitimate, so that was measured too.** A database
+parsed before the repair carries no `source_json` at all, so every row's rule is `None` — which is
+why `None` is in both allowlists, and why the count to watch is the one that would collapse if it
+were not. After the change, **382 of 653** tickers still get a derived EPS on the source's own
+average-share column, exactly as before, and **not one** figure on the published database is
+withheld for an unsupported rule.
+
 ---
 
 ## 4. The three cases, as they now stand
@@ -147,8 +154,8 @@ from the closeout; the only addition is the ranking limitation.
 
 | | Aramco `2222` | Al Rajhi `1120` | SABIC `2010` |
 |---|---|---|---|
-| P9 before → after | 4,243 → **10,843** chars | 7,215 → **14,863** | 4,198 → **9,543** |
-| budget headroom (16,000) | 5,157 | **1,137** | 6,457 |
+| P9 before → after | 4,298 → **10,898** chars | 7,215 → **14,863** | 4,253 → **9,598** |
+| budget headroom (16,000) | 5,102 | **1,137** | 6,402 |
 | income statement | TTM@2026-06, 18 rows, `sum_quarters` | TTM@2026-06, 24 rows | TTM@2026-06, 15 rows |
 | balance sheet | Q@2026-06 | **Q@2026-06 — the same date** | Q@2026-06 |
 | derived EPS | 1.6875 vs the statement's 1.69 | 4.4164 vs 4.42 | **−7.1074** vs −7.11 |
@@ -310,12 +317,12 @@ place of `alrumayyan`. That is the owner's decision and I have not taken it. If 
 for — the extraordinary split and the bank measures — and that is worth deciding rather than
 leaving.
 
-**What P9 costs, with the counting method.** Per call, mean of five real packs: **18,477 → 29,510
-characters**, +10,372, **+56%**; in UTF-8 bytes 18,761 → 29,796. Across 21 calls that is
-**+217,816 characters** a debate, and the pack is in every call's system prompt with no prompt
-caching on the debate path. In tokens: the byte count, **217,867**, is a hard ceiling — no
+**What P9 costs, with the counting method.** Per call, mean of five real packs: **18,477 → 29,554
+characters**, +10,416, **+56%**; in UTF-8 bytes 18,761 → 29,840. Across 21 calls that is
+**+218,740 characters** a debate, and the pack is in every call's system prompt with no prompt
+caching on the debate path. In tokens: the byte count, **218,791**, is a hard ceiling — no
 byte-level BPE tokenizer emits more tokens than bytes — and the chars/4 divisor my earlier figure
-used would say 54,454. **So the added input tokens are between about 54,000 and 218,000, and the
+used would say 54,685. **So the added input tokens are between about 55,000 and 219,000, and the
 true figure is the provider's reported `prompt_tokens`, which needs a paid run.** `audit_tokens`
 already compares the provider's count against the byte ceiling on every call.
 
@@ -325,16 +332,18 @@ limitation, or a row a calculation divides by (protected rows are taken first �
 balance sheet the share count is the **last** row, and taking the first N dropped the denominator
 of every per-share measure in the same dataset). `Pack.prompt()`'s `[:budget]`, which would cut
 mid-row, is the backstop behind it. Measured: **0 of 653 datasets over the 16,000-character budget**
-(largest 10,776 on the published database; 13,142 on the repaired parse with the longest possible
-limitation forced on every company, 2,858 of headroom), and **limitations intact 653 of 653**. The
+(largest 10,776 on the published database; and on the repaired parse, measured against **all four
+peer classes for every company** so that each one carries the longest limitation it could, 128
+datasets with 0 over and a largest of **13,142** — Al Rajhi as a bank — leaving 2,858 of
+headroom), and **limitations intact 653 of 653**. The
 single lever is `evidence.DATASET_BUDGET`.
 
 ---
 
 ## 8. Offline checks passed, and what is still unmeasured
 
-**Passed.** API suite **544 passed, 11 skipped** (531 before this round; 13 new tests covering the
-three closures). Web typecheck clean, `openapi.json` and the web client types regenerated. Both
+**Passed.** API suite **557 passed, 11 skipped** — 531 before this work, 544 after the three
+closures, 557 after the review of them (§9), each round carrying 13 new tests. Web typecheck clean, `openapi.json` and the web client types regenerated. Both
 pipeline patches apply clean to the files now on the server, reproduce the tested files byte for
 byte, and `patch -R` restores the originals byte for byte — re-verified today against fresh copies.
 **One defect found in the prepared patch while re-verifying it:** its ranking comment and its log
@@ -425,7 +434,10 @@ at 1440 and 390, English and Arabic: `docs/screenshots/ranking-withheld/`.
 The rest: the peer note was attached only where a score already existed; the operand readback
 skipped every repeated label (so it silently did nothing for exactly the labels this schema says
 repeat); `sector_of`'s tie-break changed inside a refactor and was untested; the tie-break itself
-was non-deterministic and now resolves toward withholding; the one operand alias had no test; the
+was non-deterministic and now resolves toward withholding — though **neither moves a single
+ticker today**: all 653 that record a sector record the same one on every gauge row, 0 disagree
+and 0 are tied, so both are guards against a state the data does not reach rather than
+corrections of something live; the one operand alias had no test; the
 false-positive sweep reached one gauge of six (closed by a test over all five named-operand
 shapes, and by re-running the universe sweep with every row stamped — **0 flagged of 1,891
 reachable**); P2's Arabic title still promised a percentile; a basis text denied a quarterly

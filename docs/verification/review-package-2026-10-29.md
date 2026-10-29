@@ -1,10 +1,10 @@
 # Acceptance review: raw output
 
-2026-10-29, after the Priority One closeout. Branch `rebuild`. Nothing applied, published, pushed
-or deployed, and no paid call made.
+2026-10-29. Branch `rebuild`. Nothing applied, published, pushed or deployed, and no paid call
+made. **Regenerated after the review of this package**, so every figure below comes from the code
+as it now stands rather than from the version the package first described.
 
-Every figure in `docs/review-package-2026-10-29.md` comes from one of the sections below. The
-scripts run read-only against local copies of the published databases (`screening.sqlite`,
+The scripts run read-only against local copies of the published databases (`screening.sqlite`,
 `briefs_index.sqlite`, copied by `scp` on 2026-10-29) and against the two scratch parses
 `demo_before.sqlite` / `demo_after.sqlite`, which are today's parser and the repaired parser run
 over the same live pages with the patched gauge stage over each.
@@ -17,6 +17,8 @@ over the same live pages with the patched gauge stage over each.
 4. The three closures validated over all 653 tickers
 5. What P9 costs a debate, with the counting method
 6. The three cases: the P9 pack before and after, and the gauge strip
+7. After the review: the sweeps re-run against the fixed code
+8. How far the two vote changes actually move, and the worst case for the budget
 
 ---
 
@@ -180,7 +182,7 @@ AND THE POSITION ROWS: does the count move inside a window?
 
 A check that withholds a figure has two failure modes and the quiet one is worse: missing a stale
 gauge shows a wrong number, but calling a FRESH gauge stale withholds a right one across the whole
-universe. So section 1 establishes that the revision check flags nothing on an unmodified
+universe. So the first run establishes that the revision check flags nothing on an unmodified
 database, and only then that it flags the right thing on a modified one.
 
 ```
@@ -201,11 +203,11 @@ database, and only then that it flags the right thing on a modified one.
 --- the revised database: 653 tickers
     vintage basis: {'period': 6237, 'inputs': 293}
     gauges the vintage check withholds: 20  {'net_margin': 20}
-      2010_KSE net_margin: computed from 'الايرادات' = 23.64 while the statements now carry 24.35 for the same fiscal year 2025: the figure was revised after the gauge stage las
-      2012_KSE net_margin: computed from 'الايرادات' = 0.19 while the statements now carry 0.20 for the same fiscal year 2025: the figure was revised after the gauge stage last 
-      202_KSE net_margin: computed from 'الايرادات' = 14.97 while the statements now carry 15.42 for the same fiscal year 2025: the figure was revised after the gauge stage las
-      205_KSE net_margin: computed from 'الايرادات' = 1,485.06 while the statements now carry 1,529.61 for the same fiscal year 2025: the figure was revised after the gauge sta
-      235_KSE net_margin: computed from 'الايرادات' = 3.07 while the statements now carry 3.16 for the same fiscal year 2025: the figure was revised after the gauge stage last 
+      2010_KSE net_margin: computed from 'الايرادات' = 23.64 while the statements now carry 24.35 (Income Statement) for the same fiscal year 2025: the figure was revised after 
+      2012_KSE net_margin: computed from 'الايرادات' = 0.19 while the statements now carry 0.20 (Income Statement) for the same fiscal year 2025: the figure was revised after th
+      202_KSE net_margin: computed from 'الايرادات' = 14.97 while the statements now carry 15.42 (Income Statement) for the same fiscal year 2025: the figure was revised after 
+      205_KSE net_margin: computed from 'الايرادات' = 1,485.06 while the statements now carry 1,529.61 (Income Statement) for the same fiscal year 2025: the figure was revised 
+      235_KSE net_margin: computed from 'الايرادات' = 3.07 while the statements now carry 3.16 (Income Statement) for the same fiscal year 2025: the figure was revised after th
     peer classes: {'bank': 204, 'non_bank': 408, 'insurance': 41}
     sector ranks: 196 withheld, 1758 kept
     expected 20, caught 20
@@ -251,22 +253,22 @@ THE ROOM AS CONFIGURED (app/settings.py, untouched by this work)
 
 WHAT P9 ADDS TO ONE CALL'S PROMPT, exactly
 ticker           P1-P8 chars  P9 chars    total    +%  P1-P8 bytes  P9 bytes    total
-2222_TADAWUL          17,473    10,917   29,062   66%       17,588    10,919   29,179
+2222_TADAWUL          17,473    10,972   29,117   67%       17,588    10,974   29,234
 1120_TADAWUL          20,043    14,937   35,660   78%       20,172    14,941   35,793
-2010_TADAWUL          18,421     9,617   28,725   56%       18,654     9,619   28,960
-4061_TADAWUL          18,123     8,142   26,878   48%       18,751     8,144   27,508
-4190_TADAWUL          18,325     8,248   27,225   49%       18,639     8,250   27,541
+2010_TADAWUL          18,421     9,672   28,780   56%       18,654     9,674   29,015
+4061_TADAWUL          18,123     8,197   26,933   49%       18,751     8,199   27,563
+4190_TADAWUL          18,325     8,303   27,280   49%       18,639     8,305   27,596
 
 PER CALL, mean of the five
-  characters   18,477 -> 29,510   (+10,372, +56%)
-  UTF-8 bytes  18,761 -> 29,796   (+10,375, +55%)
+  characters   18,477 -> 29,554   (+10,416, +56%)
+  UTF-8 bytes  18,761 -> 29,840   (+10,419, +56%)
 
 PER DEBATE, 21 calls
-  characters added   217,816
-  UTF-8 bytes added  217,867  <- a CEILING on the added input tokens:
+  characters added   218,740
+  UTF-8 bytes added  218,791  <- a CEILING on the added input tokens:
                         no byte-level BPE tokenizer emits more tokens than bytes
-  chars/4 would say  54,454  <- the old assumption, not a measurement
-  so the added input tokens per debate are between about 54,454 and 217,867.
+  chars/4 would say  54,685  <- the old assumption, not a measurement
+  so the added input tokens per debate are between about 54,685 and 218,791.
   The true figure is the provider's reported prompt_tokens and needs a paid run.
 
 THE HARD BOUND, independent of any ticker
@@ -296,7 +298,7 @@ measured over all 653 tickers in section 4.
 2222_TADAWUL  Saudi Aramco
 ========================================================================================================
 
---- BEFORE (today's parser, the pages as they are served): 4,243 characters of a 16,000 budget  (fits: True), sector=non_bank, peer class recorded by the pipeline=non_bank
+--- BEFORE (today's parser, the pages as they are served): 4,298 characters of a 16,000 budget  (fits: True), sector=non_bank, peer class recorded by the pipeline=non_bank
     Balance Sheet       None@None  34 rows (+8 omitted)  aggregation=None
     quarters: none
     calculations:
@@ -320,9 +322,9 @@ measured over all 653 tickers in section 4.
       - A SECTOR PERCENTILE IN P2 IS A RANK INSIDE THE PIPELINE'S OWN `non_bank` PEER CLASS, not inside
         the sector the exchange publishes. On 2026-10-29 that class was short the 140 tickers the
         pipeline had misfiled as banks; adding them back moves these ranks by at most 4.7 percentile
-        points.
+        points, and 1,343 of its 1,673 scored rows do not move at all.
 
---- AFTER (the repaired parser, same pages, patched gauge stage): 10,843 characters of a 16,000 budget  (fits: True), sector=non_bank, peer class recorded by the pipeline=non_bank
+--- AFTER (the repaired parser, same pages, patched gauge stage): 10,898 characters of a 16,000 budget  (fits: True), sector=non_bank, peer class recorded by the pipeline=non_bank
     Income Statement    TTM@2026-06  18 rows (+0 omitted)  aggregation=sum_quarters
         source columns: ['2025-09', '2025-12', '2026-03', '2026-06']
         'Shares Outstanding (Million)' is aggregated as end_quarter_position, not as the section's rule
@@ -387,7 +389,7 @@ measured over all 653 tickers in section 4.
       - A SECTOR PERCENTILE IN P2 IS A RANK INSIDE THE PIPELINE'S OWN `non_bank` PEER CLASS, not inside
         the sector the exchange publishes. On 2026-10-29 that class was short the 140 tickers the
         pipeline had misfiled as banks; adding them back moves these ranks by at most 4.7 percentile
-        points.
+        points, and 1,343 of its 1,673 scored rows do not move at all.
 
     the fundamentals strip (ranks kept):
       gauge                      value          status    rank  vintage  note
@@ -561,7 +563,7 @@ measured over all 653 tickers in section 4.
 2010_TADAWUL  SABIC
 ========================================================================================================
 
---- BEFORE (today's parser, the pages as they are served): 4,198 characters of a 16,000 budget  (fits: True), sector=non_bank, peer class recorded by the pipeline=non_bank
+--- BEFORE (today's parser, the pages as they are served): 4,253 characters of a 16,000 budget  (fits: True), sector=non_bank, peer class recorded by the pipeline=non_bank
     Balance Sheet       None@None  34 rows (+24 omitted)  aggregation=None
     quarters: none
     calculations:
@@ -585,9 +587,9 @@ measured over all 653 tickers in section 4.
       - A SECTOR PERCENTILE IN P2 IS A RANK INSIDE THE PIPELINE'S OWN `non_bank` PEER CLASS, not inside
         the sector the exchange publishes. On 2026-10-29 that class was short the 140 tickers the
         pipeline had misfiled as banks; adding them back moves these ranks by at most 4.7 percentile
-        points.
+        points, and 1,343 of its 1,673 scored rows do not move at all.
 
---- AFTER (the repaired parser, same pages, patched gauge stage): 9,543 characters of a 16,000 budget  (fits: True), sector=non_bank, peer class recorded by the pipeline=non_bank
+--- AFTER (the repaired parser, same pages, patched gauge stage): 9,598 characters of a 16,000 budget  (fits: True), sector=non_bank, peer class recorded by the pipeline=non_bank
     Income Statement    TTM@2026-06  15 rows (+0 omitted)  aggregation=sum_quarters
         source columns: ['2025-09', '2025-12', '2026-03', '2026-06']
         'Shares Outstanding (Million)' is aggregated as end_quarter_position, not as the section's rule
@@ -642,7 +644,7 @@ measured over all 653 tickers in section 4.
       - A SECTOR PERCENTILE IN P2 IS A RANK INSIDE THE PIPELINE'S OWN `non_bank` PEER CLASS, not inside
         the sector the exchange publishes. On 2026-10-29 that class was short the 140 tickers the
         pipeline had misfiled as banks; adding them back moves these ranks by at most 4.7 percentile
-        points.
+        points, and 1,343 of its 1,673 scored rows do not move at all.
 
     the fundamentals strip (ranks kept):
       gauge                      value          status    rank  vintage  note
@@ -677,26 +679,34 @@ gauges the vintage check withholds: 0
 by gauge: {}
 ```
 
-And the 20 companies revised inside their own fiscal year and period, re-run: still 20 of 20, now
-naming the section each figure was read from.
+---
+
+## 8. How far the two vote changes move, and the worst case for the budget
+
+Two of the review's findings were about the peer-class vote: `sector_of` changed from taking the
+first gauge that carried a sector to taking the majority, inside what read as a refactor; and the
+tie-break kept whichever key an unordered SELECT happened to return first. Both are real. Neither
+moves a single ticker on the data as it stands, and saying so is part of reporting them
+honestly - a guard against a state the data does not reach is still worth having, but it is not a
+correction of something live.
 
 ```
-1. THE REVISION CHECK ON AN UNMODIFIED DATABASE (it must flag nothing)
---- the published database, 653 tickers: 653 tickers
-    vintage basis: {'period': 6237, 'inputs': 293}
-    gauges the vintage check withholds: 0
-    peer classes: {'bank': 204, 'non_bank': 408, 'insurance': 41}
-    sector ranks: 196 withheld, 1758 kept
-    false positives: 0
+DOES ANY TICKER HAVE GAUGES THAT DISAGREE ABOUT ITS SECTOR?
+  The review found two things about the vote: sector_of changed from first-row to majority
+  inside a refactor, and the tie-break kept whichever key an unordered SELECT returned
+  first. Both are real, and this is how much they move on the data as it stands.
+  tickers carrying a recorded sector:        653
+  whose gauge rows DISAGREE about it:        0
+  whose vote is TIED:                        0
 
-    gauges the vintage check withholds: 20  {'net_margin': 20}
-      2010_KSE net_margin: computed from 'الايرادات' = 23.64 while the statements now carry 24.35 (Income Statement) for the same fiscal year 2025: the figure was revised after 
-      2012_KSE net_margin: computed from 'الايرادات' = 0.19 while the statements now carry 0.20 (Income Statement) for the same fiscal year 2025: the figure was revised after th
-      202_KSE net_margin: computed from 'الايرادات' = 14.97 while the statements now carry 15.42 (Income Statement) for the same fiscal year 2025: the figure was revised after 
-      205_KSE net_margin: computed from 'الايرادات' = 1,485.06 while the statements now carry 1,529.61 (Income Statement) for the same fiscal year 2025: the figure was revised 
-      235_KSE net_margin: computed from 'الايرادات' = 3.07 while the statements now carry 3.16 (Income Statement) for the same fiscal year 2025: the figure was revised after th
-    peer classes: {'bank': 204, 'non_bank': 408, 'insurance': 41}
-    sector ranks: 196 withheld, 1758 kept
-    expected 20, caught 20
+  So neither change moves a single ticker today: every ticker that records a sector at all
+  records the same one on every gauge row. The majority rule and the deterministic
+  tie-break are guards against a state the data does not currently reach, which is worth
+  saying plainly rather than implying they corrected something live.
 
+EVERY TICKER OF THE REPAIRED PARSE AGAINST EVERY PEER CLASS, for the budget
+  The earlier run forced `bank` on every company; this one tries all four classes, so the
+  longest limitation each company could carry is the one measured.
+  128 datasets, 0 over the 16,000-character budget
+  median 8,433   largest 13,142 (1120_TADAWUL as bank)   headroom 2,858
 ```
