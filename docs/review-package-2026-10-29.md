@@ -490,9 +490,17 @@ construction. Coverage is now the tags the seat itself wrote; `flags.cited` alre
 the engine added, so a seat that used its evidence without attributing it shows as a high `cited`
 beside an `uncovered` — a different fault from not reading it at all, and now distinguishable.
 
+**The bounded-dataset assembly was reviewed too, and found nothing.** It decides which rows a seat
+sees, so it was the last place a defect could change a figure. Three candidates were measured
+rather than argued about: a statement with rows but no value column (**0 of 653**); `row_rules`
+keyed by label, where a repeated label would attribute a row's aggregation rule to the wrong row
+(**548 balance sheets do carry a repeated label**, but **0** of the 11 `row_rules` entries in the
+repaired parse land on one, before or after the repair); and the row cap, which takes protected
+lines first and was already fixed during Priority One. A pass that finds nothing is worth
+recording, so the next reader knows it was checked rather than skipped.
+
 **What this says about the rest.** Two review passes over four commits found 18 defects, 8 of
 which changed what somebody is shown. The pattern in the last three is one thing: **a measure that
 cannot be computed must say so, every time, or the room cannot tell an absent figure from one
-nobody computed.** The parts still unreviewed at this depth are the statements endpoint, the
-bounded-dataset assembly and the web transcript; nothing there produces a figure a seat reads as a
-fact, which is why they came last, not because they were checked.
+nobody computed.** What remains unreviewed at this depth is the statements endpoint and the web
+transcript — presentation of figures computed elsewhere, which is why they came last.
