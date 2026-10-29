@@ -307,6 +307,120 @@ def test_checks_cite_flag_and_remove_advice():
     assert advice_in("Buy on weakness", short=True) and not advice_in("Covered only if margins hold", short=True)
 
 
+# --- the Chair's rulings -----------------------------------------------------------------------
+
+
+def a_verdict(**over):
+    raw = {
+        "headline": "The payout is covered on the figures",
+        "answer": "The room reads the payout as covered.",
+        "rulings": [
+            {"on": "Whether the payout is covered", "between": ["buffett", "marks"],
+             "verdict": "settled", "grounds": "The payout of 1.00 decides it for Buffett."},
+            {"on": "What the cycle is worth", "between": ["marks", "lynch"],
+             "verdict": "judgment", "grounds": "Both weigh the same figures differently."},
+        ],
+        "gaps": ["The data has no earnings forecasts."],
+    }
+    return {**raw, **over}
+
+
+def ruling_room():
+    debate = a_room()
+    debate.state.faultlines = {"lines": [{"title": "t", "between": ["buffett", "marks"], "text": "x"}], "summary": ""}
+    return debate
+
+
+def test_the_chair_rules_on_each_fault_line_and_says_what_decided_it():
+    debate = ruling_room()
+    data = debate.check_verdict(a_verdict())["data"]
+    assert [r["verdict"] for r in data["rulings"]] == ["settled", "judgment"]
+    assert data["rulings"][0]["between"] == ["buffett", "marks"]
+    assert "decides it" in data["rulings"][0]["grounds"]
+
+
+def test_a_ruling_must_be_one_of_the_three_the_room_recognises():
+    """"The room split" dressed as a ruling is the thing this stage exists to stop."""
+    from app.debate.engine import RULINGS
+
+    debate = ruling_room()
+    assert set(RULINGS) == {"settled", "unsettled", "judgment"}
+    bad = a_verdict(rulings=[{"on": "x", "between": [], "verdict": "the room split", "grounds": "g"}])
+    with pytest.raises(ValueError, match="one of settled, unsettled, judgment"):
+        debate.check_verdict(bad)
+    # a verdict written with a space or in capitals is the same verdict, not a refusal
+    spaced = a_verdict(rulings=[{"on": "x", "between": [], "verdict": "NOT A DISAGREEMENT", "grounds": "g"}])
+    with pytest.raises(ValueError):
+        debate.check_verdict(spaced)
+    fine = a_verdict(rulings=[{"on": "x", "between": [], "verdict": "Judgment", "grounds": "g"}])
+    assert debate.check_verdict(fine)["data"]["rulings"][0]["verdict"] == "judgment"
+
+
+def test_a_chair_that_named_fault_lines_must_rule_on_them():
+    debate = ruling_room()
+    with pytest.raises(ValueError, match="rule on each fault line"):
+        debate.check_verdict(a_verdict(rulings=[]))
+    # a room that never reached the fault lines has nothing to rule on
+    quiet = a_room()
+    assert quiet.check_verdict(a_verdict(rulings=[]))["data"]["rulings"] == []
+
+
+def test_what_the_room_settled_is_not_also_listed_as_an_open_split():
+    """`disagreements` is what is still open, so a ruling that settled something leaves it out.
+    The engine joins the Chair's own words for it; it writes none of its own."""
+    debate = ruling_room()
+    data = debate.check_verdict(a_verdict())["data"]
+    assert len(data["disagreements"]) == 1
+    assert "cycle" in data["disagreements"][0]
+    assert "payout is covered" not in data["disagreements"][0]
+    both_open = a_verdict(rulings=[
+        {"on": "A", "between": [], "verdict": "unsettled", "grounds": "no figure for it"},
+        {"on": "B", "between": [], "verdict": "judgment", "grounds": "a matter of weight"},
+    ])
+    assert len(debate.check_verdict(both_open)["data"]["disagreements"]) == 2
+
+
+def test_a_ruling_with_no_grounds_is_flagged():
+    """A verdict with nothing behind it is the failure mode of asking for one at all."""
+    debate = ruling_room()
+    bare = a_verdict(rulings=[{"on": "Whether it is covered", "between": [], "verdict": "settled", "grounds": ""}])
+    checked = debate.check_verdict(bare)
+    assert checked["flags"]["unruled"] == ["Whether it is covered"]
+    assert debate.check_verdict(a_verdict())["flags"]["unruled"] == []
+
+
+def test_the_chair_is_told_to_rule_on_the_evidence_and_not_on_a_head_count():
+    from app.debate import roster
+
+    chair = roster.chair()
+    answer = chair.sections["Stage: The answer"]
+    assert "A majority is never the grounds for a ruling" in answer
+    assert "ruling on the evidence, not counting hands" in answer
+    # all three outcomes are offered, including the one that refuses to decide
+    assert "the evidence settles it" in answer
+    assert "the evidence cannot settle it" in answer
+    assert "not a disagreement about the data" in answer
+    assert "a manufactured resolution is worse than an open question" in answer
+    # and neutrality is reconciled with ruling rather than left to contradict it
+    who = chair.sections["Who the Chair is"]
+    assert "adjudicator" in who and "not that it declines to decide" in who
+    assert "never on a head count" in who
+    # the fault-lines stage still comes before the challenges, so it still does not resolve
+    assert "Do not resolve them" in chair.sections["Stage: Fault lines"]
+
+
+def test_a_room_without_a_model_still_rules(room):
+    """The stand-in names one fault line, so it rules on one: `judgment`, honestly, because
+    "which figures matter most" is a difference of weight by construction."""
+    signup(room)
+    events = convene(room)
+    verdict = next(e["turn"]["data"] for e in events if e.get("type") == "turn" and e["turn"]["stage"] == "verdict")
+    assert len(verdict["rulings"]) == 1
+    assert verdict["rulings"][0]["verdict"] == "judgment"
+    assert verdict["rulings"][0]["between"], "a ruling names the advisors it is between"
+    assert verdict["disagreements"], "a judgment call is still an open disagreement"
+
+
 # --- status, gate, allowance ---------------------------------------------------------------------------
 
 
@@ -552,7 +666,14 @@ class FakeRouter:
                 "headline": "The data supports a covered dividend",
                 "answer": "The room reads the payout as covered, with Marks and Lynch on the conditional reading.",
                 "favours": "The room splits evenly between the two readings.",
-                "disagreements": ["Marks reads the cycle differently."],
+                "rulings": [
+                    {"on": "Whether the payout is covered", "between": ["buffett", "marks"],
+                     "verdict": "settled",
+                     "grounds": "The payout of 41.90 % against earnings decides it for Buffett."},
+                    {"on": "What the cycle is worth", "between": ["marks", "lynch"],
+                     "verdict": "judgment",
+                     "grounds": "Both read the same figures and weigh the cycle differently."},
+                ],
                 "gaps": ["No earnings forecasts."],
             }
         )

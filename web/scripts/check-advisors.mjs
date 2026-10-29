@@ -215,6 +215,27 @@ async function formatChecks(page, locale, standIn) {
   const answer = (await page.locator("[data-answer]").textContent()) ?? "";
   check(answer.trim().length > 0, `${locale}: the Chair wrote the room's complete answer`);
   note(`INFO  ${locale}: the Chair's answer is ${words(answer)} words (asked for ${CHAIR_WORDS.join("–")})`);
+  // The Chair rules on each fault line it named (chair.md, "Stage: The answer"), and the screen
+  // marks each ruling with its verdict. Reported, not failed: which way a ruling goes is the
+  // Chair's to decide on the evidence, and a room where every ruling came back `judgment` is
+  // worth looking at rather than worth failing - it may be an honest reading of a split room, or
+  // a Chair declining to decide. The count against the fault lines is the part that would show a
+  // fault line going unruled.
+  const faultLines = await page.locator("[data-stage-view=faultlines] [data-fault-line]").count();
+  const rulings = await page.locator("[data-ruling]").all();
+  const verdicts = {};
+  for (const r of rulings) {
+    const v = (await r.getAttribute("data-ruling")) ?? "?";
+    verdicts[v] = (verdicts[v] ?? 0) + 1;
+  }
+  note(
+    `INFO  ${locale}: the Chair ruled on ${rulings.length} of ${faultLines} fault lines` +
+      (rulings.length
+        ? ` (${Object.entries(verdicts)
+            .map(([v, n]) => `${v} ${n}`)
+            .join(", ")})`
+        : " — no rulings on screen"),
+  );
   // DebateText splits a text on blank lines into paragraphs, so a long answer in one block is a wall of
   // text. It happened once: a system-prompt line reading "use no line breaks" flattened every long text
   // (2026-10-27). Reported, never failed — a short answer may honestly be one paragraph.

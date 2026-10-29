@@ -62,12 +62,23 @@ export type FaultLines = { lines: { title: string; between: string[]; text: stri
 /** Sessions held before 2026-10-24 scored every option instead of giving a final word. */
 export type Vote = { scores: Record<string, number>; top: string; reason: string };
 export type Credited = { seat: string | null; point: string };
+/** `verdict` is engine.RULINGS: the evidence settles it, cannot settle it, or the advisors read
+ *  the same figures and weigh them differently. */
+export type Ruling = {
+  on: string;
+  between: string[];
+  verdict: "settled" | "unsettled" | "judgment";
+  grounds: string;
+};
 export type Verdict = {
   headline: string;
   /** The room's complete answer (new sessions). Scored sessions have `summary`, `why` and `watch_out` instead. */
   answer?: string;
   /** In a choice session: which reading the room favours and how firmly. */
   favours?: string;
+  /** The Chair's ruling on each fault line it named (sessions held from 2026-10-29). Sessions
+   *  before that reported the splits without ruling on them and have `disagreements` only. */
+  rulings?: Ruling[];
   disagreements: string[];
   gaps: string[];
   summary?: string;

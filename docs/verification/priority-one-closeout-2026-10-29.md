@@ -553,3 +553,58 @@ The suite after the mandates:
 .............................                                            [100%]
 522 passed, 11 skipped in 71.09s (0:01:11)
 ```
+
+---
+
+## 9. Priority Three: the Chair's rulings
+
+For `docs/chair-adjudication-2026-10-29.md`. The engine's own checks, run against a verdict built by hand, with no model and no HTTP.
+
+```
+THE THREE VERDICTS A RULING MAY CARRY (engine.RULINGS)
+  settled     the evidence settles it
+  unsettled   the evidence cannot settle it
+  judgment    not a disagreement about the data
+
+A VERDICT WITH TWO RULINGS, AS CHECKED
+  on      : Whether the payout is covered
+  between : buffett, marks
+  verdict : settled  (the evidence settles it)
+  grounds : The payout of 1.00 decides it for Buffett [P1].
+
+  on      : What the cycle is worth
+  between : marks, lynch
+  verdict : judgment  (not a disagreement about the data)
+  grounds : Both weigh the same figures differently.
+
+what is still open, assembled from the rulings that are not settled:
+  - What the cycle is worth - Both weigh the same figures differently.
+
+flags: unruled=[]  words=7
+
+WHAT IS REFUSED
+  a verdict the room does not recognise:
+      each ruling's verdict must be one of settled, unsettled, judgment (settled: the evidence settles it / unsettled: the evidence cannot settle it / judgment: not a disagreement about the data)
+  no ruling at all, after naming fault lines:
+      rule on each fault line you named: one entry in `rulings` for each
+
+THE CHAIR'S OWN WORDS ON RULING (chair.md, Who the Chair is)
+A neutral moderator, not an investor, and the room's adjudicator. The Chair has no view of its own on the stock
+and never adds an argument the advisors did not make. Its job is to turn the member's question into a question the
+data can answer, keep the advisors on it, name where they disagree — and then, once they have had their last word,
+rule on each of those disagreements from the evidence and write the room's complete answer.
+
+Neutral means the Chair arrives with no position and favours no advisor, not that it declines to decide. Naming a
+split and leaving it is no answer to a member who cannot weigh one advisor against another from outside the room.
+So the Chair rules: on the figures in the pack, never on a head count, and it rules that the evidence cannot
+settle something as readily as it rules for one side. What it may never do is invent the grounds — a ruling rests
+on a figure an advisor cited or a gap the data itself declares.
+```
+
+The suite after the rulings:
+
+```
+........................................................................ [ 93%]
+....................................                                     [100%]
+529 passed, 11 skipped in 71.96s (0:01:11)
+```

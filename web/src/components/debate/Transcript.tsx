@@ -215,7 +215,8 @@ function FaultLinesView({ room }: { room: Room }) {
   return (
     <div className="mt-2 flex flex-col">
       {d.lines.map((f, i) => (
-        <div key={i} className="border-t border-line py-2 first:border-t-0">
+        // data-fault-line so the checker can count the Chair's rulings against the lines it named.
+        <div key={i} data-fault-line className="border-t border-line py-2 first:border-t-0">
           <p className="font-semibold text-text" dir="auto">
             {f.title}
           </p>
@@ -414,7 +415,26 @@ export function VerdictView({ room }: { room: Room }) {
             <ul className="flex flex-col gap-1.5">{credited(v.watch_out, 0)}</ul>
           </div>
         )}
-        {v.disagreements.length > 0 && (
+        {(v.rulings?.length ?? 0) > 0 && (
+          <div>
+            <p className="label-caps mb-1.5 text-muted">{t("rulings")}</p>
+            <ul className="flex flex-col gap-2.5">
+              {v.rulings!.map((r, i) => (
+                <li key={i} data-ruling={r.verdict}>
+                  <p className="text-text-soft" dir="auto">
+                    <span className="font-medium text-text">{r.on}</span>
+                    <span className="text-muted"> — {t(`ruling.${r.verdict}`)}</span>
+                  </p>
+                  {r.grounds && (
+                    <DebateText text={r.grounds} flags={turn?.flags} sources={s.sources} className="text-text-soft" />
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {/* Sessions held before the Chair ruled on anything carry the splits and no rulings. */}
+        {(v.rulings?.length ?? 0) === 0 && v.disagreements.length > 0 && (
           <div>
             <p className="label-caps mb-1.5 text-muted">{t("disagree")}</p>
             <ul className="flex list-disc flex-col gap-1 ps-4 text-text-soft marker:text-muted" dir="auto">

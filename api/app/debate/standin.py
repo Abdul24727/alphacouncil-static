@@ -137,7 +137,17 @@ def make_asker(pack: Pack, advisors: list[Seat], locale: str, question: str = ""
                 "headline": headline,
                 "answer": (("هذه إجابة بديلة بلا نموذج ذكاء اصطناعي. " if ar else "This is a stand-in session without an AI model. ") + body),
                 "favours": (("تميل الغرفة إلى هذه القراءة." if ar else "The room leans to this reading.") if label else ""),
-                "disagreements": [],
+                # One ruling on the one fault line the stand-in names, so a session held without a
+                # model still shows the shape the screen renders. `judgment` is the honest verdict
+                # for it: the stand-in's fault line is "which figures matter most", which is a
+                # difference of weight by construction and not something evidence settles.
+                "rulings": [{
+                    "on": ("الأرقام التي تهم أكثر" if ar else "Which figures matter most"),
+                    "between": [a.id for a in advisors[:2]],
+                    "verdict": "judgment",
+                    "grounds": ("يقرأ المستشارون الأرقام نفسها ويرجّحونها بشكل مختلف."
+                                if ar else "The advisors read the same figures and weigh them differently."),
+                }],
                 "gaps": [("لا تتضمن البيانات توقعات للأرباح." if ar else "The data has no earnings forecasts.")],
             }
         return check(raw), Usage(model="stand-in")

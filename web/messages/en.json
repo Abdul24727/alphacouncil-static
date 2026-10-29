@@ -287,7 +287,13 @@
     "favoured": "{n} of {m} advisors ended up leaning to option {option}.",
     "ofN": "{n}/{m}",
     "noOptions": "No options: the room answers the question itself.",
-    "topVote": "Top option and its score"
+    "topVote": "Top option and its score",
+    "rulings": "The Chair's rulings",
+    "ruling": {
+      "settled": "The evidence settles it",
+      "unsettled": "The evidence cannot settle it",
+      "judgment": "Not a disagreement about the data"
+    }
   },
   "placeholder": {
     "phase": "Built in Phase {phase}",

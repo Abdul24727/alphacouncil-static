@@ -32,6 +32,17 @@ STAGES = ("brief", "openings", "faultlines", "debate", "final", "verdict")
 LEGACY_STAGES = ("brief", "openings", "faultlines", "debate", "vote", "verdict")
 OPTION_IDS = ("A", "B", "C", "D")
 MODES = ("choice", "open")
+
+# What the Chair may rule on a fault line (chair.md, "Stage: The answer"). Three and only three,
+# because the interesting one is the third: a room can disagree about what the figures are worth
+# rather than about what they are, and a Chair with only "settled" and "unsettled" to choose from
+# would have to dress that as a finding. "unsettled" is a ruling too - the figure that would
+# decide it is absent, and saying which figure that is tells the member more than a split does.
+RULINGS = {
+    "settled": "the evidence settles it",
+    "unsettled": "the evidence cannot settle it",
+    "judgment": "not a disagreement about the data",
+}
 LANGUAGE = {"en": "English", "ar": "Arabic (Modern Standard Arabic)"}
 
 # The heading of the Chair's section for each step (chair.md "Stage: …"), and the step's name in the prompt.
@@ -363,15 +374,51 @@ class Debate:
         answer = c.text(raw.get("answer"), 4_000)
         if not answer:
             raise ValueError("write the room's complete answer in the `answer` field")
+        # One ruling per fault line the Chair named. A ruling with no verdict the room recognises
+        # is refused rather than carried: "the room split" dressed as a ruling is the thing this
+        # stage exists to stop, and the Chair is asked again.
+        ids = {a.id for a in self.ctx.advisors}
+        rulings = []
+        for r in (raw.get("rulings") or [])[:3]:
+            if not isinstance(r, dict):
+                continue
+            on = c.text(r.get("on"), 240)
+            verdict = str(r.get("verdict") or "").strip().lower().replace(" ", "_")
+            if not on:
+                continue
+            if verdict not in RULINGS:
+                raise ValueError(
+                    f"each ruling's verdict must be one of {', '.join(RULINGS)}"
+                    f" ({' / '.join(f'{k}: {v}' for k, v in RULINGS.items())})"
+                )
+            rulings.append({
+                "on": on,
+                "between": list(dict.fromkeys(x for x in (r.get("between") or []) if x in ids)),
+                "verdict": verdict,
+                "grounds": c.text(r.get("grounds"), 600),
+            })
+        if self.state.faultlines and not rulings:
+            raise ValueError("rule on each fault line you named: one entry in `rulings` for each")
         data = {
             "headline": headline,
             "answer": answer,
             # Only a choice session has a reading to favour; an open one answers the question outright.
             "favours": c.text(raw.get("favours"), 400) if self.state.options() else "",
-            "disagreements": [c.text(x, 400) for x in (raw.get("disagreements") or raw.get("split") or [])[:3] if isinstance(x, str) and x.strip()],
+            "rulings": rulings,
+            # Kept for the screens and the sessions that were held before the Chair ruled on
+            # anything: the disagreements that are still open, in the Chair's own words. Assembled
+            # here from the rulings rather than asked for twice - the engine joins the Chair's
+            # text, it never writes any.
+            "disagreements": [
+                f"{r['on']} - {r['grounds']}" if r["grounds"] else r["on"]
+                for r in rulings
+                if r["verdict"] != "settled"
+            ]
+            or [c.text(x, 400) for x in (raw.get("disagreements") or raw.get("split") or [])[:3] if isinstance(x, str) and x.strip()],
             "gaps": [c.text(x, 400) for x in (raw.get("gaps") or [])[:3] if isinstance(x, str) and x.strip()],
         }
-        return {"data": data, "flags": {**c.flags(), "words": words_in(answer)}}
+        return {"data": data, "flags": {**c.flags(), "words": words_in(answer),
+                                        "unruled": [r["on"] for r in rulings if not r["grounds"]]}}
 
     # --- running -----------------------------------------------------------------------------------
 
@@ -521,7 +568,10 @@ class Debate:
             '{"headline": "the room\'s answer in at most 16 words, no figures", '
             f'"answer": "the room\'s complete answer, {chair_low} to {chair_high} words", '
             + ('"favours": "one sentence on which reading the room favours and how firmly", ' if choice else "")
-            + '"disagreements": ["where the room still splits, one sentence each"], '
+            + '"rulings": [{"on": "what the fault line was about, one line", '
+            '"between": ["advisor ids"], '
+            f'"verdict": "one of {" | ".join(RULINGS)}", '
+            '"grounds": "the figure it turns on and why it decides it, or which figure is missing"}], '
             '"gaps": ["what the data does not show that would have settled it, one sentence each"]}',
             self.check_verdict,
         )
