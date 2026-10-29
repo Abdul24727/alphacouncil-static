@@ -36,38 +36,85 @@ from pydantic import BaseModel
 
 FLOW_SECTIONS = ("Income Statement", "Cash Flow Statement")
 
-# Label groups, taken from the labels the data provider's grids actually carry (read off the
-# Tadawul and ADX templates on 2026-10-29), not from what a statement "should" be called. First
-# match wins, so the more specific label comes first.
-NET_INCOME = ("Net Income", "صافي الدخل", "الربح الصافي")
-NET_INCOME_BEFORE_UNUSUAL = ("Net Profit Before Unusual Items",)
-EXTRAORDINARY = ("Extraordinary income/expense",)
-EPS_REPORTED = ("Earning Per Share (Riyal)", "Earnings Per Share (Riyal)", "ربح السهم (درهم)")
-EPS_BEFORE_UNUSUAL = ("Earnings Per Share before unusual items (Riyal)",)
-SHARES = ("Shares Outstanding (Million)",)
-AVERAGE_SHARES = ("Average number of shares (Million)", "Weighted average number of shares")
-EQUITY_COMMON = ("Total Shareholders' Equity", "Total Shareholders Equity", "حقوق المساهمين")
-EQUITY_ALL = ("Total Owners Equity", "Total Owners' Equity")
-REVENUE = ("Sales", "Total Revenue", "Net Sales", "الايرادات", "المبيعات")
+# Label groups, read off the live database on 2026-10-29 with a count of the tickers carrying each
+# alias - not from what a statement "should" be called. Within a group the first entry that matches
+# wins, so the more specific label comes first.
+#
+# Two things make a group work across the Gulf. Labels are compared after `_norm`: whitespace
+# collapsed, English case folded, and the alef and ya forms unified, because the source is not
+# consistent about them ("إجمالي حقوق المساهمين" and "إجمالى حقوق المساهمين" are the same line on
+# 101 tickers between them). And an entry beginning with "~" matches any label that STARTS with
+# the rest, which is how one entry covers a per-share line whose unit is written into its name -
+# (فلس), (درهم), (ريال قطري), (بيسة) - without listing every currency in the region.
+PREFIX = "~"
+# Alef and ya forms only. The taa marbuta is deliberately left alone: folding ة into ه would make
+# two different words equal as often as it would unify one.
+_FORMS = str.maketrans({"\u0623": "\u0627", "\u0625": "\u0627", "\u0622": "\u0627", "\u0649": "\u064a"})
+
+
+def _norm(label: str) -> str:
+    return " ".join((label or "").translate(_FORMS).split()).casefold()
+
+
+def matches(label: str, entry: str) -> bool:
+    """Does this row's label answer to this group entry?"""
+    if entry.startswith(PREFIX):
+        return _norm(label).startswith(_norm(entry[len(PREFIX):]))
+    return _norm(label) == _norm(entry)
+
+
+NET_INCOME = ("Net Income", "\u0635\u0627\u0641\u064a \u0627\u0644\u062f\u062e\u0644", "\u0627\u0644\u0631\u0628\u062d \u0627\u0644\u0635\u0627\u0641\u064a")
+NET_INCOME_BEFORE_UNUSUAL = ("Net Profit Before Unusual Items",
+                             PREFIX + "\u0635\u0627\u0641\u064a \u0627\u0644\u062f\u062e\u0644 \u0642\u0628\u0644 \u0627\u0644\u0628\u0646\u0648\u062f \u0627\u0644\u0627\u0633\u062a\u062b\u0646\u0627\u0626\u064a\u0629")
+EXTRAORDINARY = ("Extraordinary income/expense", "\u0628\u0646\u062f \u0627\u0633\u062a\u062b\u0646\u0627\u0626\u064a")
+# The unit is inside the label on every Arabic grid, so these two are prefixes. "ربح السهم قبل"
+# does not begin with "ربح السهم (", so the bracket is what keeps the two apart.
+EPS_REPORTED = ("Earning Per Share (Riyal)", "Earnings Per Share (Riyal)",
+                PREFIX + "\u0631\u0628\u062d \u0627\u0644\u0633\u0647\u0645 (")
+EPS_BEFORE_UNUSUAL = ("Earnings Per Share before unusual items (Riyal)",
+                      PREFIX + "\u0631\u0628\u062d \u0627\u0644\u0633\u0647\u0645 \u0642\u0628\u0644 \u0627\u0644\u0628\u0646\u0648\u062f \u0627\u0644\u0627\u0633\u062a\u062b\u0646\u0627\u0626\u064a\u0629 (")
+SHARES = ("Shares Outstanding (Million)", "Number of Ordinary Shares (Millions)")
+# 408 tickers carry an average-share row, in the balance sheet of the Arabic grids. Before this
+# was measured the mean rule had no live example and was only exercised against the function.
+AVERAGE_SHARES = ("Average number of shares (Million)", "Weighted average number of shares",
+                  PREFIX + "\u0645\u062a\u0648\u0633\u0637 \u0639\u062f\u062f \u0627\u0644\u0627\u0633\u0647\u0645")
+EQUITY_COMMON = ("Total Shareholders' Equity", "Total Shareholders Equity",
+                 "\u0645\u062c\u0645\u0648\u0639 \u062d\u0642\u0648\u0642 \u0627\u0644\u0645\u0633\u0627\u0647\u0645\u064a\u0646",
+                 "\u0625\u062c\u0645\u0627\u0644\u064a \u062d\u0642\u0648\u0642 \u0627\u0644\u0645\u0633\u0627\u0647\u0645\u064a\u0646")
+# "Total Common Equity" is NOT common equity, whatever it is called: on 1180 it is 203,827.25,
+# exactly shareholders' equity plus minority interest plus equity sukuk, and the same holds on
+# 1010. Reading it as the common-equity denominator would understate every conventional Saudi
+# bank's return on equity by about a tenth. Checking the arithmetic caught what the name hid.
+EQUITY_ALL = ("Total Owners Equity", "Total Owners' Equity", "Total Common Equity",
+              "\u0645\u062c\u0645\u0648\u0639 \u062d\u0642\u0648\u0642 \u0627\u0644\u0645\u0644\u0643\u064a\u0629")
+REVENUE = ("Sales", "Total Revenue", "Net Sales", "\u0627\u0644\u0627\u064a\u0631\u0627\u062f\u0627\u062a", "\u0627\u0644\u0645\u0628\u064a\u0639\u0627\u062a")
 GROSS_INCOME = ("Gross Income",)
-OPERATING_INCOME = ("Operating Income",)
-TOTAL_ASSETS = ("Total Assets", "إجمالي الأصول")
-TCA = ("Total Current Assets",)
+OPERATING_INCOME = ("Operating Income", "\u0627\u062c\u0645\u0627\u0644\u064a \u062f\u062e\u0644 \u0627\u0644\u0639\u0645\u0644\u064a\u0627\u062a", "\u0627\u0644\u0631\u0628\u062d \u0627\u0644\u062a\u0634\u063a\u064a\u0644\u064a")
+TOTAL_ASSETS = ("Total Assets", "\u0645\u062c\u0645\u0648\u0639 \u0627\u0644\u0645\u0648\u062c\u0648\u062f\u0627\u062a",
+                "\u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0645\u0648\u062c\u0648\u062f\u0627\u062a", "\u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0623\u0635\u0648\u0644",
+                "\u0645\u062c\u0645\u0648\u0639 \u0627\u0644\u0623\u0635\u0648\u0644")
+TCA = ("Total Current Assets", "\u0645\u062c\u0645\u0648\u0639 \u0627\u0644\u0645\u0648\u062c\u0648\u062f\u0627\u062a \u0627\u0644\u0645\u062a\u062f\u0627\u0648\u0644\u0629")
 
 # Bank templates. A bank's top line is `Operating Income`, not `Sales`, and these lines have no
-# analogue outside a bank — which is why a bank gets its own measures instead of being pushed
-# through a price-to-sales ratio.
+# analogue outside a bank - which is why a bank gets its own measures instead of being pushed
+# through a price-to-sales ratio. Three templates are in the data: the Islamic one (financing
+# investments), the conventional Saudi one (loans and advances), and the Arabic one, which carries
+# net loans and deposits but NO performing/non-performing split and no provision stock - so asset
+# quality is genuinely absent there rather than merely unlabelled, and comes back `missing`.
 BANK_NET_FINANCING_INCOME = ("Net income from investments and financing activities",
-                             "Net Financing Income")
-BANK_OPERATING_EXPENSES = ("Operating Expenses",)
-BANK_PROVISIONS = ("Debt Provisions",)
-BANK_FINANCING = ("Net Financing Investments",)
-BANK_PERFORMING = ("Performing Financing Investments",)
-BANK_NPL = ("Non-performing Financing Investments",)
-BANK_LOSS_PROVISION = ("Financing Investments Loss Provision",)
-BANK_DEPOSITS = ("Customer Deposits",)
-BANK_INVESTMENTS = ("Investments",)
-BANK_DUE_FROM_BANKS = ("Due from Banks",)
+                             "Net Financing Income",
+                             "\u0635\u0627\u0641\u064a \u062f\u062e\u0644 \u0627\u0644\u0639\u0645\u0648\u0644\u0627\u062a \u0627\u0644\u062e\u0627\u0635\u0629")
+BANK_OPERATING_EXPENSES = ("Operating Expenses", "\u0627\u062c\u0645\u0627\u0644\u064a \u0645\u0635\u0627\u0631\u064a\u0641 \u0627\u0644\u0639\u0645\u0644\u064a\u0627\u062a")
+BANK_PROVISIONS = ("Debt Provisions", "\u0645\u062e\u0635\u0635\u0627\u062a \u0627\u0644\u062f\u064a\u0648\u0646")
+BANK_FINANCING = ("Net Financing Investments", "Net Loans & Advances",
+                  "\u0635\u0627\u0641\u064a \u0627\u0644\u0642\u0631\u0648\u0636 \u0648 \u0627\u0644\u0633\u0644\u0641")
+BANK_PERFORMING = ("Performing Financing Investments", "Performing Loans & Advances")
+BANK_NPL = ("Non-performing Financing Investments", "Non-Performing Loans & Advances (NPLs)")
+BANK_LOSS_PROVISION = ("Financing Investments Loss Provision", "Provision for Credit Losses (PCL)")
+BANK_DEPOSITS = ("Customer Deposits", "Customers' Deposits", "\u0648\u062f\u0627\u0626\u0639 \u0627\u0644\u0639\u0645\u0644\u0627\u0621")
+BANK_INVESTMENTS = ("Investments", "\u0625\u0633\u062a\u062b\u0645\u0627\u0631\u0627\u062a", "\u0627\u0633\u062a\u062b\u0645\u0627\u0631\u0627\u062a")
+BANK_DUE_FROM_BANKS = ("Due from Banks", "Due from Banks & Other FI's",
+                       "\u0623\u0631\u0635\u062f\u0629 \u0644\u062f\u0649 \u0627\u0644\u0628\u0646\u0648\u0643 \u0648 \u0627\u0644\u0645\u0624\u0633\u0633\u0627\u062a \u0627\u0644\u0645\u0627\u0644\u064a\u0629 \u0627\u0644\u0623\u062e\u0631\u0649")
 
 # What the fundamentals strip shows, and what each number actually is. The pipeline computes some
 # of these from statements and publishes others from the data source; a reader cannot recover a
@@ -244,14 +291,17 @@ class Items:
         self.latest = self.years[0] if self.years else None
 
     def find(self, labels: tuple[str, ...], section: str | None = None, year: int | None = None) -> Cell | None:
+        """The first row answering to the earliest entry of this group. Entry order is priority:
+        a group's more specific label comes first, so a row matching it wins over one matching a
+        later entry even where the later one appears earlier in the statement."""
         year = self.latest if year is None else year
-        for label in labels:
+        for entry in labels:
             for r in self.rows:
                 if (
-                    r.label == label
-                    and r.fiscal_year == year
+                    r.fiscal_year == year
                     and r.value is not None
                     and (section is None or r.section == section)
+                    and matches(r.label, entry)
                 ):
                     return r
         return None
@@ -292,8 +342,8 @@ class Items:
         return sorted({q.period_end for q in self.quarterly if q.section == section and q.period_end})
 
     def quarter_series(self, labels: tuple[str, ...], section: str = "Income Statement") -> list[Cell]:
-        for label in labels:
-            got = [q for q in self.quarterly if q.label == label and q.section == section]
+        for entry in labels:
+            got = [q for q in self.quarterly if q.section == section and matches(q.label, entry)]
             if got:
                 return sorted(got, key=lambda q: q.period_end or "")
         return []
@@ -392,17 +442,42 @@ def window_label(p: Period) -> str | None:
 
 
 def sector_of(items: Items, gauge_inputs: dict[str, dict]) -> str:
-    """The pipeline's own verdict where it recorded one, else the same test it uses: a company
-    whose balance sheet has neither a gross income line nor a current-asset split is a bank.
+    """Which kind of company this is, for deciding which measures mean anything.
 
-    "bank" is a positive finding and never a default. The test is the absence of two labels, so
-    with no statements at all — or with no balance sheet for the absence to be an absence in —
-    every company would pass it, and the generic ratios a bank is not read on would be withheld
-    from the companies that are read on exactly those. Nothing to go on is `unknown`, and
-    `unknown` suppresses nothing."""
-    for inputs in gauge_inputs.values():
-        if isinstance(inputs, dict) and inputs.get("sector"):
-            return str(inputs["sector"])
+    The pipeline records its own verdict on every gauge row and that is taken first. But the test
+    behind it - no gross income line and no current-asset split - is an ABSENCE, and an absence
+    is a weak thing to build on: the Arabic statement templates carry neither line for ordinary
+    companies either. Measured on the live database on 2026-10-29, the pipeline calls 204 tickers
+    banks, of which only 53 are in the Banks sector the site shows; the rest are 27 insurers, 20
+    real-estate companies, 13 industrials, 17 consumer companies and 4 energy companies.
+
+    So a bank claim, from wherever it comes, must be corroborated by something a bank positively
+    has: a customer-deposit line or a lending balance. On the same data that leaves 64 - all 53 of
+    the site's banks, 10 financing companies and one unlabelled - and drops all 140 others. Not one
+    company the site calls a bank is dropped by it.
+
+    A bank claim the balance sheet does not corroborate yields `unknown`, which suppresses nothing:
+    we know from the statements that this is not a bank, and the absence of two labels does not say
+    what it is instead."""
+    recorded = next(
+        (str(i["sector"]) for i in gauge_inputs.values() if isinstance(i, dict) and i.get("sector")),
+        None,
+    )
+    sector = recorded or _detected(items)
+    if sector != "bank":
+        return sector
+    lends = items.find(BANK_FINANCING, "Balance Sheet") is not None
+    deposits = items.find(BANK_DEPOSITS, "Balance Sheet") is not None
+    return "bank" if (lends or deposits) else "unknown"
+
+
+def _detected(items: Items) -> str:
+    """The pipeline's own test, for a database whose gauges do not carry a sector.
+
+    "bank" is a positive finding and never a default. With no statements at all - or with no
+    balance sheet for the absence to be an absence in - every company would pass it, and the
+    generic ratios a bank is not read on would be withheld from the companies that are read on
+    exactly those."""
     if not items.rows or "Balance Sheet" not in {r.section for r in items.rows if r.fiscal_year == items.latest}:
         return "unknown"
     if items.find(GROSS_INCOME) is None and items.find(TCA) is None:
@@ -633,11 +708,19 @@ def _returns(items: Items, sector: str) -> list[Calculation]:
     base = {"metric": "roe_on_period_end_common_equity",
             "formula": "net income / total shareholders' equity x 100",
             "window": _window_text(items, ni, equity)}
-    if ni is None or equity is None or not equity.value:
+    if ni is None or equity is None or not equity.value or equity.value < 0:
+        # Negative equity is the case worth spelling out. A loss over negative equity comes back
+        # POSITIVE and large - on one Qatari company in the live data, a loss of 125.17 over equity
+        # of -18.99 gives +659%, which reads as a spectacular return and is nothing of the kind.
+        # The published ratio is nulled for the same reason (ratios.RatioSources: "ROE over
+        # negative equity reads as a high positive return: not meaningful"), and a figure withheld
+        # with its reason is worth more here than a number no one can use.
         return [Calculation(**base, operands=_ops(ni, equity), missing=[
             "no net income line" if ni is None else
             "no total shareholders' equity line on the balance sheet" if equity is None else
-            "shareholders' equity is zero"])]
+            f"shareholders' equity is {equity.value:,.2f}: a return on negative equity comes back"
+            " positive whatever the earnings were, so there is no meaningful figure to give"
+            if equity.value < 0 else "shareholders' equity is zero"])]
     same_date = bool(equity.period_end and flow.period_end and equity.period_end == flow.period_end)
     checks = [
         f"earnings cover {window_label(flow) or 'the reported window'} and equity is struck at"
@@ -872,7 +955,7 @@ QUARTERLY_INTEREST = (
 # Rows the budget trim must not drop: the totals, the earnings, the share count and the per-share
 # figures. Everything a measure here divides is one of these, and a trim that removed one would
 # leave a calculation whose operands are nowhere in the statements beside it.
-PROTECTED_LABELS = frozenset((
+PROTECTED_GROUPS = ((
     *REVENUE, *GROSS_INCOME, *OPERATING_INCOME, *NET_INCOME, *NET_INCOME_BEFORE_UNUSUAL,
     *EXTRAORDINARY, *EPS_REPORTED, *EPS_BEFORE_UNUSUAL, *SHARES, *AVERAGE_SHARES,
     *EQUITY_COMMON, *EQUITY_ALL, *TOTAL_ASSETS, *TCA, *BANK_NET_FINANCING_INCOME,
@@ -882,6 +965,12 @@ PROTECTED_LABELS = frozenset((
     "Total Current liabilities", "Total Non-Current Assets", "Total Non-Current Liabilities",
     "Cash & Cash Equivalents", "Short-term Debt", "Long-Term Debt", "Total Debt",
 ))
+
+
+def is_protected(label: str) -> bool:
+    """Is this a row the budget trim must keep? Through the same matcher as every other lookup,
+    so a line protected in English is protected in Arabic."""
+    return any(matches(label, entry) for entry in PROTECTED_GROUPS)
 
 
 class BoundedStatement(BaseModel):
@@ -947,9 +1036,9 @@ def bounded_statements(items: Items) -> list[BoundedStatement]:
             cell = next((c for c in item[1].values() if c is not None), None)
             return cell.label if cell else ""
 
-        protected = [it for it in ordered if labelled(it) in PROTECTED_LABELS]
-        rest = [it for it in ordered if labelled(it) not in PROTECTED_LABELS]
-        kept = protected[:limit] + rest[: max(0, limit - len(protected))]
+        keep = [it for it in ordered if is_protected(labelled(it))]
+        rest = [it for it in ordered if not is_protected(labelled(it))]
+        kept = keep[:limit] + rest[: max(0, limit - len(keep))]
         omitted = max(0, len(ordered) - len(kept))
         p = items.period(section, latest)
         rows: list[list[Any]] = []
@@ -1037,14 +1126,14 @@ def fit(ds: EvidenceDataset, budget: int = DATASET_BUDGET) -> EvidenceDataset:
     """Bring the dataset inside its character budget, and record what that cost.
 
     Statement sub-detail goes first, from the end of the longest section, skipping the lines any
-    calculation divides (PROTECTED_LABELS) — a trim that removed one of those would leave a
+    calculation divides (is_protected) — a trim that removed one of those would leave a
     calculation whose operands are nowhere in the statements beside it. Calculations and
     limitations are never trimmed: they are what says the numbers mean. The alternative to
     trimming is the prompt truncating the JSON mid-row, which changes a figure silently."""
     while encoded_length(ds) > budget:
         longest = max(
             (s for s in ds.statements
-             if any(r[0] not in PROTECTED_LABELS for r in s.rows)),
+             if any(not is_protected(r[0]) for r in s.rows)),
             key=lambda s: len(json.dumps(s.model_dump(), ensure_ascii=False, default=str)),
             default=None,
         )
@@ -1054,7 +1143,7 @@ def fit(ds: EvidenceDataset, budget: int = DATASET_BUDGET) -> EvidenceDataset:
                 continue
             return ds  # nothing left that may be dropped; the caller's budget is too small
         for i in range(len(longest.rows) - 1, -1, -1):
-            if longest.rows[i][0] not in PROTECTED_LABELS:
+            if not is_protected(longest.rows[i][0]):
                 longest.row_rules.pop(longest.rows[i][0], None)
                 longest.rows.pop(i)
                 longest.rows_omitted += 1

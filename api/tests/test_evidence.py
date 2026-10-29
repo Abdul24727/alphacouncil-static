@@ -341,6 +341,24 @@ def test_the_roe_denominator_is_named_and_is_not_the_one_including_minority_inte
     assert any("average equity" in c for c in roe.checks), "the alternative must be visible"
 
 
+def test_a_return_on_negative_equity_is_withheld(tmp_path):
+    """A loss over negative equity comes back positive and large. Found in the live data: a loss
+    of 125.17 over equity of -18.99 reads as +659%, which is not a return at all."""
+    path = tmp_path / "insolvent.sqlite"
+    main_rows, quarter_rows = _flows("2222_TADAWUL", INDUSTRIAL_QUARTERLY)
+    balance = [(label, -1000.0 if label == "Total Shareholders' Equity" else value)
+               for label, value in INDUSTRIAL_BALANCE]
+    _write(path, {"fundamentals_lineitems": [*main_rows, *_balance("2222_TADAWUL", balance)],
+                  "fundamentals_lineitems_quarterly": quarter_rows})
+    c = sqlite3.connect(path)
+    c.row_factory = sqlite3.Row
+    roe = metric(dataset(c, "2222_TADAWUL"), "roe_on_period_end_common_equity")
+    assert roe.value is None
+    assert "negative equity" in roe.missing[0] and "-1,000.00" in roe.missing[0]
+    assert roe.operands, "the operands it would have divided are still named"
+    c.close()
+
+
 def test_the_unit_check_confirms_eps_without_needing_a_price_earnings_ratio(conn):
     """A loss-making company has no meaningful P/E, so the pipeline cannot confirm its EPS unit
     that way and publishes none. The statements can confirm it against each other."""
@@ -439,6 +457,23 @@ def test_a_company_with_no_line_items_is_not_called_a_bank(conn):
     pass it and the ratios they are read on would be withheld."""
     items = load_items(conn, "NOTHING_HERE", years=2)
     assert sector_of(items, {}) == "unknown"
+
+
+def test_a_bank_claim_must_be_corroborated_by_the_balance_sheet(conn):
+    """Measured on the live database: the pipeline calls 204 tickers banks and only 53 are banks.
+    The test behind it is an absence, and the Arabic templates carry neither line for ordinary
+    companies either, so a bank claim is only honoured where a bank's own balance sheet lines are
+    there to honour it."""
+    bank = load_items(conn, "1120_TADAWUL", years=2)
+    assert sector_of(bank, {}) == "bank", "it lends and takes deposits"
+    assert sector_of(bank, {"ps": {"sector": "bank"}}) == "bank"
+
+    # the industrial company has a current-asset split, so it was never a bank candidate
+    industrial = load_items(conn, "2222_TADAWUL", years=2)
+    assert sector_of(industrial, {}) == "non_bank"
+    # ... and the pipeline calling it one does not make it one
+    assert sector_of(industrial, {"ps": {"sector": "bank"}}) == "unknown"
+    assert sector_of(industrial, {"ps": {"sector": "insurance"}}) == "insurance", "only bank is checked"
 
 
 # --- staleness and rankings -------------------------------------------------------------------

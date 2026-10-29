@@ -608,3 +608,245 @@ The suite after the rulings:
 ....................................                                     [100%]
 529 passed, 11 skipped in 71.96s (0:01:11)
 ```
+
+---
+
+## 10. The evidence module over the whole universe
+
+For `docs/evidence-universe-sweep-2026-10-29.md`. `api/app/evidence.py` run over every ticker in a read-only copy of the published database.
+
+### 10a. Label-group coverage, before and after the widening
+
+```
+653 tickers with line items
+
+group                        before  after   gain  exchanges reached
+NET_INCOME                      385    385      0  KSE:115 ADX:86 DFM:55 MSM:50 QSE:48 BSE:31
+NET_INCOME_BEFORE_UNUSUAL         0    385    385  KSE:115 ADX:86 DFM:55 MSM:50 QSE:48 BSE:31  <-- +385
+EXTRAORDINARY                     0    407    407  KSE:120 ADX:88 DFM:60 MSM:51 QSE:51 BSE:37  <-- +407
+EPS_REPORTED                    100    406    306  KSE:120 ADX:88 DFM:57 QSE:53 MSM:51 BSE:37  <-- +306
+EPS_BEFORE_UNUSUAL                0    406    406  KSE:120 ADX:88 DFM:57 QSE:53 MSM:51 BSE:37  <-- +406
+SHARES                          236    243      7  TADAWUL:243  <-- +7
+AVERAGE_SHARES                    0    408    408  KSE:121 ADX:88 DFM:58 QSE:53 MSM:51 BSE:37  <-- +408
+EQUITY_COMMON                   218    626    408  TADAWUL:218 KSE:121 ADX:88 DFM:58 QSE:53 MSM:51 BSE:37  <-- +408
+EQUITY_ALL                      211    625    414  TADAWUL:218 KSE:121 ADX:88 DFM:57 QSE:53 MSM:51 BSE:37  <-- +414
+REVENUE                         254    254      0  KSE:71 ADX:61 MSM:37 QSE:35 DFM:32 BSE:18
+GROSS_INCOME                      0      0      0  
+OPERATING_INCOME                  0     49     49  ADX:11 KSE:10 QSE:9 BSE:7 MSM:6 DFM:6  <-- +49
+TOTAL_ASSETS                    243    653    410  TADAWUL:243 KSE:121 ADX:88 DFM:60 QSE:53 MSM:51 BSE:37  <-- +410
+TCA                             208    377    169  TADAWUL:208 ADX:59 DFM:33 QSE:31 KSE:24 MSM:18 BSE:4  <-- +169
+BANK_NET_FINANCING_INCOME         0     30     30  ADX:9 MSM:6 KSE:5 QSE:4 DFM:4 BSE:2  <-- +30
+BANK_PROVISIONS                   0     29     29  ADX:9 MSM:6 KSE:5 QSE:4 DFM:4 BSE:1  <-- +29
+BANK_FINANCING                    3     42     39  TADAWUL:10 ADX:9 MSM:6 KSE:5 BSE:4 QSE:4 DFM:4  <-- +39
+BANK_PERFORMING                   3     10      7  TADAWUL:10  <-- +7
+BANK_NPL                          3     10      7  TADAWUL:10  <-- +7
+BANK_LOSS_PROVISION               3     10      7  TADAWUL:10  <-- +7
+BANK_DEPOSITS                     3     64     61  ADX:11 TADAWUL:10 KSE:10 BSE:10 QSE:9 MSM:7 DFM:7  <-- +61
+BANK_INVESTMENTS                 35    230    195  ADX:68 DFM:38 TADAWUL:35 QSE:35 KSE:25 MSM:24 BSE:5  <-- +195
+BANK_DUE_FROM_BANKS             134    166     32  TADAWUL:141 ADX:9 MSM:6 QSE:4 DFM:4 KSE:1 BSE:1  <-- +32
+```
+
+### 10b. Does a bank claim survive contact with the balance sheet?
+
+```
+the pipeline calls 204 of 653 tickers banks. The site's sector for them:
+     56  Financial Services
+     53  Banks
+     27  Insurance
+     20  Real Estate
+     13  Industrials
+     12  Consumer Discretionary
+      5  Consumer Staples
+      4  Energy
+
+of those 204: 64 carry a customer-deposit line, 41 a lending
+balance, and 140 carry neither.
+
+the 64 that carry one or the other, by the site's sector:
+     53  Banks
+     10  Financial Services
+      1  None
+
+the ones carrying neither, which a positive test would stop calling banks:
+     46  Financial Services
+     27  Insurance
+     20  Real Estate
+     13  Industrials
+     12  Consumer Discretionary
+      5  Consumer Staples
+      4  Energy
+      4  Investment/Holding
+
+a company the site calls a bank that a positive test would drop: none
+```
+
+### 10c. The sweep, before the widening and the two fixes
+
+```
+653 tickers with line items; period_aware=False
+
+============================================================================================
+1. DID ANYTHING BREAK?
+============================================================================================
+   exceptions or non-finite values: 0
+
+============================================================================================
+2. DOES IT STAY INSIDE ITS BUDGET?
+============================================================================================
+   budget 16,000; datasets over it: 0
+   smallest 3,533  median 4,923  95th 7,130  largest 7,733
+   datasets whose statements were trimmed by the row cap or the budget: 436
+
+============================================================================================
+3. SECTORS, AS THE API WILL READ THEM
+============================================================================================
+   non_bank      408
+   bank          204
+   insurance      41
+
+============================================================================================
+4. WHICH MEASURES COME BACK, AND WHICH ARE WITHHELD
+============================================================================================
+   metric                                  offered  withheld  with a value
+   extraordinary_share_of_earnings             653       653             0
+   eps_derived                                 653       653             0
+   roe_on_period_end_common_equity             653       653             0
+   payout_cash                                 653       653             0
+   net_financing_margin                        204       204             0
+   cost_to_income                              204       204             0
+   cost_of_risk                                204       204             0
+   npl_ratio                                   204       201             3
+   npl_coverage                                204       201             3
+   equity_to_assets                            204       194            10
+   financing_to_deposits                       204       201             3
+
+============================================================================================
+5. ARE THE VALUES PLAUSIBLE? (the ones a wrong window or denominator would betray)
+============================================================================================
+   npl_ratio                           n=3     min         0.75 (1120_TADAWUL)  median       0.92  max         0.98 (1140_TADAWUL)
+   equity_to_assets                    n=10    min         9.06 (1020_TADAWUL)  median      12.34  max        15.34 (1180_TADAWUL)
+   financing_to_deposits               n=3     min        91.95 (1140_TADAWUL)  median     101.04  max       112.81 (1120_TADAWUL)
+
+============================================================================================
+6. WHAT THE EVIDENCE SAYS IT CANNOT ANSWER
+============================================================================================
+     653  NO CASH FLOW STATEMENT
+     244  ONE INCOME-STATEMENT WINDOW
+     204  BANK
+```
+
+### 10d. The sweep, after
+
+```
+653 tickers with line items; period_aware=False
+
+============================================================================================
+1. DID ANYTHING BREAK?
+============================================================================================
+   exceptions or non-finite values: 0
+
+============================================================================================
+2. DOES IT STAY INSIDE ITS BUDGET?
+============================================================================================
+   budget 16,000; datasets over it: 0
+   smallest 3,111  median 4,626  95th 7,764  largest 10,320
+   datasets whose statements were trimmed by the row cap or the budget: 436
+
+============================================================================================
+3. SECTORS, AS THE API WILL READ THEM
+============================================================================================
+   non_bank      408
+   unknown       140
+   bank           64
+   insurance      41
+
+============================================================================================
+4. WHICH MEASURES COME BACK, AND WHICH ARE WITHHELD
+============================================================================================
+   metric                                  offered  withheld  with a value
+   extraordinary_share_of_earnings             653       269           384
+   eps_derived                                 653       271           382
+   roe_on_period_end_common_equity             653       279           374
+   payout_cash                                 653       653             0
+   net_financing_margin                         64        39            25
+   cost_to_income                               64        23            41
+   cost_of_risk                                 64        35            29
+   npl_ratio                                    64        54            10
+   npl_coverage                                 64        54            10
+   equity_to_assets                             64         0            64
+   financing_to_deposits                        64        23            41
+   net_income_to_operating_income               32         0            32
+
+============================================================================================
+5. ARE THE VALUES PLAUSIBLE? (the ones a wrong window or denominator would betray)
+============================================================================================
+   roe_on_period_end_common_equity     n=374   min       -86.20 (252_KSE)  median       9.27  max       519.99 (SHPS_MSM)
+   extraordinary_share_of_earnings     n=384   min      -473.50 (ERES_QSE)  median       0.00  max     1,586.53 (MANAZEL_ADX)
+   eps_derived                         n=382   min        -1.32 (AGLTY_DFM)  median       0.04  max       164.20 (ORIENT_DFM)
+   npl_ratio                           n=10    min         0.75 (1120_TADAWUL)  median       0.95  max         2.53 (1060_TADAWUL)
+   equity_to_assets                    n=64    min    -2,371.23 (BMEB.BH_BSE)  median      10.89  max        30.46 (EIBANK_DFM)
+   financing_to_deposits               n=41    min        28.08 (EIBANK_DFM)  median      96.07  max       118.24 (102_KSE)
+   cost_to_income                      n=41    min        22.27 (QIBK_QSE)  median      43.51  max       216.85 (813_KSE)
+   net_financing_margin                n=25    min         1.64 (BOS_ADX)  median       2.59  max         5.35 (NBQ_ADX)
+
+============================================================================================
+6. WHAT THE EVIDENCE SAYS IT CANNOT ANSWER
+============================================================================================
+     653  NO CASH FLOW STATEMENT
+     244  ONE INCOME-STATEMENT WINDOW
+      64  BANK
+```
+
+### 10e. The tails, and why no payout resolves
+
+```
+THE TAILS
+--- WDAM_QSE
+    net income    'صافي الدخل' = -125.17 (Income Statement, FY2025)
+    before unusual'صافي الدخل قبل البنود الاستثنائية و غير المتكررة' = -164.01 (Income Statement, FY2025)
+    equity        'مجموع حقوق المساهمين' = -18.99 (Balance Sheet, FY2025)
+    assets        'مجموع الموجودات' = 220.54 (Balance Sheet, FY2025)
+    share count   'متوسط عدد الأسهم (مليون)' = 180.00 (Balance Sheet, FY2025)
+    reported EPS  'ربح السهم (ريال قطري)' = -0.69 (Income Statement, FY2025)
+--- ORIENT_DFM
+    net income    'الربح الصافي' = 820.98 (Income Statement, FY2025)
+    before unusual'صافي الدخل قبل البنود الاستثنائية وغير المتكررة' = 820.98 (Income Statement, FY2025)
+    equity        'إجمالى حقوق المساهمين' = 6,090.24 (Balance Sheet, FY2025)
+    assets        'إجمالى الموجودات' = 17,273.98 (Balance Sheet, FY2025)
+    share count   'متوسط عدد الاسهم (مليون)' = 5.00 (Balance Sheet, FY2025)
+    reported EPS  'ربح السهم (درهم)' = 164.20 (Income Statement, FY2025)
+--- MANAZEL_ADX
+    net income    'صافي الدخل' = 14.40 (Income Statement, FY2025)
+    before unusual'صافي الدخل قبل البنود الاستثنائية و غير المتكررة' = -214.06 (Income Statement, FY2025)
+    equity        'مجموع حقوق المساهمين' = 2,950.03 (Balance Sheet, FY2025)
+    assets        'مجموع الموجودات' = 5,246.01 (Balance Sheet, FY2025)
+    share count   'متوسط عدد الأسهم (مليون)' = 2,600.00 (Balance Sheet, FY2025)
+    reported EPS  'ربح السهم (درهم)' = 0.01 (Income Statement, FY2025)
+--- BMEB.BH_BSE
+    net income    'الربح الصافي' = -0.64 (Income Statement, FY2025)
+    before unusual'صافي الدخل قبل البنود الاستثنائية و غير المتكررة' = -0.64 (Income Statement, FY2025)
+    equity        'إجمالي حقوق المساهمين' = -47.47 (Balance Sheet, FY2025)
+    assets        'إجمالي الموجودات' = 2.00 (Balance Sheet, FY2025)
+    share count   'متوسط عدد الأسهم (مليون)' = 400.00 (Balance Sheet, FY2025)
+    reported EPS  'ربح السهم (فلس)' = -0.00 (Income Statement, FY2025)
+
+WHY NO PAYOUT RESOLVES ANYWHERE
+  tickers with dividend rows: 230
+  by exchange:
+     TADAWUL     230
+
+  the latest fiscal year in the statements, against the newest dividend, for a few:
+     KFH_KSE       statements to FYNone   window None   0 dividends (0 with an amount), newest None
+     FAB_ADX       statements to FY2025   window ('2025-01-01', '2025-12-31')   0 dividends (0 with an amount), newest None
+     EMAAR_DFM     statements to FY2025   window ('2025-01-01', '2025-12-31')   0 dividends (0 with an amount), newest None
+     QIBK_QSE      statements to FY2025   window ('2025-01-01', '2025-12-31')   0 dividends (0 with an amount), newest None
+     2222_TADAWUL  statements to FY2025   window ('2025-01-01', '2025-12-31')   10 dividends (10 with an amount), newest 2026-08-27
+```
+
+### 10f. The suite
+
+```
+........................................................................ [ 92%]
+......................................                                   [100%]
+531 passed, 11 skipped in 73.95s (0:01:13)
+```

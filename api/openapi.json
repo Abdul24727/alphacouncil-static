@@ -5677,6 +5677,14 @@
             "type": "array",
             "title": "Recuse",
             "default": []
+          },
+          "owns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Owns",
+            "default": []
           }
         },
         "type": "object",

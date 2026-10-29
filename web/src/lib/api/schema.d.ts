@@ -2025,6 +2025,11 @@ export interface components {
              * @default []
              */
             recuse: string[];
+            /**
+             * Owns
+             * @default []
+             */
+            owns: string[];
         };
         /** SeatInput */
         SeatInput: {
