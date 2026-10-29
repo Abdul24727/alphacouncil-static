@@ -1015,8 +1015,31 @@ verification archive marks it rather than burying it. It can be untracked on req
 **The decisions waiting on the owner** (see §6 and `docs/council-test-plan-final-2026-10-28.md` §8):
 push `rebuild`; top up OpenRouter; deploy to beta for the `llm.py` smoke test; and fund the benchmark —
 **but not the full plan as a decision-grade experiment**, because it cannot carry the six-versus-four
-decision. The recommended order is push, top up, fund the **$66 validation pilot**, expand the probe set
-from 6 to about 18 offline (no spend, no approval needed), then fund the decision-grade run at cap $393.
+decision.
+
+**The order, revised 2026-10-29 after the evidence work and two review passes over it.** The probe-set
+expansion this line used to recommend is **done** — the bench is eighteen probes
+(`docs/council-probe-spec-2026-10-28.md`), so there is no offline step left before a paid run. What changed
+is that two things now have to land BEFORE any paid run that measures the room, or the run measures the
+wrong thing:
+
+1. **Push `rebuild`** (39 commits unpushed, everything from 2026-10-28 and 10-29). Free, and a Goal 1
+   exposure while it waits.
+2. **Top up OpenRouter.** $4.74 and the monitor's fifteenth check is FAILING. This one reaches **members on
+   production**, not only the bench: the next person to open the room on an empty account gets a refusal.
+3. **Ship the API to beta, then apply the two pipeline patches and publish the database** — in that order,
+   because `periods` on `/statements` is a precondition (§8b). Until this lands, **the published database
+   has no Tadawul income statement at all**, so a paid session would measure the room on a pack whose P9
+   says "there is no income statement" for every Saudi name. That is the opposite of what Priority One was
+   built to fix, and it would be paid for.
+4. **Then the $66 validation pilot**, and the decision-grade run at cap $393 after it.
+
+**Why the order moved:** the review of 2026-10-29 found that the mandate-coverage flag — Priority Two's only
+instrument — was reading the engine's own auto-inserted citations, and attributing any figure held by both
+P2 and P9 to P2, while **five of the six seated advisors own P9**. A paid session run before that fix would
+have produced a coverage reading that was wrong in a direction nobody would have questioned. It is fixed;
+the point is that the instrument has to be right before the money is spent, and the same argument applies to
+the evidence the room is being measured on.
 The superseded figure below is kept because the reasoning still matters.
 
 **Superseded — the A/B/E plan:** fund a **dedicated OpenRouter key to about $90**
