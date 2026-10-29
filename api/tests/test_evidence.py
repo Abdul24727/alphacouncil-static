@@ -1060,3 +1060,81 @@ def test_a_withheld_rank_says_why_even_before_a_score_exists(repaired_client, re
     de = next(m for g in f["groups"] for m in g["metrics"] if m["key"] == "debt_equity")
     assert de["status"] == "ok" and de["sector_percentile"] is None
     assert "204 tickers of which 53 are banks" in de["note"]
+
+
+# --- the bank measures, reviewed after the acceptance round -----------------------------------
+
+LOSS_MAKING_BANK = [
+    ("Operating Income", [-0.02, -0.01, -0.02, -0.02]),
+    ("Operating Expenses", [-0.30, -0.28, -0.31, -0.29]),
+    ("Net income from investments and financing activities", [0.10, 0.11, 0.09, 0.10]),
+    ("Debt Provisions", [-0.05, -0.05, -0.05, -0.05]),
+    ("Net Income", [-0.16, -0.15, -0.17, -0.15]),
+    ("Shares Outstanding (Million)", [50.0, 50.0, 50.0, 50.0]),
+]
+INSOLVENT_BANK_BALANCE = [
+    ("Investments", 0.80), ("Net Financing Investments", 0.60),
+    ("Total Assets", 2.00), ("Customer Deposits", 0.41),
+    ("Total Liabilities", 49.47), ("Total Shareholders' Equity", -47.47),
+    ("Shares Outstanding (Million)", 50.0),
+]
+
+
+def _loss_making_bank(tmp_path):
+    path = tmp_path / "loss_bank.sqlite"
+    main_rows, quarter_rows = _flows("BMEB_BSE", LOSS_MAKING_BANK)
+    _write(path, {"fundamentals_lineitems": [*main_rows,
+                                             *_balance("BMEB_BSE", INSOLVENT_BANK_BALANCE)],
+                  "fundamentals_lineitems_quarterly": quarter_rows})
+    c = sqlite3.connect(path)
+    c.row_factory = sqlite3.Row
+    try:
+        return {m.metric: m for m in dataset(c, "BMEB_BSE").calculations}
+    finally:
+        c.close()
+
+
+def test_a_bank_ratio_over_a_negative_denominator_is_withheld(tmp_path):
+    """The same trap `_returns` guards against, in measures that did not guard against it. A loss
+    over a negative operating income comes back POSITIVE and large: on the live universe one
+    Bahraini bank reported net income / operating income as +912.86% from a loss of 0.639 over
+    operating income of -0.070, which reads as an extraordinary conversion and is the opposite of
+    what happened. A bank losing money on both lines is the case this measure matters for most."""
+    by = _loss_making_bank(tmp_path)
+    conversion = by["net_income_to_operating_income"]
+    assert conversion.value is None, "a loss over a loss must not read as a positive conversion"
+    why = " ".join(conversion.missing)
+    assert "operating income is -0.07" in why, "the denominator is named with its value"
+    assert "comes back positive whatever happened" in why
+
+    cost = by["cost_to_income"]
+    assert cost.value is None, "cost to income has the same negative denominator"
+    assert "operating income is -0.07" in " ".join(cost.missing)
+
+
+def test_negative_equity_is_called_solvency_rather_than_leverage(tmp_path):
+    """Here the arithmetic is sound and the fact is real - the liabilities exceed the assets - so
+    the figure stands. What it must not do is stand there as a leverage ratio to be compared with
+    other banks, which is what the denominator note alone would make it."""
+    by = _loss_making_bank(tmp_path)
+    ratio = by["equity_to_assets"]
+    assert ratio.value == pytest.approx(-47.47 / 2.00 * 100, abs=1e-2)
+    said = " ".join(ratio.checks)
+    assert "negative equity means the liabilities exceed the assets" in said
+    assert "not a leverage ratio to compare" in said
+
+
+def test_every_bank_measure_appears_with_a_value_or_a_reason(tmp_path, conn):
+    """`net_income_to_operating_income` used to be appended behind a guard, so it VANISHED for 32
+    of the 64 corroborated banks - no value, no explanation - while the other seven always
+    appeared. A seat reading two banks side by side saw eight measures for one and seven for the
+    other with nothing to say why."""
+    expected = {"net_financing_margin", "cost_to_income", "cost_of_risk", "npl_ratio",
+                "npl_coverage", "equity_to_assets", "financing_to_deposits",
+                "net_income_to_operating_income"}
+    for metrics in (_loss_making_bank(tmp_path),
+                    {m.metric: m for m in dataset(conn, "1120_TADAWUL").calculations}):
+        assert expected <= set(metrics), f"missing: {expected - set(metrics)}"
+        for name in expected:
+            m = metrics[name]
+            assert m.value is not None or m.missing, f"{name} says neither a value nor why not"

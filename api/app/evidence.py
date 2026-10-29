@@ -1082,12 +1082,25 @@ def _bank_measures(items: Items) -> list[Calculation]:
     assets, equity = g(TOTAL_ASSETS, "Balance Sheet"), g(EQUITY_COMMON, "Balance Sheet")
 
     def make(metric, formula, numerator, denominator, cells, *, denom_note=None, checks=None,
-             missing_note=None):
+             missing_note=None, denom_label=None):
         window = _window_text(items, *cells)
         if numerator is None or not denominator:
             return Calculation(metric=metric, formula=formula, window=window,
                                operands=_ops(*cells),
                                missing=[missing_note or "an operand this measure needs is absent"])
+        if denominator < 0:
+            # The same trap `_returns` guards against, in measures that did not guard against it.
+            # A ratio over a negative denominator comes back with its sign flipped, and where the
+            # numerator is negative too it comes back POSITIVE and large: on BMEB.BH_BSE in the
+            # live data, a loss of 0.639 over operating income of -0.070 read as a 913% conversion
+            # of operating income into net income. A bank making a loss on both lines is the one
+            # case where this measure matters most, and the one case it was wrong.
+            return Calculation(
+                metric=metric, formula=formula, window=window, operands=_ops(*cells),
+                missing=[f"{denom_label or 'the denominator'} is {denominator:,.2f}: a ratio over"
+                         " a negative denominator comes back with its sign flipped, and over a"
+                         " negative numerator it comes back positive whatever happened, so there"
+                         " is no meaningful figure to give"])
         return Calculation(metric=metric, formula=formula,
                            value=round(numerator / denominator * 100.0, 4), unit="%",
                            window=window, denominator=denom_note, operands=_ops(*cells),
@@ -1107,46 +1120,64 @@ def _bank_measures(items: Items) -> list[Calculation]:
                           " bank sets its margin on.",
              checks=[f"earning assets = {invest.value:,.2f} + {financing.value:,.2f}"]
                     if earning_assets else [],
-             missing_note="net financing income or the earning-asset lines are absent"),
+             missing_note="net financing income or the earning-asset lines are absent",
+             denom_label="earning assets"),
         make("cost_to_income", "operating expenses / operating income x 100",
              abs(opex.value) if opex and opex.value is not None else None,
              opi.value if opi else None, (opex, opi),
              denom_note="operating income, a bank's revenue analogue — the line a price-to-sales"
                         " ratio needs and does not find",
-             missing_note="no operating expense or operating income line"),
+             missing_note="no operating expense or operating income line",
+             denom_label="operating income"),
         make("cost_of_risk", "credit provisions / net financing investments x 100",
              abs(prov.value) if prov and prov.value is not None else None,
              financing.value if financing else None, (prov, financing),
              denom_note="net financing investments at the balance-sheet date",
-             missing_note="no provisions line or no financing-investment balance"),
+             missing_note="no provisions line or no financing-investment balance",
+             denom_label="net financing investments"),
         make("npl_ratio", "non-performing / (performing + non-performing) x 100",
              npl.value if npl else None,
              (performing.value + npl.value) if performing and npl and performing.value is not None
              and npl.value is not None else None, (npl, performing),
              denom_note="gross financing investments, before the loss provision",
-             missing_note="the statement does not split performing from non-performing"),
+             missing_note="the statement does not split performing from non-performing",
+             denom_label="gross financing investments"),
         make("npl_coverage", "loss provision / non-performing financing x 100",
              abs(loss.value) if loss and loss.value is not None else None,
              npl.value if npl else None, (loss, npl),
              denom_note="non-performing financing at the balance-sheet date",
-             missing_note="no loss-provision or non-performing line"),
+             missing_note="no loss-provision or non-performing line",
+             denom_label="non-performing financing"),
         make("equity_to_assets", "total shareholders' equity / total assets x 100",
              equity.value if equity else None, assets.value if assets else None, (equity, assets),
              denom_note="total assets at the balance-sheet date. A leverage measure, NOT a"
                         " regulatory capital ratio: not risk-weighted, not comparable with CET1.",
-             missing_note="no equity or total-asset line"),
+             checks=[f"shareholders' equity is {equity.value:,.2f} against total assets of"
+                     f" {assets.value:,.2f}: negative equity means the liabilities exceed the"
+                     " assets, so this is a statement about solvency and not a leverage ratio to"
+                     " compare with other banks"]
+                    if equity is not None and equity.value is not None and equity.value < 0
+                    and assets is not None and assets.value else [],
+             missing_note="no equity or total-asset line",
+             denom_label="total assets"),
         make("financing_to_deposits", "net financing investments / customer deposits x 100",
              financing.value if financing else None, deposits.value if deposits else None,
              (financing, deposits),
              denom_note="customer deposits only, excluding due to banks and term sukuk: the"
                         " measure is about deposit funding",
-             missing_note="no financing-investment or customer-deposit line"),
+             missing_note="no financing-investment or customer-deposit line",
+             denom_label="customer deposits"),
+        # Emitted like the other seven, with a reason where it cannot be computed. Guarding the
+        # append meant this measure VANISHED for 32 of the 64 corroborated banks - no value and no
+        # explanation - so a seat reading two banks side by side saw eight measures for one and
+        # seven for the other with nothing to say why.
+        make("net_income_to_operating_income", "net income / operating income x 100",
+             ni.value if ni else None, opi.value if opi else None, (ni, opi),
+             denom_note="operating income, a bank's revenue analogue. Comparable with other banks"
+                        " only, never with a net margin on sales.",
+             denom_label="operating income",
+             missing_note="no net income or no operating income line"),
     ]
-    if ni is not None and opi is not None and opi.value:
-        out.append(make("net_income_to_operating_income",
-                        "net income / operating income x 100", ni.value, opi.value, (ni, opi),
-                        denom_note="operating income, a bank's revenue analogue. Comparable with"
-                                   " other banks only, never with a net margin on sales."))
     return out
 
 
