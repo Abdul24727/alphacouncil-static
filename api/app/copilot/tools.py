@@ -60,6 +60,17 @@ DATABASE_TOOLS: list[dict[str, Any]] = [
         "input_schema": _schema({"ticker": TICKER}, ["ticker"]),
     },
     {
+        "name": "get_financial_statements",
+        "description": (
+            "Reported financial statements for one ticker with the period each figure covers,"
+            " the date it was struck, the currency, the unit and the rule that aggregated it;"
+            " the single quarters behind any reconstructed annual figure; measures computed from"
+            " those figures with their formula and operands; and what is missing where a measure"
+            " cannot be computed. Reported figures, computed figures and gaps are separate."
+        ),
+        "input_schema": _schema({"ticker": TICKER}, ["ticker"]),
+    },
+    {
         "name": "get_price_summary",
         "description": "Summary of daily closes over a range: first and last close, change, high, low, average volume.",
         "input_schema": _schema({"ticker": TICKER, "range": {"type": "string", "enum": list(RANGES)}}, ["ticker", "range"]),
@@ -164,7 +175,7 @@ def price_summary(request: Request, ticker: str, range_: str) -> dict[str, Any]:
 
 
 # Data only Pro has (plans.PRO_ONLY): on the Free plan the model is told so and says it.
-PRO_TOOLS = {"get_dividends", "get_fundamentals", "get_council"}
+PRO_TOOLS = {"get_dividends", "get_fundamentals", "get_council", "get_financial_statements"}
 
 
 def run(request: Request, name: str, args: dict[str, Any]) -> Any:
@@ -181,6 +192,8 @@ def run(request: Request, name: str, args: dict[str, Any]) -> Any:
                 return _dump(research.get_corporate(request, args["ticker"]))
             case "get_fundamentals":
                 return _dump(research.get_fundamentals(request, args["ticker"]))
+            case "get_financial_statements":
+                return _dump(research.get_evidence(request, args["ticker"]))
             case "get_council":
                 return _dump(research.get_council(request, args["ticker"]))
             case "get_news":

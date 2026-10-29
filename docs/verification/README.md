@@ -324,3 +324,18 @@ and the patch is prepared, not applied.
 714 — row counts before and after, per exchange — is the step that would catch a ticker whose grid
 is shaped differently again, and it needs the owner's go-ahead, because it means running pipeline
 code on the server.
+
+## Priority One closeout, 2026-10-29
+
+`priority-one-closeout-2026-10-29.md` is the raw output behind
+`docs/priority-one-closeout-2026-10-29.md`: the live published database as it stands (243 Tadawul
+tickers with 0 income statements, 0 cash-flow statements anywhere, `bank_metrics` empty for 58
+banks), the two tests that settle whether the provider's quarterly columns are standalone or
+cumulative, the gauge patch measured over the **whole live universe** (6,530 rows, no value or
+status changed), the ranking guarantee tested by refreshing a line item and running the gauge
+stage alone, the P9 dataset for the three cases before and after, the 515-test suite, and what P9
+costs a seat's prompt.
+
+**What it still does not cover**: a full parse of all 714 tickers, which needs the harvest pages on
+the server. The gauge, sector-average and ranking stages were run over every ticker that has line
+items; the parser itself was run over 33.

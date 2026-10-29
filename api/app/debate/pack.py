@@ -18,6 +18,12 @@ from ..copilot.context import numbers_in
 from ..universe import Ticker
 
 DATASET_CHARS = 12_000  # per dataset, after JSON encoding (the Copilot's PANEL_CHARS)
+# P9 is the only dataset that carries the financial statements themselves, and it bounds itself
+# (evidence.DATASET_BUDGET) rather than being cut here: a truncation lands mid-row and changes a
+# figure without saying so, while the dataset's own trim drops whole rows and records how many.
+# The budget is larger because a bank's statements plus the measures a bank is read on do not fit
+# in 12,000; see evidence.DATASET_BUDGET for the measurements.
+DATASET_CHARS_BY_TAG = {"P9": 16_000}
 
 # tag, tool, arguments, title (en, ar)
 DATASETS: tuple[tuple[str, str, dict[str, Any], str, str], ...] = (
@@ -29,6 +35,9 @@ DATASETS: tuple[tuple[str, str, dict[str, Any], str, str], ...] = (
     ("P6", "get_news", {"limit": 8}, "Latest news and disclosures", "آخر الأخبار والإفصاحات"),
     ("P7", "get_price_summary", {"range": "1Y"}, "Price summary, 1 year", "ملخص السعر، سنة"),
     ("P8", "get_price_summary", {"range": "5Y"}, "Price summary, 5 years", "ملخص السعر، خمس سنوات"),
+    # P9 is the only dataset that carries the reporting period of every figure, so it is the one
+    # a seat must read before comparing two years or dividing one figure by another.
+    ("P9", "get_financial_statements", {}, "Financial statements, their periods, and the measures they support", "القوائم المالية وفتراتها والمؤشرات المحتسبة منها"),
 )
 
 # briefs.return_*, vol_1y and max_drawdown are fractions (0.155). Seats talk in percents, so the
@@ -62,8 +71,9 @@ class Pack(BaseModel):
         lines = [self.header]
         for tag, value in self.data.items():
             text = json.dumps(value, ensure_ascii=False, default=str)
-            if len(text) > DATASET_CHARS:
-                text = text[:DATASET_CHARS] + " …[truncated]"
+            budget = DATASET_CHARS_BY_TAG.get(tag, DATASET_CHARS)
+            if len(text) > budget:
+                text = text[:budget] + " …[truncated]"
             lines.append(f"[{tag}] {self.sources[tag].title_en}: {text}")
         return "\n".join(lines)
 
@@ -88,6 +98,17 @@ def header_of(t: Ticker, fetched_at: str) -> str:
         f" Fetched {fetched_at} from AlphaCouncil's database."
         " Units: market_cap_mn and statement lines are millions of the listing currency; fields ending in _pct are percents."
         " A dataset holding an error has no data for this company."
+        # The distinction a seat cannot recover once it is lost: which figures were reported,
+        # which were computed, and which are only an opinion a threshold produced.
+        " THREE KINDS OF THING ARE IN THIS PACK AND THEY ARE NOT INTERCHANGEABLE."
+        " Reported: figures the source published, in [P9] under `statements` and `quarters`,"
+        " each with the period it covers and the date it was struck."
+        " Derived: figures computed from those, in [P9] under `calculations` and in [P2] where a"
+        " metric carries a `formula` and `operands` — quote the formula when you use one, and"
+        " where a calculation carries `missing` instead of a value, there is no number to use."
+        " Opinion: [P4] is rule-based votes from fixed thresholds, not measurements; it is not"
+        " evidence for or against anything, and a seat must not cite it as a figure."
+        " [P9] `limitations` says what this company's data cannot answer at all."
     )
 
 

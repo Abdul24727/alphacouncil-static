@@ -3,15 +3,16 @@ corporate actions and insights. Same rules as ticker.py: values come from the
 pipeline's databases, missing data is null, nothing is estimated."""
 
 import json
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
-from .. import council, ratios
+from .. import council, evidence, ratios
 from ..freshness import Freshness, assess
 from ..market_db import MarketDataUnavailable, reader
 from ..plans import require_pro
-from .ticker import _flag, _row, load_freshness, resolve, settings_of
+from .ticker import _flag, _row, get_ticker, load_freshness, resolve, settings_of
 
 router = APIRouter(prefix="/tickers/{ref}", tags=["ticker"])
 
@@ -106,8 +107,21 @@ class GaugeMetric(BaseModel):
     value: float | None
     unit: str
     higher_is_better: bool
-    status: str  # ok | missing_inputs | na_sector | undefined_nonpositive | published
+    # ok | published | missing_inputs | na_sector | undefined_nonpositive
+    #   | not_meaningful  the measure has no analogue for this company's sector
+    #   | stale           computed from statements that have since been refreshed
+    status: str
     sector_percentile: float | None
+    # What the number is, so a reader is not left to infer the formula from the name.
+    formula: str | None = None
+    denominator: str | None = None
+    source: str | None = None
+    # The operands the pipeline divided, read back from its own audit trail.
+    operands: dict[str, Any] | None = None
+    # The window and the date behind those operands.
+    as_of: evidence.Period | None = None
+    # Why there is no number, or why this one must not be compared.
+    note: str | None = None
 
 
 class GaugeGroup(BaseModel):
@@ -119,6 +133,39 @@ class GaugeGroup(BaseModel):
 class Fundamentals(BaseModel):
     groups: list[GaugeGroup]
     freshness: Freshness | None
+    sector: str | None = None  # from the pipeline's own detection, not from a sector name
+    # Set when at least one gauge was computed from statements that have since been refreshed.
+    # Values for those gauges are withheld rather than shown beside figures they do not match.
+    stale: bool = False
+
+
+# Operand keys that are provenance or diagnostics rather than inputs: they are reported in their
+# own fields, and repeating them inside `operands` would crowd out the figures.
+_NOT_OPERANDS = {
+    "fiscal_year", "period", "period_end", "position_at", "sector", "computed_at",
+    "missing", "searched", "expected_section", "available_in_section", "note", "year",
+}
+
+
+def _note_of(inputs: dict[str, Any], key: str, status: str) -> str | None:
+    """One sentence saying what is missing, in the pipeline's own words plus what it searched."""
+    if status == "ok":
+        return None
+    if inputs.get("note"):
+        return str(inputs["note"])
+    missing = inputs.get("missing")
+    if not missing:
+        return None
+    searched, available = inputs.get("searched"), inputs.get("available_in_section")
+    text = f"{missing} is absent"
+    if isinstance(searched, list) and searched:
+        text += f"; searched {len(searched)} label(s) including {', '.join(str(x) for x in searched[:3])}"
+    if isinstance(available, list):
+        text += f"; the {inputs.get('expected_section') or 'section'} carries {len(available)} other labels"
+    if key == "payout":
+        text += (". A payout matched to the earnings window is in the financial-evidence dataset"
+                 " wherever the dividend history supports one")
+    return text
 
 
 @router.get("/fundamentals", operation_id="getTickerFundamentals", dependencies=[Depends(require_pro)])
@@ -130,14 +177,25 @@ def get_fundamentals(request: Request, ref: str) -> Fundamentals:
             gauges = {
                 r["gauge_key"]: r
                 for r in conn.execute(
-                    "SELECT gauge_key, value, status, score FROM fundamentals_gauges WHERE ticker_key = ?",
+                    "SELECT gauge_key, value, status, score, inputs_json FROM fundamentals_gauges"
+                    " WHERE ticker_key = ?",
                     (t.ticker_key,),
                 )
             }
+            items = evidence.load_items(conn, t.ticker_key, years=2)
         r = ratios.load(s, [t.ticker_key]).get(t.ticker_key)
         fresh = next((f for f in load_freshness(s, t) if f.category == "fundamentals"), None)
     except MarketDataUnavailable as exc:
         raise unavailable(exc) from exc
+
+    audit: dict[str, dict] = {}
+    for key, row in gauges.items():
+        try:
+            parsed = json.loads(row["inputs_json"]) if row["inputs_json"] else {}
+        except (ValueError, TypeError):
+            parsed = {}
+        audit[key] = parsed if isinstance(parsed, dict) else {}
+    sector = evidence.sector_of(items, audit)
 
     # Ratios shown on Key metrics too: one value everywhere (app/ratios.py).
     published = {
@@ -149,31 +207,76 @@ def get_fundamentals(request: Request, ref: str) -> Fundamentals:
         "ev_ebitda": r["ev_ebitda"],
     }
 
+    any_stale = False
     groups = []
     for group, metrics in GAUGE_GROUPS:
         rows = []
         for key, unit, hib in metrics:
             g = gauges.get(key)
+            inputs = audit.get(key, {})
+            definition = evidence.DEFINITIONS.get(key, {})
+            common = {
+                "key": key, "unit": unit, "higher_is_better": hib,
+                "formula": definition.get("formula"),
+                "denominator": definition.get("denominator"),
+            }
+            # A bank has no revenue line and no current/non-current split, so the generic ratios
+            # built on them are not missing data — they are measures this company is not read on.
+            # Saying "missing" invites the wrong fix: mapping a bank's operating income into the
+            # revenue slot, which would put a price-to-sales ratio and a margin on financing
+            # income beside industrial companies' and get them compared.
+            if sector == "bank" and key in evidence.BANK_UNSUITABLE:
+                rows.append(GaugeMetric(
+                    **common, value=None, status="not_meaningful", sector_percentile=None,
+                    source="not applicable to this company", as_of=None,
+                    note=evidence.BANK_UNSUITABLE[key]
+                         + ". The measures this company is read on are in the financial-evidence"
+                           " dataset.",
+                ))
+                continue
+            stale = evidence.stale_reason(inputs, items) if g is not None else None
+            if stale:
+                any_stale = True
+                rows.append(GaugeMetric(
+                    **common, value=None, status="stale", sector_percentile=None,
+                    source=definition.get("source"), as_of=_as_of(inputs), note=stale,
+                ))
+                continue
             # A computed gauge with a value wins (it carries the sector percentile); otherwise
             # the shared published ratio, so Financials and Key metrics agree.
             if g is not None and (g["status"] == "ok" or published.get(key) is None):
-                rows.append(
-                    GaugeMetric(
-                        key=key, value=g["value"], unit=unit, higher_is_better=hib,
-                        status=g["status"], sector_percentile=g["score"],
-                    )
-                )
+                rows.append(GaugeMetric(
+                    **common, value=g["value"], status=g["status"],
+                    # A percentile means something only for the value it ranked. The pipeline
+                    # clears it when a recomputed value moves, so an absent one here is the
+                    # sector stage not having run yet, not a missing ranking.
+                    sector_percentile=g["score"] if g["status"] == "ok" else None,
+                    source=definition.get("source"),
+                    operands={k: v for k, v in inputs.items() if k not in _NOT_OPERANDS} or None,
+                    as_of=_as_of(inputs), note=_note_of(inputs, key, g["status"]),
+                ))
             else:
                 v = published.get(key)
-                rows.append(
-                    GaugeMetric(
-                        key=key, value=v, unit=unit, higher_is_better=hib,
-                        status="published" if v is not None else "missing_inputs", sector_percentile=None,
-                    )
-                )
+                rows.append(GaugeMetric(
+                    **common, value=v, status="published" if v is not None else "missing_inputs",
+                    sector_percentile=None, source=definition.get("source"),
+                    as_of=_as_of(inputs) if g is not None else None,
+                    note=_note_of(inputs, key, "missing_inputs") if v is None else None,
+                ))
         scored = [m.sector_percentile for m in rows if m.sector_percentile is not None]
         groups.append(GaugeGroup(group=group, metrics=rows, score=sum(scored) / len(scored) if scored else None))
-    return Fundamentals(groups=groups, freshness=fresh)
+    return Fundamentals(groups=groups, freshness=fresh, sector=sector, stale=any_stale)
+
+
+def _as_of(inputs: dict[str, Any]) -> evidence.Period | None:
+    if not inputs.get("period") and not inputs.get("fiscal_year"):
+        return None
+    return evidence.Period(
+        period=inputs.get("period"),
+        period_end=inputs.get("period_end") or (f"{inputs['fiscal_year']}-12" if inputs.get("fiscal_year") else None),
+        aggregation=None,
+        source_columns=[],
+    )
 
 
 # --- Statements ------------------------------------------------------------------------------
@@ -183,11 +286,19 @@ class StatementRow(BaseModel):
     index: int
     label: str
     values: dict[str, float | None]  # fiscal year -> value
+    # Where this row's aggregation differs from its section's, fiscal year -> the rule that
+    # produced it. A share count summed like a flow is the mistake this makes visible.
+    rules: dict[str, str] = {}
 
 
 class Statement(BaseModel):
     section: str
     rows: list[StatementRow]
+    # Fiscal year -> the window its figures cover. One section can hold a real fiscal year beside
+    # a trailing-twelve-month window, so this cannot be a property of the statement as a whole:
+    # without it a December position and a June position sit in one row under nothing but the
+    # labels "2025" and "2026", and read as a year-on-year comparison.
+    periods: dict[str, evidence.Period] = {}
 
 
 class Statements(BaseModel):
@@ -195,6 +306,10 @@ class Statements(BaseModel):
     unit: str  # millions of the listing currency
     currency: str | None
     statements: list[Statement]
+    # False against a database parsed before the pipeline recorded reporting modes. Every
+    # `periods` entry is then empty, and a figure's window is genuinely unknown — which is a
+    # different thing from a figure whose window is a fiscal year.
+    period_aware: bool = False
 
 
 STATEMENT_ORDER = ["Income Statement", "Balance Sheet"]
@@ -207,40 +322,33 @@ def get_statements(request: Request, ref: str, years: int = 5) -> Statements:
     years = max(1, min(years, 10))
     try:
         with reader(s.screening_db, immutable=s.market_db_immutable, name="SCREENING_DB") as conn:
-            yrs = [
-                r[0]
-                for r in conn.execute(
-                    "SELECT DISTINCT fiscal_year FROM fundamentals_lineitems WHERE ticker_key = ?"
-                    " ORDER BY fiscal_year DESC LIMIT ?",
-                    (t.ticker_key, years),
-                )
-            ]
-            rows = []
-            if yrs:
-                marks = ",".join("?" for _ in yrs)
-                rows = conn.execute(
-                    "SELECT section, fiscal_year, item_index, line_item_label, value FROM fundamentals_lineitems"
-                    f" WHERE ticker_key = ? AND fiscal_year IN ({marks}) ORDER BY section, item_index",
-                    (t.ticker_key, *yrs),
-                ).fetchall()
+            items = evidence.load_items(conn, t.ticker_key, years=years)
+            aware = evidence.period_aware(conn)
     except MarketDataUnavailable as exc:
         raise unavailable(exc) from exc
 
     by_section: dict[str, dict[int, StatementRow]] = {}
-    for r in rows:
-        sec = by_section.setdefault(r["section"] or "Other", {})
-        row = sec.setdefault(r["item_index"], StatementRow(index=r["item_index"], label=r["line_item_label"], values={}))
-        row.values[str(r["fiscal_year"])] = r["value"]
+    for c in items.rows:
+        sec = by_section.setdefault(c.section, {})
+        row = sec.setdefault(c.item_index, StatementRow(index=c.item_index, label=c.label, values={}))
+        row.values[str(c.fiscal_year)] = c.value
 
     def rank(name: str) -> tuple[int, str]:
         return (STATEMENT_ORDER.index(name) if name in STATEMENT_ORDER else 9, name)
 
-    statements = [
-        Statement(section=name, rows=[sec[i] for i in sorted(sec)])
-        for name, sec in sorted(by_section.items(), key=lambda kv: rank(kv[0]))
-    ]
+    statements = []
+    for name, sec in sorted(by_section.items(), key=lambda kv: rank(kv[0])):
+        periods = {str(y): items.period(name, y) for y in items.years if items.section_of(name, y)}
+        for c in items.rows:
+            own = periods.get(str(c.fiscal_year))
+            if c.section == name and c.rule and own is not None and c.rule != own.aggregation:
+                sec[c.item_index].rules[str(c.fiscal_year)] = c.rule
+        statements.append(Statement(section=name, rows=[sec[i] for i in sorted(sec)], periods=periods))
     # Statements keep the pipeline's currency, not a recorded trading currency (universe.py).
-    return Statements(years=sorted(yrs), unit="mn", currency=t.report_currency, statements=statements)
+    return Statements(
+        years=sorted(items.years), unit="mn", currency=t.report_currency,
+        statements=statements, period_aware=aware,
+    )
 
 
 # --- Corporate: dividends and capital changes -----------------------------------------------
@@ -292,6 +400,54 @@ def get_corporate(request: Request, ref: str) -> Corporate:
         currency=t.report_currency,  # dividends, like statements (universe.py)
         dividends=[Dividend(**dict(r)) for r in divs],
         capital_changes=[CapitalChange(**dict(r)) for r in caps],
+    )
+
+
+# --- Financial evidence: reported statements, derived calculations, stated gaps ---------------
+
+
+@router.get("/evidence", operation_id="getTickerEvidence", dependencies=[Depends(require_pro)])
+def get_evidence(request: Request, ref: str) -> evidence.EvidenceDataset:
+    """The reported statements for one company, the measures they support, and exactly what is
+    missing where a measure cannot be computed.
+
+    Bounded on purpose: this is the dataset a council seat reads inside one prompt, so it carries
+    the statement's own leading rows rather than every line, and says how many it left out. The
+    unbounded statements are `/statements`.
+    """
+    t = resolve(request, ref)
+    s = settings_of(request)
+    try:
+        with reader(s.screening_db, immutable=s.market_db_immutable, name="SCREENING_DB") as conn:
+            items = evidence.load_items(conn, t.ticker_key, years=2)
+            audit: dict[str, dict] = {}
+            for row in conn.execute(
+                "SELECT gauge_key, inputs_json FROM fundamentals_gauges WHERE ticker_key = ?",
+                (t.ticker_key,),
+            ):
+                try:
+                    parsed = json.loads(row["inputs_json"]) if row["inputs_json"] else {}
+                except (ValueError, TypeError):
+                    parsed = {}
+                audit[row["gauge_key"]] = parsed if isinstance(parsed, dict) else {}
+            dividends = [
+                dict(d)
+                for d in conn.execute(
+                    "SELECT announce_date, ex_date, pay_date, dps, amount_mn, note FROM dividends"
+                    " WHERE ticker_key = ? ORDER BY COALESCE(ex_date, announce_date) DESC LIMIT 24",
+                    (t.ticker_key,),
+                )
+            ]
+    except MarketDataUnavailable as exc:
+        raise unavailable(exc) from exc
+    price = get_ticker(request, ref).quote.last_price
+    return evidence.dataset_of(
+        items,
+        ticker_key=t.ticker_key,
+        sector=evidence.sector_of(items, audit),
+        currency=t.report_currency,
+        dividends=dividends,
+        price=price,
     )
 
 

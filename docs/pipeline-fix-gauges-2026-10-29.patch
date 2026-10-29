@@ -1,0 +1,91 @@
+--- a/llm-council/compute_fundamental_gauges.py
++++ b/llm-council/compute_fundamental_gauges.py
+@@ -26,6 +26,7 @@
+ import logging
+ import re
+ import sqlite3
++from datetime import UTC, datetime
+ from pathlib import Path
+ 
+ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+@@ -47,6 +48,15 @@
+ ON CONFLICT(ticker_key, gauge_key) DO UPDATE SET
+     value=excluded.value, status=excluded.status, inputs_json=excluded.inputs_json
+ """
++# RANKING. `score` is the sector percentile and compute_sector_averages.py writes it, not this
++# stage, so a gauge recomputed on refreshed statements used to land beside the ranking of its
++# PREVIOUS value - a correct number under a stale rank, with nothing to show it. A percentile
++# only means anything for the value it ranked, so a changed value clears it and it stays absent
++# until the sector stage runs again. `score` is added by that stage (ALTER TABLE), so a fresh
++# database has not got the column and the plain upsert is used instead.
++SQL_UPSERT_CLEARING_SCORE = SQL_UPSERT.rstrip() + """,
++    score=CASE WHEN excluded.value IS value THEN score ELSE NULL END
++"""
+ 
+ # Label aliases (sector-templated + bilingual: UAE statements are Arabic). Arabic
+ # strings are the exact, consistent-within-sector labels observed in the UAE recon.
+@@ -210,6 +220,28 @@
+     return total, matched_rows, ambiguous_rows, str(csv_path)
+ 
+ 
++def _vintage(conn, tk: str, year: int) -> dict:
++    """PROVENANCE. Which reporting window the inputs of this fiscal year come from.
++
++    The parser records `period` (FY | TTM | Q) and `period_end` per row, and a repaired Tadawul
++    year carries a flow window (TTM to a quarter end) beside a balance sheet struck at that same
++    quarter end. Both dates belong on the gauge: a ratio of a flow over a position is only as
++    comparable as the two dates behind it. Databases parsed before the repair have no such
++    columns, and then the vintage is simply the fiscal year."""
++    cols = {r[1] for r in conn.execute("PRAGMA table_info(fundamentals_lineitems)")}
++    if not {"period", "period_end"} <= cols:
++        return {"fiscal_year": year}
++    rows = conn.execute(
++        "SELECT section, period, period_end, count(*) n FROM fundamentals_lineitems"
++        " WHERE ticker_key=? AND fiscal_year=? GROUP BY 1,2,3 ORDER BY n DESC", (tk, year)).fetchall()
++    flow = next((r for r in rows if r[0] in ("Income Statement", "Cash Flow Statement")), None)
++    position = next((r for r in rows if r[0] == "Balance Sheet"), None)
++    return {"fiscal_year": year,
++            "period": flow[1] if flow else (position[1] if position else None),
++            "period_end": flow[2] if flow else (position[2] if position else None),
++            "position_at": position[2] if position else None}
++
++
+ def compute_for_ticker(conn, tk: str, universe: Path = None):
+     """Return list of (gauge_key, value, status, inputs_dict)."""
+     yr = conn.execute("SELECT MAX(fiscal_year) FROM fundamentals_lineitems WHERE ticker_key=?",
+@@ -310,8 +342,13 @@
+         return {"searched": searched_labels, "expected_section": section,
+                 "available_in_section": av}
+ 
++    # PROVENANCE. Every row, whatever its status: a missing_inputs row is evidence too, and
++    # the sector is what decides whether a gauge was ever applicable to this company.
++    vintage = {**_vintage(conn, tk, year), "sector": sector,
++               "computed_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")}
++
+     def emit(key, value, status, inputs):
+-        out.append((key, value, status, inputs))
++        out.append((key, value, status, {**inputs, **vintage}))
+ 
+     # ---- net_margin = NetIncome / Revenue * 100  (Revenue>0 required; NetIncome may be <0)
+     inp = {"net_income": net_income, "revenue": revenue, "revenue_label": rev_label, "year": year}
+@@ -572,6 +609,11 @@
+     conn = sqlite3.connect(str(db_path))
+     conn.execute(SQL_CREATE)
+     conn.commit()
++    has_score = any(r[1] == "score" for r in conn.execute("PRAGMA table_info(fundamentals_gauges)"))
++    upsert = SQL_UPSERT_CLEARING_SCORE if has_score else SQL_UPSERT
++    if has_score:
++        logger.info("fundamentals_gauges.score present: a changed value clears its ranking, "
++                    "so compute_sector_averages.py must run after this stage")
+ 
+     if args.ticker:
+         ticker_keys = [args.ticker]
+@@ -588,7 +630,7 @@
+             logger.warning(f"{tk}: FAILED {str(e)[:120]}"); continue
+         ups = [(tk, k, v, st, json.dumps(inp, ensure_ascii=False)) for (k, v, st, inp) in rows]
+         if ups:
+-            conn.executemany(SQL_UPSERT, ups)
++            conn.executemany(upsert, ups)
+             conn.commit()
+             total += len(ups)
+             for (_, _, _, st, _) in ups:

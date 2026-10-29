@@ -204,6 +204,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/tickers/{ref}/evidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Evidence
+         * @description The reported statements for one company, the measures they support, and exactly what is
+         *     missing where a measure cannot be computed.
+         *
+         *     Bounded on purpose: this is the dataset a council seat reads inside one prompt, so it carries
+         *     the statement's own leading rows rather than every line, and says how many it left out. The
+         *     unbounded statements are `/statements`.
+         */
+        get: operations["getTickerEvidence"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/tickers/{ref}/insights": {
         parameters: {
             query?: never;
@@ -1018,6 +1043,38 @@ export interface components {
             /** Turnover */
             turnover?: number | null;
         };
+        /** BoundedStatement */
+        BoundedStatement: {
+            /** Section */
+            section: string;
+            /** Period */
+            period: string | null;
+            /** Period End */
+            period_end: string | null;
+            /** Aggregation */
+            aggregation: string | null;
+            /**
+             * Source Columns
+             * @default []
+             */
+            source_columns: string[];
+            /** Columns */
+            columns: string[];
+            /** Rows */
+            rows: unknown[][];
+            /**
+             * Rows Omitted
+             * @default 0
+             */
+            rows_omitted: number;
+            /**
+             * Row Rules
+             * @default {}
+             */
+            row_rules: {
+                [key: string]: string;
+            };
+        };
         /** Breadth */
         Breadth: {
             /** Advancers */
@@ -1026,6 +1083,43 @@ export interface components {
             decliners: number;
             /** Unchanged */
             unchanged: number;
+        };
+        /**
+         * Calculation
+         * @description A derived figure, or the reason there is none. Never both.
+         *
+         *     `operands` is `[label, value, where]` per operand, the same compact shape the statements use
+         *     for their rows: a seat reads every operand of every calculation inside one prompt, and an
+         *     object with six keys per operand spends the budget on key names instead of figures.
+         */
+        Calculation: {
+            /** Metric */
+            metric: string;
+            /** Formula */
+            formula: string;
+            /** Value */
+            value?: number | null;
+            /** Unit */
+            unit?: string | null;
+            /** Window */
+            window?: string | null;
+            /** Denominator */
+            denominator?: string | null;
+            /**
+             * Operands
+             * @default []
+             */
+            operands: unknown[][];
+            /**
+             * Checks
+             * @default []
+             */
+            checks: string[];
+            /**
+             * Missing
+             * @default []
+             */
+            missing: string[];
         };
         /** CapitalChange */
         CapitalChange: {
@@ -1332,6 +1426,31 @@ export interface components {
             /** Events */
             events: components["schemas"]["EarningsEvent"][];
         };
+        /**
+         * EvidenceDataset
+         * @description P9. Reported statements, the measures they support, and the limits of both.
+         */
+        EvidenceDataset: {
+            /** Ticker */
+            ticker: string;
+            /** Currency */
+            currency: string | null;
+            /** Unit */
+            unit: string;
+            /** Basis */
+            basis: string;
+            /** Source */
+            source: string;
+            /** Sector */
+            sector: string;
+            /** Statements */
+            statements: components["schemas"]["BoundedStatement"][];
+            quarters: components["schemas"]["QuarterSeries"] | null;
+            /** Calculations */
+            calculations: components["schemas"]["Calculation"][];
+            /** Limitations */
+            limitations: string[];
+        };
         /** ExchangeCalendar */
         ExchangeCalendar: {
             /** Exchange */
@@ -1395,6 +1514,13 @@ export interface components {
             /** Groups */
             groups: components["schemas"]["GaugeGroup"][];
             freshness: components["schemas"]["Freshness"] | null;
+            /** Sector */
+            sector?: string | null;
+            /**
+             * Stale
+             * @default false
+             */
+            stale: boolean;
         };
         /** GaugeGroup */
         GaugeGroup: {
@@ -1419,6 +1545,19 @@ export interface components {
             status: string;
             /** Sector Percentile */
             sector_percentile: number | null;
+            /** Formula */
+            formula?: string | null;
+            /** Denominator */
+            denominator?: string | null;
+            /** Source */
+            source?: string | null;
+            /** Operands */
+            operands?: {
+                [key: string]: unknown;
+            } | null;
+            as_of?: components["schemas"]["Period"] | null;
+            /** Note */
+            note?: string | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -1631,6 +1770,20 @@ export interface components {
             /** Peers */
             peers: components["schemas"]["PeerRow"][];
         };
+        /** Period */
+        Period: {
+            /** Period */
+            period: string | null;
+            /** Period End */
+            period_end: string | null;
+            /** Aggregation */
+            aggregation: string | null;
+            /**
+             * Source Columns
+             * @default []
+             */
+            source_columns: string[];
+        };
         /** Plan */
         Plan: {
             /** Id */
@@ -1718,6 +1871,17 @@ export interface components {
             /** Bars */
             bars: components["schemas"]["Bar"][];
             freshness: components["schemas"]["Freshness"] | null;
+        };
+        /** QuarterSeries */
+        QuarterSeries: {
+            /** Section */
+            section: string;
+            /** Note */
+            note: string;
+            /** Columns */
+            columns: string[];
+            /** Rows */
+            rows: unknown[][];
         };
         /** Quote */
         Quote: {
@@ -2018,6 +2182,13 @@ export interface components {
             section: string;
             /** Rows */
             rows: components["schemas"]["StatementRow"][];
+            /**
+             * Periods
+             * @default {}
+             */
+            periods: {
+                [key: string]: components["schemas"]["Period"];
+            };
         };
         /** StatementRow */
         StatementRow: {
@@ -2028,6 +2199,13 @@ export interface components {
             /** Values */
             values: {
                 [key: string]: number | null;
+            };
+            /**
+             * Rules
+             * @default {}
+             */
+            rules: {
+                [key: string]: string;
             };
         };
         /** Statements */
@@ -2040,6 +2218,11 @@ export interface components {
             currency: string | null;
             /** Statements */
             statements: components["schemas"]["Statement"][];
+            /**
+             * Period Aware
+             * @default false
+             */
+            period_aware: boolean;
         };
         /** Summary */
         Summary: {
@@ -2572,6 +2755,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Corporate"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getTickerEvidence: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvidenceDataset"];
                 };
             };
             /** @description Validation Error */

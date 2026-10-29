@@ -550,6 +550,49 @@
         }
       }
     },
+    "/v1/tickers/{ref}/evidence": {
+      "get": {
+        "tags": [
+          "ticker"
+        ],
+        "summary": "Get Evidence",
+        "description": "The reported statements for one company, the measures they support, and exactly what is\nmissing where a measure cannot be computed.\n\nBounded on purpose: this is the dataset a council seat reads inside one prompt, so it carries\nthe statement's own leading rows rather than every line, and says how many it left out. The\nunbounded statements are `/statements`.",
+        "operationId": "getTickerEvidence",
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceDataset"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/tickers/{ref}/insights": {
       "get": {
         "tags": [
@@ -2301,6 +2344,93 @@
         ],
         "title": "Bar"
       },
+      "BoundedStatement": {
+        "properties": {
+          "section": {
+            "type": "string",
+            "title": "Section"
+          },
+          "period": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Period"
+          },
+          "period_end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Period End"
+          },
+          "aggregation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Aggregation"
+          },
+          "source_columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Source Columns",
+            "default": []
+          },
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Columns"
+          },
+          "rows": {
+            "items": {
+              "items": {},
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "rows_omitted": {
+            "type": "integer",
+            "title": "Rows Omitted",
+            "default": 0
+          },
+          "row_rules": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Row Rules",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "required": [
+          "section",
+          "period",
+          "period_end",
+          "aggregation",
+          "columns",
+          "rows"
+        ],
+        "title": "BoundedStatement"
+      },
       "Breadth": {
         "properties": {
           "advancers": {
@@ -2323,6 +2453,94 @@
           "unchanged"
         ],
         "title": "Breadth"
+      },
+      "Calculation": {
+        "properties": {
+          "metric": {
+            "type": "string",
+            "title": "Metric"
+          },
+          "formula": {
+            "type": "string",
+            "title": "Formula"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "window": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Window"
+          },
+          "denominator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Denominator"
+          },
+          "operands": {
+            "items": {
+              "items": {},
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Operands",
+            "default": []
+          },
+          "checks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Checks",
+            "default": []
+          },
+          "missing": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "metric",
+          "formula"
+        ],
+        "title": "Calculation",
+        "description": "A derived figure, or the reason there is none. Never both.\n\n`operands` is `[label, value, where]` per operand, the same compact shape the statements use\nfor their rows: a seat reads every operand of every calculation inside one prompt, and an\nobject with six keys per operand spends the budget on key names instead of figures."
       },
       "CapitalChange": {
         "properties": {
@@ -3285,6 +3503,87 @@
         ],
         "title": "EarningsSeason"
       },
+      "EvidenceDataset": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "basis": {
+            "type": "string",
+            "title": "Basis"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "sector": {
+            "type": "string",
+            "title": "Sector"
+          },
+          "statements": {
+            "items": {
+              "$ref": "#/components/schemas/BoundedStatement"
+            },
+            "type": "array",
+            "title": "Statements"
+          },
+          "quarters": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QuarterSeries"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "calculations": {
+            "items": {
+              "$ref": "#/components/schemas/Calculation"
+            },
+            "type": "array",
+            "title": "Calculations"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "currency",
+          "unit",
+          "basis",
+          "source",
+          "sector",
+          "statements",
+          "quarters",
+          "calculations",
+          "limitations"
+        ],
+        "title": "EvidenceDataset",
+        "description": "P9. Reported statements, the measures they support, and the limits of both."
+      },
       "ExchangeCalendar": {
         "properties": {
           "exchange": {
@@ -3507,6 +3806,22 @@
                 "type": "null"
               }
             ]
+          },
+          "sector": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sector"
+          },
+          "stale": {
+            "type": "boolean",
+            "title": "Stale",
+            "default": false
           }
         },
         "type": "object",
@@ -3588,6 +3903,72 @@
               }
             ],
             "title": "Sector Percentile"
+          },
+          "formula": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formula"
+          },
+          "denominator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Denominator"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "operands": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operands"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Period"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
           }
         },
         "type": "object",
@@ -4504,6 +4885,58 @@
         ],
         "title": "Peers"
       },
+      "Period": {
+        "properties": {
+          "period": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Period"
+          },
+          "period_end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Period End"
+          },
+          "aggregation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Aggregation"
+          },
+          "source_columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Source Columns",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "period_end",
+          "aggregation"
+        ],
+        "title": "Period"
+      },
       "Plan": {
         "properties": {
           "id": {
@@ -4748,6 +5181,41 @@
           "freshness"
         ],
         "title": "PriceHistory"
+      },
+      "QuarterSeries": {
+        "properties": {
+          "section": {
+            "type": "string",
+            "title": "Section"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Columns"
+          },
+          "rows": {
+            "items": {
+              "items": {},
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Rows"
+          }
+        },
+        "type": "object",
+        "required": [
+          "section",
+          "note",
+          "columns",
+          "rows"
+        ],
+        "title": "QuarterSeries"
       },
       "Quote": {
         "properties": {
@@ -5724,6 +6192,14 @@
             },
             "type": "array",
             "title": "Rows"
+          },
+          "periods": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Period"
+            },
+            "type": "object",
+            "title": "Periods",
+            "default": {}
           }
         },
         "type": "object",
@@ -5756,6 +6232,14 @@
             },
             "type": "object",
             "title": "Values"
+          },
+          "rules": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Rules",
+            "default": {}
           }
         },
         "type": "object",
@@ -5796,6 +6280,11 @@
             },
             "type": "array",
             "title": "Statements"
+          },
+          "period_aware": {
+            "type": "boolean",
+            "title": "Period Aware",
+            "default": false
           }
         },
         "type": "object",
