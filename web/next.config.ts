@@ -39,6 +39,13 @@ const SECURITY_HEADERS = [
 const HTML_LIMITED_BOTS = new RegExp(`${HTML_LIMITED_BOT_UA_RE.source}|Googlebot`, "i");
 
 const nextConfig: NextConfig = {
+  // Dev only. Next 16 refuses to serve /_next/* dev resources to a host it does not know, and
+  // 127.0.0.1 is not the same host as localhost to it: the page then renders its shell, never
+  // hydrates, and every panel sits on its skeleton with no request made and nothing in the
+  // console but a failed HMR socket. It looks exactly like a broken page. Allowing the loopback
+  // literal costs nothing (it is the same machine) and removes a trap that has cost a session
+  // once already. Has no effect on a production build.
+  allowedDevOrigins: ["127.0.0.1"],
   cacheComponents: true,
   poweredByHeader: false,
   htmlLimitedBots: HTML_LIMITED_BOTS,

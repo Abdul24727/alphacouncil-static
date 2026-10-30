@@ -48,6 +48,7 @@ The rebuilt AlphaCouncil: a dense research terminal for Gulf markets (Tadawul, A
 - Follow BRAND.md exactly. Anything it bans is a bug.
 - Never show a number that is not from our database. Missing data = a labelled placeholder or "Data unavailable", never an estimate.
 - Before saying a step is done: run the app, screenshot the page at 1440px and 390px wide, and show it.
+  To run it: `uv run uvicorn app.main:app --port 8000` in `api/`, `npm run dev -- -p 3100` in `web/`, then open **`http://localhost:3100/...`** — **localhost, never `127.0.0.1`**. The browser calls the API at `/api/v1/*` on the web origin, which `next.config.ts` rewrites to `API_ORIGIN` (default `http://127.0.0.1:8000`), so only the web server's own host matters. A page opened on the wrong host renders its shell and then **nothing**: no hydration, every panel stuck on its skeleton, no request made, and no error in the page - only a failed HMR socket in the console and one line in the dev server's log naming the blocked origin. `allowedDevOrigins` in `next.config.ts` now covers `127.0.0.1` as well, so this should not recur; the dev-server log is the place to look if it does.
 - If something is unclear or risky, stop and ask instead of guessing.
 - Run a chat to the end of its room: hand over at about 80% of context, not when a goal finishes or the
   obvious work runs out (owner, 2026-10-27). The full rule, and the `/goal` wording a handover block must
