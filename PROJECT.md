@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-30   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `6729395` on 2026-10-30, the owner's third go-ahead in chat ("Push them")** — three pushes that day took the remote `bdec8d8` → `19453f6` → `6729395`, all fast-forward. *The commit that writes this line is itself unpushed when it is made, so this hash is one commit behind the branch by construction: read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **beta and production both `74ce427bf6`** (released 2026-10-27 21:27 UTC on the owner's go-ahead; it carries F-10 and F-11 over `3228ab57e9`). *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-30   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `16a10f1` on 2026-10-30, the owner's fourth go-ahead in chat ("Push them")** — four pushes that day took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1`, all fast-forward. *The commit that writes this line is itself unpushed when it is made, so this hash is one commit behind the branch by construction: read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **beta and production both `74ce427bf6`** (released 2026-10-27 21:27 UTC on the owner's go-ahead; it carries F-10 and F-11 over `3228ab57e9`). *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -138,6 +138,8 @@ Older entries: `changelog-archive.md`.
 
 - 2026-10-30 — **The twelfth finding is closed, and the Financials panel was never broken: I had been opening it on the wrong host.** The screenshots `CLAUDE.md` asks for are taken, at 1440px and 390px, showing Al Rajhi (1120) with the Balance sheet's **32 rows** — the exact code path the label change touches, each line named by its newest year's label. **The diagnosis.** Next 16 refuses to serve its `/_next/*` dev resources to a host it does not know, and to it `127.0.0.1` is not `localhost`. The page therefore renders its server shell and then stops: no hydration, so `StockTemplate`'s `useLayoutEffect` never puts the ticker in the group store, so `useTickerStatements(undefined)` stays `enabled: false`, so **every panel sits on its skeleton and not one request is made**. Nothing in the page says so — the console carries only a failing HMR socket, and the one line naming the blocked origin is in the **dev server's log**, which is where I had not looked. That is why it read as a rendering failure and why I wrongly suspected a Pro gate. On `localhost` the same URL hydrates and fetches normally: `/api/v1/tickers/1120`, `/fundamentals` and `/statements` all answer 200. **Fixed at the root, not worked around:** `allowedDevOrigins: ["127.0.0.1"]` in `web/next.config.ts` (dev-only, no effect on a production build) — verified by reloading the same page on `127.0.0.1` afterwards: 0 skeletons, the table present, identical to `localhost`. And `CLAUDE.md`'s "run the app and screenshot it" rule, which demanded the check without ever saying how to run the app, now carries the two commands, the `localhost` rule and the symptom to recognise, so the trap cannot cost another session. `tsc --noEmit` and `eslint` clean, **32 web tests pass**, and a **production build is clean** (exit 0, 93 static pages) - the config key is dev-only and the build confirms it changes nothing there. **One honest limit on the 1440px image:** the browser pane captures at its own size, so the picture is a scaled view of a genuine 1440px viewport rather than a 1440-pixel-wide file; the layout is the real one (`innerWidth` 1440, `scrollWidth` 1440, **no horizontal overflow**). At 390px the capture is full size. Also seen and **not** fixed, because it is pre-existing and dev-only: Next warns that `generateMetadata()` reads uncached data through `getTickerRef`'s `connection()`, which blocks that route's metadata from prerendering. It is the "1 Issue" badge in the screenshots. Nothing deployed, no paid call, production untouched.
 
+- 2026-10-30 — **Fourth push of the day (`6729395..16a10f1`), and the corrected scan rule proved itself on its first run.** The dev-origin fix, the run recipe in `CLAUDE.md`, the push record and the two further impossible checks are all published. Fast-forward, nothing forced, the other five remote heads untouched; verified by `rev-parse` local = remote-tracking = `ls-remote` = `16a10f1`, `0 0` ahead/behind, and an anonymous fetch showing `allowedDevOrigins` live at line 48 of `web/next.config.ts`. **The rule behaved exactly as rewritten.** The outgoing diff printed **one** hit — Step 2's own *How* line quoting its regex, the named false positive. The wording I replaced earlier today demanded "one hit and only one", and this push would have satisfied it by luck while the previous push, with **0**, would have been blocked: proof that the count was never the test and that reading the hits is. A stricter value-shaped grep over the added lines matched three, all of them this file's prose about the patterns. **One thing the `git ls-files` check surfaced that earlier runs had not:** a tracked `api/.env.example`. Read in full before pushing — a template whose every key is empty except `MARKET_DB_IMMUTABLE=true`, a boolean — and `git log --all -p` over that path shows it has never carried a value. It is not in this diff and nothing needed to change; it is written here so the next session does not re-investigate it. Nothing deployed, no paid call, production untouched.
+
 ## 6. Current State
 - **Unreleased on `rebuild`, touching live application code:** `api/app/debate/llm.py`'s retry path — the echo and the quoted parser message clipped in UTF-8 bytes, every issued request counted against `ATTEMPTS`, and `REASONING_REQUIRED` seeded so the chair's model is not refused once per process (round five, 2026-10-28). Production is unaffected until a release, which is the owner's go-ahead; it should carry one real-model session on beta first, because every seat goes through that path.
 - **The acceptance round was self-reviewed and all 15 findings are fixed** (suite 557). Four changed output: derived EPS is no longer withheld from companies whose share count is supported, the share-count rule check is an allowlist rather than a denylist (`sum_quarters` — the 4x bug — was being accepted), the ranking caveat quotes the figure measured for its OWN peer class, and the Financials panel now says why a rank is missing instead of rendering an empty cell.
@@ -261,6 +263,19 @@ Older entries: `changelog-archive.md`.
     `startswith("sk_test_")` prefix check, a fixture set to the literal `sk_test_x`, a comment
     naming key prefixes, and the `# OPENROUTER_API_KEY=` template line with nothing after the `=` -
     no value anywhere; `git ls-files` finds no `.env`, key or credential file tracked.
+  - *Done (2026-10-30), fourth push:* `6729395..16a10f1` on the owner's go-ahead - the push
+    record, the two further impossible checks, the dev-origin fix and its verification.
+    Fast-forward, nothing forced, the other five heads untouched; `rev-parse` local =
+    `rev-parse` remote-tracking = `ls-remote` = `16a10f1`, `0 0` ahead/behind, and an anonymous
+    `raw.githubusercontent.com` fetch of `web/next.config.ts` showing `allowedDevOrigins` live at
+    line 48. **First run of the corrected scan rule, and it behaved as rewritten:** the outgoing
+    diff printed **one** hit - this step's own *How* line quoting its regex, the named false
+    positive - where the old wording would have demanded exactly that number and the previous push
+    produced **0**. A stricter value-shaped grep over the added lines matched three lines, all of
+    them this file's prose about the patterns, no value. `git ls-files` surfaced a tracked
+    `api/.env.example`, read in full before pushing: a template whose every key is empty except
+    `MARKET_DB_IMMUTABLE=true`, a boolean, and `git log --all -p` over that path shows it has never
+    held a value. It is not in this diff.
   - *Ruling (2026-10-29):* **this step's third Done-when is now failing, and the push went ahead
     anyway.** The two tests used on 2026-10-22 to prove the repository private - anonymous `git -c
     credential.helper= ls-remote`, and `api.github.com/repos/…` - have both reversed: the first
@@ -1056,9 +1071,9 @@ Goal 4's "Done when", as it stands tonight: **(2) MET** — six real portraits i
 Claude can run passes, `check-all.mjs` waits on the owner, and 14 of 14 waits on Step 18; **(5) NOT MET** —
 `"checkout_open":false`, deliberately, until Step 18; **(1) NOT STARTED** — Step 7, the lawyer, though its questions are drafted and ready to take (`docs/legal-questions-2026-10-27.md`).
 
-`origin/rebuild` is at **`6729395`**: the 40 commits of 2026-10-29 (`9dcc4a1..bdec8d8`) and
-then, on the owner's go-ahead on 2026-10-30, `bdec8d8..19453f6` and `19453f6..6729395` - every one
-fast-forward, nothing forced. Verified with `git ls-remote`,
+`origin/rebuild` is at **`16a10f1`**: the 40 commits of 2026-10-29 (`9dcc4a1..bdec8d8`) and
+then, on the owner's go-aheads on 2026-10-30, `bdec8d8..19453f6`, `19453f6..6729395` and
+`6729395..16a10f1` - every one fast-forward, nothing forced. Verified with `git ls-remote`,
 `git rev-list --left-right --count origin/rebuild...rebuild` = `0 0`, and an anonymous fetch of the
 pushed file from the public remote. **The Goal 1 exposure this paragraph carried since 2026-10-22 is
 closed** - no work from 2026-10-28, 10-29 or 10-30 exists only on this computer any more. The live figure
@@ -1092,9 +1107,10 @@ expansion this line used to recommend is **done** — the bench is eighteen prob
 is that two things now have to land BEFORE any paid run that measures the room, or the run measures the
 wrong thing:
 
-1. ~~**Push `rebuild`**~~ — **DONE 2026-10-29 and twice again on 2026-10-30**: 40 commits
-   (`9dcc4a1..bdec8d8`), then `bdec8d8..19453f6` and `19453f6..6729395`, each verified against the
-   remote, 0 unpushed, and the Goal 1 exposure is closed. The repository it went to is
+1. ~~**Push `rebuild`**~~ — **DONE 2026-10-29 and three times again on 2026-10-30**: 40
+   commits (`9dcc4a1..bdec8d8`), then `bdec8d8..19453f6`, `19453f6..6729395` and
+   `6729395..16a10f1`, each verified against the remote, 0 unpushed, and the Goal 1 exposure is
+   closed. The repository it went to is
    **public**, and on 2026-10-30 the owner decided to leave it that way, so the premise is retired
    rather than failing and **the first real action here is now item 2**. No credential is in what
    went up; the pre-push scan is a standing check in Step 2 from here on.
