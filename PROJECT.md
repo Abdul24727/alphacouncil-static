@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-30   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `16a10f1` on 2026-10-30, the owner's fourth go-ahead in chat ("Push them")** — four pushes that day took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1`, all fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **beta and production both `74ce427bf6`** (released 2026-10-27 21:27 UTC on the owner's go-ahead; it carries F-10 and F-11 over `3228ab57e9`). *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-30   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `3aafa82` on 2026-10-30, the owner's fifth go-ahead in chat ("Push them")** — five pushes that day took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, all fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **beta and production both `74ce427bf6`** (released 2026-10-27 21:27 UTC on the owner's go-ahead; it carries F-10 and F-11 over `3228ab57e9`). *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -142,6 +142,8 @@ Older entries: `changelog-archive.md`.
 
 - 2026-10-30 — **The two delivered pipeline patches re-checked before the owner carries them to the server: both still apply cleanly.** They are two and nine days old against a server last stamped on 2026-10-24, and a patch that no longer applies is discovered either here or with the owner at the server, so it was worth ruling out here. **Corrected 2026-10-30:** this sentence first gave the reason as "`api/app/evidence.py` changed on 10-30". That is a non-sequitur — `evidence.py` is in this platform repository and the patches target the separate pipeline repository (`Argaam-council-…`); they share no file, so no change to one can make a patch to the other stale. The check was right; the reason recorded for it was not, and left as written it would have taught the next session a dependency that does not exist. Checked against **`a38dc07`**, the server pipeline's recorded base (the 2026-10-24 Stamp: "`a38dc07` + fixes A, F-F, F-A2, uncommitted on the server"), by extracting the two files at that commit with `git show` into the scratchpad and running `patch -p1 --dry-run` — so the old repository was read and never touched, as `CLAUDE.md` requires. Both clean. The three fixes already on the server change `_bin/nightly_pipeline.sh`, `llm-council/ingest_ticker_insights.py` and `argaam/tickers.csv`, and **none of them touches** `llm-council/parse_financial_statements.py` or `llm-council/compute_fundamental_gauges.py`, so the server's copies of the two files the patches edit should still match `a38dc07` exactly. **One thing that would have misled a reader:** checked against the old repository's working checkout they both *fail* — that checkout sits on `release-auth`, which is simply a different branch, not evidence of staleness; on `fix/p16-seal-scope` they apply. The base to check against is `a38dc07`, not whatever branch a checkout happens to be on. **Two things not verified from here, both settled by one read-only command:** that the server is still at that base, and that `docs/` is the complete inventory of what was changed on it (the applied fixes were in-place edits with `.bak-*` backups, so anything edited there and never written back as a patch is invisible to this check). `ssh root@alphacouncil.tech "cd /opt/alphacouncil/backend && git rev-parse --short HEAD && git status --porcelain"` answers both. Attempted on 2026-10-30 and **refused by the auto-mode classifier as a production read**, so it is the owner's to run before applying; if the base has moved, re-run the dry run against the new one. Read-only; nothing deployed, no paid call, production untouched.
 
+- 2026-10-30 — **The review's eight fixes pushed (`16a10f1..3aafa82`), and the scan printed 0 hits — its fourth different count in four pushes.** 2, 0, 1, 0. That sequence is the clearest argument this file has for the rule it adopted today: a count cannot be the pass condition, reading every hit is. Verified as usual, and this time with one check the others cannot give — an anonymous fetch of the published `PROJECT.md` showing the false sentence **gone** from the remote and the header caveat reading "at least one commit behind". Step 2's *Outcome* holds the detail; it is the copy to correct if any of this is ever wrong. Written under the rule the pushed commit introduced, so **no unpushed count appears in this entry**: the commit carrying it is unpushed as it is written, which is the whole point. Nothing deployed, no paid call, production untouched.
+
 ## 6. Current State
 - **Unreleased on `rebuild`, touching live application code:** `api/app/debate/llm.py`'s retry path — the echo and the quoted parser message clipped in UTF-8 bytes, every issued request counted against `ATTEMPTS`, and `REASONING_REQUIRED` seeded so the chair's model is not refused once per process (round five, 2026-10-28). Production is unaffected until a release, which is the owner's go-ahead; it should carry one real-model session on beta first, because every seat goes through that path.
 - **The acceptance round was self-reviewed and all 15 findings are fixed** (suite 557). Four changed output: derived EPS is no longer withheld from companies whose share count is supported, the share-count rule check is an allowlist rather than a denylist (`sum_quarters` — the 4x bug — was being accepted), the ranking caveat quotes the figure measured for its OWN peer class, and the Financials panel now says why a rank is missing instead of rendering an empty cell.
@@ -278,6 +280,18 @@ Older entries: `changelog-archive.md`.
     `api/.env.example`, read in full before pushing: a template whose every key is empty except
     `MARKET_DB_IMMUTABLE=true`, a boolean, and `git log --all -p` over that path shows it has never
     held a value. It is not in this diff.
+  - *Done (2026-10-30), fifth push:* `16a10f1..3aafa82` on the owner's go-ahead - the review
+    of the two record commits and its eight fixes. Fast-forward, nothing forced, the other five
+    heads untouched; `rev-parse` local = `rev-parse` remote-tracking = `ls-remote` = `3aafa82`,
+    `0 0` ahead/behind at the push, and an anonymous fetch of the published `PROJECT.md` confirming
+    the correction landed: section 9's false sentence is **gone** from the remote and the header
+    caveat now reads "at least one" commit behind. (Deliberately not quoting the old sentence
+    here - quoting it would put the string back in this file, and the next push would publish it
+    again, making this very claim false by grep. That is the defect this commit removed.) **The scan printed 0 hits.**
+    Across the four pushes of 2026-10-30 it has printed 2, 0, 1 and 0 - which is the argument for
+    the rule in *How* stated as data: no count is the pass condition, reading every hit is. The
+    `--all` history scan printed only the standing false positives listed in *How*, and a
+    value-shaped grep over both the outgoing diff and the whole history matched nothing.
   - *Ruling (2026-10-29):* **this step's third Done-when is now failing, and the push went ahead
     anyway.** The two tests used on 2026-10-22 to prove the repository private - anonymous `git -c
     credential.helper= ls-remote`, and `api.github.com/repos/…` - have both reversed: the first
@@ -1073,9 +1087,9 @@ Goal 4's "Done when", as it stands tonight: **(2) MET** — six real portraits i
 Claude can run passes, `check-all.mjs` waits on the owner, and 14 of 14 waits on Step 18; **(5) NOT MET** —
 `"checkout_open":false`, deliberately, until Step 18; **(1) NOT STARTED** — Step 7, the lawyer, though its questions are drafted and ready to take (`docs/legal-questions-2026-10-27.md`).
 
-`origin/rebuild` is at **`16a10f1`**: the 40 commits of 2026-10-29 (`9dcc4a1..bdec8d8`) and
-then, on the owner's go-aheads on 2026-10-30, `bdec8d8..19453f6`, `19453f6..6729395` and
-`6729395..16a10f1` - every one fast-forward, nothing forced. Verified with `git ls-remote`,
+`origin/rebuild` is at **`3aafa82`**: the 40 commits of 2026-10-29 (`9dcc4a1..bdec8d8`) and
+then, on the owner's go-aheads on 2026-10-30, `bdec8d8..19453f6`, `19453f6..6729395`,
+`6729395..16a10f1` and `16a10f1..3aafa82` - every one fast-forward, nothing forced. Verified with `git ls-remote`,
 `git rev-list --left-right --count origin/rebuild...rebuild` = `0 0`, and an anonymous fetch of the
 pushed file from the public remote. **The Goal 1 exposure this paragraph carried since 2026-10-22 is
 closed as a standing condition**: every push goes up on the owner's go-ahead and is verified, rather
@@ -1112,9 +1126,10 @@ expansion this line used to recommend is **done** — the bench is eighteen prob
 is that two things now have to land BEFORE any paid run that measures the room, or the run measures the
 wrong thing:
 
-1. ~~**Push `rebuild`**~~ — **DONE 2026-10-29 and three times again on 2026-10-30**: 40
-   commits (`9dcc4a1..bdec8d8`), then `bdec8d8..19453f6`, `19453f6..6729395` and
-   `6729395..16a10f1`, each verified against the remote at the time of the push, and
+1. ~~**Push `rebuild`**~~ — **DONE 2026-10-29 and four times again on 2026-10-30**: 40
+   commits (`9dcc4a1..bdec8d8`), then `bdec8d8..19453f6`, `19453f6..6729395`,
+   `6729395..16a10f1` and `16a10f1..3aafa82`, each verified against the remote at the time of
+   the push, and
    the Goal 1 exposure is closed as a standing condition (section 9). **This item deliberately gives
    no unpushed count** - it said "0 unpushed" until 2026-10-30, when the branch was two ahead,
    because the commit recording a push is itself unpushed. Read it with `git status -sb`. The repository it went to is
