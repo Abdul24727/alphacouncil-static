@@ -42,7 +42,7 @@ The rebuilt AlphaCouncil: a dense research terminal for Gulf markets (Tadawul, A
 ## Standing rules
 
 - Work only on git branch `rebuild`. Never push to main.
-- Remote `origin` = the owner's private GitHub repository `https://github.com/Abdul24727/alphacouncil-static` (its other branches hold the old static site; push `rebuild` only, never force).
+- Remote `origin` = `https://github.com/Abdul24727/alphacouncil-static`, which is **PUBLIC** (its other branches hold the old static site; push `rebuild` only, never force). This line said “private” until 2026-10-30, and it was wrong: anonymous `git -c credential.helper= ls-remote` answers without a sign-in and the API reports `"private": false`. **The owner decided on 2026-10-30 to leave it public**, so **every push publishes** - the source, everything under `docs/`, and `PROJECT.md` with it. Run the credential scan in PROJECT.md Step 2 “How” before each push and read its hits; the plan file’s own prose naming those patterns is the expected one. Keys and secrets live in the server env file and never in git.
 - alphacouncil.tech runs this app (since 2026-10-17). Release only beta → production with `scripts/deploy-staging.sh` then `scripts/deploy-production.sh`, and only with the owner's go-ahead for that release.
 - Do not change the old repos (`alphacouncil-static`, `Argaam-council-…`) or the old pipeline on the server (`/opt/alphacouncil/backend`): read them for reference only, unless the owner approves a specific change (PROJECT.md, Goal 2).
 - Follow BRAND.md exactly. Anything it bans is a bug.

@@ -34,6 +34,7 @@ from app.evidence import (
     sector_of,
     stale_reason,
     vintage_basis,
+    window_label,
     window_of,
 )
 
@@ -1202,29 +1203,90 @@ def test_a_relabelled_line_is_shown_under_its_newest_label(repaired, data_files,
     assert row["values"]["2026"] == 12.0
 
 
-def test_a_section_whose_rows_disagree_reports_the_same_window_either_way(tmp_path):
-    """`Items.period()` resolves a section's window and rule with `max()`, which on a tie returns
-    whichever key was inserted first - SQLite's row order again. A tie means the rows disagree and
-    the parser's one-window-per-section invariant has broken; the pick is arbitrary either way,
-    but an arbitrary answer that is the same answer every time can be checked against the
-    statements, and one that moves cannot. 0 ties were found over the 213 section-years on this
-    machine, so this changes no reported window today."""
+def _cell(label, end, rule, section="Income Statement", window=None):
     from app.evidence import Cell
+    return Cell(label=label, section=section, fiscal_year=2026, item_index=0, value=1.0,
+                period="Q" if end.endswith("06") else "FY", period_end=end, rule=rule,
+                window=window or [])
 
-    def cell(label, end, rule):
-        return Cell(label=label, section="Income Statement", fiscal_year=2026, item_index=0,
-                    value=1.0, period="Q" if end.endswith("06") else "FY", period_end=end,
-                    rule=rule)
 
-    cells = [cell("A", "2026-06", "sum_quarters"), cell("B", "2026-06", "sum_quarters"),
-             cell("C", "2026-12", "mean_of_quarters"), cell("D", "2026-12", "mean_of_quarters")]
+def test_a_section_whose_rows_disagree_reports_no_window_at_all():
+    """`Items.period()` used to report the commonest window and rule, resolving a TIE first by row
+    order and then - after a review of that - by the text of the label. Both were wrong in the
+    same way: a tie has no commonest, so any pick states a window half the section does not cover.
+    It now reports nothing. Every caller guards on `period_end` being absent and `window_label`
+    returns None for it, so this reads as "no window stated" rather than a claim."""
+    cells = [_cell("A", "2026-06", "sum_quarters"), _cell("B", "2026-06", "sum_quarters"),
+             _cell("C", "2026-12", "mean_of_quarters"), _cell("D", "2026-12", "mean_of_quarters")]
     forward = Items(cells, []).period("Income Statement", 2026)
     backward = Items(list(reversed(cells)), []).period("Income Statement", 2026)
 
-    assert (forward.period, forward.period_end) == (backward.period, backward.period_end), (
-        f"a 2-2 tie reported {forward.period_end} one way and {backward.period_end} the other")
-    assert forward.aggregation == backward.aggregation, (
-        f"a 2-2 rule tie reported {forward.aggregation!r} and {backward.aggregation!r}")
-    # And the tie is broken by the text, so the answer is predictable from the data alone.
-    assert (forward.period, forward.period_end) == ("FY", "2026-12")
-    assert forward.aggregation == "mean_of_quarters"
+    for got in (forward, backward):
+        assert (got.period, got.period_end) == (None, None), "a 2-2 window tie states no window"
+        assert got.aggregation is None, "a 2-2 rule tie states no rule"
+    assert window_label(forward) is None, "and nothing downstream can render it as a window"
+
+
+def test_an_aggregation_tie_does_not_make_the_share_count_the_norm():
+    """The defect this policy was written for, and it was mine. Breaking the rule tie
+    alphabetically picked `mean_of_quarters` over `sum_quarters`, and both consumers compare each
+    row against that baseline (`own.rule != p.aggregation`), so Revenue and Net Income were marked
+    as deviating while the share-count rows became the section's norm - the exact inversion of
+    what the marker exists for. With no aggregation, every row carries its own rule."""
+    cells = [_cell("Revenue", "2026-06", "sum_quarters"),
+             _cell("Net Income", "2026-06", "sum_quarters"),
+             _cell("Shares Outstanding (Million)", "2026-06", "mean_of_quarters"),
+             _cell("Average number of shares (mln)", "2026-06", "mean_of_quarters")]
+    p = Items(cells, []).period("Income Statement", 2026)
+
+    assert p.aggregation != "mean_of_quarters", (
+        "the section's baseline must not be the rule that makes a share count the norm")
+    assert p.aggregation is None
+    # Which is what the marker needs: each row differs from "no rule", so each states its own.
+    assert all(c.rule != p.aggregation for c in cells), "every row now speaks for itself"
+
+
+def test_rows_that_disagree_about_their_source_columns_name_none_of_them():
+    """`source_columns` kept the first of several equal-length windows, so a section whose rows
+    were reconstructed from different quarter sets named whichever arrived first. That field is
+    the reference that makes a reconstructed annual figure checkable against the page it came
+    from, so naming the wrong set is worse than naming none."""
+    agree = [_cell("A", "2026-06", "sum_quarters", window=["2026-03", "2026-06"]),
+             _cell("B", "2026-06", "sum_quarters", window=["2026-03", "2026-06"])]
+    assert Items(agree, []).period("Income Statement", 2026).source_columns == \
+        ["2026-03", "2026-06"], "where the rows agree, the window is reported"
+
+    clash = [_cell("A", "2026-06", "sum_quarters", window=["2026-03", "2026-06"]),
+             _cell("B", "2026-06", "sum_quarters", window=["2025-09", "2025-12"])]
+    forward = Items(clash, []).period("Income Statement", 2026)
+    backward = Items(list(reversed(clash)), []).period("Income Statement", 2026)
+    assert forward.source_columns == [] and backward.source_columns == [], (
+        f"equal-length windows that differ named {forward.source_columns} one way and"
+        f" {backward.source_columns} the other")
+
+
+def test_two_labels_for_one_slot_in_one_year_resolve_the_same_way_every_time(
+        repaired, data_files, monkeypatch):
+    """The half of the label fix that the first attempt missed. Sorting the rows by fiscal_year
+    settled which YEAR names a line and left the within-year case to arrival order: a duplicate
+    slot - which the parse should not produce, and does not on the published database - still took
+    whichever label came last. The lowest by text now wins, so the answer is the same on every
+    rebuild. Inserted in the order that would have given the other label."""
+    c = sqlite3.connect(repaired)
+    c.executemany(
+        "INSERT INTO fundamentals_lineitems VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        [("2222_TADAWUL", "2222", "TADAWUL", 2026, "Balance Sheet", 901,
+          "Aaa Term Loans", 12.0, "FY", "2026-12", ANNUAL_SRC),
+         ("2222_TADAWUL", "2222", "TADAWUL", 2026, "Balance Sheet", 901,
+          "Zzz Term Loans", 12.0, "FY", "2026-12", ANNUAL_SRC)],
+    )
+    c.commit()
+    c.close()
+
+    settings = data_files.model_copy(update={"screening_db": repaired})
+    monkeypatch.setattr(main, "get_settings", lambda: settings)
+    s = get(TestClient(main.create_app()), "/v1/tickers/2222/statements")
+
+    sheet = next(x for x in s["statements"] if x["section"] == "Balance Sheet")
+    row = next(r for r in sheet["rows"] if r["index"] == 901)
+    assert row["label"] == "Aaa Term Loans", "the lowest label by text, not the last row inserted"

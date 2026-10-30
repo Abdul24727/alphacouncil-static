@@ -359,17 +359,22 @@ def get_statements(request: Request, ref: str, years: int = 5) -> Statements:
         raise unavailable(exc) from exc
 
     by_section: dict[str, dict[int, StatementRow]] = {}
-    # Oldest year first, so a line relabelled between years is shown under its NEWEST label.
-    # `load_items` orders by (section, item_index) with no year term, so taking the label from
-    # whichever row arrived first left it to SQLite: the figures came from every year and the
-    # label from an arbitrary one of them. No ticker on the published database relabels a line
-    # within five years, so this changes nothing today; it stops the answer depending on row
-    # order the first time one does.
-    for c in sorted(items.rows, key=lambda r: r.fiscal_year):
+    # A line is merged across years by `item_index`, so one of its labels has to name it: the
+    # NEWEST year's, and where that year carries two labels for one index - a duplicate the parse
+    # should not produce - the lowest by text. Taking it from whichever row arrived first left the
+    # choice to SQLite, across years and within one. Nothing on the published database relabels a
+    # line inside five years and nothing duplicates a slot, so no row on screen changes; the
+    # answer simply stops moving between two rebuilds of identical data.
+    naming: dict[tuple[str, int], tuple[int, str]] = {}
+    for c in items.rows:
         sec = by_section.setdefault(c.section, {})
         row = sec.setdefault(c.item_index, StatementRow(index=c.item_index, label=c.label, values={}))
-        row.label = c.label
         row.values[str(c.fiscal_year)] = c.value
+        held = naming.get((c.section, c.item_index))
+        if held is None or c.fiscal_year > held[0] or (c.fiscal_year == held[0] and c.label < held[1]):
+            naming[(c.section, c.item_index)] = (c.fiscal_year, c.label)
+    for (name, index), (_year, label) in naming.items():
+        by_section[name][index].label = label
 
     def rank(name: str) -> tuple[int, str]:
         return (STATEMENT_ORDER.index(name) if name in STATEMENT_ORDER else 9, name)

@@ -340,6 +340,27 @@ def period_aware(conn: sqlite3.Connection) -> bool:
     return {"period", "period_end"} <= columns_of(conn, "fundamentals_lineitems")
 
 
+def _modal(counts: dict[Any, int], *, on_tie: Any = None) -> Any:
+    """The value more rows carry than any other, or None where no single value leads.
+
+    A TIE returns None by default, which is the honest answer: the rows disagree, so the group has
+    no one value and each row has to speak for itself. `on_tie` takes a callable for the one case
+    where a tie has a safer side to fall on (`recorded_peer_class` falls toward `bank`, because
+    that is the class whose ranks are withheld). The leaders are sorted before `on_tie` sees them,
+    so its input does not depend on the order the rows arrived in either.
+
+    Written because three places needed this and had three different answers, one of which was
+    actively harmful: breaking the aggregation tie alphabetically picked `mean_of_quarters`, which
+    made a section's share-count rows its norm and flagged its flows as the deviation."""
+    if not counts:
+        return None
+    top = max(counts.values())
+    leaders = sorted((k for k, n in counts.items() if n == top), key=repr)
+    if len(leaders) == 1:
+        return leaders[0]
+    return on_tie(leaders) if on_tie else None
+
+
 class Items:
     """One ticker's line items for the years asked for, with lookup by label group."""
 
@@ -375,8 +396,16 @@ class Items:
         return [s for s in order if s in present] + sorted(present - set(order))
 
     def period(self, section: str, year: int | None = None) -> Period:
-        """The window this section's figures cover in this year. One window per section is an
-        invariant of the repaired parser; where rows disagree the commonest one is reported."""
+        """The window this section's figures cover in this year, where its rows agree on one.
+
+        One window per section is an invariant of the repaired parser, and it holds across all 213
+        section-years on this machine. Where it breaks, this reports **nothing** rather than the
+        commonest: a tie has no commonest, and resolving one by row order made the answer move
+        between two rebuilds of identical data, while resolving it by text made it move toward
+        whichever label happened to sort first. Every caller guards on `period_end` being absent
+        and `window_label` returns None for it, so saying nothing reads as "no window stated"
+        instead of claiming a window half the rows do not cover. The same goes for `aggregation`:
+        with none, every row carries its own `rule`, which is what the row-rule marker wants."""
         cells = self.section_of(section, year)
         if not cells:
             return Period(period=None, period_end=None, aggregation=None)
@@ -386,23 +415,22 @@ class Items:
             counts[(c.period, c.period_end)] = counts.get((c.period, c.period_end), 0) + 1
             if c.rule:
                 rules[c.rule] = rules.get(c.rule, 0) + 1
-        # Most rows wins, and a TIE is broken by the window's own text rather than by the order
-        # the rows arrived in: `max()` alone returns the first key inserted, which is SQLite's row
-        # order. A tie means the rows disagree and the one-window-per-section invariant above has
-        # broken, so there is no commonest window to report - the pick is arbitrary either way,
-        # and an arbitrary answer that is at least the same answer every time can be checked
-        # against the statements. 0 ties over the 213 section-years on this machine.
-        (period, end), _n = min(counts.items(), key=lambda kv: (-kv[1], str(kv[0][0]), str(kv[0][1])))
+        window = _modal(counts)
+        period, end = window if window else (None, None)
+        # The columns of the chosen window, and only where the rows that carry it agree on them.
+        # `len(w) > len(longest)` used to keep the first of several equal-length windows, so a
+        # section whose rows were reconstructed from different quarter sets named whichever
+        # arrived first - the same order-dependence as above, in the one field that exists to make
+        # a reconstructed figure checkable against the page it came from.
         columns: list[str] = []
-        for c in cells:
-            if c.period == period and c.period_end == end and len(c.window) > len(columns):
-                columns = c.window
-        top = max(rules.values()) if rules else 0
-        return Period(
-            period=period, period_end=end,
-            aggregation=min((r for r, n in rules.items() if n == top), default=None),
-            source_columns=columns,
-        )
+        if window is not None:
+            carried = [c.window for c in cells
+                       if (c.period, c.period_end) == (period, end) and c.window]
+            longest = max((len(w) for w in carried), default=0)
+            best = [w for w in carried if len(w) == longest]
+            columns = best[0] if best and all(w == best[0] for w in best) else []
+        return Period(period=period, period_end=end, aggregation=_modal(rules),
+                      source_columns=columns)
 
     def quarters(self, section: str = "Income Statement") -> list[str]:
         return sorted({q.period_end for q in self.quarterly if q.section == section and q.period_end})
@@ -432,7 +460,11 @@ def load_items(conn: sqlite3.Connection, ticker_key: str, years: int = 2) -> Ite
         for r in conn.execute(
             f"SELECT section, fiscal_year, item_index, line_item_label, value{extra}"
             f" FROM fundamentals_lineitems WHERE ticker_key = ? AND fiscal_year IN ({marks})"
-            " ORDER BY section, item_index",
+            # fiscal_year as well: without it the rows of one (section, item_index) came back in
+            # whatever order SQLite chose, and every consumer that takes "the first" inherited
+            # that. `get_statements` had to sort them itself to name a line by its newest label;
+            # ordering here fixes it for each of them at once.
+            " ORDER BY section, item_index, fiscal_year",
             (ticker_key, *yrs),
         ):
             rows.append(_cell(r, aware))
@@ -770,10 +802,7 @@ def recorded_peer_class(gauge_inputs: dict[str, dict]) -> str | None:
         if isinstance(i, dict) and i.get("sector"):
             key = str(i["sector"])
             votes[key] = votes.get(key, 0) + 1
-    if not votes:
-        return None
-    most = max(votes.values())
-    return min(k for k, n in votes.items() if n == most)
+    return _modal(votes, on_tie=min)
 
 
 def peer_group_reason(peer_class: str | None) -> str | None:
