@@ -1322,6 +1322,33 @@ wrong thing:
    - The server state the patches need is confirmed unchanged, and the suite is 576/11 after the flaky
      F-11 test was fixed (`b0a6c36`).
    - D1/D3/D6 must be retired or re-registered before item 4 is scored.
+   **Run 2026-11-02 evening, on the owner's go-ahead ("Yes, all tonight": all of item 3 tonight; keep
+   the patches if the check matches the walkthrough, reverse them before 00:00 UTC if not):**
+   - *A2, beta (done):* `scripts/deploy-staging.sh` → `deployed df83e19404`; `acp-api` and `acp-web`
+     active, api 200, web 200.
+   - *A3, one real-model session on beta (done):* `check-advisors.mjs` through the tunnel →
+     **"all passed", 53 PASS / 0 FAIL**. EN verdict in 30 s, AR in 78 s; every seat answered all three
+     rounds; the Chair's answer was 255 / 225 words; "ruled on 3" in both
+     (`docs/screenshots/release-df83e19404/check-advisors-beta.txt`).
+     - Two of the new INFO lines are suspect **in the checker**: "6 of 6 seats not citing their own
+       datasets" with **all 8 owned datasets never cited**, and "ruled on 3 of **0** fault lines".
+     - Zero tags found at all, and zero fault lines while three rulings show, point at the regex and the
+       selector, not the room. The checker reads `[P2]`-style text from the card and
+       `[data-stage-view=faultlines] [data-fault-line]`.
+     - Unverified; to settle before item 4 relies on those lines.
+   - *B1 (done, 21:02 UTC):* named copies, each `cmp`-identical to its source:
+     `prestatementrepair-det_out-screening.sqlite`, `prestatementrepair-live-screening.sqlite`, and
+     `prestatementrepair-live-evidence.sqlite` (1.27 GB; an addition to the walkthrough).
+   - *B2 (prep):* both patches uploaded to `/root`, sha256-equal to the committed copies.
+   - *B4's commands* were taken from the server's own `--dry-run` (steps 8, 11, 13, 14 with the
+     `pipeline-venv` interpreter). SABIC's `current_ratio` reads 1.8006 before.
+   - *A4, production (done):* `scripts/deploy-production.sh` → `deployed df83e19404 to production`;
+     api 200, web 200 after restart.
+     - Production serves `releases/df83e19404`, `BILLING_OPEN=true` is untouched, `checkout_open:true`,
+       and `/statements` answers a visitor 403 (Pro-only).
+     - On beta (same sha) `/statements` for 2222 returns `period_aware: false` and per-statement
+       `periods` with null fields, as it must before the repaired database is published.
+     - **Both tiers now understand `periods`, so §1's exposure is closed.**
 4. **Then the $66 validation pilot**, and the decision-grade run at cap $393 after it.
    **This item's precondition is MET as of 2026-11-02, on the owner's go-ahead ("Yes, wire them
    up"): the pilot can now answer all three priorities.** It used to be able to speak to Priority
