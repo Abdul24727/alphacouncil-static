@@ -234,13 +234,33 @@ costs nothing when nothing moved.
      in place with `.bak-*` backups, so anything edited there and never written back as a patch is
      invisible to a local check. `git status --porcelain` lists it.
 
-   Verified here on 2026-10-30, and still true of the patch files: both apply cleanly against
-   `a38dc07` (the two files extracted with `git show` and dry-run with `patch -p1 --dry-run`), and
-   **no patch in `docs/` other than these two touches `llm-council/parse_financial_statements.py`
-   or `llm-council/compute_fundamental_gauges.py`** — so the server's copies of those two files
-   should still match `a38dc07`. Note that "fixes A" is the 2026-10-19 **bundle**, five files in
-   seven hunks, not one file. Then, on the server, `git apply --check -p1` each patch before
-   applying it for real.
+**RUN 2026-11-02 by the owner, and both questions came back clean.** `HEAD` is `a38dc07`,
+   the base this was verified against, so the dry run stands. The modified files are, every one of
+   them, accounted for:
+
+   | server says | why |
+   |---|---|
+   | `M argaam/main_patched2026_with_sectors.py` | fixes A (three hunks) |
+   | `M argaam/tickers.csv` | fixes A, then F-A2 |
+   | `M llm-council/ingest_ticker_insights.py` | F-F |
+   | `M llm-council/scripts/health_digest.py` | fixes A |
+   | `M llm-council/RELEASE.json` | **not a patch** — the deploy stamp (`backend`, `static`, `deployed_at`) written by `llm-council/backend/release.py` and read by `health.py`; machine-written on every deploy of the old stack |
+   | `?? argaam/tools/chart_failures.py` | fixes A **creates** it (`create mode 100644`), so untracked is correct |
+   | `?? *.bak-*` files and `llm-council.bak-*/`, `llm-council/backups` | the standing backup rule, and the pipeline's own backups |
+
+   **The answer that matters: neither `llm-council/parse_financial_statements.py` nor
+   `llm-council/compute_fundamental_gauges.py` is modified.** Both are clean at `a38dc07`, which
+   is exactly the premise the dry run rested on — so both patches apply. Verified locally on
+   2026-10-30 by extracting the two files at that commit with `git show` and running
+   `patch -p1 --dry-run`; no patch in `docs/` other than these two touches either file. ("Fixes A"
+   is the 2026-10-19 **bundle** — five files, seven hunks — not one file.)
+
+   **One blind spot to know about:** `_bin/nightly_pipeline.sh`, which fixes A also patches, does
+   not appear in the output and cannot. `_bin/` is not tracked at `a38dc07` and is not inside
+   `/opt/alphacouncil/backend`, so this `git status` never sees it. That is not a discrepancy, but
+   it does mean this check cannot speak for anything under `_bin/`.
+
+   Then, on the server, `git apply --check -p1` each patch before applying it for real.
 
 1. **Named safety copies first.** `publish_dbs.sh` copies the live file to
    `/opt/alphacouncil/backups/dbpublish-<stamp>/` and keeps five — observed as one per day, so the
