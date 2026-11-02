@@ -1357,8 +1357,53 @@ wrong thing:
        hand matches the nightly.
      - **From here, the nightly at 00:00 UTC runs with the patches.** The owner's rule: keep them if
        B6 matches the walkthrough, reverse before 00:00 if not.
-   - *B5 (started 21:15:49 UTC):* steps 8, 11, 13, 14 into `det_out/screening.sqlite`, detached on the
-     server (`/root/item3-b5.sh`, log `/root/item3-b5-20261102T211549Z.log`).
+   - *B5 (done):* steps 8, 11, 13, 14 into `det_out/screening.sqlite`, detached on the server
+     (`/root/item3-b5.sh`, log `/root/item3-b5-20261102T211549Z.log`). All four exited 0. **The parse
+     took 354 s over the universe**; 11, 13 and 14 took 3 s together. Scored 3,218 of 6,620 gauge rows.
+   - *B6, the check (done, 21:22–21:40 UTC): KEPT.* The three criteria the owner was given are all met:
+     - Tadawul income statements **0 → 250** (269 Tadawul rows in `stocks`).
+     - 2222 shows `Income Statement TTM 2026-06` beside `Balance Sheet Q 2026-06` (and `FY 2025-12`).
+     - **0** `ok` gauges unranked.
+   - *B6's deeper checks, all passing:*
+     - **0** ticker/section/year cells with more than one `period_end`.
+     - Every non-Tadawul income statement is still `FY`; all 250 Tadawul ones are `TTM`.
+     - **All 1,342 gauge status changes and all 379 ok→ok value changes are Tadawul**, and 0 values moved
+       elsewhere.
+     - The changes are the intended ones: `missing_inputs → ok` for `net_margin` 228, `ps` 228, `roic`
+       206, `interest_coverage` 199, `payout` 73; `na_sector → ok` for `gross_margin` 202 and
+       `ev_ebitda` 61.
+     - About 25 tickers moved between `na_sector` and `missing_inputs` for `debt_equity` /
+       `interest_coverage`, consistent with the review's more robust sector detection.
+     - SABIC `current_ratio` **1.8006 → 2.4297** (2.430 predicted).
+     - SABIC, Aramco and Al Rajhi reproduce `docs/ingestion-repair-reconciliation-2026-10-28.md`: 15, 18
+       and 24 rows at TTM@2026-06; shares 3,000 m and 242,000 m (the 4× gone); SABIC EPS −7.12 against
+       −7.11. SABIC's −19.7 % net margin is the real loss with its 16.8 bn extraordinary charge.
+   - *Two of the walkthrough's B6 expectations were wrong, not the data:*
+     - Its "income sections spanning >1 period_end" query groups by ticker only, so it flags every
+       multi-year annual statement (it listed Kuwaiti tickers with five FYs). The right test, per
+       ticker, section and year, returns none.
+     - Its expected gauge counts (`ok 1679…1954`) came from runs that never parsed Tadawul in full, so
+       they could not include 250 restored income statements. Both are corrected in the walkthrough.
+   - *Found, minor, and gone by morning:* 72 rows (about 15 Tadawul tickers, Balance Sheet 2025, 2–10
+     rows each) have `period` NULL.
+     - Upsert leftovers: rows are keyed by `item_index`, and the old parse's extra positions are not
+       overwritten.
+     - The nightly's step 5 deletes and recreates `screening.sqlite`, and the patched parser creates the
+       new columns on a fresh table, so the published file will not carry them. Re-parsing into an
+       existing file would.
+   - *Resume here (after 05:00 UTC on 2026-11-03, 08:00 Riyadh): the post-publish check.*
+     1. `tail /opt/alphacouncil/logs/db_publish.log` should show `published. /healthz/deep=ok`; the
+        nightly's rebuild must have exited OK (`/opt/alphacouncil/logs/cron.log`).
+     2. On `/var/lib/alphacouncil/screening.sqlite` (read-only): about 250 Tadawul income statements,
+        `period` never NULL, 2222's sections as above.
+     3. Through the beta tunnel (beta and production read the same file): `/v1/tickers/2222/statements`
+        should say `period_aware: true` with TTM 2026-06 and Q 2026-06 labels. Then screenshots of the
+        Financials panel at 1440 and 390, EN and AR.
+     4. If anything is wrong, use the walkthrough's Rollback: `git apply -R` both patches
+        (`/root/item3-reverse.sh` does it and restores `det_out`), then restore
+        `prestatementrepair-live-screening.sqlite` and `prestatementrepair-live-evidence.sqlite` into
+        `/var/lib/alphacouncil/`.
+     5. **No paid run until that check passes** (walkthrough B7).
 4. **Then the $66 validation pilot**, and the decision-grade run at cap $393 after it.
    **This item's precondition is MET as of 2026-11-02, on the owner's go-ahead ("Yes, wire them
    up"): the pilot can now answer all three priorities.** It used to be able to speak to Priority

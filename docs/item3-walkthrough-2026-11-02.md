@@ -44,6 +44,15 @@ Read-only checks at 20:33 UTC (server and repository). Four things below are now
    pipeline was running. The API suite on `rebuild` is 576 passed, 11 skipped, after a flaky F-11 test was
    fixed (`b0a6c36`).
 
+5. **B6's query and expected counts, corrected after the run (21:40 UTC).**
+   - The query `… GROUP BY ticker_key HAVING COUNT(DISTINCT period_end) > 1` flags every multi-year annual
+     income statement, because each FY has its own year-end. The right test groups by `ticker_key, section,
+     fiscal_year`. It returned none on the repaired file.
+   - The expected gauge statuses (`ok 1679…1954`) came from runs that never parsed Tadawul in full. With
+     250 Tadawul income statements back, the real result is `missing_inputs 1109, na_sector 2241, ok 3218,
+     undefined_nonpositive 52`. Every change is on Tadawul and every move is an income-statement gauge
+     becoming computable (PROJECT.md, Next Up item 3, "B6").
+
 **Still the owner's, before item 4 rather than before the publish:** probes D1, D3 and D6 change their
 correct answers once the repair lands. The closeout left their bands untouched. Retire or re-register them
 before the pilot is scored.
