@@ -22,10 +22,17 @@ the turn's `flags.uncovered`. Flagged, never refused.
 
 **Who reads that flag** (corrected 2026-11-02): `eval/probe_run.room_flags`, which the probe report prints as
 Priority Two. This line used to say `web/scripts/check-advisors.mjs` reported it, and that was never true - the
-browser check recomputes coverage from its own `MANDATES` map and has never read `flags.uncovered`. The wrong
+browser check recomputes coverage itself and has never read `flags.uncovered`. The wrong
 pointer is part of why the flag went unread until 2026-11-02: anyone checking whether it had a consumer was sent to
-a script that appeared to be one. The duplicate map is still there and can drift from `owns`; the harness
-deliberately computes nothing of its own so it cannot become a third copy.
+a script that appeared to be one. The harness deliberately computes nothing of its own so it cannot become a
+third implementation.
+
+**How the second implementation can drift** (corrected 2026-11-02, same day): the line above first said the script
+carries a `MANDATES` map "duplicating `owns`". It does not - it reads the `owns:` line out of these same files
+(`web/scripts/check-advisors.mjs:44`), so it is a second **parser**, not a second copy. The drift that is left is
+**case**: `roster.py:146` upper-cases `owns` before validating it against `DATASET_TAG`, so `owns: p2, p9` is a
+legal file here that Python reads as `P2, P9` while the JS keeps `p2, p9` - matching no uppercase tag in any
+answer and reporting every mandate uncovered. **So write `owns` in upper case**, as all seven files do today.
 
 Between them the mandates cover every dataset in the pack except **P4**, and that is deliberate: P4 is the
 rule-based council seats, which are votes from fixed thresholds rather than measurements. Nobody is answerable for
