@@ -123,6 +123,10 @@ Monthly, renewing until cancelled (`api/app/billing.py`):
   `https://alphacouncil.tech/api/billing/webhook/moyasar` reaches the same handler. Both check
   `MOYASAR_WEBHOOK_SECRET`. It confirms payments for payers who closed the browser, and a refund made in
   Moyasar's dashboard ends Pro. Each event arrives twice (two webhooks); each payment is applied once.
+  **Seen on the first live payment (2026-11-02): the two webhooks do not share a secret.** One is answered
+  403 "Unknown sender." and retried by Moyasar, while the other is answered 200. Nothing is lost, since the
+  matching one carries every event. The fix is the owner's, in the dashboard: delete the duplicate or give it
+  the same secret. Do it only after a refund has landed, so the refund's notification is not the one refused.
 - Tested on beta with the account's Moyasar **test** keys (2026-10-18, `screenshots/accounts-billing/`):
   declined card refused, paid card starts Pro with the card saved, and a renewal charged the saved
   card through Moyasar and moved Pro a month on. Full case list on 2026-10-22, 13 of 13
@@ -193,6 +197,10 @@ Step 18, *Pre-check*), and before Step 10 closed.
 - **Check scripts that sign up their own accounts now get Free accounts.** `check-all.mjs`'s Pro-data phases
   and the signed-up `check-advisors.mjs` fail on production while billing is open. Run `check-all` with
   billing briefly closed, and run `check-advisors` with `EMAIL=` set to an account that has Pro.
+
+- **The first live payment (2026-11-02 19:24 UTC), the owner's own:** SAR 79, Visa, Moyasar id `d8e27294…`,
+  applied once (one `billing_payments` row; the return page's confirm and a webhook both answered 200). Pro is
+  active to 2026-12-02 with the card saved. The owner's cancel and refund come next (PROJECT.md Step 18).
 
 To close billing again: delete the `BILLING_OPEN` line, then `systemctl restart acp-prod-api` (as above).
 
