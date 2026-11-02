@@ -272,8 +272,20 @@ costs nothing when nothing moved.
    leaves every changed gauge unranked, which is safe but shows no percentiles.
 4. Check before publishing: Tadawul income statements present, gauge statuses, `ok` rows all
    ranked.
-5. Ship the API change to beta **before** publishing the database — see §2's note on `periods`.
-6. Publish.
+5. Ship the API change **to beta and then to production** before publishing the database —
+   see §2's note on `periods`. **Corrected 2026-11-02:** this step said "to beta" alone,
+   which does not protect the tier that matters. Production reads the same published file
+   (`acp-prod-api.service` mounts `/var/lib/alphacouncil`, and `deploy-production.sh --setup`
+   copies `SCREENING_DB` straight out of staging's env), and the live release `3228ab57e9`
+   serves `/statements` without `periods`, rendering each year as an `FY{year}` column. So the
+   first publish would label a TTM@2026-06 income statement and a Q@2026-06 balance sheet
+   "FY2026" on the live site - §2's defect, live. `deploy-production.sh` refuses unless beta
+   already runs the identical sha, so the beta-first gate is kept either way.
+6. Publish. **But note what §"Publication order" cannot enforce:** the nightly runs steps 8,
+   11, 13 and 14 of `run_rebuild_pipeline.py` at 00:00 UTC and `publish_dbs.sh` fires at about
+   05:00 UTC, so applying the patches and stopping publishes them unattended by morning.
+   "Do not publish yet" is not a state the server holds. The step-by-step order with that
+   timing built in is `docs/item3-walkthrough-2026-11-02.md`.
 
 Rollback: restore the named copy, and `patch -R` the two files (proven byte for byte). The added
 columns are nullable and SQLite cannot drop them; restoring the database file makes that moot.
