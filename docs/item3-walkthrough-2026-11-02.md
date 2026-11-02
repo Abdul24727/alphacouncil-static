@@ -9,6 +9,45 @@ this turned up two things that change the order. They are first, because they de
 
 ---
 
+## Corrections, 2026-11-02 evening (read before anything below)
+
+Read-only checks at 20:33 UTC (server and repository). Four things below are now wrong or incomplete.
+
+1. **`publish_dbs.sh` would not publish in B7.** The crontab runs it **hourly from 05:00 to 10:00 UTC**
+   (`0 5-10 * * *`), not once. Each run publishes only when the in-tree `briefs_index` has a newer
+   `MAX(as_of_date)` than the served one (the "is there anything newer to publish?" block); otherwise it
+   logs "served data is already current — nothing to publish." and exits. That is what the 06:00–10:00 runs
+   on 2026-11-02 logged. So a manual B7 after the day's 05:00 publish **does nothing**, because the four
+   stages do not move the briefs date. The same gate is good news: the hourly runs cannot publish a
+   half-checked `det_out/screening.sqlite` either. **The working shape follows from it:** apply, run the four
+   stages and check (B3–B6) **before 00:00 UTC**. If the check is good, leave the patches applied: the nightly
+   re-runs the chain with them, and its own 05:00 publish carries the repair. If it is not good, reverse the
+   patches and restore `det_out` before 00:00. The nightly's rebuild finished at 02:17 UTC on 11-02
+   (`det_out/screening.sqlite` mtime) after the scrape, so the manual stages must be done well before then.
+2. **Billing is open on production since 2026-11-02 18:20 UTC** (PROJECT.md Step 18). §1's point 5 no longer
+   holds: `/statements` is Pro-only and production's visitors are Free unless they pay, so the mislabelled
+   columns of option (b) would reach paying members only. Nobody is subscribed today. (a) is still the order
+   to use.
+3. **Phase A ships all of `rebuild`, not only `periods`.** `git diff 74ce427bf6..rebuild -- api/app web/src
+   web/messages deploy` is 24 files, about 2,600 lines. It includes:
+   - P9 in every seat's pack (about +60 % input tokens per seat call, no prompt caching);
+   - the mandates (Priority Two) and the Chair's rulings (Priority Three), which change what the paid room
+     does;
+   - the `llm.py` retry-path changes, which §6 of the plan says should carry one real-model session on beta
+     before production.
+
+   So A3 should be that session (about $0.30–0.60, a paid call), not only a look at the panel.
+4. **Unchanged and confirmed:** production and beta both run `74ce427bf6`. The pipeline repo is at
+   `a38dc07`, and neither file the patches edit is modified. The other modified tracked files each map to a
+   `docs/` patch (`ingest_ticker_insights.py` is F-F's), plus `RELEASE.json`. `publish_dbs.sh` is in
+   `/opt/alphacouncil/bin/`. 40 GB is free for the B1 copies (`screening.sqlite` is 29 MB). Nothing in the
+   pipeline was running. The API suite on `rebuild` is 576 passed, 11 skipped, after a flaky F-11 test was
+   fixed (`b0a6c36`).
+
+**Still the owner's, before item 4 rather than before the publish:** probes D1, D3 and D6 change their
+correct answers once the repair lands. The closeout left their bands untouched. Retire or re-register them
+before the pilot is scored.
+
 ## 1. Publishing the database is a production change, and "ship to beta first" does not protect production
 
 `docs/priority-one-closeout-2026-10-29.md` step 5 says to ship the API change to **beta** before

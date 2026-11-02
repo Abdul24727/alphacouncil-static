@@ -1311,6 +1311,17 @@ wrong thing:
    has no Tadawul income statement at all**, so a paid session would measure the room on a pack whose P9
    says "there is no income statement" for every Saudi name. That is the opposite of what Priority One was
    built to fix, and it would be paid for.
+   **Re-read 2026-11-02 20:33 UTC (the walkthrough's new "Corrections" section):**
+   - `publish_dbs.sh` runs **hourly 05:00–10:00 UTC** and publishes only when the day's briefs are newer
+     than the served ones, so the walkthrough's manual B7 would have been a no-op.
+   - The working shape: B3–B6 **before 00:00 UTC**. A good check leaves the patches applied for the
+     nightly's own 05:00 publish; a bad one is reversed before midnight.
+   - Phase A ships all of `rebuild`: P9, the mandates, the rulings and the retry path. So A3 is one
+     real-model session on beta (paid, about $0.30–0.60).
+   - With billing open, the mislabelled-column exposure would reach paying members only.
+   - The server state the patches need is confirmed unchanged, and the suite is 576/11 after the flaky
+     F-11 test was fixed (`b0a6c36`).
+   - D1/D3/D6 must be retired or re-registered before item 4 is scored.
 4. **Then the $66 validation pilot**, and the decision-grade run at cap $393 after it.
    **This item's precondition is MET as of 2026-11-02, on the owner's go-ahead ("Yes, wire them
    up"): the pilot can now answer all three priorities.** It used to be able to speak to Priority
