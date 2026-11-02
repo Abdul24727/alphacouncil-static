@@ -480,8 +480,14 @@ def test_one_http_client_per_event_loop_not_one_per_call(monkeypatch):
     async def ids_on_one_loop(n: int) -> set[int]:
         return {id(make_client(settings)) for _ in range(n)}
 
+    async def client_of_one_loop():
+        return make_client(settings)
+
     assert len(asyncio.run(ids_on_one_loop(20))) == 1, "one loop must share one client"
     # A different loop must NOT reuse the first one: that is what a single global would get wrong.
-    assert asyncio.run(ids_on_one_loop(1)) != asyncio.run(ids_on_one_loop(1))
+    # Both clients are held while they are compared. Comparing id()s of clients already let go let
+    # the second land at the first one's freed address about once in a hundred runs (2026-11-02).
+    first, second = asyncio.run(client_of_one_loop()), asyncio.run(client_of_one_loop())
+    assert first is not second
     # A synchronous caller has no loop to key on and still gets a usable client.
     assert make_client(settings) is not None
