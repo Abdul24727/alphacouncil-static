@@ -151,6 +151,27 @@ Once both are in this file, Step 10 closes, and **Step 7** (the lawyer reviews t
 >   Pro, your own once you have paid, or a test account given Pro with
 >   `python -m app.billing grant <email> 1`. Signed in that way it spends two of that account's 20 sessions
 >   this month.
+>
+> **The run plan chosen (2026-11-02): both checks in one window with billing closed.** Closing billing
+> restores exactly the condition the bullets below were checked for (every account Pro, checkout closed), so
+> both scripts run as designed and neither needs a granted account:
+> 1. Claude backs up `api.env`, deletes the `BILLING_OPEN` line, restarts `acp-prod-api`, and confirms
+>    `"checkout_open":false`. This needs the owner's go-ahead in chat.
+> 2. The owner runs, from `web/` in PowerShell, `check-all.mjs` and then the signed-in `check-advisors.mjs`
+>    (fresh accounts, about $0.60 of model credit), and pastes both summaries into chat.
+> 3. Claude puts `BILLING_OPEN=true` back, restarts, and re-runs `check-billing-public.mjs` (signed out, all
+>    must pass). Then it records both summaries here, moves the scripts' screenshots into this folder, and
+>    reads the monitor.
+>
+> While the window is open, checkout is closed and every visitor has Pro. Nobody is subscribed, so nobody is
+> affected. The test accounts the runs leave behind turn Free when billing reopens; removing them is the
+> owner's (`scripts/old-accounts.sh`, "After them" below).
+>
+> **Read the INFO lines with production in mind.** The `check-advisors.mjs` on `rebuild` added three
+> report-only lines after `74ce427bf6`: seats not citing their own datasets, datasets never cited, and the
+> Chair's rulings. Production's room has no mandates and no rulings yet, so those lines will read as total
+> misses. They are INFO and cannot fail the run. `check-all.mjs` and its phase scripts are unchanged since
+> `74ce427bf6`.
 
 Checked read-only on 2026-10-27, so there are no surprises in the middle of a run:
 
