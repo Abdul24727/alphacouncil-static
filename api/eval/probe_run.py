@@ -120,6 +120,20 @@ class ProbeResult:
     gaps: list[str] = field(default_factory=list)
     disagreements: list[str] = field(default_factory=list)
     absent: list[str] = field(default_factory=list)
+    # Priority Two and Three, read off the per-turn flags the engine already writes rather than
+    # recomputed here. Until 2026-11-02 nothing anywhere read either one: the room measured mandate
+    # coverage on every opening and the Chair's grounds on every ruling, and the harness threw both
+    # away, so a funded run could speak to Priority One - the evidence in the pack - and to neither
+    # of the other two.
+    #
+    # `openings` is stored because it is the DENOMINATOR, and because a blank is not a zero. A seat
+    # that went absent has no opening and cannot be measured, so counting `uncovered` against the
+    # roster would report the best coverage exactly when the room was least healthy. On a
+    # single-model arm there are no openings at all, and 0 is what tells the report to print
+    # UNAVAILABLE rather than perfect coverage.
+    openings: int = 0
+    uncovered: dict[str, list[str]] = field(default_factory=dict)  # seat -> own datasets it never cited
+    unruled: list[str] = field(default_factory=list)               # fault lines ruled with no grounds
     critique: list[str] = field(default_factory=list)  # arm E's first pass, kept so it can be read
     answer_words: int = 0
     unverified: list[str] = field(default_factory=list)
@@ -188,6 +202,34 @@ def with_plant(base: Any, probe: Any, planted: bool):
 # --- the room: arms A and D --------------------------------------------------------------------
 
 
+def room_flags(turns: list[dict[str, Any]]) -> tuple[int, dict[str, list[str]], list[str]]:
+    """(openings measured, seat -> own datasets it never cited, fault lines ruled with no grounds).
+
+    Priority Two and Three, read off flags the engine has always written and nobody has ever read.
+    The turn dicts carry `flags` beside `data` (`engine.py`, "One seat's answer for one step"), so
+    this reads two keys the harness was discarding; it computes nothing itself, deliberately. The
+    room already measures both, and a second implementation here would be free to drift from it -
+    which is exactly what happened to `web/scripts/check-advisors.mjs`, whose own `MANDATES` map
+    duplicates `seat.info.owns`.
+
+    **Openings only, for Priority Two.** `check_opening` measures coverage there and nowhere else:
+    an opening is the seat's own complete answer, written without seeing the others', so citing
+    none of your own part means your part went unread. A challenge or a final word is a reply, and
+    reaching for another seat's dataset there is the debate working.
+
+    **An absent turn carries `flags: None`**, not an empty dict, so every filter here asks for a
+    dict rather than for truthiness. The count of openings is returned because it is the
+    denominator and because a seat that never spoke cannot be measured: counting against the
+    roster instead would report the best coverage exactly when the room was least healthy.
+    """
+    openings = [t for t in turns if t.get("stage") == "openings" and isinstance(t.get("flags"), dict)]
+    uncovered = {t["seat"]: list(t["flags"]["uncovered"]) for t in openings if t["flags"].get("uncovered")}
+    unruled = next((list(t["flags"]["unruled"]) for t in turns
+                    if t.get("stage") == "verdict" and isinstance(t.get("flags"), dict)
+                    and t["flags"].get("unruled")), [])
+    return len(openings), uncovered, unruled
+
+
 async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool, dry: bool, roster_spec: str | None = None, budget: Budget | None = None) -> ProbeResult:
     settings = get_settings()
     cell = CELL[probe.cell]
@@ -231,6 +273,7 @@ async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool
     r.cost_usd, r.calls = round(calls["cost"], 6), int(calls["n"])
     r.bound_usd = round(calls.get("bound", 0.0), 6)
     r.absent = sorted({t["seat"] for t in turns if isinstance(t.get("data"), dict) and t["data"].get("absent")})
+    r.openings, r.uncovered, r.unruled = room_flags(turns)
     if planted:
         blob = json.dumps([t.get("data") for t in turns if t["stage"] == "debate"], ensure_ascii=False)
         r.challenged = bool(S.hits(checks.normalize_digits(blob), probe.wrong, probe.metric))

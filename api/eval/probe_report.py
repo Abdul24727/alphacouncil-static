@@ -249,6 +249,55 @@ def report(path: Path | None = None) -> None:
             extra = f", {ch}/{n} contested in the round of challenges"
         print(f"  {arm}: {h}/{n} handled{extra}")
 
+    # --- Priority Two and Three ------------------------------------------------------------------
+    #
+    # Added 2026-11-02. Both instruments existed and neither had a consumer: the engine wrote
+    # `flags.uncovered` on every opening and `flags.unruled` on every verdict, and nothing anywhere
+    # read them - not this report, not the web's `Flags` type, not any component. So the funded run
+    # could answer Priority One and would have reported NOTHING on the other two, while appearing
+    # to be the experiment that measured all three.
+    #
+    # Counted over every run that produced an answer, planted AND clean, which is deliberately not
+    # the `good` set the outcome tables use. The validity gate voids a probe when its METRIC cannot
+    # be read - no clean control, or a control that never reaches for the figure. Neither says
+    # anything about whether the seats cited their mandates or the Chair gave grounds, so gating
+    # these on it would throw away sound observations of the room for a reason unrelated to them.
+    #
+    # The single-model arms print UNAVAILABLE, not 0. They have no seats to hold mandates and no
+    # Chair to rule, so there is nothing to measure - and a 0 there would read as flawless coverage,
+    # which is the one misreading this section must not invite.
+    print("\nPRIORITY TWO AND THREE (the room's own instruments; a single model has neither)")
+    print(f"  {'arm':4}{'openings':>10}{'seats not citing own':>22}{'rulings with no grounds':>25}")
+    answered = [r for r in rows if r["ok"]]
+    for arm in arms:
+        g = [r for r in answered if r["arm"] == arm]
+        if not g:
+            continue
+        openings = sum(int(r.get("openings") or 0) for r in g)
+        if not openings:
+            print(f"  {arm:4}{'-':>10}{'UNAVAILABLE':>22}{'UNAVAILABLE':>25}")
+            continue
+        seats = sum(len(r.get("uncovered") or {}) for r in g)
+        unruled = sum(len(r.get("unruled") or []) for r in g)
+        tags = sorted({t for r in g for ts in (r.get("uncovered") or {}).values() for t in ts})
+        print(f"  {arm:4}{openings:>10}{f'{seats}/{openings}':>22}{unruled:>25}")
+        print(f"      datasets a seat owns and never cited: {', '.join(tags) or 'none'}")
+    print("\n  A seat is measured on its OPENING only - the one turn written without seeing the")
+    print("  others', where citing none of your own part means your part went unread. A reply that")
+    print("  reaches for another seat's dataset is the debate working, not a gap. An absent seat has")
+    print("  no opening and is not counted, which is why openings is printed beside the share")
+    print("  instead of the roster size. A ruling with no grounds is the Chair naming a fault line")
+    print("  and then not saying what decided it; which WAY it ruled is the Chair's call and is not")
+    print("  counted here.")
+    if any(r.get("dry") and r.get("openings") for r in answered):
+        # The same warning the efficiency table carries, and it matters more here. The dry
+        # stand-in writes answers with no citations in them at all, so it owes every mandate on
+        # every opening - a figure that describes the stand-in and not the room, and one that reads
+        # as a catastrophic result rather than as an artifact unless it is said out loud.
+        print("\n  SOME OF THESE RUNS ARE DRY. The stand-in cites nothing, so it owes every mandate")
+        print("  on every opening: a dry coverage figure describes the stand-in, not the room, and")
+        print("  is not a result. Only a paid run's numbers mean anything in this section.")
+
     # --- the paired reading --------------------------------------------------------------------
     #
     # Added 2026-10-28, because "handled" on its own can be read as a result when it is a ceiling.

@@ -21,15 +21,21 @@ from eval.probes import BY_ID
 from eval.score import CORRECT, WRONG
 
 
-def row(probe: str, arm: str, planted: bool, outcome: str, *, gate_hits=("metric",), ok=True):
-    """One result row in the shape `probe_run` writes."""
+def row(probe: str, arm: str, planted: bool, outcome: str, *, gate_hits=("metric",), ok=True,
+        openings=0, uncovered=None, unruled=()):
+    """One result row in the shape `probe_run` writes.
+
+    `openings` defaults to 0 - the single-model shape - so a test that does not care about the
+    room's instruments gets the UNAVAILABLE reading rather than a fabricated coverage figure.
+    """
     p = BY_ID[probe]
     return {
         "arm": arm, "probe": probe, "family": p.family, "cell": p.cell, "ticker": "2222_TADAWUL",
         "repeat": 1, "planted": planted, "ok": ok, "dry": False, "error": None,
         "seconds": 1.0, "cost_usd": 0.01, "bound_usd": 0.4, "calls": 1,
         "headline": "a headline", "answer": "an answer", "gaps": [], "disagreements": [],
-        "absent": [], "critique": [], "answer_words": 100, "unverified": [],
+        "absent": [], "openings": openings, "uncovered": dict(uncovered or {}),
+        "unruled": list(unruled), "critique": [], "answer_words": 100, "unverified": [],
         "outcome": outcome, "evidence": [], "gate_hits": list(gate_hits), "challenged": False,
     }
 
@@ -203,3 +209,97 @@ def test_b_is_reported_as_the_efficiency_baseline(tmp_path, capsys):
     # and a room costs a multiple of it per run
     a_line = next(l for l in block.splitlines() if l.strip().startswith("A "))
     assert "7.7x" in a_line, a_line
+
+
+# --- Priority Two and Three --------------------------------------------------------------------
+#
+# Added 2026-11-02 with the section they test. The claim in front of the owner is that the funded
+# run can answer all three priorities rather than only the first, and these are what make that
+# claim checkable: the room's two instruments now have a consumer, and the one way the section
+# could mislead - a single model's blank reading as perfect coverage - is tested rather than hoped.
+
+
+def test_a_single_model_arm_reports_the_rooms_instruments_as_unavailable_not_zero(tmp_path, capsys):
+    """The misreading this section exists to prevent.
+
+    Arms B and E have no seats to hold mandates and no Chair to rule, so there is nothing to
+    measure. Printed as `0/0` or as a bare 0 it would read as a single model citing every mandate
+    perfectly and never leaving a ruling ungrounded - which would make the baseline look like the
+    best-behaved room in the experiment on two measures it cannot take part in.
+    """
+    rows = _full_rows("CORRECTED", "CORRECTED", "CORRECTED")
+    out = _report_text(tmp_path, rows, capsys)
+
+    assert "PRIORITY TWO AND THREE" in out
+    section = out.split("PRIORITY TWO AND THREE")[1]
+    b_line = next(l for l in section.splitlines() if l.strip().startswith("B "))
+    assert "UNAVAILABLE" in b_line, b_line
+    assert "0/0" not in b_line, "a blank was printed as a zero"
+
+
+def test_the_rooms_uncovered_seats_are_reported_against_the_openings_measured(tmp_path, capsys):
+    """A share, with its own denominator. The denominator is not the roster size: a seat that went
+    absent wrote no opening and cannot be measured, so printing `3/6` for a room where only four
+    seats spoke would overstate coverage exactly when the room went worst."""
+    rows = [
+        row("D1", "A", True, "CORRECTED", openings=4,
+            uncovered={"buffett": ["P2", "P9"], "lynch": ["P7"]}, unruled=["Whether it is covered"]),
+        row("D1", "D", True, "CORRECTED", openings=4),
+        row("D1", "B", True, "CORRECTED"),
+    ]
+    rows += [row("D1", a, False, "CORRECTED", openings=4 if a in ("A", "D") else 0)
+             for a in ("A", "D", "B")]
+    out = _report_text(tmp_path, rows, capsys)
+
+    section = out.split("PRIORITY TWO AND THREE")[1]
+    a_line = next(l for l in section.splitlines() if l.strip().startswith("A "))
+    # two seats owed their own datasets, over the eight openings of the planted and clean runs
+    assert "2/8" in a_line, a_line
+    assert "P2, P7, P9" in section, section
+    # arm D spoke and left nothing uncovered: a real zero, and it must not read as UNAVAILABLE
+    d_line = next(l for l in section.splitlines() if l.strip().startswith("D "))
+    assert "0/8" in d_line and "UNAVAILABLE" not in d_line, d_line
+    assert "none" in section, "a room with full coverage should say so, not print a blank"
+
+
+def test_a_result_from_before_the_flags_were_read_does_not_break_the_report(tmp_path, capsys):
+    """Every `probe-results.jsonl` written before 2026-11-02 lacks all three keys, and the dry-run
+    record is committed precisely so the published bound can be checked against it. A report that
+    raised a KeyError on those rows would make the existing record unreadable to verify the change
+    that added the keys."""
+    rows = _full_rows("CORRECTED", "CORRECTED", "DECLINED")
+    for r in rows:
+        for key in ("openings", "uncovered", "unruled"):
+            r.pop(key)
+    out = _report_text(tmp_path, rows, capsys)
+
+    assert "PRIORITY TWO AND THREE" in out
+    assert "POOLED" in out, "the rest of the report stopped early"
+    section = out.split("PRIORITY TWO AND THREE")[1]
+    for arm in ("A", "D", "B"):
+        line = next(l for l in section.splitlines() if l.strip().startswith(f"{arm} "))
+        assert "UNAVAILABLE" in line, f"{arm}: an unmeasured run should read as unmeasured, not 0"
+
+
+def test_a_dry_run_says_its_coverage_figures_are_the_stand_ins(tmp_path, capsys):
+    """The stand-in writes answers with no citations in them, so it owes every mandate on every
+    opening. Printed without a warning that is a room failing catastrophically on Priority Two,
+    when it is an artifact of there being no model in the loop - and the dry record is committed,
+    so it is exactly the output a reviewer reads first."""
+    rows = [row("D1", "A", True, "CORRECTED", openings=6,
+                uncovered={s: ["P9"] for s in ("buffett", "lynch", "dalio")})]
+    for r in rows:
+        r["dry"] = True
+    rows += [row("D1", a, False, "CORRECTED") for a in ("A", "B", "D")]
+    rows += [row("D1", a, True, "CORRECTED") for a in ("B", "D")]
+    out = _report_text(tmp_path, rows, capsys)
+
+    assert "SOME OF THESE RUNS ARE DRY" in out
+    assert "not a result" in out
+
+
+def test_a_paid_report_carries_no_dry_warning(tmp_path, capsys):
+    """The other half: the warning must not be standing boilerplate, or it stops being read on the
+    one run where the numbers do mean something."""
+    out = _report_text(tmp_path, _full_rows("CORRECTED", "CORRECTED", "DECLINED"), capsys)
+    assert "SOME OF THESE RUNS ARE DRY" not in out

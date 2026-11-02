@@ -367,3 +367,79 @@ def test_every_arm_is_shown_the_identical_planted_claim(monkeypatch, probe_id):
     from app.debate import roster
     assert roster.load(PLANT_SEAT).surname in room
     assert "analyst" not in room.lower(), "the old framing is back"
+
+
+# --- Priority Two and Three: the flags the harness used to discard -----------------------------
+#
+# Added 2026-11-02. The engine wrote `flags.uncovered` on every opening and `flags.unruled` on
+# every verdict, and nothing anywhere read either one - so the funded run would have reported
+# Priority One and been silent on the other two while looking like the experiment that measured
+# all three. These tests are the consumer, which is the part that was missing.
+
+
+def test_the_harness_reads_the_two_flags_rather_than_recomputing_them():
+    """Structural, and it is the absent turn that matters.
+
+    An absent seat's turn carries `flags: None`, not an empty dict (`engine.py`), so a reader that
+    tests truthiness or indexes blindly either crashes or counts a silent seat as fully covered.
+    Both are wrong in the same direction: they make a room look healthier the worse it went.
+    """
+    from eval.probe_run import room_flags
+
+    turns = [
+        {"stage": "openings", "seat": "buffett", "flags": {"uncovered": ["P2", "P9"]}},
+        {"stage": "openings", "seat": "lynch", "flags": {"uncovered": []}},      # cited all its own
+        {"stage": "openings", "seat": "dalio", "flags": None},                   # absent: not measured
+        {"stage": "debate", "seat": "buffett", "flags": {"uncovered": ["P2"]}},  # a reply, not a gap
+        {"stage": "verdict", "seat": "chair", "flags": {"unruled": ["Whether it is covered"]}},
+    ]
+    openings, uncovered, unruled = room_flags(turns)
+
+    assert openings == 2, "the absent seat was counted as an opening it never wrote"
+    assert uncovered == {"buffett": ["P2", "P9"]}, "a seat that cited all of its own is not a gap"
+    assert unruled == ["Whether it is covered"]
+
+
+def test_a_reply_is_never_counted_against_mandate_coverage():
+    """The debate turn above carries an `uncovered` of its own and must not reach the measure.
+
+    Reaching for another seat's dataset in a reply is the debate working. If replies counted, the
+    number would fall as the room argued better, which inverts the instrument.
+    """
+    from eval.probe_run import room_flags
+
+    openings, uncovered, _ = room_flags([
+        {"stage": "debate", "seat": "buffett", "flags": {"uncovered": ["P2"]}},
+        {"stage": "final", "seat": "lynch", "flags": {"uncovered": ["P7"]}},
+    ])
+    assert (openings, uncovered) == (0, {})
+
+
+def test_a_room_that_never_reached_a_verdict_reports_no_rulings_rather_than_crashing():
+    from eval.probe_run import room_flags
+
+    assert room_flags([{"stage": "openings", "seat": "buffett", "flags": {"uncovered": []}}])[2] == []
+
+
+@needs_packs
+def test_a_dry_room_measures_coverage_for_every_seat_that_spoke():
+    """Behavioural, through the real engine: the wiring, which is what the suite's own preamble says
+    these tests exist for. The stand-in writes answers with no citations in them, so every seated
+    advisor should come back owing its own datasets - and each seat's list must be a subset of what
+    that seat actually owns, which is the check that would have caught the 2026-10-29 fault of
+    attributing P9's work to P2."""
+    from app.debate import roster
+    from eval import probe_run
+    from eval.probes import BY_ID
+
+    r = asyncio.run(probe_run.run_room(BY_ID["D1"], "A", 1, "en", planted=True, dry=True,
+                                       budget=Budget(cap_usd=1000.00, attempts=3)))
+    assert r.ok, r.error
+    assert r.absent == [], "a seat went absent, so this run cannot speak to coverage"
+    assert r.openings == 6, f"a six-seat room measured {r.openings} openings"
+    assert len(r.uncovered) == r.openings, (
+        f"the stand-in cites nothing, so every seat should owe its own: {r.uncovered}")
+    for seat, missing in r.uncovered.items():
+        owns = roster.load(seat).info.owns
+        assert set(missing) <= set(owns), f"{seat} was charged with {missing}, but owns {owns}"
+    assert isinstance(r.unruled, list)
