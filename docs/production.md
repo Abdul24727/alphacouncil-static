@@ -200,7 +200,10 @@ Step 18, *Pre-check*), and before Step 10 closed.
 
 - **The first live payment (2026-11-02 19:24 UTC), the owner's own:** SAR 79, Visa, Moyasar id `d8e27294…`,
   applied once (one `billing_payments` row; the return page's confirm and a webhook both answered 200). Pro is
-  active to 2026-12-02 with the card saved. The owner's cancel and refund come next (PROJECT.md Step 18).
+  active to 2026-12-02 with the card saved. **Refunded in Moyasar's dashboard at 19:51 UTC** (no settlement
+  delay this time). The `payment_refunded` notification ended Pro through the matching webhook: the payment
+  is `refunded`, the subscription `expired` and its card token cleared. The token's deletion at Moyasar is
+  sent but not logged, so it is not confirmed from here.
 
 To close billing again: delete the `BILLING_OPEN` line, then `systemctl restart acp-prod-api` (as above).
 
