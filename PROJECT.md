@@ -1349,6 +1349,16 @@ wrong thing:
      - On beta (same sha) `/statements` for 2222 returns `period_aware: false` and per-statement
        `periods` with null fields, as it must before the repaired database is published.
      - **Both tiers now understand `periods`, so §1's exposure is closed.**
+   - *B2–B4, the patches (done, 21:15 UTC):*
+     - The pipeline repo was at `a38dc07` with both target files unmodified.
+     - Both target files backed up as `*.py.bak-20261102`. `git apply --check` passed for both, then both
+       applied; only those two files changed, and both compile.
+     - The dry run shows steps 8/11/13/14 get no special environment (only 19–23 do), so running them by
+       hand matches the nightly.
+     - **From here, the nightly at 00:00 UTC runs with the patches.** The owner's rule: keep them if
+       B6 matches the walkthrough, reverse before 00:00 if not.
+   - *B5 (started 21:15:49 UTC):* steps 8, 11, 13, 14 into `det_out/screening.sqlite`, detached on the
+     server (`/root/item3-b5.sh`, log `/root/item3-b5-20261102T211549Z.log`).
 4. **Then the $66 validation pilot**, and the decision-grade run at cap $393 after it.
    **This item's precondition is MET as of 2026-11-02, on the owner's go-ahead ("Yes, wire them
    up"): the pilot can now answer all three priorities.** It used to be able to speak to Priority
