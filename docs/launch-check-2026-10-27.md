@@ -140,6 +140,18 @@ Once both are in this file, Step 10 closes, and **Step 7** (the lawyer reviews t
 
 ## Before you run those two 
 
+> **Superseded 2026-11-02 18:20 UTC: billing is OPEN on production** (Step 18; `docs/production.md`,
+> "Billing open again (2026-11-02)"). The first bullet below is no longer true: a freshly signed-up account
+> is **Free**, and Free has the room at 0 sessions a month and locks financials and ownership.
+> - **`check-all.mjs`** signs up its own accounts, so its Pro-data phases would now fail on production. Run
+>   it with billing briefly closed. That is a production change (delete the `BILLING_OPEN` line, restart,
+>   run, put the line back, restart), so ask Claude for it in chat first. Or accept that this check can no
+>   longer run on production as written.
+> - **The signed-in `check-advisors.mjs`**: run it with `EMAIL=` (and `PASSWORD=`) set to an account that has
+>   Pro, your own once you have paid, or a test account given Pro with
+>   `python -m app.billing grant <email> 1`. Signed in that way it spends two of that account's 20 sessions
+>   this month.
+
 Checked read-only on 2026-10-27, so there are no surprises in the middle of a run:
 
 - **A fresh account can convene.** Production's `api.env` sets none of `BILLING_OPEN`, `EARLY_ACCESS` or any

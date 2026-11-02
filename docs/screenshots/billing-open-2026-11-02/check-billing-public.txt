@@ -1,0 +1,14 @@
+PASS  /api/v1/plans: checkout_open=true
+PASS  a visitor is on Free with billing open (plan free, billing_open true, pro_only council,financials,ownership,calendar,indicators,pins,advisors)
+PASS  /pricing en 1440: 200, buy control 1 ("Get Pro"), early-access note false, sideways scroll false
+PASS  /pricing en 390: 200, buy control 1 ("Get Pro"), early-access note false, sideways scroll false
+PASS  /pricing ar 1440: 200, buy control 1 ("اشترك في برو"), early-access note false, sideways scroll false
+PASS  /pricing ar 390: 200, buy control 1 ("اشترك في برو"), early-access note false, sideways scroll false
+PASS  signed out EN 1440: overview has Pro panels locked (1)
+PASS  signed out EN 1440: key metrics stay free
+PASS  signed out EN 1440: financials locked (3 panels)
+INFO  signed out EN 1440: advisors page answered, Pro locks on it 0
+PASS  signed out: /checkout asks to sign in first
+PASS  signed out AR 390: ownership locked (1)
+
+Billing (public) checks: all passed

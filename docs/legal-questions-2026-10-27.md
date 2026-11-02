@@ -14,9 +14,9 @@ a Saudi sole establishment, Unified National Number 7050149686, trading as Alpha
 fundamental data for about 714 listed companies across 7 exchanges. Two features use a language model: a
 **Copilot** that answers questions about the page's own data with citations, and an **advisors' room** where
 six simulated advisors answer a member's question about one company in three rounds and a neutral Chair writes
-the room's answer. A **Pro** plan at SAR 79/month is built but **checkout is closed** — nobody has ever been
-charged, and the owner's rule is that nothing is charged until the product is fully built. The live site today
-is free to use for every account.
+the room's answer. A **Pro** plan at SAR 79/month is **on sale since 2026-11-02** (the owner opened it before
+this visit). Pro includes the advisors' room and the council, which Free accounts no longer get. Free keeps the
+Copilot at 10 questions a day. *(Until 2026-11-02 checkout was closed and every account had everything free.)*
 
 Legal texts already published: Terms, Privacy, Cookies, Refunds, Merchant, and an **AI and Financial
 Disclaimer** (version 1.0, effective 2026-07-21) whose sections include "Information and education only",
@@ -68,7 +68,10 @@ and claim no connection to the person anywhere.
 ## (b) Whether this needs a CMA permit
 
 **The facts.** The owner's own plan of 2026-08-08 said not to "enable Council or Research Assistant for
-customers" before a permit — and both are enabled today, free, for every account. The product never gives a
+customers" before a permit. Both are enabled today, and **since 2026-11-02 the room and the council are sold as
+part of Pro**. The live `/pricing` lists among Pro's features "The council's vote and each seat's reasoning on
+every equity" and "The advisors' room: 20 sessions a month in which simulated advisors debate your question
+about a stock and score the options against our data". The product never gives a
 recommendation: the Chair writes an assessment of what the data shows, the no-advice rule is enforced in every
 prompt, and an automated check scans the Chair's answer and headline for buy/sell/hold language before any
 release. Where a session asks the room to choose between readings, **the engine counts the advisors' leans
@@ -82,25 +85,35 @@ is matched against the data pack and marked on screen when it cannot be matched.
 2. If either crosses the line: is the line about the **wording** (what the Chair may say), the **framing**
    (choosing between readings at all), the **personalisation** (it answers one member's question about one
    company), or the **charging** for it?
-3. Does it make a difference that it is free today and would be sold at SAR 79/month from launch?
+3. Does it make a difference that it was free until 2026-11-02 and is now sold at SAR 79/month? And does the
+   pricing page's wording above ("vote", "score the options") matter?
 4. If a permit or an exemption is needed, which one, roughly what does the process involve, and may the
    features stay live in the meantime?
 
-**What the answer changes.** Potentially whether Step 18 (opening billing) may happen at all, or whether a
-feature must be switched off, reworded, or made non-personalised. This is the question with the most power to
+**What the answer changes.** Potentially whether Pro may go on being sold with the room and the council in it
+(billing opened on 2026-11-02, before this visit), or whether a feature must be switched off, taken out of Pro,
+reworded, or made non-personalised. This is the question with the most power to
 change the plan, so it is worth the lawyer's time even if the first three are quick.
 
 ## (c) Whether Moyasar must be told
 
-**The facts.** The payment processor is **Moyasar**. The merchant account was approved on the representation
-that the product is **not robo-advisory**. Since that approval the advisors' room has been built and is live;
-the product still gives no recommendations. No payment has ever been taken — checkout is closed and the only
-live subscription is not charging a card.
+**The facts.** The payment processor is **Moyasar**. The merchant account was approved in August 2026 on the
+representation that the product is **not robo-advisory**. The written answer to Moyasar's reviewer went further
+than that. It said the AI Analyst Council, Research Assistant and thesis scoring were "not available in the
+current launch", that their endpoints returned HTTP 503, and that "No customer on any plan can obtain generated
+commentary today". As proof it offered a public URL, `https://alphacouncil.tech/api/capabilities`, showing every
+AI capability as false. Since that approval:
+- the advisors' room has been built and is live;
+- the Copilot (the successor to the Research Assistant) is live;
+- that URL now answers 404 on the rebuilt site;
+- **since 2026-11-02 checkout is open**, and the room and the council are part of what Pro sells.
+
+The product still gives no recommendations. As of 2026-11-02 no customer has paid.
 
 **The questions.**
 
-1. Does the advisors' room, as it now stands, change what Moyasar was told — and if so, must they be informed
-   before the first charge, or at all?
+1. Does the advisors' room, as it now stands, change what Moyasar was told? If so, must they be informed now,
+   with checkout open, or at all?
 2. What is the right form of words if they must be told, and does telling them carry a risk to the merchant
    account that waiting does not?
 3. Does the answer to (b) change the answer here?
@@ -155,7 +168,8 @@ exists. If re-consent is needed, that is its own piece of work.
   is about what is actually there, and (a) and (d) are much easier to answer having seen a room.
 - The three documents worth having open: the **AI and Financial Disclaimer**, the **Terms**, and one finished
   advisors' session.
-- Checkout is closed, so there is nothing to pay for and nothing to test on the billing side.
+- Checkout is open (since 2026-11-02). The lawyer can read what Pro sells on `/pricing` without paying. A
+  signed-in Free account sees the room locked, so the live session above needs an account with Pro.
 
 ## After the visit
 

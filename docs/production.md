@@ -165,6 +165,37 @@ Pro features free until paid plans open…" (EN and AR, 1440 and 390 px); signed
 Financials tabs of `/t/2222` are unlocked. Monitor: 13 ok before and after. `acp-prod-billing.timer`
 stays on; with no renewing card it charges nobody.
 
+### Billing open again (2026-11-02): the paid launch, Step 18
+
+Opened on the owner's go-ahead in chat on 2026-11-02 ("Open billing anyway"). The go-ahead came **before** the
+lawyer's answers to Step 7's questions (b) and (c), against Claude's recommendation to wait (PROJECT.md,
+Step 18, *Pre-check*), and before Step 10 closed.
+
+- **Before** (read only; counts only; no secret values printed): release `74ce427bf6`; no `BILLING_OPEN` line;
+  `MOYASAR_PUBLISHABLE_KEY` and `MOYASAR_SECRET_KEY` are `pk_live_`/`sk_live_` shaped and
+  `MOYASAR_WEBHOOK_SECRET` is set; 22 accounts, 1 subscription (expired), 0 payments; monitor 14 ok +
+  renewals "–".
+- **The change:** `BILLING_OPEN=true` appended to `/etc/alphacouncil-platform/prod/api.env` (25 → 26 lines,
+  mode 640 root:alphacouncil kept). The file before is `api.env.bak-20261102182018` (UTC), checked identical
+  with `cmp`. `acp-prod-api` restarted at 18:20:20 UTC. `/api/v1/health` answered 500 for about seven seconds
+  while the two workers started, then 200; the log shows a clean startup and no error.
+- **Checked signed out over HTTPS** with `web/scripts/check-billing-public.mjs` (new; it makes no account and
+  pays nothing), output and screenshots in `screenshots/billing-open-2026-11-02/`: **all passed**.
+  `checkout_open:true`; a visitor is Free; `/pricing` shows "Get Pro" / «اشترك في برو», no early-access note and
+  no sideways scroll in EN and AR at 1440 and 390 px; signed out, the overview's Pro panel, three financials
+  panels and (AR, 390 px) ownership are locked while key metrics stay free; `/checkout` asks to sign in; the
+  advisors' room asks a visitor to sign in. Monitor after: 14 ok + renewals "–".
+- **Every account that has not paid is Free now**, so the 22 early-access accounts lost the council, the
+  advisors' room, financials, ownership, the calendar, indicators and pins with this change.
+  Complimentary Pro is `app.billing grant` (above).
+- **Waiting on the owner:** the live card form in English and Arabic (it needs a signed-in, confirmed account,
+  and Claude makes none on production), then the first real payment and its refund.
+- **Check scripts that sign up their own accounts now get Free accounts.** `check-all.mjs`'s Pro-data phases
+  and the signed-up `check-advisors.mjs` fail on production while billing is open. Run `check-all` with
+  billing briefly closed, and run `check-advisors` with `EMAIL=` set to an account that has Pro.
+
+To close billing again: delete the `BILLING_OPEN` line, then `systemctl restart acp-prod-api` (as above).
+
 ## Backups
 
 Every night at 01:30 UTC, `acp-db-backup.timer` runs `/usr/local/sbin/acp-db-backup`
