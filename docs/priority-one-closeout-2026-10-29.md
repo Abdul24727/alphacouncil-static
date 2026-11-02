@@ -220,6 +220,28 @@ costs nothing when nothing moved.
 
 ### Publication order, and rollback
 
+0. **Check before touching anything** (added 2026-10-30; the list below went straight from
+   backups to `git apply`). One read-only command answers both open questions at once:
+
+   ```
+   ssh root@alphacouncil.tech "cd /opt/alphacouncil/backend && git rev-parse --short HEAD && git status --porcelain"
+   ```
+
+   - **Is the server where this plan thinks it is?** These patches were verified against
+     `a38dc07`, the base recorded by the *Stamp* line of Step F-F's outcome in `PROJECT.md`
+     (2026-10-24). If `HEAD` has moved, re-run the dry run below against the new base first.
+   - **Is `docs/` the whole story?** The fixes already on the server (A, F-F, F-A2) were applied
+     in place with `.bak-*` backups, so anything edited there and never written back as a patch is
+     invisible to a local check. `git status --porcelain` lists it.
+
+   Verified here on 2026-10-30, and still true of the patch files: both apply cleanly against
+   `a38dc07` (the two files extracted with `git show` and dry-run with `patch -p1 --dry-run`), and
+   **no patch in `docs/` other than these two touches `llm-council/parse_financial_statements.py`
+   or `llm-council/compute_fundamental_gauges.py`** — so the server's copies of those two files
+   should still match `a38dc07`. Note that "fixes A" is the 2026-10-19 **bundle**, five files in
+   seven hunks, not one file. Then, on the server, `git apply --check -p1` each patch before
+   applying it for real.
+
 1. **Named safety copies first.** `publish_dbs.sh` copies the live file to
    `/opt/alphacouncil/backups/dbpublish-<stamp>/` and keeps five — observed as one per day, so the
    automatic window is a five-day rotation, not an archive. A named copy outside it comes first.

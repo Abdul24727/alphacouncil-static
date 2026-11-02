@@ -144,6 +144,8 @@ Older entries: `changelog-archive.md`.
 
 - 2026-10-30 — **The review's eight fixes pushed (`16a10f1..3aafa82`), and the scan printed 0 hits — its fourth different count in four pushes.** 2, 0, 1, 0. That sequence is the clearest argument this file has for the rule it adopted today: a count cannot be the pass condition, reading every hit is. Verified as usual, and this time with one check the others cannot give — an anonymous fetch of the published `PROJECT.md` showing the false sentence **gone** from the remote and the header caveat reading "at least one commit behind". Step 2's *Outcome* holds the detail; it is the copy to correct if any of this is ever wrong. Written under the rule the pushed commit introduced, so **no unpushed count appears in this entry**: the commit carrying it is unpushed as it is written, which is the whole point. Nothing deployed, no paid call, production untouched.
 
+- 2026-11-02 — **OpenRouter topped up (owner in chat: "account is topped up"), so Next Up item 2 is closed and item 3 is the first real action.** This was the one item that was actively breaking for **members on production** rather than only the bench — at $4.74 with the monitor's fifteenth check FAILING, the next person to open the room on an empty account got a refusal. **Recorded as owner-reported and explicitly NOT verified here, because it is not verifiable here:** the balance is readable only with the production `OPENROUTER_API_KEY`, which is a credentials file under §4 Always-stop and a production read that the auto-mode classifier refused on 2026-10-30; the monitor's own next check is the independent confirmation, and its alerts go to a mailbox the Claude-connected Gmail cannot read. The branch is unchanged since 2026-10-30 and still green (API **567 passed, 11 skipped**); nothing was deployed, no paid call was made, production was untouched. **One gap closed in the runbook the owner is about to walk:** `docs/priority-one-closeout-2026-10-29.md` §"Publication order, and rollback" went straight from the safety copies to `git apply`, with no step that checks the patches will apply or that the server is where the plan thinks it is. It now has a step 0 carrying the 2026-10-30 verification (both patches dry-run clean against `a38dc07`, and no other patch in `docs/` touches either file they edit) and the single read-only command that settles the base and the inventory together. That command is the owner's to run: it was attempted here and refused as a production read.
+
 ## 6. Current State
 - **Unreleased on `rebuild`, touching live application code:** `api/app/debate/llm.py`'s retry path — the echo and the quoted parser message clipped in UTF-8 bytes, every issued request counted against `ATTEMPTS`, and `REASONING_REQUIRED` seeded so the chair's model is not refused once per process (round five, 2026-10-28). Production is unaffected until a release, which is the owner's go-ahead; it should carry one real-model session on beta first, because every seat goes through that path.
 - **The acceptance round was self-reviewed and all 15 findings are fixed** (suite 557). Four changed output: derived EPS is no longer withheld from companies whose share count is supported, the share-count rule check is an allowlist rather than a denylist (`sum_quarters` — the 4x bug — was being accepted), the ranking caveat quotes the figure measured for its OWN peer class, and the Financials panel now says why a rank is missing instead of rendering an empty cell.
@@ -1134,10 +1136,16 @@ wrong thing:
    no unpushed count** - it said "0 unpushed" until 2026-10-30, when the branch was two ahead,
    because the commit recording a push is itself unpushed. Read it with `git status -sb`. The repository it went to is
    **public**, and on 2026-10-30 the owner decided to leave it that way, so the premise is retired
-   rather than failing and **the first real action here is now item 2**. No credential is in what
+   rather than failing and **the first real action here is now item 3** (item 2 closed 2026-11-02). No credential is in what
    went up; the pre-push scan is a standing check in Step 2 from here on.
-2. **Top up OpenRouter.** $4.74 and the monitor's fifteenth check is FAILING. This one reaches **members on
-   production**, not only the bench: the next person to open the room on an empty account gets a refusal.
+2. ~~**Top up OpenRouter.**~~ — **DONE 2026-11-02, owner-reported in chat ("account is topped up").**
+   It had been $4.74 with the monitor's fifteenth check FAILING, and it reached **members on production**,
+   not only the bench. **Not verified from here, and not verifiable from here:** the balance can only be
+   read with the production `OPENROUTER_API_KEY`, which lives in `/etc/alphacouncil-platform/prod/api.env` —
+   a credentials file (§4 Always-stop) and a production read, refused by the auto-mode classifier on
+   2026-10-30. The monitor's next check is the independent confirmation, and its alerts go to
+   `attmimi.abdulw@gmail.com`, which the Claude-connected Gmail cannot read. **So the owner confirms this
+   one, not Claude.** With it cleared, **the first real action is now item 3.**
 3. **Ship the API to beta, then apply the two pipeline patches and publish the database** — in that order,
    because `periods` on `/statements` is a precondition (§8b). Until this lands, **the published database
    has no Tadawul income statement at all**, so a paid session would measure the room on a pack whose P9
