@@ -276,8 +276,9 @@ costs nothing when nothing moved.
    see §2's note on `periods`. **Corrected 2026-11-02:** this step said "to beta" alone,
    which does not protect the tier that matters. Production reads the same published file
    (`acp-prod-api.service` mounts `/var/lib/alphacouncil`, and `deploy-production.sh --setup`
-   copies `SCREENING_DB` straight out of staging's env), and the live release `3228ab57e9`
-   serves `/statements` without `periods`, rendering each year as an `FY{year}` column. So the
+   copies `SCREENING_DB` straight out of staging's env), and the live release `74ce427bf6`
+   serves `/statements` without `periods`, rendering each year as an `FY{year}` column
+   (`research-panels.tsx:153`). So the
    first publish would label a TTM@2026-06 income statement and a Q@2026-06 balance sheet
    "FY2026" on the live site - §2's defect, live. `deploy-production.sh` refuses unless beta
    already runs the identical sha, so the beta-first gate is kept either way.

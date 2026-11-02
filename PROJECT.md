@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-10-30   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `3aafa82` on 2026-10-30, the owner's fifth go-ahead in chat ("Push them")** — five pushes that day took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, all fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **beta and production both `74ce427bf6`** (released 2026-10-27 21:27 UTC on the owner's go-ahead; it carries F-10 and F-11 over `3228ab57e9`). *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-02   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `c1198ca` on 2026-11-02, the owner's sixth go-ahead in chat ("Push them")** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, and one on 2026-11-02 took it `3aafa82` → `c1198ca`; every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **beta and production both `74ce427bf6`** (released 2026-10-27 21:27 UTC on the owner's go-ahead; it carries F-10 and F-11 over `3228ab57e9`). *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -150,6 +150,8 @@ Older entries: `changelog-archive.md`.
 
 - 2026-11-02 — **Item 3 written out as a runnable walkthrough (`docs/item3-walkthrough-2026-11-02.md`), and writing it found two things that reorder it.** The owner asked to be walked through "ship the API to beta → apply the two patches → publish", so the deploy scripts and the server's own rebuild chain were read rather than the plan's summary of them. **First: publishing the database is a production change, and the closeout's "ship to beta first" does not protect production.** Five checks, all from the repository: `deploy/acp-prod-api.service` mounts `/var/lib/alphacouncil`; `scripts/deploy-production.sh --setup` builds production's env by copying `SCREENING_DB` and the other market-data lines straight out of staging's, so both tiers read the one file `publish_dbs.sh` replaces; the live release **`3228ab57e9`** serves `/statements` and does **not** contain the evidence work (`git merge-base --is-ancestor f921011 3228ab57e9` is false), returning `years: list[int]` with values keyed by fiscal year; that release's `research-panels.tsx` renders each year as a column headed `FY{year}` (`web/messages/en.json:508`); and `/statements` is `require_pro` while production sets no `BILLING_OPEN`/`EARLY_ACCESS`, so every visitor can open it. **So the first publish would put a TTM@2026-06 income statement and a Q@2026-06 balance-sheet snapshot under one "FY2026" column on the live site** — exactly the defect §2 of the closeout calls "worse than today's defect". The fix costs one script run, and `deploy-production.sh` already refuses unless beta runs the identical sha, so the beta-first gate is kept. **Second: "do not publish yet" is not a state the server holds.** `nightly_pipeline.sh` runs at 00:00 UTC, its rebuild step is `run_rebuild_pipeline.py`, and that chain at `a38dc07` includes steps **8** `parse_financial_statements`, **11** `compute_fundamental_gauges`, **13** `compute_sector_averages` and **14** `compute_gauge_scores`; `publish_dbs.sh` fires at about 05:00 UTC. So applying the patches and stopping publishes them unattended by morning — the safe place to pause is *before* `git apply`, not after. **Third, smaller:** `--from-step 8` is the obvious shortcut and would make a paid call, because the chain continues past 14 to `generate_news_ai.py`; the four stages must be run individually, with the argv that `run_rebuild_pipeline.py --dry-run` prints (it is fully read-only — no snapshot, no dead-man's-switch ping). The walkthrough also carries real check SQL against the patch's own new columns (`period`, `period_end`, `source_json` on `fundamentals_lineitems`, plus the new `fundamentals_lineitems_quarterly`), run through python because the server has no `sqlite3`. Both corrections were written back into `docs/priority-one-closeout-2026-10-29.md` step 5 and this file's item 3, so a reader who opens either alone gets the complete order. Read-only throughout: nothing deployed, no paid call, production untouched.
 
+- 2026-11-02 — **The walkthrough and the two records pushed (`3aafa82..c1198ca`) on the owner's go-ahead, and writing the record caught a stale hash in the file that had just gone public.** The push itself: fast-forward, nothing forced, `rebuild` the only refspec, the other five heads untouched, verified five ways including an **anonymous** fetch of the newly published walkthrough answering http 200 at 203 lines - which is the only check that shows what publishing means in a public repository. **The outgoing diff matched nothing**, the fifth different result in six pushes (2, 0, 1, 0, 0), and every history hit was one of the standing categories; Step 2's *Outcome* holds the detail and is the copy to correct if any of it is wrong. **The correction:** updating the header's pushed hash put me next to the line recording what is deployed, which says **`74ce427bf6`** - and the walkthrough I had just published named **`3228ab57e9`** as the live production release. `3228ab57e9` is its *parent* release; `74ce427bf6` carried F-10 and F-11 over it on 2026-10-27 21:27 UTC. The finding is untouched, because `git merge-base --is-ancestor f921011 74ce427bf6` is false as well and that release's `/statements` still returns `years: list[int]` with no `periods` while `research-panels.tsx:153` renders each year as an `FY{year}` column - so the first publish would still mislabel the repaired statements on the live site. But a hash written down as *the live release* is precisely what a later reader will check against, and one release off is enough to send them to the wrong file. Corrected in all three places that carry it: the walkthrough, the closeout's step 5 and this file's item 3. **Why it happened is worth keeping:** I verified the claim against `3228ab57e9` because §9's Step 10 paragraph names that release twice, and never cross-read the header line that says what is deployed now - the same class of error as reading a count out of this file instead of running the command. The lesson is the one already written in §9: for anything that moves, read the live source, and the deployed hashes live in the header. Nothing deployed, no paid call, production untouched.
+
 ## 6. Current State
 - **Unreleased on `rebuild`, touching live application code:** `api/app/debate/llm.py`'s retry path — the echo and the quoted parser message clipped in UTF-8 bytes, every issued request counted against `ATTEMPTS`, and `REASONING_REQUIRED` seeded so the chair's model is not refused once per process (round five, 2026-10-28). Production is unaffected until a release, which is the owner's go-ahead; it should carry one real-model session on beta first, because every seat goes through that path.
 - **The acceptance round was self-reviewed and all 15 findings are fixed** (suite 557). Four changed output: derived EPS is no longer withheld from companies whose share count is supported, the share-count rule check is an allowlist rather than a denylist (`sum_quarters` — the 4x bug — was being accepted), the ranking caveat quotes the figure measured for its OWN peer class, and the Financials panel now says why a rank is missing instead of rendering an empty cell.
@@ -298,6 +300,25 @@ Older entries: `changelog-archive.md`.
     the rule in *How* stated as data: no count is the pass condition, reading every hit is. The
     `--all` history scan printed only the standing false positives listed in *How*, and a
     value-shaped grep over both the outgoing diff and the whole history matched nothing.
+  - *Done (2026-11-02), sixth push:* `3aafa82..c1198ca` on the owner's go-ahead - the top-up
+    record, the server check, and item 3's walkthrough with the two findings that reorder it.
+    Fast-forward, nothing forced, `rebuild` the only refspec; the other five heads sit at their own
+    hashes (`master` `3d485885`, `staging-option-a` `1be3c0ba`,
+    `vps-production-sync-20260714` `8d4dbaf2`, `feat/settings-market-multiselect` `2a8d9e59`,
+    `claude/affectionate-visvesvaraya-15c98d` `6009e79b`). Verified five ways: `rev-parse` local =
+    `rev-parse` remote-tracking = `ls-remote` = `c1198ca`, `0 0` ahead/behind, and an **anonymous**
+    fetch of the newly published `docs/item3-walkthrough-2026-11-02.md` answering **http 200,
+    13,702 bytes, 203 lines** with section 1's heading at line 12 - the only check that shows what
+    publishing means here. **The outgoing diff matched nothing**, the fifth different result in six
+    pushes (2, 0, 1, 0, 0): the argument for the rule in *How* stated as data. The history scan
+    printed only the standing categories named there - this file quoting its own regex, a
+    `startswith("sk_test_")` prefix check, the literal `sk_test_x` fixture, comments naming key
+    prefixes, and the `# OPENROUTER_API_KEY=` template line with nothing after the `=`. The one
+    tracked env-shaped file, `api/.env.example`, has exactly one line with anything after the `=`:
+    `MARKET_DB_IMMUTABLE=true`. **What this push publishes is worth naming:** an operational
+    runbook that gives the server's paths, the deploy scripts' behaviour and the publish timing. No
+    credential is in it, and the deploy scripts carrying the same paths were already public, but it
+    is the first file here written to be *followed* at the server rather than to describe it.
   - *Ruling (2026-10-29):* **this step's third Done-when is now failing, and the push went ahead
     anyway.** The two tests used on 2026-10-22 to prove the repository private - anonymous `git -c
     credential.helper= ls-remote`, and `api.github.com/repos/…` - have both reversed: the first
@@ -1093,9 +1114,10 @@ Goal 4's "Done when", as it stands tonight: **(2) MET** — six real portraits i
 Claude can run passes, `check-all.mjs` waits on the owner, and 14 of 14 waits on Step 18; **(5) NOT MET** —
 `"checkout_open":false`, deliberately, until Step 18; **(1) NOT STARTED** — Step 7, the lawyer, though its questions are drafted and ready to take (`docs/legal-questions-2026-10-27.md`).
 
-`origin/rebuild` is at **`3aafa82`**: the 40 commits of 2026-10-29 (`9dcc4a1..bdec8d8`) and
-then, on the owner's go-aheads on 2026-10-30, `bdec8d8..19453f6`, `19453f6..6729395`,
-`6729395..16a10f1` and `16a10f1..3aafa82` - every one fast-forward, nothing forced. Verified with `git ls-remote`,
+`origin/rebuild` is at **`c1198ca`**: the 40 commits of 2026-10-29 (`9dcc4a1..bdec8d8`), then,
+on the owner's go-aheads on 2026-10-30, `bdec8d8..19453f6`, `19453f6..6729395`,
+`6729395..16a10f1` and `16a10f1..3aafa82`, and on 2026-11-02 `3aafa82..c1198ca` - every one
+fast-forward, nothing forced. Verified with `git ls-remote`,
 `git rev-list --left-right --count origin/rebuild...rebuild` = `0 0`, and an anonymous fetch of the
 pushed file from the public remote. **The Goal 1 exposure this paragraph carried since 2026-10-22 is
 closed as a standing condition**: every push goes up on the owner's go-ahead and is verified, rather
@@ -1132,10 +1154,10 @@ expansion this line used to recommend is **done** — the bench is eighteen prob
 is that two things now have to land BEFORE any paid run that measures the room, or the run measures the
 wrong thing:
 
-1. ~~**Push `rebuild`**~~ — **DONE 2026-10-29 and four times again on 2026-10-30**: 40
-   commits (`9dcc4a1..bdec8d8`), then `bdec8d8..19453f6`, `19453f6..6729395`,
-   `6729395..16a10f1` and `16a10f1..3aafa82`, each verified against the remote at the time of
-   the push, and
+1. ~~**Push `rebuild`**~~ — **DONE 2026-10-29, four times again on 2026-10-30 and once on
+   2026-11-02**: 40 commits (`9dcc4a1..bdec8d8`), then `bdec8d8..19453f6`, `19453f6..6729395`,
+   `6729395..16a10f1`, `16a10f1..3aafa82` and `3aafa82..c1198ca`, each verified against the
+   remote at the time of the push, and
    the Goal 1 exposure is closed as a standing condition (section 9). **This item deliberately gives
    no unpushed count** - it said "0 unpushed" until 2026-10-30, when the branch was two ahead,
    because the commit recording a push is itself unpushed. Read it with `git status -sb`. The repository it went to is
@@ -1154,7 +1176,8 @@ wrong thing:
    — **`docs/item3-walkthrough-2026-11-02.md` is the step-by-step**, written 2026-11-02 with every command.
    The order matters because `periods` on `/statements` is a precondition (§8b), and **it now includes
    production**: reading the deploy scripts showed production mounts the same `/var/lib/alphacouncil`
-   file that `publish_dbs.sh` replaces while running a release (`3228ab57e9`) that has no `periods`,
+   file that `publish_dbs.sh` replaces while running a release (**`74ce427bf6`**, the live one; this
+   line said `3228ab57e9`, its parent release, until 2026-11-02) that has no `periods`,
    so beta-first alone would put a TTM income statement and a quarter-end balance sheet under one
    `FY2026` column on the live site. **And the publish is not a separate decision for long:** the
    nightly runs the four stages at 00:00 UTC and `publish_dbs.sh` fires at ~05:00 UTC, so patches

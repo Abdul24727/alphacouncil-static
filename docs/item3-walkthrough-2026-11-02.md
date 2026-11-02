@@ -24,13 +24,16 @@ Five checks, all from the repository:
    `grep -E '^(BRIEFS_DB|SCREENING_DB|EVIDENCE_DB|…)=' "$STAGING" > "$ENVDIR/api.env"`. So
    production's `SCREENING_DB` **is** `/var/lib/alphacouncil/screening.sqlite`, the path
    `publish_dbs.sh` replaces.
-3. The live production release is `3228ab57e9`. It serves `/statements`
-   (`api/app/routers/ticker_research.py:203` at that commit) and returns
-   `Statements(years=sorted(yrs), …)` with each row's `values` keyed by fiscal year — **no
-   `periods`**. `git merge-base --is-ancestor f921011 3228ab57e9` is false: the evidence work is
-   not in it.
-4. `web/src/components/stock/research-panels.tsx` at that commit renders one column per year,
-   headed `t("statements.fy", { year })`, and that release's `web/messages/en.json:508` defines
+3. The live production release is **`74ce427bf6`** (2026-10-27 21:27 UTC, F-10 and F-11 over
+   `3228ab57e9`). It serves `/statements`
+   (`api/app/routers/ticker_research.py:203` at that commit, `Depends(require_pro)`) and
+   returns `Statements(years=sorted(yrs), …)` with each row's `values` keyed by fiscal year —
+   **no `periods`**. `git merge-base --is-ancestor f921011 74ce427bf6` is false: the evidence
+   work is not in it. *(Corrected 2026-11-02: this read `3228ab57e9`, which is the release
+   BEFORE the live one. Both lack `periods`, so nothing below changes — but a hash named as
+   the live release is what a later reader checks against, so it has to be the live one.)*
+4. `web/src/components/stock/research-panels.tsx:153` at that release renders one column per
+   year, headed `t("statements.fy", { year })`, and its `web/messages/en.json:509` defines
    `"fy": "FY{year}"`.
 5. `/statements` is `dependencies=[Depends(require_pro)]`, and production sets none of
    `BILLING_OPEN` / `EARLY_ACCESS`, so `plans.plan_of` returns `pro` for everyone
