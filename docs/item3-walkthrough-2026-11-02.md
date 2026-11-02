@@ -44,7 +44,7 @@ Read-only checks at 20:33 UTC (server and repository). Four things below are now
    pipeline was running. The API suite on `rebuild` is 576 passed, 11 skipped, after a flaky F-11 test was
    fixed (`b0a6c36`).
 
-5. **B6's query and expected counts, corrected after the run (21:40 UTC).**
+5. **B6's query and expected counts, corrected after the run (21:28 UTC).**
    - The query `… GROUP BY ticker_key HAVING COUNT(DISTINCT period_end) > 1` flags every multi-year annual
      income statement, because each FY has its own year-end. The right test groups by `ticker_key, section,
      fiscal_year`. It returned none on the repaired file.

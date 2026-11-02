@@ -1360,7 +1360,7 @@ wrong thing:
    - *B5 (done):* steps 8, 11, 13, 14 into `det_out/screening.sqlite`, detached on the server
      (`/root/item3-b5.sh`, log `/root/item3-b5-20261102T211549Z.log`). All four exited 0. **The parse
      took 354 s over the universe**; 11, 13 and 14 took 3 s together. Scored 3,218 of 6,620 gauge rows.
-   - *B6, the check (done, 21:22–21:40 UTC): KEPT.* The three criteria the owner was given are all met:
+   - *B6, the check (done, 21:22–21:28 UTC): KEPT.* The three criteria the owner was given are all met:
      - Tadawul income statements **0 → 250** (269 Tadawul rows in `stocks`).
      - 2222 shows `Income Statement TTM 2026-06` beside `Balance Sheet Q 2026-06` (and `FY 2025-12`).
      - **0** `ok` gauges unranked.
