@@ -1,0 +1,12 @@
+diff --git a/llm-council/parse_financial_statements.py b/llm-council/parse_financial_statements.py
+--- a/llm-council/parse_financial_statements.py
++++ b/llm-council/parse_financial_statements.py
+@@ -65,5 +65,8 @@ SECTION_MAP = {
+     "Income Statement": "Income Statement",
+     "Balance Sheet": "Balance Sheet",
++    # Saudi finance companies' template heads its balance sheet "Financial Position" (F-15,
++    # 2026-11-03): without this their balances stayed in the income statement, summed as flows.
++    "Financial Position": "Balance Sheet",
+     "Cash Flow Statement": "Cash Flow Statement",
+     "قائمة الدخل": "Income Statement",
+     "المركز المالي": "Balance Sheet",

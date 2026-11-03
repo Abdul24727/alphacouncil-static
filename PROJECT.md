@@ -176,6 +176,8 @@ Older entries: `changelog-archive.md`.
 
 - 2026-11-03 — **The twelve item-3 and F-13 commits pushed (`6acce45..c046236`) on the owner's go-ahead ("Yes, push").** Before: Step 2's outgoing-diff scan (139 files) gave three hits, all prose naming Moyasar (this file's 11-02 push entry, Step 10's renewals line, the launch-check doc); no address, IP or payment token in any added line; the only tracked env-shaped file is `api/.env.example`, empty values, untouched by this push and public since 10-15; the history scan printed only the standing false positives; the stricter value-shaped scan over all history printed **0**. The push: fast-forward, `rebuild` the only refspec. After: `rebuild` = `origin/rebuild` = anonymous `ls-remote` = `c046236`, left/right `0 0`. **Publication proved by content**: sha-pinned anonymous fetches of `web/src/lib/statement-period.ts`, `web/src/components/stock/research-panels.tsx`, `PROJECT.md` and a release screenshot all 200 and hash-equal to `git cat-file -p c046236:<path>`; the released `2e44ee6fbf` is an ancestor of `origin/rebuild`. This entry is itself unpushed, by construction.
 
+- 2026-11-03 — **Arabic statement labels from Argaam's own Arabic, without signing in; F-15 found.** The owner chose to harvest Argaam's Arabic. The server got Argaam's "Human Verification" challenge on the Saudi Arabic pages (not got around), and the owner ruled out a second sign-in because it would sign the nightly's session out. Argaam's row ids turned out to be shared across markets, and the Gulf markets' pages are harvested in Arabic, so 129 labels were added from them (`aa3dde6`). Saudi income-statement rows shown in Arabic went from 31 % to 100 % but one company's two lines. Not released. Checking that work found **F-15**: five finance companies' balance sheets summed into their income statements since this morning's publish, because their template says "Financial Position". A one-line parser patch is dry-run on a copy (every other row and all gauges identical) and waits on the owner's go-ahead, ideally before tonight's 00:00 UTC run.
+
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
   (§9 item 3): 250 Saudi income statements (was 0), every row period-tagged, every change on Tadawul only.
@@ -183,7 +185,10 @@ Older entries: `changelog-archive.md`.
   `df83e19404` had ignored the API's `periods` and headed Aramco's TTM-to-June-2026 income statement and
   June-2026 balance sheet "FY2026" (seen on beta only; production had 0 Pro members). It now reads "TTM
   Jun 2026" / "Jun 2026" with a note under the table. **Still open:** Saudi income-statement line labels
-  show in English on Arabic pages (133 labels; Argaam's Arabic for them is not harvested). **F-14:** the pipeline's news-AI step has
+  show in English on Arabic pages (133 labels; Argaam's Arabic for them is not harvested) — *fixed on
+  `rebuild` from Argaam's Gulf Arabic pages (`aa3dde6`), not released.* **F-15 (open, fix prepared):**
+  five Saudi finance companies' balance sheets are summed into their income statements (Tasheel's
+  total assets shown ×4); a one-line parser patch is dry-run and waits on the owner. **F-14:** the pipeline's news-AI step has
   generated nothing since at least 2026-10-19 (OpenRouter 401 on the pipeline's key) while reporting OK;
   the owner's, as a credential.
 - **Pro billing is OPEN on production since 2026-11-02 18:20 UTC** (Step 18), on the owner's go-ahead given before the lawyer (Step 7) and before Step 10 closed, against Claude's recommendation to wait. **The owner's own first payment went through and was applied once** (2026-11-02 19:24 UTC, SAR 79), **and the refund at 19:51 UTC ended Pro and dropped the saved card**: the paid path is proved end to end on the live site. No customer has paid. F-12: one of Moyasar's two webhooks is refused 403 for a secret mismatch, harmless, and the owner's to tidy now the refund has landed. The lawyer's (b) and (c) are now live questions about a product that is being sold, not one that is free.
@@ -1535,9 +1540,27 @@ wrong thing:
      cover over the 269 English pages shows **eight companies carry every line** (5110, 8160, 1150,
      1180, 4083, 4350, 7211, 2222 — 415 id/label pairs, 0 uncovered). Record in
      `docs/arabic-statement-labels-2026-11-03.md`.
-   - *Resume here:* the owner's go-ahead for the browser-pane route (and their own Argaam sign-in
-     there), or the fallback of drafted translations for review. Then pair by row id, merge
-     (differences to the owner), test on beta, release.
+   - *The browser-pane route was dropped on the owner's word:* signing in to Argaam anywhere else
+     signs the nightly's single session out. Signed out, the Arabic page has no table at all.
+   - *Done instead, with no request to Argaam (2026-11-03):* Argaam's row ids are shared across its
+     markets, and the Gulf markets' statement pages are already harvested in **Arabic**; 408 of the
+     411 Saudi row ids are on them. `scripts/argaam_ar_labels/pair_from_gulf.py` pairs them (Saudi
+     units "(ريال)"/"(هللة)" restored, five misspellings corrected, ties to the general wording);
+     `merge_pairs.py` **added 129 labels** to `web/src/content/data-labels.json`, kept the 70 where
+     the dictionary differs. **Saudi income-statement rows in Arabic: 31 % → 100 %** (5,858 of
+     5,860; only one company's two Mudaraba lines left). Rendered locally against the live data:
+     0 English line labels on 2222, 1120, 1150, 8010, 4083. Commit `aa3dde6`. **Not released.**
+   - **F-15, found while checking (prepared and dry-run, NOT applied):** five finance companies
+     (1182, 1183, 4081, 4082, 4083) have their balance sheets inside the income statement, summed
+     over four quarters — Tasheel's "Total Assets" reads 12,918.83 against a real 3,197.89 / 3,365.01.
+     Arrived with this morning's publish. Cause: their template heads the balance sheet "Financial
+     Position", which the parser's `SECTION_MAP` has only in Arabic. Fix: one line,
+     `docs/pipeline-fix-financial-position-2026-11-03.patch`, `git apply --check` clean. Dry run in
+     `/tmp/f15` on a copy: the five parse like Aramco, every other row and **all 6,620 gauge rows
+     identical**. Record: `docs/f15-financial-position-2026-11-03.md`.
+   - *Resume here:* two go-aheads. (1) **F-15's patch on the server before 00:00 UTC** so the 05:00
+     publish carries it (time-sensitive); then check the five after the publish. (2) Release the
+     Arabic labels to beta, then production. Neither is done.
      **Item 4, the $66 pilot, is unblocked by this check** — B7's condition (the post-publish check
      passes) is met for the data, the API and now the panel; it still needs the owner's go-ahead as a
      paid run, and probes D1/D3/D6 (retire or re-register) are still the owner's before it is scored.
