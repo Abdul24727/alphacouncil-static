@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Panel } from "@/components/panel/Panel";
 import { dataLabel } from "@/lib/data-labels";
 import { dividendPeriod } from "@/lib/dividend-period";
+import { statementColumns } from "@/lib/statement-period";
 import type { components } from "@/lib/api/schema";
 import { currencyLabel, fmtDate, fmtNumber, fmtPct, signClass } from "@/lib/format";
 import {
@@ -147,6 +148,9 @@ export function StatementPanel({ section, className }: { section: "Income Statem
   const s = q.data;
   const statement = s?.statements.find((x) => x.section === section);
   const years = s?.years ?? [];
+  // Each column headed by the period it covers: a "2026" column can be a trailing year or a quarter-end.
+  const columns = statement ? statementColumns(years, statement.periods, statement.rows, locale) : [];
+  const notes = columns.flatMap((c) => (c.note ? [c.note] : []));
   const id = section === "Income Statement" ? "income" : "balance";
 
   return (
@@ -157,9 +161,27 @@ export function StatementPanel({ section, className }: { section: "Income Statem
       ticker={slug}
       onRefresh={() => q.refetch()}
       copyData={() =>
-        statement ? toTsv([[t("statements.item"), ...years], ...statement.rows.map((r) => [r.label, ...years.map((y) => r.values[String(y)])])]) : null
+        statement
+          ? toTsv([
+              [t("statements.item"), ...columns.map((c) => c.heading)],
+              ...statement.rows.map((r) => [r.label, ...columns.map((c) => r.values[String(c.year)])]),
+            ])
+          : null
       }
-      copilotData={() => (statement ? { section, unit: s?.unit, currency: s?.currency, years, rows: statement.rows } : null)}
+      copilotData={() =>
+        statement
+          ? {
+              section,
+              unit: s?.unit,
+              currency: s?.currency,
+              // The row values are keyed by these years; `periods` says what each one covers.
+              years: columns.map((c) => c.year),
+              periods: statement.periods,
+              column_headings: Object.fromEntries(columns.map((c) => [String(c.year), c.heading])),
+              rows: statement.rows,
+            }
+          : null
+      }
       className={className}
       bodyClassName="p-0"
     >
@@ -169,13 +191,14 @@ export function StatementPanel({ section, className }: { section: "Income Statem
             <>
               <p className="label-caps mb-1.5 text-muted">{t("statements.unit", { currency: currencyLabel(s?.currency, locale) })}</p>
               <div className="max-h-[560px] overflow-auto">
-                <table className="w-full min-w-[560px]">
+                {/* Wide enough for the label and the columns shown, so one column fits a phone without scrolling. */}
+                <table className="w-full" style={{ minWidth: Math.min(560, 208 + 96 * columns.length) }}>
                   <thead className="sticky top-0 bg-panel">
                     <tr className="label-caps text-muted">
                       <th className="py-1 text-start font-normal">{t("statements.item")}</th>
-                      {years.map((y) => (
-                        <th key={y} className="num w-20 py-1 text-end font-normal">
-                          {t("statements.fy", { year: String(y) })}
+                      {columns.map((c) => (
+                        <th key={c.year} className="num w-20 py-1 ps-3 text-end font-normal" title={c.note ?? undefined}>
+                          <bdi>{c.heading}</bdi>
                         </th>
                       ))}
                     </tr>
@@ -187,13 +210,13 @@ export function StatementPanel({ section, className }: { section: "Income Statem
                           {/* Labels are stored in one language; shown in the page's when known (lib/data-labels). */}
                           <bdi lang={dataLabel(r.label, locale).lang}>{dataLabel(r.label, locale).text}</bdi>
                         </td>
-                        {years.map((y) => (
-                          <td key={y} className="py-1 text-end">
-                            {r.values[String(y)] == null ? (
+                        {columns.map(({ year }) => (
+                          <td key={year} className="py-1 ps-3 text-end">
+                            {r.values[String(year)] == null ? (
                               <span className="text-line">·</span>
                             ) : (
-                              <span className={`num ${(r.values[String(y)] ?? 0) < 0 ? "text-loss" : ""}`}>
-                                {statementValue(r.values[String(y)])}
+                              <span className={`num ${(r.values[String(year)] ?? 0) < 0 ? "text-loss" : ""}`}>
+                                {statementValue(r.values[String(year)])}
                               </span>
                             )}
                           </td>
@@ -203,6 +226,13 @@ export function StatementPanel({ section, className }: { section: "Income Statem
                   </tbody>
                 </table>
               </div>
+              {notes.length > 0 && (
+                <ul className="mt-2 space-y-0.5 text-xs text-muted" data-statement-periods>
+                  {notes.map((n) => (
+                    <li key={n}>{n}</li>
+                  ))}
+                </ul>
+              )}
             </>
           )}
         </QueryState>

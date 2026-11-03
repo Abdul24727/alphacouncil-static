@@ -1,0 +1,26 @@
+API   Income Statement: 2026=TTM@2026-06
+API   Balance Sheet: 2025=FY@2025-12, 2026=Q@2026-06
+local-fix  en 1440 financials.income: headings ["LINE ITEM","TTM JUN 2026"]  first row ["Sales","1,823,483"]  notes ["TTM Jun 2026: trailing twelve months, the four quarters to Jun 2026 added together."]
+local-fix  en 1440 financials.balance: headings ["LINE ITEM","FY2025","JUN 2026"]  first row ["Cash & Cash Equivalents","243,099","167,387"]  notes ["Jun 2026: the position at that quarter-end, not a fiscal year-end."]
+local-fix  en 1440 page scrolls sideways: false
+local-fix  en 390 financials.income: headings ["LINE ITEM","TTM JUN 2026"]  first row ["Sales","1,823,483"]  notes ["TTM Jun 2026: trailing twelve months, the four quarters to Jun 2026 added together."]
+local-fix  en 390 financials.balance: headings ["LINE ITEM","FY2025","JUN 2026"]  first row ["Cash & Cash Equivalents","243,099","167,387"]  notes ["Jun 2026: the position at that quarter-end, not a fiscal year-end."]
+local-fix  en 390 page scrolls sideways: false
+local-fix  ar 1440 financials.income: headings ["البند","12 شهرًا حتى يونيو 2026"]  first row ["Sales","1,823,483"]  notes ["12 شهرًا حتى يونيو 2026: مجموع الأرباع الأربعة المنتهية في يونيو 2026."]
+local-fix  ar 1440 financials.balance: headings ["البند","2025","يونيو 2026"]  first row ["نقد وما يعادله","243,099","167,387"]  notes ["يونيو 2026: المركز المالي في نهاية ذلك الربع، لا في نهاية سنة مالية."]
+local-fix  ar 1440 page scrolls sideways: false
+local-fix  ar 390 financials.income: headings ["البند","12 شهرًا حتى يونيو 2026"]  first row ["Sales","1,823,483"]  notes ["12 شهرًا حتى يونيو 2026: مجموع الأرباع الأربعة المنتهية في يونيو 2026."]
+local-fix  ar 390 financials.balance: headings ["البند","2025","يونيو 2026"]  first row ["نقد وما يعادله","243,099","167,387"]  notes ["يونيو 2026: المركز المالي في نهاية ذلك الربع، لا في نهاية سنة مالية."]
+local-fix  ar 390 page scrolls sideways: false
+en 1440: console ["error: Error: Route \"/[locale]/t/[ticker]/financials\": Next.js encountered uncached data in `generateMetadata()`.\n\nThis route's metadata is blocked, but the rest of its content can be prerendered. `fetch(...)` or `connection()` accessed in `generateMetadata()` cause it to run dynamically.\n\nWays to fix this"]
+en 390: console ["error: Error: Route \"/[locale]/t/[ticker]/financials\": Next.js encountered uncached data in `generateMetadata()`.\n\nThis route's metadata is blocked, but the rest of its content can be prerendered. `fetch(...)` or `connection()` accessed in `generateMetadata()` cause it to run dynamically.\n\nWays to fix this"]
+ar 1440: console ["error: Error: Route \"/[locale]/t/[ticker]/financials\": Next.js encountered uncached data in `generateMetadata()`.\n\nThis route's metadata is blocked, but the rest of its content can be prerendered. `fetch(...)` or `connection()` accessed in `generateMetadata()` cause it to run dynamically.\n\nWays to fix this"]
+ar 390: console ["error: Error: Route \"/[locale]/t/[ticker]/financials\": Next.js encountered uncached data in `generateMetadata()`.\n\nThis route's metadata is blocked, but the rest of its content can be prerendered. `fetch(...)` or `connection()` accessed in `generateMetadata()` cause it to run dynamically.\n\nWays to fix this"]
+ALDAR financials.income: ["LINE ITEM","FY2021","FY2022","FY2023","FY2024","FY2025"] notes 0
+ALDAR financials.balance: ["LINE ITEM","FY2021","FY2022","FY2023","FY2024","FY2025"] notes 0
+ALDAR/ar financials.income: ["البند","2021","2022","2023","2024","2025"] notes 0
+ALDAR/ar financials.balance: ["البند","2021","2022","2023","2024","2025"] notes 0
+1120 financials.income: ["البند","12 شهرًا حتى يونيو 2026"] notes 1
+1120 financials.balance: ["البند","2025","يونيو 2026"] notes 1
+fresh context: 1120 financials.income: ["LINE ITEM","TTM JUN 2026"] notes 1
+fresh context: 1120 financials.balance: ["LINE ITEM","FY2025","JUN 2026"] notes 1

@@ -1468,9 +1468,31 @@ wrong thing:
         (last night's beta session). So no news item since then has its English headline, bilingual
         summary or impact pre-generated. The pipeline's OpenRouter key is a credential: the owner's.
         Also standing: the disk-pressure alert (80 % on 11-02, 81 % on 11-03, 82 % now; 37 GB free).
-   - *Resume here:* F-13's panel fix on `rebuild`, then the owner's go-ahead for beta and production.
-     The $66 pilot (item 4) does not read the panel, but the B7 rule said no paid run until this check
-     passes, so it waits for the owner's word either way.
+   - *F-13's fix (done on `rebuild`, 2026-11-03, NOT released):* new `web/src/lib/statement-period.ts`
+     heads each column from the API's `periods`: FY stays "FY2025" / "2025"; TTM reads "TTM Jun 2026" /
+     "12 شهرًا حتى يونيو 2026"; a quarter-end balance reads "Jun 2026" / "يونيو 2026". Every non-FY
+     column gets a one-line note under the table ("the four quarters to Jun 2026 added together"; "the
+     position at that quarter-end, not a fiscal year-end"). A column with neither a figure nor a period
+     is dropped (the empty "FY2025" beside a TTM). The old response shape keeps "FY{year}". The copied
+     table uses the same headings, and `copilotData` now carries `periods` and the headings. Two
+     pre-existing layout faults in the same table fixed with it: a fixed 560 px minimum width pushed the
+     one figure column off a 390 px Arabic screen (now `min(560, 208 + 96 × columns)`), and adjacent
+     negatives ran together ("-1,047,136-1,074,073"; a start gap on number cells).
+     *Checked:* `npm test` 39/39 (7 new), typecheck and eslint clean. Rendered locally (`next dev` on
+     `localhost:3100`, `API_ORIGIN` through a tunnel to beta's API, GETs only) against the live repaired
+     data: 2222 and 1120 show the periods and notes in both languages at 1440 and 390, no sideways
+     scroll, right-to-left order correct; ALDAR shows "FY2021…FY2025" / "2021…2025" with no notes, as
+     before. Console: only Next's dev-only `generateMetadata` notice for the route, unrelated.
+     Saved: `docs/screenshots/f13-panel-fix-2026-11-03.txt` and the panel PNGs beside it.
+   - *Still open after F-13, found with it:* the Arabic page shows Saudi income statements' line labels
+     in English. There are **133 distinct labels** across the 250 Tadawul income statements and
+     `web/src/content/data-labels.json` knows 4 of Aramco's 18; they never existed in the database
+     before the repair, so this re-opens commit `b548bbe`'s guarantee (no English on Arabic pages
+     outside an allow-list). The right source is Argaam's own Arabic pages paired row by row, not a
+     translation made here. Not started.
+   - *Resume here:* the owner's go-ahead to release F-13's fix to beta, then production (one go-ahead
+     each, per §4). The $66 pilot (item 4) does not read the panel, but the B7 rule held paid runs until
+     this check passed, so it waits for the owner's word.
 4. **Then the $66 validation pilot**, and the decision-grade run at cap $393 after it.
    **This item's precondition is MET as of 2026-11-02, on the owner's go-ahead ("Yes, wire them
    up"): the pilot can now answer all three priorities.** It used to be able to speak to Priority
