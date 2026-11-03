@@ -1,8 +1,32 @@
 # Arabic line labels for Saudi statements, from Argaam's own Arabic pages
 
 2026-11-03. Owner's choice in chat: **"Harvest Argaam Arabic"**, over translations drafted here.
-Nothing in this document has been run against Argaam with the signed-in session yet: that is the
-go-ahead it asks for.
+
+## Outcome of the server harvest (2026-11-03 14:29–14:35 UTC, on the owner's "Yes, run it"): BLOCKED
+
+- **The pilot** (2222, 1120, 8010) got no statement grid on any of the three pages and stopped itself
+  after the third, as designed. Nothing was saved and the nightly's files were not touched.
+- **One diagnostic visit to Aramco, in each language, with the same session**, settled why:
+  - *English:* signed in (the account's name shows), the grid present, 102 rows. The session works.
+  - *Arabic:* Argaam answers with **"Human Verification — Let's confirm you are human"**, a bot
+    challenge. The page `/ar/tadawul/…` redirects to the older `/ar/company/financialstatement/…`
+    route, and that route challenges the server. It is the same block that stopped F-D
+    (Step 19) on the market-wide disclosures list.
+- **The challenge is not to be got around**, so harvesting from the server is closed. Four Arabic
+  page loads were made in all. Left on the server: `/root/argaam-ar-statements/_summary.json` and
+  `_diag/` (the two diagnostic pages).
+- **The route that remains: the owner's own browser.**
+  - The owner signs in to Argaam in the desktop app's browser pane. Claude never types the password.
+  - Claude then reads the Arabic statement pages there, as the owner's signed-in visit.
+  - If a challenge appears there, it is the owner's to answer, not Claude's.
+  - **Eight companies cover every line**: a greedy cover over all 269 English pages, 415 (row id,
+    English label) pairs including the unit variants, 0 uncovered.
+  - The eight: 5110 `saudi-energy` (+94), 8160 `aicc` (+86), 1150 `alinma` (+69), 1180 `snb` (+68),
+    4083 `tasheel` (+54), 4350 `alistithmar-reit` (+40), 7211 `azm` (+3), 2222 `saudi-aramco` (+1).
+  - So it is eight page visits, not 269. The pairing is unchanged: by row id, against each company's
+    own English page on the server.
+
+The plan as first written follows; its server harvest is superseded by the outcome above.
 
 ## The gap
 

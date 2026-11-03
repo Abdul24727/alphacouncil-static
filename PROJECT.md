@@ -1525,8 +1525,19 @@ wrong thing:
      while the nightly runs, stopping after three empty pages; a pilot of 2222/1120/8010 first, then
      all 269 (about 45 min). Dry-run on the server: 269 URLs. Merge into `data-labels.json` adds only
      missing labels and lists every difference with the dictionary for the owner.
-   - *Resume here:* the owner's go-ahead to run the harvest on the server (it uses the Argaam
-     session, so it is a §4 stop). Then pair, merge (differences to the owner), test on beta, release.
+   - *The server harvest was run on the owner's "Yes, run it" and is BLOCKED (14:29–14:35 UTC):* the
+     pilot found no grid on 2222/1120/8010 and stopped itself; one diagnostic visit per language showed
+     the session signed in on the English page (grid, 102 rows) and Argaam's **"Human Verification"
+     bot challenge** on the Arabic one (the `/ar/company/financialstatement/…` route; the same block
+     as F-D). Not to be got around, so the server route is closed; four Arabic loads in all, nothing
+     of the nightly's touched. **The remaining route:** the owner signs in to Argaam in the app's
+     browser pane (Claude never types the password) and Claude reads the Arabic pages there; a greedy
+     cover over the 269 English pages shows **eight companies carry every line** (5110, 8160, 1150,
+     1180, 4083, 4350, 7211, 2222 — 415 id/label pairs, 0 uncovered). Record in
+     `docs/arabic-statement-labels-2026-11-03.md`.
+   - *Resume here:* the owner's go-ahead for the browser-pane route (and their own Argaam sign-in
+     there), or the fallback of drafted translations for review. Then pair by row id, merge
+     (differences to the owner), test on beta, release.
      **Item 4, the $66 pilot, is unblocked by this check** — B7's condition (the post-publish check
      passes) is met for the data, the API and now the panel; it still needs the owner's go-ahead as a
      paid run, and probes D1/D3/D6 (retire or re-register) are still the owner's before it is scored.
