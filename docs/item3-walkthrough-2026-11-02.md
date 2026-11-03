@@ -9,6 +9,17 @@ this turned up two things that change the order. They are first, because they de
 
 ---
 
+## Correction, 2026-11-03 (after the publish)
+
+**§1's premise was half true, and A4 did not remove the exposure.** "After it, both tiers understand
+`periods`" holds for the API only. The panel of the release that shipped (`df83e19404`,
+`web/src/components/stock/research-panels.tsx`, `StatementPanel`) still heads every column
+`t("statements.fy", { year })` and never reads `periods`, so after the 05:03 UTC publish Aramco's TTM
+income statement and June-2026 balance sheet sit under "FY2026" on beta, and would for any Pro member on
+production (0 today; the panel is locked signed out). Nobody compared the panel's code with this claim
+before relying on it. The data and the API pass. The post-publish check and the fix are recorded in
+PROJECT.md, Next Up item 3, as F-13.
+
 ## Corrections, 2026-11-02 evening (read before anything below)
 
 Read-only checks at 20:33 UTC (server and repository). Four things below are now wrong or incomplete.

@@ -170,7 +170,17 @@ Older entries: `changelog-archive.md`.
 
 - 2026-11-02 — **Step 10 DONE: the owner's two runs passed on production.** Both scripts sign up their own accounts, which are Free while billing is open, so billing was closed for the run on the owner's go-ahead: 20:06:56–20:24:55 UTC, both `api.env` states `cmp`-checked against their backups, and `check-billing-public.mjs` all passed after reopening. `check-all.mjs` came back **9 of 9, 264 PASS / 0 FAIL**, the same as 2026-10-24. The signed-in `check-advisors.mjs` came back **"all passed", 53 / 0 / 20 INFO**, matching the script's own `check-sessions.txt` line for line. Two real-model sessions; every seat answered all three rounds in both languages. Monitor 14 ok + renewals "–". The rebuild checker's mandate and ruling INFO lines are not applicable to `74ce427bf6` and are recorded as such. Six `@example.com` test accounts are left for the owner to remove. Open in Goal 4: Step 7 (the lawyer) and Step 18's item 4 (a real renewal).
 
+- 2026-11-03 — **Item 3's post-publish check: the data, the publish and the API pass; the Financials panel fails (F-13).** The nightly ran clean (716/716, 24 steps OK, `ok 3218/6620` as in B5) and `publish_dbs.sh` published at 05:03:24 UTC, `/healthz/deep=ok`. The live file has 250 Tadawul income statements, no NULL period, and no statement-driven gauge moved outside Tadawul. `/statements` on beta is `period_aware` with TTM@2026-06 / Q@2026-06 / FY@2025-12. But the panel of `df83e19404` never reads `periods`, so on beta Aramco's TTM sales and June balance sheet sit under "FY2026" in both languages at both widths; production locks the panel signed out and has 0 active subscriptions, so no customer sees it today. Walkthrough §1's claim that the release made both tiers understand `periods` was true of the API only — Claude's miss. No rollback: the data is right and the Council's evidence reads `periods`. Also recorded, F-14: the pipeline's `generate_news_ai` has written 0 every night since at least 10-19 (OpenRouter 401), reporting OK.
+
 ## 6. Current State
+- **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
+  (§9 item 3): 250 Saudi income statements (was 0), every row period-tagged, every change on Tadawul only.
+  **One fault is open, F-13:** the Financials panel of release `df83e19404` ignores the API's `periods`
+  and heads Aramco's TTM-to-June-2026 income statement and June-2026 balance sheet "FY2026". It shows on
+  beta (behind its gate) and to Pro members on production, of whom there are none today. The fix is on
+  `rebuild` next and needs the owner's go-ahead to release. **F-14:** the pipeline's news-AI step has
+  generated nothing since at least 2026-10-19 (OpenRouter 401 on the pipeline's key) while reporting OK;
+  the owner's, as a credential.
 - **Pro billing is OPEN on production since 2026-11-02 18:20 UTC** (Step 18), on the owner's go-ahead given before the lawyer (Step 7) and before Step 10 closed, against Claude's recommendation to wait. **The owner's own first payment went through and was applied once** (2026-11-02 19:24 UTC, SAR 79), **and the refund at 19:51 UTC ended Pro and dropped the saved card**: the paid path is proved end to end on the live site. No customer has paid. F-12: one of Moyasar's two webhooks is refused 403 for a secret mismatch, harmless, and the owner's to tidy now the refund has landed. The lawyer's (b) and (c) are now live questions about a product that is being sold, not one that is free.
 - **Unreleased on `rebuild`, touching live application code:** `api/app/debate/llm.py`'s retry path — the echo and the quoted parser message clipped in UTF-8 bytes, every issued request counted against `ATTEMPTS`, and `REASONING_REQUIRED` seeded so the chair's model is not refused once per process (round five, 2026-10-28). Production is unaffected until a release, which is the owner's go-ahead; it should carry one real-model session on beta first, because every seat goes through that path.
 - **The acceptance round was self-reviewed and all 15 findings are fixed** (suite 557). Four changed output: derived EPS is no longer withheld from companies whose share count is supported, the share-count rule check is an allowlist rather than a denylist (`sum_quarters` — the 4x bug — was being accepted), the ranking caveat quotes the figure measured for its OWN peer class, and the Financials panel now says why a rank is missing instead of rendering an empty cell.
@@ -182,7 +192,9 @@ Older entries: `changelog-archive.md`.
 - **The ingestion repair is prepared, dry-run, pre-application-reviewed and waiting on the owner** (`docs/ingestion-repair-preapplication-2026-10-29.md` is the current record; the 10-28 reconciliation carries a banner saying what it supersedes). The 10-29 round found that the repair **as first prepared would have broken the gauge stage** — it reads `MAX(fiscal_year)` and takes every input from that year, so an income statement under 2026 with the balance sheet under 2025 would have turned `debt_equity`, `current_ratio` and `ev_ebitda` from `ok` into `missing_inputs` market-wide and misdetected non-banks as banks. Fixed by aligning the balance-sheet snapshot to the flow window, and **verified by running the pipeline's own gauge stage over both databases**: five or six gauges per ticker come back, nothing breaks, sector detection is more robust than before. **Before applying, two things are the owner's to accept:** published gauge values move (SABIC `current_ratio` 1.801 → 2.430, a fresher balance sheet rather than an error), and **§8b (`periods` on `Statement`) is a precondition, not an accompaniment** — without it one statement row shows a December and a June balance-sheet figure as a year-on-year comparison. Order of application, invalidation and rollback are specified; the rollback window is a **five-day rotation**, so the named copies come first. Bank gauges stay blocked until the bank revenue mapping lands (held, with P9, as a subsequent scoped change).
 - **The ingestion repair is prepared, dry-run and waiting on the owner** (`docs/ingestion-repair-reconciliation-2026-10-28.md`, patch `docs/pipeline-fix-statements-2026-10-28.patch`, 2026-10-28). It applies cleanly and reproduces the tested parser byte for byte. **Every Saudi income statement comes back** (2222 18 rows, 1120 24, 2010 15, 4061 20, 4190 20, all `TTM@2026-06`), the **4× share count goes away** (968,000 → 242,000), balance sheets and the ADX control are **row-for-row identical**, and the reconstruction matches the vendor's own published TTM EPS to 0.4%. Al Rajhi's three blocked bank measures are unblocked (cost/income 23.4%, net financing margin 3.47%, cost of risk 0.36%). **Nothing is applied: the live pipeline is untouched**, and applying it is Step 5's pattern — prepare, decide, apply. Two things wait on the owner besides that: **D3 and D6 must be re-registered or retired before the repair lands** (their correct answers change and both bands fail), and the API/pack change of §8 is proposed, not built — `period`/`period_end` on `/statements` is the one piece that must ship with the repair, or a trailing-twelve-month statement will be read as a fiscal year.
 - **The evidence the room reads has a hole in it, and it is the owner's call whether to close it** (`docs/evidence-pipeline-inspection-2026-10-28.md`, 2026-10-28). **No Saudi company has an income statement in the live database** — 0 of 90 Tadawul names sampled, against 135 of 148 elsewhere — so for every Saudi name the room gets no revenue, no net income, no net margin, no payout or dividend coverage, no P/S, no ROIC and no interest coverage. Aramco's payout was computed at **92.64%** on 2026-08-02 and now reads `missing_inputs`. The HTML is still harvested, so the loss is in the parse or load stage of the old pipeline, which §4 gates until Step 5's checkpoint: **diagnosing it needs the owner's go-ahead**, and it is the highest-value change available. **The cause is established**: Argaam's Tadawul pages serve the quarterly grid under the annual URL, the parser reconstructs annual figures by summing quarters, income-statement rows are flows needing four complete quarters, and the page's rolling five-quarter window leaves FY2025 one quarter short — verified by running the real parser locally, unmodified (`42 rows, Balance Sheet only, mode = quarterly_reconstructed`), against `annual_direct, 9 year columns, both statements, 2021-2025` for an ADX ticker. The same mechanism is the 4× share count and the one-year statement limit. **So the fix is either A1 (get the annual grid, preferred) or A2 (sum the newest four quarters as TTM, which reproduces the vendor's published TTM EPS to 0.4%)** — §9A of the report. Old-pipeline work, so the owner's decision. **It also lands on the benchmark:** 4061's gauge values are **orphaned** (computed from a statement that no longer exists, never recomputed), **D3 and D6 derive their whole answer from two of them** and become unanswerable the day 4061 is recomputed, and **D1 inverts if the income statement is restored** — its band tops out at 85% while the pipeline's own payout is 92.6%, 4.8 points from the planted error. No probe was changed; `test_eval_probes.py` gained a guard that fires instead (suite 483). **D1 needs its band widened or the probe retired before fix A lands, and that is the owner's call, not mine** — re-registering a criterion after reading the data is what pre-registration exists to prevent. Everything else in the report is ours to fix on `rebuild` and none of it is built — the cheapest being `inputs_json` on one SELECT, which makes every computed gauge checkable. **This also bears on the benchmark:** the probes ask rooms to reason about earnings and coverage over a pack whose valuation ratios are struck on an undisclosed price (12.7% from `last_price` for SABIC) and whose income-statement evidence is absent for Saudi tickers, which is every ticker the eighteen probes use.
-- Live on alphacouncil.tech: release **`74ce427bf6`** since 2026-10-27 21:27 UTC (2026-10-28 00:27 Riyadh), on the owner's go-ahead. Beta runs the same sha. It carries everything `3228ab57e9` had (advisor portraits; Copilot option (e); the three-round room; F-8's paragraph fix) **plus F-10 (`no_credit`) and F-11 (one HTTP client per event loop)**. Its app code is byte-identical to the beta release both fixes were proven on — `git diff d5c28fb48b..74ce427bf6 -- api/app web/src web/messages web/public deploy` is empty; only `PROJECT.md`, `api/eval/` and docs moved. Pro checkout **OPEN since 2026-11-02 18:20 UTC** (Step 18, on the owner's go-ahead, given before the lawyer; `checkout_open:true`; early access is over, so every account that has not paid is Free; no one has paid yet; the file before is `api.env.bak-20261102182018`). *(Until 2026-11-02: closed, everyone had Pro.)*
+- *(Superseded 2026-11-02: production and beta run **`df83e19404`**, all of `rebuild` as of item 3's
+  Phase A — §9 item 3, A2 and A4. The line below is the release before it.)*
+  Live on alphacouncil.tech: release **`74ce427bf6`** since 2026-10-27 21:27 UTC (2026-10-28 00:27 Riyadh), on the owner's go-ahead. Beta runs the same sha. It carries everything `3228ab57e9` had (advisor portraits; Copilot option (e); the three-round room; F-8's paragraph fix) **plus F-10 (`no_credit`) and F-11 (one HTTP client per event loop)**. Its app code is byte-identical to the beta release both fixes were proven on — `git diff d5c28fb48b..74ce427bf6 -- api/app web/src web/messages web/public deploy` is empty; only `PROJECT.md`, `api/eval/` and docs moved. Pro checkout **OPEN since 2026-11-02 18:20 UTC** (Step 18, on the owner's go-ahead, given before the lawyer; `checkout_open:true`; early access is over, so every account that has not paid is Free; no one has paid yet; the file before is `api.env.bak-20261102182018`). *(Until 2026-11-02: closed, everyone had Pro.)*
 - **The OpenRouter account is shared between production and every bench run, and stands at $4.74** after the paired test ($9.00) — about 21 production sessions. **The monitor now reports this: it is at 15 checks and the fifteenth is FAILING.** That is the one red line on the board and it is the owner's to clear, at openrouter.ai/credits. Until it is cleared, the room on production is one busy day from refusing — and now it refuses legibly ("the room has run out of capacity for now") instead of blaming the network.
 - Copilot: option (e) is live (first turn answers from the page's fetched data; beta 2026-10-22: first words 5.3 s, full 15.2 s; 7f stays BY DESIGN). Production's speed with it not yet re-measured.
 - Goal 3 DONE: every audit item PASS or BY DESIGN with the owner's words (`docs/qa-beta-2026-10/reaudit-2026-10-22.md`); checkout proven in Moyasar test mode on beta, 13 of 13.
@@ -1391,7 +1403,7 @@ wrong thing:
      - The nightly's step 5 deletes and recreates `screening.sqlite`, and the patched parser creates the
        new columns on a fresh table, so the published file will not carry them. Re-parsing into an
        existing file would.
-   - *Resume here (after 05:00 UTC on 2026-11-03, 08:00 Riyadh): the post-publish check.*
+   - *The post-publish check as planned (its outcome follows the list):*
      1. `tail /opt/alphacouncil/logs/db_publish.log` should show `published. /healthz/deep=ok`; the
         nightly's rebuild must have exited OK (`/opt/alphacouncil/logs/cron.log`).
      2. On `/var/lib/alphacouncil/screening.sqlite` (read-only): about 250 Tadawul income statements,
@@ -1404,6 +1416,61 @@ wrong thing:
         `prestatementrepair-live-screening.sqlite` and `prestatementrepair-live-evidence.sqlite` into
         `/var/lib/alphacouncil/`.
      5. **No paid run until that check passes** (walkthrough B7).
+   - *The post-publish check (done, 2026-11-03 10:34–11:00 UTC): the DATA, the publish and the API PASS;
+     the Financials PANEL FAILS (F-13).* Saved: `docs/screenshots/item3-post-publish-2026-11-03.txt` and
+     the five PNGs beside it.
+     1. *The nightly and the publish: PASS.* The nightly logs to `logs/daily_YYYYMMDD.log` and
+        `logs/LAST_RUN_STATUS.txt`, not `cron.log` (empty; the crontab does not redirect), so the plan's
+        pointer was wrong. `[OK] 2026-11-03 02:16:27`: 716/716 scraped, all 24 rebuild steps `[OK]`,
+        step 8 parsed 664 tickers, step 11 `ok 3218 / 6620` (B5's figure exactly), step 14 scored
+        3218/6620. `db_publish.log`: `05:03:24 published. /healthz/deep=ok`, backup
+        `dbpublish-20261103T050001Z`; every hourly run since says "already current". The live
+        `screening.sqlite` is `cmp`-identical to `det_out/screening.sqlite`.
+     2. *The live database (read-only, `check-live.py` over stdin, nothing written on the server): PASS.*
+        Tadawul income statements **250** (the pre-repair live copy: 0); `period` NULL **0** (the 72
+        leftovers are gone, as predicted); **0** ticker/section/year cells with two `period_end`s; every
+        non-Tadawul income statement `FY`, all 250 Tadawul ones `TTM`; 2222 `Income Statement TTM
+        2026-06` (18 rows), `Balance Sheet Q 2026-06` and `FY 2025-12` (42 each); **0** ok gauges
+        unranked; SABIC `current_ratio` 1.8006 → **2.4297**, `net_margin` −19.75, `ev_ebitda` 9.69.
+        Against the pre-repair live copy, the statement-driven gauges (`current_ratio`, `debt_equity`,
+        `net_margin`, `gross_margin`, `roic`, `interest_coverage`, `payout`) changed status 1,027 times
+        on Tadawul and **0 times elsewhere**, and moved value 379 times, **0 outside Tadawul**, despite a
+        fresh scrape in between.
+     3. *The API: PASS.* Beta (`127.0.0.1:8200`, billing closed) answers `/v1/tickers/2222/statements`
+        with `period_aware: true`: Income Statement `2026 = TTM@2026-06, sum_quarters, source columns
+        2025-09…2026-06`; Balance Sheet `2026 = Q@2026-06, quarter_end_snapshot`, `2025 =
+        FY@2025-12`. Sales TTM 1,823,483 m SAR. 2010 is period-aware too. Production answers an
+        anonymous call 403 (Pro-only), as it should.
+     4. **The panel: FAIL — F-13.** `web/src/components/stock/research-panels.tsx` (`StatementPanel`,
+        the release `df83e19404` live on both tiers) never reads `periods`: it heads every column
+        `t("statements.fy", { year })`. On beta, in both languages at 1440 and 390, Aramco's TTM-to-June
+        sales sit under **"FY2026"** beside an empty **"FY2025"** column, and the June 2026 quarter-end
+        balance sheet sits under **"FY2026"** beside the real FY2025. Arabic heads them bare "2025" /
+        "2026". This is exactly the defect walkthrough §1 shipped Phase A to prevent; §1's "after A4 both
+        tiers understand `periods`" was true of the API only, and no one checked the panel's code
+        against it — Claude's error, in the walkthrough and in last night's summary. Both mislabelled
+        columns are new with the repair: before it, 2222 had no income statement and only a 2025 balance
+        sheet. The Copilot panel is fed the same `years` without `periods` (`copilotData`), so it can
+        repeat "FY2026" too.
+        **Who sees it:** beta, anyone past its gate; production, Pro members only — the panel is locked
+        signed out (3 lock markers, 0 tables) and production has **0 active subscriptions** (2, both
+        expired). So no paying customer sees it today; the first to subscribe would.
+        Also seen: on the Arabic page most income-statement row labels stay English ("Sales", "Cost of
+        Sales"…), since `lib/data-labels` maps only a few; a smaller, separate gap.
+     5. **The data is not the fault, so no rollback was run.** The Council's evidence path
+        (`api/app/evidence.py`) reads `periods` and is unaffected. A rollback would also need the
+        owner's go-ahead (production). The fix is the panel's: head each column from `periods`, give
+        `copilotData` the periods, then release beta → production (the owner's go-ahead per deploy).
+     6. *Found while reading the nightly log, not caused by item 3 — F-14:* the pipeline's step 23
+        `generate_news_ai` has written **0** items **every night since at least 2026-10-19** (the oldest
+        log kept; 155–413 OpenRouter `401 Unauthorized` per night), while the step and the night both
+        report OK. 401 is a refused key, not exhausted credit (that is 402), and the app's own key works
+        (last night's beta session). So no news item since then has its English headline, bilingual
+        summary or impact pre-generated. The pipeline's OpenRouter key is a credential: the owner's.
+        Also standing: the disk-pressure alert (80 % on 11-02, 81 % on 11-03, 82 % now; 37 GB free).
+   - *Resume here:* F-13's panel fix on `rebuild`, then the owner's go-ahead for beta and production.
+     The $66 pilot (item 4) does not read the panel, but the B7 rule said no paid run until this check
+     passes, so it waits for the owner's word either way.
 4. **Then the $66 validation pilot**, and the decision-grade run at cap $393 after it.
    **This item's precondition is MET as of 2026-11-02, on the owner's go-ahead ("Yes, wire them
    up"): the pilot can now answer all three priorities.** It used to be able to speak to Priority

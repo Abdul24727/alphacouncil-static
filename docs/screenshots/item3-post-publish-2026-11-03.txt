@@ -1,0 +1,15 @@
+API   Income Statement: 2026=TTM@2026-06
+API   Balance Sheet: 2025=FY@2025-12, 2026=Q@2026-06
+BETA  en 1440 financials.income: headings ["LINE ITEM","FY2025","FY2026"]  first row ["Sales","·","1,823,483"]
+BETA  en 1440 financials.balance: headings ["LINE ITEM","FY2025","FY2026"]  first row ["Cash & Cash Equivalents","243,099","167,387"]
+BETA  en 1440 page scrolls sideways: false
+BETA  en 390 financials.income: headings ["LINE ITEM","FY2025","FY2026"]  first row ["Sales","·","1,823,483"]
+BETA  en 390 financials.balance: headings ["LINE ITEM","FY2025","FY2026"]  first row ["Cash & Cash Equivalents","243,099","167,387"]
+BETA  en 390 page scrolls sideways: false
+BETA  ar 1440 financials.income: headings ["البند","2025","2026"]  first row ["Sales","·","1,823,483"]
+BETA  ar 1440 financials.balance: headings ["البند","2025","2026"]  first row ["نقد وما يعادله","243,099","167,387"]
+BETA  ar 1440 page scrolls sideways: false
+BETA  ar 390 financials.income: headings ["البند","2025","2026"]  first row ["Sales","·","1,823,483"]
+BETA  ar 390 financials.balance: headings ["البند","2025","2026"]  first row ["نقد وما يعادله","243,099","167,387"]
+BETA  ar 390 page scrolls sideways: false
+PROD  signed out /t/2222/financials: locked markers 3, statement tables rendered 0
