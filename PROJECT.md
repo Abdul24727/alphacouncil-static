@@ -188,7 +188,8 @@ Older entries: `changelog-archive.md`.
   show in English on Arabic pages (133 labels; Argaam's Arabic for them is not harvested) — *fixed on
   `rebuild` from Argaam's Gulf Arabic pages (`aa3dde6`), not released.* **F-15 (open, fix prepared):**
   five Saudi finance companies' balance sheets are summed into their income statements (Tasheel's
-  total assets shown ×4); a one-line parser patch is dry-run and waits on the owner. **F-14:** the pipeline's news-AI step has
+  total assets shown ×4); the one-line parser patch is APPLIED (15:38 UTC) and lands with the
+  2026-11-04 05:00 UTC publish, to be checked then. **F-14:** the pipeline's news-AI step has
   generated nothing since at least 2026-10-19 (OpenRouter 401 on the pipeline's key) while reporting OK;
   the owner's, as a credential.
 - **Pro billing is OPEN on production since 2026-11-02 18:20 UTC** (Step 18), on the owner's go-ahead given before the lawyer (Step 7) and before Step 10 closed, against Claude's recommendation to wait. **The owner's own first payment went through and was applied once** (2026-11-02 19:24 UTC, SAR 79), **and the refund at 19:51 UTC ended Pro and dropped the saved card**: the paid path is proved end to end on the live site. No customer has paid. F-12: one of Moyasar's two webhooks is refused 403 for a secret mismatch, harmless, and the owner's to tidy now the refund has landed. The lawyer's (b) and (c) are now live questions about a product that is being sold, not one that is free.
@@ -1558,9 +1559,14 @@ wrong thing:
      `docs/pipeline-fix-financial-position-2026-11-03.patch`, `git apply --check` clean. Dry run in
      `/tmp/f15` on a copy: the five parse like Aramco, every other row and **all 6,620 gauge rows
      identical**. Record: `docs/f15-financial-position-2026-11-03.md`.
-   - *Resume here:* two go-aheads. (1) **F-15's patch on the server before 00:00 UTC** so the 05:00
-     publish carries it (time-sensitive); then check the five after the publish. (2) Release the
-     Arabic labels to beta, then production. Neither is done.
+   - **F-15's patch APPLIED on the server (2026-11-03 15:38 UTC, the owner's "Yes, apply it"):**
+     backup `parse_financial_statements.py.bak-20261103` (md5 = the file before), `git apply`, the
+     diff against the backup is exactly the three lines, the module imports with the new mapping.
+     Tonight's 00:00 UTC run re-parses into a fresh database and the 05:00 publish carries it.
+   - *Resume here:* (1) **after 05:00 UTC on 2026-11-04**, check the five on the live file (sections
+     TTM + FY/Q balance sheets, no "Total Assets" in an income statement, 4083 total assets about
+     3,365) — `docs/f15-financial-position-2026-11-03.md`; (2) the owner's go-ahead to release the
+     Arabic labels (`aa3dde6`) to beta, then production.
      **Item 4, the $66 pilot, is unblocked by this check** — B7's condition (the post-publish check
      passes) is met for the data, the API and now the panel; it still needs the owner's go-ahead as a
      paid run, and probes D1/D3/D6 (retire or re-register) are still the owner's before it is scored.

@@ -56,3 +56,24 @@ git apply --check -p1 /root/pipeline-fix-financial-position-2026-11-03.patch && 
   so no leftovers. The 05:00 publish then carries the fix with no manual step.
 - **Check after the publish:** the five companies' sections, as in the dry run.
 - **Reverse:** `git apply -R -p1` the same file, or restore the `.bak`.
+
+## Applied (2026-11-03 15:38 UTC, on the owner's "Yes, apply it")
+
+- No pipeline process was running. A first attempt stopped on its own guard because `pgrep -f`
+  matched the ssh command line that contained the pattern. Re-run as a script on stdin, it found
+  none.
+- Backup `llm-council/parse_financial_statements.py.bak-20261103`: md5 `df2f3422…`, identical to
+  the file before.
+- `git apply --check` then `git apply`; md5 now `ac23a4f5…`.
+- `diff` against the backup is exactly the three intended lines (67–69).
+- The file parses, and importing it gives `SECTION_MAP["Financial Position"] == "Balance Sheet"`.
+- The nightly (00:00 UTC, daily mode) re-parses into a freshly created database, and the 05:00 UTC
+  publish carries it.
+
+**Check after 05:00 UTC on 2026-11-04 (08:00 Riyadh):**
+- On `/var/lib/alphacouncil/screening.sqlite`, read-only:
+  - 1182, 1183, 4081, 4082 and 4083 have an Income Statement (TTM) and Balance Sheets (FY 2025-12,
+    Q 2026-06);
+  - no income statement holds "Total Assets";
+  - 4083's Total Assets reads about 3,365 at 2026-06.
+- Gauge totals change only by whatever the night's fresh scrape moves.
