@@ -1,0 +1,14 @@
+local 2222 1440 financials.income: rows 18, still English 0 []  first ["الايرادات","تكلفة الايرادات","اجمالي الدخل","المصاريف الادارية والتسويقية"]
+local 2222 1440 financials.balance: rows 42, still English 0 []  first ["نقد وما يعادله","صافي المدينين","مخزون","استثمارات قصيرة الأجل"]
+local 2222 390 financials.income: rows 18, still English 0 []  first ["الايرادات","تكلفة الايرادات","اجمالي الدخل","المصاريف الادارية والتسويقية"]
+local 2222 390 financials.balance: rows 42, still English 0 []  first ["نقد وما يعادله","صافي المدينين","مخزون","استثمارات قصيرة الأجل"]
+local 1120 1440 financials.income: rows 24, still English 0 []  first ["اجمالي الدخل من التمويل و الاستثمارات","العائد على استثمارات لأجل","صافي الدخل من الاستثمارات والتمويل","أتعاب خدمات مصرفية"]
+local 1120 1440 financials.balance: rows 32, still English 0 []  first ["نقد وأرصدة لدى البنك المركزي","مستحق من البنوك","استثمارات","صافي الاستثمارات التمويلية"]
+local 1150 1440 financials.income: rows 24, still English 0 []  first ["اجمالي الدخل من التمويل و الاستثمارات","العائد على استثمارات لأجل","صافي الدخل من الاستثمارات والتمويل","أتعاب خدمات مصرفية"]
+local 1150 1440 financials.balance: rows 32, still English 0 []  first ["نقد وأرصدة لدى البنك المركزي","مستحق من البنوك","استثمارات","صافي الاستثمارات التمويلية"]
+local 8010 1440 financials.income: rows 30, still English 0 []  first ["إيرادات التأمين","مصاريف خدمات التأمين","صافي نتائج خدمة التأمين قبل عقود إعادة التأمين","صافى دخل عقود إعادة التأمين المحتفظ بها"]
+local 8010 1440 financials.balance: rows 44, still English 0 []  first ["نقد وما يعادله","نقد في الصندوق","ودائع تحت الطلب","ودائع لأجل"]
+local 4083 1440 financials.income: rows 51, still English 0 []  first ["دخل عمولات التمويلات والاستثمارات","دخل اقساط التمويل","دخل اتعاب و عمولات","ايرادات أخرى"]
+local 4083 1440 financials.balance: no table
+local 4350 1440 financials.income: no table
+local 4350 1440 financials.balance: no table

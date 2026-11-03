@@ -109,3 +109,40 @@ logged to `/root/argaam-ar-statements.log`).
   challenge stops it at the third empty page.
 - **The nightly is unaffected:** separate folder, refusal inside its window, and the session file
   is read, never written.
+
+## What was done instead (2026-11-03, after the owner's "there is no need to sign in")
+
+The owner pointed out that signing in to Argaam anywhere else would sign the nightly's single session
+out and break the scrape, so the browser-pane route was dropped unread. Signed out, Argaam's Arabic
+statements page carries no table at all (0 rows; "للإستمرار في قراءة محتوى هذا القسم يرجي الدخول").
+
+**The source used: Argaam's own Arabic, already on the server.**
+- Argaam's row ids are shared across its markets, and the other Gulf markets' statement pages (ADX,
+  DFM, KSE, QSE, MSM, BSE: 447 pages) are harvested in Arabic every quarter. So one row id carries a
+  Saudi English label on one page and Argaam's Arabic label on another.
+- 408 of the 411 Saudi row ids appear there. `scripts/argaam_ar_labels/pair_from_gulf.py`
+  (read-only, no request to Argaam) pairs them.
+  - Currency units are set to the Saudi ones: "(ريال)" / "(هللة)" in place of fils, dirham, baisa
+    and so on, in 12 labels.
+  - Where one English label covers two fields, the most used Arabic wins, and a tie goes to the
+    shorter wording (one case: "Financing Investment" → "استثمارات تمويلية", not "…قصيرة الاجل").
+  - Five outright misspellings in Argaam's text are corrected (missing letters or a misplaced hamza;
+    listed in the script). Its informal spellings are kept.
+- **284 English labels paired.** `merge_pairs.py` added the **129** the dictionary lacked; 85 were
+  already identical. **70 differ from the dictionary and were left as the dictionary has them**,
+  mostly spelling (the dictionary's hamzas and ة against Argaam's "إجمالى", "مبقاه"), a few more
+  specific ("مطلوبات أخرى" where Argaam says "اخرى").
+- **Unpaired, so still English:** "Net profit before deducting Mudaraba Instrument profit" and "EPS
+  before deducting Mudaraba Instrument profit" (one company), and "Surplus Attributable to Insurance
+  Operations" (on the pages, not in the database).
+
+**Measured on the live data:** Saudi income-statement rows shown in Arabic went from **1,809 of 5,860
+(31 %) to 5,858 of 5,860**; labels from 40 of 133 to 131. Balance sheets were already complete.
+Rendered locally against the live data (`next dev`, beta's API by tunnel): 2222 (at 1440 and 390),
+1120, 1150, 8010 and 4083 show **0 English line labels** on the Arabic Financials page.
+`docs/screenshots/arabic-labels-2026-11-03.txt` and the PNGs beside it. Web suite 39/39, typecheck clean.
+
+**Found while checking (F-15, recorded in PROJECT.md):** five finance companies (1182, 1183, 4081,
+4082, 4083) have their balance-sheet lines inside the income statement, summed over four quarters.
+The other gap seen, 19 REITs and funds (4330–4350) with no statement lines at all, predates the repair
+(26 before it).
