@@ -174,6 +174,8 @@ Older entries: `changelog-archive.md`.
 
 - 2026-11-03 — **F-13 fixed and released to beta, then production (`2e44ee6fbf`), on the owner's go-ahead ("Yes, release it").** The panel heads each statement column from `periods` ("FY2025", "TTM Jun 2026", "Jun 2026", Arabic alike), notes every non-fiscal-year column under the table, drops empty columns, gives the Copilot the periods, and fits one column on a phone. Web suite 39/39. Checked locally against the live data, then on beta (2222, 1120, ALDAR, both languages, 1440 and 390) and on production (release links, `BILLING_OPEN` untouched, health 200, the served scripts swapped from `statements.fy` to the new text, `check-billing-public` all passed). Left: Arabic line labels for Saudi income statements (source not harvested), and the push (12 commits ahead; the release sha is not public).
 
+- 2026-11-03 — **The twelve item-3 and F-13 commits pushed (`6acce45..c046236`) on the owner's go-ahead ("Yes, push").** Before: Step 2's outgoing-diff scan (139 files) gave three hits, all prose naming Moyasar (this file's 11-02 push entry, Step 10's renewals line, the launch-check doc); no address, IP or payment token in any added line; the only tracked env-shaped file is `api/.env.example`, empty values, untouched by this push and public since 10-15; the history scan printed only the standing false positives; the stricter value-shaped scan over all history printed **0**. The push: fast-forward, `rebuild` the only refspec. After: `rebuild` = `origin/rebuild` = anonymous `ls-remote` = `c046236`, left/right `0 0`. **Publication proved by content**: sha-pinned anonymous fetches of `web/src/lib/statement-period.ts`, `web/src/components/stock/research-panels.tsx`, `PROJECT.md` and a release screenshot all 200 and hash-equal to `git cat-file -p c046236:<path>`; the released `2e44ee6fbf` is an ancestor of `origin/rebuild`. This entry is itself unpushed, by construction.
+
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
   (§9 item 3): 250 Saudi income statements (was 0), every row period-tagged, every change on Tadawul only.
@@ -1510,8 +1512,8 @@ wrong thing:
        (Free by default, financials locked signed out). The panel itself cannot be seen on production
        without Pro; its code is the same build beta was checked on.
      - Saved: `docs/screenshots/f13-release-2026-11-03.txt` and the folder beside it.
-     - **The release sha is not on the public remote**: `rebuild` is ahead of `origin` by 12 commits.
-       Pushing is the owner's go-ahead, with the credential scan first.
+     - *Pushed 2026-11-03* on the owner's go-ahead ("Yes, push"): `6acce45..c046236`, so the released
+       sha `2e44ee6fbf` is on the public branch (changelog, same date).
    - *Resume here:* item 3 is DONE but for the Arabic labels above (the owner's choice of source).
      **Item 4, the $66 pilot, is unblocked by this check** — B7's condition (the post-publish check
      passes) is met for the data, the API and now the panel; it still needs the owner's go-ahead as a
