@@ -1514,7 +1514,19 @@ wrong thing:
      - Saved: `docs/screenshots/f13-release-2026-11-03.txt` and the folder beside it.
      - *Pushed 2026-11-03* on the owner's go-ahead ("Yes, push"): `6acce45..c046236`, so the released
        sha `2e44ee6fbf` is on the public branch (changelog, same date).
-   - *Resume here:* item 3 is DONE but for the Arabic labels above (the owner's choice of source).
+   - *The Arabic labels: the owner chose "Harvest Argaam Arabic" (2026-11-03).* Prepared, not run:
+     `docs/arabic-statement-labels-2026-11-03.md` and `scripts/argaam_ar_labels/`. Argaam serves the
+     grid signed-in only (both languages, signed out: the login gate, 0 rows), so the Arabic pages can
+     come only through the nightly's Argaam session. Each grid row carries Argaam's own row id
+     (`tr384`), the same on both pages: over all 269 Saudi English pages, **411 ids, each one English
+     label** (three differ only by a Riyal/Halala unit), so pairing English with Arabic is exact.
+     Proposed as a **one-off harvest** into `/root/argaam-ar-statements/`, not a nightly change: the
+     session read and never written back, one page every 4 s, refusing inside 23:30–03:00 UTC or
+     while the nightly runs, stopping after three empty pages; a pilot of 2222/1120/8010 first, then
+     all 269 (about 45 min). Dry-run on the server: 269 URLs. Merge into `data-labels.json` adds only
+     missing labels and lists every difference with the dictionary for the owner.
+   - *Resume here:* the owner's go-ahead to run the harvest on the server (it uses the Argaam
+     session, so it is a §4 stop). Then pair, merge (differences to the owner), test on beta, release.
      **Item 4, the $66 pilot, is unblocked by this check** — B7's condition (the post-publish check
      passes) is met for the data, the API and now the panel; it still needs the owner's go-ahead as a
      paid run, and probes D1/D3/D6 (retire or re-register) are still the owner's before it is scored.
