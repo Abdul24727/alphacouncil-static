@@ -172,13 +172,16 @@ Older entries: `changelog-archive.md`.
 
 - 2026-11-03 — **Item 3's post-publish check: the data, the publish and the API pass; the Financials panel fails (F-13).** The nightly ran clean (716/716, 24 steps OK, `ok 3218/6620` as in B5) and `publish_dbs.sh` published at 05:03:24 UTC, `/healthz/deep=ok`. The live file has 250 Tadawul income statements, no NULL period, and no statement-driven gauge moved outside Tadawul. `/statements` on beta is `period_aware` with TTM@2026-06 / Q@2026-06 / FY@2025-12. But the panel of `df83e19404` never reads `periods`, so on beta Aramco's TTM sales and June balance sheet sit under "FY2026" in both languages at both widths; production locks the panel signed out and has 0 active subscriptions, so no customer sees it today. Walkthrough §1's claim that the release made both tiers understand `periods` was true of the API only — Claude's miss. No rollback: the data is right and the Council's evidence reads `periods`. Also recorded, F-14: the pipeline's `generate_news_ai` has written 0 every night since at least 10-19 (OpenRouter 401), reporting OK.
 
+- 2026-11-03 — **F-13 fixed and released to beta, then production (`2e44ee6fbf`), on the owner's go-ahead ("Yes, release it").** The panel heads each statement column from `periods` ("FY2025", "TTM Jun 2026", "Jun 2026", Arabic alike), notes every non-fiscal-year column under the table, drops empty columns, gives the Copilot the periods, and fits one column on a phone. Web suite 39/39. Checked locally against the live data, then on beta (2222, 1120, ALDAR, both languages, 1440 and 390) and on production (release links, `BILLING_OPEN` untouched, health 200, the served scripts swapped from `statements.fy` to the new text, `check-billing-public` all passed). Left: Arabic line labels for Saudi income statements (source not harvested), and the push (12 commits ahead; the release sha is not public).
+
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
   (§9 item 3): 250 Saudi income statements (was 0), every row period-tagged, every change on Tadawul only.
-  **One fault is open, F-13:** the Financials panel of release `df83e19404` ignores the API's `periods`
-  and heads Aramco's TTM-to-June-2026 income statement and June-2026 balance sheet "FY2026". It shows on
-  beta (behind its gate) and to Pro members on production, of whom there are none today. The fix is on
-  `rebuild` next and needs the owner's go-ahead to release. **F-14:** the pipeline's news-AI step has
+  **F-13 is fixed and RELEASED on both tiers (`2e44ee6fbf`, 2026-11-03):** the Financials panel of
+  `df83e19404` had ignored the API's `periods` and headed Aramco's TTM-to-June-2026 income statement and
+  June-2026 balance sheet "FY2026" (seen on beta only; production had 0 Pro members). It now reads "TTM
+  Jun 2026" / "Jun 2026" with a note under the table. **Still open:** Saudi income-statement line labels
+  show in English on Arabic pages (133 labels; Argaam's Arabic for them is not harvested). **F-14:** the pipeline's news-AI step has
   generated nothing since at least 2026-10-19 (OpenRouter 401 on the pipeline's key) while reporting OK;
   the owner's, as a credential.
 - **Pro billing is OPEN on production since 2026-11-02 18:20 UTC** (Step 18), on the owner's go-ahead given before the lawyer (Step 7) and before Step 10 closed, against Claude's recommendation to wait. **The owner's own first payment went through and was applied once** (2026-11-02 19:24 UTC, SAR 79), **and the refund at 19:51 UTC ended Pro and dropped the saved card**: the paid path is proved end to end on the live site. No customer has paid. F-12: one of Moyasar's two webhooks is refused 403 for a secret mismatch, harmless, and the owner's to tidy now the refund has landed. The lawyer's (b) and (c) are now live questions about a product that is being sold, not one that is free.
@@ -1489,10 +1492,30 @@ wrong thing:
      `web/src/content/data-labels.json` knows 4 of Aramco's 18; they never existed in the database
      before the repair, so this re-opens commit `b548bbe`'s guarantee (no English on Arabic pages
      outside an allow-list). The right source is Argaam's own Arabic pages paired row by row, not a
-     translation made here. Not started.
-   - *Resume here:* the owner's go-ahead to release F-13's fix to beta, then production (one go-ahead
-     each, per §4). The $66 pilot (item 4) does not read the panel, but the B7 rule held paid runs until
-     this check passed, so it waits for the owner's word.
+     translation made here. Not started. **The source is not on the server:** the KSA harvest reads
+     Argaam's `/en/` pages only (the parser says so, and a 2222 run holds no Arabic statement page), so
+     Argaam's own Arabic for these 133 labels needs either a harvest of the `/ar/` KSA statement pages
+     (pipeline work, the owner's) or translations drafted here for the owner to review.
+   - *F-13 RELEASED (2026-11-03, on the owner's go-ahead "Yes, release it", covering beta then
+     production):* `2e44ee6fbf` (= `rebuild` `2e44ee6`; app code differs from `df83e19404` only in
+     the panel and `lib/statement-period`).
+     - *Beta:* `scripts/deploy-staging.sh` → `deployed 2e44ee6fbf`, `api 200`, `web 200`. Through the
+       tunnel: 2222 and 1120 show "TTM Jun 2026" / "FY2025" / "Jun 2026" and the Arabic equivalents with
+       their notes, at 1440 and 390, no sideways scroll; ALDAR "FY2021…FY2025", no notes. The page's
+       scripts carry the new note text and no longer reference `statements.fy`.
+     - *Production:* `scripts/deploy-production.sh` → `deployed 2e44ee6fbf to production`, `api 200`,
+       `web 200`. Both tiers serve `releases/2e44ee6fbf`; `BILLING_OPEN=true` untouched; public health
+       200, `www` 301. The served scripts carry the new text (same chunk as beta) and not
+       `statements.fy` — before the release it was the reverse. `check-billing-public.mjs`: all passed
+       (Free by default, financials locked signed out). The panel itself cannot be seen on production
+       without Pro; its code is the same build beta was checked on.
+     - Saved: `docs/screenshots/f13-release-2026-11-03.txt` and the folder beside it.
+     - **The release sha is not on the public remote**: `rebuild` is ahead of `origin` by 12 commits.
+       Pushing is the owner's go-ahead, with the credential scan first.
+   - *Resume here:* item 3 is DONE but for the Arabic labels above (the owner's choice of source).
+     **Item 4, the $66 pilot, is unblocked by this check** — B7's condition (the post-publish check
+     passes) is met for the data, the API and now the panel; it still needs the owner's go-ahead as a
+     paid run, and probes D1/D3/D6 (retire or re-register) are still the owner's before it is scored.
 4. **Then the $66 validation pilot**, and the decision-grade run at cap $393 after it.
    **This item's precondition is MET as of 2026-11-02, on the owner's go-ahead ("Yes, wire them
    up"): the pilot can now answer all three priorities.** It used to be able to speak to Priority

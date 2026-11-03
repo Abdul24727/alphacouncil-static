@@ -1,0 +1,35 @@
+API   Income Statement: 2026=TTM@2026-06
+API   Balance Sheet: 2025=FY@2025-12, 2026=Q@2026-06
+beta-2e44ee6fbf  en 1440 financials.income: headings ["LINE ITEM","TTM JUN 2026"]  first row ["Sales","1,823,483"]  notes ["TTM Jun 2026: trailing twelve months, the four quarters to Jun 2026 added together."]
+beta-2e44ee6fbf  en 1440 financials.balance: headings ["LINE ITEM","FY2025","JUN 2026"]  first row ["Cash & Cash Equivalents","243,099","167,387"]  notes ["Jun 2026: the position at that quarter-end, not a fiscal year-end."]
+beta-2e44ee6fbf  en 1440 page scrolls sideways: false
+beta-2e44ee6fbf  en 390 financials.income: headings ["LINE ITEM","TTM JUN 2026"]  first row ["Sales","1,823,483"]  notes ["TTM Jun 2026: trailing twelve months, the four quarters to Jun 2026 added together."]
+beta-2e44ee6fbf  en 390 financials.balance: headings ["LINE ITEM","FY2025","JUN 2026"]  first row ["Cash & Cash Equivalents","243,099","167,387"]  notes ["Jun 2026: the position at that quarter-end, not a fiscal year-end."]
+beta-2e44ee6fbf  en 390 page scrolls sideways: false
+beta-2e44ee6fbf  ar 1440 financials.income: headings ["البند","12 شهرًا حتى يونيو 2026"]  first row ["Sales","1,823,483"]  notes ["12 شهرًا حتى يونيو 2026: مجموع الأرباع الأربعة المنتهية في يونيو 2026."]
+beta-2e44ee6fbf  ar 1440 financials.balance: headings ["البند","2025","يونيو 2026"]  first row ["نقد وما يعادله","243,099","167,387"]  notes ["يونيو 2026: المركز المالي في نهاية ذلك الربع، لا في نهاية سنة مالية."]
+beta-2e44ee6fbf  ar 1440 page scrolls sideways: false
+beta-2e44ee6fbf  ar 390 financials.income: headings ["البند","12 شهرًا حتى يونيو 2026"]  first row ["Sales","1,823,483"]  notes ["12 شهرًا حتى يونيو 2026: مجموع الأرباع الأربعة المنتهية في يونيو 2026."]
+beta-2e44ee6fbf  ar 390 financials.balance: headings ["البند","2025","يونيو 2026"]  first row ["نقد وما يعادله","243,099","167,387"]  notes ["يونيو 2026: المركز المالي في نهاية ذلك الربع، لا في نهاية سنة مالية."]
+beta-2e44ee6fbf  ar 390 page scrolls sideways: false
+ALDAR financials.income: ["LINE ITEM","FY2021","FY2022","FY2023","FY2024","FY2025"] notes 0
+ALDAR financials.balance: ["LINE ITEM","FY2021","FY2022","FY2023","FY2024","FY2025"] notes 0
+1120/ar financials.income: ["البند","12 شهرًا حتى يونيو 2026"] notes 1
+1120/ar financials.balance: ["البند","2025","يونيو 2026"] notes 1
+http://localhost:3201/t/2222/financials: 20 scripts
+  FOUND  "the position at that quarter-end"  in /_next/static/chunks/1_dnhsy1ifpuo.js
+  absent  "statements.fy"
+
+== production after deploy-production.sh (2e44ee6fbf), 2026-11-03 11:57:28 UTC
+beta: /opt/alphacouncil-platform/releases/2e44ee6fbf
+prod: /opt/alphacouncil-platform/prod/releases/2e44ee6fbf
+prod BILLING_OPEN=true lines: 1
+active active active active 
+200  https://alphacouncil.tech/api/v1/health
+200  https://alphacouncil.tech/
+200  https://alphacouncil.tech/ar/t/2222/financials
+301  https://www.alphacouncil.tech/
+https://alphacouncil.tech/t/2222/financials: 20 scripts
+  FOUND  "the position at that quarter-end"  in /_next/static/chunks/1_dnhsy1ifpuo.js
+  absent  "statements.fy"
+check-billing-public.mjs on production: all passed (output in billing-public/)
