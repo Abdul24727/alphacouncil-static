@@ -1636,10 +1636,10 @@ wrong thing:
      Assets reads 3,197.89 / 3,365.01; Tadawul income statements still 250, NULL periods 0, gauges
      `ok 3218` as before. The night's run passed its Argaam session gate (716/716), so yesterday's pilot
      use of the session did not break it.
+   - *Item 4, the $66 pilot, is unblocked by these checks:* B7's condition (the post-publish check
+     passes) is met for the data, the API and the panel. It still needs the owner's go-ahead as a paid
+     run, and probes D1/D3/D6 (retire or re-register) are still the owner's before it is scored.
    - *Resume here:* the launch roadmap at the top of this section.
-     **Item 4, the $66 pilot, is unblocked by this check** — B7's condition (the post-publish check
-     passes) is met for the data, the API and now the panel; it still needs the owner's go-ahead as a
-     paid run, and probes D1/D3/D6 (retire or re-register) are still the owner's before it is scored.
 4. **Then the $66 validation pilot**, and the decision-grade run at cap $393 after it.
    **This item's precondition is MET as of 2026-11-02, on the owner's go-ahead ("Yes, wire them
    up"): the pilot can now answer all three priorities.** It used to be able to speak to Priority
