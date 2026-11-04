@@ -128,10 +128,12 @@ statements page carries no table at all (0 rows; "للإستمرار في قرا
     shorter wording (one case: "Financing Investment" → "استثمارات تمويلية", not "…قصيرة الاجل").
   - Five outright misspellings in Argaam's text are corrected (missing letters or a misplaced hamza;
     listed in the script). Its informal spellings are kept.
-- **284 English labels paired.** `merge_pairs.py` added the **129** the dictionary lacked; 85 were
-  already identical. **70 differ from the dictionary and were left as the dictionary has them**,
-  mostly spelling (the dictionary's hamzas and ة against Argaam's "إجمالى", "مبقاه"), a few more
-  specific ("مطلوبات أخرى" where Argaam says "اخرى").
+- **284 English labels paired.** `merge_pairs.py` added the **129** the dictionary lacked. *Corrected
+  2026-11-04 (below): 70 were already identical and **82 differ**, with 3 case variants inside the
+  batch. The first report said 85 identical and 70 differ, because it compared against the wrong copy.*
+  The differing ones were left as the dictionary has them. They are mostly spelling (the dictionary's
+  hamzas and ة against Argaam's "إجمالى", "مبقاه"), and a few are more specific ("مطلوبات أخرى" where
+  Argaam says "اخرى").
 - **Unpaired, so still English:** "Net profit before deducting Mudaraba Instrument profit" and "EPS
   before deducting Mudaraba Instrument profit" (one company), and "Surplus Attributable to Insurance
   Operations" (on the pages, not in the database).
@@ -146,3 +148,132 @@ Rendered locally against the live data (`next dev`, beta's API by tunnel): 2222 
 4082, 4083) have their balance-sheet lines inside the income statement, summed over four quarters.
 The other gap seen, 19 REITs and funds (4330–4350) with no statement lines at all, predates the repair
 (26 before it).
+
+## Review fixes (2026-11-04, on the owner's "Yes, fix them")
+
+The review of the unpushed work found three things to fix before these labels ship. All three are
+fixed on `rebuild`. **Nothing is released.**
+
+### 1. Sub-lines had lost the word their heading supplies
+
+Argaam nests some lines under a heading: the row carries `data-ischildelement="yes"` and
+`data-parentid`. Its Arabic for such a line often leans on the heading, as with "مرابحة" under the
+financing-income heading. Our panel lists the lines without their headings.
+
+A read-only scan of all 269 Saudi pages found 137 sub-lines (109 labels), 87 of which reach the
+database. The rule applied:
+- Where the English label carries the heading's word and the Arabic does not, the word is added.
+- Argaam's wording is otherwise kept.
+- Where a sibling line already has the composed form, it is matched: "مصاريف بيع و تسويق" leads to
+  "مصاريف بيع و توزيع".
+- Where the English is bare too ("Others", "Mushrakah", "Bei ajel", "Sukuk and Other investments"),
+  both languages say the same, and nothing changed.
+
+**13 labels changed:**
+
+| English | Was | Now | Saudi companies with the line today |
+|---|---|---|---|
+| Selling and distribution expenses | بيع و توزيع | مصاريف بيع و توزيع | 163 |
+| Other Investment Income | إستثمارات أخرى | دخل إستثمارات أخرى | 25 (insurers) |
+| Others-Total Operating Expenses | اخرى | مصاريف عمليات اخرى | 7 (banks) |
+| General & Administrative Expenses | مصاريف عمومية | مصاريف عمومية وإدارية | 6 (banks) |
+| Income from Murabahat / Mutajara / Istisnaa / Installment sale | مرابحة / متاجرة / استصناع / بيع بالتقسيط | دخل المرابحة / دخل المتاجرة / دخل الاستصناع / دخل البيع بالتقسيط | 0 |
+| Others-Fee and commission income | اخرى | دخل اتعاب و عمولات اخرى | 0 |
+| Others-Special Commission Expenses | اخرى | مصاريف عمولات خاصة اخرى | 0 |
+| Return On Customers’ Time Investments | استثمارات العملاء | العائد على استثمارات العملاء لأجل | 0 |
+| Return on due to banks and financial institutions’ time investments | المطلوبات للبنوك واستثمارات المؤسسات المالية | العائد على المطلوبات للبنوك واستثمارات المؤسسات المالية لأجل | 0 |
+| Property under development | استثمارات تحت التطوير | استثمارات عقارية تحت التطوير | 0 |
+
+- "0" means the line is on Argaam's pages but carries no figures in today's database (three Islamic
+  banks, the bank template's "Others-" lines, REITs). They are fixed so they read right when figures
+  arrive.
+- "Other Investment Income" is not a sub-line, but it had the same fault: it read as the
+  balance-sheet "other investments".
+- **Not changed:** an industrial's income statement shows both "Other" (أخرى, under operating
+  expenses) and "Others" (اخرى, under investment income). That is Argaam's own English, and both
+  languages are equally bare.
+- **Checked after:** across 250 Saudi statements, no statement shows one Arabic label for two different
+  lines. Saudi income-statement rows shown in Arabic: 5,705 of 5,707 in today's data. The F-15 fix
+  moved 153 balance-sheet rows out of the income statement since the 5,860 above. The same two
+  Mudaraba lines are left.
+
+### 2. The merge report's count
+
+- **The cause.** `merge_pairs.py` compared each label against the dictionary's *last* copy of it, but
+  the site uses the *first*. The dictionary holds two different copies of 24 labels on purpose:
+  - its own wording first, which Arabic pages show;
+  - Argaam's Gulf spelling later, so Gulf rows stored in Arabic read back to English.
+- It also counted 3 of the batch's own case variants as dictionary differences.
+- **The fix.** The script now compares first-copy, as the site reads the dictionary, and lists case
+  variants separately.
+- **The recount**, against the dictionary as it was before the merge (`aa3dde6^`):
+
+  | | Count |
+  |---|---|
+  | Added | **129**: the same 129 as `aa3dde6`, identical |
+  | Already identical | **70** |
+  | Differ | **82**: 47 in wording, 35 in spelling, spacing or the article only |
+  | Case variants within the batch | **3**: 1 the same Arabic, 2 different; the site shows the first ("Employee Costs" → "تكاليف موظفين", "Other Expenses" → "مصاريف أخرى") |
+
+- **So the first report understated the differences** rather than overstating them, as the review
+  guessed. 18 labels change verdict between the first and the last copy, 17 of them towards
+  "identical".
+- **Nothing on the site changes:** the dictionary's wording was kept in every case. The 82 are listed
+  in `docs/arabic-label-differences-2026-11-04.md`, in case the owner prefers Argaam's wording for any
+  line.
+
+### 3. English pages: Gulf lines that now read in English
+
+The 129 also give 56 Gulf labels (1,702 rows) an English label on English pages, where they showed
+Arabic before. Each was checked against Argaam's row ids on the Gulf and the Saudi pages (read-only
+scan of every ticker's newest statement page):
+
+- **54 are the same Argaam line** as the Saudi English label, so the English is Argaam's own for that
+  field.
+- **2 are partly a sibling line, with the same meaning:**
+  - "ايرادات وساطة الاسهم و ادارة الصناديق" is also used for tr168 ("Share brokerage and fund
+    management");
+  - "متوسط عدد الاسهم (مليون)" is also used for tr1331, which no Saudi page has. "Average number of
+    shares (mln)" is its literal translation.
+- **0 are a different line.**
+
+**Restoring six of them.** Fix 1 would have sent 6 of these back to Arabic, for example a Gulf bank's
+"مرابحة". They are restored as later copies of Argaam's short wording, the dictionary's existing
+pattern; a test pins both directions.
+
+**Five more that the misspelling fix had blocked.** `pair_from_gulf.py` corrects five misspellings in
+Argaam's Arabic, such as "بيع بالتقسط" → "بيع بالتقسيط". Gulf companies' rows are stored with Argaam's
+spelling, so the corrected form could never read them back. Each misspelled form is one Argaam line,
+matching the Saudi English (tr161, tr1165, tr1111, tr1061, tr1110). They are added as later copies
+too: Arabic pages keep the corrected spelling, and English pages read 56 more Gulf rows in English
+(AJMANBAN and five other Islamic banks, AMLAK, AMCREIT, DUBAIRES).
+
+**One short form deliberately gets no English:** "إستثمارات أخرى". On 49 Gulf pages Argaam uses it for
+both Other Investment Income (tr1255) and Other Investments (tr1289). No Gulf row in today's database
+carries it.
+
+**Against the committed `aa3dde6`, English pages change on 56 rows (5 labels), all from Arabic to
+English.** None changes its English, and none goes back to Arabic. Against the dictionary before the
+merge: 61 labels, 1,758 rows.
+
+**Rendered locally** (`next dev` on this tree, beta's API by tunnel;
+`docs/screenshots/arabic-labels-fix-2026-11-04.txt` and the 28 PNGs beside it):
+- **English:** the 8 Gulf companies whose pages between them carry all 61 (AMLAK, AJMANBAN, AMCREIT,
+  ADCB, 301, 821, BKIC.BH, EAND) at 1440, and AMLAK at 390. **All 72 expected English labels shown.**
+- **Arabic:** 1010, 1211, 8010 and 2222 at 1440, and 2222 at 390. **0 English line labels**, and the
+  composed labels shown.
+
+**Still in Arabic on English pages (not new; a follow-up):**
+- 92.4% of Gulf line rows now show in English (98,257 of 106,356), against 91% before the 129.
+- 8,099 rows in 95 labels still show in Arabic, mostly Argaam's spelling and unit variants of lines
+  the dictionary knows: "القيمة الاسمية (درهم)", "القيمة الدفترية (دينار كويتي)", "ارباح مبقاة",
+  "إجمالي الموجودات".
+- Nothing checks this direction, as `check-arabic.mjs` does for Arabic pages.
+
+**Tests:** `web/src/lib/data-labels-content.test.ts`, 4 tests:
+- the composed Arabic;
+- the eleven read-backs;
+- the ambiguous form left unmapped;
+- the corrected spellings on Arabic pages.
+
+Web suite 43/43; typecheck and lint clean.

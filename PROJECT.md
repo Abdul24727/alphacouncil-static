@@ -178,6 +178,12 @@ Older entries: `changelog-archive.md`.
 
 - 2026-11-03 — **Arabic statement labels from Argaam's own Arabic, without signing in; F-15 found.** The owner chose to harvest Argaam's Arabic. The server got Argaam's "Human Verification" challenge on the Saudi Arabic pages (not got around), and the owner ruled out a second sign-in because it would sign the nightly's session out. Argaam's row ids turned out to be shared across markets, and the Gulf markets' pages are harvested in Arabic, so 129 labels were added from them (`aa3dde6`). Saudi income-statement rows shown in Arabic went from 31 % to 100 % but one company's two lines. Not released. Checking that work found **F-15**: five finance companies' balance sheets summed into their income statements since this morning's publish, because their template says "Financial Position". A one-line parser patch is dry-run on a copy (every other row and all gauges identical) and waits on the owner's go-ahead, ideally before tonight's 00:00 UTC run.
 
+- 2026-11-04 — **The three label findings from the review are fixed on `rebuild`, on the owner's "Yes, fix them". Nothing is released.** Record: `docs/arabic-statement-labels-2026-11-03.md`, "Review fixes".
+  - **(1) Sub-line wording.** A read-only scan of the Saudi pages found Argaam's sub-lines (`data-ischildelement`). 13 Arabic labels now carry the word their heading supplied. "بيع و توزيع" became "مصاريف بيع و توزيع" (163 companies), "إستثمارات أخرى" became "دخل إستثمارات أخرى" (25 insurers), and "اخرى" became "مصاريف عمليات اخرى" (7 banks). No Saudi statement shows one Arabic label for two lines.
+  - **(2) The merge count.** It was wrong in the other direction from the one I reported. Compared against the copy the site actually uses, **82** labels differ from Argaam (47 in wording, 35 in spelling), not 70. The added 129 are unchanged, and nothing on the site changes. The full list is in `docs/arabic-label-differences-2026-11-04.md`, and `merge_pairs.py` now counts first-copy.
+  - **(3) English pages.** All 56 Gulf lines the new pairs relabel are the same Argaam line, checked by row id (54), or a same-meaning sibling (2). Six that fix (1) would have sent back to Arabic are restored. Argaam's five misspelled forms, which the corrected spelling could never read back, are added for 56 more rows. Gulf English pages now show 92.4 % of lines in English.
+  - **Checks.** Rendered locally in both languages: all 72 expected English labels show, and the Arabic pages show 0 English line labels (`docs/screenshots/arabic-labels-fix-2026-11-04/`). Web suite 43/43, with 4 new tests.
+
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
   (§9 item 3): 250 Saudi income statements (was 0), every row period-tagged, every change on Tadawul only.
@@ -186,7 +192,8 @@ Older entries: `changelog-archive.md`.
   June-2026 balance sheet "FY2026" (seen on beta only; production had 0 Pro members). It now reads "TTM
   Jun 2026" / "Jun 2026" with a note under the table. **Still open:** Saudi income-statement line labels
   show in English on Arabic pages (133 labels; Argaam's Arabic for them is not harvested) — *fixed on
-  `rebuild` from Argaam's Gulf Arabic pages (`aa3dde6`), not released.* **F-15 (open, fix prepared):**
+  `rebuild` from Argaam's Gulf Arabic pages (`aa3dde6`), with the 2026-11-04 review's three fixes on
+  top; not released.* **F-15 (open, fix prepared):**
   five Saudi finance companies' balance sheets are summed into their income statements (Tasheel's
   total assets shown ×4); the one-line parser patch is APPLIED (15:38 UTC) and lands with the
   2026-11-04 05:00 UTC publish, to be checked then. **F-14:** the pipeline's news-AI step has
@@ -1169,7 +1176,7 @@ and no customer has paid yet.
   1. **Step 7, the lawyer.** The one open Done-when item of Goal 4 that work can close. Billing opened
      before it on the owner's waiver.
   2. **Go-aheads:**
-     - release the Arabic statement labels (`aa3dde6`), after the review fixes below;
+     - release the Arabic statement labels (`aa3dde6` and the review fixes, done 2026-11-04);
      - push the unpushed record commits;
      - **the $66 pilot, then the $393 decision-grade run** (Next Up item 4; unblocked since F-13 and the
        post-publish checks passed), with probes D1/D3/D6 retired or re-registered first.
@@ -1183,7 +1190,7 @@ and no customer has paid yet.
   4. **Step 18, item 4:** a real customer renews. This cannot be worked: it comes a month after the first
      paying customer.
 - **Claude's — on `rebuild`, pre-approved, about 2–3 working days in all:**
-  - the 2026-11-04 review's findings on the Arabic labels (see below): **about 2 h**, before that release;
+  - ~~the 2026-11-04 review's findings on the Arabic labels~~ **DONE 2026-11-04** (see below);
   - the check-advisors INFO lines (mandate tags, fault lines) that look blind to what renders, before the
     pilot: **about 1 h**;
   - an unknown-section-header guard for the parser (the F-15 review's root-cause fix; a pipeline patch,
@@ -1198,17 +1205,20 @@ and no customer has paid yet.
   first sale, and is outside anyone's control.
 - The paid runs can start as soon as the owner says so.
 
-**The 2026-11-04 review of the unpushed work** (`git diff origin/rebuild...rebuild`, 13 findings) — the
-ones to fix before the labels ship:
-1. A few new Arabic labels describe a *child* row the way Argaam's page does under its parent, and the
-   panel's flat list loses the parent. "Other Investment Income" → "إستثمارات أخرى", "Return on due
-   to banks…" → a liability's wording, "Income from Murabahat" → "مرابحة", "Selling and distribution
-   expenses" → "بيع و توزيع", "Others-…" → "اخرى".
-2. `merge_pairs.py` compared against the *last* duplicate of an English label while the app shows the
-   *first*, and counted its own same-run case variants as dictionary differences. So "70 differ from
-   the dictionary" overstates the real conflicts; recount before the owner reviews them.
-3. The new pairs also relabel 56 Gulf companies' Arabic-stored lines on **English** pages (0 into a
-   different section). That needs rendering and recording.
+**The 2026-11-04 review of the unpushed work** (`git diff origin/rebuild...rebuild`, 13 findings). The
+three to fix before the labels ship are **FIXED on `rebuild` (2026-11-04, "Yes, fix them")**:
+1. **Sub-lines lost their heading's word in Arabic.** 13 labels fixed, among them "مصاريف بيع و توزيع"
+   (163 companies), "دخل إستثمارات أخرى" (25 insurers) and "مصاريف عمليات اخرى" (7 banks).
+2. **The merge report's count.** The count is now first-copy. **82** labels differ (47 in wording, 35 in
+   spelling), not 70: the old count *understated* them. Nothing shown changes. The list is in
+   `docs/arabic-label-differences-2026-11-04.md`.
+3. **English pages.** All 56 relabelled Gulf lines were checked by Argaam row id. With eleven read-back
+   copies (six restored, five for Argaam's misspellings), English pages gain 61 labels (1,758 rows) and
+   lose none. 72 of 72 expected labels were seen rendered.
+
+Record: `docs/arabic-statement-labels-2026-11-03.md`, "Review fixes". A follow-up from it: 8,099 Gulf
+rows (95 labels, mostly Argaam's spelling and unit variants) still show in Arabic on English pages,
+and nothing checks that direction.
 
 The rest are cleanups: a blocked harvest script still documented as runnable, duplicated helpers, a
 missing USD unit, a self-matching busy check, and CLAUDE.md's 1440/390 screenshot rule. There are two
@@ -1614,10 +1624,14 @@ wrong thing:
      markets, and the Gulf markets' statement pages are already harvested in **Arabic**; 408 of the
      411 Saudi row ids are on them. `scripts/argaam_ar_labels/pair_from_gulf.py` pairs them (Saudi
      units "(ريال)"/"(هللة)" restored, five misspellings corrected, ties to the general wording);
-     `merge_pairs.py` **added 129 labels** to `web/src/content/data-labels.json`, kept the 70 where
-     the dictionary differs. **Saudi income-statement rows in Arabic: 31 % → 100 %** (5,858 of
+     `merge_pairs.py` **added 129 labels** to `web/src/content/data-labels.json` and kept the
+     dictionary's wording where it differs (82 labels, corrected 2026-11-04 from "70"). **Saudi income-statement rows in Arabic: 31 % → 100 %** (5,858 of
      5,860; only one company's two Mudaraba lines left). Rendered locally against the live data:
      0 English line labels on 2222, 1120, 1150, 8010, 4083. Commit `aa3dde6`. **Not released.**
+   - *The review's three label findings fixed on `rebuild` (2026-11-04):* the details are in the
+     roadmap at the top of this section. 13 sub-line labels now carry their heading's word, the merge
+     count is 82, not 70, and the English-page relabels are checked by row id: 61 labels, 72 of 72
+     rendered. **Not released.**
    - **F-15, found while checking (prepared and dry-run, NOT applied):** five finance companies
      (1182, 1183, 4081, 4082, 4083) have their balance sheets inside the income statement, summed
      over four quarters — Tasheel's "Total Assets" reads 12,918.83 against a real 3,197.89 / 3,365.01.
