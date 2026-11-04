@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-02   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `12aafcc` on 2026-11-02, the owner's eighth go-ahead in chat ("Push them")** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, and three on 2026-11-02 took it `3aafa82` → `c1198ca` → `b61876d` → `12aafcc`; every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **beta and production both `74ce427bf6`** (released 2026-10-27 21:27 UTC on the owner's go-ahead; it carries F-10 and F-11 over `3228ab57e9`). *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-04   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `12aafcc` on 2026-11-02, the owner's eighth go-ahead in chat ("Push them")** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, and three on 2026-11-02 took it `3aafa82` → `c1198ca` → `b61876d` → `12aafcc`; every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **beta and production both `74ce427bf6`** (released 2026-10-27 21:27 UTC on the owner's go-ahead; it carries F-10 and F-11 over `3228ab57e9`). *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -1148,6 +1148,73 @@ Older entries: `changelog-archive.md`.
 - **Watch: one-off chart timeouts** — 4210, 4250, 4290 timed out in the same minute on 2026-10-23 (no retry in the TradingView fetch, `main_patched…:2524`). Once in the two nights on disk; propose a retry only if it recurs.
 
 ## 9. Next Up
+
+### Launch roadmap — where we are (2026-11-04)
+
+**By the plan's own weights the launch plan is about 95 % done** (Goals 1–3, 70 % of the project, are
+DONE; Goal 4 has five of seven steps done and Step 18 three of its four boxes). **Almost everything left is
+the owner's: a visit, decisions and credentials.** The site is live, billing has been open since 2026-11-02,
+and no customer has paid yet.
+
+| Goal | Weight | Where it stands |
+|---|---|---|
+| 1 — Safe footing | ~15 % | **DONE** 2026-10-22 |
+| 2 — Market data correct at the source | ~25 % | **DONE** 2026-10-24. Since then: the statement repair is live (2026-11-03 publish, 250 Saudi income statements). F-13 (panel period headings) is released, `2e44ee6fbf`. F-15 (five finance companies' balances summed as income) is fixed and **verified live after the 2026-11-04 05:03 UTC publish**: all five have TTM income plus FY 2025-12 / Q 2026-06 balance sheets; Tasheel's total assets read 3,197.89 / 3,365.01. |
+| 3 — Every known defect fixed, checkout proven | ~30 % | **DONE** 2026-10-22 |
+| 4 — Launch: settled, checked, then paid | ~30 % | Steps 8, 9, 22, 23 and 10 **DONE**. **Step 7, the lawyer: NOT STARTED** (questions ready, `docs/legal-questions-2026-10-27.md`). **Step 18, billing: OPEN**, items 1–3 met; item 4 (monitor 14/14) needs a real customer's first renewal. |
+
+**What is left, by who:**
+
+- **The owner's — gates nothing else can pass:**
+  1. **Step 7, the lawyer.** The one open Done-when item of Goal 4 that work can close. Billing opened
+     before it on the owner's waiver.
+  2. **Go-aheads:**
+     - release the Arabic statement labels (`aa3dde6`), after the review fixes below;
+     - push the unpushed record commits;
+     - **the $66 pilot, then the $393 decision-grade run** (Next Up item 4; unblocked since F-13 and the
+       post-publish checks passed), with probes D1/D3/D6 retired or re-registered first.
+  3. **Credentials and server:**
+     - **F-14**: the pipeline's OpenRouter key is refused (401) and news AI has written nothing since at
+       least 2026-10-19;
+     - disk at 82 % and rising about 1 % a night;
+     - F-12's duplicate Moyasar webhook;
+     - six `@example.com` test accounts;
+     - server hardening (optional).
+  4. **Step 18, item 4:** a real customer renews. This cannot be worked: it comes a month after the first
+     paying customer.
+- **Claude's — on `rebuild`, pre-approved, about 2–3 working days in all:**
+  - the 2026-11-04 review's findings on the Arabic labels (see below): **about 2 h**, before that release;
+  - the check-advisors INFO lines (mandate tags, fault lines) that look blind to what renders, before the
+    pilot: **about 1 h**;
+  - an unknown-section-header guard for the parser (the F-15 review's root-cause fix; a pipeline patch,
+    so applying it is the owner's): **about 1 h** to prepare;
+  - applying the lawyer's advice when it comes: **half a day to 2 days**, depending on what changes;
+  - running and reading the pilot and the decision-grade run: **about a day**.
+
+**How much longer:**
+- **The calendar is set by the lawyer.** If the advice comes within one to two weeks, every Done-when
+  item but one can close within **two to three weeks**.
+- **The exception is Step 18's monitor box**, which waits on the first real renewal, a month after the
+  first sale, and is outside anyone's control.
+- The paid runs can start as soon as the owner says so.
+
+**The 2026-11-04 review of the unpushed work** (`git diff origin/rebuild...rebuild`, 13 findings) — the
+ones to fix before the labels ship:
+1. A few new Arabic labels describe a *child* row the way Argaam's page does under its parent, and the
+   panel's flat list loses the parent. "Other Investment Income" → "إستثمارات أخرى", "Return on due
+   to banks…" → a liability's wording, "Income from Murabahat" → "مرابحة", "Selling and distribution
+   expenses" → "بيع و توزيع", "Others-…" → "اخرى".
+2. `merge_pairs.py` compared against the *last* duplicate of an English label while the app shows the
+   *first*, and counted its own same-run case variants as dictionary differences. So "70 differ from
+   the dictionary" overstates the real conflicts; recount before the owner reviews them.
+3. The new pairs also relabel 56 Gulf companies' Arabic-stored lines on **English** pages (0 into a
+   different section). That needs rendering and recording.
+
+The rest are cleanups: a blocked harvest script still documented as runnable, duplicated helpers, a
+missing USD unit, a self-matching busy check, and CLAUDE.md's 1440/390 screenshot rule. There are two
+root-cause notes: key labels by Argaam's row id rather than text, and make an unknown statement header
+loud in the parser.
+
 **Steps 22 and 23 are live on production** (`3228ab57e9`, 2026-10-27, on the owner's go-ahead): the advisors'
 room with the seven portraits round a table and the three-round format. Goals 1, 2 and 3 are closed; Steps 8
 and 9 were already live.
@@ -1563,10 +1630,13 @@ wrong thing:
      backup `parse_financial_statements.py.bak-20261103` (md5 = the file before), `git apply`, the
      diff against the backup is exactly the three lines, the module imports with the new mapping.
      Tonight's 00:00 UTC run re-parses into a fresh database and the 05:00 publish carries it.
-   - *Resume here:* (1) **after 05:00 UTC on 2026-11-04**, check the five on the live file (sections
-     TTM + FY/Q balance sheets, no "Total Assets" in an income statement, 4083 total assets about
-     3,365) — `docs/f15-financial-position-2026-11-03.md`; (2) the owner's go-ahead to release the
-     Arabic labels (`aa3dde6`) to beta, then production.
+   - **F-15 verified live (2026-11-04, after the 05:03:45 UTC publish, `/healthz/deep=ok`):** 1182, 1183,
+     4081, 4082, 4083 each have Income Statement TTM 2026-06 (20–23 rows) and Balance Sheets FY 2025-12 and
+     Q 2026-06 (30–31 rows each); no income statement holds Total Assets or Total equity; 4083's Total
+     Assets reads 3,197.89 / 3,365.01; Tadawul income statements still 250, NULL periods 0, gauges
+     `ok 3218` as before. The night's run passed its Argaam session gate (716/716), so yesterday's pilot
+     use of the session did not break it.
+   - *Resume here:* the launch roadmap at the top of this section.
      **Item 4, the $66 pilot, is unblocked by this check** — B7's condition (the post-publish check
      passes) is met for the data, the API and now the panel; it still needs the owner's go-ahead as a
      paid run, and probes D1/D3/D6 (retire or re-register) are still the owner's before it is scored.

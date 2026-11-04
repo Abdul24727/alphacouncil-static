@@ -77,3 +77,17 @@ git apply --check -p1 /root/pipeline-fix-financial-position-2026-11-03.patch && 
   - no income statement holds "Total Assets";
   - 4083's Total Assets reads about 3,365 at 2026-06.
 - Gauge totals change only by whatever the night's fresh scrape moves.
+
+## Verified live (2026-11-04, after the 05:03:45 UTC publish)
+
+The nightly ran clean: 716/716, rebuild exit 0. The publish reported `/healthz/deep=ok`. On the live
+`screening.sqlite`, read-only:
+
+- 1182, 1183, 4081, 4082 and 4083 each have Income Statement TTM 2026-06 (20–23 rows) and Balance
+  Sheets FY 2025-12 and Q 2026-06 (30–31 rows each).
+- No income statement holds "Total Assets" or "Total equity".
+- 4083's Total Assets: 3,197.89 (FY 2025-12), 3,365.01 (Q 2026-06).
+- Unchanged elsewhere: Tadawul income statements still 250, NULL periods 0, gauges `ok 3218 /
+  missing_inputs 1109 / na_sector 2241 / undefined_nonpositive 52`.
+
+**F-15 is closed.**
