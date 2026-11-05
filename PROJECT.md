@@ -246,7 +246,7 @@ Older entries: `changelog-archive.md`.
   2026-11-04 05:00 UTC publish, to be checked then. **F-16 (fix APPLIED 2026-11-05 22:44 UTC, lands with the 2026-11-06 05:00 UTC publish):** nine UAE
   companies' cash-flow statements sit inside their balance sheets (AMLAK's shows 50 lines, 19 of them cash
   flow), because their pages head it "التدفق النقدي", which the parser does not know. The heading guard
-  plus one mapping line fixes it; dry-run clean, applying it is the owner's. **F-14:** the pipeline's news-AI step has
+  plus one mapping line fixes it; applied, and its check after the publish is still to do. **F-14:** the pipeline's news-AI step has
   generated nothing since at least 2026-10-19 (OpenRouter 401 on the pipeline's key) while reporting OK;
   the owner's, as a credential.
 - **Pro billing is OPEN on production since 2026-11-02 18:20 UTC** (Step 18), on the owner's go-ahead given before the lawyer (Step 7) and before Step 10 closed, against Claude's recommendation to wait. **The owner's own first payment went through and was applied once** (2026-11-02 19:24 UTC, SAR 79), **and the refund at 19:51 UTC ended Pro and dropped the saved card**: the paid path is proved end to end on the live site. No customer has paid. F-12: one of Moyasar's two webhooks is refused 403 for a secret mismatch, harmless, and the owner's to tidy now the refund has landed. The lawyer's (b) and (c) are now live questions about a product that is being sold, not one that is free.
@@ -1228,7 +1228,8 @@ and no customer has paid yet.
   2. **Go-aheads:**
      - ~~release the Arabic statement labels~~ **RELEASED 2026-11-05** (`5c18a3ae46`, both tiers);
      - ~~push the unpushed commits~~ **PUSHED 2026-11-06** (`c046236..ccfe063`, the released sha
-       included); only the record commits made after it are unpushed;
+       included). Unpushed since then: the `check-advisors.mjs` fix (`7fb04b5`), the F-16 patches and record,
+       and records - all on `rebuild`, needing a push go-ahead;
      - ~~apply the parser's heading guard (F-16)~~ **APPLIED 2026-11-05 22:44 UTC**; to check after the 05:00 UTC publish;
      - **the $66 pilot, then the $393 decision-grade run** (Next Up item 4; unblocked since F-13 and the
        post-publish checks passed), with probes D1/D3/D6 retired or re-registered first.
@@ -1246,7 +1247,7 @@ and no customer has paid yet.
   - ~~the check-advisors INFO lines (mandate tags, fault lines) that look blind to what renders~~
     **DONE 2026-11-06**: they were blind, now fixed and proven on a local stand-in room (changelog);
   - ~~an unknown-section-header guard for the parser~~ **PREPARED 2026-11-06** and dry-run over every
-    company. It found **F-16** on its first run; applying it is the owner's (go-aheads above);
+    company. It found **F-16** on its first run. **Applied 2026-11-05 22:44 UTC**; to be checked after the publish;
   - applying the lawyer's advice when it comes: **half a day to 2 days**, depending on what changes;
   - running and reading the pilot and the decision-grade run: **about a day**.
 

@@ -1,7 +1,7 @@
 # Statement headings the parser does not know: a guard, and F-16 (2026-11-06)
 
-**Status:** prepared and dry-run on copies. **Not applied:** it changes the server's pipeline, so applying it is
-the owner's go-ahead.
+**Status:** APPLIED on the server 2026-11-05 22:44 UTC, on the owner's go-ahead (see "Applied" at the end).
+**Still to do:** the check after the 2026-11-06 05:00 UTC publish.
 
 **Patches:**
 - `docs/pipeline-guard-statement-headings-2026-11-06.patch` (recommended): the guard plus one mapping line.
