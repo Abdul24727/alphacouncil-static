@@ -299,7 +299,7 @@ previous release `2e44ee6fbf`, the only app change is `web/src/content/data-labe
 ## English pages: the Gulf lines still in Arabic (2026-11-06)
 
 This was the follow-up the review fixes left: Gulf companies' statements are stored in Arabic, and lines
-the dictionary could not put into English showed in Arabic on English pages. ChatGPT's review 02 named it
+the dictionary could not put into English showed in Arabic on English pages. ChatGPT's review 01 named it
 the next step.
 
 **Before** (income statement and balance sheet, every Gulf company, all years):
