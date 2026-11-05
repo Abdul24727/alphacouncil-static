@@ -202,6 +202,23 @@ Older entries: `changelog-archive.md`.
   - **Publication proved by content:** sha-pinned anonymous fetches of five files all answered 200 and hash-matched `git cat-file -p ccfe063:<path>`: `data-labels.json`, its test, `merge_pairs.py`, `PROJECT.md` and a release screenshot.
   - This entry is itself unpushed, by construction.
 
+- 2026-11-06 — **`check-advisors.mjs`: two INFO lines were blind to the screen and are fixed** (roadmap item, pre-approved; `web/scripts/check-advisors.mjs`).
+  - **The mandate lines** looked for `[P3]` in each card's text. The screen shows a citation as a chip reading `P3` (`splitText` drops the brackets), so no seat ever counted as citing anything. "6 of 6 seats not citing their own datasets" was true of every run, on every release.
+  - **The fault-line line** counted `[data-fault-line]` while the verdict tab was showing. Only the chosen stage is on screen, so the count was always 0 ("ruled on 1 of 0").
+  - **Word counts** included each chip as a word, and the Chair's answer was read with `textContent`, which runs paragraphs together.
+  - **Fixed:**
+    - the chips are read from `data-cite`;
+    - fault lines are counted on their own tab;
+    - chips are left out of word counts;
+    - the answer is read with `innerText`.
+  - **Proven** on a local stack whose room is the labelled stand-in (no model key, **no paid call**), before and after:
+    - Marks's P1 is now seen, and P1 left the "never cited" list (7 of 8, was 8 of 8);
+    - "ruled on 1 of 1 fault lines" in both languages (was "1 of 0");
+    - each round-one count is one word lower, its one P1 chip.
+  - Both runs passed everything (23 PASS before, English only; 47 after, both languages). Logs: `docs/screenshots/check-advisors-info-2026-11-06/`. Syntax and lint clean.
+  - **Correction:** the 2026-11-02 production run's file (`launch-2026-10-27/advisors-signed-in/check-advisors.txt`) put its total misses down to `74ce427bf6` lacking mandates and rulings. The script's own blindness would have produced the same lines on any release. Its header now says so.
+  - **Not run:** a real-model session on beta, which is a paid call. The pilot's own numbers come from the API's turn flags (`uncovered`, `unruled`), not from this script.
+
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
   (§9 item 3): 250 Saudi income statements (was 0), every row period-tagged, every change on Tadawul only.
@@ -1211,8 +1228,8 @@ and no customer has paid yet.
      paying customer.
 - **Claude's — on `rebuild`, pre-approved, about 2–3 working days in all:**
   - ~~the 2026-11-04 review's findings on the Arabic labels~~ **DONE 2026-11-04** (see below);
-  - the check-advisors INFO lines (mandate tags, fault lines) that look blind to what renders, before the
-    pilot: **about 1 h**;
+  - ~~the check-advisors INFO lines (mandate tags, fault lines) that look blind to what renders~~
+    **DONE 2026-11-06**: they were blind, now fixed and proven on a local stand-in room (changelog);
   - an unknown-section-header guard for the parser (the F-15 review's root-cause fix; a pipeline patch,
     so applying it is the owner's): **about 1 h** to prepare;
   - applying the lawyer's advice when it comes: **half a day to 2 days**, depending on what changes;

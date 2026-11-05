@@ -124,8 +124,12 @@ async function formatChecks(page, locale, standIn) {
       const absent = card.locator("[data-absent]");
       if (await absent.count()) away.push(`${seat}: ${await absent.first().getAttribute("data-absent")}`);
       else {
+        // Citations render as chips (parts.tsx Tag): "[P3]" in the text is shown as a chip reading "P3",
+        // so the screen's text never holds the brackets. Read the chips' own tags, and leave each chip's
+        // one word out of the count, as `words` does for a bracketed tag.
         const text = await card.innerText();
-        present.push([seat, words(text), [...new Set([...text.matchAll(/\[(P\d+|DB)\]/g)].map((m) => m[1]))]]);
+        const cites = await card.locator("[data-cite]").evaluateAll((es) => es.map((e) => e.getAttribute("data-cite")));
+        present.push([seat, words(text) - cites.length, [...new Set(cites)]]);
       }
     }
     return { present, away, total: present.length + away.length };
@@ -196,6 +200,11 @@ async function formatChecks(page, locale, standIn) {
       (unread.length ? unread.join(", ") : "none") + ` (of ${owned.length} owned)`,
   );
 
+  // The fault lines the Chair named, counted on their own tab: only the chosen stage is on screen, so
+  // by the verdict this list is gone.
+  await open("faultlines");
+  const faultLines = await page.locator("[data-stage-view=faultlines] [data-fault-line]").count();
+
   await open("debate");
   const r2 = await roundTurns("debate");
   answered("round 2", r2);
@@ -212,16 +221,17 @@ async function formatChecks(page, locale, standIn) {
   check((await page.locator("[data-vote-table]").count()) === 0, `${locale}: the final word carries no scores`);
 
   await open("verdict");
-  const answer = (await page.locator("[data-answer]").textContent()) ?? "";
+  // innerText, not textContent: textContent runs the last word of a paragraph into the next one's first.
+  const answer = (await page.locator("[data-answer]").innerText()) ?? "";
+  const answerCites = await page.locator("[data-answer] [data-cite]").count();
   check(answer.trim().length > 0, `${locale}: the Chair wrote the room's complete answer`);
-  note(`INFO  ${locale}: the Chair's answer is ${words(answer)} words (asked for ${CHAIR_WORDS.join("–")})`);
+  note(`INFO  ${locale}: the Chair's answer is ${words(answer) - answerCites} words (asked for ${CHAIR_WORDS.join("–")})`);
   // The Chair rules on each fault line it named (chair.md, "Stage: The answer"), and the screen
   // marks each ruling with its verdict. Reported, not failed: which way a ruling goes is the
   // Chair's to decide on the evidence, and a room where every ruling came back `judgment` is
   // worth looking at rather than worth failing - it may be an honest reading of a split room, or
   // a Chair declining to decide. The count against the fault lines is the part that would show a
   // fault line going unruled.
-  const faultLines = await page.locator("[data-stage-view=faultlines] [data-fault-line]").count();
   const rulings = await page.locator("[data-ruling]").all();
   const verdicts = {};
   for (const r of rulings) {

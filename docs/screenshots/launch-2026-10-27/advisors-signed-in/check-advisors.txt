@@ -4,6 +4,9 @@
 # The "seats not citing their own datasets", "datasets ... never cited" and "Chair ruled on" lines come from
 # checks added on `rebuild` after 74ce427bf6 for features production does not serve (mandates, rulings); they
 # are INFO and read as total misses here by construction.
+# Corrected 2026-11-06: those lines were also blind on any release. The script looked for "[P3]" in text the
+# screen shows as a "P3" chip, and counted fault lines while the verdict tab was showing; both fixed that day
+# (PROJECT.md changelog 2026-11-06). The rest of this run is unaffected.
 PS C:\projects\alphacouncil-platform\web> $env:OUT="../docs/screenshots/launch-2026-10-27/advisors-signed-in"; node scripts/check-advisors.mjs
 PASS  en idle: no sideways scroll (0px)
 PASS  en idle: disclaimer on screen
