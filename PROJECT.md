@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-05   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `c046236` on 2026-11-03, the owner's ninth go-ahead in chat ("Yes, push")** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, three on 2026-11-02 took it `3aafa82` → `c1198ca` → `b61876d` → `12aafcc`, and one on 2026-11-03 took it `6acce45..c046236`; every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **beta and production both `5c18a3ae46`** (released 2026-11-05 on the owner's go-ahead "Yes, release it"; it carries the Arabic statement labels over `2e44ee6fbf`, which is kept on both tiers for rollback). **That sha is not on the public branch yet** (9 commits unpushed). *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-06   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `ccfe063` on 2026-11-06, the owner's tenth go-ahead in chat ("Yes, push")** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, three on 2026-11-02 took it `3aafa82` → `c1198ca` → `b61876d` → `12aafcc`, one on 2026-11-03 took it `6acce45..c046236`, and one on 2026-11-06 took it `c046236..ccfe063`; every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **beta and production both `5c18a3ae46`** (released 2026-11-05 on the owner's go-ahead "Yes, release it"; it carries the Arabic statement labels over `2e44ee6fbf`, which is kept on both tiers for rollback). That sha is on the public branch since the 2026-11-06 push. *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -189,6 +189,18 @@ Older entries: `changelog-archive.md`.
   - **Production:** `deployed 5c18a3ae46 to production`, services active, health 200, and `BILLING_OPEN=true` untouched. Financials is Pro-only there, so a signed-out browser sees it locked, and Claude makes no accounts on production. So the labels are checked in the served code instead: all four new labels are in one chunk, byte-identical to beta's and hash-equal to what the public site serves, where `2e44ee6fbf` had none. `check-billing-public.mjs` passes everything.
   - **Saved:** `docs/screenshots/arabic-labels-release-2026-11-05/` (`beta-render-check.txt`, `production-check.txt`, and the screenshots).
   - **Not done:** the push. The release sha is not public yet.
+
+- 2026-11-06 — **The ten Arabic-label commits pushed (`c046236..ccfe063`) on the owner's go-ahead ("Yes, push").**
+  - **Before the push**, over 91 files:
+    - Step 2's outgoing-diff scan: two hits, both prose naming Moyasar (the 11-03 push entry and the roadmap's F-12 line).
+    - `git ls-files`: no env, database or key file tracked.
+    - The history grep: only the standing false positives.
+    - The stricter key-shape scan over history and tree: **0**.
+    - Over the 687 added lines: no email address, no IP, and "password" only in prose. The harvest script names the server paths of the Argaam session file but none of its contents, and those paths were already public (19 lines of pushed history).
+  - **The push:** fast-forward, `rebuild` the only refspec.
+  - **After:** `rebuild` = `origin/rebuild` = anonymous `ls-remote` = `ccfe063`, left/right `0 0`. The released `5c18a3a` is an ancestor of `origin/rebuild`.
+  - **Publication proved by content:** sha-pinned anonymous fetches of five files all answered 200 and hash-matched `git cat-file -p ccfe063:<path>`: `data-labels.json`, its test, `merge_pairs.py`, `PROJECT.md` and a release screenshot.
+  - This entry is itself unpushed, by construction.
 
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
@@ -1184,7 +1196,8 @@ and no customer has paid yet.
      before it on the owner's waiver.
   2. **Go-aheads:**
      - ~~release the Arabic statement labels~~ **RELEASED 2026-11-05** (`5c18a3ae46`, both tiers);
-     - push the unpushed commits (9 on 2026-11-05, including the released sha `5c18a3a`);
+     - ~~push the unpushed commits~~ **PUSHED 2026-11-06** (`c046236..ccfe063`, the released sha
+       included); only the record commits made after it are unpushed;
      - **the $66 pilot, then the $393 decision-grade run** (Next Up item 4; unblocked since F-13 and the
        post-publish checks passed), with probes D1/D3/D6 retired or re-registered first.
   3. **Credentials and server:**
@@ -1651,6 +1664,8 @@ wrong thing:
        public file hashes equal to the server's. `check-billing-public.mjs`: all passed.
      - Saved: `docs/screenshots/arabic-labels-release-2026-11-05/`. Rollback: `2e44ee6fbf` is still in
        both tiers' `releases/`.
+     - *Pushed 2026-11-06* on the owner's go-ahead ("Yes, push"): `c046236..ccfe063`, so the released
+       sha `5c18a3ae46` is on the public branch (changelog, same date).
    - **F-15, found while checking (prepared and dry-run, NOT applied):** five finance companies
      (1182, 1183, 4081, 4082, 4083) have their balance sheets inside the income statement, summed
      over four quarters — Tasheel's "Total Assets" reads 12,918.83 against a real 3,197.89 / 3,365.01.
