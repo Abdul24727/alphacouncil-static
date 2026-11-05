@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-04   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `12aafcc` on 2026-11-02, the owner's eighth go-ahead in chat ("Push them")** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, and three on 2026-11-02 took it `3aafa82` → `c1198ca` → `b61876d` → `12aafcc`; every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **beta and production both `74ce427bf6`** (released 2026-10-27 21:27 UTC on the owner's go-ahead; it carries F-10 and F-11 over `3228ab57e9`). *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-05   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `c046236` on 2026-11-03, the owner's ninth go-ahead in chat ("Yes, push")** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, three on 2026-11-02 took it `3aafa82` → `c1198ca` → `b61876d` → `12aafcc`, and one on 2026-11-03 took it `6acce45..c046236`; every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **beta and production both `5c18a3ae46`** (released 2026-11-05 on the owner's go-ahead "Yes, release it"; it carries the Arabic statement labels over `2e44ee6fbf`, which is kept on both tiers for rollback). **That sha is not on the public branch yet** (9 commits unpushed). *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -184,16 +184,23 @@ Older entries: `changelog-archive.md`.
   - **(3) English pages.** All 56 Gulf lines the new pairs relabel are the same Argaam line, checked by row id (54), or a same-meaning sibling (2). Six that fix (1) would have sent back to Arabic are restored. Argaam's five misspelled forms, which the corrected spelling could never read back, are added for 56 more rows. Gulf English pages now show 92.4 % of lines in English.
   - **Checks.** Rendered locally in both languages: all 72 expected English labels show, and the Arabic pages show 0 English line labels (`docs/screenshots/arabic-labels-fix-2026-11-04/`). Web suite 43/43, with 4 new tests.
 
+- 2026-11-05 — **The Arabic statement labels are RELEASED to beta, then production (`5c18a3ae46` = `rebuild` `5c18a3a`), on the owner's go-ahead ("Yes, release it").** No commit between the two deploys. Both tiers ran `2e44ee6fbf` before, and it is kept for rollback.
+  - **Beta:** `deployed 5c18a3ae46`, `api 200`, `web 200`. Through the tunnel, the same check as the local run gives 72 of 72 expected English labels and 0 English line labels on the Arabic pages (1010, 1211, 2222, 8010). Every panel's row count matches the local run.
+  - **Production:** `deployed 5c18a3ae46 to production`, services active, health 200, and `BILLING_OPEN=true` untouched. Financials is Pro-only there, so a signed-out browser sees it locked, and Claude makes no accounts on production. So the labels are checked in the served code instead: all four new labels are in one chunk, byte-identical to beta's and hash-equal to what the public site serves, where `2e44ee6fbf` had none. `check-billing-public.mjs` passes everything.
+  - **Saved:** `docs/screenshots/arabic-labels-release-2026-11-05/` (`beta-render-check.txt`, `production-check.txt`, and the screenshots).
+  - **Not done:** the push. The release sha is not public yet.
+
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
   (§9 item 3): 250 Saudi income statements (was 0), every row period-tagged, every change on Tadawul only.
   **F-13 is fixed and RELEASED on both tiers (`2e44ee6fbf`, 2026-11-03):** the Financials panel of
   `df83e19404` had ignored the API's `periods` and headed Aramco's TTM-to-June-2026 income statement and
   June-2026 balance sheet "FY2026" (seen on beta only; production had 0 Pro members). It now reads "TTM
-  Jun 2026" / "Jun 2026" with a note under the table. **Still open:** Saudi income-statement line labels
-  show in English on Arabic pages (133 labels; Argaam's Arabic for them is not harvested) — *fixed on
-  `rebuild` from Argaam's Gulf Arabic pages (`aa3dde6`), with the 2026-11-04 review's three fixes on
-  top; not released.* **F-15 (open, fix prepared):**
+  Jun 2026" / "Jun 2026" with a note under the table. **The Arabic statement labels are RELEASED on both
+  tiers (`5c18a3ae46`, 2026-11-05):** Saudi income-statement rows on Arabic pages are in Arabic except one
+  company's two Mudaraba lines, taken from Argaam's Gulf Arabic pages (`aa3dde6` plus the 2026-11-04
+  review's fixes). Open follow-up: about 8,100 Gulf rows (7.6 %) still show in Arabic on English pages,
+  mostly spelling and unit variants; this predates the release. **F-15 (open, fix prepared):**
   five Saudi finance companies' balance sheets are summed into their income statements (Tasheel's
   total assets shown ×4); the one-line parser patch is APPLIED (15:38 UTC) and lands with the
   2026-11-04 05:00 UTC publish, to be checked then. **F-14:** the pipeline's news-AI step has
@@ -1176,8 +1183,8 @@ and no customer has paid yet.
   1. **Step 7, the lawyer.** The one open Done-when item of Goal 4 that work can close. Billing opened
      before it on the owner's waiver.
   2. **Go-aheads:**
-     - release the Arabic statement labels (`aa3dde6` and the review fixes, done 2026-11-04);
-     - push the unpushed record commits;
+     - ~~release the Arabic statement labels~~ **RELEASED 2026-11-05** (`5c18a3ae46`, both tiers);
+     - push the unpushed commits (9 on 2026-11-05, including the released sha `5c18a3a`);
      - **the $66 pilot, then the $393 decision-grade run** (Next Up item 4; unblocked since F-13 and the
        post-publish checks passed), with probes D1/D3/D6 retired or re-registered first.
   3. **Credentials and server:**
@@ -1631,7 +1638,19 @@ wrong thing:
    - *The review's three label findings fixed on `rebuild` (2026-11-04):* the details are in the
      roadmap at the top of this section. 13 sub-line labels now carry their heading's word, the merge
      count is 82, not 70, and the English-page relabels are checked by row id: 61 labels, 72 of 72
-     rendered. **Not released.**
+     rendered.
+   - *The Arabic labels RELEASED (2026-11-05, on the owner's go-ahead "Yes, release it", covering beta
+     then production):* `5c18a3ae46` (= `rebuild` `5c18a3a`; app code differs from `2e44ee6fbf` only
+     in `web/src/content/data-labels.json`).
+     - *Beta:* `deployed 5c18a3ae46`, `api 200`, `web 200`. Through the tunnel: 72 of 72 expected English
+       labels, and 0 English line labels on Arabic 1010/1211/2222/8010, at 1440 and 390. The row counts
+       are identical to the local run.
+     - *Production:* `deployed 5c18a3ae46 to production`, `api 200`, `web 200`, `BILLING_OPEN=true`
+       untouched. The panel is Pro-only signed out, so its served code was checked instead: the new labels
+       are in chunk `28_jfcirdneya.js` (0 of them in `2e44ee6fbf`), byte-identical to beta's, and the
+       public file hashes equal to the server's. `check-billing-public.mjs`: all passed.
+     - Saved: `docs/screenshots/arabic-labels-release-2026-11-05/`. Rollback: `2e44ee6fbf` is still in
+       both tiers' `releases/`.
    - **F-15, found while checking (prepared and dry-run, NOT applied):** five finance companies
      (1182, 1183, 4081, 4082, 4083) have their balance sheets inside the income statement, summed
      over four quarters — Tasheel's "Total Assets" reads 12,918.83 against a real 3,197.89 / 3,365.01.

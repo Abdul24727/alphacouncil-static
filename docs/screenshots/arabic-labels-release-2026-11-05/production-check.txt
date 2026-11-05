@@ -1,0 +1,11 @@
+# Production check, 2026-11-05: release 5c18a3ae46 (beta ran the same sha first; no commit between)
+# Financials is Pro-only on production (billing open), so a signed-out browser sees the panel locked and
+# /api/v1/tickers/{ref}/statements answers 403. Claude makes no accounts on production, so the labels are
+# checked in the code production serves, and rendered on beta, which reads the same market data.
+prod current -> 5c18a3ae46; previous release 2e44ee6fbf kept for rollback
+acp-prod-api, acp-prod-web, acp-prod-billing.timer: active; /v1/health 200; https://alphacouncil.tech/ar/t/1211/financials 200
+BILLING_OPEN=true (unchanged)
+static chunks containing the new labels (5c18a3ae46 / 2e44ee6fbf):
+  "مصاريف بيع و توزيع" 1/0, "بيع بالتقسط" 1/0, "دخل إستثمارات أخرى" 1/0, "مصاريف عمليات اخرى" 1/0
+chunk /_next/static/chunks/28_jfcirdneya.js: byte-identical to beta's; public sha256 87d483f4e7d581da... = server's; referenced by /ar/t/1211/financials
+check-billing-public.mjs (signed out): all passed, incl. "financials locked (3 panels)"; screenshots in production-billing/

@@ -1,0 +1,42 @@
+# Beta render check, 2026-11-05: release 5c18a3ae46 through the tunnel localhost:3201 (labels-fix-check.mjs, same expectations as the local run of 2026-11-04)
+ar 1010 1440 financials.income: rows 28, labels still in English 0 []
+ar 1010 1440 financials.balance: rows 33, labels still in English 0 []
+ar 1010 1440 expected labels shown: 2/2
+ar 1211 1440 financials.income: rows 24, labels still in English 0 []
+ar 1211 1440 financials.balance: rows 60, labels still in English 0 []
+ar 1211 1440 expected labels shown: 1/1
+ar 2222 1440 financials.income: rows 18, labels still in English 0 []
+ar 2222 1440 financials.balance: rows 42, labels still in English 0 []
+ar 8010 1440 financials.income: rows 30, labels still in English 0 []
+ar 8010 1440 financials.balance: rows 44, labels still in English 0 []
+ar 8010 1440 expected labels shown: 1/1
+ar 2222 390 financials.income: rows 18, labels still in English 0 []
+ar 2222 390 financials.balance: rows 42, labels still in English 0 []
+en 301 1440 financials.income: rows 17, labels still in Arabic 0 []
+en 301 1440 financials.balance: rows 11, labels still in Arabic 4 ["إجمالى الموجودات","إجمالى المطلوبات","ارباح مبقاة","إجمالى حقوق المساهمين"]
+en 301 1440 expected labels shown: 3/3
+en 821 1440 financials.income: rows 29, labels still in Arabic 8 ["رواتب و مزايا الموظفين","مخصص الانخفاض في قيمة التمويل","مخصص الاستثمارات","صافي الايرادات ( المصاريف ) غير التشغيلية","الضرائب و التبرعات","صافي الربح قبل البنود الاستثنائية و غير المتكررة","صافي الربح","ربح السهم المخفض (فلس)"]
+en 821 1440 financials.balance: rows 29, labels still in Arabic 14 ["نقد و ارصدة لدى البنك المركزي","الاستثمارات","التمويلات العاملة","التمويلات الغير عاملة","موجودات ثابته","موجودات اخرى","إجمالي الموجودات","أرصده للبنوك"]
+en 821 1440 expected labels shown: 12/12
+en AMLAK 1440 financials.income: rows 23, labels still in Arabic 5 ["إيرادات أخرى","مخصصات","حقوق اقلية","زكاه و ضريبة","صافى الربح"]
+en AMLAK 1440 financials.balance: rows 50, labels still in Arabic 26 ["نقد وما في حكمه","إستثمارات","موجودات غير ملموسة","موجودات حق الإستخدام","إجمالى الموجودات","إجمالى المطلوبات","احتياطات اخرى","أجمالى حقوق المساهمين"]
+en AMLAK 1440 expected labels shown: 18/18
+en AJMANBAN 1440 financials.income: rows 34, labels still in Arabic 8 ["رواتب و مزايا الموظفين","مخصص الانخفاض في قيمة التمويل","مخصص الاستثمارات","صافي الايرادات ( المصاريف ) غير التشغيلية","الضرائب و التبرعات","صافي الربح قبل البنود الاستثنائية و غير المتكررة","صافي الربح","ربح السهم المخفض (درهم)"]
+en AJMANBAN 1440 financials.balance: rows 30, labels still in Arabic 12 ["نقد و ارصدة لدى البنك المركزي","الاستثمارات","موجودات ثابته","موجودات اخرى","إجمالي الموجودات","أرصده للبنوك","صكوك وتمويل لآجل","اجمالي المطلوبات"]
+en AJMANBAN 1440 expected labels shown: 17/17
+en AMCREIT 1440 financials.income: rows 17, labels still in Arabic 3 ["متوسط عدد الوحدات (مليون)","ربح الوحدة قبل البنود الاستثنائية (درهم)","ربح الوحده (درهم)"]
+en AMCREIT 1440 financials.balance: rows 39, labels still in Arabic 17 ["القيمه الدفتريه للاصول العائده للوحده","القيمة الاسمية (درهم)","صافي الارباح","الاهلاكات","صافي الدخل من العمليات التشغيلية","صافي ( الزيادة ) / النقص في الموجودات التشغيلية","صافي الزيادة / ( النقص ) في المطلوبات التشغيلية","التدفق النقدي من الانشطة التشغيلية"]
+en AMCREIT 1440 expected labels shown: 17/17
+en ADCB 1440 financials.income: rows 35, labels still in Arabic 4 ["الاستثمارات","أرصدة لدى البنوك والمؤسسات المالية","ارصدة للبنوك و المؤسسات المالية","ربح السهم المخفض (درهم)"]
+en ADCB 1440 financials.balance: rows 31, labels still in Arabic 17 ["نقدية و أرصدة لدى البنك المركزي","أرصدة لدى البنوك و المؤسسات المالية الأخرى","إستثمارات","صافي القروض و السلف","إستثمارات عقارية","موجودات ثابته","موجودات اخرى","إجمالي الموجودات"]
+en ADCB 1440 expected labels shown: 3/3
+en BKIC.BH 1440 financials.income: rows 17, labels still in Arabic 0 []
+en BKIC.BH 1440 financials.balance: rows 10, labels still in Arabic 4 ["إجمالى الموجودات","إجمالى المطلوبات","ارباح مبقاة","إجمالى حقوق المساهمين"]
+en BKIC.BH 1440 expected labels shown: 1/1
+en EAND 1440 financials.income: rows 27, labels still in Arabic 0 []
+en EAND 1440 financials.balance: rows 65, labels still in Arabic 1 ["القيمة الاسمية (درهم)"]
+en EAND 1440 expected labels shown: 1/1
+en AMLAK 390 financials.income: rows 23, labels still in Arabic 5 ["إيرادات أخرى","مخصصات","حقوق اقلية","زكاه و ضريبة","صافى الربح"]
+en AMLAK 390 financials.balance: rows 50, labels still in Arabic 26 ["نقد وما في حكمه","إستثمارات","موجودات غير ملموسة","موجودات حق الإستخدام","إجمالى الموجودات","إجمالى المطلوبات","احتياطات اخرى","أجمالى حقوق المساهمين"]
+en AMLAK 390 expected labels shown: 18/18
+PASS: every expected label shown

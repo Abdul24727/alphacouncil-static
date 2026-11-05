@@ -277,3 +277,21 @@ merge: 61 labels, 1,758 rows.
 - the corrected spellings on Arabic pages.
 
 Web suite 43/43; typecheck and lint clean.
+
+## Release (2026-11-05, on the owner's "Yes, release it")
+
+`5c18a3ae46` (= `rebuild` `5c18a3a`) went to beta, then production, with no commit in between. Against the
+previous release `2e44ee6fbf`, the only app change is `web/src/content/data-labels.json`, plus its test.
+
+- **Beta.** The render check from the review fixes, run through the tunnel:
+  - 72 of 72 expected English labels on the Gulf English pages;
+  - 0 English line labels on the Arabic pages (1010, 1211, 2222, 8010) at 1440 and 390;
+  - every panel's row count identical to the local run.
+- **Production.**
+  - Health is 200 and `BILLING_OPEN=true` is untouched.
+  - Financials is Pro-only, so a signed-out browser sees it locked; no account was made.
+  - The served code carries the new labels: one chunk, byte-identical to beta's, the same file the public
+    site serves (hash-compared). `2e44ee6fbf` had none of them.
+  - `check-billing-public.mjs` passes everything.
+- **Evidence:** `docs/screenshots/arabic-labels-release-2026-11-05/`.
+- **Rollback:** `2e44ee6fbf` is still in both tiers' `releases/`.
