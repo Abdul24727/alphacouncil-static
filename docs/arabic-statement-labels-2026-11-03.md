@@ -455,3 +455,25 @@ id (tr23, tr24, tr25, tr27, tr28), under that parent:
   - Rendered 108 and 1211 (Ma'aden) balance sheets, English and Arabic, 1440 and 390: 8/8. The clean label
     shows, the garbled one does not, the Arabic is unchanged, and the values equal the API's.
   - Evidence: `docs/screenshots/real-estate-label-2026-11-06/` and `.txt`.
+
+## The dollar as a currency unit in `pair_from_gulf.py` (2026-11-06, review 06's step)
+
+The earlier code review listed a "missing USD unit". ChatGPT's review 06 reproduced it:
+`saudi_arabic("Par Value (Riyal)", "القيمة الاسمية (دولار)")` gave "القيمة الاسمية (دولار) (ريال)", because
+`CURRENCY_AR` did not know the dollar. Five Bahrain listings trade in USD.
+
+**Fixed:**
+- `CURRENCY_AR` includes "دولار" and "دولار أمريكي".
+- `bs4` is imported where pages are parsed, so the label rule can be tested on a machine without it.
+
+**Tests:** `scripts/argaam_ar_labels/test_pair_from_gulf.py`, 4 tests, run with `python -X utf8 …`:
+- the dollar becomes the Saudi unit, or goes;
+- every Gulf currency still maps to "(ريال)" / "(هللة)" / nothing;
+- non-currency parentheses ("(مليون)", "( المصاريف )") stay;
+- a label with no unit gets the English's unit, and nothing else.
+
+All pass.
+
+**Live effect: none.** No harvested page and no database row, in any year, carries a dollar label. The old
+and new scripts run over every harvested page on the server give byte-identical output (27,096 bytes, the
+same sha256), so the dictionary built from it does not change. This guards future harvests.

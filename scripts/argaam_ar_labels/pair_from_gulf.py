@@ -10,7 +10,9 @@ market's currency unit ("ربح السهم (فلس)", "(درهم)", "(ريال �
 
 Units: the Arabic label keeps Argaam's wording, and a trailing currency unit is replaced by the unit
 the Saudi English label names — "(Riyal)" → "(ريال)", "(Halala)" → "(هللة)" — or dropped where the
-English names none. Non-currency parentheses ("(مليون)") are kept.
+English names none. Non-currency parentheses ("(مليون)") are kept. The US dollar counts as a currency
+unit too: five Bahrain listings trade in USD, and a "(دولار)" line would otherwise have kept its dollar
+beside the riyal (no harvested page carries one as of 2026-11-06; review 06).
 
 Why not Argaam's Saudi Arabic pages: the server gets Argaam's "Human Verification" challenge on them,
 and a second sign-in elsewhere would sign the nightly's single session out (2026-11-03,
@@ -27,11 +29,9 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from bs4 import BeautifulSoup
-
 ROW = re.compile(r"^tr\d+$")
 ARABIC = re.compile(r"[؀-ۿ]")
-CURRENCY_AR = r"(?:درهم|فلس|بيسة|ريال(?: قطري| عماني| سعودي)?|دينار(?: بحريني| كويتي)?|هللة)"
+CURRENCY_AR = r"(?:درهم|فلس|بيسة|ريال(?: قطري| عماني| سعودي)?|دينار(?: بحريني| كويتي)?|هللة|دولار(?: أمريكي)?)"
 TRAILING_UNIT_AR = re.compile(rf"\s*\(\s*{CURRENCY_AR}\s*\)\s*$")
 UNIT_EN = {"riyal": "ريال", "halala": "هللة"}
 TRAILING_UNIT_EN = re.compile(r"\((Riyal|Halala)\)\s*$", re.I)
@@ -53,6 +53,8 @@ def norm(s: str) -> str:
 
 
 def rows(path: Path) -> dict[str, str]:
+    from bs4 import BeautifulSoup  # here, so the label rules can be tested where bs4 is not installed
+
     soup = BeautifulSoup(path.read_text(encoding="utf-8", errors="replace"), "html.parser")
     out: dict[str, str] = {}
     for tr in soup.find_all("tr", id=ROW):
