@@ -237,6 +237,7 @@ Older entries: `changelog-archive.md`.
   - Rendered: 7 companies, both languages, 1440 and 390, every expected label shown. Tests 47/47.
   - Left: three bank sub-lines that share text with balance lines (a statement-aware lookup), one odd old entry, and phone tables opening on the oldest year.
   - Record: `docs/arabic-statement-labels-2026-11-03.md`, "English pages".
+  - **Review 02 (FIX), fixed:** the sweep could pass without checking. A failed request was skipped, and a later Pro-only answer hid failures. It now fails closed (`web/scripts/lib/label-sweep.mjs`, 11 tests; suite 58/58). Production signed out reads `unavailable`, and beta reads 714/714 companies with only F-16's 18 labels failing. Two counts were corrected: 29 new English keys (not 27) and 4 new label tests (not 5).
 
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**

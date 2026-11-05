@@ -324,8 +324,9 @@ the next step.
 **What changed and what did not:**
 - 76 pairs were added, as one group appended at the end (495 pairs, was 419).
 - **No existing mapping changed in either direction.**
-- The 27 English labels that are new to the dictionary are used by no Saudi line, so **Arabic pages do not
-  change**.
+- The 29 English labels that are new to the dictionary (27 for units and translations, and the 2 composed bank
+  sub-lines) are used by no Saudi line, so **Arabic pages do not change**. *(Corrected 2026-11-06 from "27" by
+  ChatGPT's review 02, which counted after normalisation.)*
 - Each Gulf line sits in the same statement as the Saudi line its English comes from, except the two bank
   sub-lines above.
 
@@ -347,7 +348,7 @@ the next step.
   - 0 English labels on the Arabic pages.
   - 0 Arabic labels on the English pages, except AMCREIT's 15 cash-flow lines (F-16, until the publish).
   - Evidence: `docs/screenshots/gulf-english-labels-2026-11-06/` and its `.txt`.
-- Tests: 5 new; web suite 47/47.
+- Tests: 4 new, so the web suite went from 43 to 47 *(corrected from "5" by review 02)*.
 
 **Left, and why:**
 - **Bank income sub-lines that share their text with a balance-sheet line:** "الاستثمارات" (Investments),
@@ -361,3 +362,33 @@ the next step.
   balance sheet.
 - **At 390 px the table opens on the oldest years** (FY2021–22 on 108), not the newest. Seen in the render;
   not part of the labels.
+
+### Review 02's fixes to the sweep (2026-11-06)
+
+ChatGPT's review 02 found that the new sweep could pass without checking anything. A request that failed
+(500, 429) was skipped silently: a run whose every request failed printed PASS with 0 lines. And a later
+"Pro-only" answer hid failures already found.
+
+The sweep is now `web/scripts/lib/label-sweep.mjs`, which `check-data-fixes.mjs` calls, and it **fails
+closed**:
+- a line left in Arabic fails, named;
+- any request that is not a 200 fails (a network error, 5xx, 429, 404), because that company was not
+  checked;
+- statements that are Pro-only from the first company report UNAVAILABLE, which is neither a pass nor a fail;
+- Pro-only after some companies were read fails as incomplete coverage, keeping what was found;
+- a run that checks no company fails.
+
+The API answers 200 with an empty list for a company with no statements, so a listed company has no other
+reason to refuse.
+
+**Proved by:**
+- `web/scripts/lib/label-sweep.test.mjs`: 11 tests, covering pass; a line left in Arabic; an unshown
+  statement; HTTP 500, 503, 429 and 404; a network error; gated from the start; gated after reading; and an
+  empty run. Web suite 58/58, lint clean.
+- **Against production signed out:** `unavailable`, 0 of 5 read, gated at the first company.
+- **Against beta:** the full `SWEEP=1` run, recorded under "Sweep after review 02" below.
+
+**Sweep after review 02, against beta** (before the publish): 714 of 714 companies read, 40,278 lines, no
+request failed. The one FAIL is the same 18 F-16 cash-flow labels in 8 companies; every other check passed
+(`docs/screenshots/gulf-english-labels-2026-11-06-sweep-failclosed.txt`). It is to be run again after the
+05:00 UTC publish, when it should pass.
