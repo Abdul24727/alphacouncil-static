@@ -51,3 +51,13 @@ test("income statement: other lines are untouched by the statement", () => {
   assert.deepEqual(dataLabel("صافي الربح", "en", IS), dataLabel("صافي الربح", "en"));
   assert.deepEqual(dataLabel("Total Assets", "ar", IS), dataLabel("Total Assets", "ar"));
 });
+
+test("real-estate investments read cleanly, from Argaam's garbled English as from the Arabic", () => {
+  // Argaam's English for row tr432 is "property Real estate Investment" (210 Saudi pages); the same
+  // Arabic, "استثمارات عقارية", is "Real Estate Investments" in its English for row tr73 (review 05).
+  for (const stored of ["property Real estate Investment", "استثمارات عقارية"]) {
+    assert.deepEqual(dataLabel(stored, "en", BS), { text: "Real Estate Investments", lang: "en" }, stored);
+  }
+  // Arabic pages keep what they showed: the stored Saudi spelling still finds its Arabic.
+  assert.deepEqual(dataLabel("property Real estate Investment", "ar", BS), { text: "استثمارات عقارية", lang: "ar" });
+});

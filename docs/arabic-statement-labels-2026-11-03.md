@@ -435,3 +435,23 @@ id (tr23, tr24, tr25, tr27, tr28), under that parent:
     reads as commission expense in the income statement.
   - Every value in the newest column equals the API's, row by row.
   - Evidence: `docs/screenshots/bank-sublines-2026-11-06/` and `.txt`.
+
+## "property Real estate Investment" (2026-11-06, review 05's step)
+
+- **Where it came from:** it is Argaam's own English for row tr432 on 210 Saudi pages, stored as such. The
+  dictionary had it as the *first* English for "استثمارات عقارية", so 333 Gulf pages showed it too.
+- **The wording:** "Real Estate Investments" is Argaam's English for the same Arabic on row tr73, and was
+  already the dictionary's next pair for it.
+- **The change:**
+  - the garbled pair is removed (494 pairs);
+  - an alias maps the stored Saudi spelling to "Real Estate Investments" (37 aliases), which also keeps its
+    Arabic on Arabic pages.
+- **Proof that nothing else moved:** the real lookup, run with the dictionary before and after over 926
+  labels (every dictionary entry, every Saudi and Gulf label on the harvested pages) × 2 languages × 3
+  contexts, gives exactly 6 differences. All are on English pages, and all are these two texts becoming
+  "Real Estate Investments".
+- **Checks:**
+  - 1 new test; suite 64/64; typecheck, lint and build pass.
+  - Rendered 108 and 1211 (Ma'aden) balance sheets, English and Arabic, 1440 and 390: 8/8. The clean label
+    shows, the garbled one does not, the Arabic is unchanged, and the values equal the API's.
+  - Evidence: `docs/screenshots/real-estate-label-2026-11-06/` and `.txt`.
