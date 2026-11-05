@@ -69,6 +69,10 @@ function heading(year: number, p: StatementPeriod | undefined, aware: boolean, l
  * The columns one statement shows: the response's years that the statement dates or fills, each headed
  * by its own period. Years the statement has no figure and no period for are left out, so a trailing
  * income statement is not set beside an empty "FY2025".
+ *
+ * Newest first, as in Argaam's own grid: the newest period sits beside the line labels, so a phone,
+ * which shows the labels and one or two columns before the table scrolls, opens on it, not on the
+ * oldest year (2026-11-06).
  */
 export function statementColumns(
   years: number[],
@@ -78,5 +82,7 @@ export function statementColumns(
 ): StatementColumn[] {
   const aware = !!periods && Object.keys(periods).length > 0;
   const shown = years.filter((y) => (aware && periods![String(y)] != null) || rows.some((r) => r.values[String(y)] != null));
-  return (shown.length ? shown : years).map((year) => ({ year, ...heading(year, periods?.[String(year)], aware, locale) }));
+  return [...(shown.length ? shown : years)]
+    .sort((a, b) => b - a)
+    .map((year) => ({ year, ...heading(year, periods?.[String(year)], aware, locale) }));
 }

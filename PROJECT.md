@@ -238,6 +238,7 @@ Older entries: `changelog-archive.md`.
   - Left: three bank sub-lines that share text with balance lines (a statement-aware lookup), one odd old entry, and phone tables opening on the oldest year.
   - Record: `docs/arabic-statement-labels-2026-11-03.md`, "English pages".
   - **Review 02 (FIX), fixed:** the sweep could pass without checking. A failed request was skipped, and a later Pro-only answer hid failures. It now fails closed (`web/scripts/lib/label-sweep.mjs`, 11 tests; suite 58/58). Production signed out reads `unavailable`, and beta reads 714/714 companies with only F-16's 18 labels failing. Two counts were corrected: 29 new English keys (not 27) and 4 new label tests (not 5).
+- 2026-11-06 — **Review 03 ACCEPTED the sweep. Its next step is done: statement tables are newest first, so a phone opens on the newest period.** Before, columns ran oldest first and the table scrolls sideways from the labels, so a phone saw FY2021–22 beside the labels in both languages. `statementColumns()` (`web/src/lib/statement-period.ts`) now returns newest first, as Argaam's own grid does. Older columns are a sideways scroll away. Checked on 108 and 2222, both languages, 1440 and 390, 16 panels: newest beside the labels and in view on load, and the oldest in view after scrolling (`docs/screenshots/statements-newest-first-2026-11-06/` and `.txt`). Tests 59/59 (5 updated, 1 new), typecheck, lint and `npm run build` pass. Not released.
 
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**

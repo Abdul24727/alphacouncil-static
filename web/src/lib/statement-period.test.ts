@@ -37,11 +37,11 @@ test("statement period: a trailing income statement is not headed FY, and its em
 test("statement period: a quarter-end balance sheet beside a fiscal year-end", () => {
   const en = statementColumns(YEARS, BALANCE.periods, BALANCE.rows, "en");
   assert.deepEqual(en.map((c) => [c.heading, c.note]), [
-    ["FY2025", null],
     ["Jun 2026", "Jun 2026: the position at that quarter-end, not a fiscal year-end."],
+    ["FY2025", null],
   ]);
   const ar = statementColumns(YEARS, BALANCE.periods, BALANCE.rows, "ar");
-  assert.deepEqual(ar.map((c) => c.heading), ["2025", "يونيو 2026"]);
+  assert.deepEqual(ar.map((c) => c.heading), ["يونيو 2026", "2025"]);
 });
 
 test("statement period: annual statements read as before", () => {
@@ -49,13 +49,13 @@ test("statement period: annual statements read as before", () => {
   const periods = Object.fromEntries(years.map((y) => [String(y), { period: "FY", period_end: `${y}-12`, aggregation: null }]));
   const rows = [{ values: Object.fromEntries(years.map((y) => [String(y), 1])) }];
   const cols = statementColumns(years, periods, rows, "en");
-  assert.deepEqual(cols.map((c) => c.heading), ["FY2021", "FY2022", "FY2023", "FY2024", "FY2025"]);
+  assert.deepEqual(cols.map((c) => c.heading), ["FY2025", "FY2024", "FY2023", "FY2022", "FY2021"]);
   assert.ok(cols.every((c) => c.note === null));
 });
 
 test("statement period: the old response shape keeps its fiscal-year headings", () => {
   const cols = statementColumns(YEARS, {}, [{ values: { "2025": 1, "2026": 2 } }], "en");
-  assert.deepEqual(cols.map((c) => c.heading), ["FY2025", "FY2026"]);
+  assert.deepEqual(cols.map((c) => c.heading), ["FY2026", "FY2025"]);
   assert.deepEqual(statementColumns(YEARS, undefined, [{ values: { "2025": 1 } }], "ar").map((c) => c.heading), ["2025"]);
 });
 
@@ -68,5 +68,14 @@ test("statement period: an undated or unknown column claims no period", () => {
 });
 
 test("statement period: a statement with no figures at all keeps every year rather than none", () => {
-  assert.deepEqual(statementColumns(YEARS, {}, [{ values: {} }], "en").map((c) => c.year), [2025, 2026]);
+  assert.deepEqual(statementColumns(YEARS, {}, [{ values: {} }], "en").map((c) => c.year), [2026, 2025]);
+});
+
+test("statement period: newest first, so a phone opens on the newest period beside the labels", () => {
+  // The response lists years oldest first; the order shown must not depend on it.
+  const years = [2023, 2021, 2025, 2022, 2024];
+  const rows = [{ values: Object.fromEntries(years.map((y) => [String(y), 1])) }];
+  assert.deepEqual(statementColumns(years, {}, rows, "en").map((c) => c.year), [2025, 2024, 2023, 2022, 2021]);
+  assert.deepEqual(statementColumns(years, {}, rows, "ar").map((c) => c.year), [2025, 2024, 2023, 2022, 2021]);
+  assert.deepEqual(years, [2023, 2021, 2025, 2022, 2024]); // the caller's array is not reordered
 });
