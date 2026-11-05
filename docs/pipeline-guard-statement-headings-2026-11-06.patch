@@ -1,0 +1,84 @@
+diff --git a/llm-council/parse_financial_statements.py b/llm-council/parse_financial_statements.py
+--- a/llm-council/parse_financial_statements.py
++++ b/llm-council/parse_financial_statements.py
+@@ -71,6 +71,9 @@
+     "قائمة الدخل": "Income Statement",
+     "المركز المالي": "Balance Sheet",
+     "قائمة التدفقات النقدية": "Cash Flow Statement",
++    # Nine UAE companies head their cash flow "التدفق النقدي" (F-16, 2026-11-06): without this
++    # their cash-flow lines were filed under the balance sheet.
++    "التدفق النقدي": "Cash Flow Statement",
+ }
+ TOP_SECTIONS = set(SECTION_MAP)
+ 
+@@ -238,7 +241,11 @@
+         cells = [c.get_text(" ", strip=True) for c in tr.find_all(["th", "td"])]
+         if not cells:
+             continue
+-        data_rows.append((cells[0].strip(), cells))
++        # GUARD: Argaam marks a statement's own heading with class "level1" (sub-headings such as
++        # "Assets" are "head"). Carried so a heading SECTION_MAP does not know is refused rather than
++        # read as an empty row, which filed its lines under the statement above it (F-15, F-16).
++        heading = "level1" in (tr.get("class") or [])
++        data_rows.append((cells[0].strip(), cells, heading))
+     return col_meta, data_rows
+ 
+ 
+@@ -381,12 +388,24 @@
+     flow_choice = {}   # section -> (period, period_end, fiscal_year) once chosen
+     years_seen = set()
+     section = ""
++    unknown = ""   # GUARD: the unknown statement heading we are under, if any
+     section_counter = {}
+-    for label, cells in data_rows:
++    for label, cells, heading in data_rows:
+         if not label:
+             continue
+         if label in TOP_SECTIONS:
+             section = SECTION_MAP[label]   # canonical English (handles Arabic UAE headers)
++            unknown = ""
++            continue
++        if heading:
++            # GUARD: a statement heading SECTION_MAP does not know. Its lines are held back until
++            # the next known heading - a statement missing is shown as missing, a statement filed
++            # under the wrong one is shown as wrong figures - and main() reports it by name.
++            unknown = label
++            stats.setdefault("unknown_headings", {})[label] = 0
++            continue
++        if unknown:
++            stats["unknown_headings"][unknown] += 1
+             continue
+ 
+         # Gather this row's values keyed by period descriptor. Each emit is
+@@ -632,6 +651,7 @@
+     total = 0
+     ok = 0
+     had_html = 0
++    unknown = {}   # GUARD: heading -> ticker keys that carry it
+     for tk in ticker_keys:
+         try:
+             s = ingest_one(conn, tk, universe)
+@@ -639,6 +659,10 @@
+             logger.warning(f"{tk}: FAILED {str(e)[:120]}"); continue
+         if s.get("had_html"):
+             had_html += 1
++        for h, n in s.get("unknown_headings", {}).items():
++            unknown.setdefault(h, []).append(tk)
++            logger.warning(f"{tk}: UNKNOWN STATEMENT HEADING {h!r}: {n} row(s) held back, "
++                           f"not filed under the statement above it (add it to SECTION_MAP)")
+         if s["ok"]:
+             ok += 1
+             total += s["rows"]
+@@ -651,6 +675,12 @@
+     conn.close()
+     logger.info(f"DONE: {ok} ticker(s), {total} line-item-rows "
+                 f"({had_html} ticker(s) had statement HTML on disk).")
++    if unknown:
++        # Not a halt: the rows were held back, so nothing wrong was written. Said once more at
++        # the end so it is not lost among the per-ticker lines.
++        logger.warning("UNKNOWN STATEMENT HEADINGS, rows held back: " + "; ".join(
++            f"{h!r} on {len(tks)} ticker(s) ({', '.join(tks[:5])}{', ...' if len(tks) > 5 else ''})"
++            for h, tks in sorted(unknown.items())))
+ 
+     # HARD failure: statement HTML exists on disk but we parsed ZERO line-items. That is not
+     # 'no data' — it is a parser/dependency regression that must HALT the pipeline (so the

@@ -219,6 +219,16 @@ Older entries: `changelog-archive.md`.
   - **Correction:** the 2026-11-02 production run's file (`launch-2026-10-27/advisors-signed-in/check-advisors.txt`) put its total misses down to `74ce427bf6` lacking mandates and rulings. The script's own blindness would have produced the same lines on any release. Its header now says so.
   - **Not run:** a real-model session on beta, which is a paid call. The pilot's own numbers come from the API's turn flags (`uncovered`, `unruled`), not from this script.
 
+- 2026-11-06 — **The parser's heading guard is prepared, and its first run found F-16.** Record: `docs/pipeline-guard-statement-headings-2026-11-06.md`. Pipeline change, **not applied**.
+  - **The guard** (the 2026-11-04 review's root-cause note on F-15). A statement heading the parser does not know used to be read as an empty row, so its lines were filed under the statement above. Now its lines are held back until the next known heading, with a WARNING per company and a summary line. The exit code is unchanged.
+  - **F-16.** A read-only survey of all 710 statement pages found six `level1` headings; five are known. "التدفق النقدي" is on nine UAE pages: ADAV.AD, ADNIC, AMCREIT, AMLAK, DSI, DUBAIRES, EMSTEEL, QIC and UPP. Their whole cash flow is stored as part of their balance sheet; beta serves AMLAK's balance sheet as 50 lines, the last 19 its cash flow. The recommended patch also maps that heading.
+  - **Dry run on three copies, every company, 22:22–22:30 UTC, nothing live touched:**
+    - The live parser re-run reproduces the live file exactly: line items, quarterly rows and all 6,620 gauges.
+    - **Guard only:** 677 rows leave 8 balance sheets, and nothing else moves, gauges included.
+    - **Guard plus mapping:** the same 677 rows reappear under "Cash Flow Statement", identical in line, year and value. 12 gauge rows on 5 companies change status only: "na_sector, no cash-flow statement published" becomes "missing_inputs", because the gauge stage reads English labels only. No value, score or sector average moves.
+    - Both patches pass `git apply --check` against the live file.
+  - **Left on the server:** `/tmp/f16`, about 230 MB of database copies, kept as F-15's `/tmp/f15` was.
+
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
   (§9 item 3): 250 Saudi income statements (was 0), every row period-tagged, every change on Tadawul only.
@@ -232,7 +242,10 @@ Older entries: `changelog-archive.md`.
   mostly spelling and unit variants; this predates the release. **F-15 (open, fix prepared):**
   five Saudi finance companies' balance sheets are summed into their income statements (Tasheel's
   total assets shown ×4); the one-line parser patch is APPLIED (15:38 UTC) and lands with the
-  2026-11-04 05:00 UTC publish, to be checked then. **F-14:** the pipeline's news-AI step has
+  2026-11-04 05:00 UTC publish, to be checked then. **F-16 (open, fix prepared 2026-11-06):** nine UAE
+  companies' cash-flow statements sit inside their balance sheets (AMLAK's shows 50 lines, 19 of them cash
+  flow), because their pages head it "التدفق النقدي", which the parser does not know. The heading guard
+  plus one mapping line fixes it; dry-run clean, applying it is the owner's. **F-14:** the pipeline's news-AI step has
   generated nothing since at least 2026-10-19 (OpenRouter 401 on the pipeline's key) while reporting OK;
   the owner's, as a credential.
 - **Pro billing is OPEN on production since 2026-11-02 18:20 UTC** (Step 18), on the owner's go-ahead given before the lawyer (Step 7) and before Step 10 closed, against Claude's recommendation to wait. **The owner's own first payment went through and was applied once** (2026-11-02 19:24 UTC, SAR 79), **and the refund at 19:51 UTC ended Pro and dropped the saved card**: the paid path is proved end to end on the live site. No customer has paid. F-12: one of Moyasar's two webhooks is refused 403 for a secret mismatch, harmless, and the owner's to tidy now the refund has landed. The lawyer's (b) and (c) are now live questions about a product that is being sold, not one that is free.
@@ -1215,6 +1228,8 @@ and no customer has paid yet.
      - ~~release the Arabic statement labels~~ **RELEASED 2026-11-05** (`5c18a3ae46`, both tiers);
      - ~~push the unpushed commits~~ **PUSHED 2026-11-06** (`c046236..ccfe063`, the released sha
        included); only the record commits made after it are unpushed;
+     - **apply the parser's heading guard, which fixes F-16** (`docs/pipeline-guard-statement-headings-2026-11-06.md`):
+       a pipeline change, dry-run clean; recommended with its one mapping line;
      - **the $66 pilot, then the $393 decision-grade run** (Next Up item 4; unblocked since F-13 and the
        post-publish checks passed), with probes D1/D3/D6 retired or re-registered first.
   3. **Credentials and server:**
@@ -1230,8 +1245,8 @@ and no customer has paid yet.
   - ~~the 2026-11-04 review's findings on the Arabic labels~~ **DONE 2026-11-04** (see below);
   - ~~the check-advisors INFO lines (mandate tags, fault lines) that look blind to what renders~~
     **DONE 2026-11-06**: they were blind, now fixed and proven on a local stand-in room (changelog);
-  - an unknown-section-header guard for the parser (the F-15 review's root-cause fix; a pipeline patch,
-    so applying it is the owner's): **about 1 h** to prepare;
+  - ~~an unknown-section-header guard for the parser~~ **PREPARED 2026-11-06** and dry-run over every
+    company. It found **F-16** on its first run; applying it is the owner's (go-aheads above);
   - applying the lawyer's advice when it comes: **half a day to 2 days**, depending on what changes;
   - running and reading the pilot and the decision-grade run: **about a day**.
 
