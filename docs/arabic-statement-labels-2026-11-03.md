@@ -295,3 +295,69 @@ previous release `2e44ee6fbf`, the only app change is `web/src/content/data-labe
   - `check-billing-public.mjs` passes everything.
 - **Evidence:** `docs/screenshots/arabic-labels-release-2026-11-05/`.
 - **Rollback:** `2e44ee6fbf` is still in both tiers' `releases/`.
+
+## English pages: the Gulf lines still in Arabic (2026-11-06)
+
+This was the follow-up the review fixes left: Gulf companies' statements are stored in Arabic, and lines
+the dictionary could not put into English showed in Arabic on English pages. ChatGPT's review 02 named it
+the next step.
+
+**Before** (income statement and balance sheet, every Gulf company, all years):
+- Live data: 8,085 of 106,300 rows (7.6 %) in 94 labels.
+- After the 2026-11-06 publish, which moves F-16's cash flow out of nine balance sheets: 7,510 rows in 76
+  labels.
+
+**How each of the 76 got its English:**
+- **Argaam's own English for the same row id on the Saudi pages** (row ids are shared across markets).
+  This is the 11-04 method. Every label's ids gave one meaning, so none is ambiguous.
+- **Units** are the listing's own, never the Saudi riyal, in the dictionary's Gulf style: "Par value
+  (dirham)", "Book value (KWD)", "EPS Diluted (QAR)", "Earnings per unit (fils)". KWD, BHD and OMR are new
+  to that style.
+- **Translated, because Argaam's English names something else:**
+  - "الضرائب و التبرعات": "Taxes and donations", not "Taxes and Zakat";
+  - "متوسط عدد الوحدات (مليون)": "Average number of units (Million)", not "Shares Outstanding";
+  - "القيمه الدفتريه للاصول العائده للوحده": "Book value per unit".
+- **Two bank sub-lines** occur only in income statements, under "دخل العمولات الخاصة" / "مصاريف العمولات
+  الخاصة". They read "Special commission income from banks & other FIs" and "Special commission expense on
+  due to banks & other FIs", not the balance-sheet names their row ids carry.
+
+**What changed and what did not:**
+- 76 pairs were added, as one group appended at the end (495 pairs, was 419).
+- **No existing mapping changed in either direction.**
+- The 27 English labels that are new to the dictionary are used by no Saudi line, so **Arabic pages do not
+  change**.
+- Each Gulf line sits in the same statement as the Saudi line its English comes from, except the two bank
+  sub-lines above.
+
+**After:**
+- 0 rows on the after-F-16 data.
+- On live data until the publish: 575 rows in 18 labels, every one a cash-flow line inside an F-16
+  company's balance sheet.
+
+**Checks:**
+- **The other direction now has a check.** `check-data-fixes.mjs` with `SWEEP=1` reads every company's
+  statements and fails on any shown line the dictionary leaves in Arabic.
+  - It says so instead of counting where statements are Pro-only (production signed out).
+  - Run against beta before the publish, it **failed on exactly those 18 cash-flow labels in 8 companies**;
+    everything else passed (`docs/screenshots/gulf-english-labels-2026-11-06-sweep-before-publish.txt`).
+  - After the publish it is expected to pass. That run is still to do.
+- **Rendered:** seven companies, one per market and unit (108 KWD, ABOB OMR, DUBK QAR, GFH.DU on Bahrain,
+  ADCB and AJMANBAN AED, AMCREIT fund units), English and Arabic, at 1440 and 390.
+  - Every expected English label shown (93 per width).
+  - 0 English labels on the Arabic pages.
+  - 0 Arabic labels on the English pages, except AMCREIT's 15 cash-flow lines (F-16, until the publish).
+  - Evidence: `docs/screenshots/gulf-english-labels-2026-11-06/` and its `.txt`.
+- Tests: 5 new; web suite 47/47.
+
+**Left, and why:**
+- **Bank income sub-lines that share their text with a balance-sheet line:** "الاستثمارات" (Investments),
+  "قروض و سلف" (Loans and advances) and "ودائع العملاء" (Customer Deposits).
+  - Under "Special commission income/expense" they mean income from, or expense on, those balances, but
+    read as balances in the flat panel.
+  - Argaam's own English pages show them bare the same way, for Saudi banks too.
+  - The dictionary is keyed by text, so it cannot tell the two uses apart. Fixing it needs the panel to
+    look a label up by statement, which is the review's root-cause note ("key by row id").
+- **"property Real estate Investment":** an older dictionary entry, odd capitalisation, as on the 108
+  balance sheet.
+- **At 390 px the table opens on the oldest years** (FY2021–22 on 108), not the newest. Seen in the render;
+  not part of the labels.

@@ -230,6 +230,14 @@ Older entries: `changelog-archive.md`.
   - **Left on the server:** `/tmp/f16`, about 230 MB of database copies, kept as F-15's `/tmp/f15` was.
   - **APPLIED 2026-11-05 22:44 UTC on the owner's "Yes, apply it now":** backup `.bak-20261106` (= the file before), and the live parser is byte-identical to the dry-run variant (`9a0b7aa0…`). Tonight's run and the 05:00 UTC publish carry it; check the nine companies after the publish.
 
+- 2026-11-06 — **The review loop started, and its first next step is done: Gulf lines on English pages now have English.** On the owner's instruction, every output now goes to ChatGPT with the master plan (`docs/review-loop/`). Review 01 said FIX: two stale status lines, both corrected. Its next step was the 7.6 % of Gulf statement rows still in Arabic on English pages.
+  - 76 pairs were added: Argaam's English for the same row id on the Saudi pages, with Gulf units in the dictionary's style; three translated where Argaam's English names something else, and two bank income sub-lines composed. No existing mapping changed, and Arabic pages are unchanged.
+  - After the F-16 publish, 0 of 105,623 Gulf rows stay Arabic, down from 7,510.
+  - `check-data-fixes.mjs` `SWEEP=1` now checks this direction. Before the publish it fails on exactly F-16's 18 cash-flow labels, and it is to be re-run after.
+  - Rendered: 7 companies, both languages, 1440 and 390, every expected label shown. Tests 47/47.
+  - Left: three bank sub-lines that share text with balance lines (a statement-aware lookup), one odd old entry, and phone tables opening on the oldest year.
+  - Record: `docs/arabic-statement-labels-2026-11-03.md`, "English pages".
+
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
   (§9 item 3): 250 Saudi income statements (was 0), every row period-tagged, every change on Tadawul only.
@@ -239,8 +247,8 @@ Older entries: `changelog-archive.md`.
   Jun 2026" / "Jun 2026" with a note under the table. **The Arabic statement labels are RELEASED on both
   tiers (`5c18a3ae46`, 2026-11-05):** Saudi income-statement rows on Arabic pages are in Arabic except one
   company's two Mudaraba lines, taken from Argaam's Gulf Arabic pages (`aa3dde6` plus the 2026-11-04
-  review's fixes). Open follow-up: about 8,100 Gulf rows (7.6 %) still show in Arabic on English pages,
-  mostly spelling and unit variants; this predates the release. **F-15 (open, fix prepared):**
+  review's fixes). The Gulf English-page follow-up is done on `rebuild` (2026-11-06, not released):
+  0 rows stay Arabic once F-16 is published. **F-15 (open, fix prepared):**
   five Saudi finance companies' balance sheets are summed into their income statements (Tasheel's
   total assets shown ×4); the one-line parser patch is APPLIED (15:38 UTC) and lands with the
   2026-11-04 05:00 UTC publish, to be checked then. **F-16 (fix APPLIED 2026-11-05 22:44 UTC, lands with the 2026-11-06 05:00 UTC publish):** nine UAE

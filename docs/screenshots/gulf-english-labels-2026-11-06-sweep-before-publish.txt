@@ -1,0 +1,61 @@
+# check-data-fixes.mjs SWEEP=1, 2026-11-06, local web against beta's API, BEFORE the 2026-11-06 05:00 UTC publish that carries F-16. The one FAIL is the new English-label sweep finding the cash-flow lines F-16 moves out of eight balance sheets.
+PASS  101: the news date is the newest item's (2026-11-03)
+PASS  101 en: header price 0.862
+PASS  101 en: EPS 0.064 KWD
+PASS  101 en: news light fresh
+PASS  101 ar: header price 0.862
+PASS  101 ar: EPS د.ك 0.064
+PASS  101 ar: news light fresh
+PASS  2222: the news date is the newest item's (2026-11-01)
+PASS  2222 en: header price 26.24
+PASS  2222 en: EPS 1.88 SAR
+PASS  2222 en: news light fresh
+PASS  2222 ar: header price 26.24
+PASS  2222 ar: EPS ر.س 1.88
+PASS  2222 ar: news light fresh
+PASS  QCFS: the news date is the newest item's (2026-10-27)
+PASS  QCFS en: header price 2.579
+PASS  QCFS en: EPS 0.09 QAR
+PASS  QCFS en: news light fresh
+PASS  QCFS ar: header price 2.579
+PASS  QCFS ar: EPS ر.ق 0.09
+PASS  QCFS ar: news light fresh
+PASS  ADNOCDRILL: the news date is the newest item's (2026-10-28)
+PASS  ADNOCDRILL en: header price 5.85
+PASS  ADNOCDRILL en: EPS shows "Unit not confirmed"
+PASS  ADNOCDRILL en: news light fresh
+PASS  ADNOCDRILL ar: header price 5.85
+PASS  ADNOCDRILL ar: EPS shows "الوحدة غير مؤكدة"
+PASS  ADNOCDRILL ar: news light fresh
+PASS  NIND: the news date is the newest item's (2026-11-03)
+PASS  NIND en: header price 3.37
+PASS  NIND en: "Currency not confirmed" in the header
+PASS  NIND en: EPS 0.26
+PASS  NIND en: news light fresh
+PASS  NIND ar: header price 3.37
+PASS  NIND ar: "العملة غير مؤكدة" in the header
+PASS  NIND ar: EPS 0.26
+PASS  NIND ar: news light fresh
+PASS  methodology: news ages in calendar days
+PASS  methodology en 1440: news row shows 30
+PASS  methodology en 390: news row shows 30
+PASS  methodology ar 1440: news row shows 30
+PASS  methodology ar 390: news row shows 30
+sweep {"tickers":714,"eps_shown":502,"eps_unconfirmed":181,"eps_bad":0,"news_green_old":0,"news_green":449,"no_currency":7,"vt_reason":0}
+PASS  sweep: every EPS shown times its P/E gives the price (within 20%)
+PASS  sweep: no green news light on an item older than 30 days
+FAIL  sweep: every statement line on an English page has English (40278 lines; 18 label(s) still Arabic)
+        صافي الارباح (Balance Sheet): 8 ticker(s), e.g. ADAV.AD, EMSTEEL, QIC
+        الاهلاكات (Balance Sheet): 8 ticker(s), e.g. ADAV.AD, EMSTEEL, QIC
+        التدفق النقدي من الانشطة التشغيلية (Balance Sheet): 8 ticker(s), e.g. ADAV.AD, EMSTEEL, QIC
+        التدفق النقدي من الانشطة الاستثمارية (Balance Sheet): 8 ticker(s), e.g. ADAV.AD, EMSTEEL, QIC
+        التدفق النقدي من الانشطة التمويلية (Balance Sheet): 8 ticker(s), e.g. ADAV.AD, EMSTEEL, QIC
+        صافي التغير في النقد و ما يعادله (Balance Sheet): 8 ticker(s), e.g. ADAV.AD, EMSTEEL, QIC
+        النقد و ما يعادله بداية الفترة (Balance Sheet): 8 ticker(s), e.g. ADAV.AD, EMSTEEL, QIC
+        النقد و ما يعادله في نهاية الفترة (Balance Sheet): 8 ticker(s), e.g. ADAV.AD, EMSTEEL, QIC
+        صافي ( الزيادة ) / النقص في الموجودات التشغيلية (Balance Sheet): 7 ticker(s), e.g. ADAV.AD, EMSTEEL, QIC
+        صافي الزيادة / ( النقص ) في المطلوبات التشغيلية (Balance Sheet): 7 ticker(s), e.g. ADAV.AD, EMSTEEL, QIC
+        ( الزيادة ) او النقص في الاستثمارات (Balance Sheet): 7 ticker(s), e.g. ADAV.AD, EMSTEEL, QIC
+        الزيادة ( النقص ) في الديون (Balance Sheet): 7 ticker(s), e.g. ADAV.AD, EMSTEEL, QIC
+
+1 failed

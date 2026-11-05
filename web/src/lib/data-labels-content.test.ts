@@ -63,6 +63,47 @@ test("Arabic pages: a corrected misspelling is what Arabic pages show", () => {
   assert.equal(toAr.get(norm("Total Real estate Investments")), "إجمالي الاستثمارات العقارية");
 });
 
+test("English pages: a Gulf line in its own currency keeps that currency, never the Saudi riyal", () => {
+  // Argaam's English for these row ids is the Saudi page's ("Par Value (Riyal)"); the unit is the
+  // listing's own, in the dictionary's Gulf style (2026-11-06).
+  const cases: [string, string][] = [
+    ["القيمة الاسمية (درهم)", "Par value (dirham)"],
+    ["القيمة الاسمية (بيسة)", "Par value (baisa)"],
+    ["القيمة الدفترية (دينار كويتي)", "Book value (KWD)"],
+    ["القيمة الدفترية دينار كويتي", "Book value (KWD)"],
+    ["القيمة الدفترية (ريال عماني)", "Book value (OMR)"],
+    ["القيمة الدفترية (دينار بحريني)", "Book value (BHD)"],
+    ["ربح السهم المخفض (ريال قطري)", "EPS Diluted (QAR)"],
+    ["ربح الوحده (فلس)", "Earnings per unit (fils)"],
+  ];
+  for (const [ar, en] of cases) assert.equal(toEn.get(norm(ar)), en, ar);
+});
+
+test("English pages: a bank's income sub-line says it is income or expense, not a balance", () => {
+  // Children of "دخل العمولات الخاصة" / "مصاريف العمولات الخاصة" on Gulf banks' pages, and only ever in
+  // the income statement; the bare Saudi English ("Due from Banks & Other FI's") names a balance.
+  assert.equal(toEn.get(norm("أرصدة لدى البنوك والمؤسسات المالية")), "Special commission income from banks & other FIs");
+  assert.equal(toEn.get(norm("ارصدة للبنوك و المؤسسات المالية")), "Special commission expense on due to banks & other FIs");
+});
+
+test("English pages: where Argaam's English names something else, the Arabic is translated", () => {
+  assert.equal(toEn.get(norm("الضرائب و التبرعات")), "Taxes and donations"); // not "Taxes and Zakat"
+  assert.equal(toEn.get(norm("متوسط عدد الوحدات (مليون)")), "Average number of units (Million)"); // not shares outstanding
+});
+
+test("Arabic pages: the English-page pairs leave every Saudi line's Arabic as it was", () => {
+  // First wins in each direction, so a later pair adds a reading back to English without changing
+  // what an English-stored line shows on an Arabic page.
+  const cases: [string, string][] = [
+    ["Total Assets", "مجموع الموجودات"],
+    ["Investments", "استثمارات"],
+    ["Due to Banks", "مستحق للبنوك"],
+    ["Net Income", "صافي الدخل"],
+    ["Total Liabilities", "مجموع المطلوبات"],
+  ];
+  for (const [en, ar] of cases) assert.equal(toAr.get(norm(en)), ar, en);
+});
+
 test("English pages: an Arabic label Argaam uses for two different lines is not given one English", () => {
   // "إستثمارات أخرى" is both Other Investment Income (tr1255) and Other Investments (tr1289).
   assert.equal(toEn.get(norm("إستثمارات أخرى")), undefined);

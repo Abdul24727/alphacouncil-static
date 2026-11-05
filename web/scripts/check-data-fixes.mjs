@@ -25,6 +25,13 @@ const messages = {
   en: (await import("../messages/en.json", { with: { type: "json" } })).default,
   ar: (await import("../messages/ar.json", { with: { type: "json" } })).default,
 };
+// The statement-line dictionary, read the way lib/data-labels.ts reads it for an English page: an
+// Arabic-stored line shows in English when the first pair with that Arabic gives it one.
+const labelData = (await import("../src/content/data-labels.json", { with: { type: "json" } })).default;
+const normLabel = (s) => s.replace(/\s+/g, " ").trim().toLowerCase();
+const labelToEn = new Map();
+for (const [en, ar] of labelData.pairs) if (!labelToEn.has(normLabel(ar))) labelToEn.set(normLabel(ar), en);
+const isArabic = (s) => /[؀-ۿ]/.test(s);
 
 // NBK (fils EPS), Aramco (no turnover in its file), QCFS (QSE, third decimal), ADNOC Drilling
 // (EPS at 10,000x: no unit), National Industries on DFM (pipeline currency KWD on an AED market).
@@ -177,6 +184,42 @@ if (process.env.SWEEP) {
   console.log("sweep", JSON.stringify(n));
   check(n.eps_bad === 0, "sweep: every EPS shown times its P/E gives the price (within 20%)");
   check(n.news_green_old === 0, "sweep: no green news light on an item older than 30 days");
+
+  // Statement lines on English pages (2026-11-06): the Financials panel shows the income statement
+  // and the balance sheet (tabs.tsx), and a line the dictionary cannot put into English shows in
+  // Arabic there. check-arabic.mjs watches the other direction. Statements are Pro-only where
+  // billing is open, so a signed-out sweep there says so instead of counting.
+  const SHOWN = new Set(["Income Statement", "Balance Sheet"]);
+  const left = new Map();
+  let lines = 0;
+  let gated = 0;
+  for (const e of all) {
+    const r = await context.request.get(`${BASE_URL}/api/v1/tickers/${encodeURIComponent(e.slug)}/statements`);
+    if (r.status() === 401 || r.status() === 403) {
+      gated++;
+      break;
+    }
+    if (!r.ok()) continue; // no statements for this ticker
+    for (const s of (await r.json()).statements) {
+      if (!SHOWN.has(s.section)) continue;
+      for (const row of s.rows) {
+        lines++;
+        if (isArabic(row.label) && !labelToEn.has(normLabel(row.label))) {
+          const k = `${row.label} (${s.section})`;
+          left.set(k, (left.get(k) ?? []).concat(e.slug));
+        }
+      }
+    }
+  }
+  if (gated) console.log("INFO  sweep: statements are Pro-only here, so English statement labels were not swept");
+  else {
+    const worst = [...left].sort((a, b) => b[1].length - a[1].length).slice(0, 12);
+    check(
+      left.size === 0,
+      `sweep: every statement line on an English page has English (${lines} lines; ${left.size} label(s) still Arabic)`,
+      worst.map(([k, t]) => `${k}: ${t.length} ticker(s), e.g. ${t.slice(0, 3).join(", ")}`).join("\n        "),
+    );
+  }
 }
 
 await browser.close();
