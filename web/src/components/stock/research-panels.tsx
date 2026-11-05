@@ -207,8 +207,9 @@ export function StatementPanel({ section, className }: { section: "Income Statem
                     {statement.rows.map((r) => (
                       <tr key={r.index} className="border-t border-line">
                         <td className="min-w-48 py-1 pe-3 text-start text-text-soft">
-                          {/* Labels are stored in one language; shown in the page's when known (lib/data-labels). */}
-                          <bdi lang={dataLabel(r.label, locale).lang}>{dataLabel(r.label, locale).text}</bdi>
+                          {/* Labels are stored in one language; shown in the page's when known, read within
+                              their statement (lib/data-labels). */}
+                          <bdi lang={dataLabel(r.label, locale, section).lang}>{dataLabel(r.label, locale, section).text}</bdi>
                         </td>
                         {columns.map(({ year }) => (
                           <td key={year} className="py-1 ps-3 text-end">

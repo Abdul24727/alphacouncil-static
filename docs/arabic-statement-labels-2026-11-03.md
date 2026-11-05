@@ -392,3 +392,46 @@ reason to refuse.
 request failed. The one FAIL is the same 18 F-16 cash-flow labels in 8 companies; every other check passed
 (`docs/screenshots/gulf-english-labels-2026-11-06-sweep-failclosed.txt`). It is to be run again after the
 05:00 UTC publish, when it should pass.
+
+## Bank income sub-lines, read within their statement (2026-11-06, review 04's step)
+
+**The defect:** in a bank's income statement, Argaam lists the lines behind "Special commission income" as
+"Investments", "Due from banks", "Loans and advances", and behind "Special commission expense" as "Due to
+banks" and "Customer deposits". Those are the balance-sheet words. In our flat panel they read as balances.
+The text-keyed dictionary could not tell the two uses apart.
+
+**What the source establishes:** a read-only scan of every income statement harvested found 39 (32 Gulf in
+Arabic, 7 Saudi in English). Each of the five texts occurs in an income statement **only** as its own row
+id (tr23, tr24, tr25, tr27, tr28), under that parent:
+- under "Special Commission Income" / "دخل العمولات الخاصة": tr23, tr24, tr25;
+- under "Special Commission Expense" / "مصاريف العمولات الخاصة": tr27, tr28.
+
+**The change:**
+- `data-labels.json` has a new `in_statement` section: five entries for "Income Statement". Each matches the
+  stored text in both languages and gives its meaning in both languages:
+  - "Special commission income from investments" / "دخل العمولات الخاصة من الاستثمارات";
+  - "…from banks & other FIs";
+  - "…from loans and advances";
+  - "Special commission expense on due to banks & other FIs";
+  - "…on customer deposits".
+  The Arabic is Argaam's parent wording joined to the child's.
+- The lookup moved to `web/src/lib/data-labels-core.ts`, which has no imports, so tests run the real
+  function. `lib/data-labels.ts` wraps it, and its import path and behaviour without a statement are
+  unchanged.
+- `dataLabel()` takes an optional statement. Only the statement table passes it (`research-panels.tsx`); the
+  other five callers are untouched.
+
+**Checks:**
+- `web/src/lib/data-labels-core.test.ts`, 4 tests on the real dictionary:
+  - all five read within the income statement, from both stored languages, in both page languages;
+  - the same words keep their balance-sheet meaning;
+  - the lookup without a statement is unchanged, including the aliases;
+  - other income lines are untouched.
+- Suite 63/63; typecheck, lint and `npm run build` pass.
+- **Rendered:** ADCB (Gulf, Arabic-stored) and 1010 (Saudi, English-stored), both panels, English and Arabic,
+  1440 and 390: 16 panels PASS.
+  - Every new label shows, and no bare one is left in an income statement.
+  - Each balance sheet keeps its own words: ADCB's "ودائع العملاء" stays "Customer Deposits" there while it
+    reads as commission expense in the income statement.
+  - Every value in the newest column equals the API's, row by row.
+  - Evidence: `docs/screenshots/bank-sublines-2026-11-06/` and `.txt`.
