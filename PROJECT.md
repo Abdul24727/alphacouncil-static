@@ -228,6 +228,7 @@ Older entries: `changelog-archive.md`.
     - **Guard plus mapping:** the same 677 rows reappear under "Cash Flow Statement", identical in line, year and value. 12 gauge rows on 5 companies change status only: "na_sector, no cash-flow statement published" becomes "missing_inputs", because the gauge stage reads English labels only. No value, score or sector average moves.
     - Both patches pass `git apply --check` against the live file.
   - **Left on the server:** `/tmp/f16`, about 230 MB of database copies, kept as F-15's `/tmp/f15` was.
+  - **APPLIED 2026-11-05 22:44 UTC on the owner's "Yes, apply it now":** backup `.bak-20261106` (= the file before), and the live parser is byte-identical to the dry-run variant (`9a0b7aa0…`). Tonight's run and the 05:00 UTC publish carry it; check the nine companies after the publish.
 
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
@@ -242,7 +243,7 @@ Older entries: `changelog-archive.md`.
   mostly spelling and unit variants; this predates the release. **F-15 (open, fix prepared):**
   five Saudi finance companies' balance sheets are summed into their income statements (Tasheel's
   total assets shown ×4); the one-line parser patch is APPLIED (15:38 UTC) and lands with the
-  2026-11-04 05:00 UTC publish, to be checked then. **F-16 (open, fix prepared 2026-11-06):** nine UAE
+  2026-11-04 05:00 UTC publish, to be checked then. **F-16 (fix APPLIED 2026-11-05 22:44 UTC, lands with the 2026-11-06 05:00 UTC publish):** nine UAE
   companies' cash-flow statements sit inside their balance sheets (AMLAK's shows 50 lines, 19 of them cash
   flow), because their pages head it "التدفق النقدي", which the parser does not know. The heading guard
   plus one mapping line fixes it; dry-run clean, applying it is the owner's. **F-14:** the pipeline's news-AI step has
@@ -1228,8 +1229,7 @@ and no customer has paid yet.
      - ~~release the Arabic statement labels~~ **RELEASED 2026-11-05** (`5c18a3ae46`, both tiers);
      - ~~push the unpushed commits~~ **PUSHED 2026-11-06** (`c046236..ccfe063`, the released sha
        included); only the record commits made after it are unpushed;
-     - **apply the parser's heading guard, which fixes F-16** (`docs/pipeline-guard-statement-headings-2026-11-06.md`):
-       a pipeline change, dry-run clean; recommended with its one mapping line;
+     - ~~apply the parser's heading guard (F-16)~~ **APPLIED 2026-11-05 22:44 UTC**; to check after the 05:00 UTC publish;
      - **the $66 pilot, then the $393 decision-grade run** (Next Up item 4; unblocked since F-13 and the
        post-publish checks passed), with probes D1/D3/D6 retired or re-registered first.
   3. **Credentials and server:**

@@ -111,3 +111,16 @@ git apply --check -p1 /root/pipeline-guard-statement-headings-2026-11-06.patch &
   - eight of them have a "Cash Flow Statement";
   - the night's parse log has no "UNKNOWN STATEMENT HEADING" line.
 - **Reverse:** `git apply -R -p1` the same file, or restore the `.bak`.
+
+## Applied (2026-11-05 22:44 UTC, on the owner's "Yes, apply it now")
+
+- Outside the nightly window, and no pipeline process was running (checked by a script on stdin).
+- The parser before was `ac23a4f5…`, the file the patch was dry-run on. It is backed up as
+  `llm-council/parse_financial_statements.py.bak-20261106`, md5 identical.
+- `git apply --check`, then `git apply`, of `/root/pipeline-guard-statement-headings-2026-11-06.patch`.
+- The parser is now `9a0b7aa0…`, **byte-identical to dry-run variant (c)**; 34 changed lines against the
+  backup.
+- The module imports, with `SECTION_MAP["التدفق النقدي"] == "Cash Flow Statement"` and F-15's mapping
+  intact.
+- The 00:00 UTC nightly re-parses into a fresh database, and the 05:00 UTC publish carries it. The check
+  after the publish is the one under "Applying it".
