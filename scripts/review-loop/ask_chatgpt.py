@@ -81,13 +81,13 @@ def main() -> int:
     when = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     path = replies / f"{n:02d}-{slug}.md"
     path.write_text(f"# Review {n:02d}: {a.title}\n\n{when}. Reviewer: ChatGPT via the Codex CLI, read-only in the repo.\n"
-                    f"Output reviewed: `{a.output.name}`.\n\n{answer}\n", encoding="utf-8")
+                    f"Output reviewed: `{a.output.name}`.\n\n{answer}\n", encoding="utf-8", newline="\n")
     verdict = (re.search(r"VERDICT:\s*(\w+)", answer) or [None, "?"])[1]
     log = LOOP / "LOG.md"
     if not log.exists():
         log.write_text("# Review loop log\n\nEach line: when, the output reviewed, ChatGPT's verdict, its reply.\n\n",
-                       encoding="utf-8")
-    with log.open("a", encoding="utf-8") as fh:
+                       encoding="utf-8", newline="\n")
+    with log.open("a", encoding="utf-8", newline="\n") as fh:
         fh.write(f"- {when} — **{a.title}** — {verdict} — [{path.name}](replies/{path.name})\n")
     print(answer)
     print(f"\nsaved {path.relative_to(ROOT)}")
