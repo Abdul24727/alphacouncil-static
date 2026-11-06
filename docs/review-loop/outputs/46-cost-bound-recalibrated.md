@@ -31,7 +31,7 @@ Dated notes beside each $393: the test plan (§4's table and its "fund the decis
 paid record are unchanged.
 
 **Checks:**
-- `uv run pytest -q`: all pass;
+- `uv run pytest -q`: 560 passed, 10 skipped;
 - ruff shows the same 22 pre-existing findings;
 - `git diff --check` is clean.
 
