@@ -45,12 +45,30 @@ Pro stays on in the meantime.
 
 ## 2. Where things stand on 2026-11-06
 
-- **Live** at `alphacouncil.tech`; the latest release went out on 2026-11-06.
+- **Live** at `alphacouncil.tech`, running release **`b5655a5064`**, which went out on 2026-11-06 to beta and
+  then production.
 - **Billing has been open since 2026-11-02.** The owner opened it before this review, waiving the plan's
   order; Step 7 comes after the launch check.
 - **One payment has ever been taken.** It was the owner's own, on 2026-11-02, and was refunded the same
   evening. There is **no paying customer**.
 - **Four accounts.** Every test account the site's automated checks had made was deleted on 2026-11-06.
+- **Checked as it stands, on 2026-11-06, signed out on production** (`docs/launch-check-2026-11-06.md`), all
+  passing:
+  - the search-engine checks;
+  - the Arabic pages, with no stray English;
+  - the advisors' room as a visitor sees it;
+  - the market-data checks over all 714 companies;
+  - the five main pages in both languages at desktop and phone width. Contact sheets:
+    `docs/screenshots/launch-2026-11-06/pages/contact-sheet-1440.png` and `…/contact-sheet-390.png`.
+- **What a signed-out check cannot see on production:** the Pro-only financial statements. They were checked on
+  the beta copy, which runs the same release on the same data: all 714 companies, with every statement line in
+  English on English pages (`docs/screenshots/release-b5655a5064/beta-checks.txt`).
+- **Two open items the lawyer may see:**
+  - **The AI features' credit.** The model account that pays for the Copilot and the advisors' room was at
+    $7.83 on 2026-11-06, below the site's own $10 alert. If it runs out before the visit, those two features
+    stop until the owner tops it up.
+  - **No monthly renewal has happened yet.** The renewal path has been tested on beta with test cards, but not
+    yet with a real customer's card.
 
 ## 3. How to test the site (about an hour)
 
