@@ -184,6 +184,11 @@ as the report now does.
 
    - **The effect:** the $393 decision-grade quotation is out of date. `RUN_BOUND` has to be re-measured from these
      maxima before any figure is put to the owner.
+   - **Done the same day (review 45):** `RUN_BOUND` is now A 3.9714, D 2.7929 and B 0.3304, the larger of the live
+     and dry maxima, rounded up. `RUN_COST` is the pilot's live means: A 0.2511, D 0.1870, B 0.0318.
+     - **The decision-grade plan,** dry-run in full on the server: 180 runs, $331.30 reserved, and the harness
+       calls the new bound "loose by 28%", because a dry run cannot see live retries.
+     - **The quote:** forecast **$28.19**, cap **$426**. The dry record is `docs/eval/dry-probe-results.jsonl`.
    - **The cap still did its job.** Spending is checked per call, which is why $81.20 of reservations added up over
      432 calls while $5.64 was spent.
 2. **The inference probes cannot separate the arms on the planted metric.** The decision-grade run should read them

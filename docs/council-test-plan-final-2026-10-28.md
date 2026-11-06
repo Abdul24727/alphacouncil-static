@@ -137,6 +137,8 @@ time, not credits:
 | 18 | 54 | 216 | $31.02 | $392.20 | $393 | 19 points |
 | 24 | 72 | 288 | $41.36 | $522.93 | $523 | 17 points |
 
+*(Re-quoted 2026-11-06, after the pilot, review 45: with D1, D3 and D6 retired the decision-grade run is 15 probes, 180 runs - A, B and D three times each, plus one clean control per arm and probe. Forecast **$28.19** from the pilot's live per-run costs; reservation **$425.68** from `RUN_BOUND` re-measured to the pilot's live maxima; cap **$426**. Smallest visible gap about 20 points, read between the 12- and 18-probe rows, not simulated. The 18-probe row and every $393 are superseded.)*
+
 **And the arms test seat count, not distinctness.** The owner's decision is whether to move to four
 advisors *with more distinct investment philosophies*, and arm D uses the **existing** prompts, as
 instructed. So this comparison answers "do four of the current seats do the work of six" and says
@@ -271,7 +273,7 @@ Instead, in this order:
 3. **Meanwhile, expand the probe set offline** — from 6 to about 18. This is the only thing that makes
    the primary question answerable, it costs design time rather than credits, and it is work I can do
    without approval or spend.
-4. **Then fund the decision-grade run** at 18 probes (cap $393), which can see a 19-point gap.
+4. **Then fund the decision-grade run** at 18 probes (cap $393), which can see a 19-point gap. *(Re-quoted 2026-11-06: 15 probes, cap $426, forecast about $28; see §4's table note.)*
 
 If the decision has to be made sooner than that, it should be made on cost and on the distinctness of
 the four philosophies — and this benchmark should be asked only to confirm that four seats do not lose

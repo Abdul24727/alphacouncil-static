@@ -1300,8 +1300,10 @@ and no customer has paid yet.
        2026-11-06** (`f7b7de3`); **the $66 pilot RUN 2026-11-06** (D2, D4, D5, I1, I2, I3; arms A, B, D with
        controls): 36/36 runs, **$5.64 spent** (forecast $5.17); harness and cost model proven, scoring in part
        (two defects found and fixed, review 39) (`docs/council-pilot-2026-11-06.md`). It decides nothing about six seats against four. Before the
-       decision-grade run: re-measure `RUN_BOUND` from the live runs (the $393 quotation is stale), and top up
-       (balance $7.83).
+       decision-grade run: ~~re-measure `RUN_BOUND` from the live runs (the $393 quotation is stale)~~ **re-quoted
+       2026-11-06 (review 45): 15 probes, 180 runs, forecast about $28, cap $426** (`RUN_BOUND` A 3.9714, D 2.7929,
+       B 0.3304 from the pilot's live maxima; `docs/council-test-plan-final-2026-10-28.md`); top up (balance $7.83);
+       D5's markers to settle; and every answer audited by hand before the result is reported.
   3. **Credentials and server:**
      - ~~**F-14**: the pipeline's OpenRouter key is refused (401) and news AI has written nothing since at
        least 2026-10-19~~ **FIXED 2026-11-06**: the app's key copied in on the owner's go-ahead; 401 → 200;
@@ -1800,7 +1802,7 @@ wrong thing:
      passes) is met for the data, the API and the panel. It still needs the owner's go-ahead as a paid
      run, and probes D1/D3/D6 (retire or re-register) are still the owner's before it is scored.
    - *Resume here:* the launch roadmap at the top of this section.
-4. **Then the $66 validation pilot**, and the decision-grade run at cap $393 after it.
+4. **Then the $66 validation pilot**, and the decision-grade run at cap $393 after it. *(Pilot run 2026-11-06; the decision-grade run re-quoted the same day at cap $426, forecast about $28, 15 probes.)*
    **This item's precondition is MET as of 2026-11-02, on the owner's go-ahead ("Yes, wire them
    up"): the pilot can now answer all three priorities.** It used to be able to speak to Priority
    One only, because `uncovered` and `unruled` were computed per turn and read by nothing. The

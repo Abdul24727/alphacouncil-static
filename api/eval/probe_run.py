@@ -56,7 +56,10 @@ CELL = {c.key: c for c in CELLS + PROBE_CELLS}
 # Measured on beta 2026-10-27 over 60 runs. Arm E is modelled as two B passes plus the pack carried
 # twice; it is corrected from the first real runs and only ever used to decide whether the NEXT run
 # still fits under the cap, never to report a cost.
-RUN_COST = {"A": 0.2257, "D": 0.1759, "B": 0.0292, "E": 0.0640}
+# Re-measured 2026-11-06 from the $66 pilot's 36 live runs (12 an arm) on today's larger packs:
+# A 0.251074, D 0.187033, B 0.031847. The 2026-10-27 figures were A 0.2257, D 0.1759, B 0.0292. E is
+# unchanged: no E run has been made.
+RUN_COST = {"A": 0.2511, "D": 0.1870, "B": 0.0318, "E": 0.0640}
 # The WORST case per run, not the forecast above. MEASURED, not calculated beside the runner: these
 # are the largest reservations `eval probe --dry` actually took over the whole plan, arm by arm,
 # with every stand-in call going through the same `metered` wrapper a paid call does. Re-measure
@@ -85,7 +88,17 @@ RUN_COST = {"A": 0.2257, "D": 0.1759, "B": 0.0292, "E": 0.0640}
 # UP rather than to nearest, so the published figure covers the measurement instead of sitting a
 # hair under it. The previous values were A 2.9423, D 2.1903, B 0.3146, E 0.6252 - under the
 # measured maximum in the fourth decimal, which is harmless at this scale and wrong in principle.
-RUN_BOUND = {"A": 2.9424, "D": 2.1904, "B": 0.3147, "E": 0.6254}
+#
+# RE-MEASURED 2026-11-06, after the $66 pilot (review 45). The 2026-11-02 data repair made the packs
+# larger, and live calls retry where stand-ins never do, so the old figures fell short twice over:
+#   - the dry run of the 180-run decision-grade plan (15 probes, A/B/D x 3 + clean controls) took
+#     per-run maxima of A 3.154860, D 2.377631, B 0.330336 and reserved $331.30 against the old
+#     prediction of $326.85;
+#   - the pilot's 36 LIVE runs reserved per-run maxima of A 3.971305, D 2.792840, B 0.330336.
+# Each value below is the larger of the two, rounded UP. A dry run therefore reads about 28% "loose":
+# it cannot see live retries, and the live maxima are the worst case actually observed. E was not
+# re-measured (it is not in any planned run) and keeps its 2026-10-28 value.
+RUN_BOUND = {"A": 3.9714, "D": 2.7929, "B": 0.3304, "E": 0.6254}
 
 SHAPE = (
     '{"headline": "the answer in at most 16 words, no figures", '
