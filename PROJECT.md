@@ -355,6 +355,15 @@ Older entries: `changelog-archive.md`.
       - **Not yet run:** the Argaam account check. It needs the server's session-gate line copied, unprinted, into
         a scratch file, and is left for push time.
       - **Still needs:** the owner's push go-ahead.
+    - **THE OWNER'S RULE ON REVIEWS (2026-11-07):** reviews now run in ChatGPT in the owner's browser on the max model
+      (GPT-6, thinking effort High), not through the Codex CLI. The owner's words: "for chatgpt reviews you should use the
+      broswer and set chatgpt on max model that part does not use credit and we will still have usage so set this as a
+      roll". How it works:
+      - `scripts/review-loop/browser_review.py prompt` builds the prompt (the same preamble and master plan) and
+        stages it with every file the output relies on in `C:\AlphaCouncil-Staging\review-upload`, from which the
+        browser may upload.
+      - `browser_review.py save` records the reply and the log line.
+      - The queued CLI reviews were stopped. Review 70, of output 63, was sent this way.
     - **Next:** the reviewer's acceptance, then the owner's choice. The options are to keep today's room and fix the
       percentile and the P9 question, to screen a one-model option 2, or to stop.
   - **Before the app may use it:** the app's session total must count the calls a fallback superseded.

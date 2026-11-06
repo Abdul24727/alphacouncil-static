@@ -4,6 +4,12 @@ The owner's instruction (2026-11-06): every output Claude produces is reviewed b
 it toward the final plan and gives the next step. Every review restates this plan so the direction cannot
 drift.
 
+**How reviews run (the owner's rule, 2026-11-07):** in ChatGPT on chatgpt.com in the owner's browser, with the
+strongest model the menu offers (today GPT-6, thinking effort High). The owner's words: "for chatgpt reviews you
+should use the broswer and set chatgpt on max model that part does not use credit and we will still have usage so set
+this as a roll". The reviewer there cannot open the repository, so every file an output relies on is attached
+(`scripts/review-loop/browser_review.py`). Reviews 1 to 69 ran through the Codex CLI, until its usage limit.
+
 ## The final goal
 
 **alphacouncil.tech is finished, published and polished:** the launch plan in `PROJECT.md` is complete.
