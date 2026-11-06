@@ -335,6 +335,18 @@ Older entries: `changelog-archive.md`.
         its header. The Copilot's prompt and tool description say the same. No value changes.
       - **Checks:** suite 596 passed, lint at baseline, web typecheck, lint and tests clean.
       - **How to take it:** merge the branch. To drop it, delete it. It ships only with a release go-ahead.
+    - **Pre-push audit of `eeb9a9d..473ebac` (2026-11-07, ahead of any go-ahead; it reruns over the exact range at
+      push time):**
+      - **Size:** 25 commits, 50 files, +11,882 and −64 lines, 0 files deleted, all on `rebuild`. The branch
+        `percentile-standing` is not part of it.
+      - **Diff scan:** 2 hits, both prose naming Moyasar's dashboard and webhook.
+      - **History scan:** 43 distinct lines, all the known false positives (the regex quoting itself, the
+        `sk_test_x` fixture, the `startswith("sk_test_")` check, the commented `# OPENROUTER_API_KEY=` line, and
+        prose naming key shapes).
+      - **Other checks:** value-shaped keys in the added lines 0; the `git ls-files` check clean.
+      - **Not yet run:** the Argaam account check. It needs the server's session-gate line copied, unprinted, into
+        a scratch file, and is left for push time.
+      - **Still needs:** the owner's push go-ahead.
     - **Next:** the reviewer's acceptance, then the owner's choice. The options are to keep today's room and fix the
       percentile and the P9 question, to screen a one-model option 2, or to stop.
   - **Before the app may use it:** the app's session total must count the calls a fallback superseded.
