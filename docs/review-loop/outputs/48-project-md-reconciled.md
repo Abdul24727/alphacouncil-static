@@ -7,8 +7,9 @@
     `5c18a3ae46`. A note says it named `5c18a3ae46` until then.
   - **Pushed:** `b5655a5`, already updated earlier today.
 - **§6, the Gulf English-page follow-up:** "done on `rebuild` and NOT released" now reads **RELEASED on both tiers
-  (`b5655a5064`)**. The evidence is beta's checks and the sweep at 714/714 and 40,811 lines, with production's
-  served code hash-equal to beta's.
+  (`b5655a5064`)**. The evidence is beta's checks and the sweep at 714/714 and 40,811 lines. On production, the
+  labels chunk `0h67wtzm9w_13.js` is byte-identical to beta's and hash-equal on the public site, and separately both
+  tiers run the same release sha. *(Corrected after review 49: this said production's served code.)*
 - **§6, F-14:** "the owner's, as a credential" now reads **FIXED 2026-11-06**. The app's key was copied in without
   being printed, and a two-item run wrote English headlines and both summaries.
 - **§6, the superseded release note:** names `b5655a5064` as current and lists `5c18a3ae46`, `2e44ee6fbf` and
