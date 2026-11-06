@@ -273,7 +273,8 @@ scans run again over the exact range at push time.
   | `/swapfile` | 8.0G | swap |
   | `/opt/alphacouncil-platform` | 7.6G | beta and production releases, 3 each |
   | `/root` | 4.8G | `.cache` 1.8G (1.6G of it Playwright's browsers); `argaam-essentials.tar.gz` 1.7G (2026-05-13) |
-  | `/usr`, `/var/lib`, `/var/log` and the rest | about 5.5G | system; journal 155M |
+  | the rest of `/opt/alphacouncil` | about 5.2G | `backend/llm-council` 1.6G, `refresh-candidate` 1.4G, the pipeline venv, logs, the old frontend, an August snapshot |
+  | `/usr`, the rest of `/var`, `/tmp`, `/opt/alphacouncil-staging` | about 6.5G | `/usr` 3.0G; `/var/lib` 2.0G, `/var/log` 262M (journal 155M), an August `premigration` backup 434M; `/tmp` 281M; old staging 253M |
 
 - **The snapshots.** `run_rebuild_pipeline.py`'s step 0 (`do_snapshot`) copies the three product databases
   into a new `rebuild-snapshot-<ts>/` before every rebuild.
