@@ -52,17 +52,18 @@ Pro stays on in the meantime.
 - **One payment has ever been taken.** It was the owner's own, on 2026-11-02, and was refunded the same
   evening. There is **no paying customer**.
 - **Four accounts.** Every test account the site's automated checks had made was deleted on 2026-11-06.
-- **Checked as it stands, on 2026-11-06, signed out on production** (`docs/launch-check-2026-11-06.md`), all
-  passing:
+- **Checked as it stands, on 2026-11-06, signed out on production** ([the launch check](launch-check-2026-11-06.md)),
+  all passing:
   - the search-engine checks;
   - the Arabic pages, with no stray English;
   - the advisors' room as a visitor sees it;
   - the market-data checks over all 714 companies;
   - the five main pages in both languages at desktop and phone width. Contact sheets:
-    `docs/screenshots/launch-2026-11-06/pages/contact-sheet-1440.png` and `…/contact-sheet-390.png`.
+    [desktop](screenshots/launch-2026-11-06/pages/contact-sheet-1440.png) and
+    [phone](screenshots/launch-2026-11-06/pages/contact-sheet-390.png).
 - **What a signed-out check cannot see on production:** the Pro-only financial statements. They were checked on
   the beta copy, which runs the same release on the same data: all 714 companies, with every statement line in
-  English on English pages (`docs/screenshots/release-b5655a5064/beta-checks.txt`).
+  English on English pages ([beta's checks](screenshots/release-b5655a5064/beta-checks.txt)).
 - **Two open items the lawyer may see:**
   - **The AI features' credit.** The model account that pays for the Copilot and the advisors' room was at
     $7.83 on 2026-11-06, below the site's own $10 alert. If it runs out before the visit, those two features
