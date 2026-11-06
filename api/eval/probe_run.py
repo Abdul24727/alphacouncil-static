@@ -183,6 +183,12 @@ class ProbeResult:
     # made, turns it handed back to the room's own call, rounds that failed outright.
     engine: str = "room"
     engine_stats: dict[str, int] = field(default_factory=dict)
+    # Arm P only. Billed calls carried by no displayed turn - a plan or round whose words a fallback replaced,
+    # a presenter round that failed - each {"stage", "role", "usage"}; with `turns` and `failed_calls` they
+    # record every known charge exactly once. And the analyst's whole plan, kept so an audit can tell what
+    # the presenter wrote beyond it.
+    extra_calls: list[dict[str, Any]] = field(default_factory=list)
+    analyst_plan: dict[str, Any] | None = None
     # Seconds from the start of the run to the first turn a visitor would see - the first one that is
     # not an absent seat. A single-model arm's answer arrives whole, so there it is the run's seconds.
     # On a dry run it times the stand-in, not a model.
@@ -406,6 +412,9 @@ async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool
     r.bound_usd = round(calls.get("bound", 0.0) + pcalls.get("bound", 0.0), 6)
     r.turns, r.failed_calls, r.first_turn_seconds = turns, log.failures, log.first_turn_seconds
     r.engine, r.engine_stats = engine, dict(pres.stats) if pres else {}
+    if pres:
+        r.extra_calls = [{"stage": x["stage"], "role": x["role"], "usage": usage_record(x["usage"], dry)} for x in pres.extra]
+        r.analyst_plan = pres.plan
     r.absent = sorted({t["seat"] for t in turns if isinstance(t.get("data"), dict) and t["data"].get("absent")})
     r.openings, r.uncovered, r.unruled = room_flags(turns)
     if planted:

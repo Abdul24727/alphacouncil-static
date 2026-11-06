@@ -20,9 +20,13 @@ the room's own call for that one turn, so a bad slice costs one ordinary call ra
 fallbacks are counted in `stats`. A presenter round that fails outright falls back the same way, seat by
 seat. A failed analyst ends the session, as a failed Chair does in the room.
 
-Costs: a shared call's usage is returned with ONE turn - the brief for the analyst, the first advisor served
-for a presenter round - and the other turns it served carry `Usage(model="shared")`, so the session's
-total counts each call once.
+Costs: every call's usage is recorded exactly once, never merged with another's (review 64: merging hid an
+unknown cost behind a known one). A shared call's usage is returned with ONE turn - the brief for the
+analyst, the first advisor served for a presenter round - and the other turns it served carry
+`Usage(model="shared")`. When a turn's words come from a fallback, the turn carries the fallback's usage
+and the call it superseded goes to `extra`, billed but carried by no displayed turn. The harness records
+`extra`; the app does not yet, so its session total would miss those calls - to be fixed before the app
+uses this engine (docs/council-cost-options-2026-11-06.md).
 
 Off by default (Settings.debate_engine = "room"). Measured against the room before any decision
 (docs/council-cost-options-2026-11-06.md, "The comparison that would decide it").
@@ -36,7 +40,7 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 from .engine import ANSWER_WORDS, CHAIR_WORDS, LANGUAGE, RULINGS, State
-from .llm import SeatError, Usage
+from .llm import Usage
 from .roster import Seat
 
 # Room for one call's JSON. The analyst writes the whole room's substance; a presenter round writes every
@@ -49,21 +53,6 @@ PLAN_STAGE = {"openings": "opening", "debate": "challenge", "final": "final"}
 
 # Model call: (role, stage, state, messages, model, max_tokens, temperature, check) -> (checked, usage).
 Call = Callable[..., Awaitable[tuple[Any, Usage]]]
-
-
-def combine(*usages: Usage | None) -> Usage | None:
-    """Several calls' usage as one, for a turn that paid for more than one (a fallback after a share)."""
-    real = [u for u in usages if u is not None and u.model != SHARED]
-    if not real:
-        return next((u for u in usages if u is not None), None)
-    out = Usage(model="+".join(dict.fromkeys(u.model for u in real)))
-    for u in real:
-        out.seconds += u.seconds
-        out.prompt_tokens += u.prompt_tokens
-        out.completion_tokens += u.completion_tokens
-        if u.cost_usd is not None:
-            out.cost_usd = (out.cost_usd or 0.0) + u.cost_usd
-    return out
 
 
 def _split(messages: list[dict[str, str]]) -> tuple[str, str, str]:
@@ -93,6 +82,9 @@ class PresenterAsker:
         self.plan: dict[str, Any] | None = None
         self.rounds: dict[tuple[str, int | None], asyncio.Future] = {}
         self.claimed: set[tuple[str, int | None]] = set()
+        # Billed calls carried by no displayed turn: a plan or a round whose words a fallback replaced, and
+        # a presenter round that failed outright. Each is {"stage", "role", "usage"}.
+        self.extra: list[dict[str, Any]] = []
         self.stats = {"calls": 0, "fallbacks": 0, "round_failures": 0}
 
     # --- the engine's entry point ------------------------------------------------------------------
@@ -101,9 +93,9 @@ class PresenterAsker:
         stage = kw["stage"]
         if stage == "brief":
             usage = await self._analyse(kw)
-            return await self._serve(dict(self.plan["brief"]), kw, usage)
+            return await self._serve(self.plan.get("brief"), kw, usage, "analyst")
         if stage in ("faultlines", "verdict"):
-            return await self._serve(dict(self.plan[stage]), kw, Usage(model=SHARED))
+            return await self._serve(self.plan.get(stage), kw, Usage(model=SHARED), "analyst")
         return await self._advisor_turn(kw)
 
     # --- the analyst ---------------------------------------------------------------------------------
@@ -204,20 +196,24 @@ class PresenterAsker:
             self.rounds[key] = asyncio.ensure_future(self._present(kw))
         try:
             turns, usage = await asyncio.shield(self.rounds[key])
-        except SeatError as exc:
-            # The round failed outright: this seat falls back to the room's own call. Its failed
-            # attempts are billed once, with whichever seat claims the round first.
-            self.stats["round_failures"] += 1 if key not in self.claimed else 0
-            owed = exc.usage if self._claim(key) else None
-            return await self._fall_back(kw, owed)
+        except Exception as exc:  # noqa: BLE001 - any failure of the round sends its seats back to the room
+            # The round failed outright: every seat falls back to the room's own call, and the round's
+            # failed attempts are billed once, as an extra call, by whichever seat gets here first.
+            if self._claim(key):
+                self.stats["round_failures"] += 1
+                self._extra(stage, "presenter", getattr(exc, "usage", None))
+            return await self._fall_back(kw)
         owed = usage if self._claim(key) else Usage(model=SHARED)
-        raw = dict(turns.get(seat.id) or {})
+        value = turns.get(seat.id) if isinstance(turns, dict) else None
+        # A malformed value for one advisor (review 64: a string where an object belongs) is that seat's
+        # problem alone: an empty slice, refused by the engine's check, falls back for this turn only.
+        raw = dict(value) if isinstance(value, dict) else {}
         plan = self._seat_plan(seat.id, stage)
         if "lean" in plan:
             raw["lean"] = plan["lean"]
         if stage == "debate" and plan.get("responds_to"):
             raw["responds_to"] = plan["responds_to"]
-        return await self._serve(raw, kw, owed)
+        return await self._serve(raw, kw, owed, "presenter")
 
     def _claim(self, key: tuple[str, int | None]) -> bool:
         if key in self.claimed:
@@ -282,20 +278,25 @@ class PresenterAsker:
 
     # --- serving a turn ------------------------------------------------------------------------------
 
-    async def _serve(self, raw: dict[str, Any], kw: dict[str, Any], usage: Usage | None) -> tuple[Any, Usage | None]:
-        """The engine's own check on this turn; a turn it refuses falls back to the room's own call."""
+    async def _serve(self, raw: Any, kw: dict[str, Any], usage: Usage | None, role: str) -> tuple[Any, Usage | None]:
+        """The engine's own check on this turn. A turn it refuses - for whatever reason - falls back to the
+        room's own call, and the call whose words were refused is kept as an extra, still billed."""
         try:
-            return kw["check"](raw), usage
-        except (ValueError, TypeError, KeyError, AttributeError):
-            return await self._fall_back(kw, usage)
+            if not isinstance(raw, dict):
+                raise TypeError("the plan has no object for this turn")
+            return kw["check"](dict(raw)), usage
+        except Exception:  # noqa: BLE001 - a refused slice is a fallback, never the end of the session
+            self._extra(kw["stage"], role, usage)
+            return await self._fall_back(kw)
 
-    async def _fall_back(self, kw: dict[str, Any], owed: Usage | None) -> tuple[Any, Usage | None]:
+    async def _fall_back(self, kw: dict[str, Any]) -> tuple[Any, Usage | None]:
+        """The room's own call for this one turn. Its usage is the turn's; a SeatError carries its own."""
         self.stats["fallbacks"] += 1
-        try:
-            checked, usage = await self.fallback(**kw)
-        except SeatError as exc:
-            raise SeatError(exc.code, combine(owed, exc.usage)) from exc
-        return checked, combine(owed, usage)
+        return await self.fallback(**kw)
+
+    def _extra(self, stage: str, role: str, usage: Usage | None) -> None:
+        if usage is not None and usage.model != SHARED:
+            self.extra.append({"stage": stage, "role": role, "usage": usage})
 
 
 def make_asker(call: Call, fallback: Call, advisors: list[Seat], chair: Seat, locale: str,

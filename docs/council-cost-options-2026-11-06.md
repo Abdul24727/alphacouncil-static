@@ -5,7 +5,7 @@ room's presentation is a major selling point and stays as it is: the portraits, 
 answers are no better than a single model's, it should run on one model, or two at most, one to present and one
 to do the real work. The direction is quoted in full in `docs/review-loop/MASTER-PLAN.md`.
 
-Nothing here is built or released. **Any paid run needs the owner's go-ahead per run.**
+Option 2 is built as a prototype (`api/app/debate/presenter.py`, harness arm P), off by default; nothing is released. **Any paid run needs the owner's go-ahead per run.** *(Updated 2026-11-06 after review 64: this said nothing was built.)*
 
 *(Corrected after review 60. The first version split the room's cost into advisors (77 %) and Chair by comparing
 six seats with four. That comparison cannot isolate either: fewer seats also make every remaining prompt's
@@ -75,15 +75,18 @@ A-against-D run **unnecessary** for this decision.
   - **Bound:** its dry maximum scaled by the room's measured live-to-dry ratio (1.2588), $1.5891 a run.
   - **Forecast:** its dry mean times the room's cost-to-reservation ratio, about **$0.10 a session**. The guess of
     $0.05–0.07 above was too low: the analyst writes one long answer on the stronger model.
-  - **Against criterion 4:** $0.10 is about 41 % of today's room, right at the 40 % limit. The comparison settles
-    it.
+  - **Against criterion 4:** $0.1036 is **41.3 %** of today's room's $0.2511, so on this provisional estimate it is
+    **above** the 40 % limit. Only the live comparison can settle it. *(Corrected after review 64: this said "right
+    at" the limit.)*
 - **Expected cost:** A ≈ 30 × $0.2511 = **$7.53**, P ≈ 30 × $0.1036 = $3.11: about **$10.64 in all**.
 - **The cap:** 30 × $3.9714 + 30 × $1.5891 = **$166.82, so $167**. That is a ceiling enforced per call, not an expected
   spend, and the owner approves it.
 
 **What is recorded for every session:**
 - every turn the page would show, saved whole: every advisor turn, the fault lines, the rulings and the Chair's
-  answer. Today the harness keeps only the final answer and summary flags, so this needs a harness change;
+  answer. The harness has kept these since 2026-11-06 (`ProbeResult.turns`);
+- for option 2, the analyst's whole plan (`analyst_plan`), so the audit can tell what the presenter wrote beyond the
+  analysis, and the calls a fallback superseded (`extra_calls`);
 - each turn's model, tokens and cost;
 - the time to the first words on screen.
 
@@ -110,7 +113,9 @@ A-against-D run **unnecessary** for this decision.
 ## Before any release, whichever option
 
 1. **Built behind a setting, off by default,** on `rebuild`. Today's room stays the default until the owner
-   chooses.
+   chooses. *(Done for option 2. Before the app itself may use it, its session total must also count the calls a
+   fallback superseded. Today the app sums only displayed turns' costs, and the harness records those calls
+   separately as `extra_calls`.)*
 2. **The comparison above,** on the owner's go-ahead, with its cap set from the prototype.
 3. **Shown to the owner on beta.**
 4. **The site's words kept true.**

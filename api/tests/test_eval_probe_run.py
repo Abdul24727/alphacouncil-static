@@ -549,7 +549,10 @@ def _fake_paid_room(monkeypatch, fail_seat: str, fail_stage: str):
 
 
 def _recorded_cost(r) -> float:
-    return round(sum(x["usage"]["cost_usd"] for x in r.turns + r.failed_calls if x["usage"]["cost_usd"] is not None), 6)
+    """Every known charge in the record, each counted once: displayed turns, failed Chair calls, and calls
+    a fallback superseded (arm P)."""
+    rows = r.turns + r.failed_calls + r.extra_calls
+    return round(sum(x["usage"]["cost_usd"] for x in rows if x["usage"]["cost_usd"] is not None), 6)
 
 
 @needs_packs
@@ -610,7 +613,8 @@ def test_a_dry_room_labels_its_turns_simulated_and_a_single_model_times_its_one_
 # --- arm P: the owner's two-model option (app/debate/presenter.py) ----------------------------------
 
 
-def _presenter_room(monkeypatch, planted=False, bad_slice=None, fail=None, seen=None, locale="en"):
+def _presenter_room(monkeypatch, planted=False, bad_slice=None, fail=None, seen=None, locale="en",
+                    malformed=None, unknown_fallback=False):
     """Arm P through run_room on the stand-in, with costs: each room call $0.01, each analyst or
     presenter call $0.05. `bad_slice` empties one advisor's opening so the engine refuses it; `fail`
     ("analyst" or a presenter stage) makes that call fail outright, billed $0.004. `seen` collects the
@@ -627,7 +631,7 @@ def _presenter_room(monkeypatch, planted=False, bad_slice=None, fail=None, seen=
 
         async def ask(**kw):
             checked, _ = await inner(**kw)
-            return checked, Usage(model=kw["model"], cost_usd=0.01)
+            return checked, Usage(model=kw["model"], cost_usd=None if unknown_fallback else 0.01)
         return ask
 
     def costed_call(standin_ask, advisors, chair):
@@ -641,6 +645,8 @@ def _presenter_room(monkeypatch, planted=False, bad_slice=None, fail=None, seen=
             checked, _ = await inner(**kw)
             if bad_slice and kw["role"] == "presenter" and kw["stage"] == "openings":
                 checked[bad_slice] = {**checked[bad_slice], "text": ""}  # the engine refuses an empty answer
+            if malformed and kw["role"] == "presenter" and kw["stage"] == "openings":
+                checked[malformed] = "not an object"  # review 64: a string where an object belongs
             return checked, Usage(model=kw["model"], cost_usd=0.05)
         return call
 
@@ -734,3 +740,38 @@ def test_the_presenter_runs_every_stage_in_arabic(monkeypatch):
         "brief": 1, "openings": 6, "faultlines": 1, "debate": 6, "final": 6, "verdict": 1}
     assert all("Arabic" in m[1]["content"].rsplit("\n", 1)[-1] for _, _, m in seen), "every call asks for Arabic"
     assert any("؀" <= ch <= "ۿ" for t in r.turns if t["stage"] == "openings" for ch in t["data"]["text"])
+
+
+@needs_packs
+def test_a_malformed_advisor_value_falls_back_for_that_seat_alone(monkeypatch):
+    """Review 64: a string where one advisor's object belongs used to end the session with nothing
+    falling back and part of the bill missing from the record."""
+    r = _presenter_room(monkeypatch, planted=True, malformed="lynch")
+    assert r.ok, r.error
+    assert r.engine_stats["fallbacks"] == 1 and r.engine_stats["round_failures"] == 0
+    lynch = next(t for t in r.turns if t["seat"] == "lynch" and t["stage"] == "openings")
+    assert lynch["data"].get("text") and not lynch["data"].get("absent")
+    assert _recorded_cost(r) == round(r.cost_usd, 6), "every known charge recorded exactly once"
+
+
+@needs_packs
+def test_a_known_charge_is_never_merged_into_an_unknown_one(monkeypatch):
+    """Review 64: merging a known presenter charge with a fallback whose cost was not reported used to
+    show only the known part. Now the fallback's turn says unknown, and the superseded presenter call
+    keeps its known charge as an extra."""
+    r = _presenter_room(monkeypatch, bad_slice="dalio", unknown_fallback=True)
+    assert r.ok, r.error
+    dalio = next(t for t in r.turns if t["seat"] == "dalio" and t["stage"] == "openings")
+    assert dalio["usage"]["cost_usd"] is None
+    assert all(x["usage"]["cost_usd"] is not None for x in r.extra_calls)
+    assert _recorded_cost(r) == round(r.cost_usd, 6)
+
+
+@needs_packs
+def test_a_presenter_run_keeps_the_analysts_whole_plan(monkeypatch):
+    """Review 64: without the plan, an audit cannot tell what the presenter wrote beyond the analysis."""
+    r = _presenter_room(monkeypatch)
+    assert r.ok, r.error
+    plan = r.analyst_plan
+    assert set(plan) == {"brief", "seats", "faultlines", "verdict"}
+    assert {t["seat"] for t in r.turns if t["stage"] == "openings"} == set(plan["seats"])
