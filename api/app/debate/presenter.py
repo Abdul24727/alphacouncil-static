@@ -188,8 +188,12 @@ class PresenterAsker:
             raise ValueError(f'"seats" must have every advisor; missing: {", ".join(missing)}')
         for sid in ids:
             s = seats[sid]
-            if not isinstance(s, dict) or not all(isinstance(s.get(k), dict) for k in ("opening", "challenge", "final")):
-                raise ValueError(f'"seats.{sid}" needs "opening", "challenge" and "final" objects')
+            # A pinned seat's opening is already written and is never served from the plan, and the analyst
+            # is told to write none (review 66: requiring it here refused a plan that obeyed, at the cost of a
+            # paid retry). So it may be missing, empty or anything else; the seat still needs its later rounds.
+            need = ("challenge", "final") if sid in self.pinned else ("opening", "challenge", "final")
+            if not isinstance(s, dict) or not all(isinstance(s.get(k), dict) for k in need):
+                raise ValueError(f'"seats.{sid}" needs {" and ".join(chr(34) + k + chr(34) for k in need)} objects')
             if sid not in self.pinned and not str(s["opening"].get("position") or "").strip():
                 raise ValueError(f'"seats.{sid}.opening.position" is empty')
             to = s["challenge"].get("responds_to")
@@ -232,7 +236,8 @@ class PresenterAsker:
         return True
 
     def _seat_plan(self, seat_id: str, stage: str) -> dict[str, Any]:
-        return dict(((self.plan or {}).get("seats", {}).get(seat_id) or {}).get(PLAN_STAGE[stage]) or {})
+        part = ((self.plan or {}).get("seats", {}).get(seat_id) or {}).get(PLAN_STAGE[stage])
+        return dict(part) if isinstance(part, dict) else {}
 
     async def _present(self, kw: dict[str, Any]) -> tuple[dict[str, Any], Usage]:
         stage, state = kw["stage"], kw.get("state")

@@ -636,15 +636,16 @@ def test_a_dry_room_labels_its_turns_simulated_and_a_single_model_times_its_one_
 
 
 def _presenter_room(monkeypatch, planted=False, bad_slice=None, fail=None, seen=None, locale="en",
-                    malformed=None, unknown_fallback=False):
+                    malformed=None, unknown_fallback=False, pinned_opening="keep"):
     """Arm P through run_room on the stand-in, with costs: each room call $0.01, each analyst or
     presenter call $0.05. `bad_slice` empties one advisor's opening so the engine refuses it; `fail`
     ("analyst" or a presenter stage) makes that call fail outright, billed $0.004. `seen` collects the
-    analyst's and presenter's messages."""
+    analyst's and presenter's messages. `pinned_opening` ("drop" or "empty") makes the analyst's plan
+    leave the planted seat's opening out, or empty, as it is told to."""
     from app.debate import presenter, standin
     from app.debate.llm import SeatError, Usage
     from eval import probe_run
-    from eval.probes import BY_ID
+    from eval.probes import BY_ID, PLANT_SEAT
 
     real_asker, real_call = standin.make_asker, presenter.make_standin_call
 
@@ -664,6 +665,17 @@ def _presenter_room(monkeypatch, planted=False, bad_slice=None, fail=None, seen=
                 seen.append((kw["role"], kw["stage"], kw["messages"]))
             if fail in (kw["role"], kw["stage"]):
                 raise SeatError("bad_output", usage=Usage(model=kw["model"], cost_usd=0.004))
+            if pinned_opening != "keep" and kw["role"] == "analyst":
+                check = kw["check"]
+
+                def obeying(plan):
+                    seat = plan["seats"][PLANT_SEAT]
+                    if pinned_opening == "drop":
+                        seat.pop("opening")
+                    else:
+                        seat["opening"] = {}
+                    return check(plan)
+                kw = {**kw, "check": obeying}
             checked, _ = await inner(**kw)
             if bad_slice and kw["role"] == "presenter" and kw["stage"] == "openings":
                 checked[bad_slice] = {**checked[bad_slice], "text": ""}  # the engine refuses an empty answer
@@ -801,3 +813,66 @@ def test_a_presenter_run_keeps_the_analysts_whole_plan(monkeypatch):
     plan = r.analyst_plan
     assert set(plan) == {"brief", "seats", "faultlines", "verdict"}
     assert {t["seat"] for t in r.turns if t["stage"] == "openings"} == set(plan["seats"])
+
+
+@needs_packs
+@pytest.mark.parametrize("how", ["drop", "empty"])
+def test_a_plan_that_writes_no_opening_for_the_planted_seat_is_accepted(monkeypatch, how):
+    """Review 66: the analyst is told to write no opening for a pinned seat, and the plan's check
+    still required one, so a plan that obeyed was refused - a paid retry, or a failed session. The
+    session now runs on its four calls with nothing refused."""
+    from eval.probes import PLANT_SEAT
+
+    r = _presenter_room(monkeypatch, planted=True, pinned_opening=how)
+    assert r.ok, r.error
+    assert r.calls == 4 and r.engine_stats == {"calls": 4, "fallbacks": 0, "round_failures": 0}
+    assert PLANT_SEAT in r.analyst_plan["seats"]
+    assert _recorded_cost(r) == round(r.cost_usd, 6)
+
+
+@needs_packs
+def test_the_plan_check_waives_the_opening_for_a_pinned_seat_only():
+    """The other half of review 66's regression: only the pinned seat may go without an opening.
+    Every seat, pinned or not, still needs its challenge and its final word."""
+    import copy
+
+    from app.debate import presenter, roster
+    from app.settings import get_settings
+    from eval.probes import PLANT_SEAT
+
+    s = get_settings()
+    advisors, chair = roster.advisors(s.debate_advisors), roster.chair()
+    ids = [a.id for a in advisors]
+    other = next(i for i in ids if i != PLANT_SEAT)
+
+    def plan():
+        seats = {i: {"opening": {"position": f"{i} answers"},
+                     "challenge": {"responds_to": next(j for j in ids if j != i), "point": "p"},
+                     "final": {"position": "f"}} for i in ids}
+        return {"brief": {}, "seats": seats, "faultlines": {}, "verdict": {}}
+
+    async def never(**_):
+        raise AssertionError("no call")
+
+    pinned = presenter.make_asker(never, never, advisors, chair, "en", {}, pinned={PLANT_SEAT: "- X: a line"})
+    unpinned = presenter.make_asker(never, never, advisors, chair, "en", {})
+
+    for change in ({"drop": PLANT_SEAT}, {"empty": PLANT_SEAT}, {"string": PLANT_SEAT}):
+        (how, sid), = change.items()
+        p = plan()
+        if how == "drop":
+            del p["seats"][sid]["opening"]
+        else:
+            p["seats"][sid]["opening"] = {} if how == "empty" else "not an object"
+        assert pinned.check_plan(copy.deepcopy(p)), how
+        with pytest.raises(ValueError):
+            unpinned.check_plan(p)
+
+    p = plan()
+    del p["seats"][other]["opening"]
+    with pytest.raises(ValueError, match=other):
+        pinned.check_plan(p)
+    p = plan()
+    del p["seats"][PLANT_SEAT]["final"]
+    with pytest.raises(ValueError, match=PLANT_SEAT):
+        pinned.check_plan(p)
