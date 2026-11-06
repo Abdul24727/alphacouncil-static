@@ -29,14 +29,17 @@ intended real-estate label.
 
 ## Every file changed since `5c18a3ae46`
 
-From `git diff --name-status 5c18a3ae46..307d2fc`, grouped. The full list is reproducible with that command.
+All of `git diff --name-status 5c18a3ae46..307d2fc`: 26 files named below, plus 307 evidence files under
+`docs/screenshots/` and 28 review-loop records under `docs/review-loop/`. *(Reconciled with the diff
+2026-11-06, after ChatGPT's review 14 found three script files missing from the first list.)*
 
 **App code, which ships with a release (5 files):**
 - `M web/src/content/data-labels.json`: 76 English-page pairs; `in_statement` (5 bank sub-lines); the garbled
   real-estate pair becomes an alias.
 - `A web/src/lib/data-labels-core.ts`: the lookup, with no imports, taking an optional statement.
 - `M web/src/lib/data-labels.ts`: now `makeDataLabel(data)`; same import path for every caller.
-- `M web/src/lib/statement-period.ts`: `statementColumns()` newest first; `phoneColumnWidth()`, the phone width rule.
+- `M web/src/lib/statement-period.ts`: `statementColumns()` newest first; `phoneColumnWidth()`, the phone
+  width rule.
 - `M web/src/components/stock/research-panels.tsx`: the statement table passes its statement to
   `dataLabel`; sticky label column; on a phone, measured period widths with snap scrolling.
 
@@ -50,23 +53,33 @@ From `git diff --name-status 5c18a3ae46..307d2fc`, grouped. The full list is rep
 - `A web/scripts/lib/label-sweep.mjs` and `A web/scripts/lib/label-sweep.test.mjs`: the sweep fails closed;
 - `M web/scripts/check-advisors.mjs`: two INFO lines were blind to the chips and fault lines.
 
-**Pipeline tooling and patches** (not part of the web release; the server's parser was changed separately,
-on the owner's go-ahead):
-- `M scripts/argaam_ar_labels/pair_from_gulf.py` (the dollar unit) and
-  `A scripts/argaam_ar_labels/test_pair_from_gulf.py`;
-- `A docs/pipeline-guard-statement-headings-2026-11-06.patch` (applied 2026-11-05 22:44 UTC) and its
-  guard-only variant, with `A docs/pipeline-guard-statement-headings-2026-11-06.md`.
+**Pipeline tooling, not part of the web release (6 files under `scripts/argaam_ar_labels/`):**
+- `A argaam_pages.py`: the page reading the two pairing scripts share (`page_rows()`, `norm()`, `ROW_ID`).
+- `M pair_from_gulf.py`: the dollar as a currency unit, and it uses `argaam_pages.py`.
+- `M pair_labels.py`: it uses `argaam_pages.py`, and its `--ar-dir` usage is marked superseded.
+- `M harvest_ar_statements.py`: docstring only, marked superseded (do not run).
+- `A test_pair_from_gulf.py`: the unit rule's tests.
 
-**Review loop:**
-- `A scripts/review-loop/ask_chatgpt.py`;
-- `A docs/review-loop/` (master plan, outputs, replies, log).
+**Review loop tooling (1 file):** `A scripts/review-loop/ask_chatgpt.py`.
 
-**Records and evidence:**
-- `M PROJECT.md` and `M docs/arabic-statement-labels-2026-11-03.md`;
-- `M docs/screenshots/launch-2026-10-27/advisors-signed-in/check-advisors.txt` (a corrected header);
-- added evidence under `docs/screenshots/`: `arabic-labels-release-2026-11-05/`, `check-advisors-info-2026-11-06/`,
-  `gulf-english-labels-2026-11-06/` with its three `.txt` files, `statements-newest-first-2026-11-06/`,
-  `bank-sublines-2026-11-06/`, and `real-estate-label-2026-11-06/`.
+**Patches and pipeline records (5 files under `docs/`):**
+- `A pipeline-guard-statement-headings-2026-11-06.patch`, applied on the server 2026-11-05 22:44 UTC on the
+  owner's go-ahead;
+- `A pipeline-guard-statement-headings-guard-only-2026-11-06.patch`, the unused alternative;
+- `A pipeline-guard-statement-headings-2026-11-06.md`, its record;
+- `A check-advisors-owns-case-2026-11-06.patch`, prepared and **not applied**: it waits on the owner's
+  go-ahead;
+- `A release-readiness-2026-11-06.md`, this report.
+
+**Records (3 files):**
+- `M PROJECT.md`;
+- `M docs/arabic-statement-labels-2026-11-03.md`;
+- `M docs/screenshots/launch-2026-10-27/advisors-signed-in/check-advisors.txt`: a corrected header. It is also
+  counted among the 307 evidence files.
+
+**Evidence and review records:**
+- 307 files under `docs/screenshots/`, the folders this report and the labels doc cite;
+- 28 under `docs/review-loop/`: the master plan, outputs, replies and log.
 
 ## Checks on the candidate (`307d2fc`), all run together on 2026-11-06
 
