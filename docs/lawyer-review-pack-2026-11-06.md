@@ -68,8 +68,11 @@ Pro stays on in the meantime.
 6. Add a holding and a price alert. Then, in **Settings**:
    - change the language;
    - sign out;
-   - finally, **Delete account**. It removes the account and everything stored with it, except payment
-     records (§5.1).
+   - finally, **Delete account**. It removes the account and the records tied to it. Three things outlive it
+     (§5.1):
+     - payment records;
+     - the day's rate-limit rows, which hold the IP address and email;
+     - backup copies.
 
 **Pro, the advisors' room**, in either of two ways:
 
@@ -127,7 +130,7 @@ is cited for each, so the drafting can follow what the site does.
 | Sign-in sessions: a hash of the cookie's token, never the token | staying signed in | 30 days (`auth.py`, `SESSION_DAYS`); an expired one is refused | at sign-out, at a password reset (all of the account's sessions), or when the account is deleted. An expired session that is never signed out stays until then. |
 | Password-reset links: a hash only | the reset email | one hour, once (`RESET_MINUTES`) | expired ones, anyone's, are deleted the next time any reset is requested (`forgot_password`); the account's unused ones on a successful reset |
 | Email-verification links: a hash only | the confirmation email | 48 hours, once (`VERIFY_HOURS`) | an unused one is replaced when a new link is sent (`issue_verification`); a used one stays until the account is deleted |
-| IP address and email of sign-in, sign-up, reset and verification attempts | stopping abuse | counted over a window of minutes | rows older than a day are deleted the next time anyone's attempt is counted (`DbRateLimit.hit` in `auth.py`) |
+| IP address and email of sign-in, sign-up, reset and verification attempts | stopping abuse | counted over a window of minutes | rows older than a day are deleted the next time anyone's attempt is counted (`DbRateLimit.hit` in `auth.py`). They are **not** tied to the account (`rate_hits` has no user link), so deleting the account does not remove them early. |
 | Holdings (company, quantity, average cost), price alerts, preferences | portfolio features | — | when the account is deleted |
 | Advisors' room sessions: the member's question, the company, every seat's answer, the Chair's answer, cost | the session record the member can reopen | — | when the account is deleted |
 | Acceptances (§4) | proof of consent | — | when the account is deleted |
@@ -136,23 +139,28 @@ is cited for each, so the drafting can follow what the site does.
 | Saved card at Moyasar: its token | monthly renewal | until the plan ends | see below |
 | Card brand and last four digits; never the card number | billing emails and Settings | — | when the account is deleted. They stay after the plan ends. |
 
-**The saved card, step by step** (`api/app/billing.py`):
+**The saved card, step by step** (`api/app/billing.py`). Four steps decide what happens to the token:
 - **Cancelling renewal** (`cancel_renewal`) keeps the token, so the member can resume before the paid period ends
-  (`resume_renewal`).
-- **When the plan ends**, cancelled and out of period or renewals failed (`_end`), and **on a refund**
-  (`_refunded`): the site clears the token and asks Moyasar to delete it. Neither checks Moyasar's answer.
+  (`resume_renewal`). A cancelled plan is never charged again: renewals charge only plans not cancelled.
+- **The end of a plan is applied by the hourly billing job** (`run_renewals`, the `acp-prod-billing` timer), not at
+  the exact end time. The job clears the token and asks Moyasar to delete it (`_end`) on its first run after a
+  cancelled plan's period ends. It does the same after the third failed renewal, which is retried once a day.
+- **A refund** (`_refunded`) ends Pro and clears the token **only when the refunded payment is the one that paid
+  the current period**. A refund of an older payment marks that payment refunded and leaves the plan and the
+  token as they are.
 - **When the account is deleted** (`forget_card`), the site asks Moyasar to delete the card first. A failure is
   logged, and the account is deleted either way.
 
-So the site never keeps a card it can charge after a plan ends or an account is deleted. Whether Moyasar
-deleted its copy each time is not confirmed by the site.
+`_end` and `_refunded` do not check Moyasar's answer. So the site's records show when it stopped holding a
+token, but not that Moyasar deleted its copy.
 
-**Backups:**
-- **On the server:** the account database is copied there every night.
-- **Off the server:** a copy is pulled to the owner's own computer each day. Daily copies are kept 60
-  days and weekly copies 400 days.
+**Backups** keep their own schedule, whatever is deleted from the live database (`docs/production.md`, "Backups"):
+- **On the server:** the account database is dumped every night. `daily/` keeps the newest 14 dumps and `weekly/` the
+  newest 8.
+- **Off the server:** a copy is pulled to the owner's own computer each day and kept 60 days (daily) and 400 days
+  (weekly). The owner's computer therefore holds personal data, unencrypted, behind its sign-in.
 
-So the owner's computer holds personal data, unencrypted, behind its sign-in.
+The dumps include the card-token ids.
 
 ### 5.2 Who else receives data
 
