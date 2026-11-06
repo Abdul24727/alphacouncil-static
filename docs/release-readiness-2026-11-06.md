@@ -276,17 +276,37 @@ scans run again over the exact range at push time.
   | the rest of `/opt/alphacouncil` | about 5.2G | `backend/llm-council` 1.6G, `refresh-candidate` 1.4G, the pipeline venv, logs, the old frontend, an August snapshot |
   | `/usr`, the rest of `/var`, `/tmp`, `/opt/alphacouncil-staging` | about 6.5G | `/usr` 3.0G; `/var/lib` 2.0G, `/var/log` 262M (journal 155M), an August `premigration` backup 434M; `/tmp` 281M; old staging 253M |
 
-- **The snapshots.** `run_rebuild_pipeline.py`'s step 0 (`do_snapshot`) copies the three product databases
-  into a new `rebuild-snapshot-<ts>/` before every rebuild.
-  - **Nothing deletes them.** `prune_history.py` prunes interaction records; the nightly hygiene prunes
-    harvest runs; `publish_dbs.sh` prunes only its own `dbpublish-*`.
-  - **Size:** 143 snapshots, 2026-06-10 to 2026-11-06, **97.3 GiB**. The newest five average 1.25 GiB each,
-    and they grow with `evidence.sqlite`.
-  - **What reads them:** only `_latest_prev_snapshot_screening`, which takes the newest snapshot as the
-    baseline for the row-count and coverage checks. Nothing reads an older one.
-- **Runway:** 34 GiB lasts about 26 nights at the snapshot's 1.3 GiB a night. At the recorded rate, one point
-  a night (80% on 11-02, 83% today, about 1.9 GiB), it lasts about 18 nights. The 90% mark comes in 8 to 11
-  nights.
+- **The snapshots.** `run_rebuild_pipeline.py`'s step 0 (`do_snapshot`, line 297) copies the three product
+  databases into a new `rebuild-snapshot-<ts>/` before every rebuild (called at line 507; the chain aborts
+  without it).
+  - **Where:** `--backups-dir` defaults to `llm-council/backups` (line 461). That is a symlink, since
+    2026-08-02, to `/var/backups/alphacouncil/rebuild-snapshots`.
+  - **Nothing deletes them.** `prune_history.py` deletes interaction records; the nightly hygiene prunes
+    harvest runs; `publish_dbs.sh` prunes only its own `dbpublish-*` (keeps 5). No cron line or systemd unit
+    names the snapshots.
+  - **Size:** 143 snapshots, 2026-06-10 to 2026-11-06, **97.30 GiB** allocated. The newest is 1.26 GiB, the
+    newest five average 1.25 GiB, and they grow with `evidence.sqlite`.
+  - **What reads them:** only `_latest_prev_snapshot_screening` (line 330), called once at line 399. It
+    takes the newest snapshot's `screening.sqlite` as the baseline for the row-count and coverage checks.
+    - **No other live code names them.** The only other file is `tests/test_freshness.py`, which builds its own
+      fake snapshot in a temporary folder.
+    - **So no code reads anything older than the newest snapshot.** Their only use is as manual restore
+      points.
+  - **Evidence:**
+    - `docs/disk-2026-11-06/rebuild-snapshots-inventory.txt`: every snapshot's allocated and apparent bytes,
+      the totals, the retention table and the runway arithmetic.
+    - `docs/disk-2026-11-06/pipeline-excerpts.txt`: the writer, the reader, its caller, the default and the
+      symlink, the three pruning scripts and the full reference search, pinned by md5.
+- **Runway:** 33.77 GiB available (`df -B1`), and 90% is 14.5 GiB away. Three labelled rates:
+
+  | Rate | Basis | Full in | 90% in |
+  |---|---|---|---|
+  | 1.26 GiB a night | the snapshot alone (the newest snapshot's size) | ~27 nights | ~11 nights |
+  | 1.45 GiB a night | **recorded:** 80% on 2026-11-02 to 83% on 2026-11-06, 0.75 point a day | ~23 nights | ~10 nights |
+  | 1.93 GiB a night | **conservative scenario:** one point a night | ~18 nights | ~8 nights |
+
+  `df` rounds `Use%` to whole points, so the recorded rate is approximate. *(Corrected by review 30: this called
+  one point a night the recorded rate.)*
 - **Releases:**
   - **Size:** each release folder is 1.3G (`web/node_modules` 585M, `web/.next` 118M, `api/.venv` 165M,
     source 424M).
@@ -296,16 +316,19 @@ scans run again over the exact range at push time.
     scripts then prune to the newest 3, removing `df83e19404`, so the net change is about zero.
   - **Rollback after that release:** `5c18a3ae46` in both tiers.
 - **Also seen:** `/tmp/f16`, 222M, copies from the F-16 dry run of 2026-11-05/06, made in this work.
-- **Nothing on the server was changed or deleted.** The one exception: the third pass's script wrote a list of
-  snapshot sizes to a temporary file in `/tmp` and removed it in the same command.
+- **Read-only, with one disclosed deviation.** No server file was changed or deleted, with one exception: the
+  third pass wrote a list of snapshot sizes to a temporary file of its own in `/tmp` and removed it in the same
+  command. That crossed the read-only boundary review 29 set. The evidence pass that followed sent everything
+  to stdout and wrote nothing on the server.
 
 **The owner decision these measurements support:** approve a retention rule for
 `/var/backups/alphacouncil/rebuild-snapshots`:
-- **Keep the newest 14 snapshots.** That frees **80.4 GiB** (the disk would be about 41% used), and the
-  oldest kept would be 2026-10-24.
+- **Keep the newest 14 snapshots.** That keeps 14 (16.86 GiB) and removes 129, freeing **80.44 GiB**: the
+  disk would be about 41% used. The oldest kept would be 2026-10-24.
 - **Once now, then nightly.** Remove the older ones now, and add the same keep-14 prune to the nightly, the
   way `publish_dbs.sh` keeps 5.
-- **Other numbers:** keeping 7 frees 88.6 GiB; keeping 30 frees 63.3 GiB.
+- **Other numbers:** keeping 7 removes 136 and frees 88.60 GiB (about 36%); keeping 30 removes 113 and frees
+  63.35 GiB (about 50%).
 - **Also approve or decline:**
   - removing `/tmp/f16`;
   - removing the August `premigration`/`dbrefresh` backups;

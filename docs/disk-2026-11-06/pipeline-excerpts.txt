@@ -1,0 +1,290 @@
+# Pipeline source excerpts behind the snapshot-retention decision, read-only
+# Taken 2026-11-06 06:48:30 UTC over SSH, streamed to stdout. The pipeline's code lives on the server, not in this repository;
+# md5 pins the exact files. Lines are prefixed with their line numbers.
+
+@@ md5
+7c76589291e45a4c72b7f3e1dd888d2f  /opt/alphacouncil/backend/llm-council/run_rebuild_pipeline.py
+ab58ccfc90a18ba590d9caef22bde381  /opt/alphacouncil/bin/nightly_pipeline.sh
+5cec7078431ff06d73605c27a866bf29  /opt/alphacouncil/bin/publish_dbs.sh
+ae6e8911cc0f2d8967a295a5e0dd159e  /opt/alphacouncil/backend/llm-council/scripts/prune_history.py
+@@ excerpt /opt/alphacouncil/backend/llm-council/run_rebuild_pipeline.py 1-20
+1:# -*- coding: utf-8 -*-
+2:"""
+3:run_rebuild_pipeline.py — orchestrate the DB rebuild / integration chain that turns a fresh
+4:Argaam scrape into updated product data (briefs_index / screening / fundamentals / sector
+5:averages / evidence / market indices).
+6:
+7:SAFETY FIRST:
+8:  * Step 0 is a MANDATORY SNAPSHOT of screening.sqlite + evidence.sqlite + briefs_index.sqlite
+9:    into backups/rebuild-snapshot-{ts}/ . The chain ABORTS if the snapshot fails.
+10:  * The DESTRUCTIVE evidence rebuild (evidence_builder --rebuild, which DROPs all tables) is
+11:    gated behind --rebuild-evidence (DEFAULT OFF). Without it, evidence_builder runs in its
+12:    NON-destructive incremental mode (CREATE IF NOT EXISTS + INSERT OR REPLACE).
+13:  * --dry-run prints the exact ordered commands (resolved args/paths) WITHOUT executing.
+14:  * Each step is wrapped in try/except; a failure HALTS the chain (never continues a broken
+15:    chain) and prints a "resume with --from-step N" hint. --from-step N resumes mid-chain.
+16:
+17:DAG / ORDERING (discovered from each script's real interface):
+18:  - select_latest_complete refreshes the selection CSV so the CSV-driven steps
+19:    (batch_compute_indicators, ingest_fundamentals, evidence_builder) use the FRESH runs.
+20:    The latest-run-dir-driven steps (parse_financial_statements, ingest_frc_*, gauges
+@@ excerpt /opt/alphacouncil/backend/llm-council/run_rebuild_pipeline.py 295-345
+295:
+296:
+297:def do_snapshot(cfg) -> Path | None:
+298:    """Step 0: snapshot the 3 product DBs before ANY step. Returns the snapshot dir, or None
+299:    on failure. Each DB copy is retried — a just-finished step or a concurrent reader can leave
+300:    a file briefly busy, and a single transient copy hiccup once aborted the WHOLE rebuild
+301:    (exit 2), silently skipping a night's data refresh."""
+302:    snap = cfg["backups_dir"] / f"rebuild-snapshot-{_ts()}"
+303:    try:
+304:        snap.mkdir(parents=True, exist_ok=True)
+305:    except Exception as e:
+306:        print(f"[SNAPSHOT] FAILED to create {snap}: {type(e).__name__} {e}")
+307:        return None
+308:    copied = []
+309:    for db in (cfg["screening_db"], cfg["evidence_db"], cfg["briefs_db"]):
+310:        if not db.exists():
+311:            continue
+312:        err = None
+313:        for _attempt in range(3):
+314:            try:
+315:                shutil.copy2(db, snap / db.name)
+316:                copied.append(db.name)
+317:                err = None
+318:                break
+319:            except Exception as e:
+320:                err = e
+321:                time.sleep(2)
+322:        if err is not None:
+323:            print(f"[SNAPSHOT] FAILED copying {db.name} after 3 tries: {type(err).__name__} {err}")
+324:            return None
+325:    print(f"[SNAPSHOT] -> {snap}")
+326:    print(f"[SNAPSHOT] copied: {copied or '(none existed yet)'}")
+327:    return snap
+328:
+329:
+330:def _latest_prev_snapshot_screening(cfg) -> Path | None:
+331:    """The most recent rebuild snapshot's screening.sqlite. Snapshots are taken at
+332:    step 0 BEFORE this run rebuilds, so the newest one holds the previous run's
+333:    data — the baseline for the row-count and coverage delta checks."""
+334:    base = cfg["backups_dir"]
+335:    if not base.exists():
+336:        return None
+337:    snaps = sorted(d for d in base.glob("rebuild-snapshot-*") if (d / "screening.sqlite").exists())
+338:    return (snaps[-1] / "screening.sqlite") if snaps else None
+339:
+340:
+341:def _parse_as_of(value) -> "datetime | None":
+342:    """Parse stocks.as_of_date which may be a date ('2026-06-09') or an ISO datetime
+343:    ('2026-06-09T00:00:00'). Returns a naive datetime (date precision) or None."""
+344:    if not value:
+345:        return None
+@@ /opt/alphacouncil/backend/llm-council/run_rebuild_pipeline.py: every line naming the snapshot functions or backups_dir
+297:def do_snapshot(cfg) -> Path | None:
+302:    snap = cfg["backups_dir"] / f"rebuild-snapshot-{_ts()}"
+330:def _latest_prev_snapshot_screening(cfg) -> Path | None:
+334:    base = cfg["backups_dir"]
+399:        prev_db = _latest_prev_snapshot_screening(cfg)
+461:    ap.add_argument("--backups-dir", default=str(LLM_COUNCIL / "backups"))
+475:        "backups_dir": Path(args.backups_dir).resolve(),
+500:        print(f"  copy -> {cfg['backups_dir']}\\rebuild-snapshot-<ts>\\")
+507:        snap_dir = do_snapshot(cfg)
+@@ /opt/alphacouncil/backend/llm-council/run_rebuild_pipeline.py: the callers' context
+-- around 297
+294:    return steps
+295:
+296:
+297:def do_snapshot(cfg) -> Path | None:
+298:    """Step 0: snapshot the 3 product DBs before ANY step. Returns the snapshot dir, or None
+299:    on failure. Each DB copy is retried — a just-finished step or a concurrent reader can leave
+300:    a file briefly busy, and a single transient copy hiccup once aborted the WHOLE rebuild
+301:    (exit 2), silently skipping a night's data refresh."""
+302:    snap = cfg["backups_dir"] / f"rebuild-snapshot-{_ts()}"
+303:    try:
+-- around 330
+327:    return snap
+328:
+329:
+330:def _latest_prev_snapshot_screening(cfg) -> Path | None:
+331:    """The most recent rebuild snapshot's screening.sqlite. Snapshots are taken at
+332:    step 0 BEFORE this run rebuilds, so the newest one holds the previous run's
+333:    data — the baseline for the row-count and coverage delta checks."""
+334:    base = cfg["backups_dir"]
+335:    if not base.exists():
+336:        return None
+-- around 399
+396:        bits.append(f"{n_rows} stocks")
+397:
+398:        # Previous-run baseline (for delta checks). Optional — skip cleanly if absent.
+399:        prev_db = _latest_prev_snapshot_screening(cfg)
+400:        prev_rows = prev_cov = None
+401:        if prev_db:
+402:            pc = sqlite3.connect(str(prev_db))
+403:            try:
+404:                prev_rows = pc.execute("SELECT COUNT(*) FROM stocks").fetchone()[0]
+405:                try:
+-- around 507
+504:    else:
+505:        _hc("/start")  # dead-man's-switch: the run has begun
+506:        print("\n[STEP 0] SNAPSHOT")
+507:        snap_dir = do_snapshot(cfg)
+508:        if snap_dir is None:
+509:            print("[ABORT] snapshot failed — refusing to run any step without a backup.")
+510:            _hc("/fail", "snapshot failed — no backup taken, no steps run")
+511:            return 2
+512:
+513:    # ---- Ordered steps ----
+@@ nightly_pipeline.sh: how it calls the rebuild
+23:#   3. REBUILD — run_rebuild_pipeline.py (incremental evidence; snapshots DBs first, writes
+122:log "[3/3] Rebuild: run_rebuild_pipeline.py (incremental evidence) ..."
+123:( cd "$LLM" && "$PY" run_rebuild_pipeline.py ) >> "$LOG" 2>&1
+127:  alert FAIL "rebuild halted" "Rebuild exited $REBUILD_EXIT. Resume: run_rebuild_pipeline.py --from-step N. Log: $LOG"
+@@ excerpt nightly_pipeline.sh 150-200 (hygiene)
+150:( cd "$LLM" && "$PY" generate_news_images.py --limit "${NEWS_IMAGE_LIMIT:-50}" ) >> "$LOG" 2>&1
+151:IMG_EXIT=$?
+152:log "[news-images] done (exit $IMG_EXIT)"
+153:
+154:# ---- DISK HYGIENE (G19) -------------------------------------------------------
+155:# Runs only AFTER a successful rebuild, so we never delete a run we still need.
+156:# (a) Prune old harvest runs: keep the newest KEEP_RUNS per ticker. The rebuild
+157:#     reads only the latest COMPLETE run (select_latest_complete), so older runs
+158:#     are pure history; ~5 GB/night accumulates otherwise. (b) Belt-and-braces
+159:#     sweep of any report PDFs (the scraper already skips downloading them, but
+160:#     this catches a stray DOWNLOAD_REPORT_PDFS=1 run). (c) Disk-pressure alert.
+161:KEEP_RUNS="${KEEP_RUNS:-2}"
+162:log "[hygiene] pruning harvest runs (keep newest $KEEP_RUNS per ticker + newest HEAVY/full run) ..."
+163:# MODE-AWARE prune (G19+): under a daily/quarterly split, daily runs scrape only news/chart/
+164:# overview/company_actions. They DO emit financial_ratios.csv (the always-run `overview` section
+165:# produces it), so financial_ratios is NOT a reliable "full run" marker. The heavy quarterly
+166:# fundamentals live in financial_statements_*.html -> parse_financial_statements ->
+167:# fundamentals_lineitems -> gauges / fundamental_score / 12-dim thesis; ONLY full/quarterly runs
+168:# emit those. parse_financial_statements falls back to the newest run that HAS statements (scans
+169:# up to 8), so blanking is avoided ONLY IF that run is still on disk. A blind "keep newest
+170:# $KEEP_RUNS" would, after $KEEP_RUNS daily nights, evict it -> lineitems/gauges BLANK. Fix:
+171:# ALWAYS also retain the newest run carrying financial_statements_*.html, on top of the
+172:# $KEEP_RUNS most-recent runs. (No-op for an all-full history: the heavy run is among newest N.)
+173:_run_has_heavy() { # $1=run dir; full/quarterly run iff it carries the heavy financial STATEMENTS
+174:  find "$1" -maxdepth 1 -type f -iname 'financial_statements*.html' -size +0c 2>/dev/null | grep -q .
+175:}
+176:for hr in "$ARGAAM"/default_universe/*/harvest_runs; do
+177:  [ -d "$hr" ] || continue
+178:  mapfile -t _runs < <(ls -1dt "$hr"/run_* 2>/dev/null)   # newest-first
+179:  [ "${#_runs[@]}" -le "$KEEP_RUNS" ] && continue          # nothing to prune
+180:  declare -A _keep=()
+181:  for ((i=0; i<KEEP_RUNS && i<${#_runs[@]}; i++)); do _keep["${_runs[$i]}"]=1; done
+182:  for r in "${_runs[@]}"; do                               # + newest HEAVY (full/quarterly) run
+183:    if _run_has_heavy "$r"; then _keep["$r"]=1; break; fi
+184:  done
+185:  for r in "${_runs[@]}"; do
+186:    [ -n "${_keep[$r]:-}" ] && continue
+187:    rm -rf "$r"
+188:  done
+189:  unset _keep
+190:done
+191:# stray report PDFs (defensive; normally none are downloaded since G19)
+192:find "$ARGAAM"/default_universe \( -path "*/pdfs/annual/*" -o -path "*/pdfs/quarter/*" \
+193:     -o -path "*/earnings/pdfs/*" \) -name "*.pdf" -delete 2>/dev/null || true
+194:USEPCT=$(df --output=pcent / 2>/dev/null | tail -1 | tr -dc 0-9)
+195:log "[hygiene] done; disk now ${USEPCT}% used."
+196:if [ "${USEPCT:-0}" -ge 80 ]; then
+197:  alert FAIL "disk pressure" "Root filesystem at ${USEPCT}% after nightly hygiene — investigate before it fills. Log: $LOG"
+198:fi
+199:
+200:# Tickers whose chart did not come through: a renamed company page answers 404, yet the
+@@ excerpt publish_dbs.sh 118-126
+118:systemctl start alphacouncil-backend; sleep 8
+119:
+120:ST=$(curl -s -m 20 http://127.0.0.1:8001/healthz/deep | sed -n 's/.*"status": *"\([a-z]*\)".*/\1/p')
+121:log "published. /healthz/deep=$ST  backup=$BAK"
+122:[ "$ST" = "ok" ] || { log "WARNING: deep health is '$ST' after publish"; exit 1; }
+123:# keep only 5 most recent publish backups
+124:ls -1dt /opt/alphacouncil/backups/dbpublish-* 2>/dev/null | tail -n +6 | xargs -r rm -rf
+@@ excerpt prune_history.py 1-15 and 45-75
+1:#!/usr/bin/env python3
+2:"""
+3:prune_history.py — 12-month data-retention prune (founder decision 2026-07-03).
+4:
+5:Deletes Adviser/Council interaction records older than the retention window so we keep
+6:only a rolling 12 months of stored questions, grounding, and replies. This bounds our
+7:data-retention footprint (KSA PDPL / GDPR data-minimisation) while preserving a year of
+8:audit history. Records are ALSO deleted immediately on account deletion (frontend_api),
+9:so this is the time-based half of retention only.
+10:
+11:Tables pruned (all keyed on an ISO-8601 timestamp column):
+12:  adviser_history  (created_at)  — full grounding + answer  [PII content]
+13:  council_history  (created_at)  — full grounding + answer + analyst cards  [PII content]
+14:  adviser_usage    (asked_at)    — question-only rate-limit rows (counted only within the
+15:  council_usage    (asked_at)      current billing period, so >window rows are dead weight)
+45:    ap.add_argument("--dry-run", action="store_true",
+46:                    help="report how many rows WOULD be deleted; delete nothing")
+47:    args = ap.parse_args()
+48:
+49:    # Approximate months as 30-day units — precision is irrelevant for a retention sweep.
+50:    cutoff = (datetime.now(timezone.utc) - timedelta(days=30 * args.months)).isoformat()
+51:    conn = sqlite3.connect(str(DB_PATH))
+52:    total = 0
+53:    try:
+54:        for table, col in _TARGETS:
+55:            try:
+56:                n = conn.execute(
+57:                    f"SELECT COUNT(*) FROM {table} WHERE {col} < ?", (cutoff,)
+58:                ).fetchone()[0]
+59:            except sqlite3.OperationalError:
+60:                print(f"  {table}: (absent — skipped)")
+61:                continue
+62:            if not args.dry_run and n:
+63:                conn.execute(f"DELETE FROM {table} WHERE {col} < ?", (cutoff,))
+64:            total += n
+65:            print(f"  {table}: {n} row(s) older than {args.months}mo"
+66:                  + (" [DRY-RUN]" if args.dry_run else " deleted"))
+67:        if not args.dry_run:
+68:            conn.commit()
+69:            conn.execute("VACUUM")  # reclaim space from the (potentially large) grounding blobs
+70:    finally:
+71:        conn.close()
+72:    print(("[DRY-RUN] " if args.dry_run else "") + f"prune complete: {total} row(s) "
+73:          f"{'would be ' if args.dry_run else ''}removed (cutoff {cutoff}).")
+74:    return 0
+75:
+@@ every live file naming rebuild-snapshot (code, scripts, docs, cron, systemd)
+/opt/alphacouncil/backend/llm-council/tests/test_freshness.py
+/opt/alphacouncil/backend/llm-council/run_rebuild_pipeline.py
+(+ 139 nightly run logs under /opt/alphacouncil/logs/, which print the [SNAPSHOT] line)
+-- root crontab mentions: 0
+
+@@ the snapshot folder the rebuild uses, and the test fixture
+lrwxrwxrwx 1 alphacouncil alphacouncil 43 Aug  2 08:02 /opt/alphacouncil/backend/llm-council/backups -> /var/backups/alphacouncil/rebuild-snapshots
+resolves to: /var/backups/alphacouncil/rebuild-snapshots
+170:    db = tmp_path / "screening.sqlite"
+171:    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+172:    _make_screening(db, as_of=today, n_rows=10, n_scored=10)
+173:    res = rp.validate_freshness_and_sanity(_cfg(tmp_path, db))
+174:    assert res["ok"] is False
+175:    assert "MIN_STOCK_ROWS" in res["reason"]
+176:
+177:
+178:def test_gate_warns_but_passes_on_modest_coverage_slip(tmp_path):
+179:    # A small coverage drop vs the previous run is a WARN, not a hard fail — the
+180:    # build still publishes. Seed a previous snapshot with higher coverage.
+181:    backups = tmp_path / "backups"
+182:    snap = backups / "rebuild-snapshot-20200101-000000"
+183:    snap.mkdir(parents=True)
+184:    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+185:    _make_screening(snap / "screening.sqlite", as_of=today, n_rows=700, n_scored=690)  # ~99%
+186:    db = tmp_path / "screening.sqlite"
+187:    _make_screening(db, as_of=today, n_rows=700, n_scored=650)  # ~93% (slip ~6pp)
+188:    res = rp.validate_freshness_and_sanity({"screening_db": db, "backups_dir": backups})
+189:    assert res["ok"] is True, res["reason"]
+190:    assert any("coverage slipped" in w for w in res["warnings"])
+191:
+192:
+193:def test_gate_hard_fails_on_coverage_collapse(tmp_path):
+194:    backups = tmp_path / "backups"
+195:    snap = backups / "rebuild-snapshot-20200101-000000"
+196:    snap.mkdir(parents=True)
+197:    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+198:    _make_screening(snap / "screening.sqlite", as_of=today, n_rows=700, n_scored=680)  # ~97%
+199:    db = tmp_path / "screening.sqlite"
+200:    _make_screening(db, as_of=today, n_rows=700, n_scored=300)  # ~43% (>30pp collapse)
+56:LLM_COUNCIL = Path(__file__).resolve().parent

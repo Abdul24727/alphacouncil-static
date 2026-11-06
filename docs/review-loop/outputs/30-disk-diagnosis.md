@@ -50,3 +50,5 @@ today). The 90% mark comes in 8 to 11 nights.
 sizes to a temporary file in `/tmp` and removed it in the same command. That is disclosed in the report too.
 
 **The question for the review:** is this sound, and what is the single next pre-approved step?
+
+*(Corrected after review 30: the recorded rate is 0.75 point a day, 80% on 11-02 to 83% on 11-06, about 23 nights to full and 10 to 90%; one point a night is a conservative scenario. The temporary `/tmp` file is a disclosed deviation from read-only, recorded as such in both the report and `PROJECT.md`. The inventory and source excerpts are in `docs/disk-2026-11-06/`.)*
