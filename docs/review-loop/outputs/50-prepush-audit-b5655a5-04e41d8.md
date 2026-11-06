@@ -1,7 +1,8 @@
 # Output 50: review 53's step. Step 2's pre-push audit of `b5655a5..04e41d8`.
 
-**The remote, read-only:** `git fetch` gives `origin/rebuild` = `b5655a5`. The range is 25 commits and 276 files,
-with 3,190 added text lines and nothing deleted.
+**The remote, read-only:** `git fetch` gives `origin/rebuild` = `b5655a5`. The range is 25 commits and 276 files:
+`git diff --shortstat` shows 3,190 insertions and 284 deletions, and `--diff-filter=D` shows 0 files deleted.
+*(Corrected after review 54: this said "nothing deleted".)*
 
 **The scans, the same script as this morning's:**
 1. **Outgoing-diff regex:** 44 hits, every one read, all prose naming Moyasar. The files are:
@@ -13,7 +14,9 @@ with 3,190 added text lines and nothing deleted.
    - the monitor capture ("Moyasar for renewals").
 
    None is a key or secret.
-2. **Env-like tracked files:** `api/.env.example` only, a template, unchanged.
+2. **Env-like tracked files:** two templates, `api/.env.example` and `deploy/api.env.example`, both unchanged in
+   the range. They hold paths, non-secret defaults and empty credential placeholders. *(Corrected after review 54: this
+   named one. The scan's pattern missed `deploy/api.env.example`, as in output 29; the pattern is now fixed.)*
 3. **History grep:** the distinct lines are identical to the audited set of this morning's push. They are the
    known false positives: the regex quoting itself, the `sk_test_x` fixture, the commented template line.
 4. **Value-shaped keys:** 0 in history and 0 in the tree.
