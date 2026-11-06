@@ -135,8 +135,21 @@ unchanged. *(Review 13 found that only two of the phone panels had been looked a
   investments & other operating income".)*
 - In development only, Next.js shows a "1 Issue" badge on every ticker Financials page: `generateMetadata()`
   for `/[locale]/t/[ticker]/financials` reads uncached data, so the page's metadata is held back while the
-  rest prerenders. No route file changed since `5c18a3ae46`, and the production build passes. It predates
-  this work.
+  rest prerenders. No route file changed since `5c18a3ae46`. **Verified on a local production build (review
+  17): a development diagnostic, not a production defect.**
+  - `getTickerRef()` calls `connection()` on purpose: a stock page's title comes from the API at request
+    time.
+  - Built and served with `next start` against beta's API, the production server logs no such notice.
+  - Every stock page's metadata is in the served `<head>`. `/t/2222/financials` reads "Saudi Aramco (2222) ·
+    Tadawul · AlphaCouncil" and `/ar/t/2222/financials` "أرامكو السعودية (2222) · تداول · AlphaCouncil". Each
+    has its description, a canonical consolidated on `/t/2222` or `/ar/t/2222`, `og:title`, `og:url`,
+    `og:image` (`/og/en.png`, `/og/ar.png`), `og:locale` (`en_US`, `ar_SA`) and hreflang en, ar and
+    x-default.
+  - An unknown ticker keeps the soft not-found: "Unknown ticker" / "رمز غير معروف" with `noindex,
+    nofollow`.
+  - `check-seo.mjs` against that production server: **62 PASS, 0 FAIL** ("ALL PASS").
+  - Evidence: `docs/screenshots/release-candidate-4a98832/9-check-seo-production-build.txt`,
+    `10-metadata-production-build.txt` and `seo-production-build/`.
 - *(Fixed in `307d2fc`: scrolled to its oldest year, a phone table used to scroll the line labels out of
   view and show a period cut in half beside them.)*
 

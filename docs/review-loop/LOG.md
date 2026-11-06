@@ -18,3 +18,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-06 01:03 UTC — **Phone tables fixed, candidate 307d2fc (review 13 fixes)** — FIX — [14-phone-tables-fixed-candidate-307d2fc-review-13-fix.md](replies/14-phone-tables-fixed-candidate-307d2fc-review-13-fix.md)
 - 2026-11-06 01:06 UTC — **Inventory reconciled with the diff (review 14 fix)** — FIX — [15-inventory-reconciled-with-the-diff-review-14-fix.md](replies/15-inventory-reconciled-with-the-diff-review-14-fix.md)
 - 2026-11-06 01:08 UTC — **Pipeline tooling count corrected (review 15 fix)** — ACCEPT — [16-pipeline-tooling-count-corrected-review-15-fix.md](replies/16-pipeline-tooling-count-corrected-review-15-fix.md)
+- 2026-11-06 01:24 UTC — **Income from investments label; candidate 4a98832 (review 16 step)** — ACCEPT — [17-income-from-investments-label-candidate-4a98832-re.md](replies/17-income-from-investments-label-candidate-4a98832-re.md)
