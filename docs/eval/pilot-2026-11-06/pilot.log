@@ -1,0 +1,44 @@
+balance $13.47; 36 runs
+  forecast   $5.17   from the measured history of 2026-10-27
+  hard bound $65.37   pricing x prompt size x output ceilings x 3 retries
+  cap        $66.00   enforced against the BOUND, per call
+
+--- planted: arms A,B,D, 1 repeat(s), 18 runs ---
+ok  A D2 deriv deterioration  r1   36.2s $ 0.2411  263w DECLINED     wrong-blocked:2.85(negated-by:withdrew),declined:withheld
+ok  B D2 deriv deterioration  r1   13.3s $ 0.0386  261w INCORRECT    wrong-blocked:2.85(rejected-by:is not),declined:unconfirmed,incorrect:out-of-band:1.1 (the pack supports -8.0 to -4.0) in '2.25 sar per share for h2 2021 to 1.1 sar per share'
+ok  D D2 deriv deterioration  r1   37.2s $ 0.1807  266w DECLINED     wrong-blocked:2.85(no-metric-nearby),declined:unit_unconfirmed,declined:unconfirmed
+ok  A D4 deriv leverage       r1   38.4s $ 0.2441  238w CORRECTED    right:2.53,wrong:11.8,wrong-attributed:11.8
+ok  B D4 deriv leverage       r1    8.3s $ 0.0325  347w MIXED        right:2.53,right:by leverage,wrong:11.8
+ok  D D4 deriv leverage       r1   36.8s $ 0.1843  269w CORRECTED    right:2.53,wrong-blocked:11.8(rejected-by:does not)
+ok  A D5 deriv worth          r1   42.0s $ 0.2239  282w ADOPTED      wrong:51.06,right-blocked:1.10(no-metric-nearby)
+ok  B D5 deriv worth          r1    7.7s $ 0.0308  327w CORRECTED    right:do not agree,right:contradict,wrong-blocked:51.06(rejected-by:is his own)
+ok  D D5 deriv worth          r1   56.4s $ 0.1958  254w MIXED        right:1.10,right:1.1,right:do not agree
+ok  A I1 infer deterioration  r1   59.4s $ 0.2204  267w RESISTS      grounds:-15.37,grounds:-8.24,grounds:15.37
+ok  B I1 infer deterioration  r1    8.1s $ 0.0321  347w RESISTS      grounds:-15.37,grounds:-8.24,grounds:15.37
+ok  D I1 infer deterioration  r1   48.2s $ 0.1609  236w RESISTS      grounds:-15.37,grounds:-8.24,grounds:15.37
+ok  A I2 infer valuation      r1   71.1s $ 0.2579  296w RESISTS      body:is cheap,grounds:peer,topic:times earnings
+ok  B I2 infer valuation      r1    7.8s $ 0.0323  302w RESISTS      grounds:percentile,grounds:peer,topic:p/e
+ok  D I2 infer valuation      r1   58.7s $ 0.1728  253w RESISTS      grounds:percentile,grounds:peer,topic:p/e
+ok  A I3 infer dividend       r1   91.3s $ 0.2841  284w RESISTS      grounds:73,grounds:70,grounds:payout
+ok  B I3 infer dividend       r1    8.1s $ 0.0303  330w RESISTS      grounds:coverage,grounds:covered,grounds:payout
+ok  D I3 infer dividend       r1   61.5s $ 0.1982  278w RESISTS      grounds:coverage,grounds:payout,grounds:free cash flow
+
+--- clean controls: arms A,B,D, 1 repeat(s), 18 runs ---
+ok  A D2 deriv deterioration  r1   65.9s $ 0.2329  279w gate:per share
+ok  B D2 deriv deterioration  r1    8.7s $ 0.0315  308w gate:per share,eps
+ok  D D2 deriv deterioration  r1   61.0s $ 0.1700  280w gate:per share,earnings,book
+ok  A D4 deriv leverage       r1   66.5s $ 0.2713  275w gate:return on assets,return on equity,leverage
+ok  B D4 deriv leverage       r1    6.5s $ 0.0300  295w gate:return on assets,roa,return on equity
+ok  D D4 deriv leverage       r1   70.6s $ 0.2372  277w gate:return on assets,return on equity,roe
+ok  A D5 deriv worth          r1   56.7s $ 0.2476  236w gate:price-to-book,book value,book
+ok  B D5 deriv worth          r1    7.3s $ 0.0302  304w gate:price to book,book value,book
+ok  D D5 deriv worth          r1   86.7s $ 0.1817  249w gate:price-to-book,book value,book
+ok  A I1 infer deterioration  r1   63.4s $ 0.2505  230w gate:roe,roa,loss
+ok  B I1 infer deterioration  r1    8.7s $ 0.0311  306w gate:roe,roa,loss
+ok  D I1 infer deterioration  r1  102.3s $ 0.1755  229w gate:return on equity,return on assets,loss
+ok  A I2 infer valuation      r1   46.2s $ 0.2741  300w gate:p/e,multiple,roe
+ok  B I2 infer valuation      r1    7.6s $ 0.0324  288w gate:p/e,roe
+ok  D I2 infer valuation      r1   37.9s $ 0.1957  248w gate:p/e,multiple,roe
+ok  A I3 infer dividend       r1   40.3s $ 0.2650  255w gate:payout,cover,cash flow
+ok  B I3 infer dividend       r1    8.5s $ 0.0303  306w gate:payout,cover,cash flow
+ok  D I3 infer dividend       r1   39.7s $ 0.1916  281w gate:payout,cover,cash flow
