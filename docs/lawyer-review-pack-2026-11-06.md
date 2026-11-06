@@ -68,8 +68,8 @@ Pro stays on in the meantime.
 6. Add a holding and a price alert. Then, in **Settings**:
    - change the language;
    - sign out;
-   - finally, **Delete account**. It removes the account and everything stored with it, and payment
-     records stay (§5).
+   - finally, **Delete account**. It removes the account and everything stored with it, except payment
+     records (§5.1).
 
 **Pro, the advisors' room**, in either of two ways:
 
@@ -116,19 +116,36 @@ lawyer's call.
 
 ### 5.1 Personal data the site stores
 
-| What | Why | Kept until |
-|---|---|---|
-| Email, display name, language, sign-up time, time the email was verified | the account | the account is deleted |
-| Password, as a bcrypt hash only; never the password | sign-in | the account is deleted |
-| Google account link, if the member signs in with Google | sign-in | the account is deleted |
-| Sign-in sessions: a hash of the cookie's token, never the token | staying signed in | 30 days, or sign-out |
-| Password-reset and email-verification links: a hash only | those two emails | one hour; used once |
-| IP address and email of sign-in, sign-up and reset attempts | stopping abuse | one day |
-| Holdings (company, quantity, average cost), price alerts, preferences | portfolio features | the account is deleted |
-| Advisors' room sessions: the member's question, the company, every seat's answer, the Chair's answer, cost | the session record the member can reopen | the account is deleted |
-| Acceptances (§4) | proof of consent | the account is deleted |
-| Payments: Moyasar's payment id, amount, status, period paid | billing records | **kept after the account is deleted**, without the link to it |
-| Saved card: Moyasar's token, the card brand and **last four digits**; never the card number | monthly renewal | cancellation or deletion. On deletion the card is deleted at Moyasar first. |
+Two things are kept apart below: how long a token or link **works**, and when its **record is deleted**. The code
+is cited for each, so the drafting can follow what the site does.
+
+| What | Why | Works for | Record deleted |
+|---|---|---|---|
+| Email, display name, language, sign-up time, time the email was verified | the account | — | when the account is deleted |
+| Password, as a bcrypt hash only; never the password | sign-in | — | when the account is deleted, or replaced on a reset |
+| Google account link, if the member signs in with Google | sign-in | — | when the account is deleted |
+| Sign-in sessions: a hash of the cookie's token, never the token | staying signed in | 30 days (`auth.py`, `SESSION_DAYS`); an expired one is refused | at sign-out, at a password reset (all of the account's sessions), or when the account is deleted. An expired session that is never signed out stays until then. |
+| Password-reset links: a hash only | the reset email | one hour, once (`RESET_MINUTES`) | expired ones, anyone's, are deleted the next time any reset is requested (`forgot_password`); the account's unused ones on a successful reset |
+| Email-verification links: a hash only | the confirmation email | 48 hours, once (`VERIFY_HOURS`) | an unused one is replaced when a new link is sent (`issue_verification`); a used one stays until the account is deleted |
+| IP address and email of sign-in, sign-up, reset and verification attempts | stopping abuse | counted over a window of minutes | rows older than a day are deleted the next time anyone's attempt is counted (`DbRateLimit.hit` in `auth.py`) |
+| Holdings (company, quantity, average cost), price alerts, preferences | portfolio features | — | when the account is deleted |
+| Advisors' room sessions: the member's question, the company, every seat's answer, the Chair's answer, cost | the session record the member can reopen | — | when the account is deleted |
+| Acceptances (§4) | proof of consent | — | when the account is deleted |
+| Payments: Moyasar's payment id, amount, status, period paid | billing records | — | **never**: kept after the account is deleted, without the link to it |
+| Subscription: status, period end, renewal attempts | Pro | — | when the account is deleted |
+| Saved card at Moyasar: its token | monthly renewal | until the plan ends | see below |
+| Card brand and last four digits; never the card number | billing emails and Settings | — | when the account is deleted. They stay after the plan ends. |
+
+**The saved card, step by step** (`api/app/billing.py`):
+- **Cancelling renewal** (`cancel_renewal`) keeps the token, so the member can resume before the paid period ends
+  (`resume_renewal`).
+- **When the plan ends**, cancelled and out of period or renewals failed (`_end`), and **on a refund**
+  (`_refunded`): the site clears the token and asks Moyasar to delete it. Neither checks Moyasar's answer.
+- **When the account is deleted** (`forget_card`), the site asks Moyasar to delete the card first. A failure is
+  logged, and the account is deleted either way.
+
+So the site never keeps a card it can charge after a plan ends or an account is deleted. Whether Moyasar
+deleted its copy each time is not confirmed by the site.
 
 **Backups:**
 - **On the server:** the account database is copied there every night.

@@ -266,7 +266,7 @@ Older entries: `changelog-archive.md`.
   - **Snapshots pruned to the newest 14** (10:15 UTC) by `scripts/server/prune-rebuild-snapshots.sh`, installed as `/opt/alphacouncil/bin/prune-rebuild-snapshots.sh`. Its dry run listed exactly the recorded decision (129, oldest kept `rebuild-snapshot-20261024-014734`); the run removed 129 and freed 86,367,453,184 bytes (80.44 GiB). **Disk 83 % → 41 %, 114G free.** Nightly from now: root's crontab gained one line, 11:15 UTC (after the nightly and the 05–10 UTC publish window), logging to `/opt/alphacouncil/logs/prune_snapshots.log`; backup of the crontab in `/root/crontab.bak-20261106-prune`.
   - **F-14 fixed.** The pipeline's `.env` (backed up as `.env.bak-20261106-f14`) now holds the app's working OpenRouter key, copied on the server and never printed: fingerprint equal to production's, `GET /api/v1/key` 401 → 200. A two-item run of `generate_news_ai.py` wrote 2 rows (English headline, both summaries, impact). Tonight's step 23 takes 120 of the 437 waiting items; the backlog clears in about four nights. Disclosed with it: the same key also restarts step 19's KPI extraction (about 33 calls a night until its backfill ends; the new site does not read `company_kpis`). Both use Gemini 2.5 Flash; about $0.5 a night at most.
   - **Test accounts removed:** 24 `@example.com` accounts on production (prefixes advisors-, audit-, check-, phase1-, phase4-; "six" in the old line counted prefixes) and 158 on beta, listed first and counted after: 0 left on both. Production keeps its 4 accounts and its one refunded payment; beta keeps 12 test-mode payment records with no account, and its test subscriptions are gone, so its Moyasar test cards no longer renew. `forget` does not delete Moyasar's test tokens (test mode, no money).
-  - **The `owns` case fix applied** (`5a46b8b`): check script only.
+  - **The `owns` case fix applied** (`5a46b8b`): check script only. Approval as given: "finish every thing first", in reply to a list naming "the `owns` patch"; not one of the four confirmed answers, so put to the owner to confirm or revert (review 36).
   - **D1, D3, D6 retired** (`f7b7de3`) before any paid run: definitions kept, never run; 15 probes run (6 derivation, 9 inference, no longer an even split - recorded in the test). `eval probe --only` takes a comma-separated list, so the pilot keeps its first design: D2, D4, D5, I1, I2, I3. Suite 543 passed, 10 skipped.
   - **Found by the pilot's dry run:** the published hard bound is stale. These six probes reserve $67.28 against `RUN_BOUND`'s $65.37 (per run A $3.02, B $0.32, D $2.26, against 2.94 / 0.31 / 2.19), because the repaired packs are larger. The $66 cap still holds per call, so the pilot cannot spend more than $66; at worst it would stop before finishing. `RUN_BOUND` must be re-measured before the $393 run is quoted.
   - **Found by the pilot's balance read:** the OpenRouter account held **$13.47** before the pilot. The live Copilot, the advisors' room and now the nightly news step all draw on it. Topping it up is the owner's.
@@ -1289,7 +1289,11 @@ and no customer has paid yet.
          value.
        - **At push time:** the scans run again over the exact range;
      - ~~apply the parser's heading guard (F-16)~~ **APPLIED 2026-11-05 22:44 UTC, VERIFIED LIVE 2026-11-06**;
-     - ~~apply the check-advisors `owns` case fix~~ **APPLIED 2026-11-06** (`5a46b8b`, on "finish every thing");
+     - ~~apply the check-advisors `owns` case fix~~ **APPLIED 2026-11-06** (`5a46b8b`). *The approval, exactly:* the
+       owner's message replied to a list that named "the `owns` patch" with "finish every thing first"; the
+       four-question confirmation that followed did not name it. The plan asked for an explicit go-ahead
+       (review 36), so it is put to the owner to confirm or to have reverted (`git revert 5a46b8b`, check script
+       only);
      - **the $66 pilot, then the $393 decision-grade run** (Next Up item 4; unblocked since F-13 and the
        post-publish checks passed), with probes D1/D3/D6 retired or re-registered first. **D1/D3/D6 RETIRED
        2026-11-06** (`f7b7de3`); **the $66 pilot RUNNING 2026-11-06** (D2, D4, D5, I1, I2, I3; arms A, B, D with
