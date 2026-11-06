@@ -33,3 +33,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-06 06:39 UTC — **Audit record corrected: categories and both env templates (review 28 step)** — ACCEPT — [29-audit-record-corrected-categories-and-both-env-tem.md](replies/29-audit-record-corrected-categories-and-both-env-tem.md)
 - 2026-11-06 06:47 UTC — **Disk diagnosis, read-only (review 29 step)** — FIX — [30-disk-diagnosis-read-only-review-29-step.md](replies/30-disk-diagnosis-read-only-review-29-step.md)
 - 2026-11-06 06:54 UTC — **Disk record completed: inventory, excerpts, labelled rates (review 30 step)** — FIX — [31-disk-record-completed-inventory-excerpts-labelled-.md](replies/31-disk-record-completed-inventory-excerpts-labelled-.md)
+- 2026-11-06 06:58 UTC — **Disk record: file counts and eligible-baseline reader corrected (review 31 step)** — ACCEPT — [32-disk-record-file-counts-and-eligible-baseline-read.md](replies/32-disk-record-file-counts-and-eligible-baseline-read.md)
