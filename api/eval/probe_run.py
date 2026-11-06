@@ -29,7 +29,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
-from app.debate import checks, llm, roster
+from app.debate import checks, llm, presenter, roster
 from app.debate.engine import LANGUAGE, MAX_TOKENS, RULES, TEMPERATURE, Context, Debate
 from app.debate.standin import make_asker
 from app.settings import get_settings
@@ -172,6 +172,11 @@ class ProbeResult:
     # any turn is saved. Each has `stage`, `error` and `usage`. With `turns`, it accounts for the run's
     # whole cost wherever the provider reported one.
     failed_calls: list[dict[str, Any]] = field(default_factory=list)
+    # How the room's words were produced: "room" (one call per advisor per round) or "presenter" (arm P,
+    # the owner's two-model option, app/debate/presenter.py), with the presenter's own counts - calls it
+    # made, turns it handed back to the room's own call, rounds that failed outright.
+    engine: str = "room"
+    engine_stats: dict[str, int] = field(default_factory=dict)
     # Seconds from the start of the run to the first turn a visitor would see - the first one that is
     # not an absent seat. A single-model arm's answer arrives whole, so there it is the run's seconds.
     # On a dry run it times the stand-in, not a model.
@@ -245,14 +250,18 @@ def usage_record(usage: Any, dry: bool) -> dict[str, Any]:
     nothing reported at all - is unknown too."""
     model = getattr(usage, "model", None) if usage is not None else None
     scripted = model == "scripted"
+    # A turn served from a call another turn paid for (the presenter, app/debate/presenter.py): its cost
+    # is on that turn, so here it is a confirmed zero rather than an unknown.
+    shared = model == presenter.SHARED
     cost = getattr(usage, "cost_usd", None) if usage is not None else None
     return {
         "model": model,
         "prompt_tokens": int(getattr(usage, "prompt_tokens", 0) or 0),
         "completion_tokens": int(getattr(usage, "completion_tokens", 0) or 0),
-        "cost_usd": 0.0 if scripted else (round(float(cost), 6) if isinstance(cost, (int, float)) else None),
+        "cost_usd": 0.0 if scripted or shared else (round(float(cost), 6) if isinstance(cost, (int, float)) else None),
         "seconds": round(float(getattr(usage, "seconds", 0.0) or 0.0), 2),
         "scripted": scripted,
+        "shared": shared,
         "simulated": dry,
     }
 
@@ -332,7 +341,7 @@ def room_flags(turns: list[dict[str, Any]]) -> tuple[int, dict[str, list[str]], 
     return len(openings), uncovered, unruled
 
 
-async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool, dry: bool, roster_spec: str | None = None, budget: Budget | None = None) -> ProbeResult:
+async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool, dry: bool, roster_spec: str | None = None, budget: Budget | None = None, engine: str = "room") -> ProbeResult:
     settings = get_settings()
     cell = CELL[probe.cell]
     pack = load_pack(cell.ticker, locale)
@@ -355,7 +364,25 @@ async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool
             else (make_asker(pack, advisors, locale, cell.question), {"n": 0, "cost": 0.0})
     else:
         base, calls = metered_asker(settings, budget) if budget else council_asker(settings, {})
-    ask = with_plant(base, probe, planted)
+    pres, pcalls = None, {"n": 0, "cost": 0.0, "bound": 0.0}
+    if engine == "presenter":
+        # Arm P: the same page from an analyst and a presenter. Their calls are metered through the same
+        # Budget as the room's, and the room's own asker stays the fallback for any turn the plan cannot
+        # serve. In a planted run the plant's opening is pinned: the analyst is shown it before it plans,
+        # as the single model is shown the analyst's note, so the rest of the room can answer it.
+        if dry:
+            raw_call = presenter.make_standin_call(make_asker(pack, advisors, locale, cell.question), advisors, chair)
+        else:
+            async def raw_call(**kw: Any):
+                return await llm.ask(settings, kw["model"], kw["messages"], max_tokens=kw["max_tokens"],
+                                     temperature=kw["temperature"], check=kw["check"])
+        pcall, pcalls = metered(raw_call, budget) if budget else (raw_call, pcalls)
+        pinned = {PLANT_SEAT: {"headline": probe.headline, "text": probe.text}} if planted else None
+        pres = presenter.make_asker(call=pcall, fallback=base, advisors=advisors, chair=chair, locale=locale,
+                                    models={"analyst": settings.debate_chair_model,
+                                            "presenter": settings.debate_advisor_model},
+                                    pinned=pinned)
+    ask = with_plant(pres or base, probe, planted)
 
     log = TurnLog(dry)
     turns = log.turns
@@ -369,9 +396,10 @@ async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool
     except Exception as exc:  # a failed room is a result, not a crash
         r.error = describe(exc)
     r.seconds = round(time.monotonic() - started, 2)
-    r.cost_usd, r.calls = round(calls["cost"], 6), int(calls["n"])
-    r.bound_usd = round(calls.get("bound", 0.0), 6)
+    r.cost_usd, r.calls = round(calls["cost"] + pcalls["cost"], 6), int(calls["n"] + pcalls["n"])
+    r.bound_usd = round(calls.get("bound", 0.0) + pcalls.get("bound", 0.0), 6)
     r.turns, r.failed_calls, r.first_turn_seconds = turns, log.failures, log.first_turn_seconds
+    r.engine, r.engine_stats = engine, dict(pres.stats) if pres else {}
     r.absent = sorted({t["seat"] for t in turns if isinstance(t.get("data"), dict) and t["data"].get("absent")})
     r.openings, r.uncovered, r.unruled = room_flags(turns)
     if planted:
@@ -663,6 +691,8 @@ async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool
                         r = await run_room(probe, "A", repeat, locale, planted, dry, budget=budget)
                     elif arm == "D":
                         r = await run_room(probe, "D", repeat, locale, planted, dry, roster_spec=four_seats, budget=budget)
+                    elif arm == "P":
+                        r = await run_room(probe, "P", repeat, locale, planted, dry, budget=budget, engine="presenter")
                     elif arm == "E":
                         r = await run_single(probe, "E", repeat, locale, single_model, planted, dry, second_pass=True, budget=budget)
                     else:

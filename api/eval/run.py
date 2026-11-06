@@ -396,7 +396,7 @@ def main() -> None:
     # results file are what produced docs/council-test-run-2026-10-27.md, and a result stops being
     # reproducible the moment the code behind it is edited to do something else.
     q = sub.add_parser("probe")
-    q.add_argument("--arm", action="append", choices=["A", "B", "D", "E"], help="repeatable; default A B E")
+    q.add_argument("--arm", action="append", choices=["A", "B", "D", "E", "P"], help="repeatable; default A B E")
     q.add_argument("--repeats", type=int, default=2)
     q.add_argument("--locale", default="en")
     q.add_argument("--clean", action="store_true", help="the controls the validity gate reads: no plant")
@@ -405,7 +405,7 @@ def main() -> None:
     q.add_argument("--pause", type=float, default=5.0)
     q.add_argument("--only", default=None, help="a probe id (D2) or family (inference), or several, comma-separated (D2,D4,I1)")
     q.add_argument("--four-seats", default=FOUR_SEATS)
-    q.add_argument("--clean-arms", action="append", choices=["A", "B", "D", "E"],
+    q.add_argument("--clean-arms", action="append", choices=["A", "B", "D", "E", "P"],
                    help="repeatable; adds the validity gate's clean-control phase to THIS run, at one "
                         "repeat, so both phases of the experiment are held to one cap instead of a cap each")
     q.add_argument("--cap-usd", type=float, default=10.0, help="hard cap, checked against the live balance before every run")

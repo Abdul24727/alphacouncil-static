@@ -71,6 +71,11 @@ class Settings(BaseSettings):
     debate_advisors: str = "buffett,lynch,dalio,marks,alwaleed,alrumayyan"
     # Debate rounds between the openings and the vote (1 or 2).
     debate_rounds: int = 1
+    # How the room's words are produced (app/debate/presenter.py). "room": one call per advisor per round
+    # and three for the Chair, as built. "presenter": the owner's two-model option of 2026-11-06 - an
+    # analyst (the Chair's model) plans the whole room in one call and a presenter (the advisors' model)
+    # writes each round's turns in one call; the page is the same. Off until measured and approved.
+    debate_engine: str = "room"
     # Ask OpenRouter for the models' reasoning. Off: each seat answers in one pass (faster).
     debate_reasoning: bool = False
 

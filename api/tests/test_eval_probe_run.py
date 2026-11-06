@@ -486,7 +486,7 @@ def test_the_turn_log_keeps_every_turn_with_its_usage_failed_and_scripted_includ
 
     assert [t["seat"] for t in log.turns] == ["dalio", "lynch", "buffett", "chair", "marks"]
     assert log.turns[0]["usage"] == {"model": "m", "prompt_tokens": 100, "completion_tokens": 50, "cost_usd": 0.01,
-                                     "seconds": 1.23, "scripted": False, "simulated": False}
+                                     "seconds": 1.23, "scripted": False, "shared": False, "simulated": False}
     assert log.turns[1]["data"]["absent"] and log.turns[1]["usage"]["cost_usd"] == 0.004
     assert log.turns[2]["usage"]["scripted"] and log.turns[2]["usage"]["cost_usd"] == 0.0
     # review 62: nothing reported is unknown, and a paid call with tokens but no cost is unknown - never 0.0
@@ -605,3 +605,113 @@ def test_a_dry_room_labels_its_turns_simulated_and_a_single_model_times_its_one_
     b = asyncio.run(probe_run.run_single(BY_ID["I3"], "B", 1, "en", "anthropic/claude-sonnet-5.5", False, True,
                                          False, Budget(cap_usd=1000.00, attempts=3)))
     assert b.ok and b.turns == [] and b.first_turn_seconds == b.seconds
+
+
+# --- arm P: the owner's two-model option (app/debate/presenter.py) ----------------------------------
+
+
+def _presenter_room(monkeypatch, planted=False, bad_slice=None, fail=None, seen=None):
+    """Arm P through run_room on the stand-in, with costs: each room call $0.01, each analyst or
+    presenter call $0.05. `bad_slice` empties one advisor's opening so the engine refuses it; `fail`
+    ("analyst" or a presenter stage) makes that call fail outright, billed $0.004. `seen` collects the
+    analyst's and presenter's messages."""
+    from app.debate import presenter, standin
+    from app.debate.llm import SeatError, Usage
+    from eval import probe_run
+    from eval.probes import BY_ID
+
+    real_asker, real_call = standin.make_asker, presenter.make_standin_call
+
+    def costed_asker(*a, **k):
+        inner = real_asker(*a, **k)
+
+        async def ask(**kw):
+            checked, _ = await inner(**kw)
+            return checked, Usage(model=kw["model"], cost_usd=0.01)
+        return ask
+
+    def costed_call(standin_ask, advisors, chair):
+        inner = real_call(standin_ask, advisors, chair)
+
+        async def call(**kw):
+            if seen is not None:
+                seen.append((kw["role"], kw["stage"], kw["messages"]))
+            if fail in (kw["role"], kw["stage"]):
+                raise SeatError("bad_output", usage=Usage(model=kw["model"], cost_usd=0.004))
+            checked, _ = await inner(**kw)
+            if bad_slice and kw["role"] == "presenter" and kw["stage"] == "openings":
+                checked[bad_slice] = {**checked[bad_slice], "text": ""}  # the engine refuses an empty answer
+            return checked, Usage(model=kw["model"], cost_usd=0.05)
+        return call
+
+    monkeypatch.setattr(probe_run, "make_asker", costed_asker)
+    monkeypatch.setattr(probe_run.presenter, "make_standin_call", costed_call)
+    return asyncio.run(probe_run.run_room(BY_ID["I3"], "P", 1, "en", planted=planted, dry=True,
+                                          budget=Budget(cap_usd=1000.00, attempts=3), engine="presenter"))
+
+
+@needs_packs
+def test_the_presenter_shows_every_stage_of_the_room_from_four_calls(monkeypatch):
+    """The page's whole shape - the brief, six openings, the fault lines, six challenges, six final
+    words, the answer - from one analyst call and three presenter calls. Each call's cost is on one
+    turn and the other turns it served are marked shared, so the record adds up to the run."""
+    r = _presenter_room(monkeypatch)
+    assert r.ok, r.error
+    stages = [t["stage"] for t in r.turns]
+    assert {s: stages.count(s) for s in dict.fromkeys(stages)} == {
+        "brief": 1, "openings": 6, "faultlines": 1, "debate": 6, "final": 6, "verdict": 1}
+    assert r.calls == 4 and r.engine == "presenter"
+    assert r.engine_stats == {"calls": 4, "fallbacks": 0, "round_failures": 0}
+    assert sum(t["usage"]["shared"] for t in r.turns) == 17
+    assert round(r.cost_usd, 6) == 0.2
+    assert _recorded_cost(r) == round(r.cost_usd, 6)
+
+
+@needs_packs
+def test_the_presenter_shows_the_analyst_the_planted_opening_and_does_not_rewrite_it(monkeypatch):
+    from eval.probes import BY_ID, PLANT_SEAT
+
+    seen = []
+    r = _presenter_room(monkeypatch, planted=True, seen=seen)
+    assert r.ok, r.error
+    analyst = next(m for role, _, m in seen if role == "analyst")
+    assert BY_ID["I3"].text in analyst[1]["content"], "the analyst must plan in answer to the plant"
+    openings = next(m for role, stage, m in seen if role == "presenter" and stage == "openings")
+    shape = openings[1]["content"].split("REPLY with one JSON object in this shape:\n", 1)[1]
+    assert f'"{PLANT_SEAT}"' not in shape, "the presenter does not write the pinned opening"
+    assert [(t["seat"], t["stage"]) for t in r.turns if t["usage"]["scripted"]] == [(PLANT_SEAT, "openings")]
+    assert _recorded_cost(r) == round(r.cost_usd, 6)
+
+
+@needs_packs
+def test_a_turn_the_engine_refuses_falls_back_to_the_room_for_that_turn_only(monkeypatch):
+    r = _presenter_room(monkeypatch, bad_slice="dalio")
+    assert r.ok, r.error
+    assert r.engine_stats["fallbacks"] == 1 and r.calls == 5
+    dalio = next(t for t in r.turns if t["seat"] == "dalio" and t["stage"] == "openings")
+    assert dalio["data"].get("text") and not dalio["usage"]["shared"]
+    assert _recorded_cost(r) == round(r.cost_usd, 6)
+
+
+@needs_packs
+def test_a_failed_presenter_round_falls_back_seat_by_seat_and_bills_the_failure_once(monkeypatch):
+    r = _presenter_room(monkeypatch, fail="openings")
+    assert r.ok, r.error
+    assert r.engine_stats["round_failures"] == 1 and r.engine_stats["fallbacks"] == 6
+    assert round(r.cost_usd, 6) == round(0.05 * 3 + 0.004 + 0.01 * 6, 6)
+    assert _recorded_cost(r) == round(r.cost_usd, 6)
+
+
+@needs_packs
+def test_a_failed_analyst_ends_the_session_and_its_cost_is_kept(monkeypatch):
+    r = _presenter_room(monkeypatch, fail="analyst")
+    assert not r.ok and r.error
+    assert [(f["stage"], f["usage"]["cost_usd"]) for f in r.failed_calls] == [("brief", 0.004)]
+    assert r.turns == []
+    assert _recorded_cost(r) == round(r.cost_usd, 6)
+
+
+def test_the_presenter_is_off_unless_it_is_switched_on():
+    from app.settings import Settings
+
+    assert Settings().debate_engine == "room"

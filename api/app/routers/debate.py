@@ -21,7 +21,7 @@ from starlette.concurrency import run_in_threadpool
 
 from ..auth import User, check_origin, current_user, require_user
 from ..copilot.stream import HEADERS, part, with_keepalive
-from ..debate import llm, roster, standin, store
+from ..debate import llm, presenter, roster, standin, store
 from ..debate.engine import Context, Debate
 from ..debate.pack import Source, build
 from ..plans import LIMITS, PRO_REQUIRED, Plan, plan_of
@@ -248,6 +248,14 @@ async def start(request: Request, body: StartBody, user: Annotated[User, Depends
 
         async def ask(*, messages, model, max_tokens, temperature, check, **_: Any):  # noqa: ANN001, ANN202
             return await llm.ask(s, model, messages, max_tokens=max_tokens, temperature=temperature, check=check)
+
+        if s.debate_engine == "presenter":
+            # The owner's two-model option (app/debate/presenter.py): the same page from an analyst and a
+            # presenter. The room's own call stays as the fallback for any turn the plan cannot serve.
+            ask = presenter.make_asker(
+                call=ask, fallback=ask, advisors=advisors, chair=chair, locale=body.locale,
+                models={"analyst": s.debate_chair_model, "presenter": s.debate_advisor_model},
+            )
 
     else:
         ask = standin.make_asker(pack, advisors, body.locale, question)
