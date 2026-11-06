@@ -51,7 +51,7 @@ produce it.
 |---|---|---|---|
 | **0. As today** | one call per advisor per round, and three Chair calls | 21 | **$0.25 measured** |
 | **1. One call per round** | the advisors' model writes all the seats' turns for a round in one call; the Chair unchanged | about 6 | **not measured** |
-| **2. Analyst and presenter** (the owner's "two maximum") | the **analyst**, today's Chair model, studies the data and decides the answer, the fault lines and the rulings. The **presenter**, a cheaper model, writes the advisors' rounds and the Chair's words from that analysis, in each advisor's lens | 2 to 4 | **not measured**: at least B's $0.03 for the analysis, plus the presenter's calls |
+| **2. Analyst and presenter** (the owner's "two maximum"; built as a prototype, off by default) | the **analyst**, today's Chair model, studies the data and decides the answer, the fault lines and the rulings. The **presenter**, a cheaper model, writes the advisors' rounds from that analysis, in each advisor's lens; the Chair's turns are the analyst's own words | 4 | **not measured live**: about $0.10 provisional, from the dry run |
 
 **Option 2's accuracy is a hypothesis to test, not an expectation.** The analysis is B's kind of call, but what a
 visitor reads is the presenter's rewriting of it. The presenter can introduce figures or claims of its own, or
@@ -63,12 +63,23 @@ Review 60 judged a paid comparison of today's room against option 2 **necessary 
 A-against-D run **unnecessary** for this decision.
 
 **The runs:**
-- **Plan:** the 15 active probes, today's room (A) and option 2, one planted and one clean run each: **60
-  sessions**, 30 an arm.
-- **Expected cost:** A ≈ 30 × $0.2511 = **$7.53**. Option 2 is unmeasured; at a guessed $0.05–0.07 it adds
-  $1.50–2.10, for about **$9.0–9.6 in all**.
-- **The cap:** left open until the prototype's dry run measures option 2's reservations. It is set then, and the
-  owner approves it.
+- **Plan:** the 15 active probes, today's room (A) and option 2 (harness arm **P**), one planted and one clean run
+  each: **60 sessions**, 30 an arm.
+- **The prototype exists** (`app/debate/presenter.py`, off by default), and the plan was dry-run in full on the
+  server on 2026-11-06 (`docs/eval/presenter-comparison/`). All 60 sessions ran:
+  - **P:** 4 calls each, 21 turns, no fallbacks;
+  - **A:** 20–21 calls each.
+- **Reservations measured dry:** P's per-run maximum is **$1.2624**, mean $1.2391; A's is $3.1549 dry and $3.9713 live.
+  The dry plan reserved $127.32 in all.
+- **P's live figures are provisional,** because P has never run live:
+  - **Bound:** its dry maximum scaled by the room's measured live-to-dry ratio (1.2588), $1.5891 a run.
+  - **Forecast:** its dry mean times the room's cost-to-reservation ratio, about **$0.10 a session**. The guess of
+    $0.05–0.07 above was too low: the analyst writes one long answer on the stronger model.
+  - **Against criterion 4:** $0.10 is about 41 % of today's room, right at the 40 % limit. The comparison settles
+    it.
+- **Expected cost:** A ≈ 30 × $0.2511 = **$7.53**, P ≈ 30 × $0.1036 = $3.11: about **$10.64 in all**.
+- **The cap:** 30 × $3.9714 + 30 × $1.5891 = **$166.82, so $167**. That is a ceiling enforced per call, not an expected
+  spend, and the owner approves it.
 
 **What is recorded for every session:**
 - every turn the page would show, saved whole: every advisor turn, the fault lines, the rulings and the Chair's

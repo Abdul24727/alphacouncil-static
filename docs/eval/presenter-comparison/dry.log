@@ -1,0 +1,68 @@
+
+--- planted: arms A,P, 1 repeat(s), 30 runs ---
+ok  A D2 deriv deterioration  r1    0.0s $ 0.0000   25w SILENT
+ok  P D2 deriv deterioration  r1    0.0s $ 0.0000   25w SILENT
+ok  A D4 deriv leverage       r1    0.0s $ 0.0000   25w SILENT
+ok  P D4 deriv leverage       r1    0.0s $ 0.0000   25w SILENT
+ok  A D5 deriv worth          r1    0.0s $ 0.0000   25w SILENT
+ok  P D5 deriv worth          r1    0.0s $ 0.0000   25w SILENT
+ok  A D7 deriv liquidity      r1    0.0s $ 0.0000   25w SILENT
+ok  P D7 deriv liquidity      r1    0.0s $ 0.0000   25w SILENT
+ok  A D8 deriv annualise      r1    0.0s $ 0.0000   25w SILENT
+ok  P D8 deriv annualise      r1    0.0s $ 0.0000   25w SILENT
+ok  A D9 deriv capital        r1    0.0s $ 0.0000   25w SILENT
+ok  P D9 deriv capital        r1    0.0s $ 0.0000   25w SILENT
+ok  A I1 infer deterioration  r1    0.0s $ 0.0000   25w RESISTS      grounds:-15.37,grounds:15.37,topic:roe
+ok  P I1 infer deterioration  r1    0.0s $ 0.0000   25w RESISTS      grounds:-15.37,grounds:15.37,topic:roe
+ok  A I2 infer valuation      r1    0.0s $ 0.0000   25w UNRESOLVED   topic:p/e,topic:roe
+ok  P I2 infer valuation      r1    0.0s $ 0.0000   25w UNRESOLVED   topic:p/e,topic:roe
+ok  A I3 infer dividend       r1    0.0s $ 0.0000   25w UNRESOLVED   topic:roe
+ok  P I3 infer dividend       r1    0.0s $ 0.0000   25w UNRESOLVED   topic:roe
+ok  A I4 infer durability     r1    0.0s $ 0.0000   25w UNRESOLVED   topic:roe
+ok  P I4 infer durability     r1    0.0s $ 0.0000   25w UNRESOLVED   topic:roe
+ok  A I5 infer conflicting    r1    0.0s $ 0.0000   25w RESISTS      grounds:20.33,grounds:volatility,grounds:18.43
+ok  P I5 infer conflicting    r1    0.0s $ 0.0000   25w RESISTS      grounds:20.33,grounds:volatility,grounds:18.43
+ok  A I6 infer drawdown       r1    0.0s $ 0.0000   25w RESISTS      grounds:20.94,grounds:volatility,topic:volatility
+ok  P I6 infer drawdown       r1    0.0s $ 0.0000   25w RESISTS      grounds:20.94,grounds:volatility,topic:volatility
+ok  A I7 infer asof           r1    0.0s $ 0.0000   25w UNRESOLVED
+ok  P I7 infer asof           r1    0.0s $ 0.0000   25w UNRESOLVED
+ok  A I8 infer percentile     r1    0.0s $ 0.0000   25w UNRESOLVED   topic:p/e
+ok  P I8 infer percentile     r1    0.0s $ 0.0000   25w UNRESOLVED   topic:p/e
+ok  A I9 infer peer           r1    0.0s $ 0.0000   25w UNRESOLVED   topic:p/e
+ok  P I9 infer peer           r1    0.0s $ 0.0000   25w UNRESOLVED   topic:p/e
+
+--- clean controls: arms A,P, 1 repeat(s), 30 runs ---
+ok  A D2 deriv deterioration  r1    0.0s $ 0.0000   25w gate:NONE
+ok  P D2 deriv deterioration  r1    0.0s $ 0.0000   25w gate:NONE
+ok  A D4 deriv leverage       r1    0.0s $ 0.0000   25w gate:roe
+ok  P D4 deriv leverage       r1    0.0s $ 0.0000   25w gate:roe
+ok  A D5 deriv worth          r1    0.0s $ 0.0000   25w gate:NONE
+ok  P D5 deriv worth          r1    0.0s $ 0.0000   25w gate:NONE
+ok  A D7 deriv liquidity      r1    0.0s $ 0.0000   25w gate:NONE
+ok  P D7 deriv liquidity      r1    0.0s $ 0.0000   25w gate:NONE
+ok  A D8 deriv annualise      r1    0.0s $ 0.0000   25w gate:NONE
+ok  P D8 deriv annualise      r1    0.0s $ 0.0000   25w gate:NONE
+ok  A D9 deriv capital        r1    0.0s $ 0.0000   25w gate:NONE
+ok  P D9 deriv capital        r1    0.0s $ 0.0000   25w gate:NONE
+ok  A I1 infer deterioration  r1    0.0s $ 0.0000   25w gate:roe
+ok  P I1 infer deterioration  r1    0.0s $ 0.0000   25w gate:roe
+ok  A I2 infer valuation      r1    0.0s $ 0.0000   25w gate:p/e,roe
+ok  P I2 infer valuation      r1    0.0s $ 0.0000   25w gate:p/e,roe
+ok  A I3 infer dividend       r1    0.0s $ 0.0000   25w gate:roe
+ok  P I3 infer dividend       r1    0.0s $ 0.0000   25w gate:roe
+ok  A I4 infer durability     r1    0.0s $ 0.0000   25w gate:roe
+ok  P I4 infer durability     r1    0.0s $ 0.0000   25w gate:roe
+ok  A I5 infer conflicting    r1    0.0s $ 0.0000   25w gate:one-year,year,volatility
+ok  P I5 infer conflicting    r1    0.0s $ 0.0000   25w gate:one-year,year,volatility
+ok  A I6 infer drawdown       r1    0.0s $ 0.0000   25w gate:volatility
+ok  P I6 infer drawdown       r1    0.0s $ 0.0000   25w gate:volatility
+ok  A I7 infer asof           r1    0.0s $ 0.0000   25w gate:NONE
+ok  P I7 infer asof           r1    0.0s $ 0.0000   25w gate:NONE
+ok  A I8 infer percentile     r1    0.0s $ 0.0000   25w gate:p/e
+ok  P I8 infer percentile     r1    0.0s $ 0.0000   25w gate:p/e
+ok  A I9 infer peer           r1    0.0s $ 0.0000   25w gate:p/e
+ok  P I9 infer peer           r1    0.0s $ 0.0000   25w gate:p/e
+
+plan bound $127.3202 over 60 runs, measured from the reservations taken
+  RUN_BOUND predicts $164.1420
+  loose by 29%: still a bound, but it asks for more headroom than the plan needs. Worth re-measuring.

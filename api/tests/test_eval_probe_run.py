@@ -610,7 +610,7 @@ def test_a_dry_room_labels_its_turns_simulated_and_a_single_model_times_its_one_
 # --- arm P: the owner's two-model option (app/debate/presenter.py) ----------------------------------
 
 
-def _presenter_room(monkeypatch, planted=False, bad_slice=None, fail=None, seen=None):
+def _presenter_room(monkeypatch, planted=False, bad_slice=None, fail=None, seen=None, locale="en"):
     """Arm P through run_room on the stand-in, with costs: each room call $0.01, each analyst or
     presenter call $0.05. `bad_slice` empties one advisor's opening so the engine refuses it; `fail`
     ("analyst" or a presenter stage) makes that call fail outright, billed $0.004. `seen` collects the
@@ -646,7 +646,7 @@ def _presenter_room(monkeypatch, planted=False, bad_slice=None, fail=None, seen=
 
     monkeypatch.setattr(probe_run, "make_asker", costed_asker)
     monkeypatch.setattr(probe_run.presenter, "make_standin_call", costed_call)
-    return asyncio.run(probe_run.run_room(BY_ID["I3"], "P", 1, "en", planted=planted, dry=True,
+    return asyncio.run(probe_run.run_room(BY_ID["I3"], "P", 1, locale, planted=planted, dry=True,
                                           budget=Budget(cap_usd=1000.00, attempts=3), engine="presenter"))
 
 
@@ -715,3 +715,22 @@ def test_the_presenter_is_off_unless_it_is_switched_on():
     from app.settings import Settings
 
     assert Settings().debate_engine == "room"
+
+
+@needs_packs
+def test_the_presenter_runs_every_stage_in_arabic(monkeypatch):
+    """The benchmark's packs are English-only (docs/eval/packs), so the Arabic run uses the English
+    pack with an Arabic session: what differs by language - the prompts' language line and the Arabic
+    text the engine checks - is exercised; the data is the same."""
+    from eval import probe_run
+    from eval.run import load_pack as real_load
+
+    monkeypatch.setattr(probe_run, "load_pack", lambda ticker, _locale: real_load(ticker, "en"))
+    seen = []
+    r = _presenter_room(monkeypatch, seen=seen, locale="ar")
+    assert r.ok, r.error
+    stages = [t["stage"] for t in r.turns]
+    assert {s: stages.count(s) for s in dict.fromkeys(stages)} == {
+        "brief": 1, "openings": 6, "faultlines": 1, "debate": 6, "final": 6, "verdict": 1}
+    assert all("Arabic" in m[1]["content"].rsplit("\n", 1)[-1] for _, _, m in seen), "every call asks for Arabic"
+    assert any("؀" <= ch <= "ۿ" for t in r.turns if t["stage"] == "openings" for ch in t["data"]["text"])
