@@ -270,11 +270,15 @@ Older entries: `changelog-archive.md`.
   Jun 2026" / "Jun 2026" with a note under the table. **The Arabic statement labels are RELEASED on both
   tiers (`5c18a3ae46`, 2026-11-05):** Saudi income-statement rows on Arabic pages are in Arabic except one
   company's two Mudaraba lines, taken from Argaam's Gulf Arabic pages (`aa3dde6` plus the 2026-11-04
-  review's fixes). The Gulf English-page follow-up is done on `rebuild` (2026-11-06, not released):
-  0 rows stay Arabic once F-16 is published. **F-15 (open, fix prepared):**
-  five Saudi finance companies' balance sheets are summed into their income statements (Tasheel's
-  total assets shown ×4); the one-line parser patch is APPLIED (15:38 UTC) and lands with the
-  2026-11-04 05:00 UTC publish, to be checked then. **F-16 (CLOSED, verified live 2026-11-06 after the 05:01 UTC publish; it was):** nine UAE
+  review's fixes). **The Gulf English-page follow-up is done on `rebuild` and NOT released.** Candidate `dfc7a3d` passes the
+  English-label sweep over the 2026-11-06 published data, 714/714 companies and 40,811 lines, with every
+  candidate check passing. It waits on the owner's release go-ahead (`docs/release-readiness-2026-11-06.md`).
+  **F-15 (CLOSED, verified live 2026-11-04 after the 05:03:45 UTC publish; it was):** five Saudi finance
+  companies' balance sheets were summed into their income statements (Tasheel's total assets shown ×4).
+  The one-line parser patch was applied 2026-11-03 15:38 UTC; since that publish all five have TTM
+  income plus FY 2025-12 / Q 2026-06 balance sheets, and Tasheel's total assets read 3,197.89 /
+  3,365.01 (§9's Goal 2 row). *(Corrected 2026-11-06 by review 32: this said "open, fix prepared"
+  two days after it was verified.)* **F-16 (CLOSED, verified live 2026-11-06 after the 05:01 UTC publish; it was):** nine UAE
   companies' cash-flow statements sit inside their balance sheets (AMLAK's shows 50 lines, 19 of them cash
   flow), because their pages head it "التدفق النقدي", which the parser does not know. The heading guard
   plus one mapping line fixes it; applied, and **verified live after the 2026-11-06 05:01 UTC publish** (13/13, sweep 714/714). **F-14:** the pipeline's news-AI step has
@@ -1258,9 +1262,17 @@ and no customer has paid yet.
      before it on the owner's waiver.
   2. **Go-aheads:**
      - ~~release the Arabic statement labels~~ **RELEASED 2026-11-05** (`5c18a3ae46`, both tiers);
+     - **release candidate `dfc7a3d` to beta, then production** (`docs/release-readiness-2026-11-06.md`):
+       - **What it ships:** Gulf statement lines in English on English pages, newest-first columns, bank
+         sub-lines, the unconfirmed-currency caption, phone tables and capital-panel spacing.
+       - **Checks:** every candidate check passes, including the sweep at 714/714.
+       - **Rollback:** `5c18a3ae46`, kept in both tiers.
      - ~~push the unpushed commits~~ **PUSHED 2026-11-06** (`c046236..ccfe063`, the released sha
        included). Unpushed since then: the `check-advisors.mjs` fix (`7fb04b5`), the F-16 patches and record,
-       and records - all on `rebuild`, needing a push go-ahead;
+       the candidate's commits and records - all on `rebuild`, needing a push go-ahead.
+       - **Audited:** Step 2's audit covered `ccfe063..9712418` (45 commits). Every hit was read; none is a
+         value.
+       - **At push time:** the scans run again over the exact range;
      - ~~apply the parser's heading guard (F-16)~~ **APPLIED 2026-11-05 22:44 UTC, VERIFIED LIVE 2026-11-06**;
      - **apply the check-advisors `owns` case fix** (`docs/check-advisors-owns-case-2026-11-06.patch`): a behaviour change to a check script, dormant today (all seven files uppercase);
      - **the $66 pilot, then the $393 decision-grade run** (Next Up item 4; unblocked since F-13 and the
@@ -1304,6 +1316,9 @@ three to fix before the labels ship are **FIXED on `rebuild` (2026-11-04, "Yes, 
 Record: `docs/arabic-statement-labels-2026-11-03.md`, "Review fixes". A follow-up from it: 8,099 Gulf
 rows (95 labels, mostly Argaam's spelling and unit variants) still show in Arabic on English pages,
 and nothing checks that direction.
+*(2026-11-06: **done on `rebuild`, NOT released.** 79 English-page pairs were added. The sweep
+(`check-data-fixes.mjs`, `SWEEP=1`) now checks that direction and fails closed. On candidate `dfc7a3d`, over
+the 2026-11-06 published data, it passes 714/714 companies and 40,811 lines. The release waits on the owner.)*
 
 The rest are cleanups: a blocked harvest script still documented as runnable, duplicated helpers, a
 missing USD unit, a self-matching busy check, and CLAUDE.md's 1440/390 screenshot rule. There are two
