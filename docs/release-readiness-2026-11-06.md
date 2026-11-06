@@ -84,9 +84,16 @@ Run after the last change, so no later step can have broken an earlier one.
 | 5 | Real-estate label | 108, 1211; en + ar; 1440 + 390 | PASS 8/8, with values equal to the API's |
 | 6 | `check-arabic.mjs` with `WIDTHS=1440,390` | 48 Arabic page views signed out, including `/t/2222/financials` | 0 English strings outside the allow-list |
 
-The only Arabic text left on English pages in these runs is the cash-flow lines inside AMLAK's and
-AMCREIT's balance sheets: 15–16 per panel, every one a cash-flow line. That is F-16, which the 05:00 UTC
-publish removes. Nothing else is left.
+**What is still Arabic on English pages, and where:**
+- In the rendered samples, the only Arabic left is the cash-flow lines inside AMLAK's and AMCREIT's balance
+  sheets: 15–16 per panel, every one a cash-flow line.
+- These are samples. The **full sweep** over all 714 companies
+  (`docs/screenshots/gulf-english-labels-2026-11-06-sweep-failclosed.txt`) found **18 such labels across
+  eight companies**: ADAV.AD, AMCREIT, AMLAK, DSI, DUBAIRES, EMSTEEL, QIC and UPP. All of them are F-16's
+  cash-flow lines in a balance sheet, and no other label is left.
+- They are **expected** to go with the 05:00 UTC publish, and that is **unverified** until the
+  after-publish checks below have run. *(Corrected 2026-11-06 by ChatGPT's review 08: this paragraph read as
+  if the two rendered companies were all of it, and as if the publish had already removed them.)*
 
 **On production after a release:** Financials is Pro-only there, so a signed-out check cannot render it. As
 on 2026-11-05, production is checked through its served code: the new chunk byte-identical to beta's, and
