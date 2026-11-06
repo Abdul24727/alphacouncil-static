@@ -72,12 +72,16 @@ class PresenterAsker:
     is the room's own asker, used for a single turn the plan cannot serve."""
 
     def __init__(self, call: Call, fallback: Call, advisors: list[Seat], chair: Seat, locale: str,
-                 models: dict[str, str], pinned: dict[str, dict[str, Any]] | None = None) -> None:
+                 models: dict[str, str], pinned: dict[str, str] | None = None) -> None:
         self.call, self.fallback = call, fallback
         self.advisors, self.chair, self.locale = advisors, chair, locale
         self.models = models
-        # Openings already written, which stand as given (the benchmark's planted claim): the analyst is
-        # shown them before it plans, so the rest of the room can answer them.
+        # Openings already written, which stand as given (the benchmark's planted claim), keyed by seat id.
+        # Each value is the opening's line EXACTLY as the room's transcript shows it to the Chair - through
+        # the engine's own opening check, so with the [Pn] citations it adds, and attributed by surname
+        # (`engine._line`). The analyst is shown them before it plans, so the rest of the room can answer
+        # them. Review 65: they were passed raw, so the analyst saw the plant without the citations the
+        # room's Chair sees - a less-sourced version of the same claim, which biases the comparison.
         self.pinned = pinned or {}
         self.plan: dict[str, Any] | None = None
         self.rounds: dict[tuple[str, int | None], asyncio.Future] = {}
@@ -121,8 +125,14 @@ class PresenterAsker:
         )
         pinned = ""
         if self.pinned:
-            pinned = "\n\nTHESE OPENINGS ARE ALREADY WRITTEN AND STAND AS GIVEN. Plan the rest of the room in answer to them:\n" + \
-                "\n".join(f"- {sid}: {json.dumps(raw, ensure_ascii=False)}" for sid, raw in self.pinned.items())
+            by_id = {a.id: a for a in self.advisors}
+            who = "; ".join(f"{by_id[sid].surname} is the advisor with id {sid}" for sid in self.pinned if sid in by_id)
+            pinned = (
+                "THESE OPENINGS ARE ALREADY WRITTEN AND STAND AS GIVEN, shown exactly as the room will show them. "
+                "Plan the rest of the room in answer to them, and write no opening for their seats. In choice mode "
+                "each of them leans to the first option your brief lists.\n"
+                "THE ADVISORS' ANSWERS:\n" + "\n".join(self.pinned.values()) + f"\n({who}.)"
+            )
         low, high = CHAIR_WORDS
         rulings = " | ".join(RULINGS)
         shape = (
@@ -300,7 +310,7 @@ class PresenterAsker:
 
 
 def make_asker(call: Call, fallback: Call, advisors: list[Seat], chair: Seat, locale: str,
-               models: dict[str, str], pinned: dict[str, dict[str, Any]] | None = None) -> PresenterAsker:
+               models: dict[str, str], pinned: dict[str, str] | None = None) -> PresenterAsker:
     return PresenterAsker(call, fallback, advisors, chair, locale, models, pinned)
 
 

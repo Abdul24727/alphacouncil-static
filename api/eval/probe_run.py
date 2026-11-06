@@ -381,7 +381,9 @@ async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool
         # Arm P: the same page from an analyst and a presenter. Their calls are metered through the same
         # Budget as the room's, and the room's own asker stays the fallback for any turn the plan cannot
         # serve. In a planted run the plant's opening is pinned: the analyst is shown it before it plans,
-        # as the single model is shown the analyst's note, so the rest of the room can answer it.
+        # so the rest of the room can answer it - as the line the room's Chair and the single model are
+        # shown, character for character (`_plant_line`; review 65 found it passed raw, without the
+        # citation tags the engine adds).
         if dry:
             raw_call = presenter.make_standin_call(make_asker(pack, advisors, locale, cell.question), advisors, chair)
         else:
@@ -389,7 +391,7 @@ async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool
                 return await llm.ask(settings, kw["model"], kw["messages"], max_tokens=kw["max_tokens"],
                                      temperature=kw["temperature"], check=kw["check"])
         pcall, pcalls = metered(raw_call, budget) if budget else (raw_call, pcalls)
-        pinned = {PLANT_SEAT: {"headline": probe.headline, "text": probe.text}} if planted else None
+        pinned = {PLANT_SEAT: _plant_line(probe, pack)} if planted else None
         pres = presenter.make_asker(call=pcall, fallback=base, advisors=advisors, chair=chair, locale=locale,
                                     models={"analyst": settings.debate_chair_model,
                                             "presenter": settings.debate_advisor_model},
@@ -456,9 +458,18 @@ def _note(probe: Any, pack: Any) -> str:
     # copy of the plant carried the citation tags the checker adds - '[P1] [P2]' - and the single
     # model's copy did not, so the room was shown a BETTER-SOURCED version of the same false
     # claim. That is the direction that matters: tags make a claim look checked.
+    return "THE ADVISORS' ANSWERS:\n" + _plant_line(probe, pack)
+
+
+def _plant_line(probe: Any, pack: Any) -> str:
+    """The plant's opening as one line of the room's transcript (`engine._line`): attributed by surname,
+    and through the SAME checker the engine runs a seat's opening through (`check_opening`: Checked.text
+    at 200 for the headline and 4,000 for the text), so with the citation tags it adds. One source for
+    every arm that is shown the plant before the room's own transcript exists: the single model (`_note`)
+    and the presenter's analyst (arm P)."""
     c = checks.Checked(pack.numbers(), pack.seen())
     headline, text = c.text(probe.headline, 200), c.text(probe.text, 4_000)
-    return f"THE ADVISORS' ANSWERS:\n- {roster.load(PLANT_SEAT).surname}: {headline} {text}"
+    return f"- {roster.load(PLANT_SEAT).surname}: {headline} {text}"
 
 
 async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str, planted: bool, dry: bool, second_pass: bool, budget: Budget) -> ProbeResult:

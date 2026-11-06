@@ -309,9 +309,17 @@ def test_both_phases_of_the_experiment_run_under_one_budget(monkeypatch, tmp_pat
 # --- fairness of the stimulus across configurations (owner's item 6) ---------------------------
 
 
+try:
+    from eval.probes import PROBES as _ACTIVE
+
+    ACTIVE_IDS = [p.id for p in _ACTIVE]
+except Exception:  # noqa: BLE001 - the structural tests still run where the harness cannot be imported
+    ACTIVE_IDS = []
+
+
 @needs_packs
-@pytest.mark.parametrize("probe_id", ["D1", "I1"])
-def test_every_arm_is_shown_the_identical_planted_claim(monkeypatch, probe_id):
+@pytest.mark.parametrize("probe_id", ACTIVE_IDS)
+def test_every_arm_is_shown_the_identical_planted_claim(monkeypatch, tmp_path, probe_id):
     """The owner asked for proof that the standalone Chairman receives a fair equivalent of each
     injected claim. It did not, in two ways, and both were invisible until the prompts were read
     side by side:
@@ -327,13 +335,21 @@ def test_every_arm_is_shown_the_identical_planted_claim(monkeypatch, probe_id):
 
     Both are closed by `_note` mirroring `engine._line` and running the same `Checked.text`. This
     test reads the prompts the client was actually handed and compares the line character for
-    character, because that is the only version of this claim that cannot drift."""
+    character, because that is the only version of this claim that cannot drift.
+
+    3. **The presenter's analyst (arm P).** Review 65 found the analyst - which plans the whole room
+       before any turn exists - shown the plant RAW: no citation tags, and attributed by seat id
+       rather than surname, while the room's Chair saw the checked, tagged line. On I1 the room saw
+       `[P1]` and `[P2]` and the analyst saw neither. Closed by `_plant_line`, the one source for
+       every arm shown the plant ahead of the room's own transcript. Checked here on every active
+       probe, because the citation difference touched 14 of the 15."""
     from eval import probe_run
     from eval.budget import Budget
     from eval.probes import BY_ID, PLANT_SEAT
 
     probe = BY_ID[probe_id]
-    seen: list[list[str]] = []
+    monkeypatch.setattr(probe_run, "DRY", tmp_path / "dry-prompts.txt")
+    seen: list[tuple[str | None, list[str]]] = []
     real = probe_run.metered
 
     def spy(ask_fn, budget):
@@ -341,19 +357,23 @@ def test_every_arm_is_shown_the_identical_planted_claim(monkeypatch, probe_id):
 
         async def wrapped(**kw):
             if kw.get("messages"):
-                seen.append([m["content"] for m in kw["messages"]])
+                seen.append((kw.get("role"), [m["content"] for m in kw["messages"]]))
             return await inner(**kw)
 
         return wrapped, calls
 
     monkeypatch.setattr(probe_run, "metered", spy)
 
-    def plant_line(run) -> str:
+    def plant_line(run, role: str | None = None) -> str:
+        """The plant's line in the call that reasons over it: the last call (the room's Chair, the single
+        model) or, for the presenter, the analyst's one call."""
         seen.clear()
         asyncio.run(run())
-        last = "\n".join(seen[-1])
-        lines = [l for l in last.splitlines() if l.startswith("- ")and probe.headline[:30] in l]
-        assert lines, f"the answer-writing call does not carry the plant at all:\n{last[-2000:]}"
+        calls = [m for r, m in seen if role is None or r == role]
+        assert calls, f"no {role or 'model'} call was made"
+        text = "\n".join(calls[-1] if role is None else calls[0])
+        lines = [l for l in text.splitlines() if l.startswith("- ") and probe.headline[:30] in l]
+        assert lines, f"the answer-writing call does not carry the plant at all:\n{text[-2000:]}"
         return lines[0]
 
     room = plant_line(lambda: probe_run.run_room(
@@ -361,10 +381,12 @@ def test_every_arm_is_shown_the_identical_planted_claim(monkeypatch, probe_id):
     single = plant_line(lambda: probe_run.run_single(
         probe, "B", 1, "en", "anthropic/claude-sonnet-5.5", True, True,
         second_pass=False, budget=Budget(cap_usd=1e6)))
+    analyst = plant_line(lambda: probe_run.run_room(
+        probe, "P", 1, "en", True, True, budget=Budget(cap_usd=1e6), engine="presenter"), role="analyst")
 
-    assert room == single, (
-        f"the arms are shown different versions of the same plant\n  room:   {room!r}\n"
-        f"  single: {single!r}")
+    assert room == single == analyst, (
+        f"the arms are shown different versions of the same plant\n  room:    {room!r}\n"
+        f"  single:  {single!r}\n  analyst: {analyst!r}")
     # and it really is the plant, attributed, not a paraphrase
     from app.debate import roster
     assert roster.load(PLANT_SEAT).surname in room
@@ -675,13 +697,17 @@ def test_the_presenter_shows_every_stage_of_the_room_from_four_calls(monkeypatch
 
 @needs_packs
 def test_the_presenter_shows_the_analyst_the_planted_opening_and_does_not_rewrite_it(monkeypatch):
+    from eval import probe_run
     from eval.probes import BY_ID, PLANT_SEAT
 
     seen = []
     r = _presenter_room(monkeypatch, planted=True, seen=seen)
     assert r.ok, r.error
     analyst = next(m for role, _, m in seen if role == "analyst")
-    assert BY_ID["I3"].text in analyst[1]["content"], "the analyst must plan in answer to the plant"
+    probe = BY_ID["I3"]
+    pack = probe_run.load_pack(probe_run.CELL[probe.cell].ticker, "en")
+    # as the room's Chair is shown it: checked, cited, attributed (review 65)
+    assert probe_run._note(probe, pack) in analyst[1]["content"], "the analyst must plan in answer to the plant"
     openings = next(m for role, stage, m in seen if role == "presenter" and stage == "openings")
     shape = openings[1]["content"].split("REPLY with one JSON object in this shape:\n", 1)[1]
     assert f'"{PLANT_SEAT}"' not in shape, "the presenter does not write the pinned opening"
