@@ -33,7 +33,9 @@ All of it is in `web/src` and `web/messages`; `api/`, `deploy/` and `web/public/
 | "income from investments & Other operating income" reads "Income from investments & other operating income" | Financials, English: 3 Saudi banks and the Gulf companies with that line | `PROJECT.md` §5, 2026-11-06 (review 16) |
 | On a phone, the line labels stay in place, each period fills the space beside them, and scrolling snaps to whole periods: no figure is shown cut in half | Financials on phones, both languages; desktop unchanged | `PROJECT.md` §5, 2026-11-06 (review 13) |
 
-Arabic pages change only through rows 2, 3 and 6 (newest first, bank sub-lines, phone tables). No existing dictionary mapping changed, apart from the one
+Arabic pages change only through rows 2, 3, 5 and 7: newest first, bank sub-lines, the unconfirmed-currency
+caption, and phone tables. *(Corrected by review 25: this said rows 2, 3 and 6, from before the caption row
+was added.)* No existing dictionary mapping changed, apart from the one
 intended real-estate label.
 
 ## Every file changed since `5c18a3ae46`
@@ -134,6 +136,16 @@ KFH, whose currency is not confirmed, and 108 (KWD) as the control; income and b
 - 108 keeps "MILLIONS OF KWD" / "بملايين د.ك";
 - no caption is clipped;
 - every cell in every column equals the API.
+
+**Check 15, the capital-changes panel's caption** (`15-capital-captions.txt`, `capital-captions/`). It uses the
+same `unitCaption()`; Calendar tab, English and Arabic, 1440 and 390. 8/8 PASS:
+- **Confirmed currency, 1010 (SAR):** "MILLIONS OF SAR" / "بملايين ر.س", not clipped; all 9 rows' date,
+  capital after and change equal the API's.
+- **Unconfirmed currency: no data to show it.** None of the 8 listings without a confirmed currency has a
+  capital change (`/corporate` gives 0 rows each). KFH's panel therefore shows its empty message and no
+  caption, which was checked. No row was invented to show the unconfirmed caption there.
+- **Seen on check 15, left for review:** on 1010's Arabic panel at 390 the date and type columns run
+  together ("2026-04-05أسهم منحة"), because neither cell has inline padding. That predates today's work.
 
 The sweep counts **8** listings with no confirmed currency (`"no_currency":8`). *(Corrected by review 24: this
 report and `PROJECT.md` first said 7, taken from the 2026-11-05 sweep.)*

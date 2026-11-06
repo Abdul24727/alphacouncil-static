@@ -1,0 +1,9 @@
+PASS 1010 en 1440 capital: caption "MILLIONS OF SAR" (want "MILLIONS OF SAR"), clipped false; 9 rows (API 9), cells differing from the API 0
+PASS KFH en 1440 capital: no capital change in the API; caption shown null; empty message shown true
+PASS 1010 en 390 capital: caption "MILLIONS OF SAR" (want "MILLIONS OF SAR"), clipped false; 9 rows (API 9), cells differing from the API 0
+PASS KFH en 390 capital: no capital change in the API; caption shown null; empty message shown true
+PASS 1010 ar 1440 capital: caption "بملايين ر.س" (want "بملايين ر.س"), clipped false; 9 rows (API 9), cells differing from the API 0
+PASS KFH ar 1440 capital: no capital change in the API; caption shown null; empty message shown true
+PASS 1010 ar 390 capital: caption "بملايين ر.س" (want "بملايين ر.س"), clipped false; 9 rows (API 9), cells differing from the API 0
+PASS KFH ar 390 capital: no capital change in the API; caption shown null; empty message shown true
+PASS: the capital panel's caption reads right with a confirmed currency; the unconfirmed case has no data to show it
