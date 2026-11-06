@@ -64,6 +64,15 @@ Billing has been open since 2026-11-02.
   - the owner's direction of 2026-11-06 on the room's cost, below;
   - the open small items in `PROJECT.md` §6 and §9.
 
+**Since then (2026-11-06 evening to 2026-11-07), on the owner's direction below:**
+- **Option 2 is built as a prototype** (`api/app/debate/presenter.py`, harness arm P), behind a setting and off by
+  default. Nothing is released. Reviews 62 to 65 fixed its accounting, its fallbacks and, in review 65, the planted
+  claim: the analyst now sees it exactly as today's room's Chair does (`2e948d9`).
+- **The paid comparison of today's room against option 2** (60 sessions, about $10.64 expected, $167 cap) has the
+  owner's go-ahead: "Yes, run it", in answer to "Once ChatGPT accepts the fixes, run the paid comparison (about $11,
+  ceiling $167)?". It runs once the reviewer accepts the latest fixes. Every answer is audited by hand before any
+  result is reported. Adoption, any beta showing and any release stay the owner's, separately.
+
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 
 "The idea from the LLM council is not only for performance. If performance is similar or very clearly similar and

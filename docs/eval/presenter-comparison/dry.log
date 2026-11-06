@@ -63,6 +63,6 @@ ok  P I8 infer percentile     r1    0.0s $ 0.0000   25w gate:p/e
 ok  A I9 infer peer           r1    0.0s $ 0.0000   25w gate:p/e
 ok  P I9 infer peer           r1    0.0s $ 0.0000   25w gate:p/e
 
-plan bound $127.3202 over 60 runs, measured from the reservations taken
+plan bound $127.3381 over 60 runs, measured from the reservations taken
   RUN_BOUND predicts $166.8150
   loose by 31%: still a bound, but it asks for more headroom than the plan needs. Worth re-measuring.
