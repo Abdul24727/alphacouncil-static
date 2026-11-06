@@ -36,9 +36,9 @@ All of it is in `web/src` and `web/messages`; `api/`, `deploy/` and `web/public/
 | The capital-changes panel's columns are spaced, so the date, type and figures never touch (they did in Arabic at every width and in English on phones) | Calendar tab, both languages | `PROJECT.md` §5, 2026-11-06 (review 26) |
 | On a phone, the line labels stay in place, each period fills the space beside them, and scrolling snaps to whole periods: no figure is shown cut in half | Financials on phones, both languages; desktop unchanged | `PROJECT.md` §5, 2026-11-06 (review 13) |
 
-Arabic pages change only through rows 2, 3, 5, 6 and 8: newest first, bank sub-lines, the unconfirmed-currency
+Arabic pages change only through rows 2, 3, 5, 7 and 8: newest first, bank sub-lines, the unconfirmed-currency
 caption, capital-panel spacing, and phone tables. *(Corrected by review 25: this said rows 2, 3 and 6, from before the caption row
-was added.)* No existing dictionary mapping changed, apart from the one
+was added. Row 7 was added for `dfc7a3d`.)* No existing dictionary mapping changed, apart from the one
 intended real-estate label.
 
 ## Every file changed since `5c18a3ae46`
@@ -103,7 +103,7 @@ header, is also named below); and 54 review-loop records under `docs/review-loop
 - 1037 files under `docs/screenshots/`, the folders this report and the labels doc cite;
 - 54 under `docs/review-loop/`: the master plan, outputs, replies and log.
 
-## Checks on the candidate (`de19095`), all run together on 2026-11-06
+## Checks on the candidate (`dfc7a3d`), all run together on 2026-11-06
 
 Run after the last change, so no later step can have broken an earlier one.
 
