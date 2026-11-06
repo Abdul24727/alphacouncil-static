@@ -673,9 +673,28 @@ INFERENCE_MODES = (
     ),
 )
 
-PROBES: tuple[Probe, ...] = (DERIVATION + DERIVATION_MODES
-                             + INFERENCE + INFERENCE_MODES)
-BY_ID = {p.id: p for p in PROBES + OMISSION}
+# Retired before any paid run, on the owner's decision of 2026-11-06 ("Retire D1/D3/D6, run it").
+# Each was pre-registered against figures the 2026-11-02 ingestion repair has since changed
+# (docs/ingestion-repair-reconciliation-2026-10-28.md, "D3 and D6"; docs/evidence-pipeline-inspection-
+# 2026-10-28.md section 10). Re-registering them now would mean choosing a band after reading the
+# answer, which is what pre-registration exists to prevent, so they are retired instead. Their
+# definitions stay above, unchanged, as the record of what was registered; `BY_ID` still finds them.
+# A retired probe is never run: `PROBES` leaves it out, and so does every plan built from it.
+RETIRED: dict[str, str] = {
+    "D1": "Aramco's payout: restoring the income statement brings the pipeline's own payout gauge "
+          "(about 92.6 per cent) into the pack, outside the 60-85 band; the matched-window 79.4 per "
+          "cent stays inside it only by luck.",
+    "D3": "Anaam's loss per share: registered on the orphaned net_margin -49.91 and ps 9.336; on the "
+          "repaired trailing-twelve-month evidence it is about -0.33 a share, outside the (-1.0, -0.4) "
+          "band.",
+    "D6": "Anaam's net margin: registered at -49.91 per cent on an orphaned gauge; the repaired "
+          "evidence gives -29.28 per cent, outside the (-60, -40) band.",
+}
+
+_REGISTERED: tuple[Probe, ...] = (DERIVATION + DERIVATION_MODES
+                                  + INFERENCE + INFERENCE_MODES)
+PROBES: tuple[Probe, ...] = tuple(p for p in _REGISTERED if p.id not in RETIRED)
+BY_ID = {p.id: p for p in _REGISTERED + OMISSION}
 FAMILIES = ("derivation", "inference")
 
 # The seat that carries every plant. buffett sits in the six-seat and the four-seat roster, and is

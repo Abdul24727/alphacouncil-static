@@ -403,7 +403,7 @@ def main() -> None:
     q.add_argument("--dry", action="store_true", help="stand-in room: no model, no cost")
     q.add_argument("--single-model", default=get_settings().debate_chair_model)
     q.add_argument("--pause", type=float, default=5.0)
-    q.add_argument("--only", default=None, help="one probe id (D1) or one family (omission)")
+    q.add_argument("--only", default=None, help="a probe id (D2) or family (inference), or several, comma-separated (D2,D4,I1)")
     q.add_argument("--four-seats", default=FOUR_SEATS)
     q.add_argument("--clean-arms", action="append", choices=["A", "B", "D", "E"],
                    help="repeatable; adds the validity gate's clean-control phase to THIS run, at one "

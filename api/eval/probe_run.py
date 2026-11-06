@@ -409,6 +409,25 @@ async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str,
 # --- the run -----------------------------------------------------------------------------------
 
 
+def select(only: str | None) -> list[Any]:
+    """The probes a run covers. `only` is one probe id or family, or several separated by commas
+    ("D2,D4,D5,I1,I2,I3"), which is how the 2026-11-06 pilot keeps the first design's three
+    derivation and three inference probes. Every name has to match a probe that can run: a retired
+    id (probes.RETIRED) or a typo refuses the run rather than quietly making it smaller."""
+    if only is None:
+        return list(PROBES)
+    wanted = [w.strip() for w in only.split(",") if w.strip()]
+    known = {p.id for p in PROBES} | set(FAMILIES)
+    unknown = [w for w in wanted if w not in known]
+    chosen = [p for p in PROBES if p.id in wanted or p.family in wanted]
+    if unknown or not chosen:
+        raise SystemExit(
+            f"no probe matches {', '.join(unknown) or only}: ids are {[p.id for p in PROBES]}, "
+            f"families {list(FAMILIES)}"
+        )
+    return chosen
+
+
 async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool, single_model: str,
               pause: float, only: str | None, four_seats: str, cap_usd: float,
               clean_arms: list[str] | None = None) -> None:
@@ -427,9 +446,7 @@ async def run(arms: list[str], repeats: int, locale: str, clean: bool, dry: bool
         out.write_text("", encoding="utf-8")
         DRY.parent.mkdir(parents=True, exist_ok=True)
         DRY.write_text("", encoding="utf-8")
-    chosen = [p for p in PROBES if only is None or p.id == only or p.family == only]
-    if not chosen:
-        raise SystemExit(f"no probe matches {only!r}: ids are {[p.id for p in PROBES]}, families {list(FAMILIES)}")
+    chosen = select(only)
 
     # (arms, repeats, planted) for each phase of ONE experiment. `--clean-arms` adds the validity
     # gate's control phase to the same run instead of leaving it to a second command with a second

@@ -261,8 +261,9 @@ def test_a_second_dry_run_rebuilds_its_outputs_instead_of_doubling_them(monkeypa
     def preview() -> tuple[int, int]:
         # A priced model name rather than the settings default, so the test does not depend on
         # which chair model this checkout is configured for. No call is made: dry is True.
+        # I3, not D1: D1 was retired on 2026-11-06 (probes.RETIRED); I3 runs on the same pack (2222).
         asyncio.run(probe_run.run(["B"], 1, "en", False, True, "anthropic/claude-sonnet-5.5",
-                                  0.0, "D1", FOUR_SEATS, 1.0))
+                                  0.0, "I3", FOUR_SEATS, 1.0))
         return (len(results.read_text(encoding="utf-8").strip().splitlines()),
                 len(prompts.read_text(encoding="utf-8")))
 
@@ -294,8 +295,9 @@ def test_both_phases_of_the_experiment_run_under_one_budget(monkeypatch, tmp_pat
     monkeypatch.setattr(probe_run, "DRY_RESULTS", results)
     monkeypatch.setattr(probe_run, "DRY", tmp_path / "dry-prompts.txt")
 
+    # I3, not D1: D1 was retired on 2026-11-06 (probes.RETIRED); I3 runs on the same pack (2222).
     asyncio.run(probe_run.run(["B"], 1, "en", False, True, "anthropic/claude-sonnet-5.5", 0.0,
-                              "D1", FOUR_SEATS, 1.0, ["B"]))
+                              "I3", FOUR_SEATS, 1.0, ["B"]))
 
     rows = [json.loads(line) for line in results.read_text(encoding="utf-8").strip().splitlines()]
     assert [r["planted"] for r in rows] == [True, False], rows
@@ -443,3 +445,20 @@ def test_a_dry_room_measures_coverage_for_every_seat_that_spoke():
         owns = roster.load(seat).info.owns
         assert set(missing) <= set(owns), f"{seat} was charged with {missing}, but owns {owns}"
     assert isinstance(r.unruled, list)
+
+
+def test_select_takes_several_ids_and_refuses_retired_or_unknown_ones():
+    """The 2026-11-06 pilot runs D2, D4, D5, I1, I2, I3 in one invocation under one cap. A retired
+    probe or a typo must stop the run, not shrink it without saying so."""
+    from eval import probe_run
+    from eval.probes import PROBES, RETIRED
+
+    got = [p.id for p in probe_run.select("D2,D4,D5,I1,I2,I3")]
+    assert got == ["D2", "D4", "D5", "I1", "I2", "I3"]
+    assert [p.id for p in probe_run.select("D2")] == ["D2"]
+    assert {p.family for p in probe_run.select("inference")} == {"inference"}
+    assert not {p.id for p in probe_run.select("derivation")} & set(RETIRED)
+    assert probe_run.select(None) == list(PROBES)
+    for bad in ("D1", "D2,D3", "D2,X9", "omission", ""):
+        with pytest.raises(SystemExit):
+            probe_run.select(bad)

@@ -29,7 +29,7 @@ import re
 import pytest
 
 from eval import score as S
-from eval.probes import PLANT_SEAT, PROBES
+from eval.probes import _REGISTERED, BY_ID, PLANT_SEAT, PROBES, RETIRED
 from eval.questions import CELLS, PROBE_CELLS
 
 CELL = {c.key: c for c in CELLS + PROBE_CELLS}
@@ -40,13 +40,21 @@ IDS = [p.id for p in PROBES]
 def test_there_are_eighteen_probes_evenly_split():
     """Eighteen because six could only see a 33-point gap between six seats and four, and the only
     prior available puts the gap at zero. Evenly split so the pooled metric cannot be carried by one
-    family."""
-    assert len(PROBES) == 18, IDS
+    family. Three derivation probes were retired on 2026-11-06, before any paid run (probes.RETIRED),
+    so fifteen run - six derivation, nine inference - and the split is no longer even. That is a
+    known cost of retiring rather than re-registering after reading the data, recorded here so the
+    decision-grade run restores the balance or says why not."""
+    registered_ids = [p.id for p in _REGISTERED]
+    assert len(registered_ids) == 18 and len(set(registered_ids)) == 18, registered_ids
     families = {}
-    for p in PROBES:
+    for p in _REGISTERED:
         families[p.family] = families.get(p.family, 0) + 1
     assert families == {"derivation": 9, "inference": 9}, families
-    assert len(set(IDS)) == 18, "duplicate probe id"
+    assert len(PROBES) == 15 and len(set(IDS)) == 15, IDS
+    running = {}
+    for p in PROBES:
+        running[p.family] = running.get(p.family, 0) + 1
+    assert running == {"derivation": 6, "inference": 9}, running
 
 
 def test_every_probe_tests_a_distinct_failure_mode():
@@ -239,7 +247,20 @@ def test_the_pack_still_supports_each_band_scored_derivation(probe):
 def test_every_band_scored_probe_has_registered_derivation_inputs():
     """A new band-scored probe added without an entry above would be guarded by nothing."""
     banded = {p.id for p in PROBES if p.band}
-    assert banded == set(DERIVATION_INPUTS), (
+    # A retired probe keeps its registered inputs above as part of its record, but is never run.
+    assert banded == set(DERIVATION_INPUTS) - set(RETIRED), (
         f"band-scored without inputs: {sorted(banded - set(DERIVATION_INPUTS))}; "
         f"registered but no longer band-scored: {sorted(set(DERIVATION_INPUTS) - banded)}"
     )
+
+
+def test_retired_probes_never_run_and_keep_their_record():
+    """D1, D3 and D6 were retired on 2026-11-06 because the data repair moved the figures their
+    bands were registered on. They must be absent from every plan, still findable by id, unchanged,
+    and each must say why it went."""
+    assert set(RETIRED) == {"D1", "D3", "D6"}
+    assert not {p.id for p in PROBES} & set(RETIRED)
+    for pid, why in RETIRED.items():
+        assert BY_ID[pid].id == pid and BY_ID[pid].band, pid
+        assert len(why) > 40, pid
+    assert len(PROBES) == 15
