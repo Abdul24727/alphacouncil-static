@@ -289,6 +289,11 @@ Older entries: `changelog-archive.md`.
     (`docs/eval/presenter-comparison/`).
   - **The owner's go-ahead:** "Yes, run it", in answer to "Once ChatGPT accepts the fixes, run the paid comparison
     (about $11, ceiling $167)?". It runs after the reviewer accepts review 65's fix.
+  - **Review 66** found one more defect: the plan's check required an opening for the planted seat that the analyst is
+    told not to write. It is fixed in `d7c2091`, and the dry run repeated gave the same figures. **Review 67 ACCEPTED.**
+  - **The paid comparison STARTED 2026-11-07 00:31 local (21:31 UTC 11-06)** from `d7c2091`, staged as
+    `/root/comparison-d7c2091` with an empty record. It runs as the server job `acp-comparison`, with the balance
+    at $37.83 and a $10.64 forecast against the $167 cap.
   - **Before the app may use it:** the app's session total must count the calls a fallback superseded.
 
 ## 6. Current State
