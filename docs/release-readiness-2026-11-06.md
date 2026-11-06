@@ -140,16 +140,29 @@ unchanged. *(Review 13 found that only two of the phone panels had been looked a
   - `getTickerRef()` calls `connection()` on purpose: a stock page's title comes from the API at request
     time.
   - Built and served with `next start` against beta's API, the production server logs no such notice.
-  - Every stock page's metadata is in the served `<head>`. `/t/2222/financials` reads "Saudi Aramco (2222) ·
-    Tadawul · AlphaCouncil" and `/ar/t/2222/financials` "أرامكو السعودية (2222) · تداول · AlphaCouncil". Each
-    has its description, a canonical consolidated on `/t/2222` or `/ar/t/2222`, `og:title`, `og:url`,
-    `og:image` (`/og/en.png`, `/og/ar.png`), `og:locale` (`en_US`, `ar_SA`) and hreflang en, ar and
-    x-default.
-  - An unknown ticker keeps the soft not-found: "Unknown ticker" / "رمز غير معروف" with `noindex,
-    nofollow`.
-  - `check-seo.mjs` against that production server: **62 PASS, 0 FAIL** ("ALL PASS").
+  - **What was tested, by user agent** (`10-metadata-production-build.txt`, for `/t/2222/financials`,
+    `/ar/t/2222/financials` and an unknown ticker in both languages):
+    - **Googlebot**, raw HTML: the title, description, canonical, `og:title`, `og:url`, `og:image`,
+      `og:locale` and the en / ar / x-default alternates are all in `<head>`. `next.config.ts` puts the
+      crawlers on its `HTML_LIMITED_BOTS` list there (Next's list plus Googlebot); only Googlebot was
+      tested.
+    - **An ordinary Chrome user agent**, raw HTML: the same fields arrive **streamed into `<body>`**, as
+      `next.config.ts` says they do for ordinary visitors.
+    - **An ordinary Chrome browser after load:** the document has the right title, description, canonical,
+      preview tags and alternates.
+  - **The values:** "Saudi Aramco (2222) · Tadawul · AlphaCouncil" and "أرامكو السعودية (2222) · تداول ·
+    AlphaCouncil", each with its own description. Canonical `/t/2222` and `/ar/t/2222`; `og:image`
+    `/og/en.png` and `/og/ar.png`; `og:locale` `en_US` and `ar_SA`.
+  - **An unknown ticker** keeps the soft not-found ("Unknown ticker" / "رمز غير معروف"). Its robots tag reads
+    `noindex, nofollow` for Googlebot and `noindex` for a browser; both keep it out of search.
+  - `check-seo.mjs` against that production server: **62 PASS, 0 FAIL** ("ALL PASS"). It reads as Googlebot
+    and a link-preview bot. Of the Financials URLs, it checks only English `/t/2222/financials`'s canonical;
+    the rest above comes from file 10.
   - Evidence: `docs/screenshots/release-candidate-4a98832/9-check-seo-production-build.txt`,
-    `10-metadata-production-build.txt` and `seo-production-build/`.
+    `10-metadata-production-build.txt` and `seo-production-build/` (12 screenshots). *(Corrected by review
+    18: the screenshots had been written under an untracked `web/docs/`; file 10 had left out the
+    descriptions and alternates; and this paragraph had claimed every stock page's metadata is in `<head>`
+    without saying that was true for crawlers only.)*
 - *(Fixed in `307d2fc`: scrolled to its oldest year, a phone table used to scroll the line labels out of
   view and show a period cut in half beside them.)*
 
