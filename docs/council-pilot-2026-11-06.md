@@ -173,7 +173,10 @@ as the report now does.
 
 ## What it found that changes the next run
 
-1. **The published hard bound is stale.** Live calls retry, and the repaired packs are larger.
+1. **The published hard bound is stale.** Every call reserves for all its attempts before it is made, from
+   the size of its own prompt (`budget.py`), and dry and live runs make the same number of calls. Live prompts are
+   longer: the repaired packs are larger, and later rounds carry the transcript the seats really wrote, which a
+   stand-in cannot reproduce. *(Corrected after review 46: this said live calls retry.)*
 
    | Per-run reservation | A | D | B |
    |---|---|---|---|
@@ -187,8 +190,11 @@ as the report now does.
    - **Done the same day (review 45):** `RUN_BOUND` is now A 3.9714, D 2.7929 and B 0.3304, the larger of the live
      and dry maxima, rounded up. `RUN_COST` is the pilot's live means: A 0.2511, D 0.1870, B 0.0318.
      - **The decision-grade plan,** dry-run in full on the server: 180 runs, $331.30 reserved, and the harness
-       calls the new bound "loose by 28%", because a dry run cannot see live retries.
+       calls the new bound "loose by 28%", because a dry run's prompts are shorter than live ones.
      - **The quote:** forecast **$28.19**, cap **$426**. The dry record is `docs/eval/dry-probe-results.jsonl`.
+     - **What the $426 is:** a planning reservation, built from the largest reservations seen so far. It is not a
+       guarantee, because a future transcript can be longer. The spend is guaranteed by the cap, which the
+       harness enforces against each call before it is made. A run that would need more stops instead.
    - **The cap still did its job.** Spending is checked per call, which is why $81.20 of reservations added up over
      432 calls while $5.64 was spent.
 2. **The inference probes cannot separate the arms on the planted metric.** The decision-grade run should read them

@@ -89,15 +89,21 @@ RUN_COST = {"A": 0.2511, "D": 0.1870, "B": 0.0318, "E": 0.0640}
 # hair under it. The previous values were A 2.9423, D 2.1903, B 0.3146, E 0.6252 - under the
 # measured maximum in the fourth decimal, which is harmless at this scale and wrong in principle.
 #
-# RE-MEASURED 2026-11-06, after the $66 pilot (review 45). The 2026-11-02 data repair made the packs
-# larger, and live calls retry where stand-ins never do, so the old figures fell short twice over:
+# RE-MEASURED 2026-11-06, after the $66 pilot (review 45). Every call - dry or live - reserves for all
+# of its attempts BEFORE it is made, from the size of its own prompt (budget.metered), and dry and
+# live runs make the same number of calls (A 20-21, D 14-15, B 1). What differs is the prompt: the
+# 2026-11-02 data repair made the packs larger, and later rounds carry the transcript the seats
+# actually wrote (engine.py), which a stand-in's short text cannot reproduce. So the old figures fell
+# short twice over:
 #   - the dry run of the 180-run decision-grade plan (15 probes, A/B/D x 3 + clean controls) took
 #     per-run maxima of A 3.154860, D 2.377631, B 0.330336 and reserved $331.30 against the old
 #     prediction of $326.85;
 #   - the pilot's 36 LIVE runs reserved per-run maxima of A 3.971305, D 2.792840, B 0.330336.
 # Each value below is the larger of the two, rounded UP. A dry run therefore reads about 28% "loose":
-# it cannot see live retries, and the live maxima are the worst case actually observed. E was not
-# re-measured (it is not in any planned run) and keeps its 2026-10-28 value.
+# its prompts are shorter than live ones. These are PLANNING figures - the largest reservations seen
+# so far - not a guarantee: a future transcript can be longer. What guarantees the spend is the cap,
+# which the Budget enforces against every call's own reservation. E was not re-measured (it is not in
+# any planned run) and keeps its 2026-10-28 value.
 RUN_BOUND = {"A": 3.9714, "D": 2.7929, "B": 0.3304, "E": 0.6254}
 
 SHAPE = (

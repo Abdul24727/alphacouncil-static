@@ -5,15 +5,17 @@
   runs.
 - **Reserved:** $331.30, against the old `RUN_BOUND`'s $326.85. That is TOO LOW.
 - **Dry per-run maxima:** A 3.154860, D 2.377631, B 0.330336.
-- **The pilot's live per-run maxima:** A 3.971305, D 2.792840, B 0.330336. Live calls retry; stand-ins never do.
+- **The pilot's live per-run maxima:** A 3.971305, D 2.792840, B 0.330336. *(Corrected after review 46: this said
+  live calls retry. Every call reserves for all its attempts up front, dry or live, and both make the same number of
+  calls. Live prompts are longer, because they carry the real transcript.)*
 
 **`api/eval/probe_run.py`:**
 - **`RUN_BOUND`:** A 3.9714, D 2.7929, B 0.3304. Each is the larger of the two measurements, rounded up as before.
   E is unchanged and not re-measured; it is in no planned run.
 - **`RUN_COST`:** A 0.2511, D 0.1870, B 0.0318, the pilot's live means.
 - **The comments** record both measurements and the previous values.
-- **The re-run dry plan** prints "RUN_BOUND predicts $425.68 … loose by 28%", which is expected: the dry run cannot see
-  live retries.
+- **The re-run dry plan** prints "RUN_BOUND predicts $425.68 … loose by 28%", which is expected: a dry run's prompts
+  are shorter than live ones.
 - **The record:** `docs/eval/dry-probe-results.jsonl` is replaced by the 180-row record; the old one had 216 rows for
   18 probes.
 
@@ -41,3 +43,9 @@ paid record are unchanged.
 - approve the $426 cap.
 
 **The question for the review:** is this sound, and what is the single next pre-approved step?
+
+*Review 46's correction, made in commit "Bound wording: prompt size, not retries":*
+- **The cause:** the live-versus-dry gap is prompt size, not retries.
+- **What the $426 is:** a planning reservation, not a guaranteed maximum.
+- **The guarantee:** the spend is guaranteed by the per-call cap.
+- **Unchanged:** the constants, probes and records.

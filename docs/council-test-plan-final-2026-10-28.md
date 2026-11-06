@@ -137,7 +137,7 @@ time, not credits:
 | 18 | 54 | 216 | $31.02 | $392.20 | $393 | 19 points |
 | 24 | 72 | 288 | $41.36 | $522.93 | $523 | 17 points |
 
-*(Re-quoted 2026-11-06, after the pilot, review 45: with D1, D3 and D6 retired the decision-grade run is 15 probes, 180 runs - A, B and D three times each, plus one clean control per arm and probe. Forecast **$28.19** from the pilot's live per-run costs; reservation **$425.68** from `RUN_BOUND` re-measured to the pilot's live maxima; cap **$426**. Smallest visible gap about 20 points, read between the 12- and 18-probe rows, not simulated. The 18-probe row and every $393 are superseded.)*
+*(Re-quoted 2026-11-06, after the pilot, review 45: with D1, D3 and D6 retired the decision-grade run is 15 probes, 180 runs - A, B and D three times each, plus one clean control per arm and probe. Forecast **$28.19** from the pilot's live per-run costs; reservation **$425.68** from `RUN_BOUND` re-measured to the pilot's live maxima; cap **$426**. The reservation is a planning figure from the largest reservations seen so far, not a guarantee; the cap is what the harness enforces against every call. Smallest visible gap about 20 points, read between the 12- and 18-probe rows, not simulated. The 18-probe row and every $393 are superseded.)*
 
 **And the arms test seat count, not distinctness.** The owner's decision is whether to move to four
 advisors *with more distinct investment philosophies*, and arm D uses the **existing** prompts, as
