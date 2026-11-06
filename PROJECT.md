@@ -1460,6 +1460,8 @@ it and the other three read pages the release did not touch):
 `check-advisors VISITOR=1` 24/0, monitor 13 ok + renewals "–", and 20 page views across five pages, two
 languages and two widths, all 200 with no sideways scroll.
 
+*(2026-11-06: the signed-out half re-run on production `b5655a5064` after the release, all PASS: `check-seo` 62/0, `check-arabic` 48 views / 0, `check-advisors VISITOR=1` 24/0, `check-data-fixes` SWEEP=1 44/0 (statement labels UNAVAILABLE signed out, covered on beta 714/714), 20 page views all 200 with no sideways scroll; `docs/launch-check-2026-11-06.md`.)*
+
 **DONE 2026-11-02: both runs are in and passing, and Step 10 is closed** (`check-all` 9 of 9, 264 PASS /
 0 FAIL; signed-in `check-advisors` "all passed", 53 / 0; run with billing closed 20:06:56–20:24:55 UTC, then
 reopened and re-checked). The paragraphs that follow are the 2026-10-27 instructions, kept as written.

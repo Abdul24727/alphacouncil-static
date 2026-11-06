@@ -1,0 +1,24 @@
+PASS  status: models deepseek/deepseek-v4-pro / anthropic/claude-sonnet-5.5, plan free, Pro limit 20
+PASS  en 1440: signed out, the room is locked
+PASS  en visitor 1440: no sideways scroll (0px)
+PASS  en visitor 1440: disclaimer on screen
+PASS  en visitor 1440: citation chips name a dataset (0)
+PASS  en 1440: the Council tab links to the room
+PASS  en 390: signed out, the room is locked
+PASS  en visitor 390: no sideways scroll (0px)
+PASS  en visitor 390: disclaimer on screen
+PASS  en visitor 390: citation chips name a dataset (0)
+PASS  en 390: the Council tab links to the room
+PASS  en: /pricing lists the advisors' room under Pro
+PASS  status: models deepseek/deepseek-v4-pro / anthropic/claude-sonnet-5.5, plan free, Pro limit 20
+PASS  ar 1440: signed out, the room is locked
+PASS  ar visitor 1440: no sideways scroll (0px)
+PASS  ar visitor 1440: disclaimer on screen
+PASS  ar visitor 1440: citation chips name a dataset (0)
+PASS  ar 1440: the Council tab links to the room
+PASS  ar 390: signed out, the room is locked
+PASS  ar visitor 390: no sideways scroll (0px)
+PASS  ar visitor 390: disclaimer on screen
+PASS  ar visitor 390: citation chips name a dataset (0)
+PASS  ar 390: the Council tab links to the room
+PASS  ar: /pricing lists the advisors' room under Pro
