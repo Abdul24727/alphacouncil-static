@@ -347,3 +347,31 @@ scans run again over the exact range at push time.
   - removing the 2026-05-13 tarball.
 
   Deleting data is the owner's call (`PROJECT.md` §4).
+
+## The release request (2026-11-06, review 35)
+
+**Asked of the owner: release to beta.** Production is a separate go-ahead, asked only after beta is checked.
+
+- **What ships:** `rebuild` HEAD at the moment of deploy, whose app code is identical to the tested candidate
+  `dfc7a3d`.
+  - **Check, run right before deploying:** `git diff --exit-code dfc7a3d..HEAD -- web/src api deploy web/messages
+    web/public`. It passes at `839ec98`, and every commit after `dfc7a3d` is records only.
+  - **The release name:** `scripts/deploy-staging.sh` names the release by HEAD's 10-character sha.
+  - **No commit between the two deploys:** `deploy-production.sh` requires production to ship exactly what beta
+    runs.
+- **What visitors get:** the eight rows of "What a release changes for visitors" above.
+- **Before:** both tiers run `5c18a3ae46`, which stays in both `releases/` folders as the rollback. The disk has
+  34G free; a release needs about 1.3G per tier (see "Disk").
+- **Beta checks after the deploy,** through the tunnel to beta's API, the same scripts as the candidate run:
+  - the deploy's own `api 200` / `web 200`;
+  - checks 1–8;
+  - checks 13, 14 and 15;
+  - the English-label sweep (`SWEEP=1`, 714 companies);
+  - evidence saved under `docs/screenshots/release-<sha>/`.
+- **Production, only on its own go-ahead after beta passes:** `scripts/deploy-production.sh`, then its checks:
+  - services, health and `BILLING_OPEN=true` untouched;
+  - Financials is Pro-only for a signed-out visitor, so the new labels and captions are checked in the served
+    chunks, hash-equal to beta's;
+  - `check-billing-public.mjs`.
+- **Rollback:** point `current` back to `releases/5c18a3ae46` in the affected tier and restart its two services.
+  This is what the deploy scripts' switch does, run with the old release.
