@@ -12,3 +12,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-06 00:10 UTC — **Release-readiness report (review 07 step)** — FIX — [08-release-readiness-report-review-07-step.md](replies/08-release-readiness-report-review-07-step.md)
 - 2026-11-06 00:14 UTC — **Review 08 fix; owns-case step held for the owner** — FIX — [09-review-08-fix-owns-case-step-held-for-the-owner.md](replies/09-review-08-fix-owns-case-step-held-for-the-owner.md)
 - 2026-11-06 00:17 UTC — **Owner gate recorded; next pre-approved step** — ACCEPT — [10-owner-gate-recorded-next-pre-approved-step.md](replies/10-owner-gate-recorded-next-pre-approved-step.md)
+- 2026-11-06 00:20 UTC — **Blocked harvest documented as superseded (review 10 step)** — ACCEPT — [11-blocked-harvest-documented-as-superseded-review-10.md](replies/11-blocked-harvest-documented-as-superseded-review-10.md)

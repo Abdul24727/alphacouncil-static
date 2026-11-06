@@ -29,7 +29,8 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-ROW = re.compile(r"^tr\d+$")
+from argaam_pages import page_rows
+
 ARABIC = re.compile(r"[؀-ۿ]")
 CURRENCY_AR = r"(?:درهم|فلس|بيسة|ريال(?: قطري| عماني| سعودي)?|دينار(?: بحريني| كويتي)?|هللة|دولار(?: أمريكي)?)"
 TRAILING_UNIT_AR = re.compile(rf"\s*\(\s*{CURRENCY_AR}\s*\)\s*$")
@@ -46,24 +47,6 @@ TYPOS = {
     "استثمارات وآخرى": "استثمارات وأخرى",
     "إجمالي الأستثمارات العقارية": "إجمالي الاستثمارات العقارية",
 }
-
-
-def norm(s: str) -> str:
-    return re.sub(r"\s+", " ", s or "").strip()
-
-
-def rows(path: Path) -> dict[str, str]:
-    from bs4 import BeautifulSoup  # here, so the label rules can be tested where bs4 is not installed
-
-    soup = BeautifulSoup(path.read_text(encoding="utf-8", errors="replace"), "html.parser")
-    out: dict[str, str] = {}
-    for tr in soup.find_all("tr", id=ROW):
-        td = tr.find("td", attrs={"data-fieldname": True})
-        if td is not None:
-            label = norm(td.get_text(" ")) or norm(td.get("data-fieldname"))
-            if label:
-                out.setdefault(tr["id"], label)
-    return out
 
 
 def newest_page(ticker_dir: Path) -> Path | None:
@@ -98,7 +81,7 @@ def main() -> int:
             continue
         ex = d.name.rsplit("_", 1)[1]
         pages[ex] += 1
-        for rid, label in rows(page).items():
+        for rid, label in page_rows(page).items():
             if ex == "TADAWUL":
                 saudi.append((d.name, rid, label))
             elif ARABIC.search(label):

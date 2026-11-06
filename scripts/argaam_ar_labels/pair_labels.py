@@ -22,34 +22,13 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from bs4 import BeautifulSoup
+from argaam_pages import page_rows
 
-ROW_ID = re.compile(r"^tr\d+$")
 ENGLISH_PAGE = "financial_statements_quarter.html"
-
-
-def norm(s: str) -> str:
-    return re.sub(r"\s+", " ", s or "").strip()
-
-
-def rows(html: str) -> dict[str, str]:
-    """Row id -> label, for every statement line on one page."""
-    out: dict[str, str] = {}
-    for tr in BeautifulSoup(html, "html.parser").find_all("tr", id=ROW_ID):
-        td = tr.find("td", attrs={"data-fieldname": True})
-        if td is None:
-            continue
-        # The text the reader sees, not the attribute: on the Arabic page `data-fieldname` may be a
-        # field key that stays English while the cell's text is Arabic.
-        label = norm(td.get_text(" ")) or norm(td.get("data-fieldname"))
-        if label:
-            out.setdefault(tr["id"], label)
-    return out
 
 
 def newest_english_page(ticker_dir: Path) -> Path | None:
@@ -78,7 +57,7 @@ def main() -> int:
         page = newest_english_page(t)
         if page is None:
             continue
-        en = rows(page.read_text(encoding="utf-8", errors="replace"))
+        en = page_rows(page)
         report["english_pages"] += 1
         for rid, label in en.items():
             en_by_id[rid][label] += 1
@@ -87,7 +66,7 @@ def main() -> int:
         ar_page = a.ar_dir / f"{t.name}.html"
         if not ar_page.exists():
             continue
-        ar = rows(ar_page.read_text(encoding="utf-8", errors="replace"))
+        ar = page_rows(ar_page)
         report["arabic_pages"] += 1
         missing = sorted(set(en) ^ set(ar))
         if missing:  # a row on one page and not the other: report it, pair the rest
