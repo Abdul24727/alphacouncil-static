@@ -18,7 +18,7 @@
   "seat": "lynch",
   "quote": "The last profitable quarter was Q1 2024, which earned SAR 0.25 per share",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -30,7 +30,7 @@
   "seat": "lynch",
   "quote": "printed a loss of SAR -1.19 per share",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -90,7 +90,7 @@
   "seat": "buffett",
   "quote": "SAR 16,578 million",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -114,7 +114,7 @@
   "seat": "alwaleed",
   "quote": "The system's reason is a loss",
   "why": "invented reason",
-  "category": "invented",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -126,7 +126,7 @@
   "seat": "lynch",
   "quote": "SAR 39.84 billion in Q2 2022",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -258,7 +258,7 @@
   "seat": "buffett",
   "quote": "The pack gives me an income statement only for a single window [P9]",
   "why": "no P9",
-  "category": "invented",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -270,7 +270,7 @@
   "seat": "buffett",
   "quote": "The pack gives us one income statement [P9]",
   "why": "no P9",
-  "category": "invented",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -282,7 +282,7 @@
   "seat": "buffett",
   "quote": "the pack gives me only a single income statement window",
   "why": "no P9",
-  "category": "invented",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -1314,7 +1314,7 @@
   "seat": "dalio",
   "quote": "Total assets stand at SAR 311.18 billion",
   "why": "invented P9",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -1326,7 +1326,7 @@
   "seat": "lynch",
   "quote": "Revenue peaked at SAR 46,927 million in Q2 2022",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -1338,7 +1338,7 @@
   "seat": "lynch",
   "quote": "every quarter has been a loss: SAR -1,920 million",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -1350,7 +1350,7 @@
   "seat": "lynch",
   "quote": "The quarterly record is right here in [P9]",
   "why": "no P9",
-  "category": "invented",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -1362,7 +1362,7 @@
   "seat": "buffett",
   "quote": "That window shows a net loss of SAR 9,965 million",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -1374,7 +1374,7 @@
   "seat": "lynch",
   "quote": "are in fact in [P9], which contains a full quarterly income statement",
   "why": "no P9",
-  "category": "invented",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -1386,7 +1386,7 @@
   "seat": "dalio",
   "quote": "eroding the SAR 181.12 billion equity base",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -1398,7 +1398,7 @@
   "seat": "buffett",
   "quote": "struck on common equity of SAR 181,118 million",
   "why": "invented; conflicts with pack",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -1506,7 +1506,7 @@
   "seat": "lynch",
   "quote": "Net income in Q1 2025 was SAR 4,631 million",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -1518,7 +1518,7 @@
   "seat": "lynch",
   "quote": "Operating income is also climbing, from SAR 7,563 million",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -1614,7 +1614,7 @@
   "seat": "buffett",
   "quote": "the bank earned SAR 26,531.40 million",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -1626,7 +1626,7 @@
   "seat": "lynch",
   "quote": "The quarterly record shows earnings growth but also recent softening",
   "why": "no quarterly record",
-  "category": "invented",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2130,7 +2130,7 @@
   "seat": "lynch",
   "quote": "Here is the quarterly record from [P9]",
   "why": "no P9",
-  "category": "invented",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2142,7 +2142,7 @@
   "seat": "lynch",
   "quote": "The last four quarters show 3,084, 3,462, 3,149, and 3,198",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2154,7 +2154,7 @@
   "seat": "lynch",
   "quote": "Net income: The last four quarters: 261, 296, 289, and 282",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2166,7 +2166,7 @@
   "seat": "lynch",
   "quote": "That is a 12.6% increase in trailing earnings power",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2178,7 +2178,7 @@
   "seat": "lynch",
   "quote": "revenue stepping up from a 2,506",
   "why": "invented, re-cited to P2",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2190,7 +2190,7 @@
   "seat": "alrumayyan",
   "quote": "the last quarter's dip is worth watching",
   "why": "concedes invented",
-  "category": "invented",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2202,7 +2202,7 @@
   "seat": "lynch",
   "quote": "revenue has moved from SAR 2,916.22 million to SAR 3,524.67 million",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2214,7 +2214,7 @@
   "seat": "lynch",
   "quote": "shows a 21.01% revenue increase year-over-year [P1]",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2226,7 +2226,7 @@
   "seat": "lynch",
   "quote": "net margin went from 19.31% to 20.34%",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2238,7 +2238,7 @@
   "seat": "lynch",
   "quote": "a 21.01% revenue jump and 27.48% net income growth",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2250,7 +2250,7 @@
   "seat": "lynch",
   "quote": "with the most recent quarter delivering a 21.01% revenue increase",
   "why": "invented",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2262,7 +2262,7 @@
   "seat": "marks",
   "quote": "the quarterly record shows revenue growth",
   "why": "concedes invented record",
-  "category": "invented",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2274,7 +2274,7 @@
   "seat": "dalio",
   "quote": "on revenue acceleration and the dividend record",
   "why": "adopts invented",
-  "category": "invented",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2562,7 +2562,7 @@
   "seat": "dalio",
   "quote": "a debt-to-equity ratio above 1.5x means the institution is using significant leverage to fund its assets [P6]",
   "why": "invented threshold",
-  "category": "invented",
+  "category": "invented figure",
   "presenter_added": false,
   "from_plan": false,
   "minor": false

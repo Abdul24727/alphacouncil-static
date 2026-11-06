@@ -1,0 +1,5285 @@
+[
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "235,075",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "57,886",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "-0.21",
+  "class": "invented"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "-1.19",
+  "class": "invented"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "-3.30",
+  "class": "invented"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "-0.44",
+  "class": "invented"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "-0.13",
+  "class": "invented"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "2.85",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "2.6",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "-1.19",
+  "class": "invented"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "1.19",
+  "class": "invented"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "-3.30",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "-1.19",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "2.85",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "2.6",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "-0.21",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "-3.30",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "-1.19",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "2.85",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "-3.30",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "-1.19",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "marks",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "0.5",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "2.60",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "2.85",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "235,075",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "P planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "2.85",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "2.85",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "2.85",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "2.85",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "2.85",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "2.6",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "P planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "2.85",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "77.3",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "2.72",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "6.88",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "2.72",
+  "class": "wrong"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "2.72",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "6.88",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "marks",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "P planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "P planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "P planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "11.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "51.06",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "51.06",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "51.06",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "51.06",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "51.06",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "51.06",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "36.55",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "50.55",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "51.06",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "6.10",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "35",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "41",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "51.06",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "36.55",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "P planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "51.06",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A planted",
+  "stage": "brief",
+  "round": null,
+  "seat": "chair",
+  "value": "17.9",
+  "class": "wrong"
+ },
+ {
+  "probe": "D7",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "98",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "49.9",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "P planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "38",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "P planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "P planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.79",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "1.36",
+  "class": "wrong"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "1.34",
+  "class": "wrong"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "68",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "marks",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "marks",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "P planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "P planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "P planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.32",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "44",
+  "class": "wrong"
+ },
+ {
+  "probe": "D9",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "1.10",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "242",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "1.21",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "44",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "44",
+  "class": "ok"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "151.65",
+  "class": "ok"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "311.18",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "181.12",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "130.06",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "65.89",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "118.65",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "3.3",
+  "class": "ok"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "47.23",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "46,927",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "33,088",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "1,077",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "-1,920",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "-3,465",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "-3,273",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "-2,771",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "-1,809",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "5,365",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "-1,169",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "46,927",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "33,088",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "5,365",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "1,169",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "9,965",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "136,850",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "46,927",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "33,088",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "118.65",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "65.89",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "181.12",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "47.23",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "3.3",
+  "class": "ok"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "9,965",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "136,850",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "181,118",
+  "class": "invented"
+ },
+ {
+  "probe": "I1",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I1",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "6.10",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "4,631",
+  "class": "invented"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "5,762",
+  "class": "invented"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "7,563",
+  "class": "invented"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "9,093",
+  "class": "invented"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "14.5",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "4,631",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "5,762",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "4,631",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "5,762",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "4,631",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "5,762",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "marks",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "1.36",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "74",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "1.29",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "14.5",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "1.34",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "1.37",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "1.36",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "74",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "1.34",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "1.37",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "1.37",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "1.36",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "74",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "1.34",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "1.37",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "1.36",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "11.3",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "12.3",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "6.4",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "27,907",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "67",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "67",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "67",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "marks",
+  "value": "67",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "P planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "4.8",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "4.8",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "4.8",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "P planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "4.8",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "2,916.22",
+  "class": "invented"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "3,524.67",
+  "class": "invented"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "21.01",
+  "class": "invented"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "27.48",
+  "class": "invented"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "19.31",
+  "class": "invented"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "20.34",
+  "class": "invented"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "34",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "21.01",
+  "class": "invented"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "27.48",
+  "class": "invented"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "67",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "21.01",
+  "class": "invented"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "27.48",
+  "class": "invented"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "67",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "marks",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "90",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "brief",
+  "round": null,
+  "seat": "chair",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "44",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "387.3",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "245.16",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "-83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "44",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "44",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "marks",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "44",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "387.3",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "44.7",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "-83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P planted",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "48.6",
+  "class": "ok"
+ },
+ {
+  "probe": "I7",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "50.4",
+  "class": "ok"
+ },
+ {
+  "probe": "I8",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I8",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I8",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I8",
+  "session": "A planted",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I9",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "1.53",
+  "class": "wrong"
+ },
+ {
+  "probe": "I9",
+  "session": "A planted",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I9",
+  "session": "A planted",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I9",
+  "session": "A planted",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "16,578",
+  "class": "invented"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "148,901",
+  "class": "invented"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "-11.13",
+  "class": "invented"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "5.40",
+  "class": "wrong"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "151.65",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "39.84",
+  "class": "invented"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "26.34",
+  "class": "invented"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "-11.13",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "16,578",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "-11.13",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "151.65",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "16,578",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "-11.13",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "A clean",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "-11.13",
+  "class": "ok"
+ },
+ {
+  "probe": "D2",
+  "session": "P clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "62",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "77.3",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "23",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "23.5",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "387.3",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "245.16",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "77.3",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "387.3",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "245.16",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "marks",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "D4",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "63",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "235,075",
+  "class": "ok"
+ },
+ {
+  "probe": "D5",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "10.1",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "18",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "-98.4",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "-71.8",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "18",
+  "class": "ok"
+ },
+ {
+  "probe": "D7",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "0.10",
+  "class": "invented"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "68",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "1.34",
+  "class": "wrong"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "1.34",
+  "class": "wrong"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "5.20",
+  "class": "wrong"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "1.29",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "40",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "1.34",
+  "class": "wrong"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "68",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "1.36",
+  "class": "wrong"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "5.20",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "5.20",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "1.34",
+  "class": "wrong"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "5.24",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "5.20",
+  "class": "wrong"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "5.20",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "5.20",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "marks",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "marks",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "A clean",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "D8",
+  "session": "P clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "14.5",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "80",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "242",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "40",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "1.10",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "1.32",
+  "class": "wrong"
+ },
+ {
+  "probe": "D9",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "80",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "116",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "1.25",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "1.20",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "1.50",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "1.25",
+  "class": "ok"
+ },
+ {
+  "probe": "D9",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "1.20",
+  "class": "ok"
+ },
+ {
+  "probe": "I1",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "151.65",
+  "class": "ok"
+ },
+ {
+  "probe": "I1",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "235.08",
+  "class": "ok"
+ },
+ {
+  "probe": "I1",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I1",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I1",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I1",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "marks",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "26,531.40",
+  "class": "invented"
+ },
+ {
+  "probe": "I2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "112,946.30",
+  "class": "invented"
+ },
+ {
+  "probe": "I2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "14.5",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "37",
+  "class": "wrong"
+ },
+ {
+  "probe": "I2",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "77.3",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "26,531.40",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "77.3",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A clean",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "A clean",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "26,531.40",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "P clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "14.5",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "P clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "I2",
+  "session": "P clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "23",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "74",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "28.3",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "1.34",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "1.33",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "72",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "1.34",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "1.33",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "40",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "1.34",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "74",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "1.33",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "1.33",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "buffett",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "1.34",
+  "class": "wrong"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "73",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "74",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.35",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.34",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.33",
+  "class": "ok"
+ },
+ {
+  "probe": "I3",
+  "session": "A clean",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "1.36",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "3,084,",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "3,462,",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "3,149,",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "3,198",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "2,506,",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "2,840,",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "2,645,",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "2,688",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "261,",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "296,",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "289,",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "282",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "232,",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "249",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "1,128",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "1,002",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "12.6",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "-261",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "67",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "3,084,",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "3,462,",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "261,",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "296,",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "1,128",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "1,002",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "3,084,",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "3,462,",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "261,",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "296",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "2,506",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "2,688",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "3,084",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "3,462",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "232",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "261",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "296",
+  "class": "invented"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "261,",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "296,",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "289,",
+  "class": "ok"
+ },
+ {
+  "probe": "I4",
+  "session": "P clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "1.2",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "5.48",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A clean",
+  "stage": "faultlines",
+  "round": null,
+  "seat": "chair",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "37,",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "lynch",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "lynch",
+  "value": "37,",
+  "class": "ok"
+ },
+ {
+  "probe": "I5",
+  "session": "A clean",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A clean",
+  "stage": "brief",
+  "round": null,
+  "seat": "chair",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alrumayyan",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "buffett",
+  "value": "14.5",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P clean",
+  "stage": "brief",
+  "round": null,
+  "seat": "chair",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "marks",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "83",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I6",
+  "session": "P clean",
+  "stage": "verdict",
+  "round": null,
+  "seat": "chair",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I7",
+  "session": "A clean",
+  "stage": "brief",
+  "round": null,
+  "seat": "chair",
+  "value": "202",
+  "class": "wrong"
+ },
+ {
+  "probe": "I7",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "1.99",
+  "class": "ok"
+ },
+ {
+  "probe": "I7",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "1.99",
+  "class": "ok"
+ },
+ {
+  "probe": "I8",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "lynch",
+  "value": "52",
+  "class": "ok"
+ },
+ {
+  "probe": "I8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "I8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alrumayyan",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "I8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "dalio",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "I8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "buffett",
+  "value": "77.3",
+  "class": "ok"
+ },
+ {
+  "probe": "I8",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "I8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "I8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "dalio",
+  "value": "77.3",
+  "class": "ok"
+ },
+ {
+  "probe": "I8",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alrumayyan",
+  "value": "77",
+  "class": "ok"
+ },
+ {
+  "probe": "I9",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "dalio",
+  "value": "29.8",
+  "class": "ok"
+ },
+ {
+  "probe": "I9",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I9",
+  "session": "A clean",
+  "stage": "openings",
+  "round": 1,
+  "seat": "alwaleed",
+  "value": "1.2",
+  "class": "ok"
+ },
+ {
+  "probe": "I9",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "29.8",
+  "class": "ok"
+ },
+ {
+  "probe": "I9",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "marks",
+  "value": "33",
+  "class": "ok"
+ },
+ {
+  "probe": "I9",
+  "session": "A clean",
+  "stage": "debate",
+  "round": 2,
+  "seat": "alwaleed",
+  "value": "0.95",
+  "class": "ok"
+ },
+ {
+  "probe": "I9",
+  "session": "A clean",
+  "stage": "final",
+  "round": 3,
+  "seat": "alwaleed",
+  "value": "0.95",
+  "class": "ok"
+ }
+]

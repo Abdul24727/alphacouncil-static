@@ -306,16 +306,25 @@ Older entries: `changelog-archive.md`.
     - **Cost:** option 2 FAILS criterion 4 clearly. It costs 62.4 % of today's room ($0.1454 against $0.2332), 53 %
       with no plan retries. A clear failure settles it, so today's room stays.
     - **Accuracy:** option 2 had 55 wrong claims against today's room's 210, 0 against 7 in a final answer, and 0
-      against 34 invented figures. 45 of its 55 were added by the presenter.
+      against 34 inventions (23 with invented figures). 45 of its 55 were added by the presenter.
     - **Speed:** option 2 shows its first words after a median of 40 s, against 5 s.
     - **Reliability:** 1 of 30 option-2 sessions failed with no fallback.
     - **Found in today's room:**
       - the "sector percentile" field is a flipped score for lower-is-better metrics, and both arms misread it;
-      - advisors invent [P9] figures on packs that have no statements, because the test packs predate P9.
+      - advisors invent statement figures on packs that have no statements (P9), because the test packs predate
+        it.
     - **P's live figures** replaced the provisional ones in `eval/probe_run.py` (`a10cc11`). A's bound rose to the
       live maximum, $4.0089.
-    - **Next:** review 68, then the owner's choice. The options are to keep today's room and fix the percentile and the
-      [P9] question, to screen a one-model option 2, or to stop.
+    - **Review 68 said FIX**, and the fixes are made:
+      - **Inventions:** the 34 split into 23 with invented figures and 11 statements about the pack, and they carry
+        several source tags, not only [P9].
+      - **The flags:** all 587 UNVERIFIED flags are now classified in `flag-classifications.json`, by
+        `tools/classify_flags.py`, so 122 against 0 reproduces.
+      - **The analyst's cost:** with every attempt and the failed session it is $0.1094 a session, 46.9 % of A, not
+        the single-attempt $0.086.
+      - **Quotes:** `tools/verify_quotes.py` checks all 265 against their stated turns.
+    - **Next:** the reviewer's acceptance, then the owner's choice. The options are to keep today's room and fix the
+      percentile and the P9 question, to screen a one-model option 2, or to stop.
   - **Before the app may use it:** the app's session total must count the calls a fallback superseded.
 
 ## 6. Current State
