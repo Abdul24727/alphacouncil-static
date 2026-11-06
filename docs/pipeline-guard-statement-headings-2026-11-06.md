@@ -1,7 +1,7 @@
 # Statement headings the parser does not know: a guard, and F-16 (2026-11-06)
 
 **Status:** APPLIED on the server 2026-11-05 22:44 UTC, on the owner's go-ahead (see "Applied" at the end).
-**Still to do:** the check after the 2026-11-06 05:00 UTC publish.
+**Still to do:** the check after the 2026-11-06 05:00 UTC publish, now as commands ("The check after the publish, as commands"; PENDING).
 
 **Patches:**
 - `docs/pipeline-guard-statement-headings-2026-11-06.patch` (recommended): the guard plus one mapping line.
@@ -124,3 +124,54 @@ git apply --check -p1 /root/pipeline-guard-statement-headings-2026-11-06.patch &
   intact.
 - The 00:00 UTC nightly re-parses into a fresh database, and the 05:00 UTC publish carries it. The check
   after the publish is the one under "Applying it".
+
+## The check after the publish, as commands (2026-11-06, review 19)
+
+**Status: PENDING.** It runs after the 2026-11-06 publish; nothing is claimed until then.
+
+**1. The night, the publish and the served data, on the server, read-only.**
+`scripts/pipeline-checks/f16_after_publish.py` checks 12 items and exits with the number of failures:
+
+```
+ssh root@alphacouncil.tech '/opt/alphacouncil/pipeline-venv/bin/python -X utf8 - 2026-11-06' \
+    < scripts/pipeline-checks/f16_after_publish.py
+```
+
+- **The night's run** (`/opt/alphacouncil/logs/daily_<day>.log` and its `.1`):
+  - the patched parser is on disk, md5 `9a0b7aa0…`;
+  - `[OK step 8] parse_financial_statements`;
+  - the parse step's `DONE:` totals;
+  - **no `UNKNOWN STATEMENT HEADING` line**;
+  - the run's `ALERT [OK]`.
+- **The publish:** a `<day> … published. /healthz/deep=ok` line in `/opt/alphacouncil/logs/db_publish.log`
+  (and its `.1`), and a served `/var/lib/alphacouncil/screening.sqlite` dated that day. *A Friday night runs
+  in full mode and logs to `cron_heavy.log`, but its run log is still `daily_<day>.log`.*
+- **The data:**
+  - none of F-16's 18 distinctive cash-flow lines left in the nine balance sheets (`fundamentals_lineitems`,
+    `section='Balance Sheet'`; "اخرى" is left out of the list, being a balance-sheet line too);
+  - `Cash Flow Statement` rows for the eight;
+  - none for ADNIC, whose cash-flow lines carry no figures;
+  - AMLAK's newest balance sheet under 50 rows (31 in the dry run).
+
+**Proved before it is needed:**
+- Against the 2026-11-05 publish it reports the night and the publish PASS, and the three data items FAIL:
+  - cash-flow lines in eight balance sheets, 40–80 rows each;
+  - no Cash Flow Statement;
+  - AMLAK 50 rows.
+
+  That is F-16 before its fix.
+- With `F16_DB=/tmp/f16/c/screening.sqlite`, the dry run's fixed copy, every data item passes: 0 cash-flow
+  lines, the eight with 40–95 cash-flow rows, AMLAK 31.
+
+**2. The English-label sweep, from a workstation:** beta's API reads the same published file
+(`SCREENING_DB=/var/lib/alphacouncil/screening.sqlite`, as production's does).
+
+```
+ssh -o ServerAliveInterval=15 -N -L 8201:127.0.0.1:8200 root@alphacouncil.tech      # tunnel to beta's API
+cd web && API_ORIGIN=http://127.0.0.1:8201 npm run dev -- -p 3100                    # local web on it
+cd web && BASE_URL=http://localhost:3100 SWEEP=1 node scripts/check-data-fixes.mjs  # the sweep
+```
+
+It must read **714 of 714** companies and PASS "every statement line on an English page has English". Before
+the publish it failed on exactly F-16's 18 labels in 8 companies
+(`docs/screenshots/gulf-english-labels-2026-11-06-sweep-failclosed.txt`).
