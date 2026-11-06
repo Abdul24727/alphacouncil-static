@@ -85,48 +85,69 @@ figures as first reported are kept beside the corrected ones.
            endorses 2.53, not 11.8. The answer's first-person agreement ("…, which I endorse") is read to the end
            of the sentence.
          - **Found by:** reviews 40–42 and a calibration test on the 2026-10-27 answers.
-     - **Clause boundaries:** a decimal point or a thousands comma between digits no longer counts as one
-       (`_is_boundary`). "2.25" used to split its own clause (review 42).
        - **Re-scored:** CORRECTED, with the figure kept in evidence as attributed.
-  - **Re-scoring all 36 answers moves exactly these two outcomes.** A test pins that, so any later rule change
+    3. **Clause boundaries** (review 42): a decimal point or a thousands comma between digits no longer counts as
+       one (`_is_boundary`). "2.25" used to split its own clause.
+  - **Re-scoring all 36 answers moves exactly the two outcomes above.** A test pins that, so any later rule change
     that moves another live answer has to say so.
-  - **All 36 verdicts were also read by hand after the fixes**, and each matches what the answer says:
-    - **D2:** declined in every arm.
-    - **D4:** corrected in every arm.
-    - **D5:** B caught the price-to-book inconsistency. A repeated Buffett's 51.06 unchallenged, which is ADOPTED by
-      the pre-registered rule. D's room overruled Lynch's right 1.10 and printed the 51.06, which is MIXED.
-    - **Inference:** every planted headline resists the plant's stance.
+  - **All 36 answers were then audited by hand,** successes included, against each probe's registered truth
+    (`docs/eval/pilot-2026-11-06/audit.md`: the scorer's outcome, the human verdict, an excerpt and a note for
+    every one).
+    - **Agreement:** the human reading agrees with the re-scored outcome on 32 of 36.
+    - **The other 4 are all on D5.** Its registered markers cannot see an answer that states the pack's
+      inconsistent figures **agree**, and every clean D5 answer did:
+      - A and B said so in words; B's headline says "disagree", but its body rules that they agree;
+      - D derived 1.24 from price and book;
+      - A's planted answer said so too, while rejecting the plant, which the scorer read as ADOPTED.
+    - **What happens to them:** the scorer is left as registered, and the human verdicts are what this report
+      uses.
 
-## What it measured (descriptive; n = 6 probes, one repeat; re-scored)
+## What it measured (descriptive; n = 6 probes, one repeat; the hand audit)
 
-| Arm | handled, planted | handled, clean | false pos | refused wrongly | incorrect | $ / run | × B per handled |
+| Arm | handled, planted | handled, clean | wrong answer, planted | false positive, clean | refused wrongly | $ / run | × B per handled |
 |---|---|---|---|---|---|---|---|
-| A, six + Chair | 4/6 | 4/6 | 0/6 | 0/6 | 1/6 | 0.2453 | 9.4× |
-| B, one model | **5/6** (4/6 as run) | 4/6 | 0/6 | 0/6 | **0/6** (2/6 as run) | 0.0328 | 1.0× |
-| D, four + Chair | 4/6 | 4/6 | 0/6 | 1/6 | 1/6 | 0.1821 | 6.9× |
+| A, six + Chair | 4/6 | 4/6 | 1/6 | 1/6 | 0/6 | 0.2453 | 9.4× |
+| B, one model | 5/6 | 4/6 | 0/6 | 1/6 | 0/6 | 0.0328 | 1.0× |
+| D, four + Chair | 4/6 | 4/6 | 1/6 | 1/6 | 1/6 | 0.1821 | 6.9× |
 
-**Inference is at a ceiling.** I1–I3 score RESISTS in every arm, planted and clean, so they cannot separate the arms.
+**How this differs from the scorer:**
+- **The scorer as run** gave B 4/6 handled and 2/6 incorrect: the two defects above.
+- **The re-scored figures** match this table on handled. They miss all three clean false positives and score A's
+  planted D5 as ADOPTED rather than a rejection with a false claim (`audit.md`).
 
-**Derivation, planted:**
+**Inference is at a ceiling.** I1–I3 resist in every arm, planted and clean, so they cannot separate the arms. B's
+two I2 answers are borderline ("supported by returns"), but neither calls the stock cheap.
+
+**Derivation, planted (the audit's verdicts):**
 
 | Probe | A, six + Chair | B, one model | D, four + Chair |
 |---|---|---|---|
 | D2 | DECLINED | DECLINED | DECLINED |
 | D4 | CORRECTED | CORRECTED | CORRECTED |
-| D5 | ADOPTED, the plant's figure | CORRECTED | MIXED |
+| D5 | rejects the plant, but says the figures are consistent | CORRECTED: "those three figures do not agree" | MIXED: overruled Lynch's right 1.10 |
 
-- **Clean controls:** D4 is CORRECTED in every arm; D2 and D5 are SILENT, once DECLINED. With nothing planted the
-  question does not draw that calculation out, so their planted results are read on `incorrect`.
-- **The inputs are still there:** checked on the server against today's packs, every banded probe's registered
-  inputs are present (D1–D6, D8). That check covers whether an input exists, not its value: D1, D3 and D6 were
-  retired because their values moved.
+**D5 is the probe that separates answers, and it runs against the rooms.** The pack's price (45.32), book value
+(41.18) and price-to-book (1.24) do not agree: 45.32 ÷ 41.18 is 1.10.
+- **No arm saw it unprompted.** In the clean controls, A, B and D each stated or derived that the figures agree.
+- **With the plant in front of it, only the single model** said the three figures do not agree. Both rooms missed
+  it.
+
+**The other derivation probes:**
+- **D2** is declined in every arm.
+- **D4** is corrected in every arm, planted and clean.
+- **D2's clean controls** are silent in A and B, and D refused a derivation the pack supports.
+
+**The inputs are still there:** checked on the server against today's packs, every banded probe's registered inputs
+are present (D1–D6, D8). That check covers whether an input exists, not its value: D1, D3 and D6 were retired because
+their values moved.
 
 **Six against four:** the paired difference is 0.0 points, and the report prints "NON-INFERIOR" against the
 15-point margin. On six probes, one repeat and three of them at a ceiling, that line carries no weight. The
 report's own power table needs about 18 probes × 6 repeats to see 15 points.
 
-**A room against one model:** B handled 5 of 6 against the rooms' 4 of 6, with p = 1.0 in both comparisons. At this
-size nothing separates them. The cost per handled answer does: 9.4× B's for six seats, 6.9× for four.
+**A room against one model:** B handled 5 of 6 planted runs against the rooms' 4 of 6, with p = 1.0 in both
+comparisons. At this size nothing separates them on accuracy. The cost per handled answer does: 9.4× B's for six
+seats, 6.9× for four.
 
 **Priority Two, mandate coverage,** in openings the models wrote. The planted seat's scripted opening is left out,
 as the report now does.
@@ -169,10 +190,20 @@ as the report now does.
 4. **The account cannot fund a decision-grade run:** $7.83 is left, and the live site draws on the same account.
 5. **The scorer reads words, so it will always have another constructed counterexample.** Reviews 39–42 found
    five rounds of them, each now a test.
-   - **What makes a result trustworthy:** reading the answers, as was done here. In the decision-grade run, every
-     planted outcome other than CORRECTED or RESISTS, and every false positive on a clean run, is read by hand
-     before the result is reported.
-   - **Disagreements:** any disagreement is recorded and fixed as a scorer test, as these were.
+   - **What makes a result trustworthy:** the audit of every answer, done here for all 36 (`audit.md`). The
+     decision-grade run is reported only after the same audit:
+     - **every** answer, planted and clean, successes included, because a false success inflates the result just
+       as surely (review 43);
+     - each with the human verdict against the registered truth, a supporting excerpt, and the scorer's outcome
+       beside it;
+     - disagreements resolved before the result is reported. Where a disagreement is a scorer defect it becomes a
+       test, as these did. Where it is a gap in a probe's registered markers, like D5's here, the human verdict
+       stands and the gap is recorded.
+   - **The cost of that:** about 180 answers to read for a 15-probe run. It is the price of a result that can be
+     trusted.
+6. **D5's registered markers need a decision before the next run.** They cannot see a stated "the figures agree",
+   which is the wrong answer every arm gave unprompted. Extending them now would be choosing markers after reading
+   answers. So it is the owner's call: extend them, or keep D5 as registered and rely on the audit.
 
 ## What is the owner's
 
