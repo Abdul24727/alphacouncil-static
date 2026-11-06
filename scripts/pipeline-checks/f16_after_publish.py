@@ -49,41 +49,55 @@ def text(p: Path) -> str:
     return "\n".join(parts)
 
 
-print(f"F-16 after-publish check for {DAY} (UTC)")
+def night_and_publish() -> None:
+    # 1. The patched parser is the one the night ran, and the night's parse step finished.
+    check(hashlib.md5(PARSER.read_bytes()).hexdigest() == PARSER_MD5, "the parser on disk is the patched one", PARSER_MD5[:8])
+    run_log = LOGS / f"daily_{DAY.replace('-', '')}.log"
+    log = text(run_log)
+    check(bool(log), f"the night's run log exists ({run_log.name})")
+    check("[OK step 8] parse_financial_statements" in log, "the parse step finished OK")
+    done = re.findall(r"DONE: (\d+) ticker\(s\), (\d+) line-item-rows", log)
+    check(bool(done), "the parse step reported its totals", f"{done[-1][0]} tickers, {done[-1][1]} rows" if done else "")
+    unknown = [ln for ln in log.splitlines() if "UNKNOWN STATEMENT HEADING" in ln]
+    check(not unknown, "no UNKNOWN STATEMENT HEADING warning in the parse", unknown[0][:160] if unknown else "")
+    check(bool(re.search(r"ALERT \[OK\]", log)), "the night's run ended with ALERT [OK]")
+    # 2. That night was published, healthy, and the served file is from it.
+    pub = [ln for ln in text(LOGS / "db_publish.log").splitlines() if ln.startswith(DAY) and "published. /healthz/deep=ok" in ln]
+    check(bool(pub), f"published on {DAY} with /healthz/deep=ok", pub[-1][:80] if pub else "")
+    mtime = dt.datetime.fromtimestamp(PUBLISHED.stat().st_mtime, dt.timezone.utc).strftime("%Y-%m-%d %H:%M")
+    check(mtime.startswith(DAY), "the served screening.sqlite is from that day", mtime)
 
-# 1. The patched parser is the one the night ran, and the night's parse step finished.
-check(hashlib.md5(PARSER.read_bytes()).hexdigest() == PARSER_MD5, "the parser on disk is the patched one", PARSER_MD5[:8])
-run_log = LOGS / f"daily_{DAY.replace('-', '')}.log"
-log = text(run_log)
-check(bool(log), f"the night's run log exists ({run_log.name})")
-check("[OK step 8] parse_financial_statements" in log, "the parse step finished OK")
-done = re.findall(r"DONE: (\d+) ticker\(s\), (\d+) line-item-rows", log)
-check(bool(done), "the parse step reported its totals", f"{done[-1][0]} tickers, {done[-1][1]} rows" if done else "")
-unknown = [ln for ln in log.splitlines() if "UNKNOWN STATEMENT HEADING" in ln]
-check(not unknown, "no UNKNOWN STATEMENT HEADING warning in the parse", unknown[0][:160] if unknown else "")
-check(bool(re.search(r"ALERT \[OK\]", log)), "the night's run ended with ALERT [OK]")
 
-# 2. That night was published, healthy, and the served file is from it.
-pub = [ln for ln in text(LOGS / "db_publish.log").splitlines() if ln.startswith(DAY) and "published. /healthz/deep=ok" in ln]
-check(bool(pub), f"published on {DAY} with /healthz/deep=ok", pub[-1][:80] if pub else "")
-mtime = dt.datetime.fromtimestamp(PUBLISHED.stat().st_mtime, dt.timezone.utc).strftime("%Y-%m-%d %H:%M")
-check(mtime.startswith(DAY), "the served screening.sqlite is from that day", mtime)
+def data_checks(db: sqlite3.Connection) -> list[tuple[bool, str, str]]:
+    """The served data's items. Each must FAIL on missing data, not pass on it (review 20): a balance sheet
+    that is absent holds no cash-flow line either, so its presence is an item of its own."""
+    marks = ",".join("?" * len(NINE))
+    lines = ",".join("?" * len(CASH_FLOW_LINES))
+    bs = dict(db.execute(f"SELECT ticker_key, COUNT(*) FROM fundamentals_lineitems WHERE section='Balance Sheet' "
+                         f"AND ticker_key IN ({marks}) GROUP BY 1", NINE).fetchall())
+    left = db.execute(f"SELECT ticker_key, COUNT(*) FROM fundamentals_lineitems WHERE section='Balance Sheet' "
+                      f"AND ticker_key IN ({marks}) AND line_item_label IN ({lines}) GROUP BY 1", NINE + CASH_FLOW_LINES).fetchall()
+    cf = dict(db.execute(f"SELECT ticker_key, COUNT(*) FROM fundamentals_lineitems WHERE section='Cash Flow Statement' "
+                         f"AND ticker_key IN ({marks}) GROUP BY 1", NINE).fetchall())
+    amlak = db.execute("SELECT COUNT(*) FROM fundamentals_lineitems WHERE ticker_key='AMLAK_DFM' AND section='Balance Sheet' "
+                       "AND fiscal_year=(SELECT MAX(fiscal_year) FROM fundamentals_lineitems WHERE ticker_key='AMLAK_DFM' "
+                       "AND section='Balance Sheet')").fetchone()[0]
+    return [
+        (all(bs.get(t, 0) > 0 for t in NINE), "each of the nine has a balance sheet",
+         ", ".join(f"{t.split('_')[0]} {bs.get(t, 0)}" for t in NINE)),
+        (not left, "no cash-flow line in the nine companies' balance sheets", str(left)),
+        (all(cf.get(t, 0) > 0 for t in WITH_CASH_FLOW), "the eight have a Cash Flow Statement",
+         ", ".join(f"{t.split('_')[0]} {cf.get(t, 0)}" for t in WITH_CASH_FLOW)),
+        (cf.get("ADNIC_ADX", 0) == 0, "ADNIC has none (its cash-flow lines carry no figures)", str(cf.get("ADNIC_ADX", 0))),
+        (0 < amlak < 50, "AMLAK's newest balance sheet is back to its own lines", f"{amlak} rows (50 before, 31 in the dry run)"),
+    ]
 
-# 3. The served data: no cash flow left in the nine balance sheets; eight cash-flow statements.
-db = sqlite3.connect(f"file:{PUBLISHED}?mode=ro", uri=True)
-marks = ",".join("?" * len(NINE))
-lines = ",".join("?" * len(CASH_FLOW_LINES))
-left = db.execute(f"SELECT ticker_key, COUNT(*) FROM fundamentals_lineitems WHERE section='Balance Sheet' "
-                  f"AND ticker_key IN ({marks}) AND line_item_label IN ({lines}) GROUP BY 1", NINE + CASH_FLOW_LINES).fetchall()
-check(not left, "no cash-flow line in the nine companies' balance sheets", str(left))
-cf = dict(db.execute(f"SELECT ticker_key, COUNT(*) FROM fundamentals_lineitems WHERE section='Cash Flow Statement' "
-                     f"AND ticker_key IN ({marks}) GROUP BY 1", NINE).fetchall())
-check(all(cf.get(t, 0) > 0 for t in WITH_CASH_FLOW), "the eight have a Cash Flow Statement",
-      ", ".join(f"{t.split('_')[0]} {cf.get(t, 0)}" for t in WITH_CASH_FLOW))
-check(cf.get("ADNIC_ADX", 0) == 0, "ADNIC has none (its cash-flow lines carry no figures)", str(cf.get("ADNIC_ADX", 0)))
-amlak = db.execute("SELECT COUNT(*) FROM fundamentals_lineitems WHERE ticker_key='AMLAK_DFM' AND section='Balance Sheet' "
-                   "AND fiscal_year=(SELECT MAX(fiscal_year) FROM fundamentals_lineitems WHERE ticker_key='AMLAK_DFM' AND section='Balance Sheet')").fetchone()[0]
-check(amlak < 50, "AMLAK's newest balance sheet is back to its own lines", f"{amlak} rows (50 before, 31 in the dry run)")
 
-print(f"{'ALL PASS' if not fails else f'{fails} FAIL'}")
-sys.exit(fails)
+if __name__ == "__main__":
+    print(f"F-16 after-publish check for {DAY} (UTC)")
+    night_and_publish()
+    # 3. The served data: every balance sheet there, no cash flow left in them, eight cash-flow statements.
+    for ok, what, detail in data_checks(sqlite3.connect(f"file:{PUBLISHED}?mode=ro", uri=True)):
+        check(ok, what, detail)
+    print(f"{'ALL PASS' if not fails else f'{fails} FAIL'}")
+    sys.exit(fails)

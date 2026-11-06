@@ -130,7 +130,8 @@ git apply --check -p1 /root/pipeline-guard-statement-headings-2026-11-06.patch &
 **Status: PENDING.** It runs after the 2026-11-06 publish; nothing is claimed until then.
 
 **1. The night, the publish and the served data, on the server, read-only.**
-`scripts/pipeline-checks/f16_after_publish.py` checks 12 items and exits with the number of failures:
+`scripts/pipeline-checks/f16_after_publish.py` checks 13 items (8 for the night and the publish, 5 for the
+data) and exits with the number of failures:
 
 ```
 ssh root@alphacouncil.tech '/opt/alphacouncil/pipeline-venv/bin/python -X utf8 - 2026-11-06' \
@@ -146,22 +147,35 @@ ssh root@alphacouncil.tech '/opt/alphacouncil/pipeline-venv/bin/python -X utf8 -
 - **The publish:** a `<day> … published. /healthz/deep=ok` line in `/opt/alphacouncil/logs/db_publish.log`
   (and its `.1`), and a served `/var/lib/alphacouncil/screening.sqlite` dated that day. *A Friday night runs
   in full mode and logs to `cron_heavy.log`, but its run log is still `daily_<day>.log`.*
-- **The data:**
+- **The data** (each item must fail on missing data, not pass on it):
+  - each of the nine has a balance sheet;
   - none of F-16's 18 distinctive cash-flow lines left in the nine balance sheets (`fundamentals_lineitems`,
     `section='Balance Sheet'`; "اخرى" is left out of the list, being a balance-sheet line too);
   - `Cash Flow Statement` rows for the eight;
   - none for ADNIC, whose cash-flow lines carry no figures;
-  - AMLAK's newest balance sheet under 50 rows (31 in the dry run).
+  - AMLAK's newest balance sheet has rows, and fewer than 50 (31 in the dry run).
 
 **Proved before it is needed:**
-- Against the 2026-11-05 publish it reports the night and the publish PASS, and the three data items FAIL:
+- Against the 2026-11-05 publish it reports 10 PASS: the 8 night and publish items, the nine balance sheets
+  present, and ADNIC with none. The three data items FAIL:
   - cash-flow lines in eight balance sheets, 40–80 rows each;
   - no Cash Flow Statement;
   - AMLAK 50 rows.
 
   That is F-16 before its fix.
-- With `F16_DB=/tmp/f16/c/screening.sqlite`, the dry run's fixed copy, every data item passes: 0 cash-flow
-  lines, the eight with 40–95 cash-flow rows, AMLAK 31.
+- With `F16_DB=/tmp/f16/c/screening.sqlite`, the dry run's fixed copy, all 5 data items pass: the nine
+  balance sheets present, 0 cash-flow lines, the eight with 40–95 cash-flow rows, ADNIC none, AMLAK 31.
+- **Missing data fails** (review 20 found that an absent balance sheet passed the first version, and so did
+  AMLAK at 0 rows). `scripts/pipeline-checks/test_f16_after_publish.py` runs 8 tests on in-memory
+  databases, all OK:
+  - the fixed data passes;
+  - cash flow left in a balance sheet fails;
+  - a missing balance sheet fails for each of the nine;
+  - no balance sheets at all fails;
+  - AMLAK at 0 rows fails, and AMLAK still at 50 fails;
+  - a missing cash-flow statement fails;
+  - ADNIC with one fails.
+  Run it with `python -B -X utf8 scripts/pipeline-checks/test_f16_after_publish.py`.
 
 **2. The English-label sweep, from a workstation:** beta's API reads the same published file
 (`SCREENING_DB=/var/lib/alphacouncil/screening.sqlite`, as production's does).
