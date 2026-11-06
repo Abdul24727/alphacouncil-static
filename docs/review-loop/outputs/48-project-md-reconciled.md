@@ -37,3 +37,5 @@
 `git diff --check` is clean. No code changed.
 
 **The question for the review:** is this sound, and what is the single next pre-approved step?
+
+*Review 48's correction:* F-7's paragraph in §6 now names `b5655a5064` as live and `5c18a3ae46` as its rollback.
