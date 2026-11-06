@@ -243,6 +243,7 @@ Older entries: `changelog-archive.md`.
 - 2026-11-06 — **Review 05 ACCEPTED the bank sub-lines. Its next step is done: "property Real estate Investment" reads "Real Estate Investments".** It is Argaam's garbled English for row tr432 (210 Saudi pages) and was the first English for "استثمارات عقارية" (333 Gulf pages). The pair was replaced by an alias to Argaam's own clean wording for that Arabic (row tr73). Lookups before and after over 926 labels × 2 languages × 3 contexts differ in exactly 6 places, all intended; Arabic pages are unchanged. 108 and 1211 rendered: 8/8. Suite 64/64; typecheck, lint and build pass. Not released.
 - 2026-11-06 — **Review 06 ACCEPTED the real-estate label. Its next step is done: `pair_from_gulf.py` treats the dollar as a currency unit** (the review's "missing USD unit"). "القيمة الاسمية (دولار)" no longer keeps its dollar beside the riyal. 4 unit-rule tests pass. No live effect: no page or row carries a dollar label, and old and new outputs over every harvested page are byte-identical.
 - 2026-11-06 — **Review 07 ACCEPTED. Its next step is done: `docs/release-readiness-2026-11-06.md`, candidate `509d7bf` against the deployed `5c18a3ae46`.** Five app files, all in `web/src`; no API, deploy, message or asset change. Everything was re-run together on the candidate: tests 64/64, typecheck, lint, build, the Python unit tests, five render checks (labels of 11-04, Gulf English pages, newest-first, bank sub-lines, real-estate label) and `check-arabic` at 1440 and 390 (48 views, 0 stray English). All PASS. The only Arabic left on English pages is F-16's cash flow in AMLAK's and AMCREIT's balance sheets, gone at the 05:00 UTC publish. Pending: F-16's after-publish check, then the owner's release and push go-aheads.
+- 2026-11-06 — **Review 08 said FIX: the report blurred the rendered samples into the whole.** Corrected: the full sweep's leftovers are 18 labels in eight F-16 companies, re-derived from the data, and their removal is *expected*, not verified. Review 08's next step, the `owns` case fix, needs the owner's go-ahead, so it is prepared as a patch and waits.
 
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
@@ -1245,6 +1246,7 @@ and no customer has paid yet.
        included). Unpushed since then: the `check-advisors.mjs` fix (`7fb04b5`), the F-16 patches and record,
        and records - all on `rebuild`, needing a push go-ahead;
      - ~~apply the parser's heading guard (F-16)~~ **APPLIED 2026-11-05 22:44 UTC**; to check after the 05:00 UTC publish;
+     - **apply the check-advisors `owns` case fix** (`docs/check-advisors-owns-case-2026-11-06.patch`): a behaviour change to a check script, dormant today (all seven files uppercase);
      - **the $66 pilot, then the $393 decision-grade run** (Next Up item 4; unblocked since F-13 and the
        post-publish checks passed), with probes D1/D3/D6 retired or re-registered first.
   3. **Credentials and server:**
@@ -1768,6 +1770,7 @@ wrong thing:
    **every** mandate uncovered. All seven files are uppercase today, so it is dormant; one
    `.toUpperCase()` in the JS closes it. Not applied - it is a change to a check script and
    nobody asked for it.)*
+   *(2026-11-06: **prepared, not applied** - `docs/check-advisors-owns-case-2026-11-06.patch`, `git apply --check` clean. Shown on the parser alone: `owns: p2, P9` reported `p2` missing before and nothing after, the same as `owns: P2, P9`. ChatGPT's review 08 named it the next step; the owner's standing word is to ask before applying it, so it waits on their go-ahead.)*
 
 **Why the order moved:** the review of 2026-10-29 found that the mandate-coverage flag — Priority Two's only
 instrument — was reading the engine's own auto-inserted citations, and attributing any figure held by both
