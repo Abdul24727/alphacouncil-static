@@ -223,3 +223,28 @@ PASSED 714/714. Details are in `docs/pipeline-guard-statement-headings-2026-11-0
 **Release order** (`CLAUDE.md`, `PROJECT.md` §4): `scripts/deploy-staging.sh`, then check beta, then
 `scripts/deploy-production.sh` with no commit in between, then check production. The rollback is
 `5c18a3ae46`, still in both tiers' `releases/`.
+
+## Pre-push audit (`PROJECT.md` Step 2), 2026-11-06
+
+The push is a separate owner go-ahead; this audit only prepares it. **Audited range: `ccfe063..9712418`**
+(`origin/rebuild`, equal to the remote's `refs/heads/rebuild` by `git ls-remote`, to local `rebuild`): 45
+commits, 1,289 files (1,136 PNG, 68 txt, 60 md, 25 code, 3 patch), 5,520 added text lines, nothing deleted.
+**Every hit was read; none is a value.**
+
+- **Outgoing-diff scan** (Step 2's exact regex): 2 hits, both prose naming Moyasar: `PROJECT.md`'s 2026-11-06
+  push entry, and the owner-gate list in `docs/review-loop/MASTER-PLAN.md`.
+- **Tracked files:** only `api/.env.example`, not in this push, every value empty.
+- **History grep** (`git log --all -p`): only the standing false positives Step 2 lists (the plan quoting its
+  own regex, the `startswith("sk_test_")` check, the `sk_test_x` fixture, comments naming key prefixes, the
+  `# OPENROUTER_API_KEY=` template line).
+- **Value-shaped key scan** (OpenRouter, OpenAI, Anthropic, Moyasar live/test, GitHub, AWS, Google, Slack,
+  private-key blocks, JWTs): **0** in history, **0** files in the tree.
+- **Added lines and commit messages:** no email address except `root@alphacouncil.tech` (an SSH login, 3
+  lines, already public on 34 lines of the pushed tree) and the co-author `noreply@anthropic.com`; IPv4 only
+  `127.0.0.1`; "password" twice, both prose; no token, cookie or key assignment.
+- **The Argaam account name:** **0** in added lines, commit messages, file names, the tracked tree and the
+  1,136 PNGs. Method: the value was copied from the server's session-gate log line straight into a scratch
+  file outside the repository, used only as a `grep -F` pattern, never printed, then deleted.
+
+Commits after `9712418` (this record and the review loop's) are outside the range by construction, so the same
+scans run again over the exact range at push time.
