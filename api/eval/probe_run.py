@@ -168,6 +168,10 @@ class ProbeResult:
     # a visitor reads, nor to price a session turn by turn. Empty on a single-model arm, whose whole
     # output is `headline` and `answer`.
     turns: list[dict[str, Any]] = field(default_factory=list)
+    # Billed calls that are not displayed turns: a failed Chair call, which the engine re-raises before
+    # any turn is saved. Each has `stage`, `error` and `usage`. With `turns`, it accounts for the run's
+    # whole cost wherever the provider reported one.
+    failed_calls: list[dict[str, Any]] = field(default_factory=list)
     # Seconds from the start of the run to the first turn a visitor would see - the first one that is
     # not an absent seat. A single-model arm's answer arrives whole, so there it is the run's seconds.
     # On a dry run it times the stand-in, not a model.
@@ -233,16 +237,22 @@ def with_plant(base: Any, probe: Any, planted: bool):
 
 
 def usage_record(usage: Any, dry: bool) -> dict[str, Any]:
-    """One turn's usage as the record keeps it. `None` - a turn with nothing billed - is zeros, not
-    missing: a blank would read as unknown cost where the cost was nothing."""
+    """One turn's or call's usage as the record keeps it.
+
+    `cost_usd` is the provider's own figure, or **None when it reported none**: an unknown cost is
+    not a zero, and recording it as 0.0 would present unknown spending as free (review 62). The
+    plant's scripted opening is the one confirmed zero, because no model was called. `None` usage -
+    nothing reported at all - is unknown too."""
     model = getattr(usage, "model", None) if usage is not None else None
+    scripted = model == "scripted"
+    cost = getattr(usage, "cost_usd", None) if usage is not None else None
     return {
         "model": model,
         "prompt_tokens": int(getattr(usage, "prompt_tokens", 0) or 0),
         "completion_tokens": int(getattr(usage, "completion_tokens", 0) or 0),
-        "cost_usd": round(float(getattr(usage, "cost_usd", None) or 0.0), 6),
+        "cost_usd": 0.0 if scripted else (round(float(cost), 6) if isinstance(cost, (int, float)) else None),
         "seconds": round(float(getattr(usage, "seconds", 0.0) or 0.0), 2),
-        "scripted": model == "scripted",
+        "scripted": scripted,
         "simulated": dry,
     }
 
@@ -252,13 +262,33 @@ class TurnLog:
 
     It is the engine's own two callbacks, kept rather than discarded: `save(turn, usage)` - called for
     every turn, an absent seat's included, with the usage of its failed attempts (F-7) - and
-    `emit(event)`, the stream the page follows live."""
+    `emit(event)`, the stream the page follows live.
+
+    One billed case never reaches `save`: a **Chair** call that fails. The engine re-raises it (the
+    session cannot go on without the Chair) before any turn is saved, so its attempts' cost would
+    vanish from the record while the run's total still counts it (review 62). `observe` wraps the
+    asker to keep those calls in `failures` - billed, but not displayed turns. An advisor's failure is
+    not kept there: the engine already saves it as an absent turn with its usage."""
 
     def __init__(self, dry: bool) -> None:
         self.dry = dry
         self.turns: list[dict[str, Any]] = []
+        self.failures: list[dict[str, Any]] = []
         self.started = time.monotonic()
         self.first_turn_seconds: float | None = None
+
+    def observe(self, ask: Any) -> Any:
+        async def observed(**kw: Any):
+            try:
+                return await ask(**kw)
+            except llm.SeatError as exc:
+                seat = kw.get("seat")
+                if getattr(getattr(seat, "info", None), "role", None) == "chair":
+                    self.failures.append({"stage": kw.get("stage"), "seat": "chair", "error": exc.code,
+                                          "usage": usage_record(exc.usage, self.dry)})
+                raise
+
+        return observed
 
     async def save(self, turn: dict[str, Any], usage: Any) -> None:
         self.turns.append({**turn, "usage": usage_record(usage, self.dry)})
@@ -331,7 +361,7 @@ async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool
     turns = log.turns
     started = log.started
     try:
-        state = await Debate(ctx, ask, log.emit, log.save).run()
+        state = await Debate(ctx, log.observe(ask), log.emit, log.save).run()
         v = state.verdict or {}
         r.headline, r.answer = v.get("headline", ""), v.get("answer", "")
         r.gaps, r.disagreements = list(v.get("gaps") or []), list(v.get("disagreements") or [])
@@ -341,7 +371,7 @@ async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool
     r.seconds = round(time.monotonic() - started, 2)
     r.cost_usd, r.calls = round(calls["cost"], 6), int(calls["n"])
     r.bound_usd = round(calls.get("bound", 0.0), 6)
-    r.turns, r.first_turn_seconds = turns, log.first_turn_seconds
+    r.turns, r.failed_calls, r.first_turn_seconds = turns, log.failures, log.first_turn_seconds
     r.absent = sorted({t["seat"] for t in turns if isinstance(t.get("data"), dict) and t["data"].get("absent")})
     r.openings, r.uncovered, r.unruled = room_flags(turns)
     if planted:

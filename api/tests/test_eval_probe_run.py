@@ -481,14 +481,20 @@ def test_the_turn_log_keeps_every_turn_with_its_usage_failed_and_scripted_includ
     asyncio.run(log.save(absent, Usage(model="m", cost_usd=0.004)))
     asyncio.run(log.save(scripted, Usage(model="scripted")))
     asyncio.run(log.save({"stage": "verdict", "round": None, "seat": "chair", "data": {}}, None))
+    asyncio.run(log.save({"stage": "final", "round": 3, "seat": "marks", "data": {"text": "y"}},
+                         Usage(model="m", prompt_tokens=10, completion_tokens=5, cost_usd=None)))
 
-    assert [t["seat"] for t in log.turns] == ["dalio", "lynch", "buffett", "chair"]
+    assert [t["seat"] for t in log.turns] == ["dalio", "lynch", "buffett", "chair", "marks"]
     assert log.turns[0]["usage"] == {"model": "m", "prompt_tokens": 100, "completion_tokens": 50, "cost_usd": 0.01,
                                      "seconds": 1.23, "scripted": False, "simulated": False}
     assert log.turns[1]["data"]["absent"] and log.turns[1]["usage"]["cost_usd"] == 0.004
     assert log.turns[2]["usage"]["scripted"] and log.turns[2]["usage"]["cost_usd"] == 0.0
-    assert log.turns[3]["usage"]["cost_usd"] == 0.0 and log.turns[3]["usage"]["model"] is None
-    assert round(sum(t["usage"]["cost_usd"] for t in log.turns), 6) == 0.014
+    # review 62: nothing reported is unknown, and a paid call with tokens but no cost is unknown - never 0.0
+    assert log.turns[3]["usage"]["cost_usd"] is None and log.turns[3]["usage"]["model"] is None
+    assert log.turns[4]["usage"]["cost_usd"] is None and log.turns[4]["usage"]["prompt_tokens"] == 10
+    assert not log.turns[4]["usage"]["scripted"] and not log.turns[4]["usage"]["simulated"]
+    known = [t["usage"]["cost_usd"] for t in log.turns if t["usage"]["cost_usd"] is not None]
+    assert round(sum(known), 6) == 0.014
     assert ok == {"stage": "openings", "round": 1, "seat": "dalio", "data": {"text": "x"}, "flags": {}}, "the turn was mutated"
 
 
@@ -508,12 +514,10 @@ def test_the_first_turn_time_is_the_first_turn_a_visitor_sees():
     assert log.first_turn_seconds == first
 
 
-@needs_packs
-def test_a_paid_room_records_every_turn_and_its_cost_adds_up_to_the_run(monkeypatch):
-    """The reconciliation the comparison rests on, without a model: a room run through the real
-    metering path with a fake paid model. One seat fails its opening (billed $0.004), the plant's
-    opening is scripted (free), every other call costs $0.01. Every turn is kept, and the turns' costs
-    add up exactly to the run's total."""
+def _fake_paid_room(monkeypatch, fail_seat: str, fail_stage: str):
+    """A six-seat room run through the real metering path (`metered`, a Budget) with a fake paid
+    model: the named seat fails at the named stage, billed $0.004; the plant's opening is scripted;
+    every other call costs $0.01. Returns the result and the plant seat."""
     from app.debate import roster
     from app.debate.llm import SeatError, Usage
     from app.debate.standin import make_asker
@@ -529,10 +533,11 @@ def test_a_paid_room_records_every_turn_and_its_cost_adds_up_to_the_run(monkeypa
     pack = load_pack(cell.ticker, "en")
     advisors = roster.sitting(roster.advisors(get_settings().debate_advisors), pack.ticker_key)
     standin = make_asker(pack, advisors, "en", cell.question)
-    failing = next(a.id for a in advisors if a.id != PLANT_SEAT)
+    if fail_seat == "advisor":
+        fail_seat = next(a.id for a in advisors if a.id != PLANT_SEAT)
 
     async def paid(**kw):
-        if kw["stage"] == "openings" and kw["seat"].id == failing:
+        if kw["stage"] == fail_stage and kw["seat"].id == fail_seat:
             raise SeatError("bad_output", usage=Usage(model=kw["model"], cost_usd=0.004))
         checked, _ = await standin(**kw)
         return checked, Usage(model=kw["model"], prompt_tokens=10, completion_tokens=5, cost_usd=0.01)
@@ -540,7 +545,23 @@ def test_a_paid_room_records_every_turn_and_its_cost_adds_up_to_the_run(monkeypa
     monkeypatch.setattr(probe_run, "metered_asker", lambda _settings, budget: metered(paid, budget))
     r = asyncio.run(probe_run.run_room(probe, "A", 1, "en", planted=True, dry=False,
                                        budget=Budget(cap_usd=1000.00, attempts=3)))
+    return r, fail_seat, advisors
+
+
+def _recorded_cost(r) -> float:
+    return round(sum(x["usage"]["cost_usd"] for x in r.turns + r.failed_calls if x["usage"]["cost_usd"] is not None), 6)
+
+
+@needs_packs
+def test_a_paid_room_records_every_turn_and_its_cost_adds_up_to_the_run(monkeypatch):
+    """The reconciliation the comparison rests on, without a model. One advisor fails its opening
+    (billed $0.004), the plant's opening is scripted (free), every other call costs $0.01. Every turn
+    is kept, and the turns' costs add up exactly to the run's total."""
+    from eval.probes import PLANT_SEAT
+
+    r, failing, advisors = _fake_paid_room(monkeypatch, "advisor", "openings")
     assert r.ok, r.error
+    assert r.failed_calls == [], "an advisor's failure is an absent turn, not a separate failed call"
     assert r.absent == [failing]
     stages = [t["stage"] for t in r.turns]
     assert stages.count("brief") == 1 and stages.count("faultlines") == 1 and stages.count("verdict") == 1
@@ -551,8 +572,22 @@ def test_a_paid_room_records_every_turn_and_its_cost_adds_up_to_the_run(monkeypa
     assert not any(t["usage"]["simulated"] for t in r.turns)
     absent = next(t for t in r.turns if t["seat"] == failing and t["stage"] == "openings")
     assert absent["data"]["absent"] and absent["usage"]["cost_usd"] == 0.004
-    assert round(sum(t["usage"]["cost_usd"] for t in r.turns), 6) == round(r.cost_usd, 6)
+    assert _recorded_cost(r) == round(r.cost_usd, 6)
     assert r.first_turn_seconds is not None and r.first_turn_seconds <= r.seconds
+
+
+@needs_packs
+@pytest.mark.parametrize("stage", ["brief", "faultlines", "verdict"])
+def test_a_failed_chair_call_is_kept_as_billed_and_the_cost_still_adds_up(monkeypatch, stage):
+    """Review 62: the engine re-raises a Chair failure before saving any turn, so its billed attempts
+    used to vanish from the record. They are kept in `failed_calls` - billed, not displayed - and the
+    record still adds up to the run's total, at every Chair stage."""
+    r, _, _ = _fake_paid_room(monkeypatch, "chair", stage)
+    assert not r.ok and r.error
+    assert [(f["stage"], f["seat"], f["error"]) for f in r.failed_calls] == [(stage, "chair", "bad_output")]
+    assert r.failed_calls[0]["usage"]["cost_usd"] == 0.004
+    assert not any(t["stage"] == stage for t in r.turns), "a failed Chair call is not a displayed turn"
+    assert _recorded_cost(r) == round(r.cost_usd, 6)
 
 
 @needs_packs
