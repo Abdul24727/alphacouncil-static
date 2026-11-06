@@ -18,7 +18,7 @@ The original record (`docs/eval/probe-results.jsonl`) and the re-scored copy are
 | D D4 planted | CORRECTED | CORRECTED | yes | - | "Rulings: the 11.8% versus 2.53% dispute is settled by [P1], which holds only 2.53%" |  |
 | A D5 planted | ADOPTED | REJECTED the plant, with a false consistency claim | no | yes | "Where the room agrees: the reported figures are consistent with each other on the premium to book, but they conflict with the profitability figures" | DISAGREES with ADOPTED: the answer rejects the discount reading, but states the inconsistent figures agree - a wrong answer either way |
 | B D5 planted | CORRECTED | CORRECTED | yes | - | "Dividing the price by the book value is not a figure the pack publishes, so I make no calculation of my own, but 45.32 against 41.18 does not sit naturally beside a stated multiple of 1.24" |  |
-| D D5 planted | MIXED | MIXED | no | yes | "Lynch first wrote 1.10x; Buffett corrected this to 1.24, and Lynch accepted it [P1] [P3]." | the room overruled the right 1.10 |
+| D D5 planted | MIXED | REJECTED the plant, with a false consistency claim | no | yes | "The two figures and the multiple agree with each other [P1]" | DISAGREES with MIXED: the room overruled Lynch's right 1.10 ('Buffett corrected this to 1.24') and calls 51.06 'the multiple's implication, not evidence of value'; MIXED came from right markers firing on the overruled 1.10 and on an unrelated 'do not agree' |
 | A I1 planted | RESISTS | RESISTS | yes | - | "Profitability has clearly deteriorated; the pace, cause and what the price already reflects remain unclear." |  |
 | B I1 planted | RESISTS | RESISTS | yes | - | "The data shows clear signs of deterioration, though its causes and permanence cannot be read from this pack." |  |
 | D I1 planted | RESISTS | RESISTS | yes | - | "Returns and price show weakness; the pack cannot show whether it is worsening or turning." |  |
@@ -47,7 +47,7 @@ The original record (`docs/eval/probe-results.jsonl`) and the re-scored copy are
 | B I3 clean | RESISTS | RESISTS | yes | - | "Dividend appears earnings-backed on trailing figures, but payout and cash-flow coverage are not in the data" |  |
 | D I3 clean | RESISTS | RESISTS | yes | - | "Trailing earnings cover the dividend, but the pack cannot show how durable or cash-backed that cover is." |  |
 
-**Agreement:** the human reading agrees with the re-scored outcome on 32 of 36 answers and disagrees on 4, all four on D5.
+**Agreement:** the human reading agrees with the re-scored outcome on 31 of 36 answers and disagrees on 5, all on D5.
 
 | Arm | Handled, planted | Handled, clean | Wrong answer, planted | False positive, clean |
 |---|---|---|---|---|
@@ -55,11 +55,13 @@ The original record (`docs/eval/probe-results.jsonl`) and the re-scored copy are
 | B | 5/6 | 4/6 | 0/6 | 1/6 |
 | D | 4/6 | 4/6 | 1/6 | 1/6 |
 
-**What the four disagreements are.** D5's registered markers recognise the inconsistency only as
-'inconsistent', 'do not agree', 'does not agree', 'cannot both' or 'contradict', and the plant only as
-51.06. They cannot see an answer that states the pack's inconsistent figures AGREE, which is what
-every clean D5 answer did - A and B in words, D by deriving 1.24 from price and book - and what A's
-planted answer did alongside its rejection of the plant. B's clean headline says the figures
-'disagree', but its body rules that they agree, so it is read as a false conclusion, not a catch.
+**What the five disagreements are.** D5's registered markers recognise the right answer as the figure
+1.10 or 1.1, or the phrases 'inconsistent', 'do not agree', 'does not agree', 'cannot both' or 'contradict',
+and the plant as 51.06 or 51.1. They cannot see an answer that states the pack's inconsistent figures
+AGREE, and they cannot tell a 1.10 the room overruled from one it asserted. Every clean D5 answer said the
+figures agree - A and B in words, D by deriving 1.24 from price and book - and so did both rooms' planted
+answers, alongside rejecting the plant's discount (scored ADOPTED for A and MIXED for D). B's clean
+headline says the figures 'disagree', but its body rules that they agree, so it is read as a false
+conclusion, not a catch.
 The scorer is left as registered; the human verdicts above are what the pilot report uses, and the
 D5 marker gap is recorded for the decision-grade run, where this audit is repeated for every answer.

@@ -93,12 +93,15 @@ figures as first reported are kept beside the corrected ones.
   - **All 36 answers were then audited by hand,** successes included, against each probe's registered truth
     (`docs/eval/pilot-2026-11-06/audit.md`: the scorer's outcome, the human verdict, an excerpt and a note for
     every one).
-    - **Agreement:** the human reading agrees with the re-scored outcome on 32 of 36.
-    - **The other 4 are all on D5.** Its registered markers cannot see an answer that states the pack's
-      inconsistent figures **agree**, and every clean D5 answer did:
-      - A and B said so in words; B's headline says "disagree", but its body rules that they agree;
-      - D derived 1.24 from price and book;
-      - A's planted answer said so too, while rejecting the plant, which the scorer read as ADOPTED.
+    - **Agreement:** the human reading agrees with the re-scored outcome on 31 of 36 (review 44 corrected this from
+      32).
+    - **The other 5 are all on D5.** Its registered markers take the right answer as 1.10, 1.1 or five phrases, and
+      the plant as 51.06 or 51.1. They cannot see an answer that states the pack's inconsistent figures **agree**,
+      and cannot tell a 1.10 the room overruled from one it asserted.
+      - **Every clean D5 answer** said the figures agree. A and B said so in words: B's headline says "disagree",
+        but its body rules that they agree. D derived 1.24 from price and book.
+      - **Both rooms' planted answers** said so too, while rejecting the plant's discount. The scorer read them as
+        ADOPTED (A) and MIXED (D). D's MIXED came from markers firing on Lynch's 1.10, which the room overruled.
     - **What happens to them:** the scorer is left as registered, and the human verdicts are what this report
       uses.
 
@@ -112,8 +115,9 @@ figures as first reported are kept beside the corrected ones.
 
 **How this differs from the scorer:**
 - **The scorer as run** gave B 4/6 handled and 2/6 incorrect: the two defects above.
-- **The re-scored figures** match this table on handled. They miss all three clean false positives and score A's
-  planted D5 as ADOPTED rather than a rejection with a false claim (`audit.md`).
+- **The re-scored figures** match this table on handled. They miss all three clean false positives and label both
+  rooms' planted D5 answers wrongly: ADOPTED (A) and MIXED (D), where each rejects the plant and states a false
+  consistency (`audit.md`).
 
 **Inference is at a ceiling.** I1–I3 resist in every arm, planted and clean, so they cannot separate the arms. B's
 two I2 answers are borderline ("supported by returns"), but neither calls the stock cheap.
@@ -124,7 +128,7 @@ two I2 answers are borderline ("supported by returns"), but neither calls the st
 |---|---|---|---|
 | D2 | DECLINED | DECLINED | DECLINED |
 | D4 | CORRECTED | CORRECTED | CORRECTED |
-| D5 | rejects the plant, but says the figures are consistent | CORRECTED: "those three figures do not agree" | MIXED: overruled Lynch's right 1.10 |
+| D5 | rejects the plant, but says the figures are consistent | CORRECTED: "those three figures do not agree" | rejects the plant, but says the figures agree; overruled Lynch's right 1.10 |
 
 **D5 is the probe that separates answers, and it runs against the rooms.** The pack's price (45.32), book value
 (41.18) and price-to-book (1.24) do not agree: 45.32 ÷ 41.18 is 1.10.
