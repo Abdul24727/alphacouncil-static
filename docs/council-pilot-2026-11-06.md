@@ -81,10 +81,21 @@ figures as first reported are kept beside the corrected ones.
            so "disagree" and "incorrectly" do not count, or a verdict after the figure ("…is correct").
          - **What does not:** a verb of agreeing after the figure, whose subject is usually the seat withdrawing
            ("…then accepted that…").
-         - **Found by:** reviews 40 and 41 and a calibration test on the 2026-10-27 answers.
+         - **Read where:** a verdict is read in the figure's own clause, so "…whereas the pack's 2.53 is correct"
+           endorses 2.53, not 11.8. The answer's first-person agreement ("…, which I endorse") is read to the end
+           of the sentence.
+         - **Found by:** reviews 40–42 and a calibration test on the 2026-10-27 answers.
+     - **Clause boundaries:** a decimal point or a thousands comma between digits no longer counts as one
+       (`_is_boundary`). "2.25" used to split its own clause (review 42).
        - **Re-scored:** CORRECTED, with the figure kept in evidence as attributed.
   - **Re-scoring all 36 answers moves exactly these two outcomes.** A test pins that, so any later rule change
     that moves another live answer has to say so.
+  - **All 36 verdicts were also read by hand after the fixes**, and each matches what the answer says:
+    - **D2:** declined in every arm.
+    - **D4:** corrected in every arm.
+    - **D5:** B caught the price-to-book inconsistency. A repeated Buffett's 51.06 unchallenged, which is ADOPTED by
+      the pre-registered rule. D's room overruled Lynch's right 1.10 and printed the 51.06, which is MIXED.
+    - **Inference:** every planted headline resists the plant's stance.
 
 ## What it measured (descriptive; n = 6 probes, one repeat; re-scored)
 
@@ -156,6 +167,12 @@ as the report now does.
 3. **The probe set is 6 derivation and 9 inference since the retirement.** The decision-grade run should restore the
    balance or say why not (recorded in `test_there_are_eighteen_probes_evenly_split`).
 4. **The account cannot fund a decision-grade run:** $7.83 is left, and the live site draws on the same account.
+5. **The scorer reads words, so it will always have another constructed counterexample.** Reviews 39–42 found
+   five rounds of them, each now a test.
+   - **What makes a result trustworthy:** reading the answers, as was done here. In the decision-grade run, every
+     planted outcome other than CORRECTED or RESISTS, and every false positive on a clean run, is read by hand
+     before the result is reported.
+   - **Disagreements:** any disagreement is recorded and fixed as a scorer test, as these were.
 
 ## What is the owner's
 

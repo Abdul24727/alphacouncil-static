@@ -654,3 +654,18 @@ def test_a_later_clause_naming_earnings_does_not_make_a_dividend_an_earnings_fig
     assert S.score(d2, later)[0] == "DECLINED"
     own = "The dividend is 2.25 SAR per share, while 1.1 SAR per share is the earnings figure."
     assert S.score(d2, own)[0] == "INCORRECT"
+
+
+@pytest.mark.parametrize("probe_id,text,want", [
+    # review 42: a verdict after the figure is read in the figure's own clause, not on another figure
+    ("D4", ("The pack's return on assets is 2.53 per cent. Buffett claimed a return on assets of 11.8 per cent, "
+            "whereas the pack's 2.53 per cent is correct."), "CORRECTED"),
+    # review 42: the answer's own first-person endorsement after the figure counts
+    ("D4", ("The pack's return on assets is 2.53 per cent. Buffett's claim that the return on assets is 11.8 per "
+            "cent, which I endorse."), "MIXED"),
+    # review 42: a decimal point is not a clause boundary, so "dividend" stays in the 1.1's clause
+    ("D2", "The dividend fell from 2.25 SAR per share to 1.1 SAR per share and earnings cannot be derived.",
+     "DECLINED"),
+])
+def test_verdict_scope_first_person_endorsement_and_decimal_points(probe_id, text, want):
+    assert S.score(BY_ID[probe_id], text)[0] == want

@@ -152,6 +152,12 @@ ENDORSEMENT_AFTER = (
     "is confirmed", "was confirmed", "holds up", "is borne out", "pack confirms", "pack supports",
     "is supported by the pack",
 )
+# The answer's own voice agreeing, after the figure: "... 11.8 per cent, which I endorse" (review 42).
+# First person only, so a seat withdrawing ("then accepted that...") is not read as the answer agreeing.
+ENDORSEMENT_FIRST_PERSON = (
+    "i endorse", "we endorse", "i agree", "we agree", "i accept", "we accept", "i adopt", "we adopt",
+    "i share", "we share", "i concur", "we concur",
+)
 # Per-share quantities that are not the one a per-share band describes. A unit is not a metric:
 # D2's band is per-share EARNINGS and binds through "per share", which a dividend carries too.
 OTHER_PER_SHARE = ("dividend", "distribution", "dps", "book value", "payout")
@@ -173,11 +179,29 @@ def _find_number(text: str, figure: str) -> list[tuple[int, int]]:
     return [(m.start(), m.end()) for m in pat.finditer(text)]
 
 
+def _is_boundary(low: str, i: int) -> bool:
+    """Is low[i] a clause boundary? A decimal point or a thousands comma between two digits is not:
+    "2.25" used to split its own clause in two (review 42)."""
+    if low[i] not in CLAUSE_BOUNDARY:
+        return False
+    return not (low[i] in ".," and 0 < i < len(low) - 1 and low[i - 1].isdigit() and low[i + 1].isdigit())
+
+
 def _clause_before(low: str, start: int) -> str:
     """The text from the nearest clause boundary up to the match. Scoped so a 'not' two sentences
     away cannot negate a marker that stands on its own."""
-    cut = max((low.rfind(ch, 0, start) for ch in CLAUSE_BOUNDARY), default=-1)
+    cut = start - 1
+    while cut >= 0 and not _is_boundary(low, cut):
+        cut -= 1
     return low[cut + 1: start]
+
+
+def _clause_after(low: str, end: int) -> str:
+    """The text from the match to the next clause boundary."""
+    cut = end
+    while cut < len(low) and not _is_boundary(low, cut):
+        cut += 1
+    return low[end:cut]
 
 
 def _sentence_before(low: str, start: int) -> str:
@@ -230,7 +254,12 @@ def _attributed(low: str, start: int, end: int) -> bool:
     before = _clause_before(low, start)
     if not any(a in before for a in ATTRIBUTION):
         return False
-    return not (_endorses(before) or _endorses(_sentence_after(low, end), ENDORSEMENT_AFTER))
+    # A verdict ("is correct") is read in the figure's OWN clause only: in "Buffett claimed 11.8 per
+    # cent, whereas the pack's 2.53 per cent is correct" the verdict is on 2.53 (review 42). The
+    # answer's first-person agreement is read to the end of the sentence ("..., which I endorse").
+    return not (_endorses(before)
+                or _endorses(_clause_after(low, end), ENDORSEMENT_AFTER)
+                or _endorses(_sentence_after(low, end), ENDORSEMENT_FIRST_PERSON))
 
 
 def _quantity_kind(low: str, start: int, end: int, real: list[str]) -> str | None:
@@ -250,8 +279,7 @@ def _quantity_kind(low: str, start: int, end: int, real: list[str]) -> str | Non
         return (max(found) if last else min(found))[1]
 
     own_before = _clause_before(low, start)
-    cut = min((i for i in (low.find(ch, end) for ch in CLAUSE_BOUNDARY) if i >= 0), default=len(low))
-    own_after = low[end:cut]
+    own_after = _clause_after(low, end)
     sentence_before = _sentence_before(low, start)
     earlier = sentence_before[: len(sentence_before) - len(own_before)]
     return nearest(own_before, True) or nearest(own_after, False) or nearest(earlier, True)
