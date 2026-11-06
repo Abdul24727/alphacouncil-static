@@ -254,6 +254,7 @@ Older entries: `changelog-archive.md`.
 - 2026-11-06 — **Review 19 ACCEPTED. Its next step is done: F-16's after-publish check is a script** (`scripts/pipeline-checks/f16_after_publish.py`, read-only, on stdin). It runs 13 items: 8 for the night and the publish (the patched parser, the parse with no UNKNOWN heading, the publish with `/healthz/deep=ok`), and 5 for the data (the nine balance sheets present, no cash flow in them, eight Cash Flow Statements, ADNIC none, AMLAK 0 < rows < 50). *(Review 20 found the first version passed on missing data; it now fails, proved by 8 in-memory tests.)* On the 2026-11-05 publish its data items FAIL, as they should before the fix; on the dry run's fixed copy they all PASS. The sweep command is in the F-16 doc. **The live result stays PENDING until after the 05:00 UTC publish.**
 - 2026-11-06 01:46 UTC — **Review 21 ACCEPTED. Tonight's run was observed, read-only.** The patched parser is on disk (`9a0b7aa0`), and the full-mode scrape is at 329/716 (expected to end around 03:50 UTC). The parse, the run's end, the publish and the data are all **PENDING**. Recorded in the F-16 doc, without the session-gate line that names the Argaam account.
 - 2026-11-06 05:01 UTC — **F-16 VERIFIED LIVE and CLOSED.** The night ended `ALERT [OK]`: the parse at 04:00 read 682 companies, 139,985 line items, with no unknown heading. It was published at 05:01 with `/healthz/deep=ok`. `f16_after_publish.py 2026-11-06`: all 13 items PASS. The nine balance sheets are present, none holds a cash-flow line, the eight have Cash Flow Statements (46–95 rows), ADNIC has none, and AMLAK is 31 rows (was 50). **The English-label sweep on the published data** read 714/714 but first failed on 3 new annual-page spellings from the full harvest, none of them F-16's (DIC tr552/tr1373 with no unit; KFH tr544). Those were given English in `2f50598`, and the sweep then **PASSED 714/714, 40,811 lines**. The whole candidate check was re-run on `2f50598`, and all 8 PASS on the new data.
+- 2026-11-06 — **Review 23 said FIX.** The three new labels had no page evidence, and three record lines still said F-16 was pending. DIC and KFH are now rendered in both languages at 1440 and 390: 8/8, every cell equal to the API, no clipping, inspected by eye (check 13). The records now say F-16 is verified live, and the build was re-run on the candidate. Seen and recorded: the 7 listings with no confirmed currency show "Millions of" with nothing after it in the statement unit line.
 
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
@@ -271,7 +272,7 @@ Older entries: `changelog-archive.md`.
   2026-11-04 05:00 UTC publish, to be checked then. **F-16 (CLOSED, verified live 2026-11-06 after the 05:01 UTC publish; it was):** nine UAE
   companies' cash-flow statements sit inside their balance sheets (AMLAK's shows 50 lines, 19 of them cash
   flow), because their pages head it "التدفق النقدي", which the parser does not know. The heading guard
-  plus one mapping line fixes it; applied, and its check after the publish is still to do. **F-14:** the pipeline's news-AI step has
+  plus one mapping line fixes it; applied, and **verified live after the 2026-11-06 05:01 UTC publish** (13/13, sweep 714/714). **F-14:** the pipeline's news-AI step has
   generated nothing since at least 2026-10-19 (OpenRouter 401 on the pipeline's key) while reporting OK;
   the owner's, as a credential.
 - **Pro billing is OPEN on production since 2026-11-02 18:20 UTC** (Step 18), on the owner's go-ahead given before the lawyer (Step 7) and before Step 10 closed, against Claude's recommendation to wait. **The owner's own first payment went through and was applied once** (2026-11-02 19:24 UTC, SAR 79), **and the refund at 19:51 UTC ended Pro and dropped the saved card**: the paid path is proved end to end on the live site. No customer has paid. F-12: one of Moyasar's two webhooks is refused 403 for a secret mismatch, harmless, and the owner's to tidy now the refund has landed. The lawyer's (b) and (c) are now live questions about a product that is being sold, not one that is free.
@@ -1273,7 +1274,7 @@ and no customer has paid yet.
   - ~~the check-advisors INFO lines (mandate tags, fault lines) that look blind to what renders~~
     **DONE 2026-11-06**: they were blind, now fixed and proven on a local stand-in room (changelog);
   - ~~an unknown-section-header guard for the parser~~ **PREPARED 2026-11-06** and dry-run over every
-    company. It found **F-16** on its first run. **Applied 2026-11-05 22:44 UTC**; to be checked after the publish;
+    company. It found **F-16** on its first run. **Applied 2026-11-05 22:44 UTC, verified live 2026-11-06**;
   - applying the lawyer's advice when it comes: **half a day to 2 days**, depending on what changes;
   - running and reading the pilot and the decision-grade run: **about a day**.
 

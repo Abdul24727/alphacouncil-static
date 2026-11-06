@@ -101,10 +101,26 @@ Run after the last change, so no later step can have broken an earlier one.
 - `npm test` 68/68; `tsc --noEmit` exit 0; `npm run lint` exit 0; `npm run build` passes (93/93 pages).
 - `python -X utf8 scripts/argaam_ar_labels/test_pair_from_gulf.py`: OK (4 tests).
 
-**Rendered:** local web against beta's API, beta's data being before the F-16 publish. Evidence is in
+**Rendered:** local web against beta's API, which since 05:01 UTC serves the 2026-11-06 publish. Evidence is in
 `docs/screenshots/release-candidate-2f50598/`: checks 1–8 re-run on the candidate against the **2026-11-06
 published data**, all PASS. Also there: `11-sweep-on-the-2026-11-06-publish.txt` (714/714, PASS) and
 `12-f16-after-publish-2026-11-06.txt` (13/13). The SEO checks 9 and 10 are in the `4a98832` folder.
+
+**Check 13, the three labels the live sweep called for** (`13-three-labels.txt`, `three-labels/`,
+`contact-sheet-three-labels.png`): DIC's income statement and KFH's balance sheet, English and Arabic, 1440 and
+390. 8/8 PASS:
+- "EPS", "EPS before exceptional items" and "Book value (BHD)" are shown and not clipped, and the Arabic is
+  unchanged;
+- every cell in every column equals the API (DIC 26 × 5, KFH 29 × 5);
+- inspected by eye: DIC's FY2025 EPS is 0.36 and before exceptional items 0.16; KFH's book value is 0.36 in
+  FY2025 and 0.12 in FY2021.
+
+`npm run build` was re-run on this candidate's code (93/93).
+
+**Seen on check 13, left for review:** KFH's unit line reads "Millions of" with no currency (Arabic
+"بملايين"). Its currency is not confirmed: `currency` and `report_currency` are null, and it is one of the
+sweep's 7 `no_currency` listings. The page header already says "Currency not confirmed" for these, but the
+statement unit line (`statements.unit`, "Millions of {currency}") renders an empty currency.
 
 | # | Check | Covers | Result |
 |---|---|---|---|

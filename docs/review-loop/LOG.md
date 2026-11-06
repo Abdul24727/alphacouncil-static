@@ -24,3 +24,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-06 01:40 UTC — **F-16 after-publish check as a script (review 19 step)** — FIX — [20-f-16-after-publish-check-as-a-script-review-19-ste.md](replies/20-f-16-after-publish-check-as-a-script-review-19-ste.md)
 - 2026-11-06 01:45 UTC — **F-16 checker fails on missing data (review 20 fixes)** — ACCEPT — [21-f-16-checker-fails-on-missing-data-review-20-fixes.md](replies/21-f-16-checker-fails-on-missing-data-review-20-fixes.md)
 - 2026-11-06 01:49 UTC — **Tonight's run observed before the publish (review 21 step)** — ACCEPT — [22-tonight-s-run-observed-before-the-publish-review-2.md](replies/22-tonight-s-run-observed-before-the-publish-review-2.md)
+- 2026-11-06 05:26 UTC — **F-16 verified live; candidate 2f50598 (review 22 step)** — FIX — [23-f-16-verified-live-candidate-2f50598-review-22-ste.md](replies/23-f-16-verified-live-candidate-2f50598-review-22-ste.md)
