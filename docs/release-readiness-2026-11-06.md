@@ -256,3 +256,58 @@ commits, 1,289 files: 1,136 PNG, 68 txt, 60 md, 22 code (8 py, 6 ts, 4 mjs, 3 js
 
 Commits after `9712418` (this record and the review loop's) are outside the range by construction, so the same
 scans run again over the exact range at push time.
+
+## Disk, measured 2026-11-06 06:40 UTC (read-only SSH)
+
+**The cause of the disk alert is one folder that nothing ever prunes.** Releases are not blocked by disk today.
+
+- **`df -h /`:** 193G size, 159G used, **34G available, 83%**. Inodes 3%. (`/boot` and `/boot/efi` are separate
+  and small.)
+- **`du -x` from `/`:**
+
+  | Path | Size | What it is |
+  |---|---|---|
+  | `/var/backups/alphacouncil/rebuild-snapshots` | **98G** | see below |
+  | `/opt/alphacouncil/backend/argaam` | 21G | the scrape's harvest runs; the nightly hygiene already keeps the newest 2 per ticker plus the newest full run |
+  | `/opt/alphacouncil/backups` | 9.8G | `dbpublish-*` 1.3G × 5 (`publish_dbs.sh` keeps 5); `premigration-f11*` and `dbrefresh` from August, about 2.3G; `prestatementrepair-live-evidence.sqlite` 1.2G (2026-11-02) |
+  | `/swapfile` | 8.0G | swap |
+  | `/opt/alphacouncil-platform` | 7.6G | beta and production releases, 3 each |
+  | `/root` | 4.8G | `.cache` 1.8G (1.6G of it Playwright's browsers); `argaam-essentials.tar.gz` 1.7G (2026-05-13) |
+  | `/usr`, `/var/lib`, `/var/log` and the rest | about 5.5G | system; journal 155M |
+
+- **The snapshots.** `run_rebuild_pipeline.py`'s step 0 (`do_snapshot`) copies the three product databases
+  into a new `rebuild-snapshot-<ts>/` before every rebuild.
+  - **Nothing deletes them.** `prune_history.py` prunes interaction records; the nightly hygiene prunes
+    harvest runs; `publish_dbs.sh` prunes only its own `dbpublish-*`.
+  - **Size:** 143 snapshots, 2026-06-10 to 2026-11-06, **97.3 GiB**. The newest five average 1.25 GiB each,
+    and they grow with `evidence.sqlite`.
+  - **What reads them:** only `_latest_prev_snapshot_screening`, which takes the newest snapshot as the
+    baseline for the row-count and coverage checks. Nothing reads an older one.
+- **Runway:** 34 GiB lasts about 26 nights at the snapshot's 1.3 GiB a night. At the recorded rate, one point
+  a night (80% on 11-02, 83% today, about 1.9 GiB), it lasts about 18 nights. The 90% mark comes in 8 to 11
+  nights.
+- **Releases:**
+  - **Size:** each release folder is 1.3G (`web/node_modules` 585M, `web/.next` 118M, `api/.venv` 165M,
+    source 424M).
+  - **Beta:** `current` → `/opt/alphacouncil-platform/releases/5c18a3ae46`. Kept: `2e44ee6fbf`, `df83e19404`.
+  - **Production:** `current` → `/opt/alphacouncil-platform/prod/releases/5c18a3ae46`. Kept: the same two.
+  - **What a release of `dfc7a3d` needs:** about 1.3G per tier while it builds, 2.6G for both. The deploy
+    scripts then prune to the newest 3, removing `df83e19404`, so the net change is about zero.
+  - **Rollback after that release:** `5c18a3ae46` in both tiers.
+- **Also seen:** `/tmp/f16`, 222M, copies from the F-16 dry run of 2026-11-05/06, made in this work.
+- **Nothing on the server was changed or deleted.** The one exception: the third pass's script wrote a list of
+  snapshot sizes to a temporary file in `/tmp` and removed it in the same command.
+
+**The owner decision these measurements support:** approve a retention rule for
+`/var/backups/alphacouncil/rebuild-snapshots`:
+- **Keep the newest 14 snapshots.** That frees **80.4 GiB** (the disk would be about 41% used), and the
+  oldest kept would be 2026-10-24.
+- **Once now, then nightly.** Remove the older ones now, and add the same keep-14 prune to the nightly, the
+  way `publish_dbs.sh` keeps 5.
+- **Other numbers:** keeping 7 frees 88.6 GiB; keeping 30 frees 63.3 GiB.
+- **Also approve or decline:**
+  - removing `/tmp/f16`;
+  - removing the August `premigration`/`dbrefresh` backups;
+  - removing the 2026-05-13 tarball.
+
+  Deleting data is the owner's call (`PROJECT.md` §4).
