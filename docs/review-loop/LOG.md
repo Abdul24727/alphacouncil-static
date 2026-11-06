@@ -22,3 +22,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-06 01:30 UTC — **Financials metadata verified on a production build (review 17 step)** — FIX — [18-financials-metadata-verified-on-a-production-build.md](replies/18-financials-metadata-verified-on-a-production-build.md)
 - 2026-11-06 01:34 UTC — **Metadata evidence completed, qualified by user agent (review 18 fixes)** — ACCEPT — [19-metadata-evidence-completed-qualified-by-user-agen.md](replies/19-metadata-evidence-completed-qualified-by-user-agen.md)
 - 2026-11-06 01:40 UTC — **F-16 after-publish check as a script (review 19 step)** — FIX — [20-f-16-after-publish-check-as-a-script-review-19-ste.md](replies/20-f-16-after-publish-check-as-a-script-review-19-ste.md)
+- 2026-11-06 01:45 UTC — **F-16 checker fails on missing data (review 20 fixes)** — ACCEPT — [21-f-16-checker-fails-on-missing-data-review-20-fixes.md](replies/21-f-16-checker-fails-on-missing-data-review-20-fixes.md)

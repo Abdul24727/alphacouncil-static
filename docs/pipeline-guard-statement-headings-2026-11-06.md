@@ -189,3 +189,18 @@ cd web && BASE_URL=http://localhost:3100 SWEEP=1 node scripts/check-data-fixes.m
 It must read **714 of 714** companies and PASS "every statement line on an English page has English". Before
 the publish it failed on exactly F-16's 18 labels in 8 companies
 (`docs/screenshots/gulf-english-labels-2026-11-06-sweep-failclosed.txt`).
+
+### Tonight's run, observed before the publish (2026-11-06 01:46 UTC, read-only)
+
+- **Parser on disk:** md5 `9a0b7aa05da2029167c8de1a5fffaf4c`, the patched one.
+- **Run log** `/opt/alphacouncil/logs/daily_20261106.log`: the run started 00:00:01 UTC. Its Argaam session
+  gate verified, and the scrape started 00:00:30 in **full** mode (a Friday) with 8 workers.
+- **Scrape progress**, from the workers' `batch_dailyrun_20261106_w*.done.json`: **329 of 716** companies done
+  (40–42 per worker). At that rate the scrape ends around 03:50 UTC; the rebuild, with the parse as its step 8,
+  follows.
+- **Not reached yet, so all PENDING:**
+  - the parse step (`[OK step 8]`, its `DONE` totals, and any `UNKNOWN STATEMENT HEADING` line);
+  - the run's `ALERT [OK]`;
+  - the publish (`publish_dbs.sh`, hourly 05:00–10:00 UTC);
+  - every data item;
+  - the 714/714 label sweep.
