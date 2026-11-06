@@ -326,6 +326,15 @@ Older entries: `changelog-archive.md`.
     - **Review 69 said FIX:** one definition for both arms. That gave 14 more of today's room's claims, and 2 of option
       2's (both presenter additions), as invented statements about the pack. D7's "0.10" is a hypothetical, not an
       invented figure. So the inventions are 48 against 2, and the figures absent from the data 121 against 0.
+    - **Review 70 could not run** (2026-11-07 02:2x local): the reviewer's ChatGPT usage limit was hit, until about
+      05:03 local. Output 63 waits for it.
+    - **Prepared for the owner's choice, NOT on `rebuild`:** local branch `percentile-standing` (`7d4dda8`, one commit
+      on `24f94d7`).
+      - **What it changes:** the site's "Sector percentile" / "P23" become "Sector standing", with a tooltip that
+        higher is better on every measure (en, ar). The room's pack passes the field as `sector_standing`, defined in
+        its header. The Copilot's prompt and tool description say the same. No value changes.
+      - **Checks:** suite 596 passed, lint at baseline, web typecheck, lint and tests clean.
+      - **How to take it:** merge the branch. To drop it, delete it. It ships only with a release go-ahead.
     - **Next:** the reviewer's acceptance, then the owner's choice. The options are to keep today's room and fix the
       percentile and the P9 question, to screen a one-model option 2, or to stop.
   - **Before the app may use it:** the app's session total must count the calls a fallback superseded.
