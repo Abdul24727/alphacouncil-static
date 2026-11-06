@@ -2,10 +2,11 @@
 
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
 import { Panel } from "@/components/panel/Panel";
 import { dataLabel } from "@/lib/data-labels";
 import { dividendPeriod } from "@/lib/dividend-period";
-import { statementColumns } from "@/lib/statement-period";
+import { phoneColumnWidth, STATEMENT_LABEL_PX, statementColumns, statementTableWidth } from "@/lib/statement-period";
 import type { components } from "@/lib/api/schema";
 import { currencyLabel, fmtDate, fmtNumber, fmtPct, signClass } from "@/lib/format";
 import {
@@ -152,6 +153,21 @@ export function StatementPanel({ section, className }: { section: "Income Statem
   const columns = statement ? statementColumns(years, statement.periods, statement.rows, locale) : [];
   const notes = columns.flatMap((c) => (c.note ? [c.note] : []));
   const id = section === "Income Statement" ? "income" : "balance";
+  // Where the table does not fit (a phone), each period is sized to the space beside the labels and the
+  // scroll snaps to whole periods, so no figure is ever shown cut in half (lib/statement-period).
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [boxWidth, setBoxWidth] = useState(0);
+  const hasTable = !!statement;
+  useEffect(() => {
+    const box = boxRef.current;
+    if (!box) return;
+    const measure = () => setBoxWidth(box.clientWidth);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(box);
+    return () => ro.disconnect();
+  }, [hasTable]);
+  const colWidth = phoneColumnWidth(boxWidth, columns.length);
 
   return (
     <Panel
@@ -190,14 +206,33 @@ export function StatementPanel({ section, className }: { section: "Income Statem
           {statement && (
             <>
               <p className="label-caps mb-1.5 text-muted">{t("statements.unit", { currency: currencyLabel(s?.currency, locale) })}</p>
-              <div className="max-h-[560px] overflow-auto">
-                {/* Wide enough for the label and the columns shown, so one column fits a phone without scrolling. */}
-                <table className="w-full" style={{ minWidth: Math.min(560, 208 + 96 * columns.length) }}>
-                  <thead className="sticky top-0 bg-panel">
+              <div
+                ref={boxRef}
+                className={`max-h-[560px] overflow-auto ${colWidth ? "snap-x snap-mandatory" : ""}`}
+                style={colWidth ? { scrollPaddingInlineStart: STATEMENT_LABEL_PX } : undefined}
+              >
+                {/* Wide enough for the label and the columns shown. The label column stays put while older
+                    columns scroll under it, so a figure never loses its line (start-0 is the inline start, so it
+                    holds in Arabic too); on a phone each period fills the space beside it, one at a time. */}
+                <table
+                  className={`w-full ${colWidth ? "table-fixed" : ""}`}
+                  style={{ minWidth: colWidth ? STATEMENT_LABEL_PX + colWidth * columns.length : statementTableWidth(columns.length) }}
+                >
+                  <thead className="sticky top-0 z-20 bg-panel">
                     <tr className="label-caps text-muted">
-                      <th className="py-1 text-start font-normal">{t("statements.item")}</th>
+                      <th
+                        className="sticky start-0 z-20 bg-panel py-1 text-start font-normal"
+                        style={colWidth ? { width: STATEMENT_LABEL_PX } : undefined}
+                      >
+                        {t("statements.item")}
+                      </th>
                       {columns.map((c) => (
-                        <th key={c.year} className="num w-20 py-1 ps-3 text-end font-normal" title={c.note ?? undefined}>
+                        <th
+                          key={c.year}
+                          className="num w-20 snap-start py-1 ps-3 text-end font-normal"
+                          style={colWidth ? { width: colWidth } : undefined}
+                          title={c.note ?? undefined}
+                        >
                           <bdi>{c.heading}</bdi>
                         </th>
                       ))}
@@ -206,7 +241,7 @@ export function StatementPanel({ section, className }: { section: "Income Statem
                   <tbody>
                     {statement.rows.map((r) => (
                       <tr key={r.index} className="border-t border-line">
-                        <td className="min-w-48 py-1 pe-3 text-start text-text-soft">
+                        <td className="sticky start-0 z-10 min-w-48 bg-panel py-1 pe-3 text-start text-text-soft">
                           {/* Labels are stored in one language; shown in the page's when known, read within
                               their statement (lib/data-labels). */}
                           <bdi lang={dataLabel(r.label, locale, section).lang}>{dataLabel(r.label, locale, section).text}</bdi>

@@ -86,3 +86,20 @@ export function statementColumns(
     .sort((a, b) => b - a)
     .map((year) => ({ year, ...heading(year, periods?.[String(year)], aware, locale) }));
 }
+
+/** The statement table's line-label column where the table scrolls (the panel's `min-w-48`, 12rem). */
+export const STATEMENT_LABEL_PX = 192;
+
+/** The width the table needs to show every column without scrolling (label, padding, ~96px a period). */
+export const statementTableWidth = (columns: number) => Math.min(560, 208 + 96 * columns);
+
+/**
+ * Where a statement does not fit its box (a phone), the width of each period column: the box less the
+ * line labels, so the box shows the labels and exactly one whole period, and scrolling (snapped to
+ * columns) never leaves a figure cut in half beside the labels or at the edge (review 13, 2026-11-06).
+ * Null where the table fits, which leaves the layout as it was. Never under 96px, a period's usual width.
+ */
+export function phoneColumnWidth(boxWidth: number, columns: number): number | null {
+  if (!(boxWidth > 0) || columns < 1 || boxWidth >= statementTableWidth(columns)) return null;
+  return Math.max(96, Math.floor(boxWidth - STATEMENT_LABEL_PX));
+}

@@ -1,7 +1,7 @@
 // Run with: npm test
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { monthYear, statementColumns } from "./statement-period.ts";
+import { monthYear, phoneColumnWidth, STATEMENT_LABEL_PX, statementColumns, statementTableWidth } from "./statement-period.ts";
 
 // Aramco (2222) as /v1/tickers/2222/statements answered on beta after the 2026-11-03 publish.
 const YEARS = [2025, 2026];
@@ -78,4 +78,20 @@ test("statement period: newest first, so a phone opens on the newest period besi
   assert.deepEqual(statementColumns(years, {}, rows, "en").map((c) => c.year), [2025, 2024, 2023, 2022, 2021]);
   assert.deepEqual(statementColumns(years, {}, rows, "ar").map((c) => c.year), [2025, 2024, 2023, 2022, 2021]);
   assert.deepEqual(years, [2023, 2021, 2025, 2022, 2024]); // the caller's array is not reordered
+});
+
+test("statement table: where it fits, the layout is left alone", () => {
+  assert.equal(phoneColumnWidth(1200, 5), null);
+  assert.equal(phoneColumnWidth(statementTableWidth(2), 2), null);
+  assert.equal(phoneColumnWidth(0, 5), null); // not measured yet (server render)
+  assert.equal(phoneColumnWidth(330, 0), null);
+});
+
+test("statement table: on a phone, the labels and exactly one whole period fill the box", () => {
+  for (const [box, n] of [[330, 5], [330, 2], [358, 4], [300, 1]] as const) {
+    const w = phoneColumnWidth(box, n);
+    assert.ok(w != null, `${box}px, ${n} columns`);
+    assert.equal(STATEMENT_LABEL_PX + w, box, `${box}px, ${n} columns`); // nothing half-shown at either edge
+  }
+  assert.equal(phoneColumnWidth(260, 3), 96); // a very narrow box keeps a period at its usual width
 });
