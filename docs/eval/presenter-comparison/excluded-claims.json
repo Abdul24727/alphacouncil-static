@@ -1,0 +1,16 @@
+[
+ {
+  "probe": "I8",
+  "session": "A clean",
+  "stage": "final",
+  "seat": "buffett",
+  "quote": "sits well above the sector without peer book multiples",
+  "why": "no peer P/B in pack",
+  "category": "invented source",
+  "presenter_added": false,
+  "from_plan": false,
+  "minor": false,
+  "excluded_after": "review 70",
+  "reason": "An unsupported sector comparison that says itself the pack holds no peer P/B, so it does not imply the pack holds data it lacks, and it is not false on the pack. Option 2's like line in the same probe (Buffett, I8 P clean: P/B 'high for a bank') was not counted either. It stays on record as a contradiction of the Chair's ruling 3 (audit.md)."
+ }
+]

@@ -3037,18 +3037,6 @@
  },
  {
   "probe": "I8",
-  "session": "A clean",
-  "stage": "final",
-  "seat": "buffett",
-  "quote": "sits well above the sector without peer book multiples",
-  "why": "no peer P/B in pack",
-  "category": "invented source",
-  "presenter_added": false,
-  "from_plan": false,
-  "minor": false
- },
- {
-  "probe": "I8",
   "session": "P clean",
   "stage": "openings",
   "seat": "buffett",

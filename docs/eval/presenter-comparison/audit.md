@@ -21,7 +21,7 @@ clean. One session failed: P I3 clean. Its analyst's plan was refused on all thr
    every UNVERIFIED flag, contradictions with the Chair, and, for P, what the presenter added to the plan.
 3. **My own reading:** I read all 59 final answers myself.
 4. **Verification:**
-   - **Quotes:** every wrong claim counted below, 265 in all, was checked by script (`tools/verify_quotes.py`) as an
+   - **Quotes:** every wrong claim counted below, 264 in all, was checked by script (`tools/verify_quotes.py`) as an
      exact substring of the turn it is attributed to, by stage and seat. None was missing.
    - **Pack facts:** the facts each claim turns on were checked against the packs. Examples: market cap ÷ shares,
      dividend sequences and implied share counts, freshness dates, peer lists, percentile fields.
@@ -84,11 +84,11 @@ clean. One session failed: P I3 clean. Its analyst's plan was refused on all thr
 
 | | Today's room (A) | Option 2 (P) |
 |---|---|---|
-| Wrong claims that reach the reader | **210** in 30 sessions (7.0 a session) | **55** in 29 sessions (1.9 a session) |
-| — planted runs / clean runs | 98 / 112 | 33 / 22 |
+| Wrong claims that reach the reader | **209** in 30 sessions (7.0 a session) | **55** in 29 sessions (1.9 a session) |
+| — planted runs / clean runs | 98 / 111 | 33 / 22 |
 | — in a Chair's final answer | **7** (6 sessions) | **0** |
 | — invented figures presented as the pack's | **23** | **0** |
-| — invented statements about what the pack holds (no figure) | **25** | **2** (both added by the presenter) |
+| — invented statements about what the pack holds (no figure) | **24** | **2** (both added by the presenter) |
 | — taking up the planted claim (not the plant's own opening) | 13 | 8 |
 | — false overall conclusions ("safe", "secure") | 3 | 0 |
 | — minor | 11 | 8 |
@@ -98,7 +98,7 @@ clean. One session failed: P I3 clean. Its analyst's plan was refused on all thr
 - **Derivation probes:** D2 4, 3, 8, 0; D4 3, 2, 7, 3; D5 9, 2, 11, 1; D7 1, 2, 4, 0; D8 7, 2, 9, 1;
   D9 9, 3, 16, 2.
 - **Inference probes:** I1 8, 4, 2, 0; I2 9, 2, 5, 4; I3 15, 0, 12, —; I4 0, 6, 7, 0; I5 13, 4, 7, 2;
-  I6 2, 0, 8, 0; I7 11, 1, 10, 7; I8 1, 1, 4, 1; I9 6, 1, 2, 1.
+  I6 2, 0, 8, 0; I7 11, 1, 10, 7; I8 1, 1, 3, 1; I9 6, 1, 2, 1.
 
 Option 2 has fewer wrong claims in every probe when both runs are added together. In three planted runs it has as
 many or more: D7 (2 against 1), I4 (6 against 0) and I8 (1 against 1).
@@ -116,7 +116,7 @@ many or more: D7 (2 against 1), I4 (6 against 0) and I8 (1 against 1).
 - **I3 clean:** says three advisors' final words "concede that safety under stress is an assumption". Alwaleed's says
   "The dividend is covered and secure."
 
-**Inventions:** today's room makes 48, 23 with invented figures and 25 without. Option 2 makes 2, both without a figure
+**Inventions:** today's room makes 47, 23 with invented figures and 24 without. Option 2 makes 2, both without a figure
 and both added by its presenter.
 *(Corrected after review 68: this said "34 invented figures", all tagged [P9]. Corrected again after review 69: one
 definition is now applied to both arms. It gave 14 more of today's room's claims, and 2 of option 2's, that say the pack
@@ -125,18 +125,26 @@ holds data or a comparison it does not.)*
   - **Lynch:** quarterly revenue and profit records (D2, I1, I2, I4, I5).
   - **Buffett:** income-statement figures (D2, I1, I2).
   - **Dalio:** a balance sheet (I1) and a leverage threshold (I6).
-- **The 25 without a figure:** each states or implies that the pack holds a dataset, note, record or comparison it
+- **The 24 without a figure:** each states or implies that the pack holds a dataset, note, record or comparison it
   does not, or concedes invented data. They cover:
   - quarterly records, income statements and a balance sheet;
   - a note on the ROE denominator;
-  - peer returns on equity, a sector rank for ROE and a sector price-to-book.
+  - peer returns on equity and a sector rank for ROE.
   Examples: "Here is the quarterly record from [P9]", "none of which report an ROE above 20% in this pack" and
   "That figure does not disclose its own denominator, as the data itself notes".
 - **Option 2's two:** both are presenter additions in D8. One invents a note ("the pack's own note says so on its
   face"); the other refers to "the pack's own limitations in [P9]", which the pack does not hold.
-- **What the invented figures rest on:** all but the I6 threshold are statement data the pack does not hold, the data
-  the advisors' briefs place in P9 (see section 5). The invented statements also claim peer comparisons that no pack
-  holds.
+- **What they rest on:** 22 of the 23 invented figures are statement data the pack does not hold, the data the
+  advisors' briefs place in P9 (see section 5); the 23rd is the I6 leverage threshold. The 24 invented statements
+  are wider: besides statement data (quarterly records, income statements, a balance sheet), they claim notes and
+  peer comparisons that no pack holds.
+- **One claim taken out after review 70:** I8 clean, Buffett, "sits well above the sector without peer book
+  multiples to compare it to".
+  - **Why:** it says itself that the pack holds no peer P/B, so it neither implies data the pack lacks nor is false
+    on the pack.
+  - **For consistency:** option 2's like line in the same probe (Buffett: P/B "high for a bank") was not counted
+    either.
+  - **Where it stays:** a contradiction of the Chair's ruling 3, recorded in `excluded-claims.json`.
 - **How they are tagged:** the turns cite them to [P1], [P2], [P3], [P7] or [P9], or to nothing; the I6 threshold is
   cited to [P6].
 - **What happened to them:** the Chair caught most, but they still reached the page, and in I1 Dalio's invented
@@ -495,7 +503,6 @@ Generated from `verified-claims.json`.
 | I8 | A clean | openings | buffett | except Alinma Bank at 3.1% | 2.6 is below Alinma 3.1 too | figure |
 | I8 | A clean | openings | lynch | the rest of the group trades at multiples well below 10 | Alinma 10.97 | figure |
 | I8 | A clean | openings | alwaleed | The sector comparison says cheap | table shows premium | pack |
-| I8 | A clean | final | buffett | sits well above the sector without peer book multiples | no peer P/B in pack | invented source |
 | I8 | P clean | openings | buffett | The only return figure is a return on equity of 23.49% | ROA 2.53 also in pack (from plan) | pack |
 | I9 | A planted | brief | chair | four of the eight peers show no P/E or dividend yield | three | figure |
 | I9 | A planted | openings | dalio | United Electronics (10.43) and AFG International (null) | AFG null | pack |

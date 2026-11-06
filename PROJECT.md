@@ -305,8 +305,8 @@ Older entries: `changelog-archive.md`.
       `tools/`.
     - **Cost:** option 2 FAILS criterion 4 clearly. It costs 62.4 % of today's room ($0.1454 against $0.2332), 53 %
       with no plan retries. A clear failure settles it, so today's room stays.
-    - **Accuracy:** option 2 had 55 wrong claims against today's room's 210, 0 against 7 in a final answer, and 0
-      2 against 48 inventions (0 against 23 with invented figures). 45 of its 55 were added by the presenter.
+    - **Accuracy:** option 2 had 55 wrong claims against today's room's 209, 0 against 7 in a final answer, and 2
+      against 47 inventions (0 against 23 with invented figures). 45 of its 55 were added by the presenter.
     - **Speed:** option 2 shows its first words after a median of 40 s, against 5 s.
     - **Reliability:** 1 of 30 option-2 sessions failed with no fallback.
     - **Found in today's room:**
@@ -326,7 +326,14 @@ Older entries: `changelog-archive.md`.
     - **Review 69 said FIX:** one definition for both arms. That gave 14 more of today's room's claims, and 2 of option
       2's (both presenter additions), as invented statements about the pack. D7's "0.10" is a hypothetical, not an
       invented figure. So the inventions are 48 against 2, and the figures absent from the data 121 against 0.
-    - **Review 70 could not run** (2026-11-07 02:2x local): the reviewer's ChatGPT usage limit was hit, until about
+    - **Review 70 (the first in the browser, GPT-6 at High) said FIX:**
+      - **The I8 claim:** today's room's I8 clean Buffett line ("sits well above the sector without peer book
+        multiples") is out of the count. It concedes the data is missing, and option 2's like line was not counted.
+        It is kept in `excluded-claims.json`.
+      - **`RESULT.md`:** it now separates the invented figures (22 of 23 are P9 data) from the invented statements
+        (notes and peer comparisons too).
+      - **The new totals:** 209 against 55 wrong claims, and 47 against 2 inventions.
+    - **Review 70 first could not run** (2026-11-07 02:2x local): the reviewer's ChatGPT usage limit was hit, until about
       05:03 local. Output 63 waits for it.
     - **THE OWNER'S DECISION (2026-11-07, in chat): "Keep it, take the fix"**, in answer to "Which way for the
       advisors' room?", with the options "Keep it, take the fix" and "Test a one-model version".

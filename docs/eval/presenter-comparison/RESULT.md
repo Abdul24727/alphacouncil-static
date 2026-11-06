@@ -18,7 +18,7 @@ session was audited by hand (`audit.md`), and every counted claim is quoted and 
 | # | Criterion (written before the run) | Result |
 |---|---|---|
 | 1 | Handles at least A's count − 1 of the 15 planted probes | **Depends on how a decline is counted.** On substance: A 14, P 14. Strictly, if a derivation counts only when the answer states the derived figure: A 14 (13 against the registered D9 truth), P 11. P's analyst declines derived figures by the room's own rule ("Never convert, combine or calculate new figures"). |
-| 2 | No more wrong answers or wrong claims reach the reader, across the whole discussion | **P passes clearly.** Wrong claims: 55 against 210 (1.9 against 7.0 a session). In a final answer: 0 against 7. Inventions: 2 against 48. Today's room has 23 with invented figures and 25 invented statements about what the pack holds; option 2 has no invented figure and 2 invented statements, both added by its presenter. 45 of P's 55 were added by its presenter, not by the analyst's plan. |
+| 2 | No more wrong answers or wrong claims reach the reader, across the whole discussion | **P passes clearly.** Wrong claims: 55 against 209 (1.9 against 7.0 a session). In a final answer: 0 against 7. Inventions: 2 against 47. Today's room has 23 with invented figures and 24 invented statements about what the pack holds; option 2 has no invented figure and 2 invented statements, both added by its presenter. 45 of P's 55 were added by its presenter, not by the analyst's plan. |
 | 3 | No more figures absent from the data per session | **P passes clearly:** 0 asserted wrong or invented figures against 121 (about 4.0 a session). Caveat: the engine's check misses miscounts the presenter derives ("four quarters", "five months"); those are counted under criterion 2. |
 | 4 | Measured cost at most 40 % of today's room | **P fails clearly:** $0.1454 against $0.2332, **62.4 %**. With no plan retries it is 53 %, and its cheapest session was 48 %. The analyst's call alone, every attempt and the failed session included, averages **$0.1094, or 46.9 % of A**; when the plan passed first time, $0.086 (37 %). *(Corrected after review 68: this gave only the single-attempt figure.)* |
 | 5 | The owner judges the presentation unchanged (beta, both languages, 1440 and 390) | **Not judged;** it is not on beta. The record shows changes the owner would see: see below. |
@@ -42,14 +42,18 @@ session was audited by hand (`audit.md`), and every counted claim is quoted and 
    - D5 planted endorses a false market-cap check.
    - D9 clean leaves a dividend cut as an open question.
 2. **Inventions:** advisors invent **income-statement, quarterly and balance-sheet figures**: 23 claims with
-   invented figures, and 25 more that say the pack holds data or a comparison it does not, such as peer returns on
-   equity.
-   - **What they rest on:** all but one rest on statement data the advisors' briefs place in P9, though the turns
-     cite them to [P1], [P2], [P3], [P7], [P9] or nothing.
+   invented figures, and 24 more that say the pack holds data, a note or a comparison it does not.
+   - **What they rest on:**
+     - **The invented figures:** 22 of the 23 are statement data the advisors' briefs place in P9, though the turns
+       cite them to [P1], [P2], [P3], [P7], [P9] or nothing. The 23rd is a leverage threshold cited to [P6].
+     - **The invented statements:** they cover statement data too, and also notes and peer comparisons (peer returns
+       on equity, a sector rank for ROE) that no pack holds.
    - **Why the packs matter:** the test packs date from 2026-10-27 and have no P9, while the live packs have
      carried statements since 2026-11-03. How often this happens on live packs is not measured.
-   - *(Corrected after reviews 68 and 69. Review 68: this said 34 invented figures, all tagged [P9]. Review 69: one
-     definition is now applied to both arms.)*
+   - *(Corrected after reviews 68 to 70:*
+     - *Review 68: this said 34 invented figures, all tagged [P9].*
+     - *Review 69: one definition is now applied to both arms.*
+     - *Review 70: it said all but one rest on P9 data, and an I8 claim is out of the count; see `audit.md` §2.)*
 3. **The percentile is misread:** the **"sector percentile" field reads the wrong way** for lower-is-better metrics.
    The API passes through the pipeline's flipped score, so Al Rajhi's 22.7 on debt-to-equity means more
    leveraged than about 77 % of its class. Both arms mostly read it as the opposite, today's room in at least 57
