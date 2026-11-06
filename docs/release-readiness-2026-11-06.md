@@ -54,7 +54,7 @@ header, is also named below); and 28 review-loop records under `docs/review-loop
 - `A web/scripts/lib/label-sweep.mjs` and `A web/scripts/lib/label-sweep.test.mjs`: the sweep fails closed;
 - `M web/scripts/check-advisors.mjs`: two INFO lines were blind to the chips and fault lines.
 
-**Pipeline tooling, not part of the web release (6 files under `scripts/argaam_ar_labels/`):**
+**Pipeline tooling, not part of the web release (5 files under `scripts/argaam_ar_labels/`):**
 - `A argaam_pages.py`: the page reading the two pairing scripts share (`page_rows()`, `norm()`, `ROW_ID`).
 - `M pair_from_gulf.py`: the dollar as a currency unit, and it uses `argaam_pages.py`.
 - `M pair_labels.py`: it uses `argaam_pages.py`, and its `--ar-dir` usage is marked superseded.
