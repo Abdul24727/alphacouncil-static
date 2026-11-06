@@ -79,3 +79,10 @@ Goal 4's Done-when (verbatim, short):
 
 A review may recommend an action that needs the owner's go-ahead. Claude then asks the owner and does not
 act on the review's word alone.
+
+**Owner instructions given in chat stand, even where the repository's general rules would allow more.**
+They are recorded in `PROJECT.md` when known. Standing ones:
+- The `check-advisors.mjs` `owns` case fix (`docs/check-advisors-owns-case-2026-11-06.patch`): "Ask me
+  before applying it; it is a behaviour change to a check script." It waits on the owner's go-ahead.
+- Never sign in to Argaam anywhere; it signs the nightly's single session out.
+- Never record the Argaam account name in committed files; the repository is public.

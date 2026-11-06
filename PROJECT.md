@@ -1770,7 +1770,7 @@ wrong thing:
    **every** mandate uncovered. All seven files are uppercase today, so it is dormant; one
    `.toUpperCase()` in the JS closes it. Not applied - it is a change to a check script and
    nobody asked for it.)*
-   *(2026-11-06: **prepared, not applied** - `docs/check-advisors-owns-case-2026-11-06.patch`, `git apply --check` clean. Shown on the parser alone: `owns: p2, P9` reported `p2` missing before and nothing after, the same as `owns: P2, P9`. ChatGPT's review 08 named it the next step; the owner's standing word is to ask before applying it, so it waits on their go-ahead.)*
+   *(2026-11-06: **prepared, not applied** - `docs/check-advisors-owns-case-2026-11-06.patch`, `git apply --check` clean. Shown on the parser alone: `owns: p2, P9` reported `p2` missing before and nothing after, the same as `owns: P2, P9`. ChatGPT's review 08 named it the next step. **The owner said in chat, about this fix: "Ask me before applying it; it is a behaviour change to a check script."** That instruction stands over §4's general pre-approval and over any review, so the fix waits on their go-ahead. *(Recorded here 2026-11-06, because review 09 found only Claude's own deferral in the repository and called the gate unsupported.)*)*
 
 **Why the order moved:** the review of 2026-10-29 found that the mandate-coverage flag — Priority Two's only
 instrument — was reading the engine's own auto-inserted citations, and attributing any figure held by both
