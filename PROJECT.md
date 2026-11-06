@@ -253,6 +253,7 @@ Older entries: `changelog-archive.md`.
 - 2026-11-06 — **Review 17 ACCEPTED. Its next step is done: the Financials metadata notice is development-only.** A local production build (`next start`, against beta's API) logs no such notice. Googlebot (on `next.config.ts`'s `HTML_LIMITED_BOTS`) gets each stock page's metadata in `<head>`, while an ordinary browser gets it streamed into `<body>` and ends up with the same metadata. *(Corrected by review 18, which also moved the screenshots out of an untracked `web/docs/`.)* 2222's Financials has the right title, description, canonical (`/t/2222`, `/ar/t/2222`), preview tags and hreflang in both languages, and an unknown ticker keeps its soft not-found with `noindex, nofollow`. `check-seo.mjs` against it: 62 PASS, 0 FAIL. The notice comes from `getTickerRef()` calling `connection()` on purpose, so the title is read at request time. Evidence is in `docs/screenshots/release-candidate-4a98832/` (9, 10, `seo-production-build/`).
 - 2026-11-06 — **Review 19 ACCEPTED. Its next step is done: F-16's after-publish check is a script** (`scripts/pipeline-checks/f16_after_publish.py`, read-only, on stdin). It runs 13 items: 8 for the night and the publish (the patched parser, the parse with no UNKNOWN heading, the publish with `/healthz/deep=ok`), and 5 for the data (the nine balance sheets present, no cash flow in them, eight Cash Flow Statements, ADNIC none, AMLAK 0 < rows < 50). *(Review 20 found the first version passed on missing data; it now fails, proved by 8 in-memory tests.)* On the 2026-11-05 publish its data items FAIL, as they should before the fix; on the dry run's fixed copy they all PASS. The sweep command is in the F-16 doc. **The live result stays PENDING until after the 05:00 UTC publish.**
 - 2026-11-06 01:46 UTC — **Review 21 ACCEPTED. Tonight's run was observed, read-only.** The patched parser is on disk (`9a0b7aa0`), and the full-mode scrape is at 329/716 (expected to end around 03:50 UTC). The parse, the run's end, the publish and the data are all **PENDING**. Recorded in the F-16 doc, without the session-gate line that names the Argaam account.
+- 2026-11-06 05:01 UTC — **F-16 VERIFIED LIVE and CLOSED.** The night ended `ALERT [OK]`: the parse at 04:00 read 682 companies, 139,985 line items, with no unknown heading. It was published at 05:01 with `/healthz/deep=ok`. `f16_after_publish.py 2026-11-06`: all 13 items PASS. The nine balance sheets are present, none holds a cash-flow line, the eight have Cash Flow Statements (46–95 rows), ADNIC has none, and AMLAK is 31 rows (was 50). **The English-label sweep on the published data** read 714/714 but first failed on 3 new annual-page spellings from the full harvest, none of them F-16's (DIC tr552/tr1373 with no unit; KFH tr544). Those were given English in `2f50598`, and the sweep then **PASSED 714/714, 40,811 lines**. The whole candidate check was re-run on `2f50598`, and all 8 PASS on the new data.
 
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
@@ -267,7 +268,7 @@ Older entries: `changelog-archive.md`.
   0 rows stay Arabic once F-16 is published. **F-15 (open, fix prepared):**
   five Saudi finance companies' balance sheets are summed into their income statements (Tasheel's
   total assets shown ×4); the one-line parser patch is APPLIED (15:38 UTC) and lands with the
-  2026-11-04 05:00 UTC publish, to be checked then. **F-16 (fix APPLIED 2026-11-05 22:44 UTC, lands with the 2026-11-06 05:00 UTC publish):** nine UAE
+  2026-11-04 05:00 UTC publish, to be checked then. **F-16 (CLOSED, verified live 2026-11-06 after the 05:01 UTC publish; it was):** nine UAE
   companies' cash-flow statements sit inside their balance sheets (AMLAK's shows 50 lines, 19 of them cash
   flow), because their pages head it "التدفق النقدي", which the parser does not know. The heading guard
   plus one mapping line fixes it; applied, and its check after the publish is still to do. **F-14:** the pipeline's news-AI step has
@@ -1254,7 +1255,7 @@ and no customer has paid yet.
      - ~~push the unpushed commits~~ **PUSHED 2026-11-06** (`c046236..ccfe063`, the released sha
        included). Unpushed since then: the `check-advisors.mjs` fix (`7fb04b5`), the F-16 patches and record,
        and records - all on `rebuild`, needing a push go-ahead;
-     - ~~apply the parser's heading guard (F-16)~~ **APPLIED 2026-11-05 22:44 UTC**; to check after the 05:00 UTC publish;
+     - ~~apply the parser's heading guard (F-16)~~ **APPLIED 2026-11-05 22:44 UTC, VERIFIED LIVE 2026-11-06**;
      - **apply the check-advisors `owns` case fix** (`docs/check-advisors-owns-case-2026-11-06.patch`): a behaviour change to a check script, dormant today (all seven files uppercase);
      - **the $66 pilot, then the $393 decision-grade run** (Next Up item 4; unblocked since F-13 and the
        post-publish checks passed), with probes D1/D3/D6 retired or re-registered first.

@@ -1,7 +1,7 @@
 # Statement headings the parser does not know: a guard, and F-16 (2026-11-06)
 
 **Status:** APPLIED on the server 2026-11-05 22:44 UTC, on the owner's go-ahead (see "Applied" at the end).
-**Still to do:** the check after the 2026-11-06 05:00 UTC publish, now as commands ("The check after the publish, as commands"; PENDING).
+**VERIFIED LIVE (2026-11-06):** the check after the 05:01 UTC publish passed, all 13 items and the 714/714 sweep. See "Verified live" at the end.
 
 **Patches:**
 - `docs/pipeline-guard-statement-headings-2026-11-06.patch` (recommended): the guard plus one mapping line.
@@ -127,7 +127,7 @@ git apply --check -p1 /root/pipeline-guard-statement-headings-2026-11-06.patch &
 
 ## The check after the publish, as commands (2026-11-06, review 19)
 
-**Status: PENDING.** It runs after the 2026-11-06 publish; nothing is claimed until then.
+**Status: RUN, ALL PASS** (see "Verified live" below).
 
 **1. The night, the publish and the served data, on the server, read-only.**
 `scripts/pipeline-checks/f16_after_publish.py` checks 13 items (8 for the night and the publish, 5 for the
@@ -204,3 +204,40 @@ the publish it failed on exactly F-16's 18 labels in 8 companies
   - the publish (`publish_dbs.sh`, hourly 05:00–10:00 UTC);
   - every data item;
   - the 714/714 label sweep.
+
+## Verified live (2026-11-06, after the 05:01 UTC publish)
+
+**The night:**
+- The run ended 04:33 UTC with `ALERT [OK]`: the full-mode scrape (716 tickers), the rebuild and the restart
+  completed, and `/api/screening` returned 200.
+- The parse finished at 04:00 UTC: 682 companies, 139,985 line items, **no `UNKNOWN STATEMENT HEADING`
+  line**.
+- The same night also raised the known disk-pressure alert (83 %). That is the owner's item, not a step
+  failure.
+
+**The publish:** `2026-11-06 05:01:03 published. /healthz/deep=ok`.
+
+**`f16_after_publish.py 2026-11-06`: all 13 items PASS**
+(`docs/screenshots/release-candidate-2f50598/12-f16-after-publish-2026-11-06.txt`):
+- The patched parser ran, and the publish is the 2026-11-06 one.
+- The nine balance sheets are present: ADAV.AD 310, ADNIC 50, AMCREIT 103, AMLAK 155, DSI 322, DUBAIRES 78,
+  EMSTEEL 320, QIC 322, UPP 320 rows.
+- **No cash-flow line is in any of them.**
+- **The eight have a Cash Flow Statement:** ADAV.AD 95, AMCREIT 90, AMLAK 95, DSI 95, DUBAIRES 72, EMSTEEL 95,
+  QIC 95, UPP 46 rows.
+- ADNIC has none, and AMLAK's newest balance sheet is **31** rows (it was 50).
+- Beta's API now serves AMLAK as Income Statement 23 rows, Balance Sheet 31, and Cash Flow Statement 19.
+
+**The English-label sweep on the published data**
+(`docs/screenshots/release-candidate-2f50598/11-sweep-on-the-2026-11-06-publish.txt`):
+- The first run read 714/714 companies and **failed on 3 labels**, none of them F-16's. Tonight's full harvest
+  had brought in DIC's annual-page "ربح السهم" and "ربح السهم قبل البنود الاستثنائية" (no unit; rows tr552 and
+  tr1373) and KFH's "القيمة الدفترية دينار بحريني" (tr544).
+- They now read "EPS" and "EPS before exceptional items", claiming no unit the Arabic does not name, and
+  "Book value (BHD)" (commit `2f50598`).
+- The sweep then **PASSED: 714 of 714 companies, 40,811 lines**, every one with English.
+
+**On the pages:** with the new data, AMLAK's English balance sheet shows 31 rows and AMCREIT's 21. There are
+0 Arabic labels on any English page in the candidate checks.
+
+**F-16 is closed.**

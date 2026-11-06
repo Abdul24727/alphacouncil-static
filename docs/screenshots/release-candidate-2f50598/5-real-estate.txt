@@ -1,0 +1,9 @@
+PASS 108 en 1440 balance: 29 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS 108 en 390 balance: 29 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS 108 ar 1440 balance: 29 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS 108 ar 390 balance: 29 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS 1211 en 1440 balance: 60 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS 1211 en 390 balance: 60 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS 1211 ar 1440 balance: 60 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS 1211 ar 390 balance: 60 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS: real-estate investments read cleanly in English, Arabic unchanged, values as the API's

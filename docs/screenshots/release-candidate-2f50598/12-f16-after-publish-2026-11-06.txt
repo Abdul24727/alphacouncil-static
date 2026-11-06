@@ -1,0 +1,15 @@
+F-16 after-publish check for 2026-11-06 (UTC)
+PASS  the parser on disk is the patched one  [9a0b7aa0]
+PASS  the night's run log exists (daily_20261106.log)
+PASS  the parse step finished OK
+PASS  the parse step reported its totals  [682 tickers, 139985 rows]
+PASS  no UNKNOWN STATEMENT HEADING warning in the parse
+PASS  the night's run ended with ALERT [OK]
+PASS  published on 2026-11-06 with /healthz/deep=ok  [2026-11-06 05:01:03  published. /healthz/deep=ok  backup=/opt/alphacouncil/backu]
+PASS  the served screening.sqlite is from that day  [2026-11-06 05:00]
+PASS  each of the nine has a balance sheet  [ADAV.AD 310, ADNIC 50, AMCREIT 103, AMLAK 155, DSI 322, DUBAIRES 78, EMSTEEL 320, QIC 322, UPP 320]
+PASS  no cash-flow line in the nine companies' balance sheets  [[]]
+PASS  the eight have a Cash Flow Statement  [ADAV.AD 95, AMCREIT 90, AMLAK 95, DSI 95, DUBAIRES 72, EMSTEEL 95, QIC 95, UPP 46]
+PASS  ADNIC has none (its cash-flow lines carry no figures)  [0]
+PASS  AMLAK's newest balance sheet is back to its own lines  [31 rows (50 before, 31 in the dry run)]
+ALL PASS
