@@ -29,8 +29,9 @@ intended real-estate label.
 
 ## Every file changed since `5c18a3ae46`
 
-All of `git diff --name-status 5c18a3ae46..307d2fc`: 26 files named below, plus 307 evidence files under
-`docs/screenshots/` and 28 review-loop records under `docs/review-loop/`. *(Reconciled with the diff
+All 360 files of `git diff --name-status 5c18a3ae46..307d2fc`: 25 outside `docs/screenshots/` and
+`docs/review-loop/`, all named below; 307 evidence files under `docs/screenshots/` (one of them, a corrected
+header, is also named below); and 28 review-loop records under `docs/review-loop/`. *(Reconciled with the diff
 2026-11-06, after ChatGPT's review 14 found three script files missing from the first list.)*
 
 **App code, which ships with a release (5 files):**
