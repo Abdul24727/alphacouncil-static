@@ -1498,13 +1498,14 @@ def bounded_quarters(items: Items) -> QuarterSeries | None:
 RANKING_WITHHELD = (
     "NO SECTOR RANKINGS FOR THIS COMPANY: the pipeline ranks its gauges inside the `bank` peer"
     " class, which on 2026-10-29 held 204 tickers of which 53 are banks. A rank in that class is"
-    " not a rank against banks, so P2 carries the values with no percentiles. The peer LIST in P5"
+    " not a rank against banks, so P2 carries the values with no sector standing (percentile). The peer LIST in P5"
     " is unaffected - it comes from the exchange's own sector classification, not from this"
     " detection."
 )
 RANKING_NARROWED = (
-    "A SECTOR PERCENTILE IN P2 IS A RANK INSIDE THE PIPELINE'S OWN `{cls}` PEER CLASS, not inside"
-    " the sector the exchange publishes. On 2026-10-29 that class {moved}."
+    "A SECTOR STANDING (PERCENTILE) IN P2 IS A RANK INSIDE THE PIPELINE'S OWN `{cls}` PEER CLASS, not"
+    " inside the sector the exchange publishes, and higher is better on every metric. On 2026-10-29 that"
+    " class {moved}."
 )
 
 
