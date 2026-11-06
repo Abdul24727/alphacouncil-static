@@ -1,0 +1,17 @@
+PASS 108 en 1440 income: caption "MILLIONS OF KWD" (want "MILLIONS OF KWD"), clipped false; 26 rows x 5, cells differing from the API 0
+PASS 108 en 1440 balance: caption "MILLIONS OF KWD" (want "MILLIONS OF KWD"), clipped false; 29 rows x 5, cells differing from the API 0
+PASS 108 en 390 income: caption "MILLIONS OF KWD" (want "MILLIONS OF KWD"), clipped false; 26 rows x 5, cells differing from the API 0
+PASS 108 en 390 balance: caption "MILLIONS OF KWD" (want "MILLIONS OF KWD"), clipped false; 29 rows x 5, cells differing from the API 0
+PASS 108 ar 1440 income: caption "بملايين د.ك" (want "بملايين د.ك"), clipped false; 26 rows x 5, cells differing from the API 0
+PASS 108 ar 1440 balance: caption "بملايين د.ك" (want "بملايين د.ك"), clipped false; 29 rows x 5, cells differing from the API 0
+PASS 108 ar 390 income: caption "بملايين د.ك" (want "بملايين د.ك"), clipped false; 26 rows x 5, cells differing from the API 0
+PASS 108 ar 390 balance: caption "بملايين د.ك" (want "بملايين د.ك"), clipped false; 29 rows x 5, cells differing from the API 0
+PASS KFH en 1440 income: caption "MILLIONS (CURRENCY NOT CONFIRMED)" (want "MILLIONS (CURRENCY NOT CONFIRMED)"), clipped false; 26 rows x 5, cells differing from the API 0
+PASS KFH en 1440 balance: caption "MILLIONS (CURRENCY NOT CONFIRMED)" (want "MILLIONS (CURRENCY NOT CONFIRMED)"), clipped false; 29 rows x 5, cells differing from the API 0
+PASS KFH en 390 income: caption "MILLIONS (CURRENCY NOT CONFIRMED)" (want "MILLIONS (CURRENCY NOT CONFIRMED)"), clipped false; 26 rows x 5, cells differing from the API 0
+PASS KFH en 390 balance: caption "MILLIONS (CURRENCY NOT CONFIRMED)" (want "MILLIONS (CURRENCY NOT CONFIRMED)"), clipped false; 29 rows x 5, cells differing from the API 0
+PASS KFH ar 1440 income: caption "بالملايين (العملة غير مؤكدة)" (want "بالملايين (العملة غير مؤكدة)"), clipped false; 26 rows x 5, cells differing from the API 0
+PASS KFH ar 1440 balance: caption "بالملايين (العملة غير مؤكدة)" (want "بالملايين (العملة غير مؤكدة)"), clipped false; 29 rows x 5, cells differing from the API 0
+PASS KFH ar 390 income: caption "بالملايين (العملة غير مؤكدة)" (want "بالملايين (العملة غير مؤكدة)"), clipped false; 26 rows x 5, cells differing from the API 0
+PASS KFH ar 390 balance: caption "بالملايين (العملة غير مؤكدة)" (want "بالملايين (العملة غير مؤكدة)"), clipped false; 29 rows x 5, cells differing from the API 0
+PASS: unconfirmed currency said plainly, confirmed currency kept, figures unchanged

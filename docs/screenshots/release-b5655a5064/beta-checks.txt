@@ -1,0 +1,18 @@
+# Beta checks, 2026-11-06: release b5655a5064 (rebuild b5655a5; app code identical to the tested candidate dfc7a3d)
+# Deployed beta through the tunnel localhost:3201 -> beta's web [::1]:3200, the same scripts and expectations as the candidate run
+# (docs/release-readiness-2026-11-06.md, 'Checks on the candidate'). Signed out, GETs only. Each line: check, exit code, its last line.
+# deploy-staging.sh: deployed b5655a5064; acp-api and acp-web active; api 200, web 200; 5c18a3ae46 kept for rollback.
+1-labels-2026-11-04-set exit 0 | PASS: every expected label shown
+2-gulf-english exit 0 | PASS: every expected label shown
+3-newest-first exit 0 | PASS: newest period beside the labels on load, oldest reachable, everywhere
+4-bank-sublines exit 0 | PASS: sub-lines read within their statement, balance sheets unchanged, values as the API's
+5-real-estate exit 0 | PASS: real-estate investments read cleanly in English, Arabic unchanged, values as the API's
+6-check-arabic exit 0 | 48 Arabic page view(s) signed out; 0 English string(s) outside the allow-list
+7-phone-gap exit 0 | PASS: 11 panels at 390 - expected labels shown, every cell equal to the API, every period reachable
+8-investment-income-label exit 0 | PASS: investment and other operating income in sentence case, Arabic unchanged, values as the API's
+13-three-labels exit 0 | PASS: the three labels shown, unclipped, every cell equal to the API, both languages, both widths
+14-unit-captions exit 0 | PASS: unconfirmed currency said plainly, confirmed currency kept, figures unchanged
+15-capital-captions exit 0 | PASS: the capital panel's caption reads right with a confirmed currency; the unconfirmed case has no data to show it
+11-sweep exit 0 | all passed
+# Check 15's narrowest column gaps: 19 / 12 px (en 1440 / 390), 26 / 14 px (ar 1440 / 390), as on the candidate.
+# Sweep: 714 of 714 companies, 40811 lines, "no_currency":8, as on the candidate.

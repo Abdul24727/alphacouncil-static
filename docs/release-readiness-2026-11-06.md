@@ -375,3 +375,23 @@ scans run again over the exact range at push time.
   - `check-billing-public.mjs`.
 - **Rollback:** point `current` back to `releases/5c18a3ae46` in the affected tier and restart its two services.
   This is what the deploy scripts' switch does, run with the old release.
+
+## Released, 2026-11-06
+
+On the owner's go-ahead (beta, then production once beta's checks pass), `rebuild` `b5655a5` was released as
+**`b5655a5064`**. Its app code is identical to the tested `dfc7a3d` (`git diff --exit-code dfc7a3d..HEAD -- web/src api
+deploy web/messages web/public` passed right before the deploy). No commit was made between the two deploys.
+
+- **Beta:** `deployed b5655a5064`, api 200, web 200. Every candidate check re-run against beta itself through the
+  tunnel, all PASS: checks 1–8, 13 (8/8), 14 (16/16), 15 (gaps 19 / 12 / 26 / 14 px, as on the candidate) and the
+  sweep, 714/714 companies and 40,811 lines, `"no_currency":8`. Evidence: `docs/screenshots/release-b5655a5064/`,
+  summary in `beta-checks.txt`.
+- **Production:** `deployed b5655a5064 to production`; services active, health 200, `BILLING_OPEN=true` and
+  `api.env` unchanged (hash-equal before and after). The chunk with the new labels is byte-identical to beta's and
+  hash-equal on the public site; the unconfirmed-currency caption is in the new server code and not the old;
+  `check-billing-public.mjs` all passed. Evidence: `production-check.txt`, `production-billing.txt`,
+  `production-billing/`.
+- **Rollback:** `5c18a3ae46`, kept in both `releases/` folders.
+
+**The disk decision, applied the same morning:** the keep-14 retention above ran at 10:15 UTC and freed 80.44 GiB
+(disk 83 % → 41 %); it runs nightly at 11:15 UTC from now (`PROJECT.md`, changelog 2026-11-06).

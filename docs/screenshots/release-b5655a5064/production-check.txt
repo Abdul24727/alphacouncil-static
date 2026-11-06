@@ -1,0 +1,17 @@
+# Production check, 2026-11-06: release b5655a5064 (beta ran the same sha first and passed every check, beta-checks.txt;
+# deploy-production.sh refused nothing: HEAD = beta's release, working tree clean at its start)
+# Financials is Pro-only on production (billing open) and Claude makes no accounts there, so the new labels are checked
+# in the code production serves; they were rendered and checked on beta, which reads the same market data.
+prod current -> b5655a5064; previous release 5c18a3ae46 kept for rollback (releases: 2e44ee6fbf 5c18a3ae46 b5655a5064)
+acp-prod-api, acp-prod-web, acp-prod-billing.timer, acp-prod-monitor.timer: active; /v1/health 200
+https://alphacouncil.tech/home, /ar/t/2222/financials, /pricing: 200
+BILLING_OPEN=true unchanged: one line before and after; prod api.env sha256 8825172e4992335c before and after
+static chunks holding the new English labels (b5655a5064 / 5c18a3ae46):
+  "Book value per unit" 1/0, "Average number of units (Million)" 1/0,
+  "Income from investments & other operating income" 1/0, "Book value (BHD)" 1/0 - all in 0h67wtzm9w_13.js
+chunk /_next/static/chunks/0h67wtzm9w_13.js: byte-identical to beta's (sha256 1db7dc099ded6caf...); the public site serves
+  the same hash; /t/2222/financials and /ar/t/1211/financials reference it
+the unconfirmed-currency caption ("Millions (currency not confirmed)") is in 98 server files of b5655a5064, 0 of 5c18a3ae46
+check-billing-public.mjs (signed out, production): all passed, incl. "financials locked (3 panels)"; production-billing.txt
+  and screenshots in production-billing/. Its INFO line "advisors page answered, Pro locks on it 0" is the same as on
+  2026-10-27 and 2026-11-02: signed out, the room asks the visitor to sign in.
