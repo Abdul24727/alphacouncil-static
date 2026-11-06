@@ -1,0 +1,9 @@
+PASS DIC en 1440 income: [{"label":"EPS","shown":true,"clipped":false},{"label":"EPS before exceptional items","shown":true,"clipped":false}]; 26 rows x 5 columns, cells differing from the API 0
+PASS DIC en 390 income: [{"label":"EPS","shown":true,"clipped":false},{"label":"EPS before exceptional items","shown":true,"clipped":false}]; 26 rows x 5 columns, cells differing from the API 0
+PASS DIC ar 1440 income: [{"label":"ربح السهم","shown":true,"clipped":false},{"label":"ربح السهم قبل البنود الاستثنائية","shown":true,"clipped":false}]; 26 rows x 5 columns, cells differing from the API 0
+PASS DIC ar 390 income: [{"label":"ربح السهم","shown":true,"clipped":false},{"label":"ربح السهم قبل البنود الاستثنائية","shown":true,"clipped":false}]; 26 rows x 5 columns, cells differing from the API 0
+PASS KFH en 1440 balance: [{"label":"Book value (BHD)","shown":true,"clipped":false}]; 29 rows x 5 columns, cells differing from the API 0
+PASS KFH en 390 balance: [{"label":"Book value (BHD)","shown":true,"clipped":false}]; 29 rows x 5 columns, cells differing from the API 0
+PASS KFH ar 1440 balance: [{"label":"القيمة الدفترية دينار بحريني","shown":true,"clipped":false}]; 29 rows x 5 columns, cells differing from the API 0
+PASS KFH ar 390 balance: [{"label":"القيمة الدفترية دينار بحريني","shown":true,"clipped":false}]; 29 rows x 5 columns, cells differing from the API 0
+PASS: the three labels shown, unclipped, every cell equal to the API, both languages, both widths

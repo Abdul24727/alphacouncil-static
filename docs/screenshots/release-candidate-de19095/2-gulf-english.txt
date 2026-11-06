@@ -1,0 +1,71 @@
+ar 108 1440 financials.income: rows 26, labels still in English 0 []
+ar 108 1440 financials.balance: rows 29, labels still in English 0 []
+ar 108 390 financials.income: rows 26, labels still in English 0 []
+ar 108 390 financials.balance: rows 29, labels still in English 0 []
+ar ABOB 1440 financials.income: rows 33, labels still in English 0 []
+ar ABOB 1440 financials.balance: rows 31, labels still in English 0 []
+ar ABOB 390 financials.income: rows 33, labels still in English 0 []
+ar ABOB 390 financials.balance: rows 31, labels still in English 0 []
+ar DUBK 1440 financials.income: rows 26, labels still in English 0 []
+ar DUBK 1440 financials.balance: rows 32, labels still in English 0 []
+ar DUBK 390 financials.income: rows 26, labels still in English 0 []
+ar DUBK 390 financials.balance: rows 32, labels still in English 0 []
+ar GFH.DU 1440 financials.income: rows 28, labels still in English 0 []
+ar GFH.DU 1440 financials.balance: rows 27, labels still in English 0 []
+ar GFH.DU 390 financials.income: rows 28, labels still in English 0 []
+ar GFH.DU 390 financials.balance: rows 27, labels still in English 0 []
+ar ADCB 1440 financials.income: rows 35, labels still in English 0 []
+ar ADCB 1440 financials.balance: rows 31, labels still in English 0 []
+ar ADCB 390 financials.income: rows 35, labels still in English 0 []
+ar ADCB 390 financials.balance: rows 31, labels still in English 0 []
+ar AJMANBAN 1440 financials.income: rows 34, labels still in English 0 []
+ar AJMANBAN 1440 financials.balance: rows 30, labels still in English 0 []
+ar AJMANBAN 390 financials.income: rows 34, labels still in English 0 []
+ar AJMANBAN 390 financials.balance: rows 30, labels still in English 0 []
+ar AMCREIT 1440 financials.income: rows 17, labels still in English 0 []
+ar AMCREIT 1440 financials.balance: rows 21, labels still in English 0 []
+ar AMCREIT 390 financials.income: rows 17, labels still in English 0 []
+ar AMCREIT 390 financials.balance: rows 21, labels still in English 0 []
+en 108 1440 financials.income: rows 26, labels still in Arabic 0 []
+en 108 1440 financials.balance: rows 29, labels still in Arabic 0 []
+en 108 1440 expected labels shown: 22/22
+en 108 390 financials.income: rows 26, labels still in Arabic 0 []
+en 108 390 financials.balance: rows 29, labels still in Arabic 0 []
+en 108 390 expected labels shown: 22/22
+en ABOB 1440 financials.income: rows 33, labels still in Arabic 0 []
+en ABOB 1440 financials.balance: rows 31, labels still in Arabic 0 []
+en ABOB 1440 expected labels shown: 16/16
+en ABOB 390 financials.income: rows 33, labels still in Arabic 0 []
+en ABOB 390 financials.balance: rows 31, labels still in Arabic 0 []
+en ABOB 390 expected labels shown: 16/16
+en DUBK 1440 financials.income: rows 26, labels still in Arabic 0 []
+en DUBK 1440 financials.balance: rows 32, labels still in Arabic 0 []
+en DUBK 1440 expected labels shown: 13/13
+en DUBK 390 financials.income: rows 26, labels still in Arabic 0 []
+en DUBK 390 financials.balance: rows 32, labels still in Arabic 0 []
+en DUBK 390 expected labels shown: 13/13
+en GFH.DU 1440 financials.income: rows 28, labels still in Arabic 0 []
+en GFH.DU 1440 financials.balance: rows 27, labels still in Arabic 0 []
+en GFH.DU 1440 expected labels shown: 8/8
+en GFH.DU 390 financials.income: rows 28, labels still in Arabic 0 []
+en GFH.DU 390 financials.balance: rows 27, labels still in Arabic 0 []
+en GFH.DU 390 expected labels shown: 8/8
+en ADCB 1440 financials.income: rows 35, labels still in Arabic 0 []
+en ADCB 1440 financials.balance: rows 31, labels still in Arabic 0 []
+en ADCB 1440 expected labels shown: 15/15
+en ADCB 390 financials.income: rows 35, labels still in Arabic 0 []
+en ADCB 390 financials.balance: rows 31, labels still in Arabic 0 []
+en ADCB 390 expected labels shown: 15/15
+en AJMANBAN 1440 financials.income: rows 34, labels still in Arabic 0 []
+en AJMANBAN 1440 financials.balance: rows 30, labels still in Arabic 0 []
+en AJMANBAN 1440 expected labels shown: 15/15
+en AJMANBAN 390 financials.income: rows 34, labels still in Arabic 0 []
+en AJMANBAN 390 financials.balance: rows 30, labels still in Arabic 0 []
+en AJMANBAN 390 expected labels shown: 15/15
+en AMCREIT 1440 financials.income: rows 17, labels still in Arabic 0 []
+en AMCREIT 1440 financials.balance: rows 21, labels still in Arabic 0 []
+en AMCREIT 1440 expected labels shown: 4/4
+en AMCREIT 390 financials.income: rows 17, labels still in Arabic 0 []
+en AMCREIT 390 financials.balance: rows 21, labels still in Arabic 0 []
+en AMCREIT 390 expected labels shown: 4/4
+PASS: every expected label shown

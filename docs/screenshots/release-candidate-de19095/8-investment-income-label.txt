@@ -1,0 +1,9 @@
+PASS 821 en 1440 income: 29 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS 821 en 390 income: 29 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS 821 ar 1440 income: 29 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS 821 ar 390 income: 29 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS 1120 en 1440 income: 25 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS 1120 en 390 income: 25 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS 1120 ar 1440 income: 25 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS 1120 ar 390 income: 25 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS: investment and other operating income in sentence case, Arabic unchanged, values as the API's

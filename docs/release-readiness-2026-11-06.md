@@ -1,13 +1,15 @@
-# Release readiness, 2026-11-06: candidate `2f50598` against the deployed `5c18a3ae46`
+# Release readiness, 2026-11-06: candidate `de19095` against the deployed `5c18a3ae46`
 
 **Status: ready for the owner's release decision.** This report needs no release and no push. Each release
 (beta, then production) and each push is the owner's go-ahead in chat.
 
 - **Deployed now:** `5c18a3ae46` on beta and production (2026-11-05).
-- **Candidate:** `rebuild` at `2f50598`. Commits after it change no app code: records, this report, the
-  review loop. So the deploy script may ship a later `rebuild` HEAD whose app code equals `2f50598`; the
-  check is `git diff --stat 2f50598..HEAD -- web/src api deploy web/messages web/public`, which must be
+- **Candidate:** `rebuild` at `de19095`. Commits after it change no app code: records, this report, the
+  review loop. So the deploy script may ship a later `rebuild` HEAD whose app code equals `de19095`; the
+  check is `git diff --stat de19095..HEAD -- web/src api deploy web/messages web/public`, which must be
   empty.
+- *(`2f50598` was superseded by review 24's caption fix. Its evidence, including the live sweep and F-16
+  check after the publish, stays in `docs/screenshots/release-candidate-2f50598/`.)*
 - *(`4a98832` was superseded by three label pairs the live English-label sweep called for after the
   2026-11-06 publish. Its evidence stays in `docs/screenshots/release-candidate-4a98832/`, including the SEO
   checks 9 and 10, which still hold: no metadata code changed since.)*
@@ -19,7 +21,7 @@
 
 ## What a release changes for visitors
 
-All of it is in `web/src`; `api/`, `deploy/`, `web/messages/` and `web/public/` are unchanged.
+All of it is in `web/src` and `web/messages`; `api/`, `deploy/` and `web/public/` are unchanged.
 
 | Change | Pages | Record |
 |---|---|---|
@@ -27,6 +29,7 @@ All of it is in `web/src`; `api/`, `deploy/`, `web/messages/` and `web/public/` 
 | Statement columns newest first, so a phone opens on the newest period | Financials, both languages | `PROJECT.md` §5, 2026-11-06 |
 | Bank income sub-lines read as commission income/expense inside the income statement | Financials of banks, both languages | labels doc, "Bank income sub-lines" |
 | "property Real estate Investment" reads "Real Estate Investments" | English Financials | labels doc, "property Real estate Investment" |
+| Where a listing's currency is not confirmed (8 listings), the unit caption says "Millions (currency not confirmed)" / "بالملايين (العملة غير مؤكدة)" instead of "Millions of" with nothing after it | Financials and the capital-changes panel, both languages | `PROJECT.md` §5, 2026-11-06 (review 24) |
 | "income from investments & Other operating income" reads "Income from investments & other operating income" | Financials, English: 3 Saudi banks and the Gulf companies with that line | `PROJECT.md` §5, 2026-11-06 (review 16) |
 | On a phone, the line labels stay in place, each period fills the space beside them, and scrolling snaps to whole periods: no figure is shown cut in half | Financials on phones, both languages; desktop unchanged | `PROJECT.md` §5, 2026-11-06 (review 13) |
 
@@ -35,12 +38,12 @@ intended real-estate label.
 
 ## Every file changed since `5c18a3ae46`
 
-All 721 files of `git diff --name-status 5c18a3ae46..2f50598`: 27 outside `docs/screenshots/` and
-`docs/review-loop/`, all named below; 648 evidence files under `docs/screenshots/` (one of them, a corrected
-header, is also named below); and 46 review-loop records under `docs/review-loop/`. *(Reconciled with the diff
+All 909 files of `git diff --name-status 5c18a3ae46..de19095`: 29 outside `docs/screenshots/` and
+`docs/review-loop/`, all named below; 830 evidence files under `docs/screenshots/` (one of them, a corrected
+header, is also named below); and 50 review-loop records under `docs/review-loop/`. *(Reconciled with the diff
 2026-11-06, after ChatGPT's review 14 found three script files missing from the first list.)*
 
-**App code, which ships with a release (5 files):**
+**App code, which ships with a release (7 files):**
 - `M web/src/content/data-labels.json`: 79 English-page pairs (76, plus 3 annual-page spellings the live sweep
   found after the 2026-11-06 publish); `in_statement` (5 bank sub-lines); the garbled
   real-estate pair becomes an alias; the tr166 label is recased, with an alias for Argaam's spelling.
@@ -49,7 +52,9 @@ header, is also named below); and 46 review-loop records under `docs/review-loop
 - `M web/src/lib/statement-period.ts`: `statementColumns()` newest first; `phoneColumnWidth()`, the phone
   width rule.
 - `M web/src/components/stock/research-panels.tsx`: the statement table passes its statement to
-  `dataLabel`; sticky label column; on a phone, measured period widths with snap scrolling.
+  `dataLabel`; sticky label column; on a phone, measured period widths with snap scrolling; `unitCaption()`
+  for an unconfirmed currency.
+- `M web/messages/en.json` and `M web/messages/ar.json`: `stock.statements.unitUnconfirmed`, one line each.
 
 **Tests, which ship but do not run on the server (3 files):**
 - `A web/src/lib/data-labels-core.test.ts`;
@@ -87,13 +92,13 @@ header, is also named below); and 46 review-loop records under `docs/review-loop
 - `M PROJECT.md`;
 - `M docs/arabic-statement-labels-2026-11-03.md`;
 - `M docs/screenshots/launch-2026-10-27/advisors-signed-in/check-advisors.txt`: a corrected header. It is also
-  counted among the 648 evidence files.
+  counted among the 830 evidence files.
 
 **Evidence and review records:**
-- 648 files under `docs/screenshots/`, the folders this report and the labels doc cite;
-- 46 under `docs/review-loop/`: the master plan, outputs, replies and log.
+- 830 files under `docs/screenshots/`, the folders this report and the labels doc cite;
+- 50 under `docs/review-loop/`: the master plan, outputs, replies and log.
 
-## Checks on the candidate (`2f50598`), all run together on 2026-11-06
+## Checks on the candidate (`de19095`), all run together on 2026-11-06
 
 Run after the last change, so no later step can have broken an earlier one.
 
@@ -102,12 +107,17 @@ Run after the last change, so no later step can have broken an earlier one.
 - `python -X utf8 scripts/argaam_ar_labels/test_pair_from_gulf.py`: OK (4 tests).
 
 **Rendered:** local web against beta's API, which since 05:01 UTC serves the 2026-11-06 publish. Evidence is in
-`docs/screenshots/release-candidate-2f50598/`: checks 1–8 re-run on the candidate against the **2026-11-06
-published data**, all PASS. Also there: `11-sweep-on-the-2026-11-06-publish.txt` (714/714, PASS) and
-`12-f16-after-publish-2026-11-06.txt` (13/13). The SEO checks 9 and 10 are in the `4a98832` folder.
+`docs/screenshots/release-candidate-de19095/`: checks 1–8 re-run on this candidate against the 2026-11-06
+published data, all PASS. The same folder holds:
+- check 13 (the three labels, 8/8);
+- check 14 (unit captions, 16/16);
+- `11-sweep.txt`: **714/714, PASS**.
 
-**Check 13, the three labels the live sweep called for** (`13-three-labels.txt`, `three-labels/`,
-`contact-sheet-three-labels.png`): DIC's income statement and KFH's balance sheet, English and Arabic, 1440 and
+The F-16 check after the publish (13/13) and the first live sweep are in the `2f50598` folder; the SEO checks
+9 and 10 are in the `4a98832` folder.
+
+**Check 13, the three labels the live sweep called for** (`13-three-labels.txt`, `three-labels/`; the
+contact sheet is in the `2f50598` folder): DIC's income statement and KFH's balance sheet, English and Arabic, 1440 and
 390. 8/8 PASS:
 - "EPS", "EPS before exceptional items" and "Book value (BHD)" are shown and not clipped, and the Arabic is
   unchanged;
@@ -117,10 +127,16 @@ published data**, all PASS. Also there: `11-sweep-on-the-2026-11-06-publish.txt`
 
 `npm run build` was re-run on this candidate's code (93/93).
 
-**Seen on check 13, left for review:** KFH's unit line reads "Millions of" with no currency (Arabic
-"بملايين"). Its currency is not confirmed: `currency` and `report_currency` are null, and it is one of the
-sweep's 7 `no_currency` listings. The page header already says "Currency not confirmed" for these, but the
-statement unit line (`statements.unit`, "Millions of {currency}") renders an empty currency.
+**Check 14, unit captions** (`14-unit-captions.txt`, `unit-captions/`, `contact-sheet-unit-captions.png`):
+KFH, whose currency is not confirmed, and 108 (KWD) as the control; income and balance; English and Arabic;
+1440 and 390. 16/16 PASS:
+- KFH reads "MILLIONS (CURRENCY NOT CONFIRMED)" / "بالملايين (العملة غير مؤكدة)";
+- 108 keeps "MILLIONS OF KWD" / "بملايين د.ك";
+- no caption is clipped;
+- every cell in every column equals the API.
+
+The sweep counts **8** listings with no confirmed currency (`"no_currency":8`). *(Corrected by review 24: this
+report and `PROJECT.md` first said 7, taken from the 2026-11-05 sweep.)*
 
 | # | Check | Covers | Result |
 |---|---|---|---|
