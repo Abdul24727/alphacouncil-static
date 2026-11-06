@@ -1319,7 +1319,8 @@ and no customer has paid yet.
      - ~~**F-14**: the pipeline's OpenRouter key is refused (401) and news AI has written nothing since at
        least 2026-10-19~~ **FIXED 2026-11-06**: the app's key copied in on the owner's go-ahead; 401 → 200;
        two items written; the backlog clears in about four nights;
-     - **the OpenRouter balance: $13.47 before the 2026-11-06 pilot, $7.83 after it.** The live Copilot, the
+     - **the OpenRouter balance: $13.47 before the 2026-11-06 pilot, $7.83 after it.** The production monitor's
+       credit check is FAILING on it (below $10, alert emailed; 12:33 UTC, `docs/launch-check-2026-10-27.md`); The live Copilot, the
        room and the news step share it: top up (the owner's);
      - ~~disk at 83 %~~ **DONE 2026-11-06**: keep-14 applied (129 snapshots, 80.44 GiB), disk **41 %**; nightly
        prune at 11:15 UTC (`scripts/server/prune-rebuild-snapshots.sh`);

@@ -249,3 +249,28 @@ bash scripts/old-accounts.sh production forget advisors-
 
 `forget` only ever removes `<prefix>*@example.com`, so it cannot reach a real member's account. Deleting data
 is an "Always stop" for Claude, so this one is the owner's to run or to skip.
+
+*(2026-11-06: the test accounts these checks left were removed on the owner's go-ahead ("Delete them"): 24
+`@example.com` accounts on production, prefixes advisors-, audit-, check-, phase1- and phase4-. Production keeps its
+4 real accounts. `PROJECT.md`, changelog 2026-11-06.)*
+
+## Production monitor after the 2026-11-06 release, retention and pilot
+
+Read-only, `python3 -I /usr/local/lib/acp-monitor/prod-monitor.py status` at **2026-11-06 12:33:51 UTC**, with
+production on `b5655a5064`. **14 ok, 1 failing, 1 pending.**
+
+| Check | Result |
+|---|---|
+| home, `/api/v1/health`, market data | ok (200 in 40 ms; 200 in 9 ms; market data ok) |
+| `acp-prod-api`, `acp-prod-web` | ok, active |
+| Pro renewals job and timer | ok (last run exited 0; timer active) |
+| **Moyasar for renewals** | **– pending**: no renewal run since the last round. This is not a failure. It turns ok only when a renewal talks to Moyasar: Step 18's item 4, open until a first real renewal. |
+| database backup job and timer | ok |
+| off-server backup copy | ok (the owner's computer copied 76 files at 06:00 UTC, 0.3 days before) |
+| disk `/` | ok: **41 % full, 122.4 GB free** (83 % before the keep-14 retention that morning) |
+| disk `/boot` | ok, 15 % |
+| TLS certificate | ok, expires 2027-01-21 (76 days) |
+| **model account credit** | **FAILING: $7.83 left, below the $10 alert line** (alert emailed). The advisors' room and the Copilot stop when it runs out. The fix is the owner's: add credit at openrouter.ai/credits. |
+
+Alerts: 3 emailed in 24 hours, 10 in 30 days, within the limits of 8 and 60. The outside check is pinged every
+round.
