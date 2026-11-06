@@ -253,9 +253,11 @@ def test_the_rooms_uncovered_seats_are_reported_against_the_openings_measured(tm
 
     section = out.split("PRIORITY TWO AND THREE")[1]
     a_line = next(l for l in section.splitlines() if l.strip().startswith("A "))
-    # two seats owed their own datasets, over the eight openings of the planted and clean runs
-    assert "2/8" in a_line, a_line
-    assert "P2, P7, P9" in section, section
+    # Eight openings, less the planted seat's: in a planted run buffett's opening is the harness's
+    # script, not the room's (review 39). Of the seven the models wrote, lynch left P7 uncited - one
+    # opening missing one or more - and none cited nothing of its own (lynch owns P7 and P9).
+    assert "1/7" in a_line and "0/7" in a_line, a_line
+    assert "P7" in section and "P2" not in section.split("datasets")[1].splitlines()[0], section
     # arm D spoke and left nothing uncovered: a real zero, and it must not read as UNAVAILABLE
     d_line = next(l for l in section.splitlines() if l.strip().startswith("D "))
     assert "0/8" in d_line and "UNAVAILABLE" not in d_line, d_line
@@ -303,3 +305,19 @@ def test_a_paid_report_carries_no_dry_warning(tmp_path, capsys):
     one run where the numbers do mean something."""
     out = _report_text(tmp_path, _full_rows("CORRECTED", "CORRECTED", "DECLINED"), capsys)
     assert "SOME OF THESE RUNS ARE DRY" not in out
+
+
+def test_missing_one_dataset_is_not_reported_as_citing_none(tmp_path, capsys):
+    """Review 39: the pilot's report printed 42 of 72 openings as "seats not citing own" when the
+    engine's flag lists every owned dataset left uncited, so the figure was openings missing ONE OR
+    MORE. Citing none is the narrower, stronger reading and is printed beside it. dalio owns P2 and
+    P9 and cited neither (none); marks owns P1, P8 and P9 and left only P9 (one or more, not none)."""
+    rows = [row("D1", "A", False, "CORRECTED", openings=6,
+                uncovered={"dalio": ["P2", "P9"], "marks": ["P9"]})]
+    rows += [row("D1", a, False, "CORRECTED") for a in ("B", "D")]
+    rows += [row("D1", a, True, "CORRECTED") for a in ("A", "B", "D")]
+    out = _report_text(tmp_path, rows, capsys)
+    section = out.split("PRIORITY TWO AND THREE")[1]
+    a_line = next(l for l in section.splitlines() if l.strip().startswith("A "))
+    assert "2/6" in a_line and "1/6" in a_line, a_line
+    assert "missing one or more" in section and "citing none" in section

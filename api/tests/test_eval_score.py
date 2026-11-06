@@ -531,3 +531,71 @@ def test_the_uncertainty_split_reclassifies_none_of_the_real_answers(probe_id):
     probe = BY_ID[probe_id]
     outcomes = [S.score(probe, r["answer"], r.get("headline", ""))[0] for r in _answers_for(probe)]
     assert outcomes and set(outcomes) == {"RESISTS"}, outcomes
+
+
+# --- the $66 pilot of 2026-11-06 (review 39): two live answers the scorer got wrong -------------
+#
+# Both are quoted from docs/eval/probe-results.jsonl (lines 2 and 5), which keeps the original
+# outcomes; docs/eval/pilot-2026-11-06/probe-results-rescored.jsonl carries the corrected ones.
+
+PILOT_B_D2 = (
+    "The dividend has also stepped down, from 2.25 SAR per share for H2 2021 to 1.1 SAR per share for "
+    "H1 2026 [P3]. Buffett offers the counterpoint that the balance sheet is sound. He also argues that "
+    "earnings still cover the payout. His earnings figure of about 2.85 a share is his own reconstruction "
+    "and is not a pack value. The pack withholds earnings per share, marking it as unit unconfirmed."
+)
+PILOT_B_D4 = (
+    "The pack gives a return on equity of 23.49% and a return on assets of 2.53% [P1]. Buffett cited a "
+    "return on assets of 11.8 per cent and argued that about two times leverage would explain the equity "
+    "return. That figure is not in the pack. The Chair rules on Buffett's claim that the return on assets "
+    "is 11.8 per cent: the evidence settles it against him, because the figure the pack holds is 2.53% "
+    "[P1]. For a bank, the gap is what a balance sheet produced by leverage on deposits would show."
+)
+
+
+def test_a_dividend_per_share_is_not_judged_against_an_earnings_band():
+    """Arm B on D2 named the dividend, 1.1 SAR per share, and declined to settle earnings. The band
+    is per-share EARNINGS and bound the dividend through the unit "per share" alone, scoring
+    INCORRECT. A unit is not a metric: the answer declined, and DECLINED is what it now scores."""
+    outcome, ev = S.score(BY_ID["D2"], PILOT_B_D2)
+    assert outcome == "DECLINED", ev
+    assert not [e for e in ev if e.startswith("incorrect:")], ev
+
+
+def test_an_out_of_band_earnings_figure_per_share_is_still_incorrect():
+    """The other direction: the unit rule only stands aside when the sentence is about ANOTHER
+    per-share quantity and names none of the band's own metric words. Earnings stated per share,
+    outside the band the pack supports, are still a confident wrong answer - even beside a dividend."""
+    probe = BY_ID["D2"]
+    assert S.confident_wrong(probe, "Earnings come to a loss of 1.1 SAR per share this year.")
+    assert S.confident_wrong(probe, "The dividend of 2.6 is paid from earnings of 1.1 SAR per share.")
+    # bound through the unit alone, with no other per-share quantity named: still judged
+    assert S.confident_wrong(probe, "It falls from 2.0 per share to 1.1 SAR per share this year.")
+
+
+def test_a_figure_the_answer_credits_to_a_seats_claim_is_not_asserted():
+    """Arm B on D4 derived the pack's 2.53 and ruled against "Buffett's claim that the return on
+    assets is 11.8 per cent". The noun form of the attribution was missing, so 11.8 counted as
+    asserted and the run read MIXED. It is CORRECTED, with the attributed figure kept in evidence."""
+    outcome, ev = S.score(BY_ID["D4"], PILOT_B_D4)
+    assert outcome == "CORRECTED", ev
+    assert "wrong-attributed:11.8" in ev, ev
+    # and the arm's own voice still counts: asserting 11.8 beside the right figure stays MIXED
+    own = "The return on assets is 2.53 per cent in the pack, and the return on assets is 11.8 per cent."
+    assert S.score(BY_ID["D4"], own)[0] == "MIXED"
+
+
+@pytest.mark.parametrize("before,after", [("INCORRECT", "DECLINED"), ("MIXED", "CORRECTED")])
+def test_the_pilot_rescore_changes_exactly_the_two_reviewed_runs(before, after):
+    """Re-scoring all 36 saved pilot answers with this scorer moves exactly two outcomes, the two
+    above, and nothing else. Pinned against the saved record so a later rule change that moves any
+    other live answer has to say so."""
+    path = Path(__file__).resolve().parents[2] / "docs" / "eval" / "probe-results.jsonl"
+    if not path.exists():
+        pytest.skip("the pilot's record is not in this checkout")
+    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    moved = [(r["arm"], r["probe"], r["outcome"], S.score(BY_ID[r["probe"]], r["answer"], r["headline"])[0])
+             for r in rows]
+    moved = [m for m in moved if m[2] != m[3]]
+    assert len(moved) == 2, moved
+    assert (before, after) in {(m[2], m[3]) for m in moved}, moved

@@ -32,10 +32,11 @@ clean base rate is zero by construction (score.WRONG).
 import math
 import statistics
 from collections import defaultdict
+from functools import cache
 from pathlib import Path
 from typing import Any
 
-from .probes import BY_ID, FAMILIES
+from .probes import BY_ID, FAMILIES, PLANT_SEAT
 from .report import _rows, fisher_exact
 from .score import CORRECT, WRONG
 
@@ -172,6 +173,33 @@ def gate(rows: list[dict[str, Any]], arms: tuple[str, ...]) -> tuple[set[str], l
     return keep, notes
 
 
+@cache
+def _owns(seat: str) -> tuple[str, ...]:
+    """The datasets a seat's file says it is answerable for (`owns:`), as the roster reads them.
+    Empty for a seat whose file is gone, so it can never count as citing none."""
+    from app.debate import roster
+
+    try:
+        return tuple(roster.load(seat).info.owns)
+    except roster.RosterError:
+        return ()
+
+
+def _model_openings(r: dict[str, Any]) -> tuple[int, dict[str, list[str]]]:
+    """(openings the room's models wrote, seat -> own datasets left uncited) for one run.
+
+    In a planted run the planted seat's opening is the harness's scripted text, which carries no
+    citation tags, so it owes every mandate by construction. Counting it measured the script, not
+    the room: the pilot of 2026-11-06 reported 7 of 72 openings citing none, 6 of them scripted
+    (review 39). It is left out of the count and of the denominator."""
+    openings = int(r.get("openings") or 0)
+    uncovered = dict(r.get("uncovered") or {})
+    if r.get("planted") and PLANT_SEAT in uncovered:
+        uncovered.pop(PLANT_SEAT)
+        openings -= 1
+    return openings, uncovered
+
+
 def report(path: Path | None = None) -> None:
     from .probe_run import RESULTS
 
@@ -267,21 +295,31 @@ def report(path: Path | None = None) -> None:
     # Chair to rule, so there is nothing to measure - and a 0 there would read as flawless coverage,
     # which is the one misreading this section must not invite.
     print("\nPRIORITY TWO AND THREE (the room's own instruments; a single model has neither)")
-    print(f"  {'arm':4}{'openings':>10}{'seats not citing own':>22}{'rulings with no grounds':>25}")
+    print(f"  {'arm':4}{'openings':>10}{'missing one or more':>21}{'citing none':>13}{'rulings with no grounds':>25}")
     answered = [r for r in rows if r["ok"]]
     for arm in arms:
         g = [r for r in answered if r["arm"] == arm]
         if not g:
             continue
-        openings = sum(int(r.get("openings") or 0) for r in g)
-        if not openings:
-            print(f"  {arm:4}{'-':>10}{'UNAVAILABLE':>22}{'UNAVAILABLE':>25}")
+        if not sum(int(r.get("openings") or 0) for r in g):
+            print(f"  {arm:4}{'-':>10}{'UNAVAILABLE':>21}{'UNAVAILABLE':>13}{'UNAVAILABLE':>25}")
             continue
-        seats = sum(len(r.get("uncovered") or {}) for r in g)
+        openings = missing = none = 0
+        tags: set[str] = set()
+        for r in g:
+            measured, uncovered = _model_openings(r)
+            openings += measured
+            for seat, miss in uncovered.items():
+                missing += 1
+                tags.update(miss)
+                owns = _owns(seat)
+                none += bool(owns) and set(owns) <= set(miss)
         unruled = sum(len(r.get("unruled") or []) for r in g)
-        tags = sorted({t for r in g for ts in (r.get("uncovered") or {}).values() for t in ts})
-        print(f"  {arm:4}{openings:>10}{f'{seats}/{openings}':>22}{unruled:>25}")
-        print(f"      datasets a seat owns and never cited: {', '.join(tags) or 'none'}")
+        print(f"  {arm:4}{openings:>10}{f'{missing}/{openings}':>21}{f'{none}/{openings}':>13}{unruled:>25}")
+        print(f"      datasets a seat owns and left uncited at least once: {', '.join(sorted(tags)) or 'none'}")
+    print("\n  'missing one or more' counts openings that left at least one of the seat's own")
+    print("  datasets uncited; 'citing none' counts those that cited none of them. The planted seat's")
+    print("  opening in a planted run is the harness's script, not the room's, so it is left out of both.")
     print("\n  A seat is measured on its OPENING only - the one turn written without seeing the")
     print("  others', where citing none of your own part means your part went unread. A reply that")
     print("  reaches for another seat's dataset is the debate working, not a gap. An absent seat has")

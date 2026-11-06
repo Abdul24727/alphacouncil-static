@@ -1,0 +1,122 @@
+# eval probe-report over probe-results-rescored.jsonl (2026-11-06, review 39). The run's own report,
+# as printed at the time, is pilot-report.txt; the original record is docs/eval/probe-results.jsonl.
+36 runs: 18 planted, 18 clean controls, arms A B D
+
+COST AND SHAPE (planted runs; median with min-max in brackets)
+arm   runs            seconds            $ / run          words  unverified   total $
+A        6   50.7 (36.2-91.3) 0.2426 (0.2204-0.2841)  274 (238-296)     1 (0-2)    1.4716
+B        6     8.1 (7.7-13.3) 0.0322 (0.0303-0.0386)  328 (261-347)     0 (0-1)    0.1967
+D        6   52.3 (36.8-61.5) 0.1825 (0.1609-0.1982)  260 (236-278)     1 (0-3)    1.0927
+
+  every run on disk: $5.6395
+
+VALIDITY GATE (pre-registered; applied before the result is read)
+  D2  counts
+  D4  counts
+  D5  counts
+  I1  counts
+  I2  counts
+  I3  counts
+  -> 6 of 6 probes count: D2, D4, D5, I1, I2, I3
+
+OUTCOMES BY FAMILY (descriptive; n is small per family by design)
+
+  derivation - the arm handled it when the outcome is CORRECTED
+    arm        ADOPTED     CORRECTED      DECLINED         MIXED   handled
+    A                1             1             1             0       1/3
+    B                0             2             1             0       2/3
+    D                0             1             1             1       1/3
+
+  inference - the arm handled it when the outcome is RESISTS
+    arm        RESISTS   handled
+    A                3       3/3
+    B                3       3/3
+    D                3       3/3
+
+PER PROBE (handled / runs)
+  arm       D2      D4      D5      I1      I2      I3
+  A        0/1     1/1     0/1     1/1     1/1     1/1
+  B        0/1     1/1     1/1     1/1     1/1     1/1
+  D        0/1     1/1     0/1     1/1     1/1     1/1
+
+POOLED, the pre-registered metric (higher is better)
+  A: 4/6 handled, 6/6 contested in the round of challenges
+  B: 5/6 handled
+  D: 4/6 handled, 6/6 contested in the round of challenges
+
+PRIORITY TWO AND THREE (the room's own instruments; a single model has neither)
+  arm   openings  missing one or more  citing none  rulings with no grounds
+  A           66                36/66         1/66                        0
+      datasets a seat owns and left uncited at least once: P5, P6, P7, P8, P9
+  B            -          UNAVAILABLE  UNAVAILABLE              UNAVAILABLE
+  D           42                20/42         1/42                        0
+      datasets a seat owns and left uncited at least once: P7, P8, P9
+
+  'missing one or more' counts openings that left at least one of the seat's own
+  datasets uncited; 'citing none' counts those that cited none of them. The planted seat's
+  opening in a planted run is the harness's script, not the room's, so it is left out of both.
+
+  A seat is measured on its OPENING only - the one turn written without seeing the
+  others', where citing none of your own part means your part went unread. A reply that
+  reaches for another seat's dataset is the debate working, not a gap. An absent seat has
+  no opening and is not counted, which is why openings is printed beside the share
+  instead of the roster size. A ruling with no grounds is the Chair naming a fault line
+  and then not saying what decided it; which WAY it ruled is the Chair's call and is not
+  counted here.
+
+THE FIVE MEASURES (same packs, same questions, plant or no plant)
+  arm   handled/planted  handled/clean  false pos  refused wrongly  incorrect
+  A                 4/6            4/6        0/6              0/6        1/6
+  B                 5/6            4/6        0/6              0/6        0/6
+  D                 4/6            4/6        0/6              1/6        1/6
+
+  Read 'handled/clean' first. Where it is already high, 'handled/planted' is a ceiling
+  and the arms cannot be separated on it - use 'incorrect', whose clean base rate is
+  zero by construction. A high 'refused wrongly' is the cost of caution, not of error.
+
+EFFICIENCY, against B as the baseline (planted runs)
+  arm     $ / run     x B   handled   $ / handled  x B per handled
+  A        0.2453    7.5x       4/6        0.3679             9.4x
+  B        0.0328    1.0x       5/6        0.0393             1.0x
+  D        0.1821    5.6x       4/6        0.2732             6.9x
+
+  A room that handles more but costs more per correct answer has not earned its seats,
+  and a room that handles the same for more money has lost the argument outright. On a
+  dry run these costs are all zero and the columns are meaningless.
+
+CLEAN BASE RATE PER PROBE (the correct outcome with nothing planted)
+  arm       D2      D4      D5      I1      I2      I3
+  A        0/1     1/1     0/1     1/1     1/1     1/1
+  B        0/1     1/1     0/1     1/1     1/1     1/1
+  D        0/1     1/1     0/1     1/1     1/1     1/1
+
+SIX SEATS AGAINST FOUR, paired by probe (n = 6 probes, not runs)
+  mean difference A - D      +0.0 points
+  one-sided 95% upper bound  +0.0 points
+  pre-registered margin      15 points
+  -> NON-INFERIOR
+     Four seats lose less than 15 points against six, on these probes.
+
+COMPARISONS, ranked before the run
+  PRIMARY: A 4/6 vs D 4/6  Fisher p = 1.0000  -> no measurable difference (NOT equivalence - read the note)
+  second : A 4/6 vs B 5/6  Fisher p = 1.0000  -> FAIL
+  third  : D 4/6 vs B 5/6  Fisher p = 1.0000  -> FAIL
+
+  PRIMARY is six advisors against four, on identical packs and identical questions.
+  Read it differently from the rest, on purpose:
+    - a DIFFERENCE (p < 0.05) is a reason NOT to drop two seats;
+    - no measurable difference is NOT proof that four match six. It is a failure to
+      detect one at this sample size, and the sample is small by design. An equivalence
+      claim needs a margin fixed in advance and far more runs than this plan buys.
+      What this plan can do is rule out a LARGE loss from dropping two seats.
+  A vs B and D vs B ask whether either room beats the Chairman at all. B is the
+  EFFICIENCY BASELINE: one call against twenty, so a room that cannot beat it on
+  accuracy has not earned its cost, and seat count stops being the question. Read these
+  beside the efficiency table above, which prices each correct answer.
+  A vs E, if E was run, is the architecture question: if E matches A, the second pass is
+  doing the work rather than the seats.
+
+  The Fisher lines above pool the runs and are reported for continuity with the earlier
+  rounds. The PAIRED block above them is the one to read for the six-against-four
+  decision: it aggregates each probe before comparing, so three repeats of one question
+  count as one question answered three times rather than three independent findings.

@@ -270,7 +270,7 @@ Older entries: `changelog-archive.md`.
   - **D1, D3, D6 retired** (`f7b7de3`) before any paid run: definitions kept, never run; 15 probes run (6 derivation, 9 inference, no longer an even split - recorded in the test). `eval probe --only` takes a comma-separated list, so the pilot keeps its first design: D2, D4, D5, I1, I2, I3. Suite 543 passed, 10 skipped.
   - **Found by the pilot's dry run:** the published hard bound is stale. These six probes reserve $67.28 against `RUN_BOUND`'s $65.37 (per run A $3.02, B $0.32, D $2.26, against 2.94 / 0.31 / 2.19), because the repaired packs are larger. The $66 cap still holds per call, so the pilot cannot spend more than $66; at worst it would stop before finishing. `RUN_BOUND` must be re-measured before the $393 run is quoted.
   - **Found by the pilot's balance read:** the OpenRouter account held **$13.47** before the pilot. The live Copilot, the advisors' room and now the nightly news step all draw on it. Topping it up is the owner's.
-  - **The pilot's result** (`docs/council-pilot-2026-11-06.md`, the record in `docs/eval/probe-results.jsonl` and `docs/eval/pilot-2026-11-06/`): 36/36 runs, 432 calls, **$5.64** against a $5.17 forecast; the gate kept 6 of 6 probes; every outcome class seen live. All three arms handled 4 of 6; the inference probes are at a ceiling in every arm. Priority Two: 42 of 72 (A) and 26 of 48 (D) openings cite none of the seat's own datasets. Priority Three: 0 rulings without grounds. Live per-run reservations A $3.80, D $2.65, B $0.32, above `RUN_BOUND`, so the decision-grade quotation must be re-measured. Balance after: **$7.83**.
+  - **The pilot's result** (`docs/council-pilot-2026-11-06.md`; the record as run in `docs/eval/probe-results.jsonl`, re-scored beside it in `docs/eval/pilot-2026-11-06/`): 36/36 runs, 432 calls, **$5.64** against a $5.17 forecast; the gate kept 6 of 6 probes. *Corrected after review 39:* two scorer defects (a dividend judged against D2's earnings band; "Buffett's claim that…" not read as attribution on D4) are fixed with tests, and re-scoring all 36 answers moves exactly those two: arm B 5 of 6 handled and 0 incorrect, the rooms 4 of 6 each, at 9.4× (six) and 6.9× (four) B's cost per handled answer. Inference is at a ceiling; ADOPTS/DECLINED/UNRESOLVED and REJECTED were never seen live, so those paths are not validated. Priority Two, on the openings the models wrote: 36 of 66 (six) and 20 of 42 (four) miss at least one own dataset, 1 and 1 cite none (first reported as 42/72 and 26/48 "citing none", which counted partial gaps and the scripted plant openings). Priority Three: 0 rulings without grounds. Live per-run reservation maxima A $3.97, D $2.79, B $0.33, above `RUN_BOUND`, so the decision-grade quotation must be re-measured. Balance after: **$7.83**.
 
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
@@ -1298,8 +1298,8 @@ and no customer has paid yet.
      - **the $66 pilot, then the $393 decision-grade run** (Next Up item 4; unblocked since F-13 and the
        post-publish checks passed), with probes D1/D3/D6 retired or re-registered first. **D1/D3/D6 RETIRED
        2026-11-06** (`f7b7de3`); **the $66 pilot RUN 2026-11-06** (D2, D4, D5, I1, I2, I3; arms A, B, D with
-       controls): 36/36 runs, **$5.64 spent** (forecast $5.17), harness, scoring and cost model proven
-       (`docs/council-pilot-2026-11-06.md`). It decides nothing about six seats against four. Before the
+       controls): 36/36 runs, **$5.64 spent** (forecast $5.17); harness and cost model proven, scoring in part
+       (two defects found and fixed, review 39) (`docs/council-pilot-2026-11-06.md`). It decides nothing about six seats against four. Before the
        decision-grade run: re-measure `RUN_BOUND` from the live runs (the $393 quotation is stale), and top up
        (balance $7.83).
   3. **Credentials and server:**

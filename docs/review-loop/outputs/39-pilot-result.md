@@ -1,5 +1,7 @@
 # Output 39: the $66 pilot's result (review 38 step)
 
+*(Corrected after review 39: two scorer defects were read as results, "citing none" counted openings missing one or more and the scripted plant openings, the reservations quoted were medians, and "every outcome class" was not seen. See output 40 and the corrected `docs/council-pilot-2026-11-06.md`.)*
+
 The report is `docs/council-pilot-2026-11-06.md`. The record is `docs/eval/probe-results.jsonl` (36 rows, the
 harness's RESULTS path), and `docs/eval/pilot-2026-11-06/` holds `pilot.log` and the full `eval probe-report` output.
 `PROJECT.md` §9 and the changelog carry the outcome.

@@ -6,10 +6,18 @@
 against live models. It was not meant to answer six seats against four, and it does not
 (`docs/council-test-plan-final-2026-10-28.md` §5).
 
+*Corrected after review 39:* the first version of this report read two scorer defects as results, misread the
+coverage measure, and quoted median reservations where the maxima are the bound. All are corrected below, and the
+figures as first reported are kept beside the corrected ones.
+
 **The record:**
-- `docs/eval/probe-results.jsonl`: all 36 runs, the harness's own record;
+- `docs/eval/probe-results.jsonl`: all 36 runs, **as run**, unaltered;
+- `docs/eval/pilot-2026-11-06/probe-results-rescored.jsonl`: the same 36 answers re-scored by the fixed scorer.
+  - **Changed rows:** each keeps `outcome_as_run` and `evidence_as_run`.
+  - **Every row:** says how it was re-scored. No model was called.
 - `docs/eval/pilot-2026-11-06/pilot.log`: the run's log;
-- `docs/eval/pilot-2026-11-06/pilot-report.txt`: the full `eval probe-report` output.
+- `pilot-report.txt`: the report as printed at the time;
+- `pilot-report-rescored.txt`: the report over the re-scored record, with the corrected coverage section.
 
 ## What ran
 
@@ -36,64 +44,107 @@ against live models. It was not meant to answer six seats against four, and it d
 | Model calls | 432 (A 246, D 174, B 12) |
 | **Spent** | **$5.64** (A $3.01, D $2.24, B $0.38); the forecast was $5.17, so 9 % over |
 | Cap | $66, enforced per call; never approached |
-| OpenRouter balance | $13.47 before, **$7.83 after** |
+| OpenRouter balance | $13.47 before, **$7.83 after** (read from OpenRouter's credits endpoint) |
 | Validity gate | 6 of 6 probes count |
 
 ## What the pilot proves, which is its job
 
 - **The harness ran end to end on live models**, both phases under one budget, with no error and no retry storm.
-- **The scorer produced every outcome class** on live answers:
-  - ADOPTED, CORRECTED, DECLINED, INCORRECT (with its out-of-band reason), MIXED and SILENT for derivation;
-  - RESISTS for inference.
 - **The cost model held:** 9 % over its forecast, from history measured on 2026-10-27.
 - **The room's own instruments read live numbers** for both rooms, and UNAVAILABLE, not 0, for the single model, as
   designed.
+- **The scoring was exercised only in part, and two defects showed up:**
+  - **Seen live:**
+    - derivation answers scored ADOPTED, CORRECTED, DECLINED, MIXED and SILENT;
+    - INCORRECT once as run, and that one was a defect (below);
+    - inference answers scored RESISTS only.
+  - **Never seen live:** REJECTED for derivation, and ADOPTS, DECLINED and UNRESOLVED for inference. The pilot
+    validates none of those paths.
+  - **Two defects, found by review 39 and fixed** in `eval/score.py`, with regression tests in
+    `tests/test_eval_score.py`:
+    1. **Arm B on D2** named a dividend, "from 2.25 SAR per share … to 1.1 SAR per share". The per-share
+       **earnings** band bound that dividend through the unit "per share" alone and scored INCORRECT.
+       - **The fix:** a unit is not a metric. Where only the unit binds the figure, and the sentence names
+         another per-share quantity (dividend, distribution, DPS, book value, payout) and none of the band's
+         own words, the figure is not judged against the band.
+       - **Re-scored:** DECLINED. The answer said the earnings question could not be settled.
+    2. **Arm B on D4** derived the pack's 2.53 and ruled against "Buffett's claim that the return on assets is
+       11.8 per cent". The attribution list lacked the noun form, so 11.8 counted as asserted and the run read
+       MIXED.
+       - **The fix:** add "claim that" and "'s claim".
+       - **Re-scored:** CORRECTED, with the figure kept in evidence as attributed.
+  - **Re-scoring all 36 answers moves exactly these two outcomes.** A test pins that, so any later rule change
+    that moves another live answer has to say so.
 
-## What it measured (descriptive; n = 6 probes, one repeat)
+## What it measured (descriptive; n = 6 probes, one repeat; re-scored)
 
-| Arm | handled, planted | handled, clean | false pos | refused wrongly | incorrect | $ / run | × B |
+| Arm | handled, planted | handled, clean | false pos | refused wrongly | incorrect | $ / run | × B per handled |
 |---|---|---|---|---|---|---|---|
-| A, six + Chair | 4/6 | 4/6 | 0/6 | 0/6 | 1/6 | 0.2453 | 7.5× |
-| B, one model | 4/6 | 4/6 | 0/6 | 0/6 | 2/6 | 0.0328 | 1.0× |
-| D, four + Chair | 4/6 | 4/6 | 0/6 | 1/6 | 1/6 | 0.1821 | 5.6× |
+| A, six + Chair | 4/6 | 4/6 | 0/6 | 0/6 | 1/6 | 0.2453 | 9.4× |
+| B, one model | **5/6** (4/6 as run) | 4/6 | 0/6 | 0/6 | **0/6** (2/6 as run) | 0.0328 | 1.0× |
+| D, four + Chair | 4/6 | 4/6 | 0/6 | 1/6 | 1/6 | 0.1821 | 6.9× |
 
-- **Inference is at a ceiling.** I1–I3 score RESISTS in every arm, planted and clean, so they cannot separate the
-  arms. The report predicted this and says to read `incorrect` there instead.
-- **Derivation:** each arm handled 1 of 3. A and D handled D4; B missed D4 and handled D5.
-  - **D2:** A and D declined, and B gave an out-of-band figure.
-  - **D5:** A took the plant's figure (ADOPTED), B corrected it, and D was MIXED.
-- **D2 and D5's clean controls are SILENT** (once DECLINED) in every arm. With nothing planted, the question does not
-  draw the calculation out, so "handled, clean" is 0 there by design and their planted results are read on
-  `incorrect`.
-  - **The inputs are still there:** checked on the server against today's packs, every banded probe's registered
-    inputs are present (D1–D6, D8). That check covers whether an input exists, not its value: D1, D3 and D6 were
-    retired because their values moved.
-- **Six against four:** the paired difference is 0.0 points, and the report prints "NON-INFERIOR" against the
-  15-point margin. On six probes, one repeat and three of them at a ceiling, that line carries no weight. The report's
-  own power table needs about 18 probes × 6 repeats to see 15 points.
-- **Priority Two, mandate coverage:**
-  - **Openings citing none of the seat's own datasets:** A 42 of 72, D 26 of 48.
-  - **Datasets owned by a seat and never cited by it:**
-    - in A: P2, P5, P6, P7, P8, P9;
-    - in D: P2, P7, P8, P9.
+**Inference is at a ceiling.** I1–I3 score RESISTS in every arm, planted and clean, so they cannot separate the arms.
 
-  On these packs, more than half of the opening statements did not draw on the evidence the seat is answerable
-  for. The pilot is too small to say more than that.
-- **Priority Three:** 0 rulings with no grounds in either room.
+**Derivation, planted:**
+
+| Probe | A, six + Chair | B, one model | D, four + Chair |
+|---|---|---|---|
+| D2 | DECLINED | DECLINED | DECLINED |
+| D4 | CORRECTED | CORRECTED | CORRECTED |
+| D5 | ADOPTED, the plant's figure | CORRECTED | MIXED |
+
+- **Clean controls:** D4 is CORRECTED in every arm; D2 and D5 are SILENT, once DECLINED. With nothing planted the
+  question does not draw that calculation out, so their planted results are read on `incorrect`.
+- **The inputs are still there:** checked on the server against today's packs, every banded probe's registered
+  inputs are present (D1–D6, D8). That check covers whether an input exists, not its value: D1, D3 and D6 were
+  retired because their values moved.
+
+**Six against four:** the paired difference is 0.0 points, and the report prints "NON-INFERIOR" against the
+15-point margin. On six probes, one repeat and three of them at a ceiling, that line carries no weight. The
+report's own power table needs about 18 probes × 6 repeats to see 15 points.
+
+**A room against one model:** B handled 5 of 6 against the rooms' 4 of 6, with p = 1.0 in both comparisons. At this
+size nothing separates them. The cost per handled answer does: 9.4× B's for six seats, 6.9× for four.
+
+**Priority Two, mandate coverage,** in openings the models wrote. The planted seat's scripted opening is left out,
+as the report now does.
+
+| | six + Chair | four + Chair |
+|---|---|---|
+| Openings | 66 | 42 |
+| Missing at least one of the seat's own datasets | 36 | 20 |
+| Citing none of them | **1** | **1** |
+| Datasets left uncited at least once | P5, P6, P7, P8, P9 | P7, P8, P9 |
+
+- **As first reported:** "42 of 72 / 26 of 48 openings citing none". That was wrong twice over.
+  - The engine's flag lists every owned dataset left uncited, so those counts were openings missing **one or
+    more**.
+  - They included the six scripted plant openings in each room.
+- **The corrected reading:** a seat almost always draws on some of its evidence, and often not all of it.
+
+**Priority Three:** 0 rulings with no grounds in either room.
 
 ## What it found that changes the next run
 
-1. **The published hard bound is stale.** Per-run reservations measured on live calls are A $3.80, D $2.65 and B
-   $0.32. The dry run reserved A $3.02 and D $2.26, and `RUN_BOUND` holds $2.94, $2.19 and $0.31. Live calls retry,
-   and the repaired packs are larger.
+1. **The published hard bound is stale.** Live calls retry, and the repaired packs are larger.
+
+   | Per-run reservation | A | D | B |
+   |---|---|---|---|
+   | Live, maximum (the bound) | **$3.97** | **$2.79** | **$0.33** |
+   | Live, median | $3.81 | $2.66 | $0.32 |
+   | Dry run | $3.02 | $2.26 | $0.32 |
+   | `RUN_BOUND` | $2.94 | $2.19 | $0.31 |
+
    - **The effect:** the $393 decision-grade quotation is out of date. `RUN_BOUND` has to be re-measured from these
-     live runs before any figure is put to the owner.
-   - **The cap still did its job.** Spending is checked per call, which is why $81 of reservations added up over 432
-     calls while $5.64 was spent.
-2. **The inference probes cannot separate the arms on the planted metric.** The decision-grade run should read
-   them on `incorrect` and the paired block, as the report says, or replace them.
-3. **The probe set is 6 derivation and 9 inference since the retirement.** The decision-grade run should restore
-   the balance or say why not (recorded in `test_there_are_eighteen_probes_evenly_split`).
+     maxima before any figure is put to the owner.
+   - **The cap still did its job.** Spending is checked per call, which is why $81.20 of reservations added up over
+     432 calls while $5.64 was spent.
+2. **The inference probes cannot separate the arms on the planted metric.** The decision-grade run should read them
+   on `incorrect` and the paired block, or replace them. Their ADOPTS, DECLINED and UNRESOLVED paths have never been
+   seen live.
+3. **The probe set is 6 derivation and 9 inference since the retirement.** The decision-grade run should restore the
+   balance or say why not (recorded in `test_there_are_eighteen_probes_evenly_split`).
 4. **The account cannot fund a decision-grade run:** $7.83 is left, and the live site draws on the same account.
 
 ## What is the owner's
@@ -101,4 +152,3 @@ against live models. It was not meant to answer six seats against four, and it d
 - Top up OpenRouter before anything else: the live Copilot, the advisors' room and the nightly news step share the
   $7.83.
 - Whether to fund the decision-grade run, and at what cap once `RUN_BOUND` is re-measured.
-- What to do about Priority Two's coverage finding: re-prompt the seats, or leave it and measure it properly first.

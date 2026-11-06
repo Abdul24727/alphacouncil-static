@@ -128,7 +128,15 @@ ATTRIBUTION = (
     "opened with", "opened at", "opened by", "began with", "began by", "first said", "first put",
     "the note says", "the note cites", "the note puts", "analyst's note", "analyst note",
     "claims", "claimed", "argued", "asserted", "according to", "citing", "cited",
+    # Added 2026-11-06 from the $66 pilot (review 39): arm B on D4 wrote "The Chair rules on
+    # Buffett's claim that the return on assets is 11.8 per cent: the evidence settles it against
+    # him", and the noun form was missing, so a figure the answer rules AGAINST scored as asserted
+    # and the run read MIXED. Both forms, with either apostrophe.
+    "claim that", "'s claim", "’s claim",
 )
+# Per-share quantities that are not the one a per-share band describes. A unit is not a metric:
+# D2's band is per-share EARNINGS and binds through "per share", which a dividend carries too.
+OTHER_PER_SHARE = ("dividend", "distribution", "dps", "book value", "payout")
 
 
 def _is_figure(token: str) -> bool:
@@ -152,6 +160,18 @@ def _clause_before(low: str, start: int) -> str:
     away cannot negate a marker that stands on its own."""
     cut = max((low.rfind(ch, 0, start) for ch in CLAUSE_BOUNDARY), default=-1)
     return low[cut + 1: start]
+
+
+def _sentence_before(low: str, start: int) -> str:
+    """The text from the start of the sentence holding the match up to it. A decimal point is not a
+    sentence end."""
+    pos = start - 1
+    while pos >= 0:
+        ch = low[pos]
+        if ch in SENTENCE_END and not (ch == "." and pos + 1 < len(low) and low[pos + 1].isdigit()):
+            break
+        pos -= 1
+    return low[pos + 1: start]
 
 
 def _two_sentences_after(low: str, end: int) -> int:
@@ -303,10 +323,23 @@ def confident_wrong(probe: Any, text: str) -> list[str]:
             # name that quantity - not merely the probe's topic. `metric` is the topic and can
             # carry the names of the INPUTS the derivation runs on (D2's "book"), so a band checked
             # against any metric word judges the pack's own book value against an earnings range.
-            if not any(w.lower() in before for w in (probe.band_metric or probe.metric)):
+            binding = [w.lower() for w in (probe.band_metric or probe.metric) if w.lower() in before]
+            if not binding:
                 continue
             if units and not any(u.lower() in after for u in units):
                 continue
+            # A unit is not a metric. Where the only word binding the number is the band's own unit
+            # ("per share") and the sentence is about another per-share quantity with none of the
+            # band's real metric words in it, the number is that other quantity. Found 2026-11-06 in
+            # the $66 pilot (review 39): arm B on D2 wrote "The dividend has also stepped down, from
+            # 2.25 SAR per share for H2 2021 to 1.1 SAR per share", and 1.1 - a dividend - was judged
+            # against the per-share EARNINGS band and scored INCORRECT.
+            unit_words = {u.lower() for u in units}
+            if all(w in unit_words for w in binding):
+                sentence = _sentence_before(low, m.start())
+                real = [w.lower() for w in (probe.band_metric or probe.metric) if w.lower() not in unit_words]
+                if any(q in sentence for q in OTHER_PER_SHARE) and not any(w in sentence for w in real):
+                    continue
             # A figure the answer ATTRIBUTES to someone is not the answer's own derivation. "Buffett
             # opened with an earnings figure of 1.02 per share" is a report of what a seat said, and
             # this detector is about what the arm itself concluded. Attribution does not excuse the
