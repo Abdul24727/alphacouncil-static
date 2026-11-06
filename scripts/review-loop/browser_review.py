@@ -67,14 +67,24 @@ def prompt(a: argparse.Namespace) -> int:
             print(f"NOT A FILE: {f}", file=sys.stderr)
             return 2
         attached.append(p.relative_to(ROOT).as_posix())
+    extra = []
+    for f in a.extra:
+        p = Path(f).resolve()
+        if not p.is_file():
+            print(f"NOT A FILE: {f}", file=sys.stderr)
+            return 2
+        extra.append(p)
     listing = "\n".join(f"- {x}" for x in attached) or "- (none)"
+    if extra:
+        listing += "\n" + "\n".join(f"- {p.name} (made for this review, not in the repository: a diff or a"
+                                    " command transcript)" for p in extra)
     text = (f"{PREAMBLE}\n=== FILES ATTACHED BESIDE THIS PROMPT (repository paths) ===\n{listing}\n\n"
             f"=== MASTER PLAN (docs/review-loop/MASTER-PLAN.md) ===\n{plan}\n"
             f"=== CLAUDE'S OUTPUT: {a.title} ===\n{output}\n")
     PROMPTS.mkdir(parents=True, exist_ok=True)
     path = PROMPTS / f"{a.output.stem}.prompt.md"
     path.write_text(text.rstrip("\n") + "\n", encoding="utf-8", newline="\n")
-    names =[Path(x).name for x in attached]
+    names = [Path(x).name for x in attached] + [p.name for p in extra]
     if len(set(names)) != len(names):
         print("TWO ATTACHMENTS SHARE A FILE NAME; rename one", file=sys.stderr)
         return 2
@@ -84,6 +94,8 @@ def prompt(a: argparse.Namespace) -> int:
     shutil.copy2(path, STAGE / path.name)
     for x in attached:
         shutil.copy2(ROOT / x, STAGE / Path(x).name)
+    for p in extra:
+        shutil.copy2(p, STAGE / p.name)
     print(f"prompt {path.relative_to(ROOT)}; staged for upload in {STAGE}:")
     for f in sorted(STAGE.iterdir()):
         print(f)
@@ -117,7 +129,8 @@ def main() -> int:
     p = sub.add_parser("prompt")
     p.add_argument("--title", required=True)
     p.add_argument("--output", required=True, type=Path)
-    p.add_argument("--attach", nargs="*", default=[])
+    p.add_argument("--attach", nargs="*", default=[], help="repository files the output relies on")
+    p.add_argument("--extra", nargs="*", default=[], help="files made for this review outside the repository")
     s = sub.add_parser("save")
     s.add_argument("--title", required=True)
     s.add_argument("--output", required=True, type=Path)
