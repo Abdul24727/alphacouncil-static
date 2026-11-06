@@ -161,6 +161,17 @@ class ProbeResult:
     evidence: list[str] = field(default_factory=list)
     gate_hits: list[str] = field(default_factory=list)
     challenged: bool = False  # a room contested the planted claim in the round of challenges
+    # Every turn the room's page would show, as the engine saved it, each with its own `usage`: model,
+    # tokens, cost and seconds, `scripted` for the plant's opening (which costs nothing) and
+    # `simulated` on a dry run, whose costs are not real. Kept since 2026-11-06 (review 61): the pilot
+    # kept only the final answer and summary flags, enough to score the answer but not to audit what
+    # a visitor reads, nor to price a session turn by turn. Empty on a single-model arm, whose whole
+    # output is `headline` and `answer`.
+    turns: list[dict[str, Any]] = field(default_factory=list)
+    # Seconds from the start of the run to the first turn a visitor would see - the first one that is
+    # not an absent seat. A single-model arm's answer arrives whole, so there it is the run's seconds.
+    # On a dry run it times the stand-in, not a model.
+    first_turn_seconds: float | None = None
 
 
 def finish(r: ProbeResult, pack: Any, probe: Any) -> ProbeResult:
@@ -216,6 +227,48 @@ def with_plant(base: Any, probe: Any, planted: bool):
         return await base(seat=seat, stage=stage, state=state, check=check, **kw)
 
     return ask
+
+
+# --- what a room shows, and what each turn cost -------------------------------------------------
+
+
+def usage_record(usage: Any, dry: bool) -> dict[str, Any]:
+    """One turn's usage as the record keeps it. `None` - a turn with nothing billed - is zeros, not
+    missing: a blank would read as unknown cost where the cost was nothing."""
+    model = getattr(usage, "model", None) if usage is not None else None
+    return {
+        "model": model,
+        "prompt_tokens": int(getattr(usage, "prompt_tokens", 0) or 0),
+        "completion_tokens": int(getattr(usage, "completion_tokens", 0) or 0),
+        "cost_usd": round(float(getattr(usage, "cost_usd", None) or 0.0), 6),
+        "seconds": round(float(getattr(usage, "seconds", 0.0) or 0.0), 2),
+        "scripted": model == "scripted",
+        "simulated": dry,
+    }
+
+
+class TurnLog:
+    """Every turn a room shows, with what it cost, and when the first one reached the screen.
+
+    It is the engine's own two callbacks, kept rather than discarded: `save(turn, usage)` - called for
+    every turn, an absent seat's included, with the usage of its failed attempts (F-7) - and
+    `emit(event)`, the stream the page follows live."""
+
+    def __init__(self, dry: bool) -> None:
+        self.dry = dry
+        self.turns: list[dict[str, Any]] = []
+        self.started = time.monotonic()
+        self.first_turn_seconds: float | None = None
+
+    async def save(self, turn: dict[str, Any], usage: Any) -> None:
+        self.turns.append({**turn, "usage": usage_record(usage, self.dry)})
+
+    def emit(self, event: dict[str, Any]) -> None:
+        if self.first_turn_seconds is not None or event.get("type") != "turn":
+            return
+        data = (event.get("turn") or {}).get("data")
+        if isinstance(data, dict) and not data.get("absent"):
+            self.first_turn_seconds = round(time.monotonic() - self.started, 2)
 
 
 # --- the room: arms A and D --------------------------------------------------------------------
@@ -274,14 +327,11 @@ async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool
         base, calls = metered_asker(settings, budget) if budget else council_asker(settings, {})
     ask = with_plant(base, probe, planted)
 
-    turns: list[dict[str, Any]] = []
-
-    async def save(turn: dict[str, Any], usage: Any) -> None:
-        turns.append(turn)
-
-    started = time.monotonic()
+    log = TurnLog(dry)
+    turns = log.turns
+    started = log.started
     try:
-        state = await Debate(ctx, ask, lambda _e: None, save).run()
+        state = await Debate(ctx, ask, log.emit, log.save).run()
         v = state.verdict or {}
         r.headline, r.answer = v.get("headline", ""), v.get("answer", "")
         r.gaps, r.disagreements = list(v.get("gaps") or []), list(v.get("disagreements") or [])
@@ -291,6 +341,7 @@ async def run_room(probe: Any, arm: str, repeat: int, locale: str, planted: bool
     r.seconds = round(time.monotonic() - started, 2)
     r.cost_usd, r.calls = round(calls["cost"], 6), int(calls["n"])
     r.bound_usd = round(calls.get("bound", 0.0), 6)
+    r.turns, r.first_turn_seconds = turns, log.first_turn_seconds
     r.absent = sorted({t["seat"] for t in turns if isinstance(t.get("data"), dict) and t["data"].get("absent")})
     r.openings, r.uncovered, r.unruled = room_flags(turns)
     if planted:
@@ -420,6 +471,8 @@ async def run_single(probe: Any, arm: str, repeat: int, locale: str, model: str,
     except Exception as exc:
         r.error = describe(exc)
     r.seconds = round(time.monotonic() - started, 2)
+    # The answer arrives whole, so the first thing a visitor sees comes when the run ends.
+    r.first_turn_seconds = r.seconds if r.ok else None
     r.cost_usd, r.calls = round(spend["cost"], 6), int(spend["n"])
     r.bound_usd = round(spend.get("bound", 0.0), 6)
     return finish(r, pack, probe)

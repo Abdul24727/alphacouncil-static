@@ -462,3 +462,111 @@ def test_select_takes_several_ids_and_refuses_retired_or_unknown_ones():
     for bad in ("D1", "D2,D3", "D2,X9", "omission", ""):
         with pytest.raises(SystemExit):
             probe_run.select(bad)
+
+
+# --- the turn log (review 61): every displayed turn, its cost, and the time to the first one --------
+
+
+def test_the_turn_log_keeps_every_turn_with_its_usage_failed_and_scripted_included():
+    """A failed seat's attempts are billed (F-7) and arrive as the absent turn's usage; the plant's
+    scripted opening costs nothing and says so; a turn with no usage records zeros, not a blank."""
+    from app.debate.llm import Usage
+    from eval.probe_run import TurnLog
+
+    log = TurnLog(dry=False)
+    ok = {"stage": "openings", "round": 1, "seat": "dalio", "data": {"text": "x"}, "flags": {}}
+    absent = {"stage": "openings", "round": 1, "seat": "lynch", "data": {"absent": True, "error": "bad_output"}, "flags": None}
+    scripted = {"stage": "openings", "round": 1, "seat": "buffett", "data": {"text": "plant"}, "flags": {}}
+    asyncio.run(log.save(ok, Usage(model="m", prompt_tokens=100, completion_tokens=50, cost_usd=0.01, seconds=1.234)))
+    asyncio.run(log.save(absent, Usage(model="m", cost_usd=0.004)))
+    asyncio.run(log.save(scripted, Usage(model="scripted")))
+    asyncio.run(log.save({"stage": "verdict", "round": None, "seat": "chair", "data": {}}, None))
+
+    assert [t["seat"] for t in log.turns] == ["dalio", "lynch", "buffett", "chair"]
+    assert log.turns[0]["usage"] == {"model": "m", "prompt_tokens": 100, "completion_tokens": 50, "cost_usd": 0.01,
+                                     "seconds": 1.23, "scripted": False, "simulated": False}
+    assert log.turns[1]["data"]["absent"] and log.turns[1]["usage"]["cost_usd"] == 0.004
+    assert log.turns[2]["usage"]["scripted"] and log.turns[2]["usage"]["cost_usd"] == 0.0
+    assert log.turns[3]["usage"]["cost_usd"] == 0.0 and log.turns[3]["usage"]["model"] is None
+    assert round(sum(t["usage"]["cost_usd"] for t in log.turns), 6) == 0.014
+    assert ok == {"stage": "openings", "round": 1, "seat": "dalio", "data": {"text": "x"}, "flags": {}}, "the turn was mutated"
+
+
+def test_the_first_turn_time_is_the_first_turn_a_visitor_sees():
+    """Stage events and an absent seat show nothing, so they do not stop the clock; the first real turn
+    does, and later turns do not move it."""
+    from eval.probe_run import TurnLog
+
+    log = TurnLog(dry=True)
+    log.emit({"type": "stage", "stage": "brief"})
+    log.emit({"type": "turn", "turn": {"seat": "lynch", "data": {"absent": True}}})
+    assert log.first_turn_seconds is None
+    log.emit({"type": "turn", "turn": {"seat": "chair", "data": {"question": "q"}}})
+    first = log.first_turn_seconds
+    assert first is not None and first >= 0
+    log.emit({"type": "turn", "turn": {"seat": "dalio", "data": {"text": "x"}}})
+    assert log.first_turn_seconds == first
+
+
+@needs_packs
+def test_a_paid_room_records_every_turn_and_its_cost_adds_up_to_the_run(monkeypatch):
+    """The reconciliation the comparison rests on, without a model: a room run through the real
+    metering path with a fake paid model. One seat fails its opening (billed $0.004), the plant's
+    opening is scripted (free), every other call costs $0.01. Every turn is kept, and the turns' costs
+    add up exactly to the run's total."""
+    from app.debate import roster
+    from app.debate.llm import SeatError, Usage
+    from app.debate.standin import make_asker
+    from app.settings import get_settings
+    from eval import probe_run
+    from eval.budget import metered
+    from eval.probes import BY_ID, PLANT_SEAT
+    from eval.questions import CELLS, PROBE_CELLS
+    from eval.run import load_pack
+
+    probe = BY_ID["I3"]
+    cell = {c.key: c for c in CELLS + PROBE_CELLS}[probe.cell]
+    pack = load_pack(cell.ticker, "en")
+    advisors = roster.sitting(roster.advisors(get_settings().debate_advisors), pack.ticker_key)
+    standin = make_asker(pack, advisors, "en", cell.question)
+    failing = next(a.id for a in advisors if a.id != PLANT_SEAT)
+
+    async def paid(**kw):
+        if kw["stage"] == "openings" and kw["seat"].id == failing:
+            raise SeatError("bad_output", usage=Usage(model=kw["model"], cost_usd=0.004))
+        checked, _ = await standin(**kw)
+        return checked, Usage(model=kw["model"], prompt_tokens=10, completion_tokens=5, cost_usd=0.01)
+
+    monkeypatch.setattr(probe_run, "metered_asker", lambda _settings, budget: metered(paid, budget))
+    r = asyncio.run(probe_run.run_room(probe, "A", 1, "en", planted=True, dry=False,
+                                       budget=Budget(cap_usd=1000.00, attempts=3)))
+    assert r.ok, r.error
+    assert r.absent == [failing]
+    stages = [t["stage"] for t in r.turns]
+    assert stages.count("brief") == 1 and stages.count("faultlines") == 1 and stages.count("verdict") == 1
+    assert stages.count("openings") == len(advisors), "every seat's opening, the absent and scripted ones included"
+    assert all("usage" in t for t in r.turns)
+    scripted = [t for t in r.turns if t["usage"]["scripted"]]
+    assert [(t["seat"], t["stage"]) for t in scripted] == [(PLANT_SEAT, "openings")]
+    assert not any(t["usage"]["simulated"] for t in r.turns)
+    absent = next(t for t in r.turns if t["seat"] == failing and t["stage"] == "openings")
+    assert absent["data"]["absent"] and absent["usage"]["cost_usd"] == 0.004
+    assert round(sum(t["usage"]["cost_usd"] for t in r.turns), 6) == round(r.cost_usd, 6)
+    assert r.first_turn_seconds is not None and r.first_turn_seconds <= r.seconds
+
+
+@needs_packs
+def test_a_dry_room_labels_its_turns_simulated_and_a_single_model_times_its_one_answer():
+    from eval import probe_run
+    from eval.probes import BY_ID
+
+    r = asyncio.run(probe_run.run_room(BY_ID["I3"], "A", 1, "en", planted=False, dry=True,
+                                       budget=Budget(cap_usd=1000.00, attempts=3)))
+    assert r.ok, r.error
+    assert len(r.turns) == 21, len(r.turns)  # 6 seats x 3 rounds and 3 Chair turns
+    assert all(t["usage"]["simulated"] and not t["usage"]["scripted"] for t in r.turns)
+    assert r.first_turn_seconds is not None
+
+    b = asyncio.run(probe_run.run_single(BY_ID["I3"], "B", 1, "en", "anthropic/claude-sonnet-5.5", False, True,
+                                         False, Budget(cap_usd=1000.00, attempts=3)))
+    assert b.ok and b.turns == [] and b.first_turn_seconds == b.seconds
