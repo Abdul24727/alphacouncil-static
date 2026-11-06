@@ -30,3 +30,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-06 06:04 UTC — **Capital panel caption verified (review 25 fixes)** — FIX — [26-capital-panel-caption-verified-review-25-fixes.md](replies/26-capital-panel-caption-verified-review-25-fixes.md)
 - 2026-11-06 06:25 UTC — **Capital panel columns spaced; candidate dfc7a3d (review 26 step)** — ACCEPT — [27-capital-panel-columns-spaced-candidate-dfc7a3d-rev.md](replies/27-capital-panel-columns-spaced-candidate-dfc7a3d-rev.md)
 - 2026-11-06 06:35 UTC — **Pre-push audit of ccfe063..9712418 (review 27 step)** — FIX — [28-pre-push-audit-of-ccfe063-9712418-review-27-step.md](replies/28-pre-push-audit-of-ccfe063-9712418-review-27-step.md)
+- 2026-11-06 06:39 UTC — **Audit record corrected: categories and both env templates (review 28 step)** — ACCEPT — [29-audit-record-corrected-categories-and-both-env-tem.md](replies/29-audit-record-corrected-categories-and-both-env-tem.md)
