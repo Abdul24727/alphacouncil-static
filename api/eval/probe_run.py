@@ -59,11 +59,12 @@ CELL = {c.key: c for c in CELLS + PROBE_CELLS}
 # Re-measured 2026-11-06 from the $66 pilot's 36 live runs (12 an arm) on today's larger packs:
 # A 0.251074, D 0.187033, B 0.031847. The 2026-10-27 figures were A 0.2257, D 0.1759, B 0.0292. E is
 # unchanged: no E run has been made.
-# P (the presenter, app/debate/presenter.py) is PROVISIONAL, never measured live: its dry reservation (mean
-# $1.239651 a run, re-measured 2026-11-07 after review 65; $1.2391 on 2026-11-06) times the room's measured
-# cost-to-dry-reservation ratio (A: 0.2511 / 3.0050), rounded up.
-# Replace it with the comparison's live mean.
-RUN_COST = {"A": 0.2511, "D": 0.1870, "B": 0.0318, "E": 0.0640, "P": 0.1036}
+# P (the presenter, app/debate/presenter.py) is MEASURED LIVE since 2026-11-07: the mean of the paid A-vs-P
+# comparison's 30 P runs from d7c2091, the failed one's $0.254744 included (0.145376). Its provisional figure
+# was 0.1036, from the dry reservation; plan retries by the analyst, which no dry run makes, are most of the gap.
+# The same run measured A at 0.233157 over 30 runs; A keeps the pilot's larger 0.2511, as a forecast that
+# only decides whether the next run fits under the cap.
+RUN_COST = {"A": 0.2511, "D": 0.1870, "B": 0.0318, "E": 0.0640, "P": 0.1454}
 # The WORST case per run, not the forecast above. MEASURED, not calculated beside the runner: these
 # are the largest reservations `eval probe --dry` actually took over the whole plan, arm by arm,
 # with every stand-in call going through the same `metered` wrapper a paid call does. Re-measure
@@ -108,11 +109,11 @@ RUN_COST = {"A": 0.2511, "D": 0.1870, "B": 0.0318, "E": 0.0640, "P": 0.1036}
 # so far - not a guarantee: a future transcript can be longer. What guarantees the spend is the cap,
 # which the Budget enforces against every call's own reservation. E was not re-measured (it is not in
 # any planned run) and keeps its 2026-10-28 value.
-# P is PROVISIONAL: its dry maximum (1.262354, the 60-run comparison plan, 2026-11-06; the same on 2026-11-07
-# after review 65) scaled by the room's
-# measured live-to-dry ratio (A: 3.971305 / 3.154860 = 1.2588), rounded up, because live prompts carry the
-# real transcript. Replace it with the comparison's live maximum.
-RUN_BOUND = {"A": 3.9714, "D": 2.7929, "B": 0.3304, "E": 0.6254, "P": 1.5891}
+# RE-MEASURED 2026-11-07 by the paid A-vs-P comparison (60 live runs from d7c2091): A's largest live
+# reservation was 4.008858, above the pilot's 3.971305, so A rises to it. P was PROVISIONAL at 1.5891 (its
+# dry maximum 1.262354 times A's live-to-dry ratio); its live maximum is 1.358244, and the larger of its dry
+# and live maxima, rounded up, is that one.
+RUN_BOUND = {"A": 4.0089, "D": 2.7929, "B": 0.3304, "E": 0.6254, "P": 1.3583}
 
 SHAPE = (
     '{"headline": "the answer in at most 16 words, no figures", '
