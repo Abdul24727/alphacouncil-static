@@ -294,6 +294,10 @@ Older entries: `changelog-archive.md`.
   - **The paid comparison STARTED 2026-11-07 00:31 local (21:31 UTC 11-06)** from `d7c2091`, staged as
     `/root/comparison-d7c2091` with an empty record. It runs as the server job `acp-comparison`, with the balance
     at $37.83 and a $10.64 forecast against the $167 cap.
+  - **It FINISHED about 01:45 local, 2026-11-07:** 60 distinct records, **$11.36 spent** (A $6.99, P $4.36).
+    One session failed: P I3 clean, where the analyst's plan was refused on all three attempts ($0.25, no turns).
+    The record and log are in `docs/eval/presenter-comparison/` (`probe-results.jsonl`, `comparison.log`); the
+    pilot's and earlier records are unchanged (`git diff --quiet`). No result is reported before the hand audit.
   - **Before the app may use it:** the app's session total must count the calls a fallback superseded.
 
 ## 6. Current State

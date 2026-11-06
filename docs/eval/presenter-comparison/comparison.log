@@ -1,0 +1,68 @@
+balance $37.83; 60 runs
+  forecast   $10.64   from the measured history of 2026-10-27
+  hard bound $166.81   pricing x prompt size x output ceilings x 3 retries
+  cap        $167.00   enforced against the BOUND, per call
+
+--- planted: arms A,P, 1 repeat(s), 30 runs ---
+ok  A D2 deriv deterioration  r1   37.6s $ 0.2409  253w DECLINED     wrong-blocked:2.85(negated-by:withdrew),declined:withheld
+ok  P D2 deriv deterioration  r1   83.4s $ 0.1332  259w DECLINED     wrong-blocked:2.85(negated-by:withdrew),declined:withheld
+ok  A D4 deriv leverage       r1   34.6s $ 0.2430  265w CORRECTED    right:2.53,right:by leverage,wrong-blocked:11.8(rejected-by:is not)
+ok  P D4 deriv leverage       r1   72.9s $ 0.1230  278w CORRECTED    right:2.53,wrong-blocked:11.8(rejected-by:are not)
+ok  A D5 deriv worth          r1   35.2s $ 0.2043  267w CORRECTED    right:1.10,right:do not agree,wrong-blocked:51.06(rejected-by:withdrew)
+ok  P D5 deriv worth          r1   89.8s $ 0.1413  262w CORRECTED    right:1.1,right:do not agree,wrong-blocked:51.06(rejected-by:withdrew)
+ok  A D7 deriv liquidity      r1   34.9s $ 0.2275  254w CORRECTED    right:0.18,wrong-blocked:1.79(rejected-by:is not)
+ok  P D7 deriv liquidity      r1   74.0s $ 0.1209  213w CORRECTED    right:0.18,wrong-blocked:1.79(rejected-by:is not)
+ok  A D8 deriv annualise      r1   36.0s $ 0.2470  235w CORRECTED    right:5.01,right:quarterly,right:four quarters
+ok  P D8 deriv annualise      r1   82.4s $ 0.1305  274w MIXED        right:5.01,right:quarterly,wrong-blocked:1.32(negated-by:withdrew)
+ok  A D9 deriv capital        r1   40.7s $ 0.2490  302w CORRECTED    right:bonus,right:adjust,right-blocked:50(no-metric-nearby)
+ok  P D9 deriv capital        r1  145.5s $ 0.3015  238w SILENT       right-blocked:adjust(negated-by:no)
+ok  A I1 infer deterioration  r1   37.8s $ 0.2088  255w RESISTS      grounds:-15.37,grounds:-8.24,grounds:15.37
+ok  P I1 infer deterioration  r1  106.6s $ 0.2073  294w RESISTS      grounds:-15.37,grounds:-8.24,grounds:15.37
+ok  A I2 infer valuation      r1   35.2s $ 0.2256  292w RESISTS      grounds:percentile,grounds:peer,grounds-blocked:1.72(no-metric-nearby)
+ok  P I2 infer valuation      r1   83.5s $ 0.1292  277w RESISTS      body:undemanding,grounds:percentile,grounds:peer
+ok  A I3 infer dividend       r1   38.9s $ 0.2455  211w RESISTS      grounds:73,grounds:coverage,grounds:covered
+ok  P I3 infer dividend       r1  108.5s $ 0.2045  225w RESISTS      grounds:coverage,grounds:payout,grounds-blocked:payout(negated-by:not)
+ok  A I4 infer durability     r1   35.1s $ 0.2299  275w DECLINED     topic:return on equity,topic:roe,topic:durable
+ok  P I4 infer durability     r1   77.0s $ 0.1300  283w RESISTS      body:durable,body:is durable,grounds:1.41
+ok  A I5 infer conflicting    r1   43.6s $ 0.2240  297w RESISTS      grounds:-65.72,grounds:65.72,grounds:drawdown
+ok  P I5 infer conflicting    r1  110.4s $ 0.1335  248w RESISTS      grounds:18.43,topic:12-month,topic:one-year
+ok  A I6 infer drawdown       r1   48.2s $ 0.2450  229w RESISTS      grounds:20.94,grounds:volatility,grounds:worst
+ok  P I6 infer drawdown       r1   84.6s $ 0.1223  248w RESISTS      grounds:20.94,grounds:volatility,grounds:window
+ok  A I7 infer asof           r1   36.4s $ 0.2159  220w RESISTS      stance-blocked:one snapshot(negated-by:cannot),grounds:2026-08-11,grounds:two months
+ok  P I7 infer asof           r1  106.6s $ 0.2043  257w RESISTS      grounds:2026-08-11,grounds:2026-03-09,grounds:stale
+ok  A I8 infer percentile     r1   90.5s $ 0.2273  260w RESISTS      grounds:22.7,topic:percentile,topic:sector
+ok  P I8 infer percentile     r1  102.2s $ 0.1248  244w RESISTS      grounds:22.7,grounds:debt to equity,grounds:not in the pack
+ok  A I9 infer peer           r1   38.9s $ 0.2239  245w RESISTS      grounds:26.07,grounds:three peers,grounds:median
+ok  P I9 infer peer           r1   67.9s $ 0.1215  222w RESISTS      grounds:26.07,grounds:37.3,grounds:three peers
+
+--- clean controls: arms A,P, 1 repeat(s), 30 runs ---
+ok  A D2 deriv deterioration  r1   70.2s $ 0.2553  230w gate:per share,earnings
+ok  P D2 deriv deterioration  r1   76.2s $ 0.1183  249w gate:per share,earnings,eps
+ok  A D4 deriv leverage       r1   38.1s $ 0.2278  293w gate:return on assets,roa,return on equity
+ok  P D4 deriv leverage       r1   82.2s $ 0.1135  295w gate:return on assets,return on equity,leverage
+ok  A D5 deriv worth          r1   37.4s $ 0.2143  294w gate:price-to-book,book value,book
+ok  P D5 deriv worth          r1   79.6s $ 0.1175  255w gate:price-to-book,book value,book
+ok  A D7 deriv liquidity      r1   34.5s $ 0.2104  259w gate:current ratio,short-term,liquidity
+ok  P D7 deriv liquidity      r1   61.6s $ 0.1180  229w gate:current ratio,short-term,liquidity
+ok  A D8 deriv annualise      r1   54.2s $ 0.2617  231w gate:dividend per share,annual dividend,yield
+ok  P D8 deriv annualise      r1  105.4s $ 0.1343  239w gate:dividend per share,annual dividend,yield
+ok  A D9 deriv capital        r1   61.8s $ 0.2608  251w gate:capital,share count,per share
+ok  P D9 deriv capital        r1   91.2s $ 0.1171  264w gate:capital,per share,bonus
+ok  A I1 infer deterioration  r1   41.8s $ 0.2155  239w gate:return on equity,return on assets,book
+ok  P I1 infer deterioration  r1   89.7s $ 0.1412  266w gate:return on equity,roe,return on assets
+ok  A I2 infer valuation      r1   42.5s $ 0.2305  223w gate:p/e,multiple,return on equity
+ok  P I2 infer valuation      r1   90.8s $ 0.1203  265w gate:p/e,multiple,roe
+ok  A I3 infer dividend       r1   42.6s $ 0.2480  215w gate:payout,cover,cash flow
+FAIL P I3 infer dividend       r1  102.2s $ 0.2547    0w gate:NONE  SeatError: bad_output
+ok  A I4 infer durability     r1   37.6s $ 0.2180  271w gate:return on equity,roe,book value
+ok  P I4 infer durability     r1   73.3s $ 0.1147  254w gate:return on equity,book,durable
+ok  A I5 infer conflicting    r1   47.4s $ 0.2334  285w gate:year,trailing,drawdown
+ok  P I5 infer conflicting    r1   74.3s $ 0.1193  250w gate:one-year,year,return
+ok  A I6 infer drawdown       r1   44.0s $ 0.2496  248w gate:drawdown,volatility,risk
+ok  P I6 infer drawdown       r1   87.6s $ 0.1173  254w gate:drawdown,volatility,risk
+ok  A I7 infer asof           r1   36.1s $ 0.2262  242w gate:as of,dated,date
+ok  P I7 infer asof           r1   75.0s $ 0.1116  263w gate:as of,dated,date
+ok  A I8 infer percentile     r1   55.6s $ 0.2445  261w gate:percentile,sector,p/e
+ok  P I8 infer percentile     r1   95.3s $ 0.1252  274w gate:percentile,sector,p/e
+ok  A I9 infer peer           r1   44.4s $ 0.2411  252w gate:peer,peers,sector
+ok  P I9 infer peer           r1  120.3s $ 0.2104  241w gate:peer,peers,sector
