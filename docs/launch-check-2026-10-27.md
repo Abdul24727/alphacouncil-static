@@ -164,6 +164,9 @@ ones.
 > are in, and passing (see "The owner's two runs (2026-11-02)" above). Goal 4's item 4 is met except for the
 > monitor's renewals line, which belongs to Step 18 (item 4) and cannot turn `ok` before a real renewal. The
 > text below is kept as it was written on 2026-10-27.
+> *(Corrected 2026-11-06, review 52: the renewals line can turn `ok` before a real renewal - any new renewals-job
+> summary with no unreachable renewal does it, an empty run included. Step 18's item 4 closes on a `renewal` payment
+> row on production with the monitor all ok beside it; see "Production monitor after the 2026-11-06 release".)*
 
 **Met:**
 
@@ -274,3 +277,6 @@ production on `b5655a5064`. **15 checks: 13 ok, 1 failing, 1 pending.** *(Correc
 
 Alerts: 3 emailed in 24 hours, 10 in 30 days, within the limits of 8 and 60. The outside check is pinged every
 round.
+
+The complete status output, captured again at **2026-11-06 12:40:01 UTC** with the same 13 ok, 1 failing and 1 pending,
+is `docs/screenshots/release-b5655a5064/monitor-status.txt`, verbatim.

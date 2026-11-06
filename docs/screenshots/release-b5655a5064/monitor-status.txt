@@ -1,0 +1,18 @@
+captured 2026-11-06T12:40:01Z
+ok      alphacouncil.tech/home: https://alphacouncil.tech/home answered 200 in 58 ms
+ok      alphacouncil.tech/api/v1/health: https://alphacouncil.tech/api/v1/health answered 200 in 38 ms
+ok      market data: the health check reports market data: ok
+ok      acp-prod-api: acp-prod-api is active
+ok      acp-prod-web: acp-prod-web is active
+ok      Pro renewals job: the last run exited 0
+ok      Pro renewals timer: acp-prod-billing.timer is active
+-       Moyasar for renewals: no renewal run since the last round
+ok      database backup job: the last run exited 0
+ok      database backup timer: acp-db-backup.timer is active
+ok      off-server backup copy: the owner's computer last copied the backups at 2026-11-06 06:00 UTC (09:00 Riyadh), 0.3 days ago (76 files, newest acp_prod-20261106T013413Z.dump)
+ok      disk /: / is 41% full (122.4 GB free)
+ok      disk /boot: /boot is 15% full (0.7 GB free)
+ok      TLS certificate: the certificate for alphacouncil.tech expires on 2027-01-21 16:54 UTC (19:54 Riyadh), in 76 days
+FAILING model account credit: $7.83 left on the model account - below $10. The advisors' room and the Copilot stop when it runs out, and the provider refuses with 402. Add credit at openrouter.ai/credits. (alert sent)
+alerts emailed: 3 in 24 hours (limit 8), 10 in 30 days (limit 60)
+outside check: PING_URL is set, pinged at the end of every round

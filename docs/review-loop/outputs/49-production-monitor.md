@@ -30,3 +30,13 @@ production on `b5655a5064`.
 `git diff --check` is clean. Documentation only.
 
 **The question for the review:** is this sound, and what is the single next pre-approved step?
+
+*Review 52's corrections:*
+- **The capture.** The complete status output is saved verbatim as
+  `docs/screenshots/release-b5655a5064/monitor-status.txt`, captured fresh at 2026-11-06 12:40:01 UTC. It shows 15
+  check lines: 13 `ok`, 1 `FAILING` (credit, $7.83) and 1 `-` (renewals). It holds no secret: the outside-check URL
+  is reported only as "set".
+- **The two older claims** that the renewals line "cannot turn ok before a real renewal" now carry dated correction
+  notes: `PROJECT.md` Step 18's status, and `docs/launch-check-2026-10-27.md`'s Step 10 note.
+- **Step 18's item 4 stays open.** It closes on a `renewal` payment row on production, with the monitor all ok beside
+  it.
