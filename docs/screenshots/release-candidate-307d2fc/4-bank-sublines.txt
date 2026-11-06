@@ -1,0 +1,17 @@
+PASS 1010 en 1440 income: 28 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS 1010 en 1440 balance: 33 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS 1010 en 390 income: 28 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS 1010 en 390 balance: 33 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS 1010 ar 1440 income: 28 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS 1010 ar 1440 balance: 33 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS 1010 ar 390 income: 28 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS 1010 ar 390 balance: 33 rows; must-show missing []; bare still shown []; newest column 2026 values differing from the API 0
+PASS ADCB en 1440 income: 35 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS ADCB en 1440 balance: 31 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS ADCB en 390 income: 35 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS ADCB en 390 balance: 31 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS ADCB ar 1440 income: 35 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS ADCB ar 1440 balance: 31 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS ADCB ar 390 income: 35 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS ADCB ar 390 balance: 31 rows; must-show missing []; bare still shown []; newest column 2025 values differing from the API 0
+PASS: sub-lines read within their statement, balance sheets unchanged, values as the API's

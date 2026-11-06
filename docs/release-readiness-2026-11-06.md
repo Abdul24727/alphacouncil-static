@@ -1,13 +1,15 @@
-# Release readiness, 2026-11-06: candidate `509d7bf` against the deployed `5c18a3ae46`
+# Release readiness, 2026-11-06: candidate `307d2fc` against the deployed `5c18a3ae46`
 
 **Status: ready for the owner's release decision.** This report needs no release and no push. Each release
 (beta, then production) and each push is the owner's go-ahead in chat.
 
 - **Deployed now:** `5c18a3ae46` on beta and production (2026-11-05).
-- **Candidate:** `rebuild` at `509d7bf`. Commits after it change no app code: records, this report, the
-  review loop. So the deploy script may ship a later `rebuild` HEAD whose app code equals `509d7bf`; the
-  check is `git diff --stat 509d7bf..HEAD -- web/src api deploy web/messages web/public`, which must be
+- **Candidate:** `rebuild` at `307d2fc`. Commits after it change no app code: records, this report, the
+  review loop. So the deploy script may ship a later `rebuild` HEAD whose app code equals `307d2fc`; the
+  check is `git diff --stat 307d2fc..HEAD -- web/src api deploy web/messages web/public`, which must be
   empty.
+- *(The first candidate, `509d7bf`, was superseded by review 13's phone-table fix. Its evidence stays in
+  `docs/screenshots/release-candidate-509d7bf/`: 150 screenshots, not the 130 this report first said.)*
 - **Pushed:** `origin/rebuild` is at `ccfe063`. Everything after it is unpushed.
 
 ## What a release changes for visitors
@@ -20,21 +22,23 @@ All of it is in `web/src`; `api/`, `deploy/`, `web/messages/` and `web/public/` 
 | Statement columns newest first, so a phone opens on the newest period | Financials, both languages | `PROJECT.md` §5, 2026-11-06 |
 | Bank income sub-lines read as commission income/expense inside the income statement | Financials of banks, both languages | labels doc, "Bank income sub-lines" |
 | "property Real estate Investment" reads "Real Estate Investments" | English Financials | labels doc, "property Real estate Investment" |
+| On a phone, the line labels stay in place, each period fills the space beside them, and scrolling snaps to whole periods: no figure is shown cut in half | Financials on phones, both languages; desktop unchanged | `PROJECT.md` §5, 2026-11-06 (review 13) |
 
-Arabic pages change only through rows 2 and 3. No existing dictionary mapping changed, apart from the one
+Arabic pages change only through rows 2, 3 and 5. No existing dictionary mapping changed, apart from the one
 intended real-estate label.
 
 ## Every file changed since `5c18a3ae46`
 
-From `git diff --name-status 5c18a3ae46..509d7bf`, grouped. The full list is reproducible with that command.
+From `git diff --name-status 5c18a3ae46..307d2fc`, grouped. The full list is reproducible with that command.
 
 **App code, which ships with a release (5 files):**
 - `M web/src/content/data-labels.json`: 76 English-page pairs; `in_statement` (5 bank sub-lines); the garbled
   real-estate pair becomes an alias.
 - `A web/src/lib/data-labels-core.ts`: the lookup, with no imports, taking an optional statement.
 - `M web/src/lib/data-labels.ts`: now `makeDataLabel(data)`; same import path for every caller.
-- `M web/src/lib/statement-period.ts`: `statementColumns()` newest first.
-- `M web/src/components/stock/research-panels.tsx`: the statement table passes its statement to `dataLabel`.
+- `M web/src/lib/statement-period.ts`: `statementColumns()` newest first; `phoneColumnWidth()`, the phone width rule.
+- `M web/src/components/stock/research-panels.tsx`: the statement table passes its statement to
+  `dataLabel`; sticky label column; on a phone, measured period widths with snap scrolling.
 
 **Tests, which ship but do not run on the server (3 files):**
 - `A web/src/lib/data-labels-core.test.ts`;
@@ -55,7 +59,7 @@ on the owner's go-ahead):
 
 **Review loop:**
 - `A scripts/review-loop/ask_chatgpt.py`;
-- `A docs/review-loop/` (master plan, outputs 01–06, replies 01–06, log).
+- `A docs/review-loop/` (master plan, outputs, replies, log).
 
 **Records and evidence:**
 - `M PROJECT.md` and `M docs/arabic-statement-labels-2026-11-03.md`;
@@ -64,16 +68,16 @@ on the owner's go-ahead):
   `gulf-english-labels-2026-11-06/` with its three `.txt` files, `statements-newest-first-2026-11-06/`,
   `bank-sublines-2026-11-06/`, and `real-estate-label-2026-11-06/`.
 
-## Checks on the candidate (`509d7bf`), all run together on 2026-11-06
+## Checks on the candidate (`307d2fc`), all run together on 2026-11-06
 
 Run after the last change, so no later step can have broken an earlier one.
 
 **Static checks:**
-- `npm test` 64/64; `tsc --noEmit` exit 0; `npm run lint` exit 0; `npm run build` passes (93/93 pages).
+- `npm test` 66/66; `tsc --noEmit` exit 0; `npm run lint` exit 0; `npm run build` passes (93/93 pages).
 - `python -X utf8 scripts/argaam_ar_labels/test_pair_from_gulf.py`: OK (4 tests).
 
 **Rendered:** local web against beta's API, beta's data being before the F-16 publish. Evidence is in
-`docs/screenshots/release-candidate-509d7bf/`: 130 screenshots, plus one `.txt` per check.
+`docs/screenshots/release-candidate-307d2fc/`: 150 screenshots, plus one `.txt` per check (7).
 
 | # | Check | Covers | Result |
 |---|---|---|---|
@@ -83,7 +87,7 @@ Run after the last change, so no later step can have broken an earlier one.
 | 4 | Bank sub-lines | ADCB, 1010; both panels; en + ar; 1440 + 390 | PASS 16/16, with values equal to the API's row by row |
 | 5 | Real-estate label | 108, 1211; en + ar; 1440 + 390 | PASS 8/8, with values equal to the API's |
 | 6 | `check-arabic.mjs` with `WIDTHS=1440,390` | 48 Arabic page views signed out, including `/t/2222/financials` | 0 English strings outside the allow-list |
-| 7 | Phone gap (review 12): the panels set 1 had at 1440 only | English income + balance for 301, 821, BKIC.BH, EAND; Arabic income + balance for 8010; Arabic income for 1211; 11 panels at 390 | PASS 11/11: expected labels shown; **every cell in every column** equal to the API's; newest in view on load and oldest after scrolling (`7-phone-gap.txt`, `phone-gap/`) |
+| 7 | Phone gap (review 12) and phone tables (review 13) | English income + balance for 301, 821, BKIC.BH, EAND; Arabic income + balance for 8010; Arabic income for 1211; 11 panels at 390 | PASS 11/11: expected labels shown; **every cell in every column** equal to the API's; newest in view on load; scrolled to the end, the oldest in view **beside the labels, which stay in view**; **no period shown cut**, on load, at every column step or at the end (`7-phone-gap.txt`, `phone-gap/`). Run on the previous commit, the same check fails 9 of the 11, so it does catch the defect. |
 
 **What is still Arabic on English pages, and where:**
 - In the rendered samples, the only Arabic left is the cash-flow lines inside AMLAK's and AMCREIT's balance
@@ -100,12 +104,16 @@ Run after the last change, so no later step can have broken an earlier one.
 on 2026-11-05, production is checked through its served code: the new chunk byte-identical to beta's, and
 hash-equal on the public site. Then `check-billing-public.mjs`, health, and `BILLING_OPEN` unchanged.
 
-**Seen on the phone screenshots, left for review (not defects in the figures):**
+**Inspected by eye:** all 11 phone panels on load, and the 9 that scroll in their scrolled state. They were
+put side by side on contact sheets, with a sample of the 1440 panels for comparison. The desktop layout is
+unchanged. *(Review 13 found that only two of the phone panels had been looked at before.)*
+
+**Seen on the phone screenshots, left for review:**
 - 821's English income statement shows "income from investments & Other operating income". That is
   Argaam's own English, with a lowercase first word, through the dictionary, like the real-estate label
   fixed today.
-- Scrolled to its oldest year, a phone table scrolls the line labels out of view (8010's Arabic balance
-  sheet). Values are never shown wrong. A label column that stays in place would read better.
+- *(Fixed in `307d2fc`: scrolled to its oldest year, a phone table used to scroll the line labels out of
+  view and show a period cut in half beside them.)*
 
 ## Still pending, and not a reason to wait
 

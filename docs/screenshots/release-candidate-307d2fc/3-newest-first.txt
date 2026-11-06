@@ -1,0 +1,17 @@
+PASS 108 en 1440 financials.income: ["FY2025","FY2024","FY2023","FY2022","FY2021"] newest-first true, newest in view on load true, scrolls false, oldest in view after scroll true
+PASS 108 en 1440 financials.balance: ["FY2025","FY2024","FY2023","FY2022","FY2021"] newest-first true, newest in view on load true, scrolls false, oldest in view after scroll true
+PASS 108 en 390 financials.income: ["FY2025","FY2024","FY2023","FY2022","FY2021"] newest-first true, newest in view on load true, scrolls true, oldest in view after scroll true
+PASS 108 en 390 financials.balance: ["FY2025","FY2024","FY2023","FY2022","FY2021"] newest-first true, newest in view on load true, scrolls true, oldest in view after scroll true
+PASS 108 ar 1440 financials.income: ["2025","2024","2023","2022","2021"] newest-first true, newest in view on load true, scrolls false, oldest in view after scroll true
+PASS 108 ar 1440 financials.balance: ["2025","2024","2023","2022","2021"] newest-first true, newest in view on load true, scrolls false, oldest in view after scroll true
+PASS 108 ar 390 financials.income: ["2025","2024","2023","2022","2021"] newest-first true, newest in view on load true, scrolls true, oldest in view after scroll true
+PASS 108 ar 390 financials.balance: ["2025","2024","2023","2022","2021"] newest-first true, newest in view on load true, scrolls true, oldest in view after scroll true
+PASS 2222 en 1440 financials.income: ["TTM JUN 2026"] newest-first true, newest in view on load true, scrolls false, oldest in view after scroll true
+PASS 2222 en 1440 financials.balance: ["JUN 2026","FY2025"] newest-first true, newest in view on load true, scrolls false, oldest in view after scroll true
+PASS 2222 en 390 financials.income: ["TTM JUN 2026"] newest-first true, newest in view on load true, scrolls false, oldest in view after scroll true
+PASS 2222 en 390 financials.balance: ["JUN 2026","FY2025"] newest-first true, newest in view on load true, scrolls true, oldest in view after scroll true
+PASS 2222 ar 1440 financials.income: ["12 شهرًا حتى يونيو 2026"] newest-first true, newest in view on load true, scrolls false, oldest in view after scroll true
+PASS 2222 ar 1440 financials.balance: ["يونيو 2026","2025"] newest-first true, newest in view on load true, scrolls false, oldest in view after scroll true
+PASS 2222 ar 390 financials.income: ["12 شهرًا حتى يونيو 2026"] newest-first true, newest in view on load true, scrolls false, oldest in view after scroll true
+PASS 2222 ar 390 financials.balance: ["يونيو 2026","2025"] newest-first true, newest in view on load true, scrolls true, oldest in view after scroll true
+PASS: newest period beside the labels on load, oldest reachable, everywhere
