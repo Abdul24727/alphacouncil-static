@@ -1200,6 +1200,10 @@ Older entries: `changelog-archive.md`.
   - [x] the owner's payment gave their account Pro, and the payment was applied once — check: the owner's Settings → Billing screenshot and the API log line for that payment id (2026-11-02, from the server side: one `billing_payments` row, the API's confirm and webhook lines; the owner's screenshot was not sent)
   - [x] the refund ended Pro, or is recorded as waiting for settlement — check: screenshot, or the note (2026-11-02 19:51 UTC, from the server: payment `refunded`, subscription `expired`, card token gone)
   - [ ] the monitor shows 14 of 14 ok — check: `python3 -I /usr/local/lib/acp-monitor/prod-monitor.py status`
+    *(2026-11-06, review 51: the monitor now has 15 checks. Its "Moyasar for renewals" line turns ok on any new
+    renewals-job summary with no unreachable renewal, an empty run included, so it cannot by itself show a real
+    renewal. This box closes on a `renewal` payment row on production, read-only, with the monitor all ok
+    beside it. At 12:33 UTC: 13 ok, credit FAILING at $7.83, renewals "–" (`docs/launch-check-2026-10-27.md`).)*
 - **Outcome:** _(not worked)_
   - *Pre-check (2026-11-02; the owner asked whether 18 can go before the lawyer):* recommendation **wait for Step 7's answers to (b) and (c)**; nothing changed on production (`"checkout_open":false`, read 2026-11-02). What Moyasar was told was more than "not robo-advisory": `C:\AlphaCouncil-Staging\MOYASAR_REVIEWER_RESPONSE.md` §3 says the Council, Research Assistant and thesis are "not available in the current launch", their endpoints return 503, "No customer on any plan can obtain generated commentary today", and offers `https://alphacouncil.tech/api/capabilities` (every AI capability false) as the lead evidence. Today the Copilot and the advisors' room are live for every account, and that URL answers **404** on the rebuild (so does `/api/v1/capabilities`, checked 2026-11-02). Opening billing locks the room behind Pro (`docs/production.md`, "Opening billing ends early access"), so the first charge would be for the very feature the approval said was off. The owner's own plans already gate this: `PROJECT_ENDGAME.md` puts "counsel sign-off + Moyasar re-disclosure" before AI goes to paying customers (lines 53, 95), and the 2026-08-08 permit plan says not to enable Council or Research Assistant for customers before a permit (`CMA_FINTECH_EXPERMIT_PLAN.md` lines 136–139). A grep of `api/app` found no check that turns away a question about the member's own situation (only the Chair's prompt rule, `chair.md:110`), which bears on (b)'s "personalisation" limb. Step 10 is also still open (the owner's two runs), so 18's own precondition is unmet either way.
   - *Decision (2026-11-02, the owner, in chat):* "Open billing anyway", given after reading that pre-check. Recorded as the owner's waiver of the dependencies on Steps 7 and 10, not as their being met. *(Step 10 has since closed, the same evening: its last two runs passed at 20:07–20:24 UTC. Step 7 remains waived.)*
@@ -1225,6 +1229,8 @@ Older entries: `changelog-archive.md`.
     - The subscription is `active` to 2026-12-02, Visa, card token saved, 0 renewal attempts, `cancel_at_period_end` false.
     - API log: `POST /v1/billing/checkout` 200, `POST /v1/billing/confirm` 200, one webhook 200, and nothing logged "not applied". So the payment was applied once with the return page and a notification both arriving: the primary key on the Moyasar id held.
     - Monitor: 14 ok + renewals "–", unchanged. That line turns `ok` only when a renewal run talks to Moyasar.
+      *(Corrected 2026-11-06, review 51: it turns ok on any new renewals-job summary with no unreachable renewal,
+      including a run with nothing due, so it is not evidence of a real renewal.)*
   - *Not verified here:* that the card form loaded in **both** languages. The log shows one checkout start, and the owner sent no screenshot.
   - *Finding F-12 (Moyasar's second webhook is refused):*
     - **What happened:** both notifications came from Moyasar's own sender (user agent "Moyasar Payment Gateway", nginx log 19:24:40 and 19:24:41). One was answered **403 "Unknown sender."** and Moyasar retried it at 19:25:41 to another 403. Its `secret_token` does not match production's `MOYASAR_WEBHOOK_SECRET`.
@@ -1320,8 +1326,8 @@ and no customer has paid yet.
        least 2026-10-19~~ **FIXED 2026-11-06**: the app's key copied in on the owner's go-ahead; 401 → 200;
        two items written; the backlog clears in about four nights;
      - **the OpenRouter balance: $13.47 before the 2026-11-06 pilot, $7.83 after it.** The production monitor's
-       credit check is FAILING on it (below $10, alert emailed; 12:33 UTC, `docs/launch-check-2026-10-27.md`); The live Copilot, the
-       room and the news step share it: top up (the owner's);
+       credit check is FAILING on it (below $10, alert emailed; 12:33 UTC, `docs/launch-check-2026-10-27.md`). The live Copilot,
+       the room and the news step share it: top up (the owner's);
      - ~~disk at 83 %~~ **DONE 2026-11-06**: keep-14 applied (129 snapshots, 80.44 GiB), disk **41 %**; nightly
        prune at 11:15 UTC (`scripts/server/prune-rebuild-snapshots.sh`);
      - F-12's duplicate Moyasar webhook (the owner's, in Moyasar's dashboard: delete the webhook whose recent

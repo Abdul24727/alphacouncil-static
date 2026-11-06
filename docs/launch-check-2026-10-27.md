@@ -257,14 +257,14 @@ is an "Always stop" for Claude, so this one is the owner's to run or to skip.
 ## Production monitor after the 2026-11-06 release, retention and pilot
 
 Read-only, `python3 -I /usr/local/lib/acp-monitor/prod-monitor.py status` at **2026-11-06 12:33:51 UTC**, with
-production on `b5655a5064`. **14 ok, 1 failing, 1 pending.**
+production on `b5655a5064`. **15 checks: 13 ok, 1 failing, 1 pending.** *(Corrected after review 51: this said 14 ok. The table had 13 ok rows, which is right. On 2026-11-02 the monitor read 14 ok and renewals "–"; the 14th ok was the credit check, failing now.)*
 
 | Check | Result |
 |---|---|
 | home, `/api/v1/health`, market data | ok (200 in 40 ms; 200 in 9 ms; market data ok) |
 | `acp-prod-api`, `acp-prod-web` | ok, active |
 | Pro renewals job and timer | ok (last run exited 0; timer active) |
-| **Moyasar for renewals** | **– pending**: no renewal run since the last round. This is not a failure. It turns ok only when a renewal talks to Moyasar: Step 18's item 4, open until a first real renewal. |
+| **Moyasar for renewals** | **– pending**: the hourly renewals job has logged no new run since the monitor's previous round (the monitor runs every 5 minutes). This is not a failure, and it is not evidence either way: the line turns ok on any new run summary with no unreachable renewal, including a run with nothing due (`scripts/prod-monitor.py`, `check_billing`). Step 18's item 4 needs a real renewal: a `renewal` payment row on production. |
 | database backup job and timer | ok |
 | off-server backup copy | ok (the owner's computer copied 76 files at 06:00 UTC, 0.3 days before) |
 | disk `/` | ok: **41 % full, 122.4 GB free** (83 % before the keep-14 retention that morning) |
