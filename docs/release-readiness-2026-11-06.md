@@ -228,12 +228,20 @@ PASSED 714/714. Details are in `docs/pipeline-guard-statement-headings-2026-11-0
 
 The push is a separate owner go-ahead; this audit only prepares it. **Audited range: `ccfe063..9712418`**
 (`origin/rebuild`, equal to the remote's `refs/heads/rebuild` by `git ls-remote`, to local `rebuild`): 45
-commits, 1,289 files (1,136 PNG, 68 txt, 60 md, 25 code, 3 patch), 5,520 added text lines, nothing deleted.
+commits, 1,289 files: 1,136 PNG, 68 txt, 60 md, 22 code (8 py, 6 ts, 4 mjs, 3 json, 1 tsx) and 3 patch.
+`git diff --numstat`: 5,520 lines added and 122 removed over the 153 text files; **0 files deleted**.
+*(Corrected by review 28: this said "25 code", counting the patches twice, and "nothing deleted".)*
 **Every hit was read; none is a value.**
 
 - **Outgoing-diff scan** (Step 2's exact regex): 2 hits, both prose naming Moyasar: `PROJECT.md`'s 2026-11-06
   push entry, and the owner-gate list in `docs/review-loop/MASTER-PLAN.md`.
-- **Tracked files:** only `api/.env.example`, not in this push, every value empty.
+- **Tracked env templates** (`git ls-files '*env*'`): two, neither changed in this range.
+  - `api/.env.example`: the paths are empty, plus the non-secret default `MARKET_DB_IMMUTABLE=true`.
+  - `deploy/api.env.example`: server paths and non-secret defaults. Every key, secret and password line
+    (OpenRouter, Google, Moyasar, Anthropic, SMTP) is commented out with nothing after the `=`.
+  - No other env, key, database or credential file is tracked.
+  - *(Corrected by review 28: this said only `api/.env.example`, with every value empty. The file-name pattern
+    had missed `deploy/api.env.example`.)*
 - **History grep** (`git log --all -p`): only the standing false positives Step 2 lists (the plan quoting its
   own regex, the `startswith("sk_test_")` check, the `sk_test_x` fixture, comments naming key prefixes, the
   `# OPENROUTER_API_KEY=` template line).

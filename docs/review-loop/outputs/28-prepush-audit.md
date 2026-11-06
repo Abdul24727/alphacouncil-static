@@ -5,13 +5,19 @@ Recorded in `docs/release-readiness-2026-11-06.md`, section "Pre-push audit (`PR
 
 **Audited range: `ccfe063..9712418`.** `ccfe063` is `origin/rebuild` and equals the remote's
 `refs/heads/rebuild` by `git ls-remote`; `9712418` was local `rebuild` (review 27's record). 45 commits,
-1,289 files (1,136 PNG, 68 txt, 60 md, 25 code, 3 patch), 5,520 added text lines, 0 deleted files.
+1,289 files: 1,136 PNG, 68 txt, 60 md, 22 code (8 py, 6 ts, 4 mjs, 3 json, 1 tsx) and 3 patch. 5,520 lines
+added and 122 removed; 0 files deleted. *(Corrected after review 28: this said "25 code", counting the
+patches twice.)*
 
 **Every hit was read; none is a value.**
 1. **Step 2's outgoing-diff scan, exact regex:** 2 hits, both prose naming Moyasar: `PROJECT.md`'s 2026-11-06
    push entry, and the owner-gate list in `docs/review-loop/MASTER-PLAN.md`.
-2. **Tracked env, key, database or credential files:** only `api/.env.example`. It is not in this push, and
-   every value in it is empty.
+2. **Tracked env templates, `git ls-files '*env*'`:** two, neither changed in this range.
+   - `api/.env.example`: the paths are empty, plus the non-secret default `MARKET_DB_IMMUTABLE=true`.
+   - `deploy/api.env.example`: server paths and non-secret defaults. Every key, secret and password line is
+     commented out with nothing after the `=`.
+   - No other env, key, database or credential file is tracked.
+   - *(Corrected after review 28: this said only `api/.env.example`, with every value empty.)*
 3. **History grep, `git log --all -p`:** only the standing false positives Step 2 lists:
    - the plan quoting its own regex;
    - the `startswith("sk_test_")` check;
