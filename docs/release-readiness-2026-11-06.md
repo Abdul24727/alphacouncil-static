@@ -1,13 +1,15 @@
-# Release readiness, 2026-11-06: candidate `307d2fc` against the deployed `5c18a3ae46`
+# Release readiness, 2026-11-06: candidate `4a98832` against the deployed `5c18a3ae46`
 
 **Status: ready for the owner's release decision.** This report needs no release and no push. Each release
 (beta, then production) and each push is the owner's go-ahead in chat.
 
 - **Deployed now:** `5c18a3ae46` on beta and production (2026-11-05).
-- **Candidate:** `rebuild` at `307d2fc`. Commits after it change no app code: records, this report, the
-  review loop. So the deploy script may ship a later `rebuild` HEAD whose app code equals `307d2fc`; the
-  check is `git diff --stat 307d2fc..HEAD -- web/src api deploy web/messages web/public`, which must be
+- **Candidate:** `rebuild` at `4a98832`. Commits after it change no app code: records, this report, the
+  review loop. So the deploy script may ship a later `rebuild` HEAD whose app code equals `4a98832`; the
+  check is `git diff --stat 4a98832..HEAD -- web/src api deploy web/messages web/public`, which must be
   empty.
+- *(`307d2fc` was superseded by review 16's label change. Its evidence stays in
+  `docs/screenshots/release-candidate-307d2fc/`.)*
 - *(The first candidate, `509d7bf`, was superseded by review 13's phone-table fix. Its evidence stays in
   `docs/screenshots/release-candidate-509d7bf/`: 150 screenshots, not the 130 this report first said.)*
 - **Pushed:** `origin/rebuild` is at `ccfe063`. Everything after it is unpushed.
@@ -22,21 +24,22 @@ All of it is in `web/src`; `api/`, `deploy/`, `web/messages/` and `web/public/` 
 | Statement columns newest first, so a phone opens on the newest period | Financials, both languages | `PROJECT.md` §5, 2026-11-06 |
 | Bank income sub-lines read as commission income/expense inside the income statement | Financials of banks, both languages | labels doc, "Bank income sub-lines" |
 | "property Real estate Investment" reads "Real Estate Investments" | English Financials | labels doc, "property Real estate Investment" |
+| "income from investments & Other operating income" reads "Income from investments & other operating income" | Financials, English: 3 Saudi banks and the Gulf companies with that line | `PROJECT.md` §5, 2026-11-06 (review 16) |
 | On a phone, the line labels stay in place, each period fills the space beside them, and scrolling snaps to whole periods: no figure is shown cut in half | Financials on phones, both languages; desktop unchanged | `PROJECT.md` §5, 2026-11-06 (review 13) |
 
-Arabic pages change only through rows 2, 3 and 5. No existing dictionary mapping changed, apart from the one
+Arabic pages change only through rows 2, 3 and 6 (newest first, bank sub-lines, phone tables). No existing dictionary mapping changed, apart from the one
 intended real-estate label.
 
 ## Every file changed since `5c18a3ae46`
 
-All 360 files of `git diff --name-status 5c18a3ae46..307d2fc`: 25 outside `docs/screenshots/` and
-`docs/review-loop/`, all named below; 307 evidence files under `docs/screenshots/` (one of them, a corrected
-header, is also named below); and 28 review-loop records under `docs/review-loop/`. *(Reconciled with the diff
+All 526 files of `git diff --name-status 5c18a3ae46..4a98832`: 25 outside `docs/screenshots/` and
+`docs/review-loop/`, all named below; 467 evidence files under `docs/screenshots/` (one of them, a corrected
+header, is also named below); and 34 review-loop records under `docs/review-loop/`. *(Reconciled with the diff
 2026-11-06, after ChatGPT's review 14 found three script files missing from the first list.)*
 
 **App code, which ships with a release (5 files):**
 - `M web/src/content/data-labels.json`: 76 English-page pairs; `in_statement` (5 bank sub-lines); the garbled
-  real-estate pair becomes an alias.
+  real-estate pair becomes an alias; the tr166 label is recased, with an alias for Argaam's spelling.
 - `A web/src/lib/data-labels-core.ts`: the lookup, with no imports, taking an optional statement.
 - `M web/src/lib/data-labels.ts`: now `makeDataLabel(data)`; same import path for every caller.
 - `M web/src/lib/statement-period.ts`: `statementColumns()` newest first; `phoneColumnWidth()`, the phone
@@ -76,22 +79,26 @@ header, is also named below); and 28 review-loop records under `docs/review-loop
 - `M PROJECT.md`;
 - `M docs/arabic-statement-labels-2026-11-03.md`;
 - `M docs/screenshots/launch-2026-10-27/advisors-signed-in/check-advisors.txt`: a corrected header. It is also
-  counted among the 307 evidence files.
+  counted among the 467 evidence files.
 
 **Evidence and review records:**
-- 307 files under `docs/screenshots/`, the folders this report and the labels doc cite;
-- 28 under `docs/review-loop/`: the master plan, outputs, replies and log.
+- 467 files under `docs/screenshots/`, the folders this report and the labels doc cite;
+- 34 under `docs/review-loop/`: the master plan, outputs, replies and log.
 
-## Checks on the candidate (`307d2fc`), all run together on 2026-11-06
+## Checks on the candidate (`4a98832`), all run together on 2026-11-06
 
 Run after the last change, so no later step can have broken an earlier one.
 
 **Static checks:**
-- `npm test` 66/66; `tsc --noEmit` exit 0; `npm run lint` exit 0; `npm run build` passes (93/93 pages).
+- `npm test` 67/67; `tsc --noEmit` exit 0; `npm run lint` exit 0; `npm run build` passes (93/93 pages).
 - `python -X utf8 scripts/argaam_ar_labels/test_pair_from_gulf.py`: OK (4 tests).
 
 **Rendered:** local web against beta's API, beta's data being before the F-16 publish. Evidence is in
-`docs/screenshots/release-candidate-307d2fc/`: 150 screenshots, plus one `.txt` per check (7).
+`docs/screenshots/release-candidate-4a98832/`: 159 screenshots, plus one `.txt` per check (8), and a
+contact sheet for check 8. *(The first run of these checks lost its SSH tunnel to beta partway through
+("Connection reset by peer"). Every check was re-run in full with a keep-alive tunnel; these are the re-run's
+files. The 2026-11-04 set's expectations were also updated for the one label that change renames, on 821
+and AJMANBAN.)*
 
 | # | Check | Covers | Result |
 |---|---|---|---|
@@ -102,6 +109,7 @@ Run after the last change, so no later step can have broken an earlier one.
 | 5 | Real-estate label | 108, 1211; en + ar; 1440 + 390 | PASS 8/8, with values equal to the API's |
 | 6 | `check-arabic.mjs` with `WIDTHS=1440,390` | 48 Arabic page views signed out, including `/t/2222/financials` | 0 English strings outside the allow-list |
 | 7 | Phone gap (review 12) and phone tables (review 13) | English income + balance for 301, 821, BKIC.BH, EAND; Arabic income + balance for 8010; Arabic income for 1211; 11 panels at 390 | PASS 11/11: expected labels shown; **every cell in every column** equal to the API's; newest in view on load; scrolled to the end, the oldest in view **beside the labels, which stay in view**; **no period shown cut**, on load, at every column step or at the end (`7-phone-gap.txt`, `phone-gap/`). Run on the previous commit, the same check fails 9 of the 11, so it does catch the defect. |
+| 8 | The tr166 label (review 16) | 821 (Gulf, Arabic-stored) and 1120 (Saudi, Argaam's spelling); income; en + ar; 1440 + 390 | PASS 8/8: the sentence-case label shows in English, the old spelling does not, the Arabic is unchanged, and the newest-column values equal the API's (`8-investment-income-label.txt`, contact sheet) |
 
 **What is still Arabic on English pages, and where:**
 - In the rendered samples, the only Arabic left is the cash-flow lines inside AMLAK's and AMCREIT's balance
@@ -122,10 +130,13 @@ hash-equal on the public site. Then `check-billing-public.mjs`, health, and `BIL
 put side by side on contact sheets, with a sample of the 1440 panels for comparison. The desktop layout is
 unchanged. *(Review 13 found that only two of the phone panels had been looked at before.)*
 
-**Seen on the phone screenshots, left for review:**
-- 821's English income statement shows "income from investments & Other operating income". That is
-  Argaam's own English, with a lowercase first word, through the dictionary, like the real-estate label
-  fixed today.
+**Seen on the screenshots, left for review:**
+- *(Fixed in `4a98832`: 821's "income from investments & Other operating income" now reads "Income from
+  investments & other operating income".)*
+- In development only, Next.js shows a "1 Issue" badge on every ticker Financials page: `generateMetadata()`
+  for `/[locale]/t/[ticker]/financials` reads uncached data, so the page's metadata is held back while the
+  rest prerenders. No route file changed since `5c18a3ae46`, and the production build passes. It predates
+  this work.
 - *(Fixed in `307d2fc`: scrolled to its oldest year, a phone table used to scroll the line labels out of
   view and show a period cut in half beside them.)*
 
