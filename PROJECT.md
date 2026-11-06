@@ -298,6 +298,24 @@ Older entries: `changelog-archive.md`.
     One session failed: P I3 clean, where the analyst's plan was refused on all three attempts ($0.25, no turns).
     The record and log are in `docs/eval/presenter-comparison/` (`probe-results.jsonl`, `comparison.log`); the
     pilot's and earlier records are unchanged (`git diff --quiet`). No result is reported before the hand audit.
+  - **The hand audit is DONE (2026-11-07):**
+    - **The method:** all 59 answers were read, and 15 auditors read the full discussions against the packs. All 265
+      counted claims were checked as exact quotes, with the pack facts verified.
+    - **The documents:** `docs/eval/presenter-comparison/RESULT.md` and `audit.md`, with `verified-claims.json` and
+      `tools/`.
+    - **Cost:** option 2 FAILS criterion 4 clearly. It costs 62.4 % of today's room ($0.1454 against $0.2332), 53 %
+      with no plan retries. A clear failure settles it, so today's room stays.
+    - **Accuracy:** option 2 had 55 wrong claims against today's room's 210, 0 against 7 in a final answer, and 0
+      against 34 invented figures. 45 of its 55 were added by the presenter.
+    - **Speed:** option 2 shows its first words after a median of 40 s, against 5 s.
+    - **Reliability:** 1 of 30 option-2 sessions failed with no fallback.
+    - **Found in today's room:**
+      - the "sector percentile" field is a flipped score for lower-is-better metrics, and both arms misread it;
+      - advisors invent [P9] figures on packs that have no statements, because the test packs predate P9.
+    - **P's live figures** replaced the provisional ones in `eval/probe_run.py` (`a10cc11`). A's bound rose to the
+      live maximum, $4.0089.
+    - **Next:** review 68, then the owner's choice. The options are to keep today's room and fix the percentile and the
+      [P9] question, to screen a one-model option 2, or to stop.
   - **Before the app may use it:** the app's session total must count the calls a fallback superseded.
 
 ## 6. Current State

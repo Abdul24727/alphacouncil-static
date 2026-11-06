@@ -7,6 +7,13 @@ to do the real work. The direction is quoted in full in `docs/review-loop/MASTER
 
 Option 2 is built as a prototype (`api/app/debate/presenter.py`, harness arm P), off by default; nothing is released. **Any paid run needs the owner's go-ahead per run.** *(Updated 2026-11-06 after review 64: this said nothing was built.)*
 
+**RESULT (2026-11-07):** the paid comparison ran: 60 sessions from `d7c2091`, $11.36, every session audited by hand.
+- **Cost:** option 2 fails criterion 4 clearly, at 62 % of today's room against the 40 % limit, so today's room
+  stays.
+- **Accuracy:** option 2's discussion was far more accurate (55 wrong claims against 210).
+- **Details:** `docs/eval/presenter-comparison/RESULT.md` gives the decision and the choices, and `audit.md` the
+  audit.
+
 *(Corrected after review 60. The first version split the room's cost into advisors (77 %) and Chair by comparing
 six seats with four. That comparison cannot isolate either: fewer seats also make every remaining prompt's
 transcript shorter. It also counted 18 advisor calls where the pilot paid for 17.5 on average, said five
