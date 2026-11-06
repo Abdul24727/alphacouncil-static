@@ -272,7 +272,8 @@ def report(path: Path | None = None) -> None:
     for arm in arms:
         h, n = rate(arm)
         extra = ""
-        if arm in ("A", "D"):
+        # Every room arm: P (the presenter) has a round of challenges too, and `run_room` records it.
+        if arm in ("A", "D", "P"):
             ch = sum(1 for r in good if r["arm"] == arm and r["challenged"])
             extra = f", {ch}/{n} contested in the round of challenges"
         print(f"  {arm}: {h}/{n} handled{extra}")
@@ -502,6 +503,12 @@ def report(path: Path | None = None) -> None:
     for x, y in (("A", "E"), ("E", "B")):
         if x in arms and y in arms:
             compare(x, y, "later  ", None)
+    if "A" in arms and "P" in arms:
+        # The owner's option 2 (docs/council-cost-options-2026-11-06.md): the same page from two models.
+        # Read as a difference, like six seats against four: one would stop the change, and none is not
+        # equivalence. Its acceptance is decided against the criteria written down before the run, by a
+        # hand audit of every displayed turn - not by this line.
+        compare("A", "P", "option 2", "difference")
     print("\n  PRIMARY is six advisors against four, on identical packs and identical questions.")
     print("  Read it differently from the rest, on purpose:")
     print("    - a DIFFERENCE (p < 0.05) is a reason NOT to drop two seats;")

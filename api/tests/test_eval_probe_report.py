@@ -321,3 +321,17 @@ def test_missing_one_dataset_is_not_reported_as_citing_none(tmp_path, capsys):
     a_line = next(l for l in section.splitlines() if l.strip().startswith("A "))
     assert "2/6" in a_line and "1/6" in a_line, a_line
     assert "missing one or more" in section and "citing none" in section
+
+
+def test_the_presenter_arm_reports_whether_its_round_of_challenges_contested_the_plant(tmp_path, capsys):
+    """Arm P has a round of challenges like any room, and `run_room` records `challenged` for it; the
+    pooled line printed it for A and D only, so the comparison would have shown P without it."""
+    rows = []
+    for arm in ("A", "P"):
+        planted = row("I1", arm, True, CORRECT["inference"])
+        planted["challenged"] = arm == "P"
+        rows += [planted, row("I1", arm, False, CORRECT["inference"])]
+    text = _report_text(tmp_path, rows, capsys)
+    assert "  A: 1/1 handled, 0/1 contested in the round of challenges" in text, text
+    assert "  P: 1/1 handled, 1/1 contested in the round of challenges" in text, text
+    assert "  option 2: A 1/1 vs P 1/1  Fisher p = 1.0000  -> no measurable difference" in text, text
