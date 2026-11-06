@@ -143,6 +143,15 @@ ENDORSEMENT = (
     "rightly", "correctly", "is right", "was right", "is correct", "was correct", "confirms",
     "confirmed", "we adopt", "i adopt", "adopt his", "adopt her",
 )
+# After the figure only a verdict on the claim itself endorses it ("... 11.8 per cent is correct").
+# A verb of agreeing there usually has the SEAT as its subject - "Buffett began with a payout of
+# 97.4 per cent, then accepted that this used an annual dividend figure not in the pack" is the seat
+# withdrawing, which a calibration test on the 2026-10-27 answers caught when this read ENDORSEMENT.
+ENDORSEMENT_AFTER = (
+    "is correct", "was correct", "are correct", "is right", "was right", "is accurate", "was accurate",
+    "is confirmed", "was confirmed", "holds up", "is borne out", "pack confirms", "pack supports",
+    "is supported by the pack",
+)
 # Per-share quantities that are not the one a per-share band describes. A unit is not a metric:
 # D2's band is per-share EARNINGS and binds through "per share", which a dividend carries too.
 OTHER_PER_SHARE = ("dividend", "distribution", "dps", "book value", "payout")
@@ -194,9 +203,58 @@ def _sentence_after(low: str, end: int) -> str:
     return low[end:pos]
 
 
-def _attributed(clause: str) -> bool:
-    """Does this clause credit the figure to someone else, without the answer endorsing it?"""
-    return any(a in clause for a in ATTRIBUTION) and not any(e in clause for e in ENDORSEMENT)
+def _word_at(text: str, term: str) -> list[int]:
+    """Where `term` starts in `text` as whole words: "agree" is not inside "disagree", nor
+    "correctly" inside "incorrectly" (review 41)."""
+    return [m.start() for m in re.finditer(rf"(?<![a-z]){re.escape(term)}(?![a-z])", text)]
+
+
+def _endorses(text: str, terms: tuple[str, ...] = ENDORSEMENT) -> bool:
+    """Does this text endorse what it reports? An endorsement word counts only where no negator
+    stands before it in its own clause: "I do not agree" and "cannot be confirmed" endorse nothing."""
+    for term in terms:
+        for at in _word_at(text, term):
+            clause = _clause_before(text, at)
+            if not any(_word_at(clause, n) for n in NEGATORS):
+                return True
+    return False
+
+
+def _attributed(low: str, start: int, end: int) -> bool:
+    """Does the answer credit the figure at [start, end) to someone else, without endorsing it?
+
+    The credit has to sit in the figure's own clause, before it ("Buffett's claim that ... 11.8").
+    An endorsement anywhere in the clause before it or in the rest of its sentence makes the figure
+    the answer's own: "I agree with Buffett's claim that ... 11.8" and "Buffett's claim that ... 11.8
+    per cent is correct" both assert 11.8 (reviews 40 and 41)."""
+    before = _clause_before(low, start)
+    if not any(a in before for a in ATTRIBUTION):
+        return False
+    return not (_endorses(before) or _endorses(_sentence_after(low, end), ENDORSEMENT_AFTER))
+
+
+def _quantity_kind(low: str, start: int, end: int, real: list[str]) -> str | None:
+    """Which per-share quantity a figure is: "real" (the band's own, e.g. earnings), "other" (a
+    dividend, a book value...), or None when nothing names it.
+
+    Read from the figure's OWN clause first - the nearest naming word before it, else the first one
+    after it - and only then from the clauses before it in the same sentence. A later clause is
+    never read: in "The dividend fell from 2.25 SAR per share to 1.1 SAR per share, while earnings
+    cannot be derived" the 1.1 is the dividend (review 41), while in "The dividend is 2.25 SAR per
+    share, while 1.1 SAR per share is the earnings figure" it is earnings (review 40)."""
+    def nearest(text: str, last: bool) -> str | None:
+        found = [(at, "real") for w in real for at in _word_at(text, w)]
+        found += [(at, "other") for w in OTHER_PER_SHARE for at in _word_at(text, w)]
+        if not found:
+            return None
+        return (max(found) if last else min(found))[1]
+
+    own_before = _clause_before(low, start)
+    cut = min((i for i in (low.find(ch, end) for ch in CLAUSE_BOUNDARY) if i >= 0), default=len(low))
+    own_after = low[end:cut]
+    sentence_before = _sentence_before(low, start)
+    earlier = sentence_before[: len(sentence_before) - len(own_before)]
+    return nearest(own_before, True) or nearest(own_after, False) or nearest(earlier, True)
 
 
 def _two_sentences_after(low: str, end: int) -> int:
@@ -361,19 +419,17 @@ def confident_wrong(probe: Any, text: str) -> list[str]:
             # against the per-share EARNINGS band and scored INCORRECT.
             unit_words = {u.lower() for u in units}
             if all(w in unit_words for w in binding):
-                # The WHOLE sentence, both sides of the number: "1.1 SAR per share is the earnings
-                # figure" names the band's quantity after it, and review 40 caught the first version
-                # reading only the text before.
-                sentence = _sentence_before(low, m.start()) + low[m.start(): m.end()] + _sentence_after(low, m.end())
+                # Bound by the unit alone, so ask which per-share quantity the figure is
+                # (`_quantity_kind`, reviews 39-41). Judged unless it is plainly another one.
                 real = [w.lower() for w in (probe.band_metric or probe.metric) if w.lower() not in unit_words]
-                if any(q in sentence for q in OTHER_PER_SHARE) and not any(w in sentence for w in real):
+                if _quantity_kind(low, m.start(), m.end(), real) == "other":
                     continue
             # A figure the answer ATTRIBUTES to someone is not the answer's own derivation. "Buffett
             # opened with an earnings figure of 1.02 per share" is a report of what a seat said, and
             # this detector is about what the arm itself concluded. Attribution does not excuse the
             # PLANTED figure - that has its own outcome and its own strict test - only an unrelated
             # out-of-band number.
-            if _attributed(_clause_before(low, m.start())):
+            if _attributed(low, m.start(), m.end()):
                 continue
             if band[0] <= value <= band[1] or negated(low, m.start(), m.end(), False):
                 continue
@@ -443,8 +499,8 @@ def asserted_figures(text: str, tokens: tuple[str, ...]) -> list[str]:
             while at >= 0:
                 spans.append((at, at + len(bare)))
                 at = low.find(bare.lower(), at + 1)
-        for start, _end in spans:
-            if not _attributed(_clause_before(low, start)):
+        for start, end in spans:
+            if not _attributed(low, start, end):
                 out.append(tok)
                 break
     return out

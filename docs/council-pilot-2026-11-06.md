@@ -64,17 +64,24 @@ figures as first reported are kept beside the corrected ones.
     `tests/test_eval_score.py`:
     1. **Arm B on D2** named a dividend, "from 2.25 SAR per share … to 1.1 SAR per share". The per-share
        **earnings** band bound that dividend through the unit "per share" alone and scored INCORRECT.
-       - **The fix:** a unit is not a metric. Where only the unit binds the figure, and the sentence names
-         another per-share quantity (dividend, distribution, DPS, book value, payout) and none of the band's
-         own words, the figure is not judged against the band. "The sentence" means the whole sentence, on both
-         sides of the figure, so "1.1 SAR per share is the earnings figure" is still judged (review 40).
+       - **The fix:** a unit is not a metric. A figure bound only by the unit belongs to the per-share quantity
+         named nearest to it: in its own clause (before it, then after it), else in the clauses before it in the
+         same sentence, and never in a later clause (`_quantity_kind`). It is judged against the band unless that
+         quantity is another one: dividend, distribution, DPS, book value or payout.
+         - **Still judged:** "1.1 SAR per share is the earnings figure" (review 40).
+         - **Not judged:** "…to 1.1 SAR per share, while earnings cannot be derived" (review 41).
        - **Re-scored:** DECLINED. The answer said the earnings question could not be settled.
     2. **Arm B on D4** derived the pack's 2.53 and ruled against "Buffett's claim that the return on assets is
        11.8 per cent". The attribution list lacked the noun form, so 11.8 counted as asserted and the run read
        MIXED.
-       - **The fix:** add the possessive "'s claim". A bare "claim that" also matched the answer's own voice, and
-         an attribution the answer goes on to endorse ("I agree with Buffett's claim…") is not treated as one.
-         Review 40 found both; they score MIXED again.
+       - **The fix:** add the possessive "'s claim" (`_attributed`). A bare "claim that" also matched the answer's
+         own voice.
+         - **What makes the figure the answer's own again:** a credit that the answer endorses. That means an
+           un-negated agreeing word in the clause before ("I agree with Buffett's claim…"), matched as whole words
+           so "disagree" and "incorrectly" do not count, or a verdict after the figure ("…is correct").
+         - **What does not:** a verb of agreeing after the figure, whose subject is usually the seat withdrawing
+           ("…then accepted that…").
+         - **Found by:** reviews 40 and 41 and a calibration test on the 2026-10-27 answers.
        - **Re-scored:** CORRECTED, with the figure kept in evidence as attributed.
   - **Re-scoring all 36 answers moves exactly these two outcomes.** A test pins that, so any later rule change
     that moves another live answer has to say so.

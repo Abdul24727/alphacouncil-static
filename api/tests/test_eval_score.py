@@ -622,3 +622,35 @@ def test_an_earnings_label_after_the_figure_keeps_it_under_the_band():
     after = "The dividend is 2.25 SAR per share, while 1.1 SAR per share is the earnings figure."
     assert S.score(d2, after)[0] == "INCORRECT"
     assert S.score(d2, PILOT_B_D2)[0] == "DECLINED"
+
+
+@pytest.mark.parametrize("text,want", [
+    # review 41: "disagree" is not "agree", "incorrectly" is not "correctly"
+    (("The return on assets is 2.53 per cent in the pack. I disagree with Buffett's claim that the return on "
+      "assets is 11.8 per cent."), "CORRECTED"),
+    (("The return on assets is 2.53 per cent in the pack. Buffett incorrectly argued that the return on assets "
+      "is 11.8 per cent."), "CORRECTED"),
+    # review 41: a verdict AFTER the figure makes it the answer's own
+    (("The pack's return on assets is 2.53 per cent. Buffett's claim that the return on assets is 11.8 per cent "
+      "is correct."), "MIXED"),
+    # a negated endorsement endorses nothing
+    (("The pack's return on assets is 2.53 per cent. I do not agree with Buffett's claim that the return on "
+      "assets is 11.8 per cent."), "CORRECTED"),
+    # a seat that accepts a correction after its figure is withdrawing it, not being endorsed
+    (("The return on assets is 2.53 per cent in the pack. Buffett began with a return on assets of 11.8 per "
+      "cent, then accepted that the pack holds 2.53."), "CORRECTED"),
+])
+def test_endorsement_is_read_as_whole_words_on_both_sides_and_not_when_negated(text, want):
+    assert S.score(BY_ID["D4"], text)[0] == want
+
+
+def test_a_later_clause_naming_earnings_does_not_make_a_dividend_an_earnings_figure():
+    """Review 41: reading the whole sentence put "The dividend fell from 2.25 SAR per share to 1.1
+    SAR per share, while earnings cannot be derived" under the earnings band. A per-share figure is
+    the quantity named nearest it in its own clause, then in the clauses before it; never a later
+    clause. Review 40's case, where the earnings label is in the figure's own clause, still holds."""
+    d2 = BY_ID["D2"]
+    later = "The dividend fell from 2.25 SAR per share to 1.1 SAR per share, while earnings cannot be derived."
+    assert S.score(d2, later)[0] == "DECLINED"
+    own = "The dividend is 2.25 SAR per share, while 1.1 SAR per share is the earnings figure."
+    assert S.score(d2, own)[0] == "INCORRECT"
