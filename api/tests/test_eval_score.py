@@ -599,3 +599,26 @@ def test_the_pilot_rescore_changes_exactly_the_two_reviewed_runs(before, after):
     moved = [m for m in moved if m[2] != m[3]]
     assert len(moved) == 2, moved
     assert (before, after) in {(m[2], m[3]) for m in moved}, moved
+
+
+def test_the_answers_own_claim_and_an_endorsed_claim_still_count_as_asserted():
+    """Review 40's counterexamples to the first fix. A bare "claim that" matched the answer's own
+    voice, and an attribution the answer goes on to agree with is the answer's own assertion. Both
+    must stay MIXED beside the right figure; the ruled-against claim stays CORRECTED."""
+    d4 = BY_ID["D4"]
+    own = "The return on assets is 2.53 per cent in the pack. I claim that the return on assets is 11.8 per cent."
+    endorsed = ("The pack's return on assets is 2.53 per cent. I agree with Buffett's claim that the return on "
+                "assets is 11.8 per cent.")
+    assert S.score(d4, own)[0] == "MIXED"
+    assert S.score(d4, endorsed)[0] == "MIXED"
+    assert S.score(d4, PILOT_B_D4)[0] == "CORRECTED"
+
+
+def test_an_earnings_label_after_the_figure_keeps_it_under_the_band():
+    """Review 40's other counterexample: the first fix read only the text BEFORE the number, so
+    "1.1 SAR per share is the earnings figure" beside a dividend escaped the band. The whole
+    sentence is read now; the pilot's dividend sentence still stands aside."""
+    d2 = BY_ID["D2"]
+    after = "The dividend is 2.25 SAR per share, while 1.1 SAR per share is the earnings figure."
+    assert S.score(d2, after)[0] == "INCORRECT"
+    assert S.score(d2, PILOT_B_D2)[0] == "DECLINED"

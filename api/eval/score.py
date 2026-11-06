@@ -131,8 +131,17 @@ ATTRIBUTION = (
     # Added 2026-11-06 from the $66 pilot (review 39): arm B on D4 wrote "The Chair rules on
     # Buffett's claim that the return on assets is 11.8 per cent: the evidence settles it against
     # him", and the noun form was missing, so a figure the answer rules AGAINST scored as asserted
-    # and the run read MIXED. Both forms, with either apostrophe.
-    "claim that", "'s claim", "’s claim",
+    # and the run read MIXED. The POSSESSIVE only, with either apostrophe: a bare "claim that"
+    # also matched the answer's own voice ("I claim that ... 11.8"), which review 40 caught.
+    "'s claim", "’s claim",
+)
+# An attribution the answer goes on to ENDORSE is the answer's own assertion. "I agree with Buffett's
+# claim that the return on assets is 11.8 per cent" asserts 11.8 whoever said it first (review 40),
+# so a clause holding one of these is not treated as attribution.
+ENDORSEMENT = (
+    "agree", "agreed", "agrees", "accept", "accepted", "accepts", "endorse", "endorsed", "endorses",
+    "rightly", "correctly", "is right", "was right", "is correct", "was correct", "confirms",
+    "confirmed", "we adopt", "i adopt", "adopt his", "adopt her",
 )
 # Per-share quantities that are not the one a per-share band describes. A unit is not a metric:
 # D2's band is per-share EARNINGS and binds through "per share", which a dividend carries too.
@@ -172,6 +181,22 @@ def _sentence_before(low: str, start: int) -> str:
             break
         pos -= 1
     return low[pos + 1: start]
+
+
+def _sentence_after(low: str, end: int) -> str:
+    """The rest of the sentence holding the match, after it. A decimal point is not a sentence end."""
+    pos = end
+    while pos < len(low):
+        ch = low[pos]
+        if ch in SENTENCE_END and not (ch == "." and pos + 1 < len(low) and low[pos + 1].isdigit()):
+            break
+        pos += 1
+    return low[end:pos]
+
+
+def _attributed(clause: str) -> bool:
+    """Does this clause credit the figure to someone else, without the answer endorsing it?"""
+    return any(a in clause for a in ATTRIBUTION) and not any(e in clause for e in ENDORSEMENT)
 
 
 def _two_sentences_after(low: str, end: int) -> int:
@@ -336,7 +361,10 @@ def confident_wrong(probe: Any, text: str) -> list[str]:
             # against the per-share EARNINGS band and scored INCORRECT.
             unit_words = {u.lower() for u in units}
             if all(w in unit_words for w in binding):
-                sentence = _sentence_before(low, m.start())
+                # The WHOLE sentence, both sides of the number: "1.1 SAR per share is the earnings
+                # figure" names the band's quantity after it, and review 40 caught the first version
+                # reading only the text before.
+                sentence = _sentence_before(low, m.start()) + low[m.start(): m.end()] + _sentence_after(low, m.end())
                 real = [w.lower() for w in (probe.band_metric or probe.metric) if w.lower() not in unit_words]
                 if any(q in sentence for q in OTHER_PER_SHARE) and not any(w in sentence for w in real):
                     continue
@@ -345,8 +373,7 @@ def confident_wrong(probe: Any, text: str) -> list[str]:
             # this detector is about what the arm itself concluded. Attribution does not excuse the
             # PLANTED figure - that has its own outcome and its own strict test - only an unrelated
             # out-of-band number.
-            attributed = _clause_before(low, m.start())
-            if any(a in attributed for a in ATTRIBUTION):
+            if _attributed(_clause_before(low, m.start())):
                 continue
             if band[0] <= value <= band[1] or negated(low, m.start(), m.end(), False):
                 continue
@@ -417,7 +444,7 @@ def asserted_figures(text: str, tokens: tuple[str, ...]) -> list[str]:
                 spans.append((at, at + len(bare)))
                 at = low.find(bare.lower(), at + 1)
         for start, _end in spans:
-            if not any(a in _clause_before(low, start) for a in ATTRIBUTION):
+            if not _attributed(_clause_before(low, start)):
                 out.append(tok)
                 break
     return out

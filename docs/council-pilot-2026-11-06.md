@@ -66,12 +66,15 @@ figures as first reported are kept beside the corrected ones.
        **earnings** band bound that dividend through the unit "per share" alone and scored INCORRECT.
        - **The fix:** a unit is not a metric. Where only the unit binds the figure, and the sentence names
          another per-share quantity (dividend, distribution, DPS, book value, payout) and none of the band's
-         own words, the figure is not judged against the band.
+         own words, the figure is not judged against the band. "The sentence" means the whole sentence, on both
+         sides of the figure, so "1.1 SAR per share is the earnings figure" is still judged (review 40).
        - **Re-scored:** DECLINED. The answer said the earnings question could not be settled.
     2. **Arm B on D4** derived the pack's 2.53 and ruled against "Buffett's claim that the return on assets is
        11.8 per cent". The attribution list lacked the noun form, so 11.8 counted as asserted and the run read
        MIXED.
-       - **The fix:** add "claim that" and "'s claim".
+       - **The fix:** add the possessive "'s claim". A bare "claim that" also matched the answer's own voice, and
+         an attribution the answer goes on to endorse ("I agree with Buffett's claim…") is not treated as one.
+         Review 40 found both; they score MIXED again.
        - **Re-scored:** CORRECTED, with the figure kept in evidence as attributed.
   - **Re-scoring all 36 answers moves exactly these two outcomes.** A test pins that, so any later rule change
     that moves another live answer has to say so.
