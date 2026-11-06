@@ -286,13 +286,22 @@ scans run again over the exact range at push time.
     names the snapshots.
   - **Size:** 143 snapshots, 2026-06-10 to 2026-11-06, **97.30 GiB** allocated. The newest is 1.26 GiB, the
     newest five average 1.25 GiB, and they grow with `evidence.sqlite`.
-  - **What reads them:** only `_latest_prev_snapshot_screening` (line 330), called once at line 399. It
-    takes the newest snapshot's `screening.sqlite` as the baseline for the row-count and coverage checks.
+  - **Contents:** 141 hold all three databases. Two hold only `evidence.sqlite` and `screening.sqlite`, with no
+    `briefs_index.sqlite`: 2026-06-13 and 2026-06-26. (`do_snapshot` skips a database that does not exist.)
+  - **What reads them:** only `_latest_prev_snapshot_screening` (line 330), called once at line 399. It takes
+    the newest snapshot **that contains `screening.sqlite`** and uses that file as the baseline for the
+    row-count and coverage checks.
+    - **Today that is the newest snapshot:** all 143 contain `screening.sqlite`.
+    - **It can fall back to an older one.** `do_snapshot` creates the folder before it copies, so a failed copy
+      can leave a newer folder without `screening.sqlite`. Then the reader skips that folder and goes back to
+      the next older snapshot that holds the file.
     - **No other live code names them.** The only other file is `tests/test_freshness.py`, which builds its own
       fake snapshot in a temporary folder.
-    - **So no code reads anything older than the newest snapshot.** Their only use is as manual restore
-      points.
+    - **So the code only ever reads the newest eligible snapshot.** The older ones matter as a fallback
+      baseline after failed snapshots, and as manual restore points.
+    - *(Corrected by review 31: this said no code reads anything older than the newest snapshot.)*
   - **Evidence:**
+    - `docs/disk-2026-11-06/rebuild-snapshots-files.txt`: the files in each snapshot.
     - `docs/disk-2026-11-06/rebuild-snapshots-inventory.txt`: every snapshot's allocated and apparent bytes,
       the totals, the retention table and the runway arithmetic.
     - `docs/disk-2026-11-06/pipeline-excerpts.txt`: the writer, the reader, its caller, the default and the
@@ -325,6 +334,9 @@ scans run again over the exact range at push time.
 `/var/backups/alphacouncil/rebuild-snapshots`:
 - **Keep the newest 14 snapshots.** That keeps 14 (16.86 GiB) and removes 129, freeing **80.44 GiB**: the
   disk would be about 41% used. The oldest kept would be 2026-10-24.
+  - **All 14 hold `screening.sqlite`,** so the baseline is unaffected.
+  - **The nightly rule should count only folders that hold `screening.sqlite`.** Otherwise a run of failed
+    snapshots could push out every eligible baseline.
 - **Once now, then nightly.** Remove the older ones now, and add the same keep-14 prune to the nightly, the
   way `publish_dbs.sh` keeps 5.
 - **Other numbers:** keeping 7 removes 136 and frees 88.60 GiB (about 36%); keeping 30 removes 113 and frees

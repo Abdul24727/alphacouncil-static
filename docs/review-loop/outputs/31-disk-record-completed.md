@@ -22,7 +22,9 @@ regex, for emails and IPs, and for the Argaam account name: 0 hits, apart from `
 
 `rebuild-snapshots-inventory.txt`:
 - **Inventory:** all 143 snapshots, each with allocated bytes (`du -s --block-size=1`), apparent bytes and file
-  count (3 each).
+  count. 141 have three files; two (2026-06-13 and 2026-06-26) have two, `evidence.sqlite` and
+  `screening.sqlite`. *(Corrected after review 31: this said "3 each". The file names are in
+  `rebuild-snapshots-files.txt`.)*
 - **Totals:** sum of allocated 97.30 GiB, equal to `du -s` of the folder.
 - **Retention:**
   - keep 14: keeps 14 (16.86 GiB), removes **129**, frees **80.44 GiB**, disk about 41%;
@@ -32,8 +34,9 @@ regex, for emails and IPs, and for the Argaam account name: 0 hits, apart from `
 `pipeline-excerpts.txt`, pinned by md5:
 - **Writer:** `do_snapshot` at line 297 of `run_rebuild_pipeline.py`. It is called at line 507, and the chain
   aborts without it.
-- **Reader:** `_latest_prev_snapshot_screening` at line 330, called once at line 399. It is the newest snapshot's
-  `screening.sqlite`, used as the baseline for the delta checks.
+- **Reader:** `_latest_prev_snapshot_screening` at line 330, called once at line 399. It takes the newest snapshot
+  **that contains `screening.sqlite`** as the baseline for the delta checks. That can fall back to an older
+  folder if newer ones lack the file. Today all 143 contain it.
 - **The folder:** the `--backups-dir` default `llm-council/backups` (line 461) is a symlink, since 2026-08-02, to
   `/var/backups/alphacouncil/rebuild-snapshots`.
 - **The three pruning scripts:** `prune_history.py` (interaction records), the nightly hygiene (harvest runs) and
@@ -44,8 +47,9 @@ regex, for emails and IPs, and for the Argaam account name: 0 hits, apart from `
     builds its own fake snapshot in a temporary folder. The other hits are 139 nightly logs.
   - **Cron:** 0 lines in the root crontab.
 
-So no code reads anything older than the newest snapshot. The older ones serve only as manual restore points,
-which is what the keep-14 decision weighs.
+So the code reads only the newest *eligible* snapshot. The older ones serve as a fallback baseline after failed
+snapshots, and as manual restore points; that is what the keep-14 decision weighs. *(Corrected after review 31:
+this said no code reads anything older than the newest snapshot.)*
 
 **Unchanged:** nothing is deleted and no pipeline change is made. Snapshot retention, any deletion and the
 nightly prune are the owner's decisions.
