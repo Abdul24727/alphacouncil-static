@@ -1304,6 +1304,21 @@ and no customer has paid yet.
        included). Unpushed since then: the `check-advisors.mjs` fix (`7fb04b5`), the F-16 patches and record,
        the candidate's commits and records - all on `rebuild`, needing a push go-ahead. **PUSHED 2026-11-06**
        (`ccfe063..b5655a5`, 65 commits, the scans re-run over that exact range, every hit read, none a value).
+       **Unpushed since then: `b5655a5..04e41d8` (25 commits, 276 files), audited 2026-11-06 (review 53's step).**
+       - **Diff scan:** 44 outgoing-diff hits, every one read: all prose naming Moyasar (the lawyer's pack, PROJECT.md,
+         review notes and replies, the monitor capture).
+       - **History and keys:** history-grep lines identical to the morning's audited set; value-shaped keys 0 in
+         history and tree.
+       - **The Argaam account:** in 0 added lines, messages, tracked files or file names. Its scratch copy was
+         deleted.
+       - **Other matches:** emails `root@alphacouncil.tech` and `noreply@anthropic.com` (and `@pytest`, not an
+         address); no IPv4; "password" in prose only; tracked env-like file `api/.env.example` only.
+       - **Files:** 203 PNG (signed-out beta and production screenshots), docs, the eval records
+         (`probe-results.jsonl`, the re-scored copy, the dry record), `scripts/server/prune-rebuild-snapshots.sh`, the
+         pilot log. Nothing deleted.
+       - **The range carries the `owns` fix (`5a46b8b`)**, whose approval is the owner's to confirm. A push
+         publishes it; reverting it first is one commit.
+       - **Still needs:** the owner's push go-ahead. The scans run again over the exact range at push time.
        - **Audited:** Step 2's audit covered `ccfe063..9712418` (45 commits). Every hit was read; none is a
          value.
        - **At push time:** the scans run again over the exact range;
