@@ -27,3 +27,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-06 05:26 UTC — **F-16 verified live; candidate 2f50598 (review 22 step)** — FIX — [23-f-16-verified-live-candidate-2f50598-review-22-ste.md](replies/23-f-16-verified-live-candidate-2f50598-review-22-ste.md)
 - 2026-11-06 05:32 UTC — **Three labels rendered; records reconciled (review 23 fixes)** — FIX — [24-three-labels-rendered-records-reconciled-review-23.md](replies/24-three-labels-rendered-records-reconciled-review-23.md)
 - 2026-11-06 05:54 UTC — **Unit captions for unconfirmed currency; candidate de19095 (review 24 step)** — FIX — [25-unit-captions-for-unconfirmed-currency-candidate-d.md](replies/25-unit-captions-for-unconfirmed-currency-candidate-d.md)
+- 2026-11-06 06:04 UTC — **Capital panel caption verified (review 25 fixes)** — FIX — [26-capital-panel-caption-verified-review-25-fixes.md](replies/26-capital-panel-caption-verified-review-25-fixes.md)

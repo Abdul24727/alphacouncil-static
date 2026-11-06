@@ -645,20 +645,24 @@ export function CapitalPanel({ className }: { className?: string }) {
         <table className="w-full">
           <thead>
             <tr className="label-caps text-muted">
-              <th className="py-1 text-start font-normal">{t("capital.date")}</th>
-              <th className="py-1 text-start font-normal">{t("capital.type")}</th>
-              <th className="py-1 text-end font-normal">{t("capital.after")}</th>
+              <th className="py-1 pe-3 text-start font-normal">{t("capital.date")}</th>
+              <th className="py-1 pe-3 text-start font-normal">{t("capital.type")}</th>
+              <th className="py-1 pe-3 text-end font-normal">{t("capital.after")}</th>
               <th className="py-1 text-end font-normal">{t("capital.change")}</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((r, i) => (
               <tr key={i} className="border-t border-line" title={capitalNote(r.note, locale, t)}>
-                <td className="num py-1 text-[11.5px]">{r.date}</td>
-                <td className="py-1 text-text-soft" dir="auto" lang={dataLabel(r.change_type, locale).lang}>
+                {/* Spaced as the ownership-changes table: end padding on every column but the last, and .num on
+                    the date's span, not its cell (a .num cell is left-to-right, which puts the padding outside in Arabic). */}
+                <td className="py-1 pe-3 text-[11.5px] whitespace-nowrap">
+                  <span className="num">{r.date}</span>
+                </td>
+                <td className="py-1 pe-3 text-text-soft" dir="auto" lang={dataLabel(r.change_type, locale).lang}>
                   {dataLabel(r.change_type, locale).text}
                 </td>
-                <td className="py-1 text-end">
+                <td className="py-1 pe-3 text-end">
                   <Num value={fmtNumber(r.capital_after_mn, 0)} />
                 </td>
                 <td className="py-1 text-end">
