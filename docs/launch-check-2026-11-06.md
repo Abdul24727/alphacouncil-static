@@ -6,11 +6,13 @@ will test is checked as it stands.
 **How it ran:**
 - **Where:** from `web/` against `https://alphacouncil.tech`.
 - **Signed out:** no account was made and no paid session was run.
-- **Output:** the files are in `docs/screenshots/launch-2026-11-06/`.
+- **Output:** the files are in `docs/screenshots/launch-2026-11-06/`, 49 in all.
+  - **The SEO screenshots:** `check-seo.mjs` resolves `SHOTS_DIR` from its own folder, so its 12 screenshots were
+    first written under an untracked `web/docs/…`. They were moved into `seo/` here (review 56).
 
 | Script | How | Summary line | Result |
 | --- | --- | --- | --- |
-| `check-seo.mjs` | `SHOTS_DIR=…/seo` | **"ALL PASS"**, 62 PASS, 0 FAIL | PASS (`check-seo.txt`) |
+| `check-seo.mjs` | `SHOTS_DIR=…/seo` | **"ALL PASS"**, 62 PASS, 0 FAIL | PASS (`check-seo.txt`, 12 screenshots in `seo/`) |
 | `check-arabic.mjs` | `SIGNED_IN=0 WIDTHS=1440,390` | **"48 Arabic page view(s) signed out; 0 English string(s) outside the allow-list"** | PASS (`check-arabic.txt`) |
 | `check-advisors.mjs` | `VISITOR=1` (signed out) | **"all passed"**, 24 PASS, 0 FAIL | PASS (`check-advisors-visitor.txt`, screenshots in `advisors-visitor/`) |
 | `check-data-fixes.mjs` | `SWEEP=1` | **"all passed"**, 44 PASS, 0 FAIL, 1 INFO; sweep 714 tickers, `eps_bad` 0, `vt_reason` 0, `news_green_old` 0, `no_currency` 8 | PASS (`check-data-fixes.txt`) |

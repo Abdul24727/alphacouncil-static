@@ -1,7 +1,9 @@
 # Output 51: review 55's step. Step 10's signed-out checks re-run on production `b5655a5064`.
 
 The record is `docs/launch-check-2026-11-06.md`, with the outputs and screenshots in
-`docs/screenshots/launch-2026-11-06/` (37 files, 4.9 MB). All of it ran against `https://alphacouncil.tech`, signed
+`docs/screenshots/launch-2026-11-06/` (49 files). *(Corrected after review 56: this said 37. The 12 SEO screenshots
+had landed in an untracked `web/docs/`, because `check-seo.mjs` resolves `SHOTS_DIR` from its own folder. They are
+now in `seo/`.)* All of it ran against `https://alphacouncil.tech`, signed
 out, with no account and no paid session.
 
 **Results, all PASS:**
