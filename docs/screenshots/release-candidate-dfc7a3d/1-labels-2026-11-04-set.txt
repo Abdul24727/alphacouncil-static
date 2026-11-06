@@ -1,0 +1,41 @@
+ar 1010 1440 financials.income: rows 29, labels still in English 0 []
+ar 1010 1440 financials.balance: rows 33, labels still in English 0 []
+ar 1010 1440 expected labels shown: 2/2
+ar 1211 1440 financials.income: rows 24, labels still in English 0 []
+ar 1211 1440 financials.balance: rows 60, labels still in English 0 []
+ar 1211 1440 expected labels shown: 1/1
+ar 2222 1440 financials.income: rows 18, labels still in English 0 []
+ar 2222 1440 financials.balance: rows 42, labels still in English 0 []
+ar 8010 1440 financials.income: rows 30, labels still in English 0 []
+ar 8010 1440 financials.balance: rows 44, labels still in English 0 []
+ar 8010 1440 expected labels shown: 1/1
+ar 2222 390 financials.income: rows 18, labels still in English 0 []
+ar 2222 390 financials.balance: rows 42, labels still in English 0 []
+en 301 1440 financials.income: rows 17, labels still in Arabic 0 []
+en 301 1440 financials.balance: rows 11, labels still in Arabic 0 []
+en 301 1440 expected labels shown: 3/3
+en 821 1440 financials.income: rows 29, labels still in Arabic 0 []
+en 821 1440 financials.balance: rows 29, labels still in Arabic 0 []
+en 821 1440 expected labels shown: 12/12
+en AMLAK 1440 financials.income: rows 23, labels still in Arabic 0 []
+en AMLAK 1440 financials.balance: rows 31, labels still in Arabic 0 []
+en AMLAK 1440 expected labels shown: 18/18
+en AJMANBAN 1440 financials.income: rows 34, labels still in Arabic 0 []
+en AJMANBAN 1440 financials.balance: rows 30, labels still in Arabic 0 []
+en AJMANBAN 1440 expected labels shown: 17/17
+en AMCREIT 1440 financials.income: rows 17, labels still in Arabic 0 []
+en AMCREIT 1440 financials.balance: rows 21, labels still in Arabic 0 []
+en AMCREIT 1440 expected labels shown: 17/17
+en ADCB 1440 financials.income: rows 35, labels still in Arabic 0 []
+en ADCB 1440 financials.balance: rows 31, labels still in Arabic 0 []
+en ADCB 1440 expected labels shown: 3/3
+en BKIC.BH 1440 financials.income: rows 17, labels still in Arabic 0 []
+en BKIC.BH 1440 financials.balance: rows 10, labels still in Arabic 0 []
+en BKIC.BH 1440 expected labels shown: 1/1
+en EAND 1440 financials.income: rows 27, labels still in Arabic 0 []
+en EAND 1440 financials.balance: rows 65, labels still in Arabic 0 []
+en EAND 1440 expected labels shown: 1/1
+en AMLAK 390 financials.income: rows 23, labels still in Arabic 0 []
+en AMLAK 390 financials.balance: rows 31, labels still in Arabic 0 []
+en AMLAK 390 expected labels shown: 18/18
+PASS: every expected label shown

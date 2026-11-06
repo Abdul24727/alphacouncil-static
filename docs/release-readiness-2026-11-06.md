@@ -1,13 +1,15 @@
-# Release readiness, 2026-11-06: candidate `de19095` against the deployed `5c18a3ae46`
+# Release readiness, 2026-11-06: candidate `dfc7a3d` against the deployed `5c18a3ae46`
 
 **Status: ready for the owner's release decision.** This report needs no release and no push. Each release
 (beta, then production) and each push is the owner's go-ahead in chat.
 
 - **Deployed now:** `5c18a3ae46` on beta and production (2026-11-05).
-- **Candidate:** `rebuild` at `de19095`. Commits after it change no app code: records, this report, the
-  review loop. So the deploy script may ship a later `rebuild` HEAD whose app code equals `de19095`; the
-  check is `git diff --stat de19095..HEAD -- web/src api deploy web/messages web/public`, which must be
+- **Candidate:** `rebuild` at `dfc7a3d`. Commits after it change no app code: records, this report, the
+  review loop. So the deploy script may ship a later `rebuild` HEAD whose app code equals `dfc7a3d`; the
+  check is `git diff --stat dfc7a3d..HEAD -- web/src api deploy web/messages web/public`, which must be
   empty.
+- *(`de19095` was superseded by review 26's capital-panel spacing. Its evidence stays in
+  `docs/screenshots/release-candidate-de19095/`.)*
 - *(`2f50598` was superseded by review 24's caption fix. Its evidence, including the live sweep and F-16
   check after the publish, stays in `docs/screenshots/release-candidate-2f50598/`.)*
 - *(`4a98832` was superseded by three label pairs the live English-label sweep called for after the
@@ -31,18 +33,19 @@ All of it is in `web/src` and `web/messages`; `api/`, `deploy/` and `web/public/
 | "property Real estate Investment" reads "Real Estate Investments" | English Financials | labels doc, "property Real estate Investment" |
 | Where a listing's currency is not confirmed (8 listings), the unit caption says "Millions (currency not confirmed)" / "بالملايين (العملة غير مؤكدة)" instead of "Millions of" with nothing after it | Financials and the capital-changes panel, both languages | `PROJECT.md` §5, 2026-11-06 (review 24) |
 | "income from investments & Other operating income" reads "Income from investments & other operating income" | Financials, English: 3 Saudi banks and the Gulf companies with that line | `PROJECT.md` §5, 2026-11-06 (review 16) |
+| The capital-changes panel's columns are spaced, so the date, type and figures never touch (they did in Arabic at every width and in English on phones) | Calendar tab, both languages | `PROJECT.md` §5, 2026-11-06 (review 26) |
 | On a phone, the line labels stay in place, each period fills the space beside them, and scrolling snaps to whole periods: no figure is shown cut in half | Financials on phones, both languages; desktop unchanged | `PROJECT.md` §5, 2026-11-06 (review 13) |
 
-Arabic pages change only through rows 2, 3, 5 and 7: newest first, bank sub-lines, the unconfirmed-currency
-caption, and phone tables. *(Corrected by review 25: this said rows 2, 3 and 6, from before the caption row
+Arabic pages change only through rows 2, 3, 5, 6 and 8: newest first, bank sub-lines, the unconfirmed-currency
+caption, capital-panel spacing, and phone tables. *(Corrected by review 25: this said rows 2, 3 and 6, from before the caption row
 was added.)* No existing dictionary mapping changed, apart from the one
 intended real-estate label.
 
 ## Every file changed since `5c18a3ae46`
 
-All 909 files of `git diff --name-status 5c18a3ae46..de19095`: 29 outside `docs/screenshots/` and
-`docs/review-loop/`, all named below; 830 evidence files under `docs/screenshots/` (one of them, a corrected
-header, is also named below); and 50 review-loop records under `docs/review-loop/`. *(Reconciled with the diff
+All 1120 files of `git diff --name-status 5c18a3ae46..dfc7a3d`: 29 outside `docs/screenshots/` and
+`docs/review-loop/`, all named below; 1037 evidence files under `docs/screenshots/` (one of them, a corrected
+header, is also named below); and 54 review-loop records under `docs/review-loop/`. *(Reconciled with the diff
 2026-11-06, after ChatGPT's review 14 found three script files missing from the first list.)*
 
 **App code, which ships with a release (7 files):**
@@ -55,7 +58,7 @@ header, is also named below); and 50 review-loop records under `docs/review-loop
   width rule.
 - `M web/src/components/stock/research-panels.tsx`: the statement table passes its statement to
   `dataLabel`; sticky label column; on a phone, measured period widths with snap scrolling; `unitCaption()`
-  for an unconfirmed currency.
+  for an unconfirmed currency; the capital-changes panel's column spacing.
 - `M web/messages/en.json` and `M web/messages/ar.json`: `stock.statements.unitUnconfirmed`, one line each.
 
 **Tests, which ship but do not run on the server (3 files):**
@@ -94,11 +97,11 @@ header, is also named below); and 50 review-loop records under `docs/review-loop
 - `M PROJECT.md`;
 - `M docs/arabic-statement-labels-2026-11-03.md`;
 - `M docs/screenshots/launch-2026-10-27/advisors-signed-in/check-advisors.txt`: a corrected header. It is also
-  counted among the 830 evidence files.
+  counted among the 1037 evidence files.
 
 **Evidence and review records:**
-- 830 files under `docs/screenshots/`, the folders this report and the labels doc cite;
-- 50 under `docs/review-loop/`: the master plan, outputs, replies and log.
+- 1037 files under `docs/screenshots/`, the folders this report and the labels doc cite;
+- 54 under `docs/review-loop/`: the master plan, outputs, replies and log.
 
 ## Checks on the candidate (`de19095`), all run together on 2026-11-06
 
@@ -109,10 +112,11 @@ Run after the last change, so no later step can have broken an earlier one.
 - `python -X utf8 scripts/argaam_ar_labels/test_pair_from_gulf.py`: OK (4 tests).
 
 **Rendered:** local web against beta's API, which since 05:01 UTC serves the 2026-11-06 publish. Evidence is in
-`docs/screenshots/release-candidate-de19095/`: checks 1–8 re-run on this candidate against the 2026-11-06
+`docs/screenshots/release-candidate-dfc7a3d/`: checks 1–8 re-run on this candidate against the 2026-11-06
 published data, all PASS. The same folder holds:
 - check 13 (the three labels, 8/8);
 - check 14 (unit captions, 16/16);
+- check 15 (the capital panel, 8/8);
 - `11-sweep.txt`: **714/714, PASS**.
 
 The F-16 check after the publish (13/13) and the first live sweep are in the `2f50598` folder; the SEO checks
@@ -144,8 +148,10 @@ same `unitCaption()`; Calendar tab, English and Arabic, 1440 and 390. 8/8 PASS:
 - **Unconfirmed currency: no data to show it.** None of the 8 listings without a confirmed currency has a
   capital change (`/corporate` gives 0 rows each). KFH's panel therefore shows its empty message and no
   caption, which was checked. No row was invented to show the unconfirmed caption there.
-- **Seen on check 15, left for review:** on 1010's Arabic panel at 390 the date and type columns run
-  together ("2026-04-05أسهم منحة"), because neither cell has inline padding. That predates today's work.
+- **Column spacing, fixed in `dfc7a3d` (review 26):** the check measures the narrowest gap between
+  neighbouring cells' text in every row. On `de19095` it was 0 px in Arabic at 1440 and 390, and 3 px in English
+  at 390. On `dfc7a3d` it is 26 and 14 px in Arabic, and 19 and 12 px in English; the check requires at least
+  8 px.
 
 The sweep counts **8** listings with no confirmed currency (`"no_currency":8`). *(Corrected by review 24: this
 report and `PROJECT.md` first said 7, taken from the 2026-11-05 sweep.)*
