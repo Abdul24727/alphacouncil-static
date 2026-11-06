@@ -84,6 +84,9 @@ Billing has been open since 2026-11-02.
     - advisors invent statement figures on packs that have no statements (P9).
   - **What comes next is the owner's choice:** keep today's room and fix those two issues, screen a one-model option 2,
     or stop.
+  - **The owner chose (2026-11-07): "Keep it, take the fix".** Today's room stays. The sector-percentile fix (site
+    labels in en and ar, the room's pack, the Copilot) is on `rebuild` as `867f944`. Releasing it needs the owner's
+    go-ahead.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

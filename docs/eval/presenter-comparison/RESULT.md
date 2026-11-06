@@ -67,7 +67,15 @@ session was audited by hand (`audit.md`), and every counted claim is quoted and 
 - **Cost:** three-quarters of the cost is the analyst's call. A two-model version with this analyst cannot reach 40 %
   without a cheaper analyst.
 
-## The choices for the owner
+## The owner's decision (2026-11-07)
+
+"Keep it, take the fix", in answer to "Which way for the advisors' room?":
+- **The room:** today's room stays, and option 2 is not adopted.
+- **The fix:** the sector-percentile fix is on `rebuild` as `867f944`. It changes the site's labels in English and
+  Arabic, the room's pack and the Copilot.
+- **Release:** it needs its own go-ahead.
+
+## The choices that were put to the owner
 
 1. **Keep today's room (recommended for launch) and fix what the audit found in it:**
    - **The percentile:** say in the room's data pack, and on the site, that the sector percentile is a score where

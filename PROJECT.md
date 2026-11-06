@@ -328,8 +328,16 @@ Older entries: `changelog-archive.md`.
       invented figure. So the inventions are 48 against 2, and the figures absent from the data 121 against 0.
     - **Review 70 could not run** (2026-11-07 02:2x local): the reviewer's ChatGPT usage limit was hit, until about
       05:03 local. Output 63 waits for it.
+    - **THE OWNER'S DECISION (2026-11-07, in chat): "Keep it, take the fix"**, in answer to "Which way for the
+      advisors' room?", with the options "Keep it, take the fix" and "Test a one-model version".
+      - **The room:** today's room stays. Option 2 is not adopted, and `presenter.py` stays as a prototype, off by
+        default.
+      - **The fix:** the percentile fix is on `rebuild` as `867f944`, cherry-picked from the branch below, which is
+        deleted. Suite 596 passed, lint at baseline, web typecheck, lint and 68 tests clean.
+      - **Not in the decision:** releasing the fix needs its own go-ahead. The paid live-pack check of inventions is
+        not approved.
     - **Prepared for the owner's choice, NOT on `rebuild`:** local branch `percentile-standing` (`7d4dda8`, one commit
-      on `24f94d7`).
+      on `24f94d7`). *(Taken into `rebuild` as `867f944` on the owner's decision above.)*
       - **What it changes:** the site's "Sector percentile" / "P23" become "Sector standing", with a tooltip that
         higher is better on every measure (en, ar). The room's pack passes the field as `sector_standing`, defined in
         its header. The Copilot's prompt and tool description say the same. No value changes.
