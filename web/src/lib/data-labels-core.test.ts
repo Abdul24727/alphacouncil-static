@@ -61,3 +61,12 @@ test("real-estate investments read cleanly, from Argaam's garbled English as fro
   // Arabic pages keep what they showed: the stored Saudi spelling still finds its Arabic.
   assert.deepEqual(dataLabel("property Real estate Investment", "ar", BS), { text: "استثمارات عقارية", lang: "ar" });
 });
+
+test("investment and other operating income reads in sentence case, from Argaam's spelling as from the Arabic", () => {
+  // Argaam's English for row tr166 is "income from investments & Other operating income" (3 Saudi banks);
+  // the Gulf pages store its Arabic (review 16).
+  for (const stored of ["income from investments & Other operating income", "دخل الإستثمارات والعمليات الأخرى"]) {
+    assert.deepEqual(dataLabel(stored, "en", IS), { text: "Income from investments & other operating income", lang: "en" }, stored);
+  }
+  assert.deepEqual(dataLabel("income from investments & Other operating income", "ar", IS), { text: "دخل الإستثمارات والعمليات الأخرى", lang: "ar" });
+});

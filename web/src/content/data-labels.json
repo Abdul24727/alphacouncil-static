@@ -410,7 +410,7 @@
     ["Unearned finance income", "إيرادات تمويل غير مكتسبة"],
     ["Unusual item", "بند إستثنائى"],
     ["Zakat & Tax", "زكاة وضرائب"],
-    ["income from investments & Other operating income", "دخل الإستثمارات والعمليات الأخرى"],
+    ["Income from investments & other operating income", "دخل الإستثمارات والعمليات الأخرى"],
     ["provision for impairment", "مخصص انخفاض قيمة"],
 
     ["Income from Istisnaa", "استصناع"],
@@ -539,7 +539,8 @@
     "close of offering": "Close of offering",
     "financial results date": "Financial results date",
     "eligibility of cash dividend": "Eligibility for cash dividend",
-    "property Real estate Investment": "Real Estate Investments"
+    "property Real estate Investment": "Real Estate Investments",
+    "income from investments & Other operating income": "Income from investments & other operating income"
   },
   "_in_statement_about": "A label that means something else inside one statement. Banks' income-statement sub-lines repeat a balance-sheet line's words under \"Special commission income/expense\" (Argaam row ids tr23-tr28); every income statement on the Saudi English and Gulf Arabic pages (39, 2026-11-06) uses these texts only there, so inside an income statement they are shown with the meaning their parent gives them, in both languages. `match` lists the stored texts (either language); outside the statement the pairs above apply.",
   "in_statement": {
