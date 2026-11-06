@@ -517,6 +517,7 @@
     },
     "statements": {
       "unit": "Millions of {currency}",
+      "unitUnconfirmed": "Millions (currency not confirmed)",
       "fy": "FY{year}",
       "none": "No statement lines in our database for this ticker",
       "item": "Line item"

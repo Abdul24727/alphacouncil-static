@@ -141,6 +141,12 @@ function statementValue(v: number | null | undefined) {
   return fmtNumber(v, Math.abs(v) >= 100 ? 0 : 2);
 }
 
+/** "Millions of AED"; where the listing's currency is not confirmed, say so rather than leave it blank. */
+function unitCaption(t: ReturnType<typeof useTranslations<"stock">>, currency: string | null | undefined, locale: string) {
+  const label = currencyLabel(currency, locale);
+  return label ? t("statements.unit", { currency: label }) : t("statements.unitUnconfirmed");
+}
+
 export function StatementPanel({ section, className }: { section: "Income Statement" | "Balance Sheet"; className?: string }) {
   const t = useTranslations("stock");
   const locale = useLocale();
@@ -205,7 +211,7 @@ export function StatementPanel({ section, className }: { section: "Income Statem
         <QueryState isPending={q.isPending} error={q.error} empty={!!s && !statement} emptyText={t("statements.none")} rows={10}>
           {statement && (
             <>
-              <p className="label-caps mb-1.5 text-muted">{t("statements.unit", { currency: currencyLabel(s?.currency, locale) })}</p>
+              <p className="label-caps mb-1.5 text-muted">{unitCaption(t, s?.currency, locale)}</p>
               <div
                 ref={boxRef}
                 className={`max-h-[560px] overflow-auto ${colWidth ? "snap-x snap-mandatory" : ""}`}
@@ -635,7 +641,7 @@ export function CapitalPanel({ className }: { className?: string }) {
       className={className}
     >
       <QueryState isPending={q.isPending} error={q.error} empty={!!c && rows.length === 0} emptyText={t("capital.none")}>
-        <p className="label-caps mb-1.5 text-muted">{t("statements.unit", { currency: currencyLabel(c?.currency, locale) })}</p>
+        <p className="label-caps mb-1.5 text-muted">{unitCaption(t, c?.currency, locale)}</p>
         <table className="w-full">
           <thead>
             <tr className="label-caps text-muted">
