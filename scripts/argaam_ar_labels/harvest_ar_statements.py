@@ -1,4 +1,14 @@
-"""One-off: save Argaam's ARABIC financial-statement page for every Tadawul ticker, so that
+"""SUPERSEDED - do not run. Kept as the record of what was tried (2026-11-03).
+
+The server harvest it performs was blocked: Argaam answers the Arabic statement pages with a "Human
+Verification" bot challenge, which is not to be got around. The owner then ruled out signing in to
+Argaam anywhere else, because a second sign-in signs the nightly's single session out. Argaam's Arabic
+for the Saudi lines comes instead from the Gulf statement pages the nightly already saves in Arabic,
+with no request to Argaam: see pair_from_gulf.py and docs/arabic-statement-labels-2026-11-03.md.
+
+As first written:
+
+One-off: save Argaam's ARABIC financial-statement page for every Tadawul ticker, so that
 pair_labels.py can read Argaam's own Arabic name for each statement line.
 
 Why one-off and not the nightly: the nightly harvest reads Argaam's /en/ pages for Saudi companies

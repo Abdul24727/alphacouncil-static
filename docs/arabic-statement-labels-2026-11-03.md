@@ -15,7 +15,11 @@
 - **The challenge is not to be got around**, so harvesting from the server is closed. Four Arabic
   page loads were made in all. Left on the server: `/root/argaam-ar-statements/_summary.json` and
   `_diag/` (the two diagnostic pages).
-- **The route that remains: the owner's own browser.**
+- **The route that remained at that point: the owner's own browser.** *(Superseded the same day: the
+  owner ruled out signing in to Argaam anywhere else, because a second sign-in signs the nightly's
+  single session out. No sign-in, no browser-pane visit and no Saudi Arabic page was used. The labels
+  came from the Gulf pages the nightly already saves, with `pair_from_gulf.py`; see "Done instead" in
+  `PROJECT.md` §9 item 3 and the sections below. The bullets that follow record the plan as it stood.)*
   - The owner signs in to Argaam in the desktop app's browser pane. Claude never types the password.
   - Claude then reads the Arabic statement pages there, as the owner's signed-in visit.
   - If a challenge appears there, it is the owner's to answer, not Claude's.

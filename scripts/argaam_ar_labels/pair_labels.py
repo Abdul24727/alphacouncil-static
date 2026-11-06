@@ -10,7 +10,9 @@ Read-only. Runs on the server with the pipeline's Python (it needs bs4):
   # the English side only: is each row id one English label everywhere? (a check on the key)
   python pair_labels.py --universe /opt/alphacouncil/backend/argaam/default_universe --check-ids
 
-  # pairs, once harvest_ar_statements.py has saved the Arabic pages into --ar-dir
+  # SUPERSEDED (2026-11-03): pairs from saved Saudi Arabic pages. harvest_ar_statements.py never
+  # could save them (Argaam's bot challenge; no second sign-in), so use pair_from_gulf.py, which
+  # pairs from the Gulf pages the nightly already saves in Arabic. Kept for the record:
   python pair_labels.py --universe … --ar-dir /root/argaam-ar-statements > pairs.json
 
 The English page is the newest harvest run's `financial_statements_quarter.html` (the grid the
