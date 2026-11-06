@@ -28,7 +28,7 @@ DATASET_CHARS_BY_TAG = {"P9": 16_000}
 # tag, tool, arguments, title (en, ar)
 DATASETS: tuple[tuple[str, str, dict[str, Any], str, str], ...] = (
     ("P1", "get_ticker_overview", {}, "Quote, valuation, returns and technicals", "السعر والتقييم والعوائد والمؤشرات الفنية"),
-    ("P2", "get_fundamentals", {}, "Fundamentals, with sector percentiles where the peer group supports one", "الأساسيات، ومقارنتها بالقطاع حيث تسمح مجموعة المقارنة بذلك"),
+    ("P2", "get_fundamentals", {}, "Fundamentals, with each metric's sector standing where the peer group supports one", "الأساسيات، مع ترتيب كل مقياس داخل القطاع حيث تسمح مجموعة المقارنة بذلك"),
     ("P3", "get_dividends", {}, "Dividends and capital changes", "التوزيعات وتغيرات رأس المال"),
     ("P4", "get_council", {}, "Council seats (rule-based votes)", "مقاعد المجلس (تصويت بالقواعد)"),
     ("P5", "get_peers", {}, "Sector peers", "الشركات المماثلة في القطاع"),
@@ -89,6 +89,25 @@ def _percent_returns(overview: Any) -> Any:
     return overview
 
 
+def _standing(fundamentals: Any) -> Any:
+    """The API's `sector_percentile` (and each group's `score`) is the pipeline's standing score, which
+    is flipped for metrics where lower is better (compute_gauge_scores: `pct = 1 - pct`). Under its own
+    name it reads as a plain percentile, and in the paid A-vs-P comparison of 2026-11-07 both arms read
+    Al Rajhi's 22.7 on debt to equity as "less leveraged than most peers", the opposite of what it
+    means. So the room gets it as `sector_standing`, which the header defines. Nothing is recomputed."""
+    if not isinstance(fundamentals, dict) or not isinstance(fundamentals.get("groups"), list):
+        return fundamentals
+    for g in fundamentals["groups"]:
+        if not isinstance(g, dict):
+            continue
+        if "score" in g:
+            g["sector_standing"] = g.pop("score")
+        for m in g.get("metrics") or []:
+            if isinstance(m, dict) and "sector_percentile" in m:
+                m["sector_standing"] = m.pop("sector_percentile")
+    return fundamentals
+
+
 def header_of(t: Ticker, fetched_at: str) -> str:
     name = t.name_en or t.name_ar or t.symbol
     return (
@@ -97,6 +116,10 @@ def header_of(t: Ticker, fetched_at: str) -> str:
         + f". Symbol {t.symbol} on {t.exchange}, listing currency {t.currency or 'unknown'}, sector {t.sector_en or 'unknown'}."
         f" Fetched {fetched_at} from AlphaCouncil's database."
         " Units: market_cap_mn and statement lines are millions of the listing currency; fields ending in _pct are percents."
+        " In [P2], sector_standing is a metric's standing in its peer class from 0 to 100, and HIGHER IS BETTER for"
+        " every metric: where higher_is_better is false (debt_equity, ev_ebitda, ps, payout), a high standing means"
+        " a LOW value, so a standing of 20 on debt_equity means more debt relative to equity than about 80 per cent"
+        " of the peer class."
         " A dataset holding an error has no data for this company."
         # The distinction a seat cannot recover once it is lost: which figures were reported,
         # which were computed, and which are only an opinion a threshold produced.
@@ -139,6 +162,8 @@ async def build(request: Request, t: Ticker, locale: str = "en") -> Pack:
             result = _percent_returns(result)
         if name == "get_news":
             result = _news(result, locale)
+        if name == "get_fundamentals":
+            result = _standing(result)
         data[tag] = result
         sources[tag] = Source(title_en=en, title_ar=ar, ok=not (isinstance(result, dict) and "error" in result))
     fetched = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")

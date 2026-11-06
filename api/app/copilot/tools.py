@@ -41,7 +41,7 @@ DATABASE_TOOLS: list[dict[str, Any]] = [
     },
     {
         "name": "get_fundamentals",
-        "description": "Fundamentals strip: valuation, profitability, financial health and income metrics with sector percentiles.",
+        "description": "Fundamentals strip: valuation, profitability, financial health and income metrics, each with a sector_percentile: its standing in the peer class from 0 to 100, where higher is better on every metric (where a lower value is better, as for debt to equity, a high percentile means a low value).",
         "input_schema": _schema({"ticker": TICKER}, ["ticker"]),
     },
     {

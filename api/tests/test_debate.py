@@ -874,3 +874,29 @@ def test_every_seat_error_code_has_words_in_both_languages():
         words = json.loads((WEB / "messages" / f"{locale}.json").read_text(encoding="utf-8"))["debate"]["errors"]
         missing = [c for c in codes if not words.get(c)]
         assert not missing, f"{locale}.json has no words for: {missing}"
+
+
+def test_the_room_reads_the_sector_percentile_as_a_standing_where_higher_is_better():
+    """The API's `sector_percentile` is the pipeline's flipped standing score. Under that name both arms of
+    the 2026-11-07 comparison read Al Rajhi's 22.7 on debt to equity as low leverage, the opposite of what it
+    means. The room now gets it as `sector_standing`, defined in the header; the values are not touched."""
+    from types import SimpleNamespace
+
+    from app.debate import pack
+
+    api = {"groups": [{"group": "health", "score": 37.4, "metrics": [
+        {"key": "debt_equity", "value": 1.7165, "higher_is_better": False, "status": "ok", "sector_percentile": 22.7},
+        {"key": "current_ratio", "value": None, "higher_is_better": True, "status": "na_sector", "sector_percentile": None},
+    ]}]}
+    out = pack._standing(api)
+    g = out["groups"][0]
+    assert g["sector_standing"] == 37.4 and "score" not in g
+    assert [m["sector_standing"] for m in g["metrics"]] == [22.7, None]
+    assert all("sector_percentile" not in m for m in g["metrics"])
+    assert pack._standing({"error": "x"}) == {"error": "x"} and pack._standing(None) is None
+
+    t = SimpleNamespace(name_en="Al Rajhi Bank", name_ar=None, symbol="1120", exchange="TADAWUL", currency="SAR",
+                        sector_en="Banks")
+    header = pack.header_of(t, "2026-11-07 00:00 UTC")
+    assert "HIGHER IS BETTER for every metric" in header and "a high standing means a LOW value" in header
+    assert {d[0]: d[3] for d in pack.DATASETS}["P2"].endswith("sector standing where the peer group supports one")

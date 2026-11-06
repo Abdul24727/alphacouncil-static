@@ -481,9 +481,9 @@
       "profitability": "Profitability",
       "health": "Financial health",
       "income": "Income",
-      "percentile": "Sector percentile",
-      "pctShort": "P{n}",
-      "score": "P{n}",
+      "percentile": "Sector standing, 0 to 100: higher is better on every measure. Where a lower value is better, such as debt to equity, a high standing means a low value.",
+      "pctShort": "{n}",
+      "score": "Standing {n}",
       "status": {
         "ok": "Computed",
         "published": "Published (Argaam, TTM)",
@@ -510,10 +510,10 @@
         "div_yield": "Dividend yield",
         "payout": "Payout ratio"
       },
-      "noScore": "No sector percentile",
-      "rankWithheld": "No sector percentile: the peer group is disputed",
-      "rankingWithheld": "Sector percentiles are withheld for this company: the pipeline ranks it inside a peer class whose membership is known to be wrong. The values themselves are unaffected.",
-      "rankingNarrowed": "Sector percentiles are ranks inside the pipeline's own peer class, not inside the sector the exchange publishes."
+      "noScore": "No sector standing",
+      "rankWithheld": "No sector standing: the peer group is disputed",
+      "rankingWithheld": "Sector standings are withheld for this company: the pipeline ranks it inside a peer class whose membership is known to be wrong. The values themselves are unaffected.",
+      "rankingNarrowed": "Sector standings rank the company inside the pipeline's own peer class, not inside the sector the exchange publishes."
     },
     "statements": {
       "unit": "Millions of {currency}",

@@ -491,3 +491,14 @@ def test_one_http_client_per_event_loop_not_one_per_call(monkeypatch):
     assert first is not second
     # A synchronous caller has no loop to key on and still gets a usable client.
     assert make_client(settings) is not None
+
+
+def test_the_copilot_is_told_which_way_the_sector_percentile_runs():
+    # The 2026-11-07 comparison: 22.7 on debt to equity was read as low leverage. It is the pipeline's
+    # standing score, flipped for metrics where lower is better.
+    from app.copilot import tools
+    from app.copilot.engine import SYSTEM
+
+    assert "a sector percentile is a standing from 0 to 100 where higher is better on every metric" in SYSTEM
+    desc = next(t["description"] for t in tools.ALL_TOOLS if t["name"] == "get_fundamentals")
+    assert "higher is better on every metric" in desc
