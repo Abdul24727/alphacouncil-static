@@ -66,8 +66,9 @@ A-against-D run **unnecessary** for this decision.
 - **Plan:** the 15 active probes, today's room (A) and option 2 (harness arm **P**), one planted and one clean run
   each: **60 sessions**, 30 an arm.
 - **The prototype exists** (`app/debate/presenter.py`, off by default), and the plan was dry-run in full on the
-  server on 2026-11-06. After review 65 it was run again on 2026-11-07, locally, from a clean copy of commit
-  2e948d9 with the same settings and packs (`docs/eval/presenter-comparison/`). All 60 sessions ran:
+  server on 2026-11-06. After reviews 65 and 66 it was run again on 2026-11-07, locally, from clean copies of
+  commits 2e948d9 and then d7c2091, with the same settings and packs (`docs/eval/presenter-comparison/` holds the
+  second). Both gave the same figures. All 60 sessions ran:
   - **P:** 4 calls each, 21 turns, no fallbacks;
   - **A:** 20–21 calls each.
 - **The planted claim is shown alike** *(review 65)*: P's analyst plans before any turn exists, so it is shown the
