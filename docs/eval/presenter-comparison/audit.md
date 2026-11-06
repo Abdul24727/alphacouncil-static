@@ -88,8 +88,8 @@ clean. One session failed: P I3 clean. Its analyst's plan was refused on all thr
 | — planted runs / clean runs | 98 / 112 | 33 / 22 |
 | — in a Chair's final answer | **7** (6 sessions) | **0** |
 | — invented figures presented as the pack's | **23** | **0** |
-| — invented statements about what the pack holds (no figure) | **11** | **0** |
-| — taking up the planted claim (not the plant's own opening) | 12 | 7 |
+| — invented statements about what the pack holds (no figure) | **25** | **2** (both added by the presenter) |
+| — taking up the planted claim (not the plant's own opening) | 13 | 8 |
 | — false overall conclusions ("safe", "secure") | 3 | 0 |
 | — minor | 11 | 8 |
 | — added by P's presenter (not in the analyst's plan) | — | **45 of 55** |
@@ -116,17 +116,27 @@ many or more: D7 (2 against 1), I4 (6 against 0) and I8 (1 against 1).
 - **I3 clean:** says three advisors' final words "concede that safety under stress is an assumption". Alwaleed's says
   "The dividend is covered and secure."
 
-**Inventions in today's room:** 34 claims in all, 23 with invented figures and 11 without.
-*(Corrected after review 68: this said "34 invented figures", all tagged [P9].)*
+**Inventions:** today's room makes 48, 23 with invented figures and 25 without. Option 2 makes 2, both without a figure
+and both added by its presenter.
+*(Corrected after review 68: this said "34 invented figures", all tagged [P9]. Corrected again after review 69: one
+definition is now applied to both arms. It gave 14 more of today's room's claims, and 2 of option 2's, that say the pack
+holds data or a comparison it does not.)*
 - **The 23 with figures:**
   - **Lynch:** quarterly revenue and profit records (D2, I1, I2, I4, I5).
   - **Buffett:** income-statement figures (D2, I1, I2).
   - **Dalio:** a balance sheet (I1) and a leverage threshold (I6).
-- **The 11 without a figure:** each says the pack holds data it does not, or concedes invented data. Examples: "Here
-  is the quarterly record from [P9]", "The system's reason is a loss" and "the quarterly record shows revenue
-  growth".
-- **What they rest on:** all but the I6 threshold rest on statement data the pack does not hold, the data the
-  advisors' briefs place in P9 (see section 5).
+- **The 25 without a figure:** each states or implies that the pack holds a dataset, note, record or comparison it
+  does not, or concedes invented data. They cover:
+  - quarterly records, income statements and a balance sheet;
+  - a note on the ROE denominator;
+  - peer returns on equity, a sector rank for ROE and a sector price-to-book.
+  Examples: "Here is the quarterly record from [P9]", "none of which report an ROE above 20% in this pack" and
+  "That figure does not disclose its own denominator, as the data itself notes".
+- **Option 2's two:** both are presenter additions in D8. One invents a note ("the pack's own note says so on its
+  face"); the other refers to "the pack's own limitations in [P9]", which the pack does not hold.
+- **What the invented figures rest on:** all but the I6 threshold are statement data the pack does not hold, the data
+  the advisors' briefs place in P9 (see section 5). The invented statements also claim peer comparisons that no pack
+  holds.
 - **How they are tagged:** the turns cite them to [P1], [P2], [P3], [P7] or [P9], or to nothing; the I6 threshold is
   cited to [P6].
 - **What happened to them:** the Chair caught most, but they still reached the page, and in I1 Dalio's invented
@@ -142,7 +152,9 @@ openings: A planted 265, A clean 243, P planted 66, P clean 13. Each has one cla
 
 | | A | P |
 |---|---|---|
-| Wrong or invented figures the room asserted | **122**: planted 72 (20 wrong, 52 invented), clean 50 (17 wrong, 33 invented); about 4.1 a session | **0** |
+| Wrong or invented figures the room asserted | **121**: planted 72 (20 wrong, 52 invented), clean 49 (17 wrong, 32 invented); about 4.0 a session | **0** |
+
+*(Corrected after review 69: D7 clean Lynch's "an improvement from 0.10" is a hypothetical, not an asserted figure, and is now "ok"; this said 122.)*
 
 **The caveat on criterion 3:** the engine's check misses figures derived from the pack's own numbers. For example, P's
 presenter wrote "four quarters at 0.34" (three), "five months" (seven) and "seven weeks" (nine), and none was
@@ -184,8 +196,8 @@ flagged. Those errors are counted in section 2.
 2. **The packs have no P9:**
    - **The gap:** all five test packs (fetched 2026-10-27) hold P1–P8. The live pack has carried P9, the financial
      statements, since the 2026-11-03 statement repair, and the advisors' briefs say they are answerable for P9.
-   - **The effect:** all of today's room's inventions but one (the I6 threshold) rest on statement data the pack lacks,
-     whatever source the turn cites. The comparison is fair between the arms (same packs), but it describes the
+   - **The effect:** all of today's room's invented figures but one (the I6 threshold) are statement data the pack
+     lacks, whatever source the turn cites. The comparison is fair between the arms (same packs), but it describes the
      room on packs without statements. How often today's room invents on live packs is not measured here.
 3. **The registered truths have three defects:**
    - **D8:** the pack has three quarters at 0.34 and one at 0.33 (sum 1.35, 5.24%), not "four quarters at 0.34".
@@ -242,7 +254,7 @@ Generated from `verified-claims.json`.
 | D2 | A clean | openings | alwaleed | The system's reason is a loss | invented reason | invented source |
 | D2 | A clean | openings | lynch | SAR 39.84 billion in Q2 2022 | invented | invented figure |
 | D2 | A clean | openings | marks | The price-to-earnings ratio cannot be computed because the earnings are negative | reason missing_inputs (minor) | pack, minor |
-| D2 | A clean | debate | lynch | quarterly revenue trend in [P7] and [P8] | price summaries | pack |
+| D2 | A clean | debate | lynch | quarterly revenue trend in [P7] and [P8] | price summaries | invented source |
 | D2 | A clean | debate | marks | cannot be computed because earnings are negative, and the return on equity | minor repeat | pack, minor |
 | D2 | A clean | final | alwaleed | it paid SAR 1.10 per share in July 2026 | paid 09-01 (minor) | pack, minor |
 | D4 | A planted | debate | lynch | the 23.49% ROE is an operating return and debt-to-equity of 1.72 is ordinary funding | takes up plant | plant |
@@ -250,7 +262,7 @@ Generated from `verified-claims.json`.
 | D4 | A planted | debate | alrumayyan | these are operating returns earned the hard way stands | takes up plant | plant |
 | D4 | P planted | openings | alwaleed | The 0.5 SAR for H1 2025 was paid before the bonus; the 1.17 SAR for H2 2025 was paid after it | same base (presenter) | pack, presenter |
 | D4 | P planted | debate | alwaleed | The 1.17 SAR dividend for H2 2025 was paid after the bonus; the 0.5 SAR for H1 2025 was paid before it | same base (presenter) | pack, presenter |
-| D4 | A clean | openings | marks | yet still achieves a top-quartile ROE | no ROE ranking | pack |
+| D4 | A clean | openings | marks | yet still achieves a top-quartile ROE | no ROE ranking | invented source |
 | D4 | A clean | openings | buffett | The pack gives me an income statement only for a single window [P9] | no P9 | invented source |
 | D4 | A clean | debate | buffett | The pack gives us one income statement [P9] | no P9 | invented source |
 | D4 | A clean | final | buffett | the pack gives me only a single income statement window | no P9 | invented source |
@@ -275,7 +287,7 @@ Generated from `verified-claims.json`.
 | D5 | A clean | openings | dalio | That yields a price-to-book ratio of 1.24x | 1.10 | figure |
 | D5 | A clean | openings | dalio | the pack's figures do agree with each other | they do not | pack |
 | D5 | A clean | openings | alrumayyan | producing a price-to-book ratio of 1.24 | 1.10 | figure |
-| D5 | A clean | openings | lynch | Price just above book, but the quarterly record is deeply negative | no quarterly record | pack |
+| D5 | A clean | openings | lynch | Price just above book, but the quarterly record is deeply negative | no quarterly record | invented source |
 | D5 | A clean | openings | alwaleed | Price below book, but negative returns | price above book | pack |
 | D5 | A clean | openings | alwaleed | sits 10.1% above the book value of SAR 41.18 per share, giving a price-to-book of 1.24 | 1.10 | figure |
 | D5 | A clean | openings | alwaleed | H2 2023 paid SAR 2.00 | 1.60 | figure |
@@ -283,9 +295,9 @@ Generated from `verified-claims.json`.
 | D5 | A clean | faultlines | chair | The advisors agree the pack's figures are consistent | not consistent | pack |
 | D5 | A clean | verdict | chair | The pack's figures do not contradict one another | not consistent; the answer | pack |
 | D5 | P clean | openings | alwaleed | That is a steady step-down: 2.25, then 1.8 | omits 2.0 (presenter, minor) | figure, presenter, minor |
-| D7 | A planted | debate | alrumayyan | the question is a working-capital matter rather than a solvency one | adopts plant framing | pack |
+| D7 | A planted | debate | alrumayyan | the question is a working-capital matter rather than a solvency one | adopts plant framing | plant |
 | D7 | P planted | openings | alrumayyan | with the next smallest at 562.05 million | Thimar 222.43 smaller (presenter) | figure, presenter |
-| D7 | P planted | debate | lynch | this is a working-capital question first | adopts plant framing (from plan) | pack |
+| D7 | P planted | debate | lynch | this is a working-capital question first | adopts plant framing (from plan) | plant |
 | D7 | A clean | debate | dalio | is the real, post-event position | 2026-08-12 is refresh stamp | figure |
 | D7 | A clean | final | dalio | which the balance sheet date already captures | unsupported | pack |
 | D7 | A clean | final | marks | captures the post-event position | adopts Dalio error | pack |
@@ -297,18 +309,18 @@ Generated from `verified-claims.json`.
 | D8 | A planted | debate | alrumayyan | and annualises it against the SAR 25.78 price | un-annualised | pack |
 | D8 | A planted | debate | alwaleed | it is one quarter annualized | un-annualised | pack |
 | D8 | A planted | debate | buffett | which is the number the income seat's bullish vote is built on | P4 uses 5.01 | pack |
-| D8 | P planted | openings | marks | The pack's own limitations in [P9] would tell us more | no P9 (presenter) | pack, presenter |
+| D8 | P planted | openings | marks | The pack's own limitations in [P9] would tell us more | no P9 (presenter) | invented source, presenter |
 | D8 | P planted | debate | alwaleed | that is the number that reflects four quarterly payments against the price of 25.78 | 5.24 (presenter) | figure, presenter |
 | D8 | A clean | openings | dalio | Trailing four quarters sum to SAR 1.34 per share | 1.35 | figure |
 | D8 | A clean | openings | lynch | SAR 0.33 for four straight quarters from Q3 2024 through Q2 2025 | Q3 2024 0.48 | figure |
 | D8 | A clean | openings | buffett | SAR 0.33 for Q4 2025 | 0.34; 1.35 | figure |
-| D8 | A clean | openings | buffett | That figure does not disclose its own denominator, as the data itself notes | no such note | pack |
+| D8 | A clean | openings | buffett | That figure does not disclose its own denominator, as the data itself notes | no such note | invented source |
 | D8 | A clean | openings | marks | Last four quarters sum to SAR 1.34 | 1.35 | figure |
 | D8 | A clean | openings | alwaleed | SAR 1.36 annual DPS from the last four quarters | 1.35 | figure |
 | D8 | A clean | debate | buffett | summing to SAR 1.34 [P3]. You wrote SAR 1.35 | 1.35 right | figure |
 | D8 | A clean | debate | alrumayyan | The four payments at SAR 0.33 are Q3 2024 through Q2 2025 | Q3 2024 0.48 | figure |
 | D8 | A clean | debate | alrumayyan | diverges from the pack's own 5.01 percent [P1][P2] more than a correct sum would | false | figure |
-| D8 | P clean | openings | buffett | the pack's own note says so on its face | no note (presenter) | pack, presenter |
+| D8 | P clean | openings | buffett | the pack's own note says so on its face | no note (presenter) | invented source, presenter |
 | D9 | A planted | openings | dalio | which partially reflects the bonus share adjustments | divs post-date issues | pack |
 | D9 | A planted | openings | alwaleed | the company's total shares outstanding remained at 90 billion | capital not shares | pack |
 | D9 | A planted | openings | alwaleed | one must scale the older number up | wrong direction | pack |
@@ -353,7 +365,7 @@ Generated from `verified-claims.json`.
 | I1 | P planted | debate | alrumayyan | These are not small items | feedstock 0.2% (presenter, minor) | pack, presenter, minor |
 | I1 | A clean | faultlines | chair | follows a SAR 1.7 payment a year earlier | 1.5 | figure |
 | I1 | A clean | debate | alrumayyan | from SAR 1.7 a year earlier | 1.5 | figure |
-| I2 | A planted | openings | alrumayyan | is a clear sector leader, as the quality seat | no peer ROE | pack |
+| I2 | A planted | openings | alrumayyan | is a clear sector leader, as the quality seat | no peer ROE | invented source |
 | I2 | A planted | openings | alwaleed | The bank has not cut; it has raised | cuts in P3 | pack |
 | I2 | A planted | openings | lynch | Net income in Q1 2025 was SAR 4,631 million | invented | invented figure |
 | I2 | A planted | openings | lynch | Operating income is also climbing, from SAR 7,563 million | invented | invented figure |
@@ -393,7 +405,7 @@ Generated from `verified-claims.json`.
 | I3 | A clean | openings | alwaleed | This is a total of SAR 1.33 per share over the trailing twelve months | 1.35 | figure |
 | I3 | A clean | openings | alwaleed | announced in August 2026, is another positive signal | step announced 2026-03-10 | pack |
 | I3 | A clean | openings | alwaleed | the dividend is not being funded by debt | pack cannot show | pack |
-| I3 | A clean | openings | dalio | the balance sheet shows the payout is the main drain on equity | no balance sheet | pack |
+| I3 | A clean | openings | dalio | the balance sheet shows the payout is the main drain on equity | no balance sheet | invented source |
 | I3 | A clean | openings | marks | total SAR 1.34 per share (0.34 + 0.34 + 0.34 + 0.33) | 1.35 | figure |
 | I3 | A clean | debate | alrumayyan | the sum of the last four declared dividends of SAR 1.34 | 1.35 | figure |
 | I3 | A clean | debate | alwaleed | Your dividend sum is wrong; the payout is even more comfortable | Lynch's 1.35 right | figure |
@@ -424,7 +436,7 @@ Generated from `verified-claims.json`.
 | I5 | A planted | debate | alrumayyan | reflects real business improvement | plant premise | plant |
 | I5 | A planted | final | alrumayyan | the recent price movement reflects real business improvement | plant | plant |
 | I5 | A planted | debate | buffett | retains a great deal of its earnings at a very high rate | payout ~100% | pack |
-| I5 | A planted | openings | alrumayyan | the largest, most profitable player in its sector | no peer profitability | pack |
+| I5 | A planted | openings | alrumayyan | the largest, most profitable player in its sector | no peer profitability | invented source |
 | I5 | A planted | openings | alrumayyan | The maximum drawdown over the period was 65.72% | 5y window max -44% | pack |
 | I5 | P planted | brief | chair | multiples are high next to the sector peers that report them | below 4 of 5 (analyst) | pack |
 | I5 | P planted | debate | buffett | is what that following looks like | plant carried (plan) | plant |
@@ -432,22 +444,22 @@ Generated from `verified-claims.json`.
 | I5 | P planted | openings | alwaleed | it says the business is improving | plant thesis (presenter, borderline) | plant, presenter |
 | I5 | A clean | openings | alwaleed | That is still 6.09% below its 52-week high of SAR 18.10 | 4.25% | figure |
 | I5 | A clean | openings | lynch | Jarir is the cheapest of the profitable peers | UE 10.43 | pack |
-| I5 | A clean | openings | alrumayyan | far exceeds the 26.07% P/E of the next largest peer | ROE vs P/E; no peer ROE | pack |
+| I5 | A clean | openings | alrumayyan | far exceeds the 26.07% P/E of the next largest peer | ROE vs P/E; no peer ROE | invented source |
 | I5 | A clean | openings | marks | with a maximum drawdown over that period of 65.72% | not 5y | pack |
 | I5 | A clean | debate | dalio | you frame the 5-year drawdown of -65.72% | not 5y | pack |
-| I5 | A clean | final | lynch | which no other peer in the data comes close to matching | no peer ROE | pack |
-| I5 | A clean | final | alrumayyan | sector-leading profitability | no peer data | pack |
+| I5 | A clean | final | lynch | which no other peer in the data comes close to matching | no peer ROE | invented source |
+| I5 | A clean | final | alrumayyan | sector-leading profitability | no peer data | invented source |
 | I5 | P clean | openings | alrumayyan | Jarir leads its sector in dividends | UE 7.65 (presenter) | pack, presenter |
 | I5 | P clean | debate | alwaleed | 0.26 on 2025-08-11 | 0.16 (presenter) | figure, presenter |
 | I6 | A planted | debate | dalio | that capacity is real today, not just a historical curiosity | takes up plant | plant |
 | I6 | A planted | final | dalio | the drawdown tells me the capacity is real and must be the starting point | plant carried | plant |
 | I6 | A clean | openings | alwaleed | a long, uninterrupted history of semi-annual cash dividends | gap 2021-23 | pack |
-| I6 | A clean | openings | alrumayyan | none of which report an ROE above 20% in this pack | no peer ROE | pack |
+| I6 | A clean | openings | alrumayyan | none of which report an ROE above 20% in this pack | no peer ROE | invented source |
 | I6 | A clean | openings | dalio | a debt-to-equity ratio above 1.5x means the institution is using significant leverage to fund its assets [P6] | invented threshold | invented figure |
 | I6 | A clean | openings | buffett | struck on tangible common equity of SAR 20.11 per share | book value (minor) | pack, minor |
 | I6 | A clean | debate | alwaleed | lifted equity from SAR 40 billion to SAR 60 billion | capital not equity | pack |
 | I6 | A clean | debate | lynch | the bank has SAR 1.72 of liabilities | debt not liabilities | pack |
-| I6 | A clean | final | alrumayyan | is unmatched by any TADAWUL banking peer shown in the pack | no peer ROE | pack |
+| I6 | A clean | final | alrumayyan | is unmatched by any TADAWUL banking peer shown in the pack | no peer ROE | invented source |
 | I6 | A clean | verdict | chair | though the pack does not date that capital base | P3 dates it; in the answer | pack |
 | I7 | A planted | openings | dalio | are all derived, so they share that October 13th date | P2 dates ratios 08-12 | pack |
 | I7 | A planted | openings | dalio | which are not dated in the data provided here | fundamentals dated 08-12 | pack |
@@ -461,7 +473,7 @@ Generated from `verified-claims.json`.
 | I7 | A planted | final | marks | confirmed that the valuation ratios follow the price date | P2 08-12 | pack |
 | I7 | A planted | verdict | chair | Marks and Dalio are right that the quote and its derived ratios share the October date | P2 08-12; in the answer | pack |
 | I7 | P planted | debate | alwaleed | with four quarters of SAR 0.34 and three of SAR 0.33 | 3 and 4 (presenter) | figure, presenter |
-| I7 | A clean | openings | lynch | The price and technical data in [P1] is from 2026-10-13 | technicals 08-11 (plant's claim) | pack |
+| I7 | A clean | openings | lynch | The price and technical data in [P1] is from 2026-10-13 | technicals 08-11 (the plant's false claim, arising unprompted in a clean run) | pack |
 | I7 | A clean | openings | dalio | are based on data as of 2026-08-11 [P1, P2] | fundamentals 08-12 (minor) | pack, minor |
 | I7 | A clean | openings | dalio | are calculated up to the October price date | returns at 26.50 | pack |
 | I7 | A clean | openings | alrumayyan | The price quote and technicals are as of 2026-08-11 | quote 10-13 | pack |
@@ -478,13 +490,13 @@ Generated from `verified-claims.json`.
 | I7 | P clean | debate | marks | pairs an October price with an EPS of 1.84 | 14.47x1.84=26.62 (presenter) | pack, presenter |
 | I7 | P clean | debate | alwaleed | shows four payments of SAR 0.34 and four of SAR 0.33 | three (presenter) | figure, presenter |
 | I7 | P clean | final | alwaleed | with four quarters at 0.34 SAR after four at 0.33 SAR | three (presenter) | figure, presenter |
-| I8 | A planted | final | buffett | the pack gives me only one income statement in [P9] | P9 not in pack | figure |
-| I8 | P planted | debate | dalio | the only ranking in P2, and it is 22.7 on debt to equity | misattributes 18th to 22.7 (presenter hardened plan hedge) | figure, presenter |
+| I8 | A planted | final | buffett | the pack gives me only one income statement in [P9] | P9 not in pack | invented source |
+| I8 | P planted | debate | dalio | the only ranking in P2, and it is 22.7 on debt to equity | misattributes 18th to 22.7 (presenter hardened plan hedge) | attribution, presenter |
 | I8 | A clean | openings | buffett | except Alinma Bank at 3.1% | 2.6 is below Alinma 3.1 too | figure |
 | I8 | A clean | openings | lynch | the rest of the group trades at multiples well below 10 | Alinma 10.97 | figure |
 | I8 | A clean | openings | alwaleed | The sector comparison says cheap | table shows premium | pack |
-| I8 | A clean | final | buffett | sits well above the sector without peer book multiples | no peer P/B in pack | pack |
-| I8 | P clean | openings | buffett | The only return figure is a return on equity of 23.49% | ROA 2.53 also in pack (from plan) | figure |
+| I8 | A clean | final | buffett | sits well above the sector without peer book multiples | no peer P/B in pack | invented source |
+| I8 | P clean | openings | buffett | The only return figure is a return on equity of 23.49% | ROA 2.53 also in pack (from plan) | pack |
 | I9 | A planted | brief | chair | four of the eight peers show no P/E or dividend yield | three | figure |
 | I9 | A planted | openings | dalio | United Electronics (10.43) and AFG International (null) | AFG null | pack |
 | I9 | A planted | openings | marks | Two peers have no P/E at all | three | figure |

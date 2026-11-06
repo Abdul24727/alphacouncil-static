@@ -21,13 +21,14 @@ HERE = Path(__file__).parent.parent
 INVENTED_BY = {
     ("D2", "A planted"): {"lynch": None},
     ("D2", "A clean"): {"buffett": {"stages": {"openings"}}, "lynch": {"stages": {"openings"}, "keep": {"52"}}},
-    ("D7", "A clean"): {"lynch": {"stages": {"debate"}, "only": {"0.10"}}},
     ("I1", "A planted"): {"lynch": None, "dalio": {"keep": {"3.3"}}, "buffett": None},
     ("I2", "A planted"): {"lynch": {"stages": {"openings"}, "keep": {"77"}}},
     ("I2", "A clean"): {"buffett": {"stages": {"openings"}, "only": {"26,531.40", "112,946.30"}}},
     ("I4", "A clean"): {"lynch": {"keep": {"67"}}},
     ("I5", "A planted"): {"lynch": None},
 }
+# Not listed, on purpose: D7 A clean Lynch's "0.10" ("an improvement from 0.10") is a hypothetical, not an asserted
+# figure (review 69), so it is "ok".
 # Wrong values a turn asserts: (probe, session, stage, seat, value).
 WRONG = {
     ("D2", "A clean", "openings", "alwaleed", "5.40"),

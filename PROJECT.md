@@ -306,7 +306,7 @@ Older entries: `changelog-archive.md`.
     - **Cost:** option 2 FAILS criterion 4 clearly. It costs 62.4 % of today's room ($0.1454 against $0.2332), 53 %
       with no plan retries. A clear failure settles it, so today's room stays.
     - **Accuracy:** option 2 had 55 wrong claims against today's room's 210, 0 against 7 in a final answer, and 0
-      against 34 inventions (23 with invented figures). 45 of its 55 were added by the presenter.
+      2 against 48 inventions (0 against 23 with invented figures). 45 of its 55 were added by the presenter.
     - **Speed:** option 2 shows its first words after a median of 40 s, against 5 s.
     - **Reliability:** 1 of 30 option-2 sessions failed with no fallback.
     - **Found in today's room:**
@@ -323,6 +323,9 @@ Older entries: `changelog-archive.md`.
       - **The analyst's cost:** with every attempt and the failed session it is $0.1094 a session, 46.9 % of A, not
         the single-attempt $0.086.
       - **Quotes:** `tools/verify_quotes.py` checks all 265 against their stated turns.
+    - **Review 69 said FIX:** one definition for both arms. That gave 14 more of today's room's claims, and 2 of option
+      2's (both presenter additions), as invented statements about the pack. D7's "0.10" is a hypothetical, not an
+      invented figure. So the inventions are 48 against 2, and the figures absent from the data 121 against 0.
     - **Next:** the reviewer's acceptance, then the owner's choice. The options are to keep today's room and fix the
       percentile and the P9 question, to screen a one-model option 2, or to stop.
   - **Before the app may use it:** the app's session total must count the calls a fallback superseded.

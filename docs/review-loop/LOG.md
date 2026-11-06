@@ -70,3 +70,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-06 21:22 UTC — **Review 65 fix: the analyst sees the plant as the room's Chair does; dry comparison repeated** — FIX — [66-review-65-fix-the-analyst-sees-the-plant-as-the-ro.md](replies/66-review-65-fix-the-analyst-sees-the-plant-as-the-ro.md)
 - 2026-11-06 21:31 UTC — **Review 66 fix: a plan may leave the planted seat's opening out; dry comparison repeated** — ACCEPT — [67-review-66-fix-a-plan-may-leave-the-planted-seat-s-.md](replies/67-review-66-fix-a-plan-may-leave-the-planted-seat-s-.md)
 - 2026-11-06 23:14 UTC — **Paid comparison result and hand audit** — FIX — [68-paid-comparison-result-and-hand-audit.md](replies/68-paid-comparison-result-and-hand-audit.md)
+- 2026-11-06 23:22 UTC — **Review 68 fixes to the comparison audit** — FIX — [69-review-68-fixes-to-the-comparison-audit.md](replies/69-review-68-fixes-to-the-comparison-audit.md)

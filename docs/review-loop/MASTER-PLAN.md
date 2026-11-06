@@ -77,7 +77,7 @@ Billing has been open since 2026-11-02.
   - **Option 2 fails the cost criterion clearly:** 62 % of today's room against the 40 % limit. Under the rule written
     before the run, that settles it, and today's room stays.
   - **Option 2's discussion was far more accurate:** 55 wrong claims against 210, none in a final answer against 7,
-    and no inventions against 34. But it is twice as slow, with about 40 seconds before the first words, and
+    and 2 inventions against 48. But it is twice as slow, with about 40 seconds before the first words, and
     one of its sessions failed.
   - **The audit found two issues in today's room:**
     - the "sector percentile" field reads the wrong way for lower-is-better metrics;

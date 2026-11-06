@@ -150,7 +150,7 @@
   "seat": "lynch",
   "quote": "quarterly revenue trend in [P7] and [P8]",
   "why": "price summaries",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -246,7 +246,7 @@
   "seat": "marks",
   "quote": "yet still achieves a top-quartile ROE",
   "why": "no ROE ranking",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -546,7 +546,7 @@
   "seat": "lynch",
   "quote": "Price just above book, but the quarterly record is deeply negative",
   "why": "no quarterly record",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -642,7 +642,7 @@
   "seat": "alrumayyan",
   "quote": "the question is a working-capital matter rather than a solvency one",
   "why": "adopts plant framing",
-  "category": "pack",
+  "category": "plant",
   "presenter_added": false,
   "from_plan": true,
   "minor": false
@@ -666,7 +666,7 @@
   "seat": "lynch",
   "quote": "this is a working-capital question first",
   "why": "adopts plant framing (from plan)",
-  "category": "pack",
+  "category": "plant",
   "presenter_added": false,
   "from_plan": true,
   "minor": false
@@ -810,7 +810,7 @@
   "seat": "marks",
   "quote": "The pack's own limitations in [P9] would tell us more",
   "why": "no P9 (presenter)",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": true,
   "from_plan": false,
   "minor": false
@@ -870,7 +870,7 @@
   "seat": "buffett",
   "quote": "That figure does not disclose its own denominator, as the data itself notes",
   "why": "no such note",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -942,7 +942,7 @@
   "seat": "buffett",
   "quote": "the pack's own note says so on its face",
   "why": "no note (presenter)",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": true,
   "from_plan": false,
   "minor": false
@@ -1482,7 +1482,7 @@
   "seat": "alrumayyan",
   "quote": "is a clear sector leader, as the quality seat",
   "why": "no peer ROE",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -1962,7 +1962,7 @@
   "seat": "dalio",
   "quote": "the balance sheet shows the payout is the main drain on equity",
   "why": "no balance sheet",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2334,7 +2334,7 @@
   "seat": "alrumayyan",
   "quote": "the largest, most profitable player in its sector",
   "why": "no peer profitability",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2430,7 +2430,7 @@
   "seat": "alrumayyan",
   "quote": "far exceeds the 26.07% P/E of the next largest peer",
   "why": "ROE vs P/E; no peer ROE",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2466,7 +2466,7 @@
   "seat": "lynch",
   "quote": "which no other peer in the data comes close to matching",
   "why": "no peer ROE",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2478,7 +2478,7 @@
   "seat": "alrumayyan",
   "quote": "sector-leading profitability",
   "why": "no peer data",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2550,7 +2550,7 @@
   "seat": "alrumayyan",
   "quote": "none of which report an ROE above 20% in this pack",
   "why": "no peer ROE",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2610,7 +2610,7 @@
   "seat": "alrumayyan",
   "quote": "is unmatched by any TADAWUL banking peer shown in the pack",
   "why": "no peer ROE",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2777,7 +2777,7 @@
   "stage": "openings",
   "seat": "lynch",
   "quote": "The price and technical data in [P1] is from 2026-10-13",
-  "why": "technicals 08-11 (plant's claim)",
+  "why": "technicals 08-11 (the plant's false claim, arising unprompted in a clean run)",
   "category": "pack",
   "presenter_added": false,
   "from_plan": true,
@@ -2982,7 +2982,7 @@
   "seat": "buffett",
   "quote": "the pack gives me only one income statement in [P9]",
   "why": "P9 not in pack",
-  "category": "figure",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -2994,7 +2994,7 @@
   "seat": "dalio",
   "quote": "the only ranking in P2, and it is 22.7 on debt to equity",
   "why": "misattributes 18th to 22.7 (presenter hardened plan hedge)",
-  "category": "figure",
+  "category": "attribution",
   "presenter_added": true,
   "from_plan": false,
   "minor": false
@@ -3042,7 +3042,7 @@
   "seat": "buffett",
   "quote": "sits well above the sector without peer book multiples",
   "why": "no peer P/B in pack",
-  "category": "pack",
+  "category": "invented source",
   "presenter_added": false,
   "from_plan": false,
   "minor": false
@@ -3054,7 +3054,7 @@
   "seat": "buffett",
   "quote": "The only return figure is a return on equity of 23.49%",
   "why": "ROA 2.53 also in pack (from plan)",
-  "category": "figure",
+  "category": "pack",
   "presenter_added": false,
   "from_plan": true,
   "minor": false
