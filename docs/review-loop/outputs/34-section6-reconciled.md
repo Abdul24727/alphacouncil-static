@@ -1,6 +1,6 @@
 # Output 34: PROJECT.md §6 reconciled with the recorded outcomes (review 33's step)
 
-Only `PROJECT.md` changed, and only inside §6. `git diff --check` is clean. No historical evidence was deleted:
+Commit `2b06b2c` changed two files: `PROJECT.md`, only inside §6, and this output, `docs/review-loop/outputs/34-section6-reconciled.md`. *(Corrected after review 34: this said only `PROJECT.md` changed.)* `git diff --check` is clean. No historical evidence was deleted:
 each stale paragraph keeps its text. It gains a dated *(Superseded …)* note naming the outcome that replaced it,
 and its status words move to the past tense, so it can no longer be read as current.
 
