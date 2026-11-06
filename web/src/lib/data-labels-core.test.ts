@@ -70,3 +70,11 @@ test("investment and other operating income reads in sentence case, from Argaam'
   }
   assert.deepEqual(dataLabel("income from investments & Other operating income", "ar", IS), { text: "دخل الإستثمارات والعمليات الأخرى", lang: "ar" });
 });
+
+test("annual-page spellings without the unit's brackets: English claims no unit the Arabic does not name", () => {
+  // DIC's annual page stores tr552/tr1373 with no unit at all, and KFH's stores tr544 with the dinar outside
+  // brackets; the 2026-11-06 full harvest brought them in and the English-label sweep caught them.
+  assert.deepEqual(dataLabel("ربح السهم", "en", IS), { text: "EPS", lang: "en" });
+  assert.deepEqual(dataLabel("ربح السهم قبل البنود الاستثنائية", "en", IS), { text: "EPS before exceptional items", lang: "en" });
+  assert.deepEqual(dataLabel("القيمة الدفترية دينار بحريني", "en", BS), { text: "Book value (BHD)", lang: "en" });
+});

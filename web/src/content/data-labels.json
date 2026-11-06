@@ -500,7 +500,11 @@
     ["Other Income", "إيرادات أخرى"],
     ["Minority Interest", "حقوق اقلية"],
     ["Zakat & Tax", "زكاه و ضريبة"],
-    ["Provisions", "مخصصات"]
+    ["Provisions", "مخصصات"],
+
+    ["EPS", "ربح السهم"],
+    ["EPS before exceptional items", "ربح السهم قبل البنود الاستثنائية"],
+    ["Book value (BHD)", "القيمة الدفترية دينار بحريني"]
   ],
   "aliases": {
     "Public Investment Fund.": "Public Investment Fund",
