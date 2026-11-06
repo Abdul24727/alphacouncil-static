@@ -83,6 +83,7 @@ Run after the last change, so no later step can have broken an earlier one.
 | 4 | Bank sub-lines | ADCB, 1010; both panels; en + ar; 1440 + 390 | PASS 16/16, with values equal to the API's row by row |
 | 5 | Real-estate label | 108, 1211; en + ar; 1440 + 390 | PASS 8/8, with values equal to the API's |
 | 6 | `check-arabic.mjs` with `WIDTHS=1440,390` | 48 Arabic page views signed out, including `/t/2222/financials` | 0 English strings outside the allow-list |
+| 7 | Phone gap (review 12): the panels set 1 had at 1440 only | English income + balance for 301, 821, BKIC.BH, EAND; Arabic income + balance for 8010; Arabic income for 1211; 11 panels at 390 | PASS 11/11: expected labels shown; **every cell in every column** equal to the API's; newest in view on load and oldest after scrolling (`7-phone-gap.txt`, `phone-gap/`) |
 
 **What is still Arabic on English pages, and where:**
 - In the rendered samples, the only Arabic left is the cash-flow lines inside AMLAK's and AMCREIT's balance
@@ -98,6 +99,13 @@ Run after the last change, so no later step can have broken an earlier one.
 **On production after a release:** Financials is Pro-only there, so a signed-out check cannot render it. As
 on 2026-11-05, production is checked through its served code: the new chunk byte-identical to beta's, and
 hash-equal on the public site. Then `check-billing-public.mjs`, health, and `BILLING_OPEN` unchanged.
+
+**Seen on the phone screenshots, left for review (not defects in the figures):**
+- 821's English income statement shows "income from investments & Other operating income". That is
+  Argaam's own English, with a lowercase first word, through the dictionary, like the real-estate label
+  fixed today.
+- Scrolled to its oldest year, a phone table scrolls the line labels out of view (8010's Arabic balance
+  sheet). Values are never shown wrong. A label column that stays in place would read better.
 
 ## Still pending, and not a reason to wait
 

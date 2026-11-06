@@ -1,0 +1,18 @@
+PASS en 301 390 income: 17 rows x 4 columns ["FY2025","FY2024","FY2023","FY2022"]; cells differing from the API 0; newest in view on load true; oldest in view after scroll true (scrolls true)
+PASS en 301 390 balance: 11 rows x 4 columns ["FY2025","FY2024","FY2023","FY2022"]; cells differing from the API 0; newest in view on load true; oldest in view after scroll true (scrolls true)
+PASS en 301 390 expected labels (2026-11-04 set): 3/3
+PASS en 821 390 income: 29 rows x 5 columns ["FY2025","FY2024","FY2023","FY2022","FY2021"]; cells differing from the API 0; newest in view on load true; oldest in view after scroll true (scrolls true)
+PASS en 821 390 balance: 29 rows x 5 columns ["FY2025","FY2024","FY2023","FY2022","FY2021"]; cells differing from the API 0; newest in view on load true; oldest in view after scroll true (scrolls true)
+PASS en 821 390 expected labels (2026-11-04 set): 12/12
+PASS en BKIC.BH 390 income: 17 rows x 4 columns ["FY2025","FY2024","FY2023","FY2022"]; cells differing from the API 0; newest in view on load true; oldest in view after scroll true (scrolls true)
+PASS en BKIC.BH 390 balance: 10 rows x 4 columns ["FY2025","FY2024","FY2023","FY2022"]; cells differing from the API 0; newest in view on load true; oldest in view after scroll true (scrolls true)
+PASS en BKIC.BH 390 expected labels (2026-11-04 set): 1/1
+PASS en EAND 390 income: 27 rows x 5 columns ["FY2025","FY2024","FY2023","FY2022","FY2021"]; cells differing from the API 0; newest in view on load true; oldest in view after scroll true (scrolls true)
+PASS en EAND 390 balance: 65 rows x 5 columns ["FY2025","FY2024","FY2023","FY2022","FY2021"]; cells differing from the API 0; newest in view on load true; oldest in view after scroll true (scrolls true)
+PASS en EAND 390 expected labels (2026-11-04 set): 1/1
+PASS ar 8010 390 income: 30 rows x 1 columns ["12 شهرًا حتى يونيو 2026"]; cells differing from the API 0; newest in view on load true; oldest in view after scroll true (scrolls false)
+PASS ar 8010 390 balance: 44 rows x 2 columns ["يونيو 2026","2025"]; cells differing from the API 0; newest in view on load true; oldest in view after scroll true (scrolls true)
+PASS ar 8010 390 expected labels (2026-11-04 set): 1/1
+PASS ar 1211 390 income: 24 rows x 1 columns ["12 شهرًا حتى يونيو 2026"]; cells differing from the API 0; newest in view on load true; oldest in view after scroll true (scrolls false)
+PASS ar 1211 390 expected labels (2026-11-04 set): 1/1
+PASS: 11 panels at 390 - expected labels shown, every cell equal to the API, every period reachable
