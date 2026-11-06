@@ -1,5 +1,9 @@
 # Output 53: the owner's direction on the advisors' room, the costs measured, and the question of a test
 
+*(Corrected after review 60, see output 54. The 77 % advisor split, the 18 + 2.5 call counts and "five companies"
+were wrong. The comparison is 60 sessions at about $9.0–9.6, not $5–6. Option 2's accuracy is a hypothesis. The
+lawyer's review has not started.)*
+
 **The owner said in chat, 2026-11-06, quoted in full in `docs/review-loop/MASTER-PLAN.md`:**
 - **The aim of the room:** it is "not only for performance". Its presentation of advisors with portraits
   discussing is "a major selling factor" and stays.

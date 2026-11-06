@@ -37,7 +37,8 @@ will test is checked as it stands.
 - **Signed-in and Pro pages:** Claude makes no accounts on the live site. The owner's `check-all.mjs` and signed-in
   advisors runs of 2026-11-02 closed Step 10 (`docs/launch-check-2026-10-27.md`).
 - **The monitor:**
-  - **What is open:** credit is **FAILING at $7.83**, below the $10 alert, which is the owner's to top up. Renewals
-    show "–", so Step 18's item 4 stays open until a real `renewal` payment.
+  - **At the time of the check:** credit was **FAILING at $7.83**, below the $10 alert. *(Resolved later on
+    2026-11-06: the owner topped up to $37.83, read at 15:30 UTC, and the monitor's credit check is ok again.)*
+  - **Still open:** renewals show "–", so Step 18's item 4 stays open until a real `renewal` payment.
   - **Where:** `docs/launch-check-2026-10-27.md`, "Production monitor after the 2026-11-06 release", with the
     verbatim capture in `docs/screenshots/release-b5655a5064/monitor-status.txt`.

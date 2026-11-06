@@ -78,7 +78,8 @@ site. Because the lawyer needs published, running site to evaluate what's need t
 - **It is the owner's own instruction, so it is not drift.** It changes how an existing feature is built, not
   what the site shows: the room's presentation (the portraits, the rounds, the Chair) stays as it is.
 - **Paid tests need the reviewer to judge them necessary, and the owner's go-ahead per run still applies.**
-- **The lawyer evaluates the live site as it is.** If the room's build changes, the site's own words about how
+- **The lawyer will evaluate the live site as it is.** The site is ready; Step 7 has not started, and the owner
+  sends the pack. If the room's build changes, the site's own words about how
   the room works must stay true. The How-it-works copy says "Each advisor writes their own full answer at the
   same time", so any change in how it is built is shown to the lawyer before release.
 

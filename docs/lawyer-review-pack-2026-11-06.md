@@ -64,10 +64,12 @@ Pro stays on in the meantime.
 - **What a signed-out check cannot see on production:** the Pro-only financial statements. They were checked on
   the beta copy, which runs the same release on the same data: all 714 companies, with every statement line in
   English on English pages ([beta's checks](screenshots/release-b5655a5064/beta-checks.txt)).
-- **Two open items the lawyer may see:**
-  - **The AI features' credit.** The model account that pays for the Copilot and the advisors' room was at
+- **Open items the lawyer may see** (one was resolved the same day):
+  - ~~**The AI features' credit.** The model account that pays for the Copilot and the advisors' room was at
     $7.83 on 2026-11-06, below the site's own $10 alert. If it runs out before the visit, those two features
-    stop until the owner tops it up.
+    stop until the owner tops it up.~~ *(Resolved later on 2026-11-06: the owner topped the account up to $37.83,
+    read at 15:30 UTC, and the site's credit check is ok again. The $7.83 reading stays recorded in the monitor
+    capture as history.)*
   - **No monthly renewal has happened yet.** The renewal path has been tested on beta with test cards, but not
     yet with a real customer's card.
 
