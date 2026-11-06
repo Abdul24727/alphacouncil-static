@@ -25,9 +25,9 @@ It does not mean new things.
 | Goal | Weight | State |
 |---|---|---|
 | 1 — Safe footing | ~15 % | DONE 2026-10-22 |
-| 2 — Market data correct at the source | ~25 % | DONE 2026-10-24; later data fixes F-13, F-15 live, F-16 applied 2026-11-05 (lands with the 2026-11-06 publish) |
+| 2 — Market data correct at the source | ~25 % | DONE 2026-10-24; later data fixes F-13, F-15 and F-16 all live (F-16 verified 2026-11-06) |
 | 3 — Every known defect fixed, checkout proven | ~30 % | DONE 2026-10-22 |
-| 4 — Launch: settled, checked, then paid | ~30 % | Steps 8, 9, 22, 23, 10 DONE; **Step 7 (lawyer) NOT STARTED**; Step 18 (billing) open, item 4 needs a real renewal |
+| 4 — Launch: settled, checked, then paid | ~30 % | Steps 8, 9, 22, 23, 10 DONE (10's signed-out half re-run on production `b5655a5064` 2026-11-06, all PASS); **Step 7 (lawyer) NOT STARTED**, pack ready (`docs/lawyer-review-pack-2026-11-06.md`); Step 18 (billing) open, item 4 needs a real renewal |
 
 Goal 4's Done-when (verbatim, short):
 1. The owner's written legal advice is in `docs/legal-advisors-<date>.md`, and every change it asks for is live.
@@ -36,24 +36,51 @@ Goal 4's Done-when (verbatim, short):
 4. `docs/launch-check-<date>.md` records every check script passing on production, and the monitor at 14 of 14.
 5. `checkout_open:true`, and the owner's own first real payment gave Pro.
 
-## What is left (`PROJECT.md` §9, "What is left, by who")
+## What is left (`PROJECT.md` §9, "What is left, by who"), as of 2026-11-06
 
+**The site is published and live** at alphacouncil.tech, running release `b5655a5064` on beta and production.
+Billing has been open since 2026-11-02.
+
+**Done on 2026-11-06, on the owner's go-aheads:**
+- the release;
+- two pushes (`origin/rebuild` at `eeb9a9d`);
+- the disk, now at 41 %, with a nightly keep-14;
+- F-14, the pipeline's key;
+- the test accounts, now removed;
+- the `owns` fix, confirmed;
+- the $66 pilot, which cost $5.64, with its audit (`docs/council-pilot-2026-11-06.md`);
+- the OpenRouter top-up: $37.83, owner-reported and read from OpenRouter.
+
+**Still open:**
 - **The owner's** (Claude cannot do these):
-  - Step 7, the lawyer: the questions are in `docs/legal-questions-2026-10-27.md`;
-  - the go-ahead for the $66 pilot, then the $393 run (paid model calls);
-  - F-14, the pipeline's OpenRouter key;
-  - the disk at 83 %;
-  - F-12's duplicate webhook;
-  - six test accounts;
+  - Step 7, the lawyer. The owner sends `docs/lawyer-review-pack-2026-11-06.md` and the lawyer evaluates the
+    live site; the reply comes later, into `docs/legal-advisors-<date>.md`;
+  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
   - optional server hardening;
-  - Step 18 item 4, which waits on a real customer's renewal.
+  - Step 18 item 4, which waits on a real customer's renewal;
+  - any paid run: the owner's go-ahead per run.
 - **Claude's** (pre-approved, on branch `rebuild`):
   - apply the lawyer's advice when it comes;
-  - run and read the pilot once the owner funds it;
-  - check F-16 after the 2026-11-06 05:00 UTC publish;
-  - polish: about 8,100 Gulf statement rows still show in Arabic on English pages (7.6 %), and nothing checks
-    that direction yet;
+  - the owner's direction of 2026-11-06 on the room's cost, below;
   - the open small items in `PROJECT.md` §6 and §9.
+
+## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
+
+"The idea from the LLM council is not only for performance. If performance is similar or very clearly similar and
+we are spending way too much on the presentation, we can find another way to keep the presentation as is but
+running it on one model. Two maximum, one for keeping the presentation and one is doing the heavy lifting in the
+real work. This presentation of multiple financial images and them discussing is a major selling factor in our
+website. The open router has been topped up. If you think it's necessary and the reviewer sees it necessary to run
+extra tests, then the account is topped up. Other than that, we need to continue on the progress and publish the
+site. Because the lawyer needs published, running site to evaluate what's need to be written."
+
+**How this sits with the plan:**
+- **It is the owner's own instruction, so it is not drift.** It changes how an existing feature is built, not
+  what the site shows: the room's presentation (the portraits, the rounds, the Chair) stays as it is.
+- **Paid tests need the reviewer to judge them necessary, and the owner's go-ahead per run still applies.**
+- **The lawyer evaluates the live site as it is.** If the room's build changes, the site's own words about how
+  the room works must stay true. The How-it-works copy says "Each advisor writes their own full answer at the
+  same time", so any change in how it is built is shown to the lawyer before release.
 
 ## Rules no review can change (`PROJECT.md` §4)
 
@@ -82,7 +109,7 @@ act on the review's word alone.
 
 **Owner instructions given in chat stand, even where the repository's general rules would allow more.**
 They are recorded in `PROJECT.md` when known. Standing ones:
-- The `check-advisors.mjs` `owns` case fix (`docs/check-advisors-owns-case-2026-11-06.patch`): "Ask me
-  before applying it; it is a behaviour change to a check script." It waits on the owner's go-ahead.
+- The `check-advisors.mjs` `owns` case fix: applied, and CONFIRMED by the owner 2026-11-06 ("Yes, push" to the
+  question naming it).
 - Never sign in to Argaam anywhere; it signs the nightly's single session out.
 - Never record the Argaam account name in committed files; the repository is public.
