@@ -40,7 +40,8 @@ const CHAIR_WORDS = [200, 350];
 // Each seat is answerable for part of the pack (advisors/<id>.md, `owns`), and round one is the
 // only step where a seat writes without replying to anyone, so it is the step where citing none of
 // your own datasets means your part of the evidence went unread. Reported, never failed: a seat may
-// honestly find its evidence absent for this company, and saying so covers the mandate.
+// honestly find its evidence absent for this company, and saying so covers the mandate. Tags are
+// upper-cased as api/app/debate/roster.py reads them, so `owns: p2` and `owns: P2` count alike.
 const MANDATES = Object.fromEntries(
   await Promise.all(
     (await readdir("../api/app/advisors"))
@@ -48,7 +49,7 @@ const MANDATES = Object.fromEntries(
       .map(async (f) => {
         const text = await readFile(`../api/app/advisors/${f}`, "utf8");
         const owns = /^owns:\s*(.+)$/m.exec(text)?.[1] ?? "";
-        return [f.replace(/\.md$/, ""), owns.split(",").map((t) => t.trim()).filter(Boolean)];
+        return [f.replace(/\.md$/, ""), owns.split(",").map((t) => t.trim().toUpperCase()).filter(Boolean)];
       }),
   ),
 );
