@@ -161,11 +161,15 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
 5. **The AI models (pack §5.2).**
    - **The pack said:** "DeepSeek models for the Copilot and the six seats; Anthropic's Claude for the Chair", as fact.
    - **What is known:**
-     - **The Copilot:** confirmed live.
+     - **The Copilot:** confirmed live: `deepseek/deepseek-v3.2`, `"stand_in": false`.
+     - **The room:** confirmed live not on the stand-in (`/api/v1/debate/status`, `"stand_in": false`). In this code
+       that means an OpenRouter key is set and `COPILOT_PROVIDER` is not `standin` (`api/app/routers/debate.py`,
+       `uses_models`). *(Added after review 90.)*
      - **The seats and the Chair:** only the code's defaults are known.
      - **Routing** (`api/app/settings.py` lines 34–54; `api/app/copilot/openai_compat.py`, `host_routing`):
-       - **The service:** OpenRouter by the code's default; the Copilot can also be set to Anthropic directly, and any
-         OpenAI-compatible service can stand in for OpenRouter.
+       - **The service:** OpenRouter by the code's default. `COPILOT_PROVIDER=auto` picks OpenRouter when its key is
+         set, otherwise Anthropic when its key is set, otherwise the stand-in. Any OpenAI-compatible endpoint can stand
+         in for OpenRouter.
        - **When OpenRouter is used:** it chooses the hosting company per request. The code's default asks it to sort
          hosts by latency, and `COPILOT_PROVIDER_ORDER` can name hosts for the Copilot to try first, with fallbacks.
        - **Not read:** production's values for all of these.

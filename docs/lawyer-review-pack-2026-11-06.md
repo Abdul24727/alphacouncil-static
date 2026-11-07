@@ -225,19 +225,27 @@ The dumps include the card-token ids.
   never sees the card number.
 - **MailerSend:** sends the site's emails (verification, password reset, billing).
 - **Google:** only for a member who chooses "Sign in with Google".
-- **OpenRouter, and the AI model providers it routes to:** the member's Copilot and room questions,
-  together with the company's data, go to language models that outside companies run. *Corrected 2026-11-07*, to
-  keep what was confirmed apart from what was not:
-  - **Where the data is processed:** it may be processed outside the Kingdom. Three things were not verified: which
-    companies serve the requests, the countries where they process them, and production's routing settings.
-  - **Which service is used:** the code uses OpenRouter by default. Its settings also allow two alternatives: the
-    Copilot can use Anthropic directly, and any service that accepts OpenRouter's requests can stand in for it.
-    Production's choice was not read.
-  - **The Copilot, confirmed live:** a DeepSeek model, `deepseek/deepseek-v3.2`. The site's own public status
-    address reported it on 2026-11-07.
+- **The AI services (OpenRouter by the code's default, and the model providers behind it):** when the Copilot or
+  the room uses an externally hosted model, the member's question goes to the configured AI service, together with
+  the company's data. *Corrected 2026-11-07*, to keep what production confirms apart from what the code does by
+  default and what was not verified:
+  - **What production confirms** (its public status addresses, read 2026-11-07):
+    - **Both features use a model, not the stand-in.** The code can fall back to a labelled, rule-based stand-in
+      that sends nothing out. Both status addresses report `"stand_in": false`.
+    - **The Copilot's model:** `deepseek/deepseek-v3.2`.
+    - **The room:** in this code, "not the stand-in" means an OpenRouter key is set on production. The room then
+      sends its requests to the service the settings name.
+  - **What the code does by default** (`api/app/settings.py`; production's values were not read):
+    - **The Copilot** chooses its service with `COPILOT_PROVIDER=auto`. That means OpenRouter when an OpenRouter key
+      is set, otherwise Anthropic when an Anthropic key is set, otherwise the stand-in. It can also be fixed to one of
+      them.
+    - **The room** uses the same OpenRouter client and key.
+    - **The service's address** defaults to OpenRouter's, and any OpenAI-compatible endpoint can stand in for it.
   - **The six seats and the Chair, not confirmed:** the code's defaults are a DeepSeek model for the seats and
     Anthropic's Claude for the Chair. Production's own setting sits in a server file that also holds passwords and
     keys, so it was not read. *The owner to confirm.*
+  - **Where the data is processed:** it may be processed outside the Kingdom. Three things were not verified: which
+    companies serve the requests, the countries where they process them, and production's routing settings.
   - **Who runs a request, when OpenRouter is used:** OpenRouter chooses which hosting company runs each request for
     a model, so the company is not necessarily the model's maker.
     - **The code's default:** it asks OpenRouter to prefer the fastest host.

@@ -501,6 +501,13 @@ Older entries: `changelog-archive.md`.
 
             A fourth fact is added for the owner to confirm: where the AI data is processed.
             `docs/review-loop/MASTER-PLAN.md` is unchanged in this pass, as the review asked.
+          - **Review 90 said FIX.** Review 89's correction on production's data settings is accepted. Two points:
+            - **The AI wording was still too categorical.** The code can fall back to a stand-in, so pack §5.2 now
+              separates three things:
+              - **what production confirms:** both features report `"stand_in": false`, and the Copilot's model;
+              - **what the code does by default:** `COPILOT_PROVIDER=auto`, and any OpenAI-compatible endpoint;
+              - **what is unverified.**
+            - **The diff:** the full `git diff ac35f28..HEAD` is recorded, not only a path-filtered one.
       - **Review 84 ACCEPTED the P9 fix.**
         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
           cases), and the patch rebuilds the four files byte for byte on production's bytes.
