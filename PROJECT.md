@@ -381,6 +381,18 @@ Older entries: `changelog-archive.md`.
             again;
           - the four files' blobs are the same at `73d7140` and `026699b906`.
         - **The tests:** a ten-case table, 147 in the named files, and 614 passed, 10 skipped in the suite.
+      - **Review 82 said FIX:**
+        - **The capped case:** reading only what is shown, it said "the source holds no …" about a figure the cap
+          had hidden.
+        - **The date warning:** it still read the raw rows.
+        - **Fixed at the root:**
+          - a protected line wins the row cap only if it carries a number, and `fit` never drops a statement's last
+            number, so what P9 shows always matches what the source holds;
+          - `limitations_of` also says "this dataset carries no …" if a caller's statements hide a source figure;
+          - the date warning needs both statements shown.
+        - **The real data:** no company's P9 changes; 0 all-null shown rows in 30,761.
+        - **The tests:** a twelve-case table plus a guard test, 150 in the named files, and 617 passed, 10 skipped in
+          the suite.
     - **PRODUCTION RELEASED 2026-11-07 on the owner's go-ahead** ("Yes, deploy to production"): alphacouncil.tech
       runs `026699b906ea3a513b4f2dbfc37672fa68ee9d42`, the same as beta
       (`docs/release-production-sector-standing-2026-11-07.md`).

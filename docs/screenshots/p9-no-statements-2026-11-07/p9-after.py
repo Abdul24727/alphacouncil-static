@@ -49,8 +49,17 @@ show("5d. one income-statement year, with quarters (the old wording stands)", It
 CAPPED = [Cell(label="Net Income", section="Income Statement", fiscal_year=2025, value=None, item_index=i)
           for i in range(30)] + [Cell(label="Zakat & Tax", section="Income Statement", fiscal_year=2025, value=5.0,
                                       item_index=30)]
-show("5e. review 81's capped case: the only income figure falls outside the 30-row cap, so none is shown",
+show("5e. reviews 81-82, capped: the only income figure sits behind 30 null protected lines; it is now shown",
      Items(CAPPED, [Q77]))
+BEYOND_CAP = [Cell(label="Net Income", section="Income Statement", fiscal_year=2025, value=float(i + 1), item_index=i)
+              for i in range(30)] + [Cell(label="Zakat & Tax", section="Income Statement", fiscal_year=2025,
+                                          value=5.0, item_index=30)]
+show("5f. review 82: a reported figure the cap does omit; the statement still shows figures, no absence claimed",
+     Items(BEYOND_CAP, []))
+CAPPED_DATED = [c.model_copy(update={"period_end": "2025-12"}) for c in CAPPED] + [
+    Cell(label="Total Assets", section="Balance Sheet", fiscal_year=2025, value=900.0, period_end="2025-09")]
+show("5g. review 82's second scenario: capped and dated, a balance sheet, quarters; both statements shown",
+     Items(CAPPED_DATED, [Q77]))
 
 print("\n== 6. packs with no P9, and with a P9 error: the note, and that it comes before the data")
 for name, data in (("no P9", {"P1": {"quote": 1}}), ("P9 error", {"P1": {"quote": 1}, "P9": {"error": "unavailable"}})):

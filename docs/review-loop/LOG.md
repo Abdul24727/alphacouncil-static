@@ -83,3 +83,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-07 10:49 UTC — **P9: the room is told when a company has no statements** — FIX — [79-p9-the-room-is-told-when-a-company-has-no-statemen.md](replies/79-p9-the-room-is-told-when-a-company-has-no-statemen.md)
 - 2026-11-07 11:04 UTC — **P9: review 79's fixes** — FIX — [80-p9-review-79-s-fixes.md](replies/80-p9-review-79-s-fixes.md)
 - 2026-11-07 12:29 UTC — **P9: review 80's fixes** — FIX — [81-p9-review-80-s-fixes.md](replies/81-p9-review-80-s-fixes.md)
+- 2026-11-07 12:56 UTC — **P9: review 81's fixes** — FIX — [82-p9-review-81-s-fixes.md](replies/82-p9-review-81-s-fixes.md)

@@ -98,6 +98,21 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
        this ends.
      - **The effect:** a figure cut by the cap can no longer make the quarters' note point at "annual figures above"
        while the pack says there are none.
+   - **What P9 shows always matches what the source holds (review 82):**
+     - **The cap:** a protected line now wins its place in the 30-row cap only if it carries a number. All-null
+       protected lines join the ordinary lines, which already put lines with a number first. So a statement section
+       with any reported figure always shows one.
+     - **The trim:** `fit` never drops a statement's last row with a number (`droppable`).
+     - **The effect:** "held" by what is shown and "held at the source" (for the loaded years) cannot differ through
+       `dataset_of`, so "the source holds no …" is said only where the source has no number.
+     - **The real data:** this changes no company's P9 on 2026-11-07's data. Under the old rule an all-null
+       protected line inside the cap would have been shown, and the per-row sweep found none among 30,761 shown
+       statement rows.
+     - **Any other caller:** `limitations_of` checks the source too. Where the source has a figure that the
+       statements passed to it do not show, it says "this dataset carries no …" instead of "the source holds no …"
+       (tested directly).
+   - **The date warning (review 82):** "The income statement covers a window ending … while the balance sheet is
+     struck at …" now appears only when both statements are shown with a number.
    - **One window and no quarters (review 81):** "ONE INCOME-STATEMENT WINDOW: … is available and the prior year's
      income statement is not. Year-on-year revenue or earnings cannot be compared from this dataset, and it holds no
      single quarters: this window is the only income history there is." A company with quarters keeps the old
@@ -132,7 +147,7 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
 
 ## The evidence
 
-**After** (`p9-after.txt`, from `p9-after.py`, run on the fixed code), every case reviews 79 and 80 name:
+**After** (`p9-after.txt`, from `p9-after.py`, run on the fixed code), every case reviews 79 to 82 name:
 1. **Empty P9 (group A):** the NO FINANCIAL STATEMENTS note and the pack note, with 0 of 7 calculations valued.
 2. **Quarterly-only P9 (group B):**
    - The quarter stays (`[['Net Income', 77.0]]`), and its note says there is no annual figure, not that one is above.
@@ -147,22 +162,37 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
    - **5b. With quarters:** the quarters' note is the old one.
    - **5c. One year, no quarters (8010 and 24 others):** the new one-window wording, with no quarters claimed.
    - **5d. One year, with quarters:** the old one-window wording.
-   - **5e. Review 81's capped case:**
-     - **The setup:** the only income figure falls outside the 30-row cap.
-     - **The result:** no annual figure is shown, so the quarters' note, the limitation (NO ANNUAL STATEMENTS) and
-       the pack note all say there is none.
+   - **5e. The capped case (reviews 81 and 82):**
+     - **The setup:** the only income figure sits behind 30 all-null protected lines.
+     - **The result:** it is now shown (`Zakat & Tax` 5.0). The notes are those of a company with one income window
+       and quarters, and nothing calls the source empty.
+   - **5f. A figure the cap does omit (review 82):**
+     - **The setup:** 30 numbered protected lines come first, so `Zakat & Tax` is left out (`rows_omitted` 1).
+     - **The result:** the statement still shows figures, so no note says the source lacks an income statement.
+   - **5g. Review 82's second scenario:**
+     - **The setup:** the capped income statement dated 2025-12, a balance sheet struck 2025-09, and quarters.
+     - **The result:** both statements are shown with a number, so the date warning is true and appears, with no
+       NO ANNUAL INCOME STATEMENT.
 6. **No P9, or a P9 error:** the pack note is line 2, and the data starts at line 3.
 7. **4330's pack with beta's P9 today, and the five comparison packs:** each carries the note.
 
 **Tests** (`tests.txt`):
-- **`test_p9_says_exactly_what_it_holds`** (reviews 80 and 81), across ten cases:
-  - **The cases:** empty, quarterly only, all-null rows, balance sheet only, balance sheet and quarters, normal over
-    two years, normal with quarters, one year with no quarters, one year with quarters, and the capped case.
+- **`test_p9_says_exactly_what_it_holds`** (reviews 80 to 82), across twelve cases:
+  - **The cases:**
+    - empty, quarterly only, all-null rows, balance sheet only, balance sheet and quarters;
+    - normal over two years, normal with quarters, one year with no quarters, one year with quarters;
+    - the capped figure now shown, a figure the cap omits, and capped and dated with a balance sheet and quarters.
   - **What each checks:**
     - the statements and quarter rows kept;
     - the quarters' note, the whole list of limitations and the pack note, all word for word;
     - that the quarters' note and the pack note agree with each other and with what is shown;
-    - that no quarters are claimed where none are shown.
+    - that no quarters are claimed where none are shown;
+    - that "the source holds no X" never appears where the source has a number for X;
+    - that a section with a figure at the source shows one.
+- **`test_limitations_never_say_the_source_lacks_a_statement_it_has`** (review 82):
+  - **The setup:** `limitations_of` is called directly with statements that hide the source's income statement.
+  - **What it checks:** the wording becomes "this dataset carries no …", and the date warning is withheld. Through
+    `dataset_of`, the same company shows both statements and gets the true date warning.
 - **The other P9 tests:** 9 pass, 8 new and 1 extended.
   - `test_a_company_with_no_statements_is_told_so_and_supplied_no_figure`:
     - **The fixture:** `Items([], [])`, called as the live route calls it, with a dividend history and the price.
@@ -180,15 +210,16 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
   - `test_the_comparison_packs_now_carry_the_no_statements_note`: the five frozen packs;
   - `test_an_invented_statement_figure_on_a_pack_without_statements_is_flagged`: the audit's "SAR 16,578 million",
     cited to [P9] on a no-statements pack, is listed as unverified.
-- **`test_evidence.py`, `test_debate.py` and `test_copilot.py`:** 147 passed (129 before).
-- **The whole API suite:** 614 passed, 10 skipped (596 before).
+- **`test_evidence.py`, `test_debate.py` and `test_copilot.py`:** 150 passed (129 before).
+- **The whole API suite:** 617 passed, 10 skipped (596 before).
 - **Production's files:** the four files P9 changes have the same git blob at `73d7140` and at production's
   `026699b906` (`tests.txt`), so the patch applies to production as it stands.
 - **ruff:** in each changed file, the same findings at `73d7140` (before any P9 change) and now. All are
   pre-existing.
 - **The diffs:**
   - `p9-fix.patch` is the whole change since `73d7140`.
-  - `p9-fix-review-79.patch`, `p9-fix-review-80.patch` and `p9-fix-review-81.patch` are each review's part.
+  - `p9-fix-review-79.patch`, `p9-fix-review-80.patch`, `p9-fix-review-81.patch` and `p9-fix-review-82.patch` are
+    each review's part.
 
 **What this does not prove:** that a model now writes no invented statement figure. The tests show what the
 application supplies and says. They do not show what a model does with it.

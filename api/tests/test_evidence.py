@@ -30,6 +30,7 @@ from app.evidence import (
     calculations,
     dataset_of,
     encoded_length,
+    limitations_of,
     load_items,
     period_aware,
     named_operands,
@@ -449,6 +450,17 @@ ONE_YEAR = [_cell("Net Income", "Income Statement", 2025, 50.0), TA900]
 CAPPED = [Cell(label="Net Income", section="Income Statement", fiscal_year=2025, value=None, item_index=i)
           for i in range(30)] + [Cell(label="Zakat & Tax", section="Income Statement", fiscal_year=2025, value=5.0,
                                       item_index=30)]
+BEYOND_CAP = [Cell(label="Net Income", section="Income Statement", fiscal_year=2025, value=float(i + 1), item_index=i)
+              for i in range(30)] + [Cell(label="Zakat & Tax", section="Income Statement", fiscal_year=2025,
+                                          value=5.0, item_index=30)]
+CAPPED_DATED = [c.model_copy(update={"period_end": "2025-12"}) for c in CAPPED] + [
+    Cell(label="Total Assets", section="Balance Sheet", fiscal_year=2025, value=900.0, period_end="2025-09")]
+LIM_CASH_FLOW_IS_ONLY = (
+    "NO CASH FLOW STATEMENT: the source's pages for this company carry an income statement only. Operating cash"
+    " flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and"
+    " dividend cover can be tested against earnings only, never against cash.")
+LIM_DATES = ("The income statement covers a window ending 2025-12 while the balance sheet is struck at 2025-09: any"
+             " ratio of a flow over a position mixes the two dates.")
 P9_CASES = {
     # case: (items, statements kept, quarter rows kept, quarters note, limitations, pack note)
     "empty": (Items([], []), [], None, None, [LIM_EMPTY], PACK_NONE),
@@ -481,12 +493,26 @@ P9_CASES = {
         Items(ONE_YEAR, [Q77]),
         [("Income Statement", [["Net Income", 50.0]]), ("Balance Sheet", [["Total Assets", 900.0]])],
         [["Net Income", 77.0]], NOTE_ANNUAL, [CASH_FLOW_COMMON, LIM_ONE_WINDOW_QUARTERS], None),
-    # Review 81: the only income figure falls outside the 30-row cap behind protected rows that are all
-    # null, so P9 SHOWS no annual income figure. Every note must say so, from what is shown.
-    "capped: no income figure shown": (
-        Items(CAPPED, [Q77]), [("Income Statement", [["Net Income", None]] * 30)], [["Net Income", 77.0]],
-        NOTE_NO_ANNUAL, [LIM_QUARTERS], PACK_QUARTERS),
+    # Reviews 81 and 82: the only income figure sits behind 30 protected lines that are all null. It used
+    # to fall outside the 30-row cap, so P9 showed no income figure and called the source empty. A line
+    # with a number now wins the cap first, so the figure is shown and nothing claims it is absent.
+    "capped: the figure behind null protected lines is shown": (
+        Items(CAPPED, [Q77]), [("Income Statement", [["Net Income", None]] * 29 + [["Zakat & Tax", 5.0]])],
+        [["Net Income", 77.0]], NOTE_ANNUAL, [LIM_CASH_FLOW_IS_ONLY, LIM_ONE_WINDOW_QUARTERS], None),
+    # Review 82: a reported figure the cap does omit (30 numbered protected lines come first). The
+    # statement still shows figures, so no note says the source lacks an income statement.
+    "capped: a figure beyond the cap": (
+        Items(BEYOND_CAP, []), [("Income Statement", [["Net Income", float(i + 1)] for i in range(30)])],
+        None, None, [LIM_CASH_FLOW_IS_ONLY, LIM_ONE_WINDOW_NO_QUARTERS], None),
+    # Review 82's second scenario: the capped income statement dated 2025-12, a balance sheet struck
+    # 2025-09, and quarters. Both statements are shown with a number, so the date warning is true.
+    "capped, dated, with a balance sheet and quarters": (
+        Items(CAPPED_DATED, [Q77]),
+        [("Income Statement", [["Net Income", None]] * 29 + [["Zakat & Tax", 5.0]]),
+         ("Balance Sheet", [["Total Assets", 900.0]])],
+        [["Net Income", 77.0]], NOTE_ANNUAL, [CASH_FLOW_COMMON, LIM_ONE_WINDOW_QUARTERS, LIM_DATES], None),
 }
+NO_INCOME_SHOWN = ("empty", "quarterly only", "all-null rows", "balance sheet only", "balance sheet and quarters")
 
 
 @pytest.mark.parametrize("case", list(P9_CASES))
@@ -507,8 +533,21 @@ def test_p9_says_exactly_what_it_holds(case):
         assert ds.quarters.note == quarter_note
     assert ds.limitations == limitations
     assert no_statements_note({"P9": ds.model_dump()}) == pack_note
-    if not case.startswith(("normal", "one year")):
+    if case in NO_INCOME_SHOWN:
         assert all(c.value is None for c in ds.calculations), "no derived figure without an annual statement"
+    if case == "capped: a figure beyond the cap":
+        assert ds.statements[0].rows_omitted == 1, "the source's Zakat figure exists and the cap omits it"
+
+    # Review 82: "the source holds no X" only where the source has no number for X.
+    at_source = {c.section for c in items.rows if c.value is not None}
+    for section, word in (("Income Statement", "income statement"), ("Balance Sheet", "balance sheet")):
+        if section in at_source:
+            assert f"the source holds no {word}" not in " ".join(ds.limitations), (section, ds.limitations)
+    if at_source:
+        assert not any(lim.startswith(("NO FINANCIAL STATEMENTS", "NO ANNUAL STATEMENTS")) for lim in ds.limitations)
+    for statement in ds.statements:
+        if statement.section in at_source:
+            assert has_figure(statement.rows), f"{statement.section} has a reported figure and must show one"
 
     # The notes agree with each other and with what is shown, in every case.
     income_shown = any(s.section == "Income Statement" and has_figure(s.rows) for s in ds.statements)
@@ -519,6 +558,28 @@ def test_p9_says_exactly_what_it_holds(case):
     said = " ".join(ds.limitations)
     if ds.quarters is None or not has_figure(ds.quarters.rows):
         assert "single quarters are the history" not in said and "quote each with the quarter" not in said
+
+
+def test_limitations_never_say_the_source_lacks_a_statement_it_has():
+    """Review 82: where the source holds a figure that the statements passed in do not show, the notes say
+    "this dataset carries no", never "the source holds no", and the flow-against-position date warning appears
+    only when both statements are shown. `dataset_of` cannot produce such statements any more (the cap and the
+    trim always leave a reported figure); this guards any other caller of `limitations_of`."""
+    items = Items(CAPPED_DATED, [Q77])
+    shown_all = bounded_statements(items)
+    balance_only = [s for s in shown_all if s.section == "Balance Sheet"]
+    lims = limitations_of(items, "unknown", None, quarters=None, statements=balance_only)
+    assert lims == [
+        ("NO CASH FLOW STATEMENT: this dataset carries a balance sheet only. Operating cash flow, capital"
+         " expenditure, free cash flow and cash conversion cannot be computed from anything here, and dividend"
+         " cover cannot be tested against earnings or cash."),
+        ("NO INCOME STATEMENT: this dataset carries no income statement for this company. Its revenue, earnings,"
+         " margins and earnings per share are not in this dataset; do not state, estimate or recall them.")]
+    nothing = limitations_of(items, "unknown", None, quarters=None, statements=[])
+    assert nothing == [LIM_EMPTY.replace("the source holds no", "this dataset carries no", 1)]
+    assert all("covers a window ending" not in lim for lim in lims + nothing)
+    # And through dataset_of, the same company shows both statements and gets the true date warning.
+    assert LIM_DATES in dataset_of(items, ticker_key="X", sector="unknown", currency="SAR").limitations
 
 
 # --- derived figures, and the ones that are withheld -------------------------------------------

@@ -1440,8 +1440,16 @@ def bounded_statements(items: Items) -> list[BoundedStatement]:
             cell = next((c for c in item[1].values() if c is not None), None)
             return cell.label if cell else ""
 
-        keep = [it for it in ordered if is_protected(labelled(it))]
-        rest = [it for it in ordered if not is_protected(labelled(it))]
+        # A protected line wins its place only if it carries a number (review 82): 30 protected lines
+        # of nulls must not push out the section's only reported figure, or the statement would look
+        # empty while the source holds a figure. `ordered` puts lines with a latest-year number
+        # first, so a section with any reported figure always shows one. On 2026-11-07 no line P9
+        # showed was all null (`p9-sweep-rows-summary.txt`), so this changes no company's P9.
+        def numbered(item: tuple[int, dict[int, Cell]], cols: list[int] = cols) -> bool:
+            return any(c is not None and c.value is not None and y in cols for y, c in item[1].items())
+
+        keep = [it for it in ordered if is_protected(labelled(it)) and numbered(it)]
+        rest = [it for it in ordered if not (is_protected(labelled(it)) and numbered(it))]
         kept = keep[:limit] + rest[: max(0, limit - len(keep))]
         omitted = max(0, len(ordered) - len(kept))
         p = items.period(section, latest)
@@ -1601,14 +1609,28 @@ def limitations_of(items: Items, sector: str, peer_class: str | None = None,
     sections = shown(statements)
     quarterly = quarters is not None and has_figure(quarters.rows)
     has_income = "Income Statement" in sections
+    # What the source itself holds, for the loaded years. A note may say "the source holds no" only
+    # where the source has no number for it; where the source has one that this dataset does not
+    # show, it says "this dataset carries no" (review 82). Through `dataset_of` the two cannot differ
+    # (the row cap and the trim always leave a statement's reported figure), so the second wording
+    # is the guard for any other caller.
+    at_source = {r.section for r in items.rows if r.value is not None and r.fiscal_year in items.years[:BOUNDED_YEARS]}
+
+    def said(note: str, missing: tuple[str, ...]) -> str:
+        if any(s in at_source for s in missing):
+            return note.replace("the source holds no", "this dataset carries no", 1)
+        return note
+
     if not sections:
-        out.append(QUARTERS_ONLY if quarterly else NO_STATEMENTS)
+        out.append(said(QUARTERS_ONLY if quarterly else NO_STATEMENTS, tuple(STATEMENT_NAMES)))
     if sections and "Cash Flow Statement" not in sections:
         held = [STATEMENT_NAMES[s] for s in sections]
         if quarterly and not has_income:
             held.append("single income-statement quarters")
+        whose = ("this dataset carries " if any(s in at_source and s not in sections for s in STATEMENT_NAMES)
+                 else "the source's pages for this company carry ")
         out.append(
-            "NO CASH FLOW STATEMENT: the source's pages for this company carry "
+            "NO CASH FLOW STATEMENT: " + whose
             + " and ".join(held) + " only. Operating cash flow,"
             " capital expenditure, free cash flow and cash conversion cannot be computed from"
             " anything here, and dividend cover "
@@ -1616,7 +1638,7 @@ def limitations_of(items: Items, sector: str, peer_class: str | None = None,
                else "cannot be tested against annual earnings or cash." if quarterly
                else "cannot be tested against earnings or cash."))
     if sections and not has_income:
-        out.append(NO_ANNUAL_INCOME_STATEMENT if quarterly else NO_INCOME_STATEMENT)
+        out.append(said(NO_ANNUAL_INCOME_STATEMENT if quarterly else NO_INCOME_STATEMENT, ("Income Statement",)))
     elif sections and shown_years(statements, "Income Statement") < 2:
         p = items.period("Income Statement")
         if quarterly:
@@ -1634,7 +1656,10 @@ def limitations_of(items: Items, sector: str, peer_class: str | None = None,
                 " compared from this dataset, and it holds no single quarters: this window is the"
                 " only income history there is.")
     flow, position = items.period("Income Statement"), items.period("Balance Sheet")
-    if flow.period_end and position.period_end and flow.period_end != position.period_end:
+    # Only where both statements are shown with a number (review 82): the warning describes a ratio
+    # the room could compute, so it must not name a statement this dataset does not carry.
+    if ("Income Statement" in sections and "Balance Sheet" in sections
+            and flow.period_end and position.period_end and flow.period_end != position.period_end):
         out.append(f"The income statement covers a window ending {flow.period_end} while the"
                    f" balance sheet is struck at {position.period_end}: any ratio of a flow over"
                    " a position mixes the two dates.")
@@ -1657,6 +1682,17 @@ def encoded_length(ds: EvidenceDataset) -> int:
     return len(json.dumps(ds.model_dump(), ensure_ascii=False, default=str))
 
 
+def droppable(rows: list[list[Any]], i: int) -> bool:
+    """May the budget trim drop this row? Not a protected line, and not a statement's last row with a
+    reported number (review 82): a trim must never make a statement that has figures look empty."""
+    row = rows[i]
+    if is_protected(row[0]):
+        return False
+    if any(is_number(v) for v in row[1:]):
+        return any(j != i and any(is_number(v) for v in r[1:]) for j, r in enumerate(rows))
+    return True
+
+
 def fit(ds: EvidenceDataset, budget: int = DATASET_BUDGET) -> EvidenceDataset:
     """Bring the dataset inside its character budget, and record what that cost.
 
@@ -1668,7 +1704,7 @@ def fit(ds: EvidenceDataset, budget: int = DATASET_BUDGET) -> EvidenceDataset:
     while encoded_length(ds) > budget:
         longest = max(
             (s for s in ds.statements
-             if any(not is_protected(r[0]) for r in s.rows)),
+             if any(droppable(s.rows, i) for i in range(len(s.rows)))),
             key=lambda s: len(json.dumps(s.model_dump(), ensure_ascii=False, default=str)),
             default=None,
         )
@@ -1678,7 +1714,7 @@ def fit(ds: EvidenceDataset, budget: int = DATASET_BUDGET) -> EvidenceDataset:
                 continue
             return ds  # nothing left that may be dropped; the caller's budget is too small
         for i in range(len(longest.rows) - 1, -1, -1):
-            if not is_protected(longest.rows[i][0]):
+            if droppable(longest.rows, i):
                 longest.row_rules.pop(longest.rows[i][0], None)
                 longest.rows.pop(i)
                 longest.rows_omitted += 1
