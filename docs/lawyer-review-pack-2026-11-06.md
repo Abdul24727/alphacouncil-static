@@ -20,14 +20,17 @@ site (`docs/lawyer-pack-check-2026-11-07.md`). What changed:
 - the council tab, described as the site describes it: rule-based seats that vote bullish, neutral or bearish (§1);
 - the merchant information's address (§4);
 - what checkout already says about renewal, and the reminder the site sends (§6 (i));
-- which AI models are confirmed live and which are only the code's defaults (§5.2);
+- which AI models are confirmed live and which are only the code's defaults, and that where the AI data is processed
+  was not verified (§5.2, (h));
 - what the beta copy shares with production (§2);
 - two known issues in the imported legal texts: the contact page, and the Arabic merchant notice (§6 (e)).
 
 **Not checked again, for the owner to confirm before sending:**
 - the account and payment counts in §2, which are as of 2026-11-06;
 - the hosting provider and its country (§5.2);
-- the AI models the six seats and the Chair use on production (§5.2).
+- the AI models the six seats and the Chair use on production (§5.2);
+- where the AI services process the data, if the owner can find out, for example from OpenRouter's account
+  (§5.2, (h)).
 
 ## 1. The site and who runs it
 
@@ -93,10 +96,10 @@ will be shown before payment."
 - **What a signed-out check cannot see on production:** the Pro-only financial statements. They were checked on
   the beta copy: all 714 companies, with every statement line in English on English pages
   ([beta's checks](screenshots/release-b5655a5064/beta-checks.txt)).
-  - **Why beta stands in:** it runs the same release. Production was also set up to read the same market-data
-    files: its settings were copied from beta's at setup.
-  - **The limit:** that the settings still match was not checked again on 2026-11-07. *(Until 2026-11-07 this said
-    "on the same data".)*
+  - **Why beta stands in:** it runs the same release. The deploy script is also written to copy beta's market-data
+    settings when it first creates production's settings file.
+  - **The limit:** two things are not established: that the copy ran, and that the two tiers' settings match today.
+    *(Until 2026-11-07 this said "on the same data".)*
 - **Open items the lawyer may see** (one was resolved the same day):
   - ~~**The AI features' credit.** The model account that pays for the Copilot and the advisors' room was at
     $7.83 on 2026-11-06, below the site's own $10 alert. If it runs out before the visit, those two features
@@ -223,15 +226,20 @@ The dumps include the card-token ids.
 - **MailerSend:** sends the site's emails (verification, password reset, billing).
 - **Google:** only for a member who chooses "Sign in with Google".
 - **OpenRouter, and the AI model providers it routes to:** the member's Copilot and room questions,
-  together with the company's data, go to language models outside the Kingdom. *Corrected 2026-11-07*, to keep
-  what was confirmed apart from what was not:
+  together with the company's data, go to language models that outside companies run. *Corrected 2026-11-07*, to
+  keep what was confirmed apart from what was not:
+  - **Where the data is processed:** it may be processed outside the Kingdom. Three things were not verified: which
+    companies serve the requests, the countries where they process them, and production's routing settings.
+  - **Which service is used:** the code uses OpenRouter by default. Its settings also allow two alternatives: the
+    Copilot can use Anthropic directly, and any service that accepts OpenRouter's requests can stand in for it.
+    Production's choice was not read.
   - **The Copilot, confirmed live:** a DeepSeek model, `deepseek/deepseek-v3.2`. The site's own public status
     address reported it on 2026-11-07.
   - **The six seats and the Chair, not confirmed:** the code's defaults are a DeepSeek model for the seats and
     Anthropic's Claude for the Chair. Production's own setting sits in a server file that also holds passwords and
     keys, so it was not read. *The owner to confirm.*
-  - **Who runs a request:** OpenRouter chooses which hosting company runs each request for a model, so the
-    company is not necessarily the model's maker.
+  - **Who runs a request, when OpenRouter is used:** OpenRouter chooses which hosting company runs each request for
+    a model, so the company is not necessarily the model's maker.
     - **The code's default:** it asks OpenRouter to prefer the fastest host.
     - **A setting:** it can name hosts for the Copilot to try first, with the others as fallbacks.
     - **Not read:** production's values for both, and which hosts served the site's requests.
@@ -311,8 +319,9 @@ page describes this as collected "from public market sources", and does not name
 2. Does an "impact" read on a listed company's news come closer to advice than the rest of the site
    (see (b))?
 
-**(h) Sending data outside the Kingdom.** Questions go to AI providers abroad, and emails through
-MailerSend (§5.2). Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow
+**(h) Sending data outside the Kingdom.** Questions go to outside AI providers, which may process them
+outside the Kingdom, and emails go through MailerSend (§5.2). *Qualified 2026-11-07:* where those companies process
+the data was not verified. Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow
 or the contracts with those providers need for that?
 
 **(i) Monthly renewal.** Pro renews automatically on the saved card. What must checkout say about it,

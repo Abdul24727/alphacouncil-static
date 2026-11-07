@@ -492,6 +492,15 @@ Older entries: `changelog-archive.md`.
             - **The plan files:** their diff is shown to be status-only (`plan-diffs.txt`).
 
             Give the lawyer two documents: the pack and `docs/legal-questions-2026-10-27.md`.
+          - **Review 89 said FIX: two claims went further than the evidence.** Both are corrected in the pack, the
+            check record and the P9 production record.
+            - **Where the AI data is processed:** the data may be processed outside the Kingdom. The serving
+              companies, their countries and production's routing settings were not verified.
+            - **Production's data settings:** the deploy script is written to copy beta's at first setup, but neither
+              that the copy ran nor that the settings match today is established.
+
+            A fourth fact is added for the owner to confirm: where the AI data is processed.
+            `docs/review-loop/MASTER-PLAN.md` is unchanged in this pass, as the review asked.
       - **Review 84 ACCEPTED the P9 fix.**
         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
           cases), and the patch rebuilds the four files byte for byte on production's bytes.

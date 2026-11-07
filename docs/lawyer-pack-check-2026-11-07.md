@@ -9,7 +9,10 @@ matches the live site, so that the owner can send it.
   - one feature described too loosely;
   - an outdated release;
   - one question that understated what the site already does;
-  - after review 88, two claims stated as confirmed that were not.
+  - claims stated as confirmed that were not, found by reviews 88 and 89:
+    - the room's AI models;
+    - where the AI data is processed and how it is routed;
+    - what beta shares with production.
 - **What was added:** two facts the lawyer should have, and two known issues in the imported legal texts (review
   88).
 - **Not done:** nothing was sent, no legal text on the site was changed, and nothing was deployed, pushed or paid
@@ -32,13 +35,16 @@ matches the live site, so that the owner can send it.
    of 2026-11-06 and were not counted again.
 2. **The hosting provider and its country** (§5.2), which the pack leaves to the owner.
 3. **The AI models the six seats and the Chair use on production** (§5.2). Only the Copilot's was confirmed live.
+4. **Where the AI services process the data** (§5.2, (h)), if the owner can find out. Otherwise the pack leaves it
+   marked as not verified.
 
 **Kinds of statement in the pack:**
 - **Confirmed live on 2026-11-07:** the addresses, page wording, plans, legal versions, the Copilot's model, the
   seats and the universe.
-- **Read from the released code:** the renewal reminder, the retries and grace period, and the routing request
-  sent to OpenRouter. These are marked as what the code does.
-- **For the owner to confirm:** the three facts above.
+- **Read from the released code:** the renewal reminder, the retries and grace period, the AI services' defaults
+  and routing, and what the deploy script is written to copy at setup. These are marked as what the code does, not
+  as what production is confirmed to do.
+- **For the owner to confirm:** the four facts above.
 
 ## How it was checked
 
@@ -157,17 +163,25 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
    - **What is known:**
      - **The Copilot:** confirmed live.
      - **The seats and the Chair:** only the code's defaults are known.
-     - **Routing:** OpenRouter chooses the hosting company per request (`api/app/copilot/openai_compat.py`,
-       `host_routing`).
-       - **The code's default:** it asks OpenRouter to sort hosts by latency (`copilot_provider_sort = "latency"`).
-       - **A setting:** `COPILOT_PROVIDER_ORDER` can name hosts for the Copilot to try first, with fallbacks.
-       - **Not read:** production's values for both.
-   - **Now:** §5.2 keeps the confirmed fact apart from the defaults, marks the seats' and the Chair's models for the
-     owner to confirm, and says that the host is not necessarily the model's maker. This bears on question (h).
+     - **Routing** (`api/app/settings.py` lines 34–54; `api/app/copilot/openai_compat.py`, `host_routing`):
+       - **The service:** OpenRouter by the code's default; the Copilot can also be set to Anthropic directly, and any
+         OpenAI-compatible service can stand in for OpenRouter.
+       - **When OpenRouter is used:** it chooses the hosting company per request. The code's default asks it to sort
+         hosts by latency, and `COPILOT_PROVIDER_ORDER` can name hosts for the Copilot to try first, with fallbacks.
+       - **Not read:** production's values for all of these.
+     - **Where the data is processed:** not verified. Neither the serving companies nor their countries are known
+       from this check.
+   - **Now:** §5.2 and (h) keep the confirmed fact apart from the code's defaults. They mark the seats' and the
+     Chair's models for the owner to confirm. They say the data *may* be processed outside the Kingdom, and that the
+     companies, the countries and production's routing were not verified (review 89).
 6. **What beta shares with production (pack §2).**
    - **The pack said:** beta "runs the same release on the same data".
-   - **What is known:** the same release, yes. Production's market-data settings were copied from beta's at setup
-     (`scripts/deploy-production.sh`, lines 80–83). That they still match was not checked again.
+   - **What is known:**
+     - **The release:** the same.
+     - **The setup:** the deploy script is written to copy beta's market-data settings when it first creates
+       production's settings file, and to leave an existing file alone (`scripts/deploy-production.sh`, lines 79–99).
+     - **Not established** (review 89): that the copy ran, since no output of that first setup is on record, and that
+       the settings match today.
    - **Now:** §2 says exactly that.
    - **Also corrected:** the same claim in `docs/release-production-p9-2026-11-07.md`, which now says production's
      P9 notes are not established to equal beta's.

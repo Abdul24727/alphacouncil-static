@@ -1,0 +1,194 @@
+Review 89's corrections: the documentation diff from ac35f28, 2026-11-07 20:33:40 UTC (trailing spaces removed)
+$ git diff --cached ac35f28 -- docs/lawyer-review-pack-2026-11-06.md docs/lawyer-pack-check-2026-11-07.md docs/release-production-p9-2026-11-07.md PROJECT.md docs/review-loop/MASTER-PLAN.md
+
+diff --git a/PROJECT.md b/PROJECT.md
+index 1be2e04..b920586 100644
+--- a/PROJECT.md
++++ b/PROJECT.md
+@@ -492,6 +492,15 @@ Older entries: `changelog-archive.md`.
+             - **The plan files:** their diff is shown to be status-only (`plan-diffs.txt`).
+
+             Give the lawyer two documents: the pack and `docs/legal-questions-2026-10-27.md`.
++          - **Review 89 said FIX: two claims went further than the evidence.** Both are corrected in the pack, the
++            check record and the P9 production record.
++            - **Where the AI data is processed:** the data may be processed outside the Kingdom. The serving
++              companies, their countries and production's routing settings were not verified.
++            - **Production's data settings:** the deploy script is written to copy beta's at first setup, but neither
++              that the copy ran nor that the settings match today is established.
++
++            A fourth fact is added for the owner to confirm: where the AI data is processed.
++            `docs/review-loop/MASTER-PLAN.md` is unchanged in this pass, as the review asked.
+       - **Review 84 ACCEPTED the P9 fix.**
+         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
+           cases), and the patch rebuilds the four files byte for byte on production's bytes.
+diff --git a/docs/lawyer-pack-check-2026-11-07.md b/docs/lawyer-pack-check-2026-11-07.md
+index ae6eb3a..bd65781 100644
+--- a/docs/lawyer-pack-check-2026-11-07.md
++++ b/docs/lawyer-pack-check-2026-11-07.md
+@@ -9,7 +9,10 @@ matches the live site, so that the owner can send it.
+   - one feature described too loosely;
+   - an outdated release;
+   - one question that understated what the site already does;
+-  - after review 88, two claims stated as confirmed that were not.
++  - claims stated as confirmed that were not, found by reviews 88 and 89:
++    - the room's AI models;
++    - where the AI data is processed and how it is routed;
++    - what beta shares with production.
+ - **What was added:** two facts the lawyer should have, and two known issues in the imported legal texts (review
+   88).
+ - **Not done:** nothing was sent, no legal text on the site was changed, and nothing was deployed, pushed or paid
+@@ -32,13 +35,16 @@ matches the live site, so that the owner can send it.
+    of 2026-11-06 and were not counted again.
+ 2. **The hosting provider and its country** (§5.2), which the pack leaves to the owner.
+ 3. **The AI models the six seats and the Chair use on production** (§5.2). Only the Copilot's was confirmed live.
++4. **Where the AI services process the data** (§5.2, (h)), if the owner can find out. Otherwise the pack leaves it
++   marked as not verified.
+
+ **Kinds of statement in the pack:**
+ - **Confirmed live on 2026-11-07:** the addresses, page wording, plans, legal versions, the Copilot's model, the
+   seats and the universe.
+-- **Read from the released code:** the renewal reminder, the retries and grace period, and the routing request
+-  sent to OpenRouter. These are marked as what the code does.
+-- **For the owner to confirm:** the three facts above.
++- **Read from the released code:** the renewal reminder, the retries and grace period, the AI services' defaults
++  and routing, and what the deploy script is written to copy at setup. These are marked as what the code does, not
++  as what production is confirmed to do.
++- **For the owner to confirm:** the four facts above.
+
+ ## How it was checked
+
+@@ -157,17 +163,25 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
+    - **What is known:**
+      - **The Copilot:** confirmed live.
+      - **The seats and the Chair:** only the code's defaults are known.
+-     - **Routing:** OpenRouter chooses the hosting company per request (`api/app/copilot/openai_compat.py`,
+-       `host_routing`).
+-       - **The code's default:** it asks OpenRouter to sort hosts by latency (`copilot_provider_sort = "latency"`).
+-       - **A setting:** `COPILOT_PROVIDER_ORDER` can name hosts for the Copilot to try first, with fallbacks.
+-       - **Not read:** production's values for both.
+-   - **Now:** §5.2 keeps the confirmed fact apart from the defaults, marks the seats' and the Chair's models for the
+-     owner to confirm, and says that the host is not necessarily the model's maker. This bears on question (h).
++     - **Routing** (`api/app/settings.py` lines 34–54; `api/app/copilot/openai_compat.py`, `host_routing`):
++       - **The service:** OpenRouter by the code's default; the Copilot can also be set to Anthropic directly, and any
++         OpenAI-compatible service can stand in for OpenRouter.
++       - **When OpenRouter is used:** it chooses the hosting company per request. The code's default asks it to sort
++         hosts by latency, and `COPILOT_PROVIDER_ORDER` can name hosts for the Copilot to try first, with fallbacks.
++       - **Not read:** production's values for all of these.
++     - **Where the data is processed:** not verified. Neither the serving companies nor their countries are known
++       from this check.
++   - **Now:** §5.2 and (h) keep the confirmed fact apart from the code's defaults. They mark the seats' and the
++     Chair's models for the owner to confirm. They say the data *may* be processed outside the Kingdom, and that the
++     companies, the countries and production's routing were not verified (review 89).
+ 6. **What beta shares with production (pack §2).**
+    - **The pack said:** beta "runs the same release on the same data".
+-   - **What is known:** the same release, yes. Production's market-data settings were copied from beta's at setup
+-     (`scripts/deploy-production.sh`, lines 80–83). That they still match was not checked again.
++   - **What is known:**
++     - **The release:** the same.
++     - **The setup:** the deploy script is written to copy beta's market-data settings when it first creates
++       production's settings file, and to leave an existing file alone (`scripts/deploy-production.sh`, lines 79–99).
++     - **Not established** (review 89): that the copy ran, since no output of that first setup is on record, and that
++       the settings match today.
+    - **Now:** §2 says exactly that.
+    - **Also corrected:** the same claim in `docs/release-production-p9-2026-11-07.md`, which now says production's
+      P9 notes are not established to equal beta's.
+diff --git a/docs/lawyer-review-pack-2026-11-06.md b/docs/lawyer-review-pack-2026-11-06.md
+index 0ee3c58..ad572e9 100644
+--- a/docs/lawyer-review-pack-2026-11-06.md
++++ b/docs/lawyer-review-pack-2026-11-06.md
+@@ -20,14 +20,17 @@ site (`docs/lawyer-pack-check-2026-11-07.md`). What changed:
+ - the council tab, described as the site describes it: rule-based seats that vote bullish, neutral or bearish (§1);
+ - the merchant information's address (§4);
+ - what checkout already says about renewal, and the reminder the site sends (§6 (i));
+-- which AI models are confirmed live and which are only the code's defaults (§5.2);
++- which AI models are confirmed live and which are only the code's defaults, and that where the AI data is processed
++  was not verified (§5.2, (h));
+ - what the beta copy shares with production (§2);
+ - two known issues in the imported legal texts: the contact page, and the Arabic merchant notice (§6 (e)).
+
+ **Not checked again, for the owner to confirm before sending:**
+ - the account and payment counts in §2, which are as of 2026-11-06;
+ - the hosting provider and its country (§5.2);
+-- the AI models the six seats and the Chair use on production (§5.2).
++- the AI models the six seats and the Chair use on production (§5.2);
++- where the AI services process the data, if the owner can find out, for example from OpenRouter's account
++  (§5.2, (h)).
+
+ ## 1. The site and who runs it
+
+@@ -93,10 +96,10 @@ will be shown before payment."
+ - **What a signed-out check cannot see on production:** the Pro-only financial statements. They were checked on
+   the beta copy: all 714 companies, with every statement line in English on English pages
+   ([beta's checks](screenshots/release-b5655a5064/beta-checks.txt)).
+-  - **Why beta stands in:** it runs the same release. Production was also set up to read the same market-data
+-    files: its settings were copied from beta's at setup.
+-  - **The limit:** that the settings still match was not checked again on 2026-11-07. *(Until 2026-11-07 this said
+-    "on the same data".)*
++  - **Why beta stands in:** it runs the same release. The deploy script is also written to copy beta's market-data
++    settings when it first creates production's settings file.
++  - **The limit:** two things are not established: that the copy ran, and that the two tiers' settings match today.
++    *(Until 2026-11-07 this said "on the same data".)*
+ - **Open items the lawyer may see** (one was resolved the same day):
+   - ~~**The AI features' credit.** The model account that pays for the Copilot and the advisors' room was at
+     $7.83 on 2026-11-06, below the site's own $10 alert. If it runs out before the visit, those two features
+@@ -223,15 +226,20 @@ The dumps include the card-token ids.
+ - **MailerSend:** sends the site's emails (verification, password reset, billing).
+ - **Google:** only for a member who chooses "Sign in with Google".
+ - **OpenRouter, and the AI model providers it routes to:** the member's Copilot and room questions,
+-  together with the company's data, go to language models outside the Kingdom. *Corrected 2026-11-07*, to keep
+-  what was confirmed apart from what was not:
++  together with the company's data, go to language models that outside companies run. *Corrected 2026-11-07*, to
++  keep what was confirmed apart from what was not:
++  - **Where the data is processed:** it may be processed outside the Kingdom. Three things were not verified: which
++    companies serve the requests, the countries where they process them, and production's routing settings.
++  - **Which service is used:** the code uses OpenRouter by default. Its settings also allow two alternatives: the
++    Copilot can use Anthropic directly, and any service that accepts OpenRouter's requests can stand in for it.
++    Production's choice was not read.
+   - **The Copilot, confirmed live:** a DeepSeek model, `deepseek/deepseek-v3.2`. The site's own public status
+     address reported it on 2026-11-07.
+   - **The six seats and the Chair, not confirmed:** the code's defaults are a DeepSeek model for the seats and
+     Anthropic's Claude for the Chair. Production's own setting sits in a server file that also holds passwords and
+     keys, so it was not read. *The owner to confirm.*
+-  - **Who runs a request:** OpenRouter chooses which hosting company runs each request for a model, so the
+-    company is not necessarily the model's maker.
++  - **Who runs a request, when OpenRouter is used:** OpenRouter chooses which hosting company runs each request for
++    a model, so the company is not necessarily the model's maker.
+     - **The code's default:** it asks OpenRouter to prefer the fastest host.
+     - **A setting:** it can name hosts for the Copilot to try first, with the others as fallbacks.
+     - **Not read:** production's values for both, and which hosts served the site's requests.
+@@ -311,8 +319,9 @@ page describes this as collected "from public market sources", and does not name
+ 2. Does an "impact" read on a listed company's news come closer to advice than the rest of the site
+    (see (b))?
+
+-**(h) Sending data outside the Kingdom.** Questions go to AI providers abroad, and emails through
+-MailerSend (§5.2). Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow
++**(h) Sending data outside the Kingdom.** Questions go to outside AI providers, which may process them
++outside the Kingdom, and emails go through MailerSend (§5.2). *Qualified 2026-11-07:* where those companies process
++the data was not verified. Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow
+ or the contracts with those providers need for that?
+
+ **(i) Monthly renewal.** Pro renews automatically on the saved card. What must checkout say about it,
+diff --git a/docs/release-production-p9-2026-11-07.md b/docs/release-production-p9-2026-11-07.md
+index 16545a0..a54a71d 100644
+--- a/docs/release-production-p9-2026-11-07.md
++++ b/docs/release-production-p9-2026-11-07.md
+@@ -93,12 +93,13 @@ read over read-only ssh. No model is called.
+     started from them (check 2).
+   - **The comparison:** beta runs the same commit, and its notes were compared word for word for all 714 tickers before
+     and after (`docs/release-beta-p9-2026-11-07.md`, check 7).
+-  - **The data:** production's accounts database is its own, but its market-data settings (`EVIDENCE_DB` and the rest)
+-    were copied from beta's when production was set up (`scripts/deploy-production.sh`, lines 80–83;
+-    `docs/production.md`, "Market data: the same files, read-only"). So both tiers were set up to read the same
+-    statement data, and with the same code they would write the same notes. That the settings still match today
+-    was not checked again: they sit in a file with credentials. So it is not established that production's notes
+-    equal beta's (review 88). *(Corrected after review 87: this line said production "has its own database"
++  - **The data:** production's accounts database is its own.
++    - **Its market-data settings** (`EVIDENCE_DB` and the rest): the deploy script is written to copy beta's when it
++      first creates production's settings file, and leaves an existing file alone (`scripts/deploy-production.sh`,
++      lines 79–99). `docs/production.md` records "the same files, read-only".
++    - **Not established:** that the copy ran, since no output of that first setup is on record, and that the two
++      tiers' settings match today, since they sit in a file with credentials.
++    - **So:** it is not established that production's notes equal beta's (reviews 88 and 89). *(Corrected after review 87: this line said production "has its own database"
+     for its notes, which is true only of its accounts.)*
+ - **The room's and the Copilot's behaviour:** whether the advisors now stop inventing statement figures can only be
+   measured in a paid session, and none was run.

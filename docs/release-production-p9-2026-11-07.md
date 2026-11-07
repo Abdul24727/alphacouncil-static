@@ -93,12 +93,13 @@ read over read-only ssh. No model is called.
     started from them (check 2).
   - **The comparison:** beta runs the same commit, and its notes were compared word for word for all 714 tickers before
     and after (`docs/release-beta-p9-2026-11-07.md`, check 7).
-  - **The data:** production's accounts database is its own, but its market-data settings (`EVIDENCE_DB` and the rest)
-    were copied from beta's when production was set up (`scripts/deploy-production.sh`, lines 80–83;
-    `docs/production.md`, "Market data: the same files, read-only"). So both tiers were set up to read the same
-    statement data, and with the same code they would write the same notes. That the settings still match today
-    was not checked again: they sit in a file with credentials. So it is not established that production's notes
-    equal beta's (review 88). *(Corrected after review 87: this line said production "has its own database"
+  - **The data:** production's accounts database is its own.
+    - **Its market-data settings** (`EVIDENCE_DB` and the rest): the deploy script is written to copy beta's when it
+      first creates production's settings file, and leaves an existing file alone (`scripts/deploy-production.sh`,
+      lines 79–99). `docs/production.md` records "the same files, read-only".
+    - **Not established:** that the copy ran, since no output of that first setup is on record, and that the two
+      tiers' settings match today, since they sit in a file with credentials.
+    - **So:** it is not established that production's notes equal beta's (reviews 88 and 89). *(Corrected after review 87: this line said production "has its own database"
     for its notes, which is true only of its accounts.)*
 - **The room's and the Copilot's behaviour:** whether the advisors now stop inventing statement figures can only be
   measured in a paid session, and none was run.
