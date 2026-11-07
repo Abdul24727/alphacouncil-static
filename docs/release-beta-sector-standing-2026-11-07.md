@@ -86,6 +86,9 @@ cd /c/AlphaCouncil-Staging/deploy-026699b && DEPLOY_BRANCH=release/sector-standi
 
 - **Before:** Claude reruns `git diff --quiet c3bcff6 -- scripts/deploy-production.sh` and the same command with
   `--check`. It passes now (check 10).
+  - **Review 77 accepted the beta release.** The preflight was rerun as its DONE WHEN, and each step exits 0
+    (`production-preflight.txt`).
+  - **It is run once more before the deploy itself.**
 - **Upload and build:** the same 519 MB upload, to `/opt/alphacouncil-platform/prod/releases/026699b906`, then the
   build on the server. Production keeps serving `b5655a5064` until the switch.
 - **Switch:** `prod/current` points at the new release, and `acp-prod-api` and `acp-prod-web` restart.

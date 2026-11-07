@@ -347,6 +347,14 @@ Older entries: `changelog-archive.md`.
       - **The numbers:** three moved from the candidate's captures (28 → 27, 82 → 81, 47 → 45). That is the nightly's
         01:48 UTC data refresh. The serving code is identical, and the page equals beta's API.
       - **Production is unchanged** (`b5655a5064`) and needs its own go-ahead. Nothing was pushed.
+      - **Review 77 ACCEPTED** the beta release. Its two notes are evidence it could not open: the staging script and
+        `check-arabic.mjs` were not attached. Neither blocks the release.
+      - **Its DONE WHEN is met** (`production-preflight.txt`, run 09:21 UTC):
+        - `deploy-production.sh` is unchanged since `c3bcff6`;
+        - the checkout is clean;
+        - production's exact-commit `--check` exits 0: beta runs `026699b906`, production runs `b5655a5064` (kept as
+          the rollback), and the prune is `2e44ee6fbf`.
+      - **Put to the owner:** the production go-ahead for `026699b906ea3a513b4f2dbfc37672fa68ee9d42`.
     - **Review 75 said FIX:** the scripts checked the branch but not the commit, so a moved branch would have shipped
       whatever its HEAD was. Fixed on `rebuild` in `724e742`, `8e53826` and `c3bcff6`:
       - **The commit is pinned:** a branch other than `rebuild` needs `DEPLOY_SHA`, the full approved commit. A
