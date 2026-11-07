@@ -393,6 +393,21 @@ Older entries: `changelog-archive.md`.
         - **The real data:** no company's P9 changes; 0 all-null shown rows in 30,761.
         - **The tests:** a twelve-case table plus a guard test, 150 in the named files, and 617 passed, 10 skipped in
           the suite.
+      - **Review 83 said FIX**, with two reproductions:
+        - **A hidden year:** the cap could hide a whole year (a 2025 figure behind 30 lines from 2024), and the note
+          then called the shown year missing.
+        - **A quarter P9 does not carry:** a quarter on such a line made P9 say the source had no quarterly result.
+        - **Fixed:**
+          - every year with a figure keeps one, through the cap (a bare year gets its first line back) and the trim
+            (`droppable`);
+          - a note naming quarterly results absent says "this dataset carries no …" when the source reports a
+            quarter;
+          - the pack note now reads "it holds no …".
+        - **Shown:** both reproductions fail before (`p9-review83-before.txt`) and pass after.
+        - **The tests:** a fourteen-case table plus a trim test; 153 in the named files, and 620 passed, 10 skipped
+          in the suite.
+        - **On production's bytes:** the full patch applied to a fresh copy of production's four files gives exactly
+          `rebuild`'s blobs.
     - **PRODUCTION RELEASED 2026-11-07 on the owner's go-ahead** ("Yes, deploy to production"): alphacouncil.tech
       runs `026699b906ea3a513b4f2dbfc37672fa68ee9d42`, the same as beta
       (`docs/release-production-sector-standing-2026-11-07.md`).

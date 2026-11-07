@@ -1451,6 +1451,15 @@ def bounded_statements(items: Items) -> list[BoundedStatement]:
         keep = [it for it in ordered if is_protected(labelled(it)) and numbered(it)]
         rest = [it for it in ordered if not (is_protected(labelled(it)) and numbered(it))]
         kept = keep[:limit] + rest[: max(0, limit - len(keep))]
+        # Every year this section has a figure for keeps one in what P9 shows (review 83): 30
+        # protected lines from one year must not hide the other year, or a note would describe the
+        # shown year as the missing one. Where the cap left a year bare, the first line with a figure
+        # for it is added, so the cap can run over by at most one line a year. A selection that
+        # already covers every year, as on any company with a line reported in both years, is
+        # unchanged.
+        for y in cols:
+            if not any(it[1].get(y) is not None and it[1][y].value is not None for it in kept):
+                kept.append(next(it for it in ordered if it[1].get(y) is not None and it[1][y].value is not None))
         omitted = max(0, len(ordered) - len(kept))
         p = items.period(section, latest)
         rows: list[list[Any]] = []
@@ -1615,14 +1624,19 @@ def limitations_of(items: Items, sector: str, peer_class: str | None = None,
     # (the row cap and the trim always leave a statement's reported figure), so the second wording
     # is the guard for any other caller.
     at_source = {r.section for r in items.rows if r.value is not None and r.fiscal_year in items.years[:BOUNDED_YEARS]}
+    # The same for quarters (review 83): P9 carries only the quarterly lines worth a trend
+    # (QUARTERLY_INTEREST), so a quarter the source reports on another line is not in `quarters`.
+    # A note that names quarterly results as absent says so of this dataset, not of the source.
+    quarters_at_source = any(q.section == "Income Statement" and q.value is not None for q in items.quarterly)
 
-    def said(note: str, missing: tuple[str, ...]) -> str:
-        if any(s in at_source for s in missing):
+    def said(note: str, missing: tuple[str, ...], quarters_too: bool = False) -> str:
+        if any(s in at_source for s in missing) or (quarters_too and quarters_at_source):
             return note.replace("the source holds no", "this dataset carries no", 1)
         return note
 
     if not sections:
-        out.append(said(QUARTERS_ONLY if quarterly else NO_STATEMENTS, tuple(STATEMENT_NAMES)))
+        out.append(said(QUARTERS_ONLY, tuple(STATEMENT_NAMES)) if quarterly
+                   else said(NO_STATEMENTS, tuple(STATEMENT_NAMES), quarters_too=True))
     if sections and "Cash Flow Statement" not in sections:
         held = [STATEMENT_NAMES[s] for s in sections]
         if quarterly and not has_income:
@@ -1638,7 +1652,8 @@ def limitations_of(items: Items, sector: str, peer_class: str | None = None,
                else "cannot be tested against annual earnings or cash." if quarterly
                else "cannot be tested against earnings or cash."))
     if sections and not has_income:
-        out.append(said(NO_ANNUAL_INCOME_STATEMENT if quarterly else NO_INCOME_STATEMENT, ("Income Statement",)))
+        out.append(said(NO_ANNUAL_INCOME_STATEMENT, ("Income Statement",)) if quarterly
+                   else said(NO_INCOME_STATEMENT, ("Income Statement",), quarters_too=True))
     elif sections and shown_years(statements, "Income Statement") < 2:
         p = items.period("Income Statement")
         if quarterly:
@@ -1683,13 +1698,15 @@ def encoded_length(ds: EvidenceDataset) -> int:
 
 
 def droppable(rows: list[list[Any]], i: int) -> bool:
-    """May the budget trim drop this row? Not a protected line, and not a statement's last row with a
-    reported number (review 82): a trim must never make a statement that has figures look empty."""
+    """May the budget trim drop this row? Not a protected line, and not the last row with a reported
+    number in any of the statement's year columns (reviews 82 and 83): a trim must never make a
+    statement, or one of its years, look empty while the source has a figure for it."""
     row = rows[i]
     if is_protected(row[0]):
         return False
-    if any(is_number(v) for v in row[1:]):
-        return any(j != i and any(is_number(v) for v in r[1:]) for j, r in enumerate(rows))
+    for col, v in enumerate(row[1:], 1):
+        if is_number(v) and not any(j != i and len(r) > col and is_number(r[col]) for j, r in enumerate(rows)):
+            return False
     return True
 
 

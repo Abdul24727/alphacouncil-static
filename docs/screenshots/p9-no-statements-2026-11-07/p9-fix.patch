@@ -1,5 +1,5 @@
 diff --git a/api/app/debate/pack.py b/api/app/debate/pack.py
-index 34abca7..1cef137 100644
+index 34abca7..b6510af 100644
 --- a/api/app/debate/pack.py
 +++ b/api/app/debate/pack.py
 @@ -15,6 +15,7 @@ from pydantic import BaseModel
@@ -20,7 +20,7 @@ index 34abca7..1cef137 100644
          for tag, value in self.data.items():
              text = json.dumps(value, ensure_ascii=False, default=str)
              budget = DATASET_CHARS_BY_TAG.get(tag, DATASET_CHARS)
-@@ -78,6 +82,53 @@ class Pack(BaseModel):
+@@ -78,6 +82,55 @@ class Pack(BaseModel):
          return "\n".join(lines)
 
 
@@ -63,9 +63,11 @@ index 34abca7..1cef137 100644
 +            " seat to [P9]'s statements, the seat says plainly that the annual statements are not"
 +            " available and argues from the datasets that are here." + rule
 +        )
++    # "It holds no" (review 83): the note describes this pack. The source may report quarters on lines
++    # P9 does not carry, so it must not read as a statement about the company's own reporting.
 +    return (
-+        f"NO FINANCIAL STATEMENTS IN THIS PACK ({why}): no income statement, balance sheet, cash"
-+        " flow statement or quarterly results for this company. Where a brief sends a seat to"
++        f"NO FINANCIAL STATEMENTS IN THIS PACK ({why}): it holds no income statement, balance sheet,"
++        " cash flow statement or quarterly results for this company. Where a brief sends a seat to"
 +        " [P9]'s statements, the seat says plainly that they are not available and argues from the"
 +        " datasets that are here." + rule
 +    )
@@ -75,10 +77,10 @@ index 34abca7..1cef137 100644
      if not isinstance(overview, dict) or not isinstance(overview.get("returns"), dict):
          return overview
 diff --git a/api/app/evidence.py b/api/app/evidence.py
-index 03d3a26..e07e1cd 100644
+index 03d3a26..476192b 100644
 --- a/api/app/evidence.py
 +++ b/api/app/evidence.py
-@@ -1440,8 +1440,16 @@ def bounded_statements(items: Items) -> list[BoundedStatement]:
+@@ -1440,9 +1440,26 @@ def bounded_statements(items: Items) -> list[BoundedStatement]:
              cell = next((c for c in item[1].values() if c is not None), None)
              return cell.label if cell else ""
 
@@ -95,9 +97,19 @@ index 03d3a26..e07e1cd 100644
 +        keep = [it for it in ordered if is_protected(labelled(it)) and numbered(it)]
 +        rest = [it for it in ordered if not (is_protected(labelled(it)) and numbered(it))]
          kept = keep[:limit] + rest[: max(0, limit - len(keep))]
++        # Every year this section has a figure for keeps one in what P9 shows (review 83): 30
++        # protected lines from one year must not hide the other year, or a note would describe the
++        # shown year as the missing one. Where the cap left a year bare, the first line with a figure
++        # for it is added, so the cap can run over by at most one line a year. A selection that
++        # already covers every year, as on any company with a line reported in both years, is
++        # unchanged.
++        for y in cols:
++            if not any(it[1].get(y) is not None and it[1][y].value is not None for it in kept):
++                kept.append(next(it for it in ordered if it[1].get(y) is not None and it[1][y].value is not None))
          omitted = max(0, len(ordered) - len(kept))
          p = items.period(section, latest)
-@@ -1484,11 +1492,22 @@ def bounded_quarters(items: Items) -> QuarterSeries | None:
+         rows: list[list[Any]] = []
+@@ -1484,11 +1501,22 @@ def bounded_quarters(items: Items) -> QuarterSeries | None:
          rows.append([label, *[by_end.get(e) for e in ends]])
      if not rows:
          return None
@@ -125,7 +137,7 @@ index 03d3a26..e07e1cd 100644
 
 
  # What a seat has to be told about a percentile it reads in P2. The pipeline's peer classes
-@@ -1509,25 +1528,138 @@ RANKING_NARROWED = (
+@@ -1509,25 +1537,144 @@ RANKING_NARROWED = (
  )
 
 
@@ -219,14 +231,19 @@ index 03d3a26..e07e1cd 100644
 +    # (the row cap and the trim always leave a statement's reported figure), so the second wording
 +    # is the guard for any other caller.
 +    at_source = {r.section for r in items.rows if r.value is not None and r.fiscal_year in items.years[:BOUNDED_YEARS]}
++    # The same for quarters (review 83): P9 carries only the quarterly lines worth a trend
++    # (QUARTERLY_INTEREST), so a quarter the source reports on another line is not in `quarters`.
++    # A note that names quarterly results as absent says so of this dataset, not of the source.
++    quarters_at_source = any(q.section == "Income Statement" and q.value is not None for q in items.quarterly)
 +
-+    def said(note: str, missing: tuple[str, ...]) -> str:
-+        if any(s in at_source for s in missing):
++    def said(note: str, missing: tuple[str, ...], quarters_too: bool = False) -> str:
++        if any(s in at_source for s in missing) or (quarters_too and quarters_at_source):
 +            return note.replace("the source holds no", "this dataset carries no", 1)
 +        return note
 +
 +    if not sections:
-+        out.append(said(QUARTERS_ONLY if quarterly else NO_STATEMENTS, tuple(STATEMENT_NAMES)))
++        out.append(said(QUARTERS_ONLY, tuple(STATEMENT_NAMES)) if quarterly
++                   else said(NO_STATEMENTS, tuple(STATEMENT_NAMES), quarters_too=True))
 +    if sections and "Cash Flow Statement" not in sections:
 +        held = [STATEMENT_NAMES[s] for s in sections]
 +        if quarterly and not has_income:
@@ -247,7 +264,8 @@ index 03d3a26..e07e1cd 100644
 +               else "cannot be tested against annual earnings or cash." if quarterly
 +               else "cannot be tested against earnings or cash."))
 +    if sections and not has_income:
-+        out.append(said(NO_ANNUAL_INCOME_STATEMENT if quarterly else NO_INCOME_STATEMENT, ("Income Statement",)))
++        out.append(said(NO_ANNUAL_INCOME_STATEMENT, ("Income Statement",)) if quarterly
++                   else said(NO_INCOME_STATEMENT, ("Income Statement",), quarters_too=True))
 +    elif sections and shown_years(statements, "Income Statement") < 2:
          p = items.period("Income Statement")
 -        out.append(
@@ -278,25 +296,27 @@ index 03d3a26..e07e1cd 100644
          out.append(f"The income statement covers a window ending {flow.period_end} while the"
                     f" balance sheet is struck at {position.period_end}: any ratio of a flow over"
                     " a position mixes the two dates.")
-@@ -1550,6 +1682,17 @@ def encoded_length(ds: EvidenceDataset) -> int:
+@@ -1550,6 +1697,19 @@ def encoded_length(ds: EvidenceDataset) -> int:
      return len(json.dumps(ds.model_dump(), ensure_ascii=False, default=str))
 
 
 +def droppable(rows: list[list[Any]], i: int) -> bool:
-+    """May the budget trim drop this row? Not a protected line, and not a statement's last row with a
-+    reported number (review 82): a trim must never make a statement that has figures look empty."""
++    """May the budget trim drop this row? Not a protected line, and not the last row with a reported
++    number in any of the statement's year columns (reviews 82 and 83): a trim must never make a
++    statement, or one of its years, look empty while the source has a figure for it."""
 +    row = rows[i]
 +    if is_protected(row[0]):
 +        return False
-+    if any(is_number(v) for v in row[1:]):
-+        return any(j != i and any(is_number(v) for v in r[1:]) for j, r in enumerate(rows))
++    for col, v in enumerate(row[1:], 1):
++        if is_number(v) and not any(j != i and len(r) > col and is_number(r[col]) for j, r in enumerate(rows)):
++            return False
 +    return True
 +
 +
  def fit(ds: EvidenceDataset, budget: int = DATASET_BUDGET) -> EvidenceDataset:
      """Bring the dataset inside its character budget, and record what that cost.
 
-@@ -1561,7 +1704,7 @@ def fit(ds: EvidenceDataset, budget: int = DATASET_BUDGET) -> EvidenceDataset:
+@@ -1561,7 +1721,7 @@ def fit(ds: EvidenceDataset, budget: int = DATASET_BUDGET) -> EvidenceDataset:
      while encoded_length(ds) > budget:
          longest = max(
              (s for s in ds.statements
@@ -305,7 +325,7 @@ index 03d3a26..e07e1cd 100644
              key=lambda s: len(json.dumps(s.model_dump(), ensure_ascii=False, default=str)),
              default=None,
          )
-@@ -1571,7 +1714,7 @@ def fit(ds: EvidenceDataset, budget: int = DATASET_BUDGET) -> EvidenceDataset:
+@@ -1571,7 +1731,7 @@ def fit(ds: EvidenceDataset, budget: int = DATASET_BUDGET) -> EvidenceDataset:
                  continue
              return ds  # nothing left that may be dropped; the caller's budget is too small
          for i in range(len(longest.rows) - 1, -1, -1):
@@ -314,7 +334,7 @@ index 03d3a26..e07e1cd 100644
                  longest.row_rules.pop(longest.rows[i][0], None)
                  longest.rows.pop(i)
                  longest.rows_omitted += 1
-@@ -1590,7 +1733,9 @@ def dataset_of(
+@@ -1590,7 +1750,9 @@ def dataset_of(
      price: float | None = None,
      budget: int = DATASET_BUDGET,
  ) -> EvidenceDataset:
@@ -325,7 +345,7 @@ index 03d3a26..e07e1cd 100644
          ticker=ticker_key,
          currency=currency,
          unit="millions of the reporting currency, except share counts (millions of shares) and"
-@@ -1604,9 +1749,23 @@ def dataset_of(
+@@ -1604,9 +1766,23 @@ def dataset_of(
                 " Where `aggregation` says the figures were reconstructed, `source_columns` names"
                 " the quarter-end columns added together.",
          sector=sector,
@@ -440,7 +460,7 @@ index ea02a57..52de94c 100644
 +    c.text("Net income was SAR 16,578 million [P9], so the payout is covered.")
 +    assert c.flags()["unverified"] == ["16,578"]
 diff --git a/api/tests/test_evidence.py b/api/tests/test_evidence.py
-index 439df97..052f859 100644
+index 439df97..0e093b7 100644
 --- a/api/tests/test_evidence.py
 +++ b/api/tests/test_evidence.py
 @@ -21,11 +21,16 @@ from app.evidence import (
@@ -460,7 +480,7 @@ index 439df97..052f859 100644
      load_items,
      period_aware,
      named_operands,
-@@ -302,6 +307,279 @@ def test_no_cash_flow_statement_is_stated_rather_than_left_to_be_noticed(conn):
+@@ -302,6 +307,320 @@ def test_no_cash_flow_statement_is_stated_rather_than_left_to_be_noticed(conn):
      ds = dataset(conn, "2222_TADAWUL")
      assert any("NO CASH FLOW STATEMENT" in lim for lim in ds.limitations)
      assert any("never against cash" in lim for lim in ds.limitations)
@@ -556,8 +576,8 @@ index 439df97..052f859 100644
 +ROOM_RULE = (" Every figure a seat quotes must be one these datasets show: a statement figure stated, estimated or"
 +             " recalled from memory is invented, whatever tag it carries.")
 +PACK_NONE = (
-+    "NO FINANCIAL STATEMENTS IN THIS PACK ([P9] holds no reported statement figure for this company): no income"
-+    " statement, balance sheet, cash flow statement or quarterly results for this company. Where a brief sends a"
++    "NO FINANCIAL STATEMENTS IN THIS PACK ([P9] holds no reported statement figure for this company): it holds no"
++    " income statement, balance sheet, cash flow statement or quarterly results for this company. Where a brief sends a"
 +    " seat to [P9]'s statements, the seat says plainly that they are not available and argues from the datasets"
 +    " that are here." + ROOM_RULE)
 +PACK_QUARTERS = (
@@ -612,6 +632,12 @@ index 439df97..052f859 100644
 +                                          value=5.0, item_index=30)]
 +CAPPED_DATED = [c.model_copy(update={"period_end": "2025-12"}) for c in CAPPED] + [
 +    Cell(label="Total Assets", section="Balance Sheet", fiscal_year=2025, value=900.0, period_end="2025-09")]
++YEAR_HIDDEN = [Cell(label="Net Income", section="Income Statement", fiscal_year=2024, value=float(i + 1), item_index=i,
++                    period_end="2024-12") for i in range(30)] + [
++    Cell(label="Zakat & Tax", section="Income Statement", fiscal_year=2025, value=555.0, item_index=30,
++         period_end="2025-12")]
++OTHER_QUARTER = Cell(label="Other operating gain", section="Income Statement", fiscal_year=2026, value=12.0,
++                     period="Q", period_end="2026-06")
 +LIM_CASH_FLOW_IS_ONLY = (
 +    "NO CASH FLOW STATEMENT: the source's pages for this company carry an income statement only. Operating cash"
 +    " flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and"
@@ -668,8 +694,21 @@ index 439df97..052f859 100644
 +        [("Income Statement", [["Net Income", None]] * 29 + [["Zakat & Tax", 5.0]]),
 +         ("Balance Sheet", [["Total Assets", 900.0]])],
 +        [["Net Income", 77.0]], NOTE_ANNUAL, [CASH_FLOW_COMMON, LIM_ONE_WINDOW_QUARTERS, LIM_DATES], None),
++    # Review 83, first reproduction: 30 numbered protected lines from 2024 filled the cap and hid the only
++    # 2025 figure, and the shown year was described as the missing one. Every year with a figure now keeps
++    # one, so both years are shown and no one-window note appears.
++    "two years, one hidden by the cap": (
++        Items(YEAR_HIDDEN, []),
++        [("Income Statement", [["Net Income", None, float(i + 1)] for i in range(30)] + [["Zakat & Tax", 555.0, None]])],
++        None, None, [LIM_CASH_FLOW_IS_ONLY], None),
++    # Review 83, second reproduction: a reported quarter on a line P9's quarterly series does not carry.
++    # P9 has no quarters, and says so of itself, not of the source.
++    "a quarter on a line P9 does not carry": (
++        Items([], [OTHER_QUARTER]), [], None, None,
++        [LIM_EMPTY.replace("the source holds no", "this dataset carries no", 1)], PACK_NONE),
 +}
-+NO_INCOME_SHOWN = ("empty", "quarterly only", "all-null rows", "balance sheet only", "balance sheet and quarters")
++NO_INCOME_SHOWN = ("empty", "quarterly only", "all-null rows", "balance sheet only", "balance sheet and quarters",
++                   "a quarter on a line P9 does not carry")
 +
 +
 +@pytest.mark.parametrize("case", list(P9_CASES))
@@ -705,6 +744,15 @@ index 439df97..052f859 100644
 +    for statement in ds.statements:
 +        if statement.section in at_source:
 +            assert has_figure(statement.rows), f"{statement.section} has a reported figure and must show one"
++        # Review 83: every year column shown carries a figure, so no year the source reports looks empty.
++        for col in range(1, len(statement.columns)):
++            assert any(len(r) > col and r[col] is not None for r in statement.rows), (statement.section, col)
++    # Review 83: quarterly results are never called absent at the source when the source reports one.
++    if any(q.value is not None for q in items.quarterly):
++        assert "the source holds no reported figure from an income statement, balance sheet or cash flow statement" \
++            " for this company, and no quarterly result" not in " ".join(ds.limitations)
++    if case == "two years, one hidden by the cap":
++        assert ds.statements[0].period_end == "2025-12" and ds.statements[0].columns == ["label", "2025", "2024"]
 +
 +    # The notes agree with each other and with what is shown, in every case.
 +    income_shown = any(s.section == "Income Statement" and has_figure(s.rows) for s in ds.statements)
@@ -715,6 +763,19 @@ index 439df97..052f859 100644
 +    said = " ".join(ds.limitations)
 +    if ds.quarters is None or not has_figure(ds.quarters.rows):
 +        assert "single quarters are the history" not in said and "quote each with the quarter" not in said
++
++
++def test_the_budget_trim_never_empties_a_year():
++    """Review 83: `fit` drops rows to meet the character budget, but never the last row with a figure in any
++    year column, so a year the source reports cannot be trimmed out of view."""
++    rows = [Cell(label="Net Income", section="Income Statement", fiscal_year=2024, value=10.0, item_index=0)] + [
++        Cell(label=f"Other item {i}", section="Income Statement", fiscal_year=2025, value=float(i), item_index=i)
++        for i in range(1, 25)]
++    ds = dataset_of(Items(rows, []), ticker_key="X", sector="unknown", currency="SAR", budget=2_000)
++    s = ds.statements[0]
++    assert s.rows_omitted > 0, "the budget forced a trim"
++    for col in range(1, len(s.columns)):
++        assert any(r[col] is not None for r in s.rows), s.columns[col]
 +
 +
 +def test_limitations_never_say_the_source_lacks_a_statement_it_has():

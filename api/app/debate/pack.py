@@ -121,9 +121,11 @@ def no_statements_note(data: dict[str, Any]) -> str | None:
             " seat to [P9]'s statements, the seat says plainly that the annual statements are not"
             " available and argues from the datasets that are here." + rule
         )
+    # "It holds no" (review 83): the note describes this pack. The source may report quarters on lines
+    # P9 does not carry, so it must not read as a statement about the company's own reporting.
     return (
-        f"NO FINANCIAL STATEMENTS IN THIS PACK ({why}): no income statement, balance sheet, cash"
-        " flow statement or quarterly results for this company. Where a brief sends a seat to"
+        f"NO FINANCIAL STATEMENTS IN THIS PACK ({why}): it holds no income statement, balance sheet,"
+        " cash flow statement or quarterly results for this company. Where a brief sends a seat to"
         " [P9]'s statements, the seat says plainly that they are not available and argues from the"
         " datasets that are here." + rule
     )

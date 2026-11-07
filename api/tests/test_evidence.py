@@ -399,8 +399,8 @@ NOTE_NO_ANNUAL = ("each column is one quarter as reported, standalone and not cu
 ROOM_RULE = (" Every figure a seat quotes must be one these datasets show: a statement figure stated, estimated or"
              " recalled from memory is invented, whatever tag it carries.")
 PACK_NONE = (
-    "NO FINANCIAL STATEMENTS IN THIS PACK ([P9] holds no reported statement figure for this company): no income"
-    " statement, balance sheet, cash flow statement or quarterly results for this company. Where a brief sends a"
+    "NO FINANCIAL STATEMENTS IN THIS PACK ([P9] holds no reported statement figure for this company): it holds no"
+    " income statement, balance sheet, cash flow statement or quarterly results for this company. Where a brief sends a"
     " seat to [P9]'s statements, the seat says plainly that they are not available and argues from the datasets"
     " that are here." + ROOM_RULE)
 PACK_QUARTERS = (
@@ -455,6 +455,12 @@ BEYOND_CAP = [Cell(label="Net Income", section="Income Statement", fiscal_year=2
                                           value=5.0, item_index=30)]
 CAPPED_DATED = [c.model_copy(update={"period_end": "2025-12"}) for c in CAPPED] + [
     Cell(label="Total Assets", section="Balance Sheet", fiscal_year=2025, value=900.0, period_end="2025-09")]
+YEAR_HIDDEN = [Cell(label="Net Income", section="Income Statement", fiscal_year=2024, value=float(i + 1), item_index=i,
+                    period_end="2024-12") for i in range(30)] + [
+    Cell(label="Zakat & Tax", section="Income Statement", fiscal_year=2025, value=555.0, item_index=30,
+         period_end="2025-12")]
+OTHER_QUARTER = Cell(label="Other operating gain", section="Income Statement", fiscal_year=2026, value=12.0,
+                     period="Q", period_end="2026-06")
 LIM_CASH_FLOW_IS_ONLY = (
     "NO CASH FLOW STATEMENT: the source's pages for this company carry an income statement only. Operating cash"
     " flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and"
@@ -511,8 +517,21 @@ P9_CASES = {
         [("Income Statement", [["Net Income", None]] * 29 + [["Zakat & Tax", 5.0]]),
          ("Balance Sheet", [["Total Assets", 900.0]])],
         [["Net Income", 77.0]], NOTE_ANNUAL, [CASH_FLOW_COMMON, LIM_ONE_WINDOW_QUARTERS, LIM_DATES], None),
+    # Review 83, first reproduction: 30 numbered protected lines from 2024 filled the cap and hid the only
+    # 2025 figure, and the shown year was described as the missing one. Every year with a figure now keeps
+    # one, so both years are shown and no one-window note appears.
+    "two years, one hidden by the cap": (
+        Items(YEAR_HIDDEN, []),
+        [("Income Statement", [["Net Income", None, float(i + 1)] for i in range(30)] + [["Zakat & Tax", 555.0, None]])],
+        None, None, [LIM_CASH_FLOW_IS_ONLY], None),
+    # Review 83, second reproduction: a reported quarter on a line P9's quarterly series does not carry.
+    # P9 has no quarters, and says so of itself, not of the source.
+    "a quarter on a line P9 does not carry": (
+        Items([], [OTHER_QUARTER]), [], None, None,
+        [LIM_EMPTY.replace("the source holds no", "this dataset carries no", 1)], PACK_NONE),
 }
-NO_INCOME_SHOWN = ("empty", "quarterly only", "all-null rows", "balance sheet only", "balance sheet and quarters")
+NO_INCOME_SHOWN = ("empty", "quarterly only", "all-null rows", "balance sheet only", "balance sheet and quarters",
+                   "a quarter on a line P9 does not carry")
 
 
 @pytest.mark.parametrize("case", list(P9_CASES))
@@ -548,6 +567,15 @@ def test_p9_says_exactly_what_it_holds(case):
     for statement in ds.statements:
         if statement.section in at_source:
             assert has_figure(statement.rows), f"{statement.section} has a reported figure and must show one"
+        # Review 83: every year column shown carries a figure, so no year the source reports looks empty.
+        for col in range(1, len(statement.columns)):
+            assert any(len(r) > col and r[col] is not None for r in statement.rows), (statement.section, col)
+    # Review 83: quarterly results are never called absent at the source when the source reports one.
+    if any(q.value is not None for q in items.quarterly):
+        assert "the source holds no reported figure from an income statement, balance sheet or cash flow statement" \
+            " for this company, and no quarterly result" not in " ".join(ds.limitations)
+    if case == "two years, one hidden by the cap":
+        assert ds.statements[0].period_end == "2025-12" and ds.statements[0].columns == ["label", "2025", "2024"]
 
     # The notes agree with each other and with what is shown, in every case.
     income_shown = any(s.section == "Income Statement" and has_figure(s.rows) for s in ds.statements)
@@ -558,6 +586,19 @@ def test_p9_says_exactly_what_it_holds(case):
     said = " ".join(ds.limitations)
     if ds.quarters is None or not has_figure(ds.quarters.rows):
         assert "single quarters are the history" not in said and "quote each with the quarter" not in said
+
+
+def test_the_budget_trim_never_empties_a_year():
+    """Review 83: `fit` drops rows to meet the character budget, but never the last row with a figure in any
+    year column, so a year the source reports cannot be trimmed out of view."""
+    rows = [Cell(label="Net Income", section="Income Statement", fiscal_year=2024, value=10.0, item_index=0)] + [
+        Cell(label=f"Other item {i}", section="Income Statement", fiscal_year=2025, value=float(i), item_index=i)
+        for i in range(1, 25)]
+    ds = dataset_of(Items(rows, []), ticker_key="X", sector="unknown", currency="SAR", budget=2_000)
+    s = ds.statements[0]
+    assert s.rows_omitted > 0, "the budget forced a trim"
+    for col in range(1, len(s.columns)):
+        assert any(r[col] is not None for r in s.rows), s.columns[col]
 
 
 def test_limitations_never_say_the_source_lacks_a_statement_it_has():

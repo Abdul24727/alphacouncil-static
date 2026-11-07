@@ -113,6 +113,19 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
        (tested directly).
    - **The date warning (review 82):** "The income statement covers a window ending … while the balance sheet is
      struck at …" now appears only when both statements are shown with a number.
+   - **Every year the source reports keeps a figure (review 83):**
+     - **The cap:** if the row cap leaves a year column with no figure, the first line with a figure for that year
+       is added, so the cap can run over by at most one line a year. A selection that already covers every year is
+       unchanged.
+     - **The trim:** `fit` never drops the last row with a figure in any year column (`droppable`).
+     - **The effect:** the years shown match the years the source reports (for the loaded years). The one-window note
+       cannot describe the shown year as the missing one, and `period_end` describes a column that shows figures.
+   - **Quarters at the source (review 83):**
+     - **The gap:** P9 carries only the quarterly lines worth a trend (`QUARTERLY_INTEREST`), so a quarter the source
+       reports on another line is not in `quarters`.
+     - **The wording:** a note that names quarterly results as absent then says "this dataset carries no …", not
+       "the source holds no …".
+     - **The series itself:** not widened.
    - **One window and no quarters (review 81):** "ONE INCOME-STATEMENT WINDOW: … is available and the prior year's
      income statement is not. Year-on-year revenue or earnings cannot be compared from this dataset, and it holds no
      single quarters: this window is the only income history there is." A company with quarters keeps the old
@@ -125,8 +138,8 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
 2. **`api/app/debate/pack.py`, `no_statements_note`, added to `Pack.prompt()`:**
    - **When:** the pack holds no reported statement figure. That covers no P9, a P9 error, or statements with no
      number.
-   - **What every seat reads, right after the header:** "NO FINANCIAL STATEMENTS IN THIS PACK (<why>): no income
-     statement, balance sheet, cash flow statement or quarterly results for this company. Where a brief sends a
+   - **What every seat reads, right after the header:** "NO FINANCIAL STATEMENTS IN THIS PACK (<why>): it holds no
+     income statement, balance sheet, cash flow statement or quarterly results for this company. Where a brief sends a
      seat to [P9]'s statements, the seat says plainly that they are not available and argues from the datasets that
      are here. Every figure a seat quotes must be one these datasets show: a statement figure stated, estimated or
      recalled from memory is invented, whatever tag it carries."
@@ -147,7 +160,7 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
 
 ## The evidence
 
-**After** (`p9-after.txt`, from `p9-after.py`, run on the fixed code), every case reviews 79 to 82 name:
+**After** (`p9-after.txt`, from `p9-after.py`, run on the fixed code), every case reviews 79 to 83 name:
 1. **Empty P9 (group A):** the NO FINANCIAL STATEMENTS note and the pack note, with 0 of 7 calculations valued.
 2. **Quarterly-only P9 (group B):**
    - The quarter stays (`[['Net Income', 77.0]]`), and its note says there is no annual figure, not that one is above.
@@ -173,22 +186,37 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
      - **The setup:** the capped income statement dated 2025-12, a balance sheet struck 2025-09, and quarters.
      - **The result:** both statements are shown with a number, so the date warning is true and appears, with no
        NO ANNUAL INCOME STATEMENT.
+   - **Review 83's two reproductions:** `p9-review83-repro.py`, run before the fix (`p9-review83-before.txt`) and
+     after it (`p9-review83-after.txt`).
+     - **A 2025 figure hidden behind 30 lines from 2024:**
+       - **Before:** column 2025 showed 0 figures under a 2025-12 `period_end`, and the note said "the prior year's
+         income statement is not".
+       - **After:** both years show figures, `rows_omitted` is 0, and there is no one-window note.
+     - **A quarter on a line P9 does not carry:**
+       - **Before:** "the source holds no … quarterly result".
+       - **After:** "this dataset carries no … quarterly result".
 6. **No P9, or a P9 error:** the pack note is line 2, and the data starts at line 3.
 7. **4330's pack with beta's P9 today, and the five comparison packs:** each carries the note.
 
 **Tests** (`tests.txt`):
-- **`test_p9_says_exactly_what_it_holds`** (reviews 80 to 82), across twelve cases:
+- **`test_p9_says_exactly_what_it_holds`** (reviews 80 to 83), across fourteen cases:
   - **The cases:**
     - empty, quarterly only, all-null rows, balance sheet only, balance sheet and quarters;
     - normal over two years, normal with quarters, one year with no quarters, one year with quarters;
-    - the capped figure now shown, a figure the cap omits, and capped and dated with a balance sheet and quarters.
+    - the capped figure now shown, a figure the cap omits, and capped and dated with a balance sheet and quarters;
+    - two years with one hidden by the cap, and a quarter on a line P9 does not carry (review 83).
   - **What each checks:**
     - the statements and quarter rows kept;
     - the quarters' note, the whole list of limitations and the pack note, all word for word;
     - that the quarters' note and the pack note agree with each other and with what is shown;
     - that no quarters are claimed where none are shown;
     - that "the source holds no X" never appears where the source has a number for X;
-    - that a section with a figure at the source shows one.
+    - that a section with a figure at the source shows one;
+    - that every year column shown carries a figure;
+    - that the source is never said to have no quarterly result when it reports one.
+- **`test_the_budget_trim_never_empties_a_year`** (review 83):
+  - **The setup:** a tight budget trims 23 of 24 lines.
+  - **What it checks:** the trim stops at the last line with a 2025 figure, which the earlier rule would have dropped.
 - **`test_limitations_never_say_the_source_lacks_a_statement_it_has`** (review 82):
   - **The setup:** `limitations_of` is called directly with statements that hide the source's income statement.
   - **What it checks:** the wording becomes "this dataset carries no …", and the date warning is withheld. Through
@@ -210,16 +238,17 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
   - `test_the_comparison_packs_now_carry_the_no_statements_note`: the five frozen packs;
   - `test_an_invented_statement_figure_on_a_pack_without_statements_is_flagged`: the audit's "SAR 16,578 million",
     cited to [P9] on a no-statements pack, is listed as unverified.
-- **`test_evidence.py`, `test_debate.py` and `test_copilot.py`:** 150 passed (129 before).
-- **The whole API suite:** 617 passed, 10 skipped (596 before).
-- **Production's files:** the four files P9 changes have the same git blob at `73d7140` and at production's
-  `026699b906` (`tests.txt`), so the patch applies to production as it stands.
+- **`test_evidence.py`, `test_debate.py` and `test_copilot.py`:** 153 passed (129 before).
+- **The whole API suite:** 620 passed, 10 skipped (596 before).
+- **Production's files:**
+  - **The baseline:** the four files P9 changes have the same git blob at `73d7140` and at production's `026699b906`.
+  - **The patch on production:** `p9-fix.patch`, applied to a fresh copy of production's four files (from
+    `git archive`), gives exactly `rebuild`'s blobs (`tests.txt`).
 - **ruff:** in each changed file, the same findings at `73d7140` (before any P9 change) and now. All are
   pre-existing.
 - **The diffs:**
   - `p9-fix.patch` is the whole change since `73d7140`.
-  - `p9-fix-review-79.patch`, `p9-fix-review-80.patch`, `p9-fix-review-81.patch` and `p9-fix-review-82.patch` are
-    each review's part.
+  - `p9-fix-review-79.patch` to `p9-fix-review-83.patch` are each review's part.
 
 **What this does not prove:** that a model now writes no invented statement figure. The tests show what the
 application supplies and says. They do not show what a model does with it.

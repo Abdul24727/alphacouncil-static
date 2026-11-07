@@ -1,0 +1,12 @@
+1. 30 numbered protected income-statement lines from 2024, and one unprotected 2025 figure (Zakat & Tax 555)
+   column 2025: 0 figures shown
+   column 2024: 30 figures shown
+   rows shown 30, rows_omitted 1, period_end 2025-12
+   Zakat & Tax 555 shown: False
+   LIMITATION: NO CASH FLOW STATEMENT: the source's pages for this company carry an income statement only. Operating cash flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and dividend cover can be tested against earnings only, never against cash.
+   LIMITATION: ONE INCOME-STATEMENT WINDOW: one window is available and the prior year's income statement is not. Year-on-year revenue or earnings cannot be compared from this dataset, and it holds no single quarters: this window is the only income history there is.
+
+2. no annual statement, one reported quarter on a line outside the selected quarterly series
+   quarters in P9: None
+   LIMITATION: NO FINANCIAL STATEMENTS: the source holds no reported figure from an income statement, balance sheet or cash flow statement for this company, and no quarterly result, so `statements` and `quarters` carry no number and no calculation here has a value. There is no reported revenue, earnings, asset, liability, equity, cash flow, share count or quarterly result for this company in this dataset. Do not state, estimate or recall one, and do not cite [P9] for one: say that the statements are not available.
+   claims the SOURCE has no quarterly result: True

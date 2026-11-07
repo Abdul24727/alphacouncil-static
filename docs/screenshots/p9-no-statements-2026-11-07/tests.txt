@@ -1,4 +1,4 @@
-$ .venv/Scripts/python.exe -m pytest -v <the P9 tests: the twelve-case table, the source-wording guard, and the others>
+$ .venv/Scripts/python.exe -m pytest -v <the P9 tests: the fourteen-case table, the source-wording guard, the trim test, and the others>
 tests/test_evidence.py::test_no_cash_flow_statement_is_stated_rather_than_left_to_be_noticed PASSED
 tests/test_evidence.py::test_a_company_with_no_statements_is_told_so_and_supplied_no_figure PASSED
 tests/test_evidence.py::test_quarters_alone_stay_reported_and_are_not_called_missing PASSED
@@ -16,8 +16,11 @@ tests/test_evidence.py::test_p9_says_exactly_what_it_holds[one year, with quarte
 tests/test_evidence.py::test_p9_says_exactly_what_it_holds[capped: the figure behind null protected lines is shown] PASSED
 tests/test_evidence.py::test_p9_says_exactly_what_it_holds[capped: a figure beyond the cap] PASSED
 tests/test_evidence.py::test_p9_says_exactly_what_it_holds[capped, dated, with a balance sheet and quarters] PASSED
+tests/test_evidence.py::test_p9_says_exactly_what_it_holds[two years, one hidden by the cap] PASSED
+tests/test_evidence.py::test_p9_says_exactly_what_it_holds[a quarter on a line P9 does not carry] PASSED
+tests/test_evidence.py::test_the_budget_trim_never_empties_a_year PASSED
 tests/test_evidence.py::test_limitations_never_say_the_source_lacks_a_statement_it_has PASSED
-====================== 18 passed, 68 deselected in 0.53s ======================
+====================== 21 passed, 68 deselected in 0.88s ======================
 [exit 0]
 tests/test_debate.py::test_a_pack_without_statements_tells_the_room_so PASSED
 tests/test_debate.py::test_a_pack_whose_only_figures_are_quarters_keeps_them PASSED
@@ -27,10 +30,10 @@ tests/test_debate.py::test_an_invented_statement_figure_on_a_pack_without_statem
 [exit 0]
 
 $ .venv/Scripts/python.exe -m pytest -q tests/test_evidence.py tests/test_debate.py tests/test_copilot.py
-150 passed in 26.42s
+153 passed in 25.78s
 
 $ .venv/Scripts/python.exe -m pytest -q   (the whole API suite)
-617 passed, 10 skipped in 77.89s (0:01:17)
+620 passed, 10 skipped in 78.02s (0:01:18)
 
 $ ruff check, each changed file: 73d7140 (before any P9 change) against the working tree: findings
   app/evidence.py  before=10 after=10
@@ -43,3 +46,10 @@ $ git rev-parse <commit>:<file>  (the four files P9 changes: production 026699b9
   api/app/debate/pack.py  73d7140=34abca7fddcce9737c6072b71626010adc18226e  026699b906=34abca7fddcce9737c6072b71626010adc18226e  SAME
   api/tests/test_evidence.py  73d7140=439df97d59eb29774afc6773fc9e6cd324404262  026699b906=439df97d59eb29774afc6773fc9e6cd324404262  SAME
   api/tests/test_debate.py  73d7140=ea02a575be6a7db68f941ce45b682eeafa791788  026699b906=ea02a575be6a7db68f941ce45b682eeafa791788  SAME
+
+p9-fix.patch applied with `git apply` to a fresh copy of production 026699b906's four files (git archive);
+git apply wrote CRLF there (Windows, outside a repository), so the bytes are compared after CRLF -> LF:
+  api/app/evidence.py  patched-production blob 476192b1af125d74085977129932ad907ec93e36  rebuild working-tree blob 476192b1af125d74085977129932ad907ec93e36  SAME
+  api/app/debate/pack.py  patched-production blob b6510afd00e61d9bd4f0bb444eb7aa3c66b12932  rebuild working-tree blob b6510afd00e61d9bd4f0bb444eb7aa3c66b12932  SAME
+  api/tests/test_evidence.py  patched-production blob 0e093b78ab7388439c5d6df44b01c4a765acc5d8  rebuild working-tree blob 0e093b78ab7388439c5d6df44b01c4a765acc5d8  SAME
+  api/tests/test_debate.py  patched-production blob 52de94c357552417d7abc0a6f5dc446f5935bfe1  rebuild working-tree blob 52de94c357552417d7abc0a6f5dc446f5935bfe1  SAME
