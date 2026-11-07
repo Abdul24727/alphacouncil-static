@@ -21,6 +21,7 @@ from app.evidence import (
     DISPUTED_PEER_NOTE,
     EPS_BASES_SUPPORTED,
     EQUITY_COMMON,
+    NO_STATEMENTS,
     Items,
     bounded_statements,
     calculations,
@@ -302,6 +303,42 @@ def test_no_cash_flow_statement_is_stated_rather_than_left_to_be_noticed(conn):
     ds = dataset(conn, "2222_TADAWUL")
     assert any("NO CASH FLOW STATEMENT" in lim for lim in ds.limitations)
     assert any("never against cash" in lim for lim in ds.limitations)
+    # The common case (627 of 714 companies on 2026-11-07) reads exactly as it did before P9's fix.
+    assert (
+        "NO CASH FLOW STATEMENT: the source's pages for this company carry an income"
+        " statement and a balance sheet only. Operating cash flow, capital expenditure, free"
+        " cash flow and cash conversion cannot be computed from anything here, and dividend"
+        " cover can be tested against earnings only, never against cash."
+    ) in ds.limitations
+
+
+def test_a_company_with_no_statements_is_told_so_and_supplied_no_figure():
+    """P9 (the 2026-11-07 comparison audit): for a company the source holds no statements for,
+    this dataset used to say it carried "an income statement and a balance sheet" and that "one
+    window is available", which sent a seat looking for figures that do not exist. 50 of 714
+    companies on beta had no statement rows that day (4330 among them)."""
+    ds = dataset_of(Items([], []), ticker_key="4330_TADAWUL", sector="unknown", currency="SAR")
+    assert ds.statements == [] and ds.quarters is None
+    assert ds.calculations and all(c.value is None and c.missing for c in ds.calculations)
+    assert all(not c.operands for c in ds.calculations), "no operand may carry a statement figure"
+    assert ds.limitations[0] == NO_STATEMENTS
+    said = " ".join(ds.limitations)
+    for false_claim in ("ONE INCOME-STATEMENT WINDOW", "carry an income statement", "single quarters",
+                        "tested against earnings"):
+        assert false_claim not in said, false_claim
+
+
+def test_a_balance_sheet_alone_is_not_described_as_an_income_statement(conn):
+    """One company on 2026-11-07 (232) had a balance sheet and no income statement, and was told it had
+    both, and one income-statement window."""
+    items = load_items(conn, "2222_TADAWUL", years=2)
+    only = Items([r for r in items.rows if r.section == "Balance Sheet"], [])
+    ds = dataset_of(only, ticker_key="232_TADAWUL", sector="non_bank", currency="SAR")
+    said = " ".join(ds.limitations)
+    assert "NO INCOME STATEMENT" in said
+    assert "carry a balance sheet only" in said and "cannot be tested against earnings or cash" in said
+    assert "ONE INCOME-STATEMENT WINDOW" not in said and "an income statement and" not in said
+    assert NO_STATEMENTS not in ds.limitations
 
 
 # --- derived figures, and the ones that are withheld -------------------------------------------

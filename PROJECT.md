@@ -335,6 +335,17 @@ Older entries: `changelog-archive.md`.
       - **`RESULT.md`:** it now separates the invented figures (22 of 23 are P9 data) from the invented statements
         (notes and peer comparisons too).
       - **The new totals:** 209 against 55 wrong claims, and 47 against 2 inventions.
+    - **P9 FIXED ON `rebuild` 2026-11-07, not released** (review 78's step; `docs/p9-no-statements-2026-11-07.md`):
+      - **The live reproduction:** 50 of 714 companies have no statements in P9, and one has only a balance sheet.
+        P9 told every one of them it had "an income statement and a balance sheet" and "one window". The
+        comparison's packs had no P9 at all, and the briefs send five seats to [P9]'s statements.
+      - **The fix:** P9 now says "NO FINANCIAL STATEMENTS" (or "NO INCOME STATEMENT") and nothing false. The pack
+        tells every seat, after the header, whenever it holds no statements. Companies with statements read as
+        before.
+      - **The tests:** 5 new and 1 extended. The three named files pass 134, and the suite 601 passed, 10 skipped.
+        Lint is unchanged.
+      - **What the tests cannot show:** how a model behaves; that needs a paid run (the owner's go-ahead).
+      - **A release** needs a fix-only branch and the owner's go-ahead.
     - **PRODUCTION RELEASED 2026-11-07 on the owner's go-ahead** ("Yes, deploy to production"): alphacouncil.tech
       runs `026699b906ea3a513b4f2dbfc37672fa68ee9d42`, the same as beta
       (`docs/release-production-sector-standing-2026-11-07.md`).

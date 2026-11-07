@@ -69,6 +69,9 @@ class Pack(BaseModel):
 
     def prompt(self) -> str:
         lines = [self.header]
+        note = no_statements_note(self.data)
+        if note:
+            lines.append(note)
         for tag, value in self.data.items():
             text = json.dumps(value, ensure_ascii=False, default=str)
             budget = DATASET_CHARS_BY_TAG.get(tag, DATASET_CHARS)
@@ -76,6 +79,33 @@ class Pack(BaseModel):
                 text = text[:budget] + " …[truncated]"
             lines.append(f"[{tag}] {self.sources[tag].title_en}: {text}")
         return "\n".join(lines)
+
+
+def no_statements_note(data: dict[str, Any]) -> str | None:
+    """Said once, beside the header, when the pack holds no financial statements.
+
+    Five of the six seats' briefs send them to [P9]'s statements. In the 2026-11-07 comparison the
+    packs had no P9, nothing said so, and 22 of the room's 23 invented figures were statement data
+    the briefs place in P9 (`docs/eval/presenter-comparison/audit.md` §5). A live pack has a P9, but
+    for 50 of 714 companies on 2026-11-07 it holds no statements. In each of these cases the room is
+    told plainly, here, rather than left to notice an absence."""
+    p9 = data.get("P9")
+    if p9 is None:
+        why = "the pack has no [P9]"
+    elif isinstance(p9, dict) and "error" in p9:
+        why = "[P9] holds an error, not statements"
+    elif isinstance(p9, dict) and not p9.get("statements"):
+        why = "[P9] holds none for this company"
+    else:
+        return None
+    return (
+        f"NO FINANCIAL STATEMENTS IN THIS PACK ({why}): no income statement, balance sheet, cash"
+        " flow statement or quarterly results for this company. Where a brief sends a seat to"
+        " [P9]'s statements, the seat says plainly that they are not available and argues from the"
+        " datasets that are here. Every figure a seat quotes must be one these datasets show: a"
+        " statement figure stated, estimated or recalled from memory is invented, whatever tag it"
+        " carries."
+    )
 
 
 def _percent_returns(overview: Any) -> Any:

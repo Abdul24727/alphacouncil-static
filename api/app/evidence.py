@@ -1509,17 +1509,45 @@ RANKING_NARROWED = (
 )
 
 
+# P9 for a company the source holds no statements for. Before this, such a company was told it had
+# "an income statement and a balance sheet" and "one window", which sent a seat whose brief says
+# "read [P9]'s income statement" looking for figures that do not exist (P9 in the 2026-11-07
+# comparison audit). 50 of 714 companies on 2026-11-07, read through beta's /evidence.
+NO_STATEMENTS = (
+    "NO FINANCIAL STATEMENTS: the source holds no income statement, balance sheet or cash flow"
+    " statement for this company, so `statements` and `quarters` are empty and no calculation"
+    " here has a value. There is no reported revenue, earnings, asset, liability, equity, cash"
+    " flow, share count or quarterly result for this company in this dataset. Do not state,"
+    " estimate or recall one, and do not cite [P9] for one: say that the statements are not"
+    " available.")
+
+STATEMENT_NAMES = {"Income Statement": "an income statement", "Balance Sheet": "a balance sheet",
+                   "Cash Flow Statement": "a cash flow statement"}
+
+
 def limitations_of(items: Items, sector: str, peer_class: str | None = None) -> list[str]:
     """What this evidence cannot answer. Said plainly, because a seat that does not know a gap
-    exists will argue around it."""
+    exists will argue around it. Each statement the source does not hold is named as missing, and
+    none is described as present unless its rows are."""
     out: list[str] = []
-    if "Cash Flow Statement" not in set(items.sections()):
+    sections = [s for s in items.sections() if s in STATEMENT_NAMES]
+    if not sections:
+        out.append(NO_STATEMENTS)
+    if sections and "Cash Flow Statement" not in sections:
+        has_income = "Income Statement" in sections
         out.append(
-            "NO CASH FLOW STATEMENT: the source's pages for this company carry an income"
-            " statement and a balance sheet only. Operating cash flow, capital expenditure, free"
-            " cash flow and cash conversion cannot be computed from anything here, and dividend"
-            " cover can be tested against earnings only, never against cash.")
-    if len({r.fiscal_year for r in items.rows if r.section == "Income Statement"}) < 2:
+            "NO CASH FLOW STATEMENT: the source's pages for this company carry "
+            + " and ".join(STATEMENT_NAMES[s] for s in sections) + " only. Operating cash flow,"
+            " capital expenditure, free cash flow and cash conversion cannot be computed from"
+            " anything here, and dividend cover "
+            + ("can be tested against earnings only, never against cash." if has_income
+               else "cannot be tested against earnings or cash."))
+    if sections and "Income Statement" not in sections:
+        out.append(
+            "NO INCOME STATEMENT: the source holds no income statement for this company. Its"
+            " revenue, earnings, margins and earnings per share are not in this dataset; do not"
+            " state, estimate or recall them.")
+    elif sections and len({r.fiscal_year for r in items.rows if r.section == "Income Statement"}) < 2:
         p = items.period("Income Statement")
         out.append(
             f"ONE INCOME-STATEMENT WINDOW: {window_label(p) or 'one window'} is available and the"

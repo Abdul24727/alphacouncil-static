@@ -900,3 +900,68 @@ def test_the_room_reads_the_sector_percentile_as_a_standing_where_higher_is_bett
     header = pack.header_of(t, "2026-11-07 00:00 UTC")
     assert "HIGHER IS BETTER for every metric" in header and "a high standing means a LOW value" in header
     assert {d[0]: d[3] for d in pack.DATASETS}["P2"].endswith("sector standing where the peer group supports one")
+
+
+def _p9_pack(p9):
+    """A pack with a quote and the given P9 (or none), for the no-statements note."""
+    from app.debate.pack import Pack, Source
+
+    data = {"P1": {"quote": {"last_price": 26.16}}}
+    if p9 is not None:
+        data["P9"] = p9
+    return Pack(ticker_key="4330_TADAWUL", slug="4330", header="DATA PACK.", fetched_at="2026-11-07 00:00 UTC",
+                data=data, sources={t: Source(title_en=t, title_ar=t, ok=True) for t in data})
+
+
+def test_a_pack_without_statements_tells_the_room_so():
+    """P9 (the 2026-11-07 comparison audit): five of six seats are sent to [P9]'s statements by their
+    briefs. The comparison's packs had no P9, nothing said so, and 22 of the room's 23 invented figures
+    were statement data. Live, 50 of 714 companies have a P9 with no statements. Each case is now said
+    once, beside the header; a pack with statements gets no note."""
+    from app.evidence import Items, dataset_of
+
+    # The no-statements fixture: what /evidence returns for a company with no statement rows.
+    empty = dataset_of(Items([], []), ticker_key="4330_TADAWUL", sector="unknown", currency="SAR").model_dump()
+    cases = {
+        "the pack has no [P9]": None,
+        "[P9] holds an error, not statements": {"error": "Market data unavailable"},
+        "[P9] holds none for this company": empty,
+    }
+    for why, p9 in cases.items():
+        prompt = _p9_pack(p9).prompt()
+        assert f"NO FINANCIAL STATEMENTS IN THIS PACK ({why})" in prompt, why
+        assert prompt.index("NO FINANCIAL STATEMENTS IN THIS PACK") < prompt.index("[P1]"), "said before the data"
+        assert "recalled from memory is invented" in prompt
+
+    with_statements = {**empty, "limitations": [],
+                       "statements": [{"section": "Income Statement", "rows": [["Revenue", 100.0]]}]}
+    assert "NO FINANCIAL STATEMENTS" not in _p9_pack(with_statements).prompt()
+
+
+def test_the_comparison_packs_now_carry_the_no_statements_note():
+    """The five frozen packs of the 2026-11-07 comparison hold P1 to P8 only. Their prompt now says so."""
+    from app.debate.pack import Pack
+
+    packs = sorted((Path(__file__).resolve().parents[2] / "docs" / "eval" / "packs").glob("*.json"))
+    if not packs:
+        pytest.skip("the frozen eval packs are not in this checkout")
+    for path in packs:
+        pack = Pack.model_validate_json(path.read_text(encoding="utf-8"))
+        assert "P9" not in pack.data, path.name
+        assert "NO FINANCIAL STATEMENTS IN THIS PACK (the pack has no [P9])" in pack.prompt(), path.name
+
+
+def test_an_invented_statement_figure_on_a_pack_without_statements_is_flagged():
+    """The audit's D2 example: Buffett gave 'SAR 16,578 million' for a figure the pack does not hold. With no
+    statements in the pack, such a figure is in no dataset, so the turn's checks list it as unverified and the
+    screen marks it. Deterministic: this shows what the application does with the figure, not what a model
+    writes - that needs a paid session."""
+    from app.debate.checks import Checked
+    from app.evidence import Items, dataset_of
+
+    empty = dataset_of(Items([], []), ticker_key="2010_TADAWUL", sector="unknown", currency="SAR").model_dump()
+    pack = _p9_pack(empty)
+    assert "16578" not in pack.seen() and "16,578" not in pack.seen()
+    c = Checked(pack.numbers(), pack.seen())
+    c.text("Net income was SAR 16,578 million [P9], so the payout is covered.")
+    assert c.flags()["unverified"] == ["16,578"]

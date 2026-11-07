@@ -1,0 +1,10 @@
+P9 (/v1/tickers/<slug>/evidence) on beta for every ticker, read 2026-11-07 through the tunnel, GET only (p9-sweep.py).
+tickers read: 714 | non-200: 0
+statement sections: {'Income Statement + Balance Sheet': 627, '(none at all)': 50, 'Income Statement + Balance Sheet + (none)': 28, 'Income Statement + Balance Sheet + Cash Flow Statement': 8, 'Balance Sheet': 1}
+
+NO STATEMENT ROWS: 50 tickers; by exchange {'TADAWUL': 19, 'ADX': 7, 'DFM': 3, 'QSE': 7, 'KSE': 11, 'BSE': 1, 'MSM': 2}
+  their limitations (first words): {'NO CASH FLOW STATEMENT': 50, 'ONE INCOME-STATEMENT WINDOW': 50}
+  calculations with a value: 0 of 348
+  slugs: 4330 4331 4332 4333 4334 4335 4336 4337 4338 4339 4340 4342 4344 4345 4346 4347 4348 4349 4350 AGTHIA AKIC.AD BILDCO FH ICAP ORAS WAHA ALFIRDOU MASQ TAALEEM DHBK FALH IQCD MEZA QAMC QFLS.QA QOIS 108 201 412 413 429 438 505 508 514 529 633 BMUSC.BH AAIC DIDI
+
+BALANCE SHEET BUT NO INCOME STATEMENT: 1 ['232'] | limitations: [['NO CASH FLOW STATEMENT', 'ONE INCOME-STATEMENT WINDOW', 'NO SECTOR RANKINGS FOR THIS COMPANY']]

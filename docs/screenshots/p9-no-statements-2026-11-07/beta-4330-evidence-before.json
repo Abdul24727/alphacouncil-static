@@ -1,0 +1,108 @@
+{
+ "ticker": "4330_TADAWUL",
+ "currency": "SAR",
+ "unit": "millions of the reporting currency, except share counts (millions of shares) and per-share figures (currency units per share)",
+ "basis": "`statements` and `quarters` are reported: figures the source published, aggregated by the stated rule, nothing estimated or carried forward. `calculations` are derived here and carry their formula, operands and window — where one carries `missing` instead of a value there is no number to use. Rule-based votes are a different dataset and are not evidence.",
+ "source": "company financial statements collected from the data provider's company pages. Where `aggregation` says the figures were reconstructed, `source_columns` names the quarter-end columns added together.",
+ "sector": "unknown",
+ "statements": [],
+ "quarters": null,
+ "calculations": [
+  {
+   "metric": "extraordinary_share_of_earnings",
+   "formula": "(net income - net profit before unusual items) / |net income| x 100",
+   "value": null,
+   "unit": null,
+   "window": null,
+   "denominator": null,
+   "operands": [],
+   "checks": [],
+   "missing": [
+    "no net income line in the income statement"
+   ]
+  },
+  {
+   "metric": "eps_derived",
+   "formula": "net income / share count",
+   "value": null,
+   "unit": null,
+   "window": null,
+   "denominator": null,
+   "operands": [],
+   "checks": [],
+   "missing": [
+    "no share count in either the income statement or the balance sheet",
+    "no net income line"
+   ]
+  },
+  {
+   "metric": "roe_on_period_end_common_equity",
+   "formula": "net income / total shareholders' equity x 100",
+   "value": null,
+   "unit": null,
+   "window": null,
+   "denominator": null,
+   "operands": [],
+   "checks": [],
+   "missing": [
+    "no net income line"
+   ]
+  },
+  {
+   "metric": "payout_cash",
+   "formula": "dividends paid in the earnings window / net income over that window x 100",
+   "value": null,
+   "unit": null,
+   "window": null,
+   "denominator": null,
+   "operands": [],
+   "checks": [],
+   "missing": [
+    "there is no income statement, so there is no earnings window to match dividends to and no payout ratio can be computed"
+   ]
+  },
+  {
+   "metric": "payout_declared",
+   "formula": "dividends declared in the earnings window / net income over that window x 100",
+   "value": null,
+   "unit": null,
+   "window": null,
+   "denominator": null,
+   "operands": [],
+   "checks": [],
+   "missing": [
+    "there is no income statement, so there is no earnings window to match dividends to and no payout ratio can be computed"
+   ]
+  },
+  {
+   "metric": "dps_window",
+   "formula": "sum of per-share dividends with an ex-date inside the earnings window",
+   "value": null,
+   "unit": null,
+   "window": null,
+   "denominator": null,
+   "operands": [],
+   "checks": [],
+   "missing": [
+    "there is no income statement, so there is no earnings window to match dividends to and no payout ratio can be computed"
+   ]
+  },
+  {
+   "metric": "dividend_yield_on_window",
+   "formula": "dividends per share over the earnings window / price x 100",
+   "value": null,
+   "unit": null,
+   "window": null,
+   "denominator": null,
+   "operands": [],
+   "checks": [],
+   "missing": [
+    "there is no income statement, so there is no earnings window to match dividends to and no payout ratio can be computed"
+   ]
+  }
+ ],
+ "limitations": [
+  "NO CASH FLOW STATEMENT: the source's pages for this company carry an income statement and a balance sheet only. Operating cash flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and dividend cover can be tested against earnings only, never against cash.",
+  "ONE INCOME-STATEMENT WINDOW: one window is available and the prior year's income statement is not, because the source serves a rolling five-quarter grid. Year-on-year revenue or earnings cannot be compared from this dataset; the single quarters are the history there is."
+ ]
+}

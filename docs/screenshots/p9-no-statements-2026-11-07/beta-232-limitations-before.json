@@ -1,0 +1,10 @@
+{
+ "statements_sections": [
+  "Balance Sheet"
+ ],
+ "limitations": [
+  "NO CASH FLOW STATEMENT: the source's pages for this company carry an income statement and a balance sheet only. Operating cash flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and dividend cover can be tested against earnings only, never against cash.",
+  "ONE INCOME-STATEMENT WINDOW: one window is available and the prior year's income statement is not, because the source serves a rolling five-quarter grid. Year-on-year revenue or earnings cannot be compared from this dataset; the single quarters are the history there is.",
+  "NO SECTOR RANKINGS FOR THIS COMPANY: the pipeline ranks its gauges inside the `bank` peer class, which on 2026-10-29 held 204 tickers of which 53 are banks. A rank in that class is not a rank against banks, so P2 carries the values with no sector standing (percentile). The peer LIST in P5 is unaffected - it comes from the exchange's own sector classification, not from this detection."
+ ]
+}
