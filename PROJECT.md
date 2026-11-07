@@ -335,6 +335,12 @@ Older entries: `changelog-archive.md`.
       - **`RESULT.md`:** it now separates the invented figures (22 of 23 are P9 data) from the invented statements
         (notes and peer comparisons too).
       - **The new totals:** 209 against 55 wrong claims, and 47 against 2 inventions.
+    - **REVIEW 72 ACCEPTED (2026-11-07, GPT-6 at High, in the browser): the comparison audit is CLOSED.**
+      - **What it checked:** it unzipped the evidence and ran all three scripts itself, which reproduced 264 claims
+        with 0 missing quotes, 209 against 55, 47 against 2, 587 flags (121 against 0) and $11.356014 at 62.4 %. It
+        spot-checked the frozen packs.
+      - **What follows:** the architecture decision is final. Its next step is to verify the sector-standing fix
+        (`867f944`, `e2eecc3`) as a release candidate, with no paid calls, no push and no deploy.
     - **Review 71 said FIX:** three plan-file references still said 265 claims, and the output overstated what the
       `why` fields prove. All three now say 264 retained, with 265 labelled as the earlier count. `audit.md` §1 has
       "The evidence, and its limits": what reproduces by script, and what rests on judging each claim against the
