@@ -45,8 +45,8 @@ if [[ "${1:-}" == "--check" ]]; then
   echo "archive:  $(git archive --format=tar "$commit" | tar -t | wc -l) paths from $commit (committed files only)"
   echo "release:  $rel"
   echo "beta now: $now"
-  echo "releases: $(tr '\n' ' ' <<<"$existing")"
-  echo "prune:    $(tr '\n' ' ' <<<"${prune:-nothing}")(a deploy keeps the 3 newest, $sha first)"
+  echo "releases: $(paste -sd ' ' - <<<"$existing")"
+  echo "prune:    $(paste -sd ' ' - <<<"${prune:-nothing}") (a deploy keeps the 3 newest, $sha first)"
   echo "nothing uploaded, built or switched (--check)"
   if [[ "$rollback" == "$sha" ]]; then
     echo "rollback: beta already runs $sha"

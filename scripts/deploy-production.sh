@@ -49,7 +49,7 @@ if [[ "${1:-}" == "--check" ]]; then
   echo "release:  $rel"
   echo "beta now: $staged"
   echo "prod now: $now"
-  echo "prune:    $(tr '\n' ' ' <<<"${prune:-nothing}")(a deploy keeps the 3 newest, $sha first)"
+  echo "prune:    $(paste -sd ' ' - <<<"${prune:-nothing}") (a deploy keeps the 3 newest, $sha first)"
   echo "nothing uploaded, built or switched (--check)"
   ready=1
   if [[ "$rollback" == "$sha" ]]; then
