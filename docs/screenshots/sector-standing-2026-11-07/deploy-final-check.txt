@@ -1,0 +1,22 @@
+# Final read-only confirmation before the owner's beta decision (review 76's DONE WHEN), 2026-11-07.
+
+$ git -C /c/projects/alphacouncil-platform diff --quiet c3bcff6 -- scripts/deploy-staging.sh
+exit: 0
+
+$ git -C /c/AlphaCouncil-Staging/deploy-026699b status -sb
+## release/sector-standing
+exit: 0
+
+$ cd /c/AlphaCouncil-Staging/deploy-026699b && DEPLOY_BRANCH=release/sector-standing DEPLOY_SHA=026699b906ea3a513b4f2dbfc37672fa68ee9d42 bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check
+checkout: C:/AlphaCouncil-Staging/deploy-026699b
+branch:   release/sector-standing
+commit:   026699b906ea3a513b4f2dbfc37672fa68ee9d42 (equals DEPLOY_SHA)
+archive:  3837 paths from 026699b906ea3a513b4f2dbfc37672fa68ee9d42 (committed files only)
+release:  /opt/alphacouncil-platform/releases/026699b906
+beta now: /opt/alphacouncil-platform/releases/b5655a5064
+releases: b5655a5064 5c18a3ae46 2e44ee6fbf
+prune:    2e44ee6fbf (a deploy keeps the 3 newest, 026699b906 first)
+nothing uploaded, built or switched (--check)
+rollback: releases/b5655a5064 (kept)
+preconditions met (this check approves nothing; deploying needs the owner's go-ahead)
+exit: 0

@@ -344,8 +344,13 @@ Older entries: `changelog-archive.md`.
         `b5655a5064`. It also reports the prune and the rollback release.
       - **The preflight:** 18 cases with exit codes in `deploy-preflight.txt`. The exact SHA passes and every other
         case is refused, including an advanced HEAD in a throwaway clone. The servers are unchanged.
-      - **The request:** it now gives the tested command with the full SHA. Next: review 76, then the owner's beta
-        go-ahead.
+      - **The request:** it now gives the tested command with the full SHA.
+      - **Review 76 ACCEPTED** the guard. Its one wording note (which `--check` reports the archive) is fixed in the
+        request.
+      - **The final read-only confirmation** (`deploy-final-check.txt`): the script is unchanged since `c3bcff6`, the
+        candidate's checkout is clean, and the exact-SHA staging check exits 0 with `b5655a5064` kept.
+      - **Put to the owner:** the beta-only go-ahead for `026699b906ea3a513b4f2dbfc37672fa68ee9d42`. Nothing is
+        deployed until they answer.
     - **Review 74 ACCEPTED candidate `026699b`** for the owner's beta decision, subject to a deploy preflight. The
       preflight found that both deploy scripts refused any branch but `rebuild`, which carries the rejected
       prototype, so the candidate could not be deployed as they stood.

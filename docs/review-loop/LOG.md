@@ -77,3 +77,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-07 00:36 UTC — **Sector-standing fix as a release candidate** — FIX — [73-sector-standing-fix-as-a-release-candidate.md](replies/73-sector-standing-fix-as-a-release-candidate.md)
 - 2026-11-07 00:59 UTC — **Isolated fix-only candidate 026699b** — ACCEPT — [74-isolated-fix-only-candidate-026699b.md](replies/74-isolated-fix-only-candidate-026699b.md)
 - 2026-11-07 01:10 UTC — **Deploy preflight for candidate 026699b** — FIX — [75-deploy-preflight-for-candidate-026699b.md](replies/75-deploy-preflight-for-candidate-026699b.md)
+- 2026-11-07 01:34 UTC — **Exact-commit deploy guard** — ACCEPT — [76-exact-commit-deploy-guard.md](replies/76-exact-commit-deploy-guard.md)

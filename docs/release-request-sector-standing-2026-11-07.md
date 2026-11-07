@@ -31,9 +31,13 @@ to **beta only**. Production is a separate request, after the beta checks.
 - **The commit:** that branch also needs `DEPLOY_SHA`, the full 40-character approved commit. HEAD must be exactly that
   commit. The script archives and builds the commit it checked, and does not read HEAD again.
 - **The default:** with no `DEPLOY_*` set, `rebuild` deploys as before. `DEPLOY_SHA` may also pin a `rebuild` deploy.
-- **`--check`:** it only reads the server. It reports the checkout, the commit, the archive, the release path, what
-  beta and production run, which releases a deploy would prune, and the rollback release. It exits 1 when a deploy
-  would refuse, including production's check while beta runs another commit. A passing check approves nothing.
+- **`--check`:** it only reads the server. Both scripts report the checkout, the commit, the release path, which
+  releases a deploy would prune, and the rollback release.
+  - **Staging's check** also gives the archive's path count and what beta runs.
+  - **Production's check** also gives what beta and production run, and no archive count.
+  - **When it fails:** it exits 1 when a deploy would refuse, including production's check while beta runs another
+    commit.
+  - **A passing check approves nothing.**
 
 **The preflight** (`docs/screenshots/sector-standing-2026-11-07/deploy-preflight.txt`, made by
 `deploy-preflight-harness.sh` beside it), every case with its exit code:
