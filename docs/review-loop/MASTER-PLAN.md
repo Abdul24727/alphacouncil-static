@@ -108,6 +108,12 @@ Billing has been open since 2026-11-02.
     - **Step 10's signed-out checks** were rerun on it, with the same counts as 2026-11-06
       (`docs/launch-check-2026-11-07.md`).
     - **The monitor** shows 15 of 15 ok.
+  - **P9 (advisors inventing statement figures), fixed and reviewed (reviews 78 to 85):**
+    - **The fix:** P9's notes and the room's pack now say plainly what statement data exists, and never claim the
+      source lacks data it has (`docs/p9-no-statements-2026-11-07.md`).
+    - **The candidate:** fix-only, `ea51de796c` on `release/p9-no-statements`, built from production's `026699b906`
+      and accepted in review 85 (`docs/release-readiness-p9-2026-11-07.md`).
+    - **What waits:** the beta release, on the owner's go-ahead. Production is a separate go-ahead after that.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

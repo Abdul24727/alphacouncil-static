@@ -417,6 +417,12 @@ Older entries: `changelog-archive.md`.
           as production; the prototype absent; `web/` identical to production's.
         - **The preflight:** the staging `--check` passes, pruning `5c18a3ae46` and keeping `026699b906`.
         - **Not done:** nothing deployed or pushed.
+        - **Review 85 ACCEPTED the candidate.**
+          - **What it checked:** the patch rebuilds all four files byte for byte from production's, and changes nothing
+            else.
+          - **Its notes:** the logs could not be rerun without the repository, and ruff was compared by counts.
+        - **Put to the owner:** the beta-only go-ahead for `ea51de796cf3bbdbea21a45f35682335eab5a2f8`. Beta and
+          production both still run `026699b906`, confirmed read-only.
       - **Review 84 ACCEPTED the P9 fix.**
         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
           cases), and the patch rebuilds the four files byte for byte on production's bytes.
