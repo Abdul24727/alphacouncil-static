@@ -95,3 +95,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-07 20:52 UTC — **Lawyer pack: review 90's fixes** — FIX — [91-lawyer-pack-review-90-s-fixes.md](replies/91-lawyer-pack-review-90-s-fixes.md)
 - 2026-11-07 21:02 UTC — **Lawyer pack: review 91's fixes** — FIX — [92-lawyer-pack-review-91-s-fixes.md](replies/92-lawyer-pack-review-91-s-fixes.md)
 - 2026-11-07 21:09 UTC — **Lawyer pack: review 92's fixes** — ACCEPT — [93-lawyer-pack-review-92-s-fixes.md](replies/93-lawyer-pack-review-92-s-fixes.md)
+- 2026-11-07 21:18 UTC — **Lawyer pack: the owner's facts, read-only** — ACCEPT — [94-lawyer-pack-the-owner-s-facts-read-only.md](replies/94-lawyer-pack-the-owner-s-facts-read-only.md)

@@ -539,6 +539,14 @@ Older entries: `changelog-archive.md`.
             - **The account and payment counts:** not read. A read-only aggregate query on production's database was
               refused by the session's permission check, so they stay the owner's to confirm.
             - **Where the AI data is processed:** stays not verified.
+          - **Review 94 ACCEPTED that step.** Its DONE WHEN passes (2026-11-07 21:18 UTC): `git diff --check` exits 0,
+            and the pack, `legal-questions-2026-10-27.md` and the check record all exist. The check record's handoff
+            names the two documents to send and the owner's three facts. **Step 7 now waits on the owner:**
+            - confirm the three facts;
+            - send the two documents;
+            - give the lawyer beta's password privately.
+
+            Nothing was sent, pushed, deployed or paid for.
       - **Review 84 ACCEPTED the P9 fix.**
         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
           cases), and the patch rebuilds the four files byte for byte on production's bytes.
