@@ -74,3 +74,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-06 23:55 UTC — **Review 69 fixes: one definition for both arms** — FIX — [70-review-69-fixes-one-definition-for-both-arms.md](replies/70-review-69-fixes-one-definition-for-both-arms.md)
 - 2026-11-07 00:03 UTC — **Review 70 fixes to the comparison audit** — FIX — [71-review-70-fixes-to-the-comparison-audit.md](replies/71-review-70-fixes-to-the-comparison-audit.md)
 - 2026-11-07 00:21 UTC — **Review 71 closeout of the comparison audit** — ACCEPT — [72-review-71-closeout-of-the-comparison-audit.md](replies/72-review-71-closeout-of-the-comparison-audit.md)
+- 2026-11-07 00:36 UTC — **Sector-standing fix as a release candidate** — FIX — [73-sector-standing-fix-as-a-release-candidate.md](replies/73-sector-standing-fix-as-a-release-candidate.md)

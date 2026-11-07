@@ -335,6 +335,17 @@ Older entries: `changelog-archive.md`.
       - **`RESULT.md`:** it now separates the invented figures (22 of 23 are P9 data) from the invented statements
         (notes and peer comparisons too).
       - **The new totals:** 209 against 55 wrong claims, and 47 against 2 inventions.
+    - **Review 73 said FIX:** do not ship `rebuild` (it carries the rejected prototype). Build and test a fix-only
+      candidate, capture native 1440 and 390 screenshots, and record the git output. Done, in the same report:
+      - **The candidate:** **`026699b`** on local branch `release/sector-standing`, which is `b5655a5` plus `cae5578`
+        and `026699b`, with the same patch ids as `867f944` and `e2eecc3`.
+      - **What it changes:** exactly the eight files, with no prototype code.
+      - **Checks in its own worktree:** API 578 passed and focused 129, lint identical to production per file, build
+        exit 0, typecheck 0, lint 0, 68 of 68 web tests.
+      - **The screenshots:** native en and ar captures at 1440 × 1000 and 390 × 844 with `viewports.json`.
+      - **The servers:** beta and production both still `b5655a5064`.
+      - **Next:** review 74. Releasing needs the owner's go-ahead (beta first). `deploy-staging.sh` archives `HEAD` of
+        the checkout it runs in, so no push is needed.
     - **The sector-standing fix was verified as a release candidate (review 72's step):**
       `docs/release-readiness-sector-standing-2026-11-07.md`.
       - **Checks:** both commits clean, suite 596, the affected tests 129, lint at baseline, web checks and 68 tests

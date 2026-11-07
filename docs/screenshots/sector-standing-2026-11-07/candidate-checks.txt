@@ -1,0 +1,28 @@
+=== candidate 026699b (release/sector-standing = b5655a5 + cae5578 + 026699b), worktree /c/AlphaCouncil-Staging/rc-sector-standing
+$ (api) python -c 'import app; print(app.__file__)'
+C:\AlphaCouncil-Staging\rc-sector-standing\api\app\__init__.py
+$ (api) python -m pytest -q
+578 passed, 11 skipped in 76.60s (0:01:16)
+$ (api) python -m pytest -q tests/test_debate.py tests/test_copilot.py tests/test_evidence.py
+129 passed in 26.36s
+$ ruff, per changed Python file: production b5655a5 against the candidate
+  api/app/copilot/engine.py | production: Found 1 error. | candidate: Found 1 error.
+  api/app/copilot/tools.py | production: All checks passed! | candidate: All checks passed!
+  api/app/debate/pack.py | production: All checks passed! | candidate: All checks passed!
+  api/app/evidence.py | production: Found 10 errors. | candidate: Found 10 errors.
+  api/tests/test_copilot.py | production: Found 2 errors. | candidate: Found 2 errors.
+  api/tests/test_debate.py | production: Found 4 errors. | candidate: Found 4 errors.
+$ (web) API_ORIGIN=http://127.0.0.1:8201 npm run build   (full log: 68-candidate-build.log)
+◐  (Partial Prerender)  prerendered as static HTML with dynamic server-streamed content
+ƒ  (Dynamic)            server-rendered on demand
+
+  exit 0
+$ (web) npm run typecheck   (after the build generated Next's route types; before it, tsc could not find PageProps/LayoutProps in a fresh worktree)
+  exit 0
+$ (web) npm run lint
+  exit 0
+$ (web) npm test
+ℹ tests 68
+ℹ pass 68
+ℹ fail 0
+note: web/node_modules is a local copy of rebuild's (lockfile byte-identical to b5655a5's); .next and node_modules are git-ignored
