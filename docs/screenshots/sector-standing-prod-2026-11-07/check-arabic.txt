@@ -1,3 +1,4 @@
+$ cd web && BASE_URL=https://alphacouncil.tech WIDTHS=1440,390 node scripts/check-arabic.mjs   (run 2026-11-07 10:17:17 UTC, signed out, GET only)
 
 48 Arabic page view(s) signed out; 0 English string(s) outside the allow-list
 [exit 0]

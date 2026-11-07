@@ -352,6 +352,11 @@ Older entries: `changelog-archive.md`.
       - **Not seen here:** a Pro member's view of the live panel. Signed out it shows the Pro lock. Beta's captures
         show the panel, and production's files equal beta's commit. The owner can confirm it signed in.
       - **Not done:** nothing was pushed, and no model was paid for.
+      - **Review 78 ACCEPTED** it and closed the sector-standing release.
+        - **Its notes:** the Arabic check's target was not shown in its output (since rerun with the command
+          recorded); the preflight is attested; and the Pro view is not seen here.
+        - **Next, per review 78:** P9, advisors inventing statement figures on packs without statements. It is a
+          fail-closed fix on `rebuild`, with no paid calls, push or release.
     - **BETA RELEASED 2026-11-07 on the owner's go-ahead** ("Yes, deploy to beta"): beta runs
       `026699b906ea3a513b4f2dbfc37672fa68ee9d42` (`docs/release-beta-sector-standing-2026-11-07.md`).
       - **The run:** the preflight was rerun and passed, then the request's own command ran and exited 0. `2e44ee6fbf`

@@ -55,6 +55,9 @@ read over read-only ssh.
 
 **The Arabic string check** (`check-arabic.mjs`, signed out, 1440 and 390): 48 Arabic page views, 0 English
 strings outside the allow-list, exit 0 (`check-arabic.txt`).
+- **Rerun after review 78:** it was rerun at 10:17 UTC with the same result. Review 78 noted that the first output
+  did not show which site it read. The file now begins with its exact command:
+  `BASE_URL=https://alphacouncil.tech WIDTHS=1440,390 node scripts/check-arabic.mjs`.
 
 **The monitor** (`monitor-status.txt`, the `status` mode, which only reads; read at 10:02 UTC):
 - **All 15 checks are ok:** the site and API, market data, both services, the renewals job, timer and Moyasar, the
