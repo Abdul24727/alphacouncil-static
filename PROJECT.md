@@ -408,6 +408,11 @@ Older entries: `changelog-archive.md`.
           in the suite.
         - **On production's bytes:** the full patch applied to a fresh copy of production's four files gives exactly
           `rebuild`'s blobs.
+      - **Review 84 ACCEPTED the P9 fix.**
+        - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
+          cases), and the patch rebuilds the four files byte for byte on production's bytes.
+        - **Next:** a fix-only release candidate from `026699b906`, built and checked in its own worktree. No push or
+          deploy.
     - **PRODUCTION RELEASED 2026-11-07 on the owner's go-ahead** ("Yes, deploy to production"): alphacouncil.tech
       runs `026699b906ea3a513b4f2dbfc37672fa68ee9d42`, the same as beta
       (`docs/release-production-sector-standing-2026-11-07.md`).
