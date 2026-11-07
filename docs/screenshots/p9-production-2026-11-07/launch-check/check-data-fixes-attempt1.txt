@@ -1,0 +1,69 @@
+PASS  101: the news date is the newest item's (2026-11-04)
+PASS  101 en: header price 0.870
+PASS  101 en: EPS 0.064 KWD
+PASS  101 en: news light fresh
+PASS  101 ar: header price 0.870
+PASS  101 ar: EPS د.ك 0.064
+PASS  101 ar: news light fresh
+PASS  2222: the news date is the newest item's (2026-11-03)
+PASS  2222 en: header price 26.16
+PASS  2222 en: EPS 1.88 SAR
+PASS  2222 en: news light fresh
+PASS  2222 ar: header price 26.16
+PASS  2222 ar: EPS ر.س 1.88
+PASS  2222 ar: news light fresh
+PASS  QCFS: the news date is the newest item's (2026-10-27)
+PASS  QCFS en: header price 2.579
+PASS  QCFS en: EPS 0.09 QAR
+PASS  QCFS en: news light fresh
+PASS  QCFS ar: header price 2.579
+PASS  QCFS ar: EPS ر.ق 0.09
+PASS  QCFS ar: news light fresh
+PASS  ADNOCDRILL: the news date is the newest item's (2026-11-04)
+PASS  ADNOCDRILL en: header price 5.76
+PASS  ADNOCDRILL en: EPS shows "Unit not confirmed"
+PASS  ADNOCDRILL en: news light fresh
+PASS  ADNOCDRILL ar: header price 5.76
+PASS  ADNOCDRILL ar: EPS shows "الوحدة غير مؤكدة"
+PASS  ADNOCDRILL ar: news light fresh
+PASS  NIND: the news date is the newest item's (2026-11-04)
+PASS  NIND en: header price 3.37
+PASS  NIND en: "Currency not confirmed" in the header
+PASS  NIND en: EPS 0.26
+PASS  NIND en: news light fresh
+PASS  NIND ar: header price 3.37
+PASS  NIND ar: "العملة غير مؤكدة" in the header
+PASS  NIND ar: EPS 0.26
+PASS  NIND ar: news light fresh
+PASS  methodology: news ages in calendar days
+PASS  methodology en 1440: news row shows 30
+PASS  methodology en 390: news row shows 30
+PASS  methodology ar 1440: news row shows 30
+PASS  methodology ar 390: news row shows 30
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+apiRequestContext.get: read ECONNRESET
+Call log:
+[2m  - → GET https://alphacouncil.tech/api/v1/tickers/1010[22m
+[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36[22m
+[2m    - accept: */*[22m
+[2m    - accept-encoding: gzip,deflate,br[22m
+[2m    - cookie: NEXT_LOCALE=ar[22m
+
+    at api (C:\projects\alphacouncil-platform\web\scripts\check-data-fixes.mjs:47:35)
+    at C:\projects\alphacouncil-platform\web\scripts\check-data-fixes.mjs:164:21 {
+  log: [
+    '  - → GET https://alphacouncil.tech/api/v1/tickers/1010',
+    '    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36',
+    '    - accept: */*',
+    '    - accept-encoding: gzip,deflate,br',
+    '    - cookie: NEXT_LOCALE=ar'
+  ],
+  name: 'Error',
+  code: 'ECONNRESET'
+}
+
+Node.js v24.18.0
+[exit 1]

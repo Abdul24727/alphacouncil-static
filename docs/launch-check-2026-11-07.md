@@ -41,3 +41,14 @@ Statements are Pro-only on production, and a signed-out visitor cannot read them
   - **What the owner can do:** confirm it signed in.
 - **The owner's `check-all.mjs` and signed-in advisors runs:** those of 2026-11-02 closed Step 10
   (`docs/launch-check-2026-10-27.md`).
+
+## Rerun on production `ea51de796c` (the P9 fix), 19:35–19:47 UTC
+
+After the P9 fix reached production the same evening, the same signed-out scripts were run again against
+https://alphacouncil.tech (`docs/release-production-p9-2026-11-07.md`; output in
+`docs/screenshots/p9-production-2026-11-07/launch-check/`).
+- **The result:** every count equals the run above: SEO 62 PASS, Arabic 48 page views with 0 English strings, advisors
+  (visitor) 24 PASS, data fixes 44 PASS with the same sweep line, and 20 page views at 200 with no sideways scroll.
+- **One interruption:** a connection drop at about 19:39 UTC stopped the data-fix and page scripts. Both were rerun
+  unchanged and passed. The server logged no error, and its monitor stayed at 15 of 15 ok.
+- **The screenshots** were not kept, because `web/` did not change in that release.

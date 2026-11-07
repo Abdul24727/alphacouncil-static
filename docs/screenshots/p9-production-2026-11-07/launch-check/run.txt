@@ -1,0 +1,7 @@
+run 2026-11-07 19:35:34 UTC against https://alphacouncil.tech
+check-seo exit 0 | ALL PASS
+check-arabic exit 0 | 48 Arabic page view(s) signed out; 0 English string(s) outside the allow-list
+check-advisors-visitor exit 0 | all passed
+check-data-fixes exit 1 | Node.js v24.18.0
+pages exit 1 | Node.js v24.18.0
+done 2026-11-07 19:39:36 UTC

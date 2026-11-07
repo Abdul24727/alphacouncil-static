@@ -1,0 +1,45 @@
+the 19:39 UTC connection drop, read-only ssh, read 2026-11-07 19:48:36 UTC
+
+$ grep 19:36-19:41 /var/log/nginx/error.log | wc -l
+0
+
+$ 5xx responses in /var/log/nginx/access.log, 19:36-19:41
+0
+
+$ requests per minute in /var/log/nginx/access.log, 19:35-19:41
+    202 19:35
+    542 19:36
+    554 19:37
+   1332 19:38
+     52 19:39
+      5 19:40
+    354 19:41
+
+$ requests per minute, this morning 10:00-10:09 (the launch check on 026699b906)
+    825 10:00
+    110 10:01
+    780 10:02
+    967 10:03
+    163 10:04
+    174 10:05
+    174 10:06
+    223 10:07
+    563 10:08
+      2 10:09
+
+$ fail2ban: jails, and its log lines from 19:20 to 19:49
+|- Number of jail:	1
+`- Jail list:	sshd
+0
+
+$ uptime; systemctl is-active acp-prod-api acp-prod-web nginx
+ 19:48:38 up 21 days,  3:09,  2 users,  load average: 0.23, 0.46, 0.32
+active
+active
+active
+
+$ journalctl -u acp-prod-monitor.service, 19:30-19:45, summary lines
+Nov 07 19:30:22 srv1556505 python3[844829]: 15 of 15 checks ok
+Nov 07 19:35:02 srv1556505 python3[845282]: 15 of 15 checks ok
+Nov 07 19:40:16 srv1556505 python3[845841]: 15 of 15 checks ok
+[exit 0]

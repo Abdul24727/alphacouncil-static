@@ -1,0 +1,83 @@
+production checks for ea51de796cf3bbdbea21a45f35682335eab5a2f8, run 2026-11-07 19:35:28 UTC
+
+### 1. what production and beta run (read-only ssh)
+$ readlink, ls releases, systemctl is-active
+prod: /opt/alphacouncil-platform/prod/releases/ea51de796c
+prod releases: ea51de796c 026699b906 b5655a5064
+prod services: active active
+beta: /opt/alphacouncil-platform/releases/ea51de796c
+beta releases: ea51de796c 026699b906 b5655a5064
+beta services: active active
+[exit 0]
+
+### 2. the running production processes started after the switch, from the new release
+$ systemctl show -p MainPID,ActiveEnterTimestamp; readlink /proc/<pid>/cwd
+acp-prod-api: pid 845194, active since Sat 2026-11-07 19:34:54 UTC, cwd /opt/alphacouncil-platform/prod/releases/ea51de796c/api
+acp-prod-web: pid 845195, active since Sat 2026-11-07 19:34:54 UTC, cwd /opt/alphacouncil-platform/prod/releases/ea51de796c/web
+[exit 0]
+
+### 3. what the release changes from production's previous commit
+$ git diff --name-status $BASE $C; git diff --quiet $BASE $C -- web api/app/routers
+M	api/app/debate/pack.py
+M	api/app/evidence.py
+M	api/tests/test_debate.py
+M	api/tests/test_evidence.py
+[exit 0]
+[exit 0]
+
+### 4. the four changed files on production equal the commit (sha256)
+$ git cat-file -p $C:<f> | sha256sum  vs  sha256sum on the server
+4d3957ad0ac2e8ef487b821fa9ab04f32bc3008e0dc3f4ef32b89b2329e863ab  api/app/debate/pack.py
+631cf49ddbb5a635ac78a7922ab7744173d22d08dfe66840569cd52c1272910d  api/app/evidence.py
+ee4b9fb732ec2f62bb7215b1c05c191bb58e47f60e45011f64ccfc47de9868bb  api/tests/test_debate.py
+ae747a0783d1934ebbc64705858ec72660d2dc4350d58afcb65dbf9a89b4c500  api/tests/test_evidence.py
+[exit 0]
+
+### 5. every committed file on production equals the commit
+$ the 3,566 paths of beta's tree-sha256.txt (made from the commit), hashed on the server, then diff
+paths: 3566
+commit hashes: 3566, server hashes: 3566
+[exit 0]
+
+### 6. none of the prototype on production
+$ test -e presenter.py; grep debate_engine settings.py
+presenter.py absent
+debate_engine in settings.py: 0
+
+### 7. the live site answers
+$ curl -sL https://alphacouncil.tech/<page>
+200  https://alphacouncil.tech/
+200  https://alphacouncil.tech/home
+200  https://alphacouncil.tech/ar
+200  https://alphacouncil.tech/t/4330
+200  https://alphacouncil.tech/t/2222/financials
+200  https://alphacouncil.tech/ar/t/2222/financials
+200  https://alphacouncil.tech/methodology
+200  https://alphacouncil.tech/pricing
+200  https://alphacouncil.tech/api/v1/health
+health: {"status":"ok","market_data":"ok","universe_size":714,"universe_as_of":"2026-11-07"}
+
+### 8. the evidence endpoint stays Pro-only for an anonymous reader
+$ curl https://alphacouncil.tech/api/v1/tickers/4330/evidence
+{"detail":"pro_required"}  [403]
+
+### 9. the monitor (status: works on a copy of its state; saves, mails and pings nothing)
+$ ssh root@alphacouncil.tech python3 -I /usr/local/lib/acp-monitor/prod-monitor.py status
+ok      alphacouncil.tech/home: https://alphacouncil.tech/home answered 200 in 46 ms
+ok      alphacouncil.tech/api/v1/health: https://alphacouncil.tech/api/v1/health answered 200 in 11 ms
+ok      market data: the health check reports market data: ok
+ok      acp-prod-api: acp-prod-api is active
+ok      acp-prod-web: acp-prod-web is active
+ok      Pro renewals job: the last run exited 0
+ok      Pro renewals timer: acp-prod-billing.timer is active
+-       Moyasar for renewals: no renewal run since the last round
+ok      database backup job: the last run exited 0
+ok      database backup timer: acp-db-backup.timer is active
+ok      off-server backup copy: the owner's computer last copied the backups at 2026-11-07 06:00 UTC (09:00 Riyadh), 0.6 days ago (79 files, newest acp_prod-20261107T013253Z.dump)
+ok      disk /: / is 42% full (121.9 GB free)
+ok      disk /boot: /boot is 15% full (0.7 GB free)
+ok      TLS certificate: the certificate for alphacouncil.tech expires on 2027-01-21 16:54 UTC (19:54 Riyadh), in 75 days
+ok      model account credit: $22.85 left on the model account
+alerts emailed: 0 in 24 hours (limit 8), 11 in 30 days (limit 60)
+outside check: PING_URL is set, pinged at the end of every round
+[exit 0]

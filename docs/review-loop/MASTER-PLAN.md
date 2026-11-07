@@ -33,7 +33,7 @@ It does not mean new things.
 | 1 — Safe footing | ~15 % | DONE 2026-10-22 |
 | 2 — Market data correct at the source | ~25 % | DONE 2026-10-24; later data fixes F-13, F-15 and F-16 all live (F-16 verified 2026-11-06) |
 | 3 — Every known defect fixed, checkout proven | ~30 % | DONE 2026-10-22 |
-| 4 — Launch: settled, checked, then paid | ~30 % | Steps 8, 9, 22, 23, 10 DONE (10's signed-out half re-run on production `b5655a5064` 2026-11-06 and on `026699b906` 2026-11-07, all PASS); **Step 7 (lawyer) NOT STARTED**, pack ready (`docs/lawyer-review-pack-2026-11-06.md`); Step 18 (billing) open, item 4 needs a real renewal |
+| 4 — Launch: settled, checked, then paid | ~30 % | Steps 8, 9, 22, 23, 10 DONE (10's signed-out half re-run on production `b5655a5064` 2026-11-06, and on `026699b906` and `ea51de796c` 2026-11-07, all PASS); **Step 7 (lawyer) NOT STARTED**, pack ready (`docs/lawyer-review-pack-2026-11-06.md`); Step 18 (billing) open, item 4 needs a real renewal |
 
 Goal 4's Done-when (verbatim, short):
 1. The owner's written legal advice is in `docs/legal-advisors-<date>.md`, and every change it asks for is live.
@@ -44,8 +44,8 @@ Goal 4's Done-when (verbatim, short):
 
 ## What is left (`PROJECT.md` §9, "What is left, by who"), as of 2026-11-06
 
-**The site is published and live** at alphacouncil.tech. Since 2026-11-07, production runs `026699b906`, which is
-`b5655a5064` plus the sector-standing fix, and beta runs `ea51de796c`, which is `026699b906` plus the P9 fix.
+**The site is published and live** at alphacouncil.tech. Since 2026-11-07, production and beta both run
+`ea51de796c`: `b5655a5064` plus the sector-standing fix (`026699b906`) plus the P9 fix.
 Billing has been open since 2026-11-02.
 
 **Done on 2026-11-06, on the owner's go-aheads:**
@@ -116,8 +116,11 @@ Billing has been open since 2026-11-02.
     - **Beta released 2026-11-07** on the owner's go-ahead ("Yes, deploy to beta"). Beta runs `ea51de796c`, its files
       equal the commit, and P9's notes changed for exactly the 76 companies the fix names; the other 638 are unchanged
       word for word (`docs/release-beta-p9-2026-11-07.md`).
-    - **Review 86 accepted the beta release,** and production's read-only preflight passes again. **What waits:**
-      production, on its own go-ahead from the owner.
+    - **Review 86 accepted the beta release,** and production's read-only preflight passes again.
+    - **Production released 2026-11-07** on the owner's go-ahead ("Yes, deploy to production"). Its files equal the
+      commit, its services restarted from it, its pages answer, and Step 10's signed-out checks give the same counts as
+      that morning (`docs/release-production-p9-2026-11-07.md`). P9's notes on production are Pro-only and were not
+      read. The advisors' behaviour needs a paid session.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

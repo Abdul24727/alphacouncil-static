@@ -1,0 +1,4 @@
+rerun of the two scripts cut off by the 19:39 UTC connection drop, 2026-11-07 19:41:32 UTC against https://alphacouncil.tech
+pages exit 0 | 20 views; every one 200 with no sideways scroll
+check-data-fixes exit 0 | all passed
+done 2026-11-07 19:47:16 UTC

@@ -1,0 +1,17 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.goto: net::ERR_CONNECTION_TIMED_OUT at https://alphacouncil.tech/en
+Call log:
+[2m  - navigating to "https://alphacouncil.tech/en", waiting until "networkidle"[22m
+
+    at C:\projects\alphacouncil-platform\docs\screenshots\launch-2026-11-07\page-shots.mjs:19:30 {
+  log: [
+    '  - navigating to "https://alphacouncil.tech/en", waiting until "networkidle"'
+  ],
+  name: 'Error'
+}
+
+Node.js v24.18.0
+[exit 1]
