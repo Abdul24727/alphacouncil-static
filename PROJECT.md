@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-06   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `eeb9a9d` on 2026-11-06, the owner's twelfth go-ahead in chat ("Yes, push")** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, three on 2026-11-02 took it `3aafa82` → `c1198ca` → `b61876d` → `12aafcc`, one on 2026-11-03 took it `6acce45..c046236`, and three on 2026-11-06 took it `c046236..ccfe063`, `ccfe063..b5655a5` and `b5655a5..eeb9a9d`; every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **beta and production both `b5655a5064`** (released 2026-11-06 on the owner's go-ahead "Beta, then production"; it carries the Gulf English statement labels and the rest of candidate `dfc7a3d` over `5c18a3ae46`, which is kept on both tiers for rollback). That sha is on the public branch since the 2026-11-06 push. *(Until 2026-11-06 this line named `5c18a3ae46`, released 2026-11-05.)* *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-06   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `eeb9a9d` on 2026-11-06, the owner's twelfth go-ahead in chat ("Yes, push")** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, three on 2026-11-02 took it `3aafa82` → `c1198ca` → `b61876d` → `12aafcc`, one on 2026-11-03 took it `6acce45..c046236`, and three on 2026-11-06 took it `c046236..ccfe063`, `ccfe063..b5655a5` and `b5655a5..eeb9a9d`; every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **production `026699b906`** (the sector-standing fix over `b5655a5064`, released 2026-11-07 on the owner's go-ahead "Yes, deploy to production") and **beta `ea51de796c`** (the P9 fix over `026699b906`, released 2026-11-07 on "Yes, deploy to beta"). Each is a fix-only commit on a local release branch (`release/sector-standing`, `release/p9-no-statements`), **not pushed**; `b5655a5064`, on the public branch since the 2026-11-06 push, is kept on both tiers. *(Until 2026-11-07 this line named `b5655a5064` on both tiers, released 2026-11-06; before that `5c18a3ae46`.)* *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -423,6 +423,27 @@ Older entries: `changelog-archive.md`.
           - **Its notes:** the logs could not be rerun without the repository, and ruff was compared by counts.
         - **Put to the owner:** the beta-only go-ahead for `ea51de796cf3bbdbea21a45f35682335eab5a2f8`. Beta and
           production both still run `026699b906`, confirmed read-only.
+        - **THE OWNER SAID "Yes, deploy to beta" (2026-11-07).** Beta only; production stays a separate go-ahead.
+          - **The preflight, rerun first:** `deploy-staging.sh` equals `c3bcff6`'s, and the checkout is clean at
+            `ea51de796c`. The `--check` exited 0: prune `5c18a3ae46`, rollback `026699b906`
+            (`docs/screenshots/p9-beta-2026-11-07/preflight-rerun.txt`).
+          - **Before the switch:** P9's notes for all 714 tickers were read on beta while it still served
+            `026699b906` (`p9-notes-before.json`), so the after-release notes can be compared word for word.
+          - **The deploy:** started 17:21 UTC with the readiness report's own command.
+        - **BETA RELEASED 2026-11-07:** beta runs `ea51de796c` (`docs/release-beta-p9-2026-11-07.md`).
+          - **The deploy:** it exited 0 ("deployed ea51de796c") after building 93 of 93 pages. Both services are
+            active, and `5c18a3ae46` was pruned. Production still runs `026699b906`.
+          - **The checks** (`docs/screenshots/p9-beta-2026-11-07/beta-checks.txt`, every step exit 0):
+            - **The files:** the four changed files and all 3,566 files equal the commit, and the prototype is absent.
+            - **The pages:** they answer 200.
+            - **The monitor:** 14 ok (model credit $22.85).
+            - **Production's `--check`:** passes.
+          - **P9's notes, word for word against the sweep taken before the switch:**
+            - **Unchanged:** 638 of 714.
+            - **Changed:** 76, exactly the fix's groups: 48 with no statements, 25 with one year and no quarters, the
+              2 with quarters only, and 232.
+            - **Nothing else moved:** no other note, and no statement data.
+          - **Next:** review of the beta release, then the production go-ahead put to the owner.
       - **Review 84 ACCEPTED the P9 fix.**
         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
           cases), and the patch rebuilds the four files byte for byte on production's bytes.

@@ -1,0 +1,153 @@
+== upload ea51de796c (ea51de796cf3bbdbea21a45f35682335eab5a2f8)
+== build
+
+added 516 packages in 36s
+▲ Next.js 16.4.1 (Turbopack)
+✓ Running next.config.ts took 166ms
+- Cache Components enabled
+- Partial Prefetching enabled
+- Experiments (use with caution):
+  · proxyTimeout: 120000
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 10.2s
+  Running TypeScript ...
+  Finished TypeScript in 11.8s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/93) ...
+  Generating static pages using 3 workers (23/93)
+  Generating static pages using 3 workers (46/93)
+  Generating static pages using 3 workers (69/93)
+✓ Generating static pages using 3 workers (93/93) in 3.0s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /_not-found
+├   /[locale]
+│ ├ ◐ /[locale]
+│ ├ ◐ /en
+│ └ ◐ /ar
+├   /[locale]/billing/return
+│ ├ ◐ /[locale]/billing/return
+│ ├ ○ /en/billing/return
+│ └ ○ /ar/billing/return
+├   /[locale]/checkout
+│ ├ ◐ /[locale]/checkout
+│ ├ ○ /en/checkout
+│ └ ○ /ar/checkout
+├   /[locale]/dashboards
+│ ├ ◐ /[locale]/dashboards
+│ ├ ○ /en/dashboards
+│ └ ○ /ar/dashboards
+├   /[locale]/forgot-password
+│ ├ ◐ /[locale]/forgot-password
+│ ├ ○ /en/forgot-password
+│ └ ○ /ar/forgot-password
+├   /[locale]/home
+│ ├ ◐ /[locale]/home
+│ ├ ○ /en/home
+│ └ ○ /ar/home
+├   /-/icon.svg
+│ └ ● /-/icon.svg
+├   /[locale]/legal
+│ ├ ◐ /[locale]/legal
+│ ├ ○ /en/legal
+│ └ ○ /ar/legal
+├   /[locale]/legal/[doc]
+│ ├ ◐ /[locale]/legal/[doc]
+│ ├ ◐ /en/legal/[doc]
+│ ├ ○ /en/legal/terms
+│ └ ◐ [+10 more paths]
+├   /[locale]/login
+│ ├ ◐ /[locale]/login
+│ ├ ◐ /en/login
+│ └ ◐ /ar/login
+├   /[locale]/markets
+│ ├ ◐ /[locale]/markets
+│ ├ ○ /en/markets
+│ └ ○ /ar/markets
+├   /[locale]/methodology
+│ ├ ◐ /[locale]/methodology
+│ ├ ◐ /en/methodology
+│ └ ◐ /ar/methodology
+├   /[locale]/portfolio
+│ ├ ◐ /[locale]/portfolio
+│ ├ ○ /en/portfolio
+│ └ ○ /ar/portfolio
+├   /[locale]/pricing
+│ ├ ◐ /[locale]/pricing
+│ ├ ◐ /en/pricing
+│ └ ◐ /ar/pricing
+├   /[locale]/reset-password
+│ ├ ◐ /[locale]/reset-password
+│ ├ ○ /en/reset-password
+│ └ ○ /ar/reset-password
+├   /[locale]/screener
+│ ├ ◐ /[locale]/screener
+│ ├ ◐ /en/screener
+│ └ ◐ /ar/screener
+├   /[locale]/settings
+│ ├ ◐ /[locale]/settings
+│ ├ ○ /en/settings
+│ └ ○ /ar/settings
+├   /[locale]/signup
+│ ├ ◐ /[locale]/signup
+│ ├ ◐ /en/signup
+│ └ ◐ /ar/signup
+├   /[locale]/t/[ticker]
+│ ├ ◐ /[locale]/t/[ticker]
+│ ├ ◐ /en/t/[ticker]
+│ └ ◐ /ar/t/[ticker]
+├   /[locale]/t/[ticker]/advisors
+│ ├ ◐ /[locale]/t/[ticker]/advisors
+│ ├ ◐ /en/t/[ticker]/advisors
+│ └ ◐ /ar/t/[ticker]/advisors
+├   /[locale]/t/[ticker]/calendar
+│ ├ ◐ /[locale]/t/[ticker]/calendar
+│ ├ ◐ /en/t/[ticker]/calendar
+│ └ ◐ /ar/t/[ticker]/calendar
+├   /[locale]/t/[ticker]/council
+│ ├ ◐ /[locale]/t/[ticker]/council
+│ ├ ◐ /en/t/[ticker]/council
+│ └ ◐ /ar/t/[ticker]/council
+├   /[locale]/t/[ticker]/financials
+│ ├ ◐ /[locale]/t/[ticker]/financials
+│ ├ ◐ /en/t/[ticker]/financials
+│ └ ◐ /ar/t/[ticker]/financials
+├   /[locale]/t/[ticker]/ownership
+│ ├ ◐ /[locale]/t/[ticker]/ownership
+│ ├ ◐ /en/t/[ticker]/ownership
+│ └ ◐ /ar/t/[ticker]/ownership
+├   /[locale]/templates
+│ ├ ◐ /[locale]/templates
+│ ├ ○ /en/templates
+│ └ ○ /ar/templates
+├   /[locale]/templates/[name]
+│ ├ ◐ /[locale]/templates/[name]
+│ ├ ◐ /en/templates/[name]
+│ └ ◐ /ar/templates/[name]
+├   /[locale]/verify-email
+│ ├ ◐ /[locale]/verify-email
+│ ├ ○ /en/verify-email
+│ └ ○ /ar/verify-email
+├ ○ /robots.txt
+└ ƒ /sitemap.xml
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)             prerendered as static content
+●  (SSG)                prerendered as static HTML (uses generateStaticParams)
+◐  (Partial Prerender)  prerendered as static HTML with dynamic server-streamed content
+ƒ  (Dynamic)            server-rendered on demand
+
+== switch and restart
+curl: (7) Failed to connect to 127.0.0.1 port 8200 after 0 ms: Couldn't connect to server
+curl: (7) Failed to connect to 127.0.0.1 port 8200 after 0 ms: Couldn't connect to server
+active
+active
+api 200
+web 200
+== prune: keep the 3 newest releases
+deployed ea51de796c
+exit=0

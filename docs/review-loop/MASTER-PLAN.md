@@ -44,8 +44,8 @@ Goal 4's Done-when (verbatim, short):
 
 ## What is left (`PROJECT.md` §9, "What is left, by who"), as of 2026-11-06
 
-**The site is published and live** at alphacouncil.tech. Since 2026-11-07, beta and production both run `026699b906`,
-which is `b5655a5064` plus the sector-standing fix.
+**The site is published and live** at alphacouncil.tech. Since 2026-11-07, production runs `026699b906`, which is
+`b5655a5064` plus the sector-standing fix, and beta runs `ea51de796c`, which is `026699b906` plus the P9 fix.
 Billing has been open since 2026-11-02.
 
 **Done on 2026-11-06, on the owner's go-aheads:**
@@ -113,7 +113,10 @@ Billing has been open since 2026-11-02.
       source lacks data it has (`docs/p9-no-statements-2026-11-07.md`).
     - **The candidate:** fix-only, `ea51de796c` on `release/p9-no-statements`, built from production's `026699b906`
       and accepted in review 85 (`docs/release-readiness-p9-2026-11-07.md`).
-    - **What waits:** the beta release, on the owner's go-ahead. Production is a separate go-ahead after that.
+    - **Beta released 2026-11-07** on the owner's go-ahead ("Yes, deploy to beta"). Beta runs `ea51de796c`, its files
+      equal the commit, and P9's notes changed for exactly the 76 companies the fix names; the other 638 are unchanged
+      word for word (`docs/release-beta-p9-2026-11-07.md`).
+    - **What waits:** production, on its own go-ahead from the owner.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

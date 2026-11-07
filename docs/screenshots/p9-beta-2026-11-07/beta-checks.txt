@@ -1,0 +1,180 @@
+beta checks for ea51de796cf3bbdbea21a45f35682335eab5a2f8, run 2026-11-07 17:35:46 UTC
+
+### 1. what beta and production run (read-only ssh)
+$ readlink, ls releases, systemctl is-active
+beta: /opt/alphacouncil-platform/releases/ea51de796c
+beta releases: ea51de796c 026699b906 b5655a5064
+beta services: active active
+prod: /opt/alphacouncil-platform/prod/releases/026699b906
+prod releases: 026699b906 b5655a5064 5c18a3ae46
+prod services: active active
+[exit 0]
+
+### 2. what the release changes from production's commit
+$ git diff --name-status $BASE $C; git diff --quiet $BASE $C -- web api/app/routers
+M	api/app/debate/pack.py
+M	api/app/evidence.py
+M	api/tests/test_debate.py
+M	api/tests/test_evidence.py
+[exit 0]
+[exit 0]
+
+### 3. the four changed files on beta equal the commit (sha256)
+$ git cat-file -p $C:<f> | sha256sum  vs  sha256sum on the server
+4d3957ad0ac2e8ef487b821fa9ab04f32bc3008e0dc3f4ef32b89b2329e863ab  api/app/debate/pack.py
+631cf49ddbb5a635ac78a7922ab7744173d22d08dfe66840569cd52c1272910d  api/app/evidence.py
+ee4b9fb732ec2f62bb7215b1c05c191bb58e47f60e45011f64ccfc47de9868bb  api/tests/test_debate.py
+ae747a0783d1934ebbc64705858ec72660d2dc4350d58afcb65dbf9a89b4c500  api/tests/test_evidence.py
+[exit 0]
+
+### 4. every committed file on beta equals the commit
+$ sha256 of each non-symlink path in git ls-tree, both sides, then diff
+paths: 3566
+local hashes: 3566, server hashes: 3566
+[exit 0]
+
+### 5. none of the prototype on beta
+$ test -e presenter.py; grep debate_engine settings.py
+presenter.py absent
+debate_engine in settings.py: 0
+[exit 0]
+
+### 6. beta answers (through the tunnel)
+$ curl api health and six pages
+{"status":"ok","market_data":"ok","universe_size":714,"universe_as_of":"2026-11-07"}
+200  http://localhost:3201/home
+200  http://localhost:3201/ar
+200  http://localhost:3201/t/4330
+200  http://localhost:3201/ar/t/2222/financials
+200  http://localhost:3201/methodology
+200  http://localhost:3201/pricing
+
+### 7. P9's notes for all 714 tickers, after the release, against the sweep taken before it
+$ p9-notes-sweep.py p9-notes-after.json; p9-notes-compare.py p9-notes-before.json p9-notes-after.json
+before: /opt/alphacouncil-platform/releases/026699b906
+after:  /opt/alphacouncil-platform/releases/026699b906
+after sweep serving: /opt/alphacouncil-platform/releases/ea51de796c
+started 2026-11-07 17:39:23 UTC | tickers: 714 | non-200: 0 | health: {'status': 'ok', 'market_data': 'ok', 'universe_size': 714, 'universe_as_of': '2026-11-07'}
+[exit 0]
+before: 2026-11-07 17:22:26 UTC to 2026-11-07 17:29:28 UTC, 714 tickers, health {'status': 'ok', 'market_data': 'ok', 'universe_size': 714, 'universe_as_of': '2026-11-07'}
+after:  2026-11-07 17:39:23 UTC to 2026-11-07 17:46:11 UTC, 714 tickers, health {'status': 'ok', 'market_data': 'ok', 'universe_size': 714, 'universe_as_of': '2026-11-07'}
+same tickers: True | non-200 after: 0
+tickers whose statement data itself differs between the sweeps (should be 0): 0 []
+
+notes word for word unchanged: 638 | changed: 76
+changed tickers where a note other than the statement notes changed (should be 0): 0 []
+
+5 distinct before -> after pairs among the changed tickers:
+
+== pair 1: 48 tickers, statements [] with 0 rows, 0 quarter rows, 0 of 7 calculations with a value
+   tickers: 4330 4331 4332 4333 4334 4335 4336 4337 4338 4339 4340 4342 4344 4345 4346 4347 4348 4349 4350 AGTHIA AKIC.AD BILDCO FH ICAP ORAS WAHA MASQ DHBK FALH IQCD MEZA QAMC QFLS.QA QOIS 108 201 412 413 429 438 505 508 514 529 633 BMUSC.BH AAIC DIDI
+   BEFORE: NO CASH FLOW STATEMENT | ONE INCOME-STATEMENT WINDOW | quarters note: none
+   AFTER:  NO FINANCIAL STATEMENTS | quarters note: none
+   NEW NOTE: NO FINANCIAL STATEMENTS: the source holds no reported figure from an income statement, balance sheet or cash flow statement for this company, and no quarterly result, so `statements` and `quarters` carry no number and no calculation here has a value. There is no reported revenue, earnings, asset, liability, equity, cash flow, share count or quarterly result for this company in this dataset. Do not state, estimate or recall one, and do not cite [P9] for one: say that the statements are not available.
+
+== pair 2: 24 tickers, statements ['Income Statement', 'Balance Sheet', '(none)'] with 65 rows, 0 quarter rows, 2 of 7 calculations with a value
+   tickers: 8010 8012 8020 8030 8040 8050 8070 8100 8120 8150 8160 8170 8180 8190 8200 8210 8230 8240 8250 8260 8280 8300 8310 8311
+   BEFORE: NO CASH FLOW STATEMENT | ONE INCOME-STATEMENT WINDOW | A SECTOR STANDING (PERCENTILE) IN P2 IS A RANK INSIDE THE PI | quarters note: none
+   AFTER:  NO CASH FLOW STATEMENT | ONE INCOME-STATEMENT WINDOW | A SECTOR STANDING (PERCENTILE) IN P2 IS A RANK INSIDE THE PI | quarters note: none
+   NEW NOTE: ONE INCOME-STATEMENT WINDOW: twelve months to 2026-06 is available and the prior year's income statement is not. Year-on-year revenue or earnings cannot be compared from this dataset, and it holds no single quarters: this window is the only income history there is.
+
+== pair 3: 2 tickers, statements [] with 0 rows, 5 quarter rows, 0 of 7 calculations with a value
+   tickers: ALFIRDOU TAALEEM
+   BEFORE: NO CASH FLOW STATEMENT | ONE INCOME-STATEMENT WINDOW | quarters note: yes
+   AFTER:  NO ANNUAL STATEMENTS | quarters note: yes
+   NEW NOTE: NO ANNUAL STATEMENTS: the source holds no full-year or trailing-window figure from an income statement, balance sheet or cash flow statement for this company. The single quarters in `quarters` are reported income-statement figures and the only reported figures here: quote each with the quarter it covers. There is no annual income-statement figure, and no balance-sheet or cash-flow figure, in this dataset, and the quarters are not one; do not state, estimate or recall one, and do not cite [P9] for one.
+   NEW QUARTERS NOTE: each column is one quarter as reported, standalone and not cumulative. There is no annual income-statement figure for this company in `statements`, and these quarters are not one: quote each with the quarter it covers
+
+== pair 4: 1 tickers, statements ['Income Statement', 'Balance Sheet', '(none)'] with 65 rows, 0 quarter rows, 0 of 6 calculations with a value
+   tickers: 8060
+   BEFORE: NO CASH FLOW STATEMENT | ONE INCOME-STATEMENT WINDOW | A SECTOR STANDING (PERCENTILE) IN P2 IS A RANK INSIDE THE PI | quarters note: none
+   AFTER:  NO CASH FLOW STATEMENT | ONE INCOME-STATEMENT WINDOW | A SECTOR STANDING (PERCENTILE) IN P2 IS A RANK INSIDE THE PI | quarters note: none
+   NEW NOTE: ONE INCOME-STATEMENT WINDOW: twelve months to 2026-09 is available and the prior year's income statement is not. Year-on-year revenue or earnings cannot be compared from this dataset, and it holds no single quarters: this window is the only income history there is.
+
+== pair 5: 1 tickers, statements ['Balance Sheet'] with 10 rows, 5 quarter rows, 0 of 7 calculations with a value
+   tickers: 232
+   BEFORE: NO CASH FLOW STATEMENT | ONE INCOME-STATEMENT WINDOW | NO SECTOR RANKINGS FOR THIS COMPANY | quarters note: yes
+   AFTER:  NO CASH FLOW STATEMENT | NO ANNUAL INCOME STATEMENT | NO SECTOR RANKINGS FOR THIS COMPANY | quarters note: yes
+   NEW NOTE: NO CASH FLOW STATEMENT: the source's pages for this company carry a balance sheet and single income-statement quarters only. Operating cash flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and dividend cover cannot be tested against annual earnings or cash.
+   NEW NOTE: NO ANNUAL INCOME STATEMENT: the source holds no full-year or trailing-window income statement for this company. The single quarters in `quarters` are its only reported income figures: quote each with the quarter it covers. There is no annual revenue, earnings, margin or earnings per share in this dataset, and the quarters are not one; do not state, estimate or recall one.
+   NEW QUARTERS NOTE: each column is one quarter as reported, standalone and not cumulative. There is no annual income-statement figure for this company in `statements`, and these quarters are not one: quote each with the quarter it covers
+
+the unchanged tickers, by their notes' first words:
+    243  NO CASH FLOW STATEMENT | A SECTOR STANDING (PERCENTILE) IN P2 IS A RANK INSIDE THE PI
+    210  NO CASH FLOW STATEMENT | ONE INCOME-STATEMENT WINDOW | A SECTOR STANDING (PERCENTILE) IN P2 IS A RANK INSIDE THE PI
+    112  NO CASH FLOW STATEMENT | NO SECTOR RANKINGS FOR THIS COMPANY
+     50  NO CASH FLOW STATEMENT | BANK | NO SECTOR RANKINGS FOR THIS COMPANY
+     15  NO CASH FLOW STATEMENT | ONE INCOME-STATEMENT WINDOW | BANK | NO SECTOR RANKINGS FOR THIS COMPANY
+      5  A SECTOR STANDING (PERCENTILE) IN P2 IS A RANK INSIDE THE PI
+      3  NO SECTOR RANKINGS FOR THIS COMPANY
+[exit 0]
+
+### 8. what the room is told, from beta's own P9 (the candidate's pack code, run here; no model)
+$ GET /evidence for 4330 ALFIRDOU 232 8010 2222; no_statements_note
+pack code from: C:\AlphaCouncil-Staging\deploy-p9\api\app\debate\pack.py
+
+== 4330: statements [] | quarter rows 0
+   LIMITATION: NO FINANCIAL STATEMENTS: the source holds no reported figure from an income statement, balance sheet or cash flow statement for this company, and no quarterly result, so `statements` and `quarters` carry no number and no calculation here has a value. There is no reported revenue, earnings, asset, liability, equity, cash flow, share count or quarterly result for this company in this dataset. Do not state, estimate or recall one, and do not cite [P9] for one: say that the statements are not available.
+   PACK NOTE: NO FINANCIAL STATEMENTS IN THIS PACK ([P9] holds no reported statement figure for this company): it holds no income statement, balance sheet, cash flow statement or quarterly results for this company. Where a brief sends a seat to [P9]'s statements, the seat says plainly that they are not available and argues from the datasets that are here. Every figure a seat quotes must be one these datasets show: a statement figure stated, estimated or recalled from memory is invented, whatever tag it carries.
+
+== ALFIRDOU: statements [] | quarter rows 5
+   QUARTERS NOTE: each column is one quarter as reported, standalone and not cumulative. There is no annual income-statement figure for this company in `statements`, and these quarters are not one: quote each with the quarter it covers
+   LIMITATION: NO ANNUAL STATEMENTS: the source holds no full-year or trailing-window figure from an income statement, balance sheet or cash flow statement for this company. The single quarters in `quarters` are reported income-statement figures and the only reported figures here: quote each with the quarter it covers. There is no annual income-statement figure, and no balance-sheet or cash-flow figure, in this dataset, and the quarters are not one; do not state, estimate or recall one, and do not cite [P9] for one.
+   PACK NOTE: NO ANNUAL FINANCIAL STATEMENTS IN THIS PACK: [P9] holds single income-statement quarters only, and no full-year or trailing-window income statement, balance sheet or cash flow statement figure. The quarters in [P9] `quarters` are reported: quote each with the quarter it covers, and do not present them as an annual figure. Where a brief sends a seat to [P9]'s statements, the seat says plainly that the annual statements are not available and argues from the datasets that are here. Every figure a seat quotes must be one these datasets show: a statement figure stated, estimated or recalled from memory is invented, whatever tag it carries.
+
+== 232: statements [('Balance Sheet', 10)] | quarter rows 5
+   QUARTERS NOTE: each column is one quarter as reported, standalone and not cumulative. There is no annual income-statement figure for this company in `statements`, and these quarters are not one: quote each with the quarter it covers
+   LIMITATION: NO CASH FLOW STATEMENT: the source's pages for this company carry a balance sheet and single income-statement quarters only. Operating cash flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and dividend cover cannot be tested against annual earnings or cash.
+   LIMITATION: NO ANNUAL INCOME STATEMENT: the source holds no full-year or trailing-window income statement for this company. The single quarters in `quarters` are its only reported income figures: quote each with the quarter it covers. There is no annual revenue, earnings, margin or earnings per share in this dataset, and the quarters are not one; do not state, estimate or recall one.
+   LIMITATION: NO SECTOR RANKINGS FOR THIS COMPANY: the pipeline ranks its gauges inside the `bank` peer class, which on 2026-10-29 held 204 tickers of which 53 are banks. A rank in that class is not a rank against banks, so P2 carries the values with no sector standing (percentile). The peer LIST in P5 is unaffected - it comes from the exchange's own sector classification, not from this detection.
+   PACK NOTE: None
+
+== 8010: statements [('Income Statement', 30), ('Balance Sheet', 34), ('(none)', 1)] | quarter rows 0
+   LIMITATION: NO CASH FLOW STATEMENT: the source's pages for this company carry an income statement and a balance sheet only. Operating cash flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and dividend cover can be tested against earnings only, never against cash.
+   LIMITATION: ONE INCOME-STATEMENT WINDOW: twelve months to 2026-06 is available and the prior year's income statement is not. Year-on-year revenue or earnings cannot be compared from this dataset, and it holds no single quarters: this window is the only income history there is.
+   LIMITATION: A SECTOR STANDING (PERCENTILE) IN P2 IS A RANK INSIDE THE PIPELINE'S OWN `insurance` PEER CLASS, not inside the sector the exchange publishes, and higher is better on every metric. On 2026-10-29 that class held none of the 140 tickers the pipeline misfiled as banks, and all 85 of its scored rows are unchanged when the misfiling is corrected.
+   PACK NOTE: None
+
+== 2222: statements [('Income Statement', 18), ('Balance Sheet', 34)] | quarter rows 8
+   QUARTERS NOTE: each column is one quarter as reported, standalone and not cumulative; the annual figures above are the sum of four consecutive columns of this kind
+   LIMITATION: NO CASH FLOW STATEMENT: the source's pages for this company carry an income statement and a balance sheet only. Operating cash flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and dividend cover can be tested against earnings only, never against cash.
+   LIMITATION: ONE INCOME-STATEMENT WINDOW: twelve months to 2026-09 is available and the prior year's income statement is not, because the source serves a rolling five-quarter grid. Year-on-year revenue or earnings cannot be compared from this dataset; the single quarters are the history there is.
+   LIMITATION: A SECTOR STANDING (PERCENTILE) IN P2 IS A RANK INSIDE THE PIPELINE'S OWN `non_bank` PEER CLASS, not inside the sector the exchange publishes, and higher is better on every metric. On 2026-10-29 that class was short the 140 tickers the pipeline had misfiled as banks; adding them back moves these ranks by at most 4.7 percentile points, and 1,343 of its 1,673 scored rows do not move at all.
+   PACK NOTE: None
+[exit 0]
+
+### 9. production is untouched, and its preflight for this commit (read-only; approves nothing)
+$ DEPLOY_BRANCH=release/p9-no-statements DEPLOY_SHA=$C deploy-production.sh --check
+deploy-production.sh equals c3bcff6's: exit 0
+checkout: C:/AlphaCouncil-Staging/deploy-p9
+branch:   release/p9-no-statements
+commit:   ea51de796cf3bbdbea21a45f35682335eab5a2f8 (equals DEPLOY_SHA)
+release:  /opt/alphacouncil-platform/prod/releases/ea51de796c
+beta now: ea51de796c
+prod now: /opt/alphacouncil-platform/prod/releases/026699b906
+prune:    5c18a3ae46 (a deploy keeps the 3 newest, ea51de796c first)
+nothing uploaded, built or switched (--check)
+rollback: releases/026699b906 (kept)
+preconditions met (this check approves nothing; deploying needs the owner's go-ahead)
+[exit 0]
+
+### 10. the monitor (status only: reads, saves and sends nothing)
+$ python3 -I /usr/local/lib/acp-monitor/prod-monitor.py status
+ok      alphacouncil.tech/home: https://alphacouncil.tech/home answered 200 in 37 ms
+ok      alphacouncil.tech/api/v1/health: https://alphacouncil.tech/api/v1/health answered 200 in 12 ms
+ok      market data: the health check reports market data: ok
+ok      acp-prod-api: acp-prod-api is active
+ok      acp-prod-web: acp-prod-web is active
+ok      Pro renewals job: the last run exited 0
+ok      Pro renewals timer: acp-prod-billing.timer is active
+-       Moyasar for renewals: no renewal run since the last round
+ok      database backup job: the last run exited 0
+ok      database backup timer: acp-db-backup.timer is active
+ok      off-server backup copy: the owner's computer last copied the backups at 2026-11-07 06:00 UTC (09:00 Riyadh), 0.5 days ago (79 files, newest acp_prod-20261107T013253Z.dump)
+ok      disk /: / is 42% full (121.9 GB free)
+ok      disk /boot: /boot is 15% full (0.7 GB free)
+ok      TLS certificate: the certificate for alphacouncil.tech expires on 2027-01-21 16:54 UTC (19:54 Riyadh), in 75 days
+ok      model account credit: $22.85 left on the model account
+alerts emailed: 0 in 24 hours (limit 8), 11 in 30 days (limit 60)
+outside check: PING_URL is set, pinged at the end of every round
+[exit 0]
