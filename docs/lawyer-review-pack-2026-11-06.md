@@ -336,10 +336,11 @@ page describes this as collected "from public market sources", and does not name
 2. Does an "impact" read on a listed company's news come closer to advice than the rest of the site
    (see (b))?
 
-**(h) Sending data outside the Kingdom.** Questions go to outside AI providers, which may process them
-outside the Kingdom, and emails go through MailerSend (§5.2). *Qualified 2026-11-07:* where those companies process
-the data was not verified. Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow
-or the contracts with those providers need for that?
+**(h) Sending data outside the Kingdom.** When an AI feature calls an externally hosted model, the member's
+question and the company's data are sent to the configured AI service. Three things were not verified (§5.2):
+that requests are delivered, which companies serve them, and where those companies process them. Emails go
+through MailerSend. Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow or the
+contracts with those providers need for that?
 
 **(i) Monthly renewal.** Pro renews automatically on the saved card. What must checkout say about it,
 and must a reminder go out before each renewal?

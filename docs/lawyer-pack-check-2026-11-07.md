@@ -183,9 +183,14 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
        - **Not read:** production's values for all of these.
      - **Where the data is processed:** not verified. Neither the serving companies nor their countries are known
        from this check.
-   - **Now:** §5.2 and (h) keep the confirmed fact apart from the code's defaults. They mark the seats' and the
-     Chair's models for the owner to confirm. They say the data *may* be processed outside the Kingdom, and that the
-     companies, the countries and production's routing were not verified (review 89).
+   - **Now** (after reviews 89 to 92), §5.2 and (h) keep three things apart:
+     - **Configured:** production's public status addresses report the model ids: the Copilot uses
+       `deepseek/deepseek-v3.2`; the seats use `deepseek/deepseek-v4-pro`; the Chair uses
+       `anthropic/claude-sonnet-5.5`.
+     - **Code defaults:** the code's defaults and routing.
+     - **Not verified:** no request was observed using these models. Nor were the serving companies, their countries
+       or production's routing verified.
+   - **The owner's list:** these models are no longer on it. The owner has three facts left to confirm.
 6. **What beta shares with production (pack §2).**
    - **The pack said:** beta "runs the same release on the same data".
    - **What is known:**
