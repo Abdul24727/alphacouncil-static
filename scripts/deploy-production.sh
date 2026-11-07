@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
-# Deploy the committed HEAD of this repo to production, alphacouncil.tech (docs/production.md).
+# Deploy a committed revision of this repo to production, alphacouncil.tech (docs/production.md).
 #
 #   scripts/deploy-production.sh            # deploy HEAD (on branch `rebuild`, already live on beta)
 #   scripts/deploy-production.sh --setup    # first time: env files, units and the app database
-#   scripts/deploy-production.sh --check    # read-only: say what would be deployed and from where, then stop
+#   scripts/deploy-production.sh --check    # read-only: say what would be deployed and whether it may be, then
+#                                           # stop; exits 1 when a deploy would refuse
 #
-# Another reviewed branch is deployed only when named explicitly (DEPLOY_BRANCH=<branch>), from a checkout of it,
-# and only once beta runs that same HEAD.
+# Another reviewed branch is deployed only when named explicitly, together with the full commit approved for it
+# (DEPLOY_BRANCH=<branch> DEPLOY_SHA=<full 40-character commit>), from a checkout of it, and only once beta runs
+# that same commit. DEPLOY_SHA may also pin a `rebuild` deploy. The commit checked is the one archived and built.
 #
-# Production only gets what staging already runs: HEAD must be the release behind
+# Production only gets what staging already runs: the commit must be the release behind
 # beta.alphacouncil.tech. Pointing alphacouncil.tech at this app (nginx) is a separate,
 # manual step with its rollback in docs/production.md.
 set -euo pipefail
@@ -19,26 +21,50 @@ ENVDIR=/etc/alphacouncil-platform/prod
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
 
+refuse() { echo "refusing: $*" >&2; exit 1; }
 expected="${DEPLOY_BRANCH:-rebuild}"
 branch="$(git rev-parse --abbrev-ref HEAD)"
-[[ "$branch" == "$expected" ]] || { echo "refusing: on branch '$branch', expected '$expected' (DEPLOY_BRANCH names another reviewed branch)" >&2; exit 1; }
-[[ -z "$(git status --porcelain --untracked-files=no)" ]] || { echo "refusing: uncommitted changes" >&2; exit 1; }
-sha="$(git rev-parse --short=10 HEAD)"
+[[ "$branch" == "$expected" ]] || refuse "on branch '$branch', expected '$expected' (DEPLOY_BRANCH names another reviewed branch)"
+[[ "$expected" == rebuild || -n "${DEPLOY_SHA:-}" ]] || refuse "DEPLOY_BRANCH=$expected needs DEPLOY_SHA, the full commit approved for it"
+[[ -z "$(git status --porcelain --untracked-files=no)" ]] || refuse "uncommitted changes"
+commit="$(git rev-parse --verify "HEAD^{commit}")"
+if [[ -n "${DEPLOY_SHA:-}" ]]; then
+  [[ "$DEPLOY_SHA" =~ ^[0-9a-f]{40}$ ]] || refuse "DEPLOY_SHA must be a full 40-character commit, got '$DEPLOY_SHA'"
+  [[ "$commit" == "$DEPLOY_SHA" ]] || refuse "HEAD of '$branch' is $commit, not the approved DEPLOY_SHA $DEPLOY_SHA"
+fi
+sha="${commit:0:10}"
 rel="$BASE/releases/$sha"
 ssh_() { ssh -o BatchMode=yes "$HOST" "$@"; }
 
 staged="$(ssh_ 'basename "$(readlink -f /opt/alphacouncil-platform/current)"')"
 if [[ "${1:-}" == "--check" ]]; then
+  now="$(ssh_ "readlink -f $BASE/current")"
+  existing="$(ssh_ "ls -1t $BASE/releases")"
+  # A deploy makes $sha the newest release, then keeps the 3 newest.
+  prune="$( { grep -vx "$sha" <<<"$existing" || true; } | tail -n +3)"
+  rollback="$(basename "$now")"
   echo "checkout: $ROOT"
   echo "branch:   $branch"
-  echo "HEAD:     $(git rev-parse HEAD)"
+  echo "commit:   $commit${DEPLOY_SHA:+ (equals DEPLOY_SHA)}"
   echo "release:  $rel"
-  echo "beta now: $staged ($([[ "$staged" == "$sha" ]] && echo "matches HEAD" || echo "does NOT match HEAD: a deploy would refuse"))"
-  echo "prod now: $(ssh_ 'readlink -f /opt/alphacouncil-platform/prod/current')"
+  echo "beta now: $staged"
+  echo "prod now: $now"
+  echo "prune:    $(tr '\n' ' ' <<<"${prune:-nothing}")(a deploy keeps the 3 newest, $sha first)"
   echo "nothing uploaded, built or switched (--check)"
+  ready=1
+  if [[ "$rollback" == "$sha" ]]; then
+    echo "rollback: production already runs $sha"
+  elif grep -qx "$rollback" <<<"$prune"; then
+    echo "NOT READY: the rollback release $rollback would be pruned" >&2; ready=0
+  else
+    echo "rollback: releases/$rollback (kept)"
+  fi
+  [[ "$staged" == "$sha" ]] || { echo "NOT READY: beta runs $staged, not $sha. Deploy to staging and check it first." >&2; ready=0; }
+  (( ready )) || exit 1
+  echo "ready"
   exit 0
 fi
-[[ "$staged" == "$sha" ]] || { echo "refusing: beta runs $staged, HEAD is $sha. Deploy to staging and check it first." >&2; exit 1; }
+[[ "$staged" == "$sha" ]] || refuse "beta runs $staged, the commit is $sha. Deploy to staging and check it first."
 
 if [[ "${1:-}" == "--setup" ]]; then
   echo "== one-time setup"
@@ -80,8 +106,8 @@ systemctl daemon-reload && systemctl enable acp-prod-api acp-prod-web && systemc
 REMOTE
 fi
 
-echo "== upload $sha"
-git archive --format=tar HEAD | ssh_ "rm -rf $rel && mkdir -p $rel && tar -x -C $rel"
+echo "== upload $sha ($commit)"
+git archive --format=tar "$commit" | ssh_ "rm -rf $rel && mkdir -p $rel && tar -x -C $rel"
 
 echo "== build"
 ssh_ "bash -s" <<EOF
