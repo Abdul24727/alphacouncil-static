@@ -1,0 +1,81 @@
+P9 release candidate checks, run 2026-11-07 13:34:02 UTC
+
+### 1. the candidate: branch, commit, parent, clean tree
+$ git status -sb; git log -2; git rev-parse HEAD^
+## release/p9-no-statements
+ea51de7 P9: tell the room when a company has no financial statements, and never misstate what P9 holds
+026699b P9's limitation notes: call the P2 figure a sector standing (percentile), higher is better
+commit: ea51de796cf3bbdbea21a45f35682335eab5a2f8
+parent: 026699b906ea3a513b4f2dbfc37672fa68ee9d42 (production 026699b906ea3a513b4f2dbfc37672fa68ee9d42)
+[exit 0]
+
+### 2. exactly the four P9 files changed from production, whitespace clean
+$ git diff --name-status 026699b906ea3a513b4f2dbfc37672fa68ee9d42 HEAD; git diff --check 026699b906ea3a513b4f2dbfc37672fa68ee9d42 HEAD; git show --check HEAD
+M	api/app/debate/pack.py
+M	api/app/evidence.py
+M	api/tests/test_debate.py
+M	api/tests/test_evidence.py
+[exit 0]
+ea51de7
+
+[exit 0]
+
+### 3. the four files' blobs: candidate, rebuild at 2ee892a (the reviewed fix), production before
+$ git rev-parse <commit>:<file>
+  api/app/evidence.py  candidate=476192b1af125d74085977129932ad907ec93e36  rebuild=476192b1af125d74085977129932ad907ec93e36  SAME  production-before=03d3a26446f684197697b66c20036f9580ef0cdb
+  api/app/debate/pack.py  candidate=b6510afd00e61d9bd4f0bb444eb7aa3c66b12932  rebuild=b6510afd00e61d9bd4f0bb444eb7aa3c66b12932  SAME  production-before=34abca7fddcce9737c6072b71626010adc18226e
+  api/tests/test_evidence.py  candidate=0e093b78ab7388439c5d6df44b01c4a765acc5d8  rebuild=0e093b78ab7388439c5d6df44b01c4a765acc5d8  SAME  production-before=439df97d59eb29774afc6773fc9e6cd324404262
+  api/tests/test_debate.py  candidate=52de94c357552417d7abc0a6f5dc446f5935bfe1  rebuild=52de94c357552417d7abc0a6f5dc446f5935bfe1  SAME  production-before=ea02a575be6a7db68f941ce45b682eeafa791788
+
+### 4. none of the rejected prototype
+$ test -e api/app/debate/presenter.py; grep -c debate_engine api/app/settings.py; git diff 026699b906ea3a513b4f2dbfc37672fa68ee9d42 HEAD -- api/app/routers api/app/settings.py web
+presenter.py absent
+debate_engine in settings.py: 0
+routers, settings and web: identical to production
+[exit 0]
+
+### 5. the tests import the candidate's own code
+$ cd /c/AlphaCouncil-Staging/deploy-p9/api && python -c 'import app.evidence, app.debate.pack'
+C:\AlphaCouncil-Staging\deploy-p9\api\app\evidence.py
+C:\AlphaCouncil-Staging\deploy-p9\api\app\debate\pack.py
+[exit 0]
+
+### 6. the P9 tests on the candidate
+$ pytest -v -k <P9 tests> tests/test_evidence.py tests/test_debate.py
+====================== 21 passed, 68 deselected in 0.46s ======================
+[exit 0]
+====================== 4 passed, 36 deselected in 0.17s =======================
+[exit 0]
+
+### 7. the related files and the whole API suite on the candidate
+$ pytest -q tests/test_evidence.py tests/test_debate.py tests/test_copilot.py; pytest -q
+153 passed in 26.50s
+[exit 0]
+602 passed, 11 skipped in 86.66s (0:01:26)
+[exit 0]
+
+### 8. ruff: each changed file on the candidate against production
+$ ruff check --output-format concise
+  app/evidence.py  production=10 candidate=10
+  app/debate/pack.py  production=0 candidate=0
+  tests/test_evidence.py  production=10 candidate=10
+  tests/test_debate.py  production=2 candidate=2
+
+### 9. review 83's reproductions and the P9 demonstration, run on the candidate's code
+$ cd /c/AlphaCouncil-Staging/deploy-p9/api && python p9-review83-repro.py; python p9-after.py
+[exit 0]
+identical to p9-review83-after.txt (rebuild)
+[exit 0]
+identical to p9-after.txt (rebuild)
+
+### 10. the web
+$ git diff --quiet 026699b906ea3a513b4f2dbfc37672fa68ee9d42 HEAD -- web
+[exit 0]
+the web tree is production's, byte for byte: no web build, typecheck, lint or test can differ from production's
+
+### 11. nothing pushed or deployed
+$ git ls-remote origin release/p9-no-statements; readlink beta/production current (read-only ssh)
+remote branch: 0 (0 = not pushed)
+beta: /opt/alphacouncil-platform/releases/026699b906
+production: /opt/alphacouncil-platform/prod/releases/026699b906
+[exit 0]

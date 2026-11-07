@@ -1,0 +1,20 @@
+read-only staging preflight for the P9 candidate, run 2026-11-07 13:37:49 UTC; approves nothing
+
+$ ssh root@alphacouncil.tech "ls -1t releases; ls -1t prod/releases"
+beta: 026699b906 b5655a5064 5c18a3ae46
+production: 026699b906 b5655a5064 5c18a3ae46
+[exit 0]
+
+$ cd /c/AlphaCouncil-Staging/deploy-p9 && DEPLOY_BRANCH=release/p9-no-statements DEPLOY_SHA=ea51de796cf3bbdbea21a45f35682335eab5a2f8 bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check
+checkout: C:/AlphaCouncil-Staging/deploy-p9
+branch:   release/p9-no-statements
+commit:   ea51de796cf3bbdbea21a45f35682335eab5a2f8 (equals DEPLOY_SHA)
+archive:  3837 paths from ea51de796cf3bbdbea21a45f35682335eab5a2f8 (committed files only)
+release:  /opt/alphacouncil-platform/releases/ea51de796c
+beta now: /opt/alphacouncil-platform/releases/026699b906
+releases: 026699b906 b5655a5064 5c18a3ae46
+prune:    5c18a3ae46 (a deploy keeps the 3 newest, ea51de796c first)
+nothing uploaded, built or switched (--check)
+rollback: releases/026699b906 (kept)
+preconditions met (this check approves nothing; deploying needs the owner's go-ahead)
+[exit 0]

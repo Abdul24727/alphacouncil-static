@@ -408,6 +408,15 @@ Older entries: `changelog-archive.md`.
           in the suite.
         - **On production's bytes:** the full patch applied to a fresh copy of production's four files gives exactly
           `rebuild`'s blobs.
+      - **The fix-only release candidate** (`docs/release-readiness-p9-2026-11-07.md`):
+        - **What it is:** commit `ea51de796cf3bbdbea21a45f35682335eab5a2f8` on local branch
+          `release/p9-no-statements`, in worktree `C:/AlphaCouncil-Staging/deploy-p9`. It is production's
+          `026699b906` plus the reviewed patch, exactly the four P9 files, with the same blobs as `rebuild` at
+          `2ee892a`.
+        - **Its checks, run in its own tree:** 602 passed, 11 skipped (production's 578 plus 24 new); lint the same
+          as production; the prototype absent; `web/` identical to production's.
+        - **The preflight:** the staging `--check` passes, pruning `5c18a3ae46` and keeping `026699b906`.
+        - **Not done:** nothing deployed or pushed.
       - **Review 84 ACCEPTED the P9 fix.**
         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
           cases), and the patch rebuilds the four files byte for byte on production's bytes.
