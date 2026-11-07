@@ -1,8 +1,11 @@
-P9 on beta for every ticker, read 2026-11-07 through the tunnel, GET only (p9-sweep-values.py).
-Counted by reported numbers: a row whose cells after the label are null holds none (review 80).
+P9 on beta for every ticker, read 2026-11-07 through the tunnel, GET only (p9-sweep-values.py): p9-sweep-values.json
+Classified by reported numbers per company and section (review 80).
 tickers read: 714 | non-200: 0
-statement rows present but no number in them: 0 []
-quarter rows present but no number in them: 0 []
+companies whose statement sections have rows but no number at all: 0 []
+companies whose quarter series has rows but no number at all: 0 []
+individual all-null rows: NOT MEASURED in this file (see p9-sweep-rows.json)
+
+an income statement, one window and no quarterly figure (told 'the single quarters are the history there is', review 81): 25: 8010 8012 8020 8030 8040 8050 8060 8070 8100 8120 8150 8160 8170 8180 8190 8200 8210 8230 8240 8250 8260 8280 8300 8310 8311
 
 A. no annual statement figure and no quarterly figure: 48
   by exchange: {'TADAWUL': 19, 'ADX': 7, 'DFM': 1, 'QSE': 7, 'KSE': 11, 'BSE': 1, 'MSM': 2}

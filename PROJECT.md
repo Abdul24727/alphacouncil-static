@@ -368,6 +368,19 @@ Older entries: `changelog-archive.md`.
           - the sweep is redone by numbers (`p9-sweep-values.*`).
         - **A table test:** seven cases, checked word for word.
         - **The results:** 144 in the named files, and 611 passed, 10 skipped in the suite.
+      - **Review 81 said FIX:**
+        - **One window with no quarters:** 25 companies (8010 to 8311) were told "the single quarters are the history
+          there is".
+        - **The quarters' note:** it read the raw rows, not what P9 shows after the row cap.
+        - **The record:** it claimed a per-row fact the sweep had not measured.
+        - **Fixed:**
+          - the notes are decided from the statements as shown (`shown`, `shown_years`, `quarters_note`, settled
+            after `fit`);
+          - one window with no quarters gets its own wording;
+          - a per-row sweep: 0 of 30,761 statement rows and 0 of 1,726 quarter rows without a number, and 48/2/1/663
+            again;
+          - the four files' blobs are the same at `73d7140` and `026699b906`.
+        - **The tests:** a ten-case table, 147 in the named files, and 614 passed, 10 skipped in the suite.
     - **PRODUCTION RELEASED 2026-11-07 on the owner's go-ahead** ("Yes, deploy to production"): alphacouncil.tech
       runs `026699b906ea3a513b4f2dbfc37672fa68ee9d42`, the same as beta
       (`docs/release-production-sector-standing-2026-11-07.md`).

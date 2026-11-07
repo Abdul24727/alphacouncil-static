@@ -43,6 +43,14 @@ show("4. balance-sheet-only P9 (no income figure at all)", Items([TA900], []))
 show("4b. a balance sheet and income-statement quarters (232's case on 2026-11-07)", Items([TA900], [Q77]))
 show("5. normal: an income statement and a balance sheet, two years", Items(TWO_YEARS, []))
 show("5b. normal, with quarters (the quarters' note is the one it always was)", Items(TWO_YEARS, [Q77]))
+ONE_YEAR = [cell("Net Income", "Income Statement", 2025, 50.0), TA900]
+show("5c. one income-statement year, no quarters (8010 and 24 others on 2026-11-07; review 81)", Items(ONE_YEAR, []))
+show("5d. one income-statement year, with quarters (the old wording stands)", Items(ONE_YEAR, [Q77]))
+CAPPED = [Cell(label="Net Income", section="Income Statement", fiscal_year=2025, value=None, item_index=i)
+          for i in range(30)] + [Cell(label="Zakat & Tax", section="Income Statement", fiscal_year=2025, value=5.0,
+                                      item_index=30)]
+show("5e. review 81's capped case: the only income figure falls outside the 30-row cap, so none is shown",
+     Items(CAPPED, [Q77]))
 
 print("\n== 6. packs with no P9, and with a P9 error: the note, and that it comes before the data")
 for name, data in (("no P9", {"P1": {"quote": 1}}), ("P9 error", {"P1": {"quote": 1}, "P9": {"error": "unavailable"}})):

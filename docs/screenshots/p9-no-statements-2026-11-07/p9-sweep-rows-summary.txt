@@ -1,0 +1,32 @@
+P9 on beta for every ticker, read 2026-11-07 through the tunnel, GET only (p9-sweep-values.py): p9-sweep-rows.json
+Classified by reported numbers per company and section (review 80).
+tickers read: 714 | non-200: 0
+companies whose statement sections have rows but no number at all: 0 []
+companies whose quarter series has rows but no number at all: 0 []
+individual statement rows with no number: 0 of 30761, in 0 companies
+individual quarter rows with no number: 0 of 1726, in 0 companies
+
+an income statement, one window and no quarterly figure (told 'the single quarters are the history there is', review 81): 25: 8010 8012 8020 8030 8040 8050 8060 8070 8100 8120 8150 8160 8170 8180 8190 8200 8210 8230 8240 8250 8260 8280 8300 8310 8311
+
+A. no annual statement figure and no quarterly figure: 48
+  by exchange: {'TADAWUL': 19, 'ADX': 7, 'DFM': 1, 'QSE': 7, 'KSE': 11, 'BSE': 1, 'MSM': 2}
+  with reported quarters: 0 | calculations with a value: 0 of 334
+  limitations P9 gave them (first words): {'NO CASH FLOW STATEMENT': 48, 'ONE INCOME-STATEMENT WINDOW': 48}
+  tickers: 4330 4331 4332 4333 4334 4335 4336 4337 4338 4339 4340 4342 4344 4345 4346 4347 4348 4349 4350 AGTHIA AKIC.AD BILDCO FH ICAP ORAS WAHA MASQ DHBK FALH IQCD MEZA QAMC QFLS.QA QOIS 108 201 412 413 429 438 505 508 514 529 633 BMUSC.BH AAIC DIDI
+
+B. no annual statement figure, reported quarters: 2
+  by exchange: {'DFM': 2}
+  with reported quarters: 2 | calculations with a value: 0 of 14
+  limitations P9 gave them (first words): {'NO CASH FLOW STATEMENT': 2, 'ONE INCOME-STATEMENT WINDOW': 2}
+  tickers: ALFIRDOU[q:25 numbers, 2022-03,2023-03,2024-03,2025-03,2026-03] TAALEEM[q:25 numbers, 2022-08,2023-08,2024-08,2025-08,2026-08]
+
+C. a partial annual statement (no income-statement figure or no balance-sheet figure): 1
+  by exchange: {'KSE': 1}
+  with reported quarters: 1 | calculations with a value: 0 of 7
+  limitations P9 gave them (first words): {'NO CASH FLOW STATEMENT': 1, 'ONE INCOME-STATEMENT WINDOW': 1, 'NO SECTOR RANKINGS FOR THIS COMPANY': 1}
+  tickers: 232[q:25 numbers, 2021-12,2022-08,2023-08,2024-08,2025-08][held:Balance Sheet]
+
+D. an income statement and a balance sheet with figures: 663
+  by exchange: {'TADAWUL': 250, 'ADX': 94, 'DFM': 61, 'QSE': 48, 'KSE': 116, 'BSE': 38, 'MSM': 56}
+  with reported quarters: 225 | calculations with a value: 2786 of 5301
+  limitations P9 gave them (first words): {'NO CASH FLOW STATEMENT': 655, 'ONE INCOME-STATEMENT WINDOW': 250, 'BANK': 65, 'NO SECTOR RANKINGS FOR THIS COMPANY': 180, 'A SECTOR STANDING (PERCENTILE) IN P2 IS A RANK INSIDE THE PI': 483}

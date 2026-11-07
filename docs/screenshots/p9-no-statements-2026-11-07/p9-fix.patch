@@ -75,28 +75,38 @@ index 34abca7..1cef137 100644
      if not isinstance(overview, dict) or not isinstance(overview.get("returns"), dict):
          return overview
 diff --git a/api/app/evidence.py b/api/app/evidence.py
-index 03d3a26..c3641af 100644
+index 03d3a26..34fd4c1 100644
 --- a/api/app/evidence.py
 +++ b/api/app/evidence.py
-@@ -1484,10 +1484,16 @@ def bounded_quarters(items: Items) -> QuarterSeries | None:
+@@ -1484,11 +1484,22 @@ def bounded_quarters(items: Items) -> QuarterSeries | None:
          rows.append([label, *[by_end.get(e) for e in ends]])
      if not rows:
          return None
-+    # The note may point at annual figures only where `statements` holds an income-statement
-+    # number; without one it would describe figures that are not there (review 80).
-+    annual = any(r.section == "Income Statement" and r.value is not None for r in items.rows)
-     return QuarterSeries(
-         section="Income Statement",
-         note="each column is one quarter as reported, standalone and not cumulative; the annual"
+-    return QuarterSeries(
+-        section="Income Statement",
+-        note="each column is one quarter as reported, standalone and not cumulative; the annual"
 -             " figures above are the sum of four consecutive columns of this kind",
-+             " figures above are the sum of four consecutive columns of this kind" if annual else
-+             "each column is one quarter as reported, standalone and not cumulative. There is no"
-+             " annual income-statement figure for this company in `statements`, and these quarters"
-+             " are not one: quote each with the quarter it covers",
-         columns=["label", *ends], rows=rows)
+-        columns=["label", *ends], rows=rows)
++    # Provisional: dataset_of sets the final note from the statements as shown (quarters_note).
++    annual = any(r.section == "Income Statement" and r.value is not None for r in items.rows)
++    return QuarterSeries(section="Income Statement", note=quarters_note(annual),
++                         columns=["label", *ends], rows=rows)
++
++
++def quarters_note(annual: bool) -> str:
++    """The quarters' note. It may point at annual figures only where the statements P9 shows hold an
++    income-statement number; without one it would describe figures that are not there (reviews 80
++    and 81)."""
++    if annual:
++        return ("each column is one quarter as reported, standalone and not cumulative; the annual"
++                " figures above are the sum of four consecutive columns of this kind")
++    return ("each column is one quarter as reported, standalone and not cumulative. There is no"
++            " annual income-statement figure for this company in `statements`, and these quarters"
++            " are not one: quote each with the quarter it covers")
 
 
-@@ -1509,17 +1515,82 @@ RANKING_NARROWED = (
+ # What a seat has to be told about a percentile it reads in P2. The pipeline's peer classes
+@@ -1509,23 +1520,119 @@ RANKING_NARROWED = (
  )
 
 
@@ -143,22 +153,45 @@ index 03d3a26..c3641af 100644
 +                   "Cash Flow Statement": "a cash flow statement"}
 +
 +
++def is_number(v: Any) -> bool:
++    return isinstance(v, (int, float)) and not isinstance(v, bool)
++
++
 +def has_figure(rows: list[list[Any]]) -> bool:
 +    """Does any row carry a reported number after its label? A row of nulls is not a figure."""
-+    return any(isinstance(v, (int, float)) and not isinstance(v, bool) for row in rows for v in row[1:])
++    return any(is_number(v) for row in rows for v in row[1:])
++
++
++def shown(statements: list[BoundedStatement]) -> list[str]:
++    """The statements P9 shows with at least one reported number, in STATEMENT_NAMES order. Read
++    from the statements as shown (after the row cap and any budget trim), not from the raw rows,
++    so a note never describes a figure the dataset does not carry (review 81)."""
++    held = {s.section for s in statements if has_figure(s.rows)}
++    return [s for s in STATEMENT_NAMES if s in held]
++
++
++def shown_years(statements: list[BoundedStatement], section: str) -> int:
++    """How many of a statement's year columns carry at least one reported number, as shown."""
++    for s in statements:
++        if s.section == section:
++            return sum(1 for i in range(1, len(s.columns)) if any(len(row) > i and is_number(row[i]) for row in s.rows))
++    return 0
 +
 +
 +def limitations_of(items: Items, sector: str, peer_class: str | None = None,
-+                   quarters: QuarterSeries | None = None) -> list[str]:
++                   quarters: QuarterSeries | None = None,
++                   statements: list[BoundedStatement] | None = None) -> list[str]:
      """What this evidence cannot answer. Said plainly, because a seat that does not know a gap
 -    exists will argue around it."""
-+    exists will argue around it. A statement counts as held only where it has a reported number,
-+    each one that does not is named as missing, and none is described as present without one.
-+    `quarters` is the series this dataset carries, so its figures are never called absent."""
++    exists will argue around it. A statement counts as held only where the statements as shown
++    carry a reported number, each one that does not is named as missing, and none is described as
++    present without one. `quarters` is the series this dataset carries, so its figures are never
++    called absent, and quarters it does not carry are never called present."""
      out: list[str] = []
 -    if "Cash Flow Statement" not in set(items.sections()):
-+    reported = {r.section for r in items.rows if r.value is not None}
-+    sections = [s for s in STATEMENT_NAMES if s in reported]
++    if statements is None:
++        statements = bounded_statements(items)
++    sections = shown(statements)
 +    quarterly = quarters is not None and has_figure(quarters.rows)
 +    has_income = "Income Statement" in sections
 +    if not sections:
@@ -182,30 +215,68 @@ index 03d3a26..c3641af 100644
 +               else "cannot be tested against earnings or cash."))
 +    if sections and not has_income:
 +        out.append(NO_ANNUAL_INCOME_STATEMENT if quarterly else NO_INCOME_STATEMENT)
-+    elif sections and len({r.fiscal_year for r in items.rows
-+                           if r.section == "Income Statement" and r.value is not None}) < 2:
++    elif sections and shown_years(statements, "Income Statement") < 2:
          p = items.period("Income Statement")
-         out.append(
-             f"ONE INCOME-STATEMENT WINDOW: {window_label(p) or 'one window'} is available and the"
-@@ -1590,6 +1661,7 @@ def dataset_of(
+-        out.append(
+-            f"ONE INCOME-STATEMENT WINDOW: {window_label(p) or 'one window'} is available and the"
+-            " prior year's income statement is not, because the source serves a rolling"
+-            " five-quarter grid. Year-on-year revenue or earnings cannot be compared from this"
+-            " dataset; the single quarters are the history there is.")
++        if quarterly:
++            out.append(
++                f"ONE INCOME-STATEMENT WINDOW: {window_label(p) or 'one window'} is available and the"
++                " prior year's income statement is not, because the source serves a rolling"
++                " five-quarter grid. Year-on-year revenue or earnings cannot be compared from this"
++                " dataset; the single quarters are the history there is.")
++        else:
++            # Review 81: 25 companies on 2026-11-07 had one window and no quarters, and were told
++            # "the single quarters are the history there is".
++            out.append(
++                f"ONE INCOME-STATEMENT WINDOW: {window_label(p) or 'one window'} is available and the"
++                " prior year's income statement is not. Year-on-year revenue or earnings cannot be"
++                " compared from this dataset, and it holds no single quarters: this window is the"
++                " only income history there is.")
+     flow, position = items.period("Income Statement"), items.period("Balance Sheet")
+     if flow.period_end and position.period_end and flow.period_end != position.period_end:
+         out.append(f"The income statement covers a window ending {flow.period_end} while the"
+@@ -1590,7 +1697,9 @@ def dataset_of(
      price: float | None = None,
      budget: int = DATASET_BUDGET,
  ) -> EvidenceDataset:
+-    return fit(EvidenceDataset(
++    statements = bounded_statements(items)
 +    quarters = bounded_quarters(items)
-     return fit(EvidenceDataset(
++    ds = fit(EvidenceDataset(
          ticker=ticker_key,
          currency=currency,
-@@ -1605,8 +1677,8 @@ def dataset_of(
+         unit="millions of the reporting currency, except share counts (millions of shares) and"
+@@ -1604,9 +1713,23 @@ def dataset_of(
+                " Where `aggregation` says the figures were reconstructed, `source_columns` names"
                 " the quarter-end columns added together.",
          sector=sector,
-         statements=bounded_statements(items),
+-        statements=bounded_statements(items),
 -        quarters=bounded_quarters(items),
++        statements=statements,
 +        quarters=quarters,
          calculations=calculations(items, sector=sector, dividends=dividends, price=price,
                                    currency=currency),
 -        limitations=limitations_of(items, sector, peer_class),
-+        limitations=limitations_of(items, sector, peer_class, quarters=quarters),
++        limitations=limitations_of(items, sector, peer_class, quarters=quarters, statements=statements),
      ), budget)
++    # The wording describes what the dataset finally shows (review 81). The row cap above and the
++    # budget trim in `fit` only ever remove rows, so a statement or a quarter can only stop being
++    # shown, never start: settle the notes on the shown content, trim again if the new wording is
++    # longer, and stop when nothing changes.
++    for _ in range(3):
++        limitations = limitations_of(items, sector, peer_class, quarters=ds.quarters, statements=ds.statements)
++        note = quarters_note("Income Statement" in shown(ds.statements)) if ds.quarters else None
++        if limitations == ds.limitations and (ds.quarters is None or ds.quarters.note == note):
++            break
++        ds.limitations = limitations
++        if ds.quarters is not None and note is not None:
++            ds.quarters.note = note
++        ds = fit(ds, budget)
++    return ds
 diff --git a/api/tests/test_debate.py b/api/tests/test_debate.py
 index ea02a57..52de94c 100644
 --- a/api/tests/test_debate.py
@@ -294,10 +365,10 @@ index ea02a57..52de94c 100644
 +    c.text("Net income was SAR 16,578 million [P9], so the payout is covered.")
 +    assert c.flags()["unverified"] == ["16,578"]
 diff --git a/api/tests/test_evidence.py b/api/tests/test_evidence.py
-index 439df97..4266e63 100644
+index 439df97..b99295d 100644
 --- a/api/tests/test_evidence.py
 +++ b/api/tests/test_evidence.py
-@@ -21,6 +21,9 @@ from app.evidence import (
+@@ -21,7 +21,11 @@ from app.evidence import (
      DISPUTED_PEER_NOTE,
      EPS_BASES_SUPPORTED,
      EQUITY_COMMON,
@@ -305,9 +376,11 @@ index 439df97..4266e63 100644
 +    QUARTERS_ONLY,
 +    Cell,
      Items,
++    has_figure,
      bounded_statements,
      calculations,
-@@ -302,6 +305,181 @@ def test_no_cash_flow_statement_is_stated_rather_than_left_to_be_noticed(conn):
+     dataset_of,
+@@ -302,6 +306,219 @@ def test_no_cash_flow_statement_is_stated_rather_than_left_to_be_noticed(conn):
      ds = dataset(conn, "2222_TADAWUL")
      assert any("NO CASH FLOW STATEMENT" in lim for lim in ds.limitations)
      assert any("never against cash" in lim for lim in ds.limitations)
@@ -442,6 +515,18 @@ index 439df97..4266e63 100644
 +    " company. The single quarters in `quarters` are its only reported income figures: quote each with the"
 +    " quarter it covers. There is no annual revenue, earnings, margin or earnings per share in this dataset,"
 +    " and the quarters are not one; do not state, estimate or recall one.")
++LIM_ONE_WINDOW_QUARTERS = (
++    "ONE INCOME-STATEMENT WINDOW: one window is available and the prior year's income statement is not, because"
++    " the source serves a rolling five-quarter grid. Year-on-year revenue or earnings cannot be compared from this"
++    " dataset; the single quarters are the history there is.")
++LIM_ONE_WINDOW_NO_QUARTERS = (
++    "ONE INCOME-STATEMENT WINDOW: one window is available and the prior year's income statement is not."
++    " Year-on-year revenue or earnings cannot be compared from this dataset, and it holds no single quarters:"
++    " this window is the only income history there is.")
++ONE_YEAR = [_cell("Net Income", "Income Statement", 2025, 50.0), TA900]
++CAPPED = [Cell(label="Net Income", section="Income Statement", fiscal_year=2025, value=None, item_index=i)
++          for i in range(30)] + [Cell(label="Zakat & Tax", section="Income Statement", fiscal_year=2025, value=5.0,
++                                      item_index=30)]
 +P9_CASES = {
 +    # case: (items, statements kept, quarter rows kept, quarters note, limitations, pack note)
 +    "empty": (Items([], []), [], None, None, [LIM_EMPTY], PACK_NONE),
@@ -464,6 +549,21 @@ index 439df97..4266e63 100644
 +        Items(TWO_YEARS, [Q77]),
 +        [("Income Statement", [["Net Income", 50.0, 40.0]]), ("Balance Sheet", [["Total Assets", 900.0]])],
 +        [["Net Income", 77.0]], NOTE_ANNUAL, [CASH_FLOW_COMMON], None),
++    # Review 81: one income-statement year and no quarters (25 companies on 2026-11-07) was told
++    # "the single quarters are the history there is". With quarters, the old wording stands.
++    "one year, no quarters": (
++        Items(ONE_YEAR, []),
++        [("Income Statement", [["Net Income", 50.0]]), ("Balance Sheet", [["Total Assets", 900.0]])],
++        None, None, [CASH_FLOW_COMMON, LIM_ONE_WINDOW_NO_QUARTERS], None),
++    "one year, with quarters": (
++        Items(ONE_YEAR, [Q77]),
++        [("Income Statement", [["Net Income", 50.0]]), ("Balance Sheet", [["Total Assets", 900.0]])],
++        [["Net Income", 77.0]], NOTE_ANNUAL, [CASH_FLOW_COMMON, LIM_ONE_WINDOW_QUARTERS], None),
++    # Review 81: the only income figure falls outside the 30-row cap behind protected rows that are all
++    # null, so P9 SHOWS no annual income figure. Every note must say so, from what is shown.
++    "capped: no income figure shown": (
++        Items(CAPPED, [Q77]), [("Income Statement", [["Net Income", None]] * 30)], [["Net Income", 77.0]],
++        NOTE_NO_ANNUAL, [LIM_QUARTERS], PACK_QUARTERS),
 +}
 +
 +
@@ -471,7 +571,8 @@ index 439df97..4266e63 100644
 +def test_p9_says_exactly_what_it_holds(case):
 +    """Review 80: every case checks the figures P9 keeps AND its whole wording: the quarters' note, every
 +    limitation, and the note the room reads. Nothing absent is described as present, nothing reported (a
-+    quarter included) is described as absent, and the common case reads as it always did."""
++    quarter included) is described as absent, and the common case reads as it always did. Review 81: the
++    quarters' note and the pack note are read from what P9 shows, so they cannot contradict each other."""
 +    from app.debate.pack import no_statements_note
 +
 +    items, statements, quarter_rows, quarter_note, limitations, pack_note = P9_CASES[case]
@@ -484,8 +585,18 @@ index 439df97..4266e63 100644
 +        assert ds.quarters.note == quarter_note
 +    assert ds.limitations == limitations
 +    assert no_statements_note({"P9": ds.model_dump()}) == pack_note
-+    if case != "normal, two years" and case != "normal, two years, with quarters":
++    if not case.startswith(("normal", "one year")):
 +        assert all(c.value is None for c in ds.calculations), "no derived figure without an annual statement"
++
++    # The notes agree with each other and with what is shown, in every case.
++    income_shown = any(s.section == "Income Statement" and has_figure(s.rows) for s in ds.statements)
++    any_shown = any(has_figure(s.rows) for s in ds.statements)
++    if ds.quarters is not None:
++        assert (ds.quarters.note == NOTE_ANNUAL) == income_shown
++    assert (pack_note is None) == any_shown
++    said = " ".join(ds.limitations)
++    if ds.quarters is None or not has_figure(ds.quarters.rows):
++        assert "single quarters are the history" not in said and "quote each with the quarter" not in said
 
 
  # --- derived figures, and the ones that are withheld -------------------------------------------

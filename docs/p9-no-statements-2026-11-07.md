@@ -25,7 +25,15 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
   `p9-sweep-values-summary.txt`).
 - **A correction (review 80):** the first sweep (`p9-sweep.py` / `p9-sweep.json`) counted rows. On it this record said
   that all 50 companies with no statement rows also had no quarters. Two of them have reported quarters.
-- **No row anywhere was all null.** No statement row and no quarter row in P9 lacked a number.
+- **What the classification measures:** reported numbers per company and statement section (review 80). On that
+  measure, no company had a statement section or a quarter series with rows but no number.
+- **The per-row measure (review 81):** that aggregate does not show whether a single row is all null, so the sweep
+  was rerun to count such rows (`p9-sweep-rows.json`, summary `p9-sweep-rows-summary.txt`). It found 0 of 30,761
+  statement rows and 0 of 1,726 quarter rows with no number. The classification on that run is the same,
+  48/2/1/663.
+- **One window, no quarters: 25 more companies (review 81).** 8010 to 8311 have an income statement and a balance
+  sheet but one income-statement window and no quarterly figure. P9 told them "the single quarters are the history
+  there is", which is false for them. That wording predates P9's fix.
 
 | Group | Companies | What they hold | What P9 told every one of them |
 |---|---|---|---|
@@ -82,9 +90,21 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
        four consecutive columns".
      - **When it has none:** "There is no annual income-statement figure for this company in `statements`, and
        these quarters are not one: quote each with the quarter it covers".
-   - **The window count:** it uses years with a number, which matches what `statements` shows.
-   - **Unchanged (group D):** a company with an income statement and a balance sheet keeps exactly the text it had,
-     including the quarters' note, asserted word for word.
+   - **Read from what P9 shows (review 81):**
+     - **What decides:** whether a statement is held, how many years it has, and which quarters' note applies are
+       now decided from the statements as P9 shows them, after the 30-row cap and any budget trim (`shown`,
+       `shown_years`, `quarters_note`).
+     - **How:** `dataset_of` settles the wording on the shown content after `fit`. Trimming only removes rows, so
+       this ends.
+     - **The effect:** a figure cut by the cap can no longer make the quarters' note point at "annual figures above"
+       while the pack says there are none.
+   - **One window and no quarters (review 81):** "ONE INCOME-STATEMENT WINDOW: … is available and the prior year's
+     income statement is not. Year-on-year revenue or earnings cannot be compared from this dataset, and it holds no
+     single quarters: this window is the only income history there is." A company with quarters keeps the old
+     wording.
+   - **Unchanged (group D):** a company with an income statement and a balance sheet over two years keeps exactly
+     the text it had, including the quarters' note, asserted word for word. The one-window companies with quarters
+     keep theirs too.
    - **Who reads it:** the Copilot reads P9 through the same tool (`get_financial_statements`), so it gets the
      same notes.
 2. **`api/app/debate/pack.py`, `no_statements_note`, added to `Pack.prompt()`:**
@@ -125,15 +145,24 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
      cash-flow note names the quarters, and there is no pack note.
 5. **Normal (group D, two years):** the old text and no pack note.
    - **5b. With quarters:** the quarters' note is the old one.
+   - **5c. One year, no quarters (8010 and 24 others):** the new one-window wording, with no quarters claimed.
+   - **5d. One year, with quarters:** the old one-window wording.
+   - **5e. Review 81's capped case:**
+     - **The setup:** the only income figure falls outside the 30-row cap.
+     - **The result:** no annual figure is shown, so the quarters' note, the limitation (NO ANNUAL STATEMENTS) and
+       the pack note all say there is none.
 6. **No P9, or a P9 error:** the pack note is line 2, and the data starts at line 3.
 7. **4330's pack with beta's P9 today, and the five comparison packs:** each carries the note.
 
 **Tests** (`tests.txt`):
-- **`test_p9_says_exactly_what_it_holds`** (review 80), across seven cases:
+- **`test_p9_says_exactly_what_it_holds`** (reviews 80 and 81), across ten cases:
   - **The cases:** empty, quarterly only, all-null rows, balance sheet only, balance sheet and quarters, normal over
-    two years, and normal with quarters.
-  - **What each checks:** the statements and quarter rows kept, the quarters' note, the whole list of limitations
-    and the pack note, all word for word.
+    two years, normal with quarters, one year with no quarters, one year with quarters, and the capped case.
+  - **What each checks:**
+    - the statements and quarter rows kept;
+    - the quarters' note, the whole list of limitations and the pack note, all word for word;
+    - that the quarters' note and the pack note agree with each other and with what is shown;
+    - that no quarters are claimed where none are shown.
 - **The other P9 tests:** 9 pass, 8 new and 1 extended.
   - `test_a_company_with_no_statements_is_told_so_and_supplied_no_figure`:
     - **The fixture:** `Items([], [])`, called as the live route calls it, with a dividend history and the price.
@@ -151,13 +180,15 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
   - `test_the_comparison_packs_now_carry_the_no_statements_note`: the five frozen packs;
   - `test_an_invented_statement_figure_on_a_pack_without_statements_is_flagged`: the audit's "SAR 16,578 million",
     cited to [P9] on a no-statements pack, is listed as unverified.
-- **`test_evidence.py`, `test_debate.py` and `test_copilot.py`:** 144 passed (129 before).
-- **The whole API suite:** 611 passed, 10 skipped (596 before).
+- **`test_evidence.py`, `test_debate.py` and `test_copilot.py`:** 147 passed (129 before).
+- **The whole API suite:** 614 passed, 10 skipped (596 before).
+- **Production's files:** the four files P9 changes have the same git blob at `73d7140` and at production's
+  `026699b906` (`tests.txt`), so the patch applies to production as it stands.
 - **ruff:** in each changed file, the same findings at `73d7140` (before any P9 change) and now. All are
   pre-existing.
 - **The diffs:**
   - `p9-fix.patch` is the whole change since `73d7140`.
-  - `p9-fix-review-79.patch` and `p9-fix-review-80.patch` are each review's part.
+  - `p9-fix-review-79.patch`, `p9-fix-review-80.patch` and `p9-fix-review-81.patch` are each review's part.
 
 **What this does not prove:** that a model now writes no invented statement figure. The tests show what the
 application supplies and says. They do not show what a model does with it.

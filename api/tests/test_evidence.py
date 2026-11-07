@@ -25,6 +25,7 @@ from app.evidence import (
     QUARTERS_ONLY,
     Cell,
     Items,
+    has_figure,
     bounded_statements,
     calculations,
     dataset_of,
@@ -436,6 +437,18 @@ LIM_NO_ANNUAL_INCOME = (
     " company. The single quarters in `quarters` are its only reported income figures: quote each with the"
     " quarter it covers. There is no annual revenue, earnings, margin or earnings per share in this dataset,"
     " and the quarters are not one; do not state, estimate or recall one.")
+LIM_ONE_WINDOW_QUARTERS = (
+    "ONE INCOME-STATEMENT WINDOW: one window is available and the prior year's income statement is not, because"
+    " the source serves a rolling five-quarter grid. Year-on-year revenue or earnings cannot be compared from this"
+    " dataset; the single quarters are the history there is.")
+LIM_ONE_WINDOW_NO_QUARTERS = (
+    "ONE INCOME-STATEMENT WINDOW: one window is available and the prior year's income statement is not."
+    " Year-on-year revenue or earnings cannot be compared from this dataset, and it holds no single quarters:"
+    " this window is the only income history there is.")
+ONE_YEAR = [_cell("Net Income", "Income Statement", 2025, 50.0), TA900]
+CAPPED = [Cell(label="Net Income", section="Income Statement", fiscal_year=2025, value=None, item_index=i)
+          for i in range(30)] + [Cell(label="Zakat & Tax", section="Income Statement", fiscal_year=2025, value=5.0,
+                                      item_index=30)]
 P9_CASES = {
     # case: (items, statements kept, quarter rows kept, quarters note, limitations, pack note)
     "empty": (Items([], []), [], None, None, [LIM_EMPTY], PACK_NONE),
@@ -458,6 +471,21 @@ P9_CASES = {
         Items(TWO_YEARS, [Q77]),
         [("Income Statement", [["Net Income", 50.0, 40.0]]), ("Balance Sheet", [["Total Assets", 900.0]])],
         [["Net Income", 77.0]], NOTE_ANNUAL, [CASH_FLOW_COMMON], None),
+    # Review 81: one income-statement year and no quarters (25 companies on 2026-11-07) was told
+    # "the single quarters are the history there is". With quarters, the old wording stands.
+    "one year, no quarters": (
+        Items(ONE_YEAR, []),
+        [("Income Statement", [["Net Income", 50.0]]), ("Balance Sheet", [["Total Assets", 900.0]])],
+        None, None, [CASH_FLOW_COMMON, LIM_ONE_WINDOW_NO_QUARTERS], None),
+    "one year, with quarters": (
+        Items(ONE_YEAR, [Q77]),
+        [("Income Statement", [["Net Income", 50.0]]), ("Balance Sheet", [["Total Assets", 900.0]])],
+        [["Net Income", 77.0]], NOTE_ANNUAL, [CASH_FLOW_COMMON, LIM_ONE_WINDOW_QUARTERS], None),
+    # Review 81: the only income figure falls outside the 30-row cap behind protected rows that are all
+    # null, so P9 SHOWS no annual income figure. Every note must say so, from what is shown.
+    "capped: no income figure shown": (
+        Items(CAPPED, [Q77]), [("Income Statement", [["Net Income", None]] * 30)], [["Net Income", 77.0]],
+        NOTE_NO_ANNUAL, [LIM_QUARTERS], PACK_QUARTERS),
 }
 
 
@@ -465,7 +493,8 @@ P9_CASES = {
 def test_p9_says_exactly_what_it_holds(case):
     """Review 80: every case checks the figures P9 keeps AND its whole wording: the quarters' note, every
     limitation, and the note the room reads. Nothing absent is described as present, nothing reported (a
-    quarter included) is described as absent, and the common case reads as it always did."""
+    quarter included) is described as absent, and the common case reads as it always did. Review 81: the
+    quarters' note and the pack note are read from what P9 shows, so they cannot contradict each other."""
     from app.debate.pack import no_statements_note
 
     items, statements, quarter_rows, quarter_note, limitations, pack_note = P9_CASES[case]
@@ -478,8 +507,18 @@ def test_p9_says_exactly_what_it_holds(case):
         assert ds.quarters.note == quarter_note
     assert ds.limitations == limitations
     assert no_statements_note({"P9": ds.model_dump()}) == pack_note
-    if case != "normal, two years" and case != "normal, two years, with quarters":
+    if not case.startswith(("normal", "one year")):
         assert all(c.value is None for c in ds.calculations), "no derived figure without an annual statement"
+
+    # The notes agree with each other and with what is shown, in every case.
+    income_shown = any(s.section == "Income Statement" and has_figure(s.rows) for s in ds.statements)
+    any_shown = any(has_figure(s.rows) for s in ds.statements)
+    if ds.quarters is not None:
+        assert (ds.quarters.note == NOTE_ANNUAL) == income_shown
+    assert (pack_note is None) == any_shown
+    said = " ".join(ds.limitations)
+    if ds.quarters is None or not has_figure(ds.quarters.rows):
+        assert "single quarters are the history" not in said and "quote each with the quarter" not in said
 
 
 # --- derived figures, and the ones that are withheld -------------------------------------------

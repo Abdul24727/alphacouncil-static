@@ -1484,17 +1484,22 @@ def bounded_quarters(items: Items) -> QuarterSeries | None:
         rows.append([label, *[by_end.get(e) for e in ends]])
     if not rows:
         return None
-    # The note may point at annual figures only where `statements` holds an income-statement
-    # number; without one it would describe figures that are not there (review 80).
+    # Provisional: dataset_of sets the final note from the statements as shown (quarters_note).
     annual = any(r.section == "Income Statement" and r.value is not None for r in items.rows)
-    return QuarterSeries(
-        section="Income Statement",
-        note="each column is one quarter as reported, standalone and not cumulative; the annual"
-             " figures above are the sum of four consecutive columns of this kind" if annual else
-             "each column is one quarter as reported, standalone and not cumulative. There is no"
-             " annual income-statement figure for this company in `statements`, and these quarters"
-             " are not one: quote each with the quarter it covers",
-        columns=["label", *ends], rows=rows)
+    return QuarterSeries(section="Income Statement", note=quarters_note(annual),
+                         columns=["label", *ends], rows=rows)
+
+
+def quarters_note(annual: bool) -> str:
+    """The quarters' note. It may point at annual figures only where the statements P9 shows hold an
+    income-statement number; without one it would describe figures that are not there (reviews 80
+    and 81)."""
+    if annual:
+        return ("each column is one quarter as reported, standalone and not cumulative; the annual"
+                " figures above are the sum of four consecutive columns of this kind")
+    return ("each column is one quarter as reported, standalone and not cumulative. There is no"
+            " annual income-statement figure for this company in `statements`, and these quarters"
+            " are not one: quote each with the quarter it covers")
 
 
 # What a seat has to be told about a percentile it reads in P2. The pipeline's peer classes
@@ -1557,20 +1562,43 @@ STATEMENT_NAMES = {"Income Statement": "an income statement", "Balance Sheet": "
                    "Cash Flow Statement": "a cash flow statement"}
 
 
+def is_number(v: Any) -> bool:
+    return isinstance(v, (int, float)) and not isinstance(v, bool)
+
+
 def has_figure(rows: list[list[Any]]) -> bool:
     """Does any row carry a reported number after its label? A row of nulls is not a figure."""
-    return any(isinstance(v, (int, float)) and not isinstance(v, bool) for row in rows for v in row[1:])
+    return any(is_number(v) for row in rows for v in row[1:])
+
+
+def shown(statements: list[BoundedStatement]) -> list[str]:
+    """The statements P9 shows with at least one reported number, in STATEMENT_NAMES order. Read
+    from the statements as shown (after the row cap and any budget trim), not from the raw rows,
+    so a note never describes a figure the dataset does not carry (review 81)."""
+    held = {s.section for s in statements if has_figure(s.rows)}
+    return [s for s in STATEMENT_NAMES if s in held]
+
+
+def shown_years(statements: list[BoundedStatement], section: str) -> int:
+    """How many of a statement's year columns carry at least one reported number, as shown."""
+    for s in statements:
+        if s.section == section:
+            return sum(1 for i in range(1, len(s.columns)) if any(len(row) > i and is_number(row[i]) for row in s.rows))
+    return 0
 
 
 def limitations_of(items: Items, sector: str, peer_class: str | None = None,
-                   quarters: QuarterSeries | None = None) -> list[str]:
+                   quarters: QuarterSeries | None = None,
+                   statements: list[BoundedStatement] | None = None) -> list[str]:
     """What this evidence cannot answer. Said plainly, because a seat that does not know a gap
-    exists will argue around it. A statement counts as held only where it has a reported number,
-    each one that does not is named as missing, and none is described as present without one.
-    `quarters` is the series this dataset carries, so its figures are never called absent."""
+    exists will argue around it. A statement counts as held only where the statements as shown
+    carry a reported number, each one that does not is named as missing, and none is described as
+    present without one. `quarters` is the series this dataset carries, so its figures are never
+    called absent, and quarters it does not carry are never called present."""
     out: list[str] = []
-    reported = {r.section for r in items.rows if r.value is not None}
-    sections = [s for s in STATEMENT_NAMES if s in reported]
+    if statements is None:
+        statements = bounded_statements(items)
+    sections = shown(statements)
     quarterly = quarters is not None and has_figure(quarters.rows)
     has_income = "Income Statement" in sections
     if not sections:
@@ -1589,14 +1617,22 @@ def limitations_of(items: Items, sector: str, peer_class: str | None = None,
                else "cannot be tested against earnings or cash."))
     if sections and not has_income:
         out.append(NO_ANNUAL_INCOME_STATEMENT if quarterly else NO_INCOME_STATEMENT)
-    elif sections and len({r.fiscal_year for r in items.rows
-                           if r.section == "Income Statement" and r.value is not None}) < 2:
+    elif sections and shown_years(statements, "Income Statement") < 2:
         p = items.period("Income Statement")
-        out.append(
-            f"ONE INCOME-STATEMENT WINDOW: {window_label(p) or 'one window'} is available and the"
-            " prior year's income statement is not, because the source serves a rolling"
-            " five-quarter grid. Year-on-year revenue or earnings cannot be compared from this"
-            " dataset; the single quarters are the history there is.")
+        if quarterly:
+            out.append(
+                f"ONE INCOME-STATEMENT WINDOW: {window_label(p) or 'one window'} is available and the"
+                " prior year's income statement is not, because the source serves a rolling"
+                " five-quarter grid. Year-on-year revenue or earnings cannot be compared from this"
+                " dataset; the single quarters are the history there is.")
+        else:
+            # Review 81: 25 companies on 2026-11-07 had one window and no quarters, and were told
+            # "the single quarters are the history there is".
+            out.append(
+                f"ONE INCOME-STATEMENT WINDOW: {window_label(p) or 'one window'} is available and the"
+                " prior year's income statement is not. Year-on-year revenue or earnings cannot be"
+                " compared from this dataset, and it holds no single quarters: this window is the"
+                " only income history there is.")
     flow, position = items.period("Income Statement"), items.period("Balance Sheet")
     if flow.period_end and position.period_end and flow.period_end != position.period_end:
         out.append(f"The income statement covers a window ending {flow.period_end} while the"
@@ -1661,8 +1697,9 @@ def dataset_of(
     price: float | None = None,
     budget: int = DATASET_BUDGET,
 ) -> EvidenceDataset:
+    statements = bounded_statements(items)
     quarters = bounded_quarters(items)
-    return fit(EvidenceDataset(
+    ds = fit(EvidenceDataset(
         ticker=ticker_key,
         currency=currency,
         unit="millions of the reporting currency, except share counts (millions of shares) and"
@@ -1676,9 +1713,23 @@ def dataset_of(
                " Where `aggregation` says the figures were reconstructed, `source_columns` names"
                " the quarter-end columns added together.",
         sector=sector,
-        statements=bounded_statements(items),
+        statements=statements,
         quarters=quarters,
         calculations=calculations(items, sector=sector, dividends=dividends, price=price,
                                   currency=currency),
-        limitations=limitations_of(items, sector, peer_class, quarters=quarters),
+        limitations=limitations_of(items, sector, peer_class, quarters=quarters, statements=statements),
     ), budget)
+    # The wording describes what the dataset finally shows (review 81). The row cap above and the
+    # budget trim in `fit` only ever remove rows, so a statement or a quarter can only stop being
+    # shown, never start: settle the notes on the shown content, trim again if the new wording is
+    # longer, and stop when nothing changes.
+    for _ in range(3):
+        limitations = limitations_of(items, sector, peer_class, quarters=ds.quarters, statements=ds.statements)
+        note = quarters_note("Income Statement" in shown(ds.statements)) if ds.quarters else None
+        if limitations == ds.limitations and (ds.quarters is None or ds.quarters.note == note):
+            break
+        ds.limitations = limitations
+        if ds.quarters is not None and note is not None:
+            ds.quarters.note = note
+        ds = fit(ds, budget)
+    return ds
