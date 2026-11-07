@@ -520,6 +520,16 @@ Older entries: `changelog-archive.md`.
               was asked, so no request was seen reaching a provider.
             - **Routing:** it is attributed to the settings and code.
             - **The diff:** this record's diff wording is corrected.
+          - **Review 92 said FIX: two passages; fixed in `787c896`.** That commit touches only the pack and the check
+            record (`review-92-check.txt`, `git diff --check` exit 0).
+            - **Question (h)** now reads: data is sent to the configured AI service when an AI feature calls an
+              externally hosted model. Delivery, the serving companies and their processing locations were not
+              verified.
+            - **Discrepancy 5** now separates the configured model ids from observed requests.
+            - **The owner** has three facts left to confirm.
+
+            The review added that the remaining limitations need no further technical review or paid test before the
+            legal handoff.
       - **Review 84 ACCEPTED the P9 fix.**
         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
           cases), and the patch rebuilds the four files byte for byte on production's bytes.

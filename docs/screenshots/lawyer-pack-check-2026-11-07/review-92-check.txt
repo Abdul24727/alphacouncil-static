@@ -1,0 +1,64 @@
+Review 92's DONE WHEN, run 2026-11-07 21:03:14 UTC on branch rebuild, for the fix commit 787c896 (parent 38c032c)
+
+$ git diff --check 38c032c..787c896
+[exit 0]
+
+$ git diff --name-status 38c032c..787c896
+M	docs/lawyer-pack-check-2026-11-07.md
+M	docs/lawyer-review-pack-2026-11-06.md
+
+$ owner-confirmation lines in the two documents
+docs/lawyer-review-pack-2026-11-06.md:31:**Not checked again, for the owner to confirm before sending:**
+docs/lawyer-pack-check-2026-11-07.md:51:- **For the owner to confirm:** the three facts above.
+docs/lawyer-pack-check-2026-11-07.md:193:   - **The owner's list:** these models are no longer on it. The owner has three facts left to confirm.
+
+$ the pack's list of facts for the owner
+**Not checked again, for the owner to confirm before sending:**
+- the account and payment counts in §2, which are as of 2026-11-06;
+- the hosting provider and its country (§5.2);
+- where the AI services process the data, if the owner can find out, for example from OpenRouter's account
+  (§5.2, (h)). If it cannot be found out, the pack leaves it marked as not verified.
+
+$ git diff 38c032c..787c896
+diff --git a/docs/lawyer-pack-check-2026-11-07.md b/docs/lawyer-pack-check-2026-11-07.md
+index d00f715..d4f1252 100644
+--- a/docs/lawyer-pack-check-2026-11-07.md
++++ b/docs/lawyer-pack-check-2026-11-07.md
+@@ -183,9 +183,14 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
+        - **Not read:** production's values for all of these.
+      - **Where the data is processed:** not verified. Neither the serving companies nor their countries are known
+        from this check.
+-   - **Now:** §5.2 and (h) keep the confirmed fact apart from the code's defaults. They mark the seats' and the
+-     Chair's models for the owner to confirm. They say the data *may* be processed outside the Kingdom, and that the
+-     companies, the countries and production's routing were not verified (review 89).
++   - **Now** (after reviews 89 to 92), §5.2 and (h) keep three things apart:
++     - **Configured:** production's public status addresses report the model ids: the Copilot uses
++       `deepseek/deepseek-v3.2`; the seats use `deepseek/deepseek-v4-pro`; the Chair uses
++       `anthropic/claude-sonnet-5.5`.
++     - **Code defaults:** the code's defaults and routing.
++     - **Not verified:** no request was observed using these models. Nor were the serving companies, their countries
++       or production's routing verified.
++   - **The owner's list:** these models are no longer on it. The owner has three facts left to confirm.
+ 6. **What beta shares with production (pack §2).**
+    - **The pack said:** beta "runs the same release on the same data".
+    - **What is known:**
+diff --git a/docs/lawyer-review-pack-2026-11-06.md b/docs/lawyer-review-pack-2026-11-06.md
+index abbb726..75825a2 100644
+--- a/docs/lawyer-review-pack-2026-11-06.md
++++ b/docs/lawyer-review-pack-2026-11-06.md
+@@ -336,10 +336,11 @@ page describes this as collected "from public market sources", and does not name
+ 2. Does an "impact" read on a listed company's news come closer to advice than the rest of the site
+    (see (b))?
+
+-**(h) Sending data outside the Kingdom.** Questions go to outside AI providers, which may process them
+-outside the Kingdom, and emails go through MailerSend (§5.2). *Qualified 2026-11-07:* where those companies process
+-the data was not verified. Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow
+-or the contracts with those providers need for that?
++**(h) Sending data outside the Kingdom.** When an AI feature calls an externally hosted model, the member's
++question and the company's data are sent to the configured AI service. Three things were not verified (§5.2):
++that requests are delivered, which companies serve them, and where those companies process them. Emails go
++through MailerSend. Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow or the
++contracts with those providers need for that?
+
+ **(i) Monthly renewal.** Pro renews automatically on the saved card. What must checkout say about it,
+ and must a reminder go out before each renewal?
