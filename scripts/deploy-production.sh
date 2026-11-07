@@ -61,7 +61,7 @@ if [[ "${1:-}" == "--check" ]]; then
   fi
   [[ "$staged" == "$sha" ]] || { echo "NOT READY: beta runs $staged, not $sha. Deploy to staging and check it first." >&2; ready=0; }
   (( ready )) || exit 1
-  echo "ready"
+  echo "preconditions met (this check approves nothing; deploying needs the owner's go-ahead)"
   exit 0
 fi
 [[ "$staged" == "$sha" ]] || refuse "beta runs $staged, the commit is $sha. Deploy to staging and check it first."

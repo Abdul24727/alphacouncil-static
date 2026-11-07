@@ -55,7 +55,7 @@ if [[ "${1:-}" == "--check" ]]; then
   else
     echo "rollback: releases/$rollback (kept)"
   fi
-  echo "ready"
+  echo "preconditions met (this check approves nothing; deploying needs the owner's go-ahead)"
   exit 0
 fi
 
