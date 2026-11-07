@@ -2,20 +2,14 @@ diff --git a/api/app/debate/pack.py b/api/app/debate/pack.py
 index 394285c..1cef137 100644
 --- a/api/app/debate/pack.py
 +++ b/api/app/debate/pack.py
-@@ -88,8 +88,8 @@ def no_statements_note(data: dict[str, Any]) -> str | None:
-     Five of the six seats' briefs send them to [P9]'s statements. In the 2026-11-07 comparison the
-     packs had no P9, nothing said so, and 22 of the room's 23 invented figures were statement data
+@@ -90,4 +90,4 @@ def no_statements_note(data: dict[str, Any]) -> str | None:
      the briefs place in P9 (`docs/eval/presenter-comparison/audit.md` §5). A live pack has a P9, but
 -    for 50 of 714 companies on 2026-11-07 it holds no statements. In each of these cases the room is
 -    told plainly, here, rather than left to notice an absence.
 +    for 50 of 714 companies on 2026-11-07 it holds no annual statements (2 of them have quarters).
 +    In each of these cases the room is told plainly, here, rather than left to notice an absence.
 
-     Held means a reported number (review 79): a statement whose rows are all null holds nothing, and
-     a P9 whose only numbers are single quarters is told that, not that it has none."""
-@@ -111,10 +111,13 @@ def no_statements_note(data: dict[str, Any]) -> str | None:
-         " estimated or recalled from memory is invented, whatever tag it carries."
-     )
+@@ -113,6 +113,9 @@ def no_statements_note(data: dict[str, Any]) -> str | None:
      if quarters:
 +        # Review 80: the quarters are reported income-statement figures, so what is absent is the
 +        # full-year or trailing-window statements, not every income-statement figure.
@@ -28,21 +22,17 @@ index 394285c..1cef137 100644
 +            " statement figure. The quarters in [P9] `quarters` are reported: quote each with the"
 +            " quarter it covers, and do not present them as an annual figure. Where a brief sends a"
              " seat to [P9]'s statements, the seat says plainly that the annual statements are not"
-             " available and argues from the datasets that are here." + rule
-         )
 diff --git a/api/app/evidence.py b/api/app/evidence.py
 index 12ee540..c3641af 100644
 --- a/api/app/evidence.py
 +++ b/api/app/evidence.py
-@@ -1484,10 +1484,16 @@ def bounded_quarters(items: Items) -> QuarterSeries | None:
-         rows.append([label, *[by_end.get(e) for e in ends]])
-     if not rows:
+@@ -1486,2 +1486,5 @@ def bounded_quarters(items: Items) -> QuarterSeries | None:
          return None
 +    # The note may point at annual figures only where `statements` holds an income-statement
 +    # number; without one it would describe figures that are not there (review 80).
 +    annual = any(r.section == "Income Statement" and r.value is not None for r in items.rows)
      return QuarterSeries(
-         section="Income Statement",
+@@ -1489,3 +1492,6 @@ def bounded_quarters(items: Items) -> QuarterSeries | None:
          note="each column is one quarter as reported, standalone and not cumulative; the annual"
 -             " figures above are the sum of four consecutive columns of this kind",
 +             " figures above are the sum of four consecutive columns of this kind" if annual else
@@ -50,20 +40,12 @@ index 12ee540..c3641af 100644
 +             " annual income-statement figure for this company in `statements`, and these quarters"
 +             " are not one: quote each with the quarter it covers",
          columns=["label", *ends], rows=rows)
-
-
-@@ -1512,7 +1518,7 @@ RANKING_NARROWED = (
- # P9 for a company the source holds no statement figures for. Before this, such a company was told
- # it had "an income statement and a balance sheet" and "one window", which sent a seat whose brief
+@@ -1514,3 +1520,3 @@ RANKING_NARROWED = (
  # says "read [P9]'s income statement" looking for figures that do not exist (P9 in the 2026-11-07
 -# comparison audit). 50 of 714 companies on 2026-11-07, read through beta's /evidence.
 +# comparison audit). 48 of 714 companies on 2026-11-07, read through beta's /evidence.
  # "Holds" means a reported number, not a section name or a row: a row whose value is null is not a
- # figure (review 79).
- NO_STATEMENTS = (
-@@ -1522,14 +1528,30 @@ NO_STATEMENTS = (
-     " reported revenue, earnings, asset, liability, equity, cash flow, share count or quarterly"
-     " result for this company in this dataset. Do not state, estimate or recall one, and do not"
+@@ -1524,10 +1530,26 @@ NO_STATEMENTS = (
      " cite [P9] for one: say that the statements are not available.")
 -# The same, for a company whose only reported figures are single quarters (review 79): those are
 -# reported and stay usable, and must not be described as missing.
@@ -97,11 +79,7 @@ index 12ee540..c3641af 100644
 +    " earnings per share in this dataset, and the quarters are not one; do not state, estimate or"
 +    " recall one.")
 
- STATEMENT_NAMES = {"Income Statement": "an income statement", "Balance Sheet": "a balance sheet",
-                    "Cash Flow Statement": "a cash flow statement"}
-@@ -1549,22 +1571,24 @@ def limitations_of(items: Items, sector: str, peer_class: str | None = None,
-     out: list[str] = []
-     reported = {r.section for r in items.rows if r.value is not None}
+@@ -1551,9 +1573,13 @@ def limitations_of(items: Items, sector: str, peer_class: str | None = None,
      sections = [s for s in STATEMENT_NAMES if s in reported]
 +    quarterly = quarters is not None and has_figure(quarters.rows)
 +    has_income = "Income Statement" in sections
@@ -118,7 +96,7 @@ index 12ee540..c3641af 100644
 -            + " and ".join(STATEMENT_NAMES[s] for s in sections) + " only. Operating cash flow,"
 +            + " and ".join(held) + " only. Operating cash flow,"
              " capital expenditure, free cash flow and cash conversion cannot be computed from"
-             " anything here, and dividend cover "
+@@ -1561,8 +1587,6 @@ def limitations_of(items: Items, sector: str, peer_class: str | None = None,
              + ("can be tested against earnings only, never against cash." if has_income
 +               else "cannot be tested against annual earnings or cash." if quarterly
                 else "cannot be tested against earnings or cash."))
@@ -130,28 +108,20 @@ index 12ee540..c3641af 100644
 +    if sections and not has_income:
 +        out.append(NO_ANNUAL_INCOME_STATEMENT if quarterly else NO_INCOME_STATEMENT)
      elif sections and len({r.fiscal_year for r in items.rows
-                            if r.section == "Income Statement" and r.value is not None}) < 2:
-         p = items.period("Income Statement")
 diff --git a/api/tests/test_debate.py b/api/tests/test_debate.py
 index 5e5bf70..52de94c 100644
 --- a/api/tests/test_debate.py
 +++ b/api/tests/test_debate.py
-@@ -916,7 +916,7 @@ def _p9_pack(p9):
- def test_a_pack_without_statements_tells_the_room_so():
-     """P9 (the 2026-11-07 comparison audit): five of six seats are sent to [P9]'s statements by their
+@@ -918,3 +918,3 @@ def test_a_pack_without_statements_tells_the_room_so():
      briefs. The comparison's packs had no P9, nothing said so, and 22 of the room's 23 invented figures
 -    were statement data. Live, 50 of 714 companies have a P9 with no statements. Each case is now said
 +    were statement data. Live, 50 of 714 companies have a P9 with no annual statements. Each case is now said
      once, beside the header; a pack with statements gets no note."""
-     from app.evidence import Items, dataset_of
-
 diff --git a/api/tests/test_evidence.py b/api/tests/test_evidence.py
 index 1bbfb5d..4266e63 100644
 --- a/api/tests/test_evidence.py
 +++ b/api/tests/test_evidence.py
-@@ -364,11 +364,12 @@ def test_statement_rows_without_a_number_are_not_a_statement():
-
-
+@@ -366,7 +366,8 @@ def test_statement_rows_without_a_number_are_not_a_statement():
  def test_a_balance_sheet_alone_is_not_described_as_an_income_statement(conn):
 -    """One company on 2026-11-07 (232) had a balance sheet and no income statement, and was told it had
 -    both, and one income-statement window."""
@@ -163,11 +133,7 @@ index 1bbfb5d..4266e63 100644
 -    ds = dataset_of(only, ticker_key="232_TADAWUL", sector="non_bank", currency="SAR")
 +    ds = dataset_of(only, ticker_key="X_TADAWUL", sector="non_bank", currency="SAR")
      said = " ".join(ds.limitations)
-     assert "NO INCOME STATEMENT" in said
-     assert "carry a balance sheet only" in said and "cannot be tested against earnings or cash" in said
-@@ -376,6 +377,111 @@ def test_a_balance_sheet_alone_is_not_described_as_an_income_statement(conn):
-     assert NO_STATEMENTS not in ds.limitations
-
+@@ -378,2 +379,107 @@ def test_a_balance_sheet_alone_is_not_described_as_an_income_statement(conn):
 
 +def _cell(label, section, year, value, end=None):
 +    return Cell(label=label, section=section, fiscal_year=year, value=value, period_end=end)
@@ -275,5 +241,3 @@ index 1bbfb5d..4266e63 100644
 +
 +
  # --- derived figures, and the ones that are withheld -------------------------------------------
-
-
