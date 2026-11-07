@@ -4,14 +4,14 @@ index 34abca7..394285c 100644
 +++ b/api/app/debate/pack.py
 @@ -15,6 +15,7 @@ from pydantic import BaseModel
  from starlette.concurrency import run_in_threadpool
- 
+
  from ..copilot.context import numbers_in
 +from ..evidence import has_figure
  from ..universe import Ticker
- 
+
  DATASET_CHARS = 12_000  # per dataset, after JSON encoding (the Copilot's PANEL_CHARS)
 @@ -69,6 +70,9 @@ class Pack(BaseModel):
- 
+
      def prompt(self) -> str:
          lines = [self.header]
 +        note = no_statements_note(self.data)
@@ -22,8 +22,8 @@ index 34abca7..394285c 100644
              budget = DATASET_CHARS_BY_TAG.get(tag, DATASET_CHARS)
 @@ -78,6 +82,50 @@ class Pack(BaseModel):
          return "\n".join(lines)
- 
- 
+
+
 +def no_statements_note(data: dict[str, Any]) -> str | None:
 +    """Said once, beside the header, when the pack holds no financial statements.
 +
@@ -77,8 +77,8 @@ index 03d3a26..12ee540 100644
 +++ b/api/app/evidence.py
 @@ -1509,17 +1509,64 @@ RANKING_NARROWED = (
  )
- 
- 
+
+
 -def limitations_of(items: Items, sector: str, peer_class: str | None = None) -> list[str]:
 +# P9 for a company the source holds no statement figures for. Before this, such a company was told
 +# it had "an income statement and a balance sheet" and "one window", which sent a seat whose brief
@@ -341,6 +341,6 @@ index 439df97..1bbfb5d 100644
 +    assert "carry a balance sheet only" in said and "cannot be tested against earnings or cash" in said
 +    assert "ONE INCOME-STATEMENT WINDOW" not in said and "an income statement and" not in said
 +    assert NO_STATEMENTS not in ds.limitations
- 
- 
+
+
  # --- derived figures, and the ones that are withheld -------------------------------------------

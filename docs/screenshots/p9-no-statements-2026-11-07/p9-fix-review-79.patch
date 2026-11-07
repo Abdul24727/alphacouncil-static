@@ -4,11 +4,11 @@ index a876447..394285c 100644
 +++ b/api/app/debate/pack.py
 @@ -15,6 +15,7 @@ from pydantic import BaseModel
  from starlette.concurrency import run_in_threadpool
- 
+
  from ..copilot.context import numbers_in
 +from ..evidence import has_figure
  from ..universe import Ticker
- 
+
  DATASET_CHARS = 12_000  # per dataset, after JSON encoding (the Copilot's PANEL_CHARS)
 @@ -88,23 +89,40 @@ def no_statements_note(data: dict[str, Any]) -> str | None:
      packs had no P9, nothing said so, and 22 of the room's 23 invented figures were statement data
@@ -56,16 +56,16 @@ index a876447..394285c 100644
 -        " carries."
 +        " datasets that are here." + rule
      )
- 
- 
+
+
 diff --git a/api/app/evidence.py b/api/app/evidence.py
 index bed2b49..12ee540 100644
 --- a/api/app/evidence.py
 +++ b/api/app/evidence.py
 @@ -1509,30 +1509,48 @@ RANKING_NARROWED = (
  )
- 
- 
+
+
 -# P9 for a company the source holds no statements for. Before this, such a company was told it had
 -# "an income statement and a balance sheet" and "one window", which sent a seat whose brief says
 -# "read [P9]'s income statement" looking for figures that do not exist (P9 in the 2026-11-07
@@ -96,11 +96,11 @@ index bed2b49..12ee540 100644
 +    " only reported figures here: quote each with the quarter it covers. There is no balance-sheet,"
 +    " cash-flow or annual figure in this dataset; do not state, estimate or recall one, and do not"
 +    " cite [P9] for one.")
- 
+
  STATEMENT_NAMES = {"Income Statement": "an income statement", "Balance Sheet": "a balance sheet",
                     "Cash Flow Statement": "a cash flow statement"}
- 
- 
+
+
 -def limitations_of(items: Items, sector: str, peer_class: str | None = None) -> list[str]:
 +def has_figure(rows: list[list[Any]]) -> bool:
 +    """Does any row carry a reported number after its label? A row of nulls is not a figure."""
@@ -159,7 +159,7 @@ index 7662729..5e5bf70 100644
 --- a/api/tests/test_debate.py
 +++ b/api/tests/test_debate.py
 @@ -922,12 +922,14 @@ def test_a_pack_without_statements_tells_the_room_so():
- 
+
      # The no-statements fixture: what /evidence returns for a company with no statement rows.
      empty = dataset_of(Items([], []), ticker_key="4330_TADAWUL", sector="unknown", currency="SAR").model_dump()
 +    # Review 79: statement rows with no number are not statements.
@@ -177,8 +177,8 @@ index 7662729..5e5bf70 100644
          assert prompt.index("NO FINANCIAL STATEMENTS IN THIS PACK") < prompt.index("[P1]"), "said before the data"
 @@ -938,6 +940,18 @@ def test_a_pack_without_statements_tells_the_room_so():
      assert "NO FINANCIAL STATEMENTS" not in _p9_pack(with_statements).prompt()
- 
- 
+
+
 +def test_a_pack_whose_only_figures_are_quarters_keeps_them():
 +    """Review 79: single quarters are reported figures. A pack holding only those is told the annual
 +    statements are absent and the quarters are there to quote, not that it has no quarterly results."""
@@ -209,8 +209,8 @@ index ac1f7d1..1bbfb5d 100644
      calculations,
 @@ -312,12 +314,19 @@ def test_no_cash_flow_statement_is_stated_rather_than_left_to_be_noticed(conn):
      ) in ds.limitations
- 
- 
+
+
 -def test_a_company_with_no_statements_is_told_so_and_supplied_no_figure():
 +def test_a_company_with_no_statements_is_told_so_and_supplied_no_figure(conn):
      """P9 (the 2026-11-07 comparison audit): for a company the source holds no statements for,
@@ -231,8 +231,8 @@ index ac1f7d1..1bbfb5d 100644
      assert all(not c.operands for c in ds.calculations), "no operand may carry a statement figure"
 @@ -328,6 +337,32 @@ def test_a_company_with_no_statements_is_told_so_and_supplied_no_figure():
          assert false_claim not in said, false_claim
- 
- 
+
+
 +def test_quarters_alone_stay_reported_and_are_not_called_missing():
 +    """Review 79: a company whose only reported figures are single quarters was told "no quarterly
 +    result". Its quarters are reported and stay usable; only the annual statements are absent."""
