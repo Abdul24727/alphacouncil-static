@@ -91,8 +91,10 @@ None.
 
 ## Release, on the owner's go-ahead only
 
-- **Beta first:** release `026699b` to beta. `scripts/deploy-staging.sh` archives `HEAD` of the checkout it runs in
-  (`git archive --format=tar HEAD`), so it runs from a checkout of `release/sector-standing` and needs no push.
-  Pushing stays a separate go-ahead. Then repeat these captures on beta.
+- **Beta first:** release `026699b` to beta. Since review 75, `scripts/deploy-staging.sh` takes a branch other than
+  `rebuild` only with `DEPLOY_SHA`, the full approved commit, and archives exactly that commit. It runs from a checkout
+  of `release/sector-standing` and needs no push; the command and its preflight are in
+  `docs/release-request-sector-standing-2026-11-07.md`. Pushing stays a separate go-ahead. Then repeat these captures
+  on beta.
 - **Then production,** on its own go-ahead.
 - **Rollback:** `b5655a5064` is kept on both tiers.

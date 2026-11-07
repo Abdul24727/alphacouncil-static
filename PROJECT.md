@@ -335,6 +335,17 @@ Older entries: `changelog-archive.md`.
       - **`RESULT.md`:** it now separates the invented figures (22 of 23 are P9 data) from the invented statements
         (notes and peer comparisons too).
       - **The new totals:** 209 against 55 wrong claims, and 47 against 2 inventions.
+    - **Review 75 said FIX:** the scripts checked the branch but not the commit, so a moved branch would have shipped
+      whatever its HEAD was. Fixed on `rebuild` in `724e742`, `8e53826` and `c3bcff6`:
+      - **The commit is pinned:** a branch other than `rebuild` needs `DEPLOY_SHA`, the full approved commit. A
+        missing, short or wrong SHA, or a HEAD that has moved, is refused before any upload. The checked commit is
+        the one archived. The default `rebuild` deploy is unchanged.
+      - **The check:** `--check` exits 1 when a deploy would refuse. Production's check fails while beta runs
+        `b5655a5064`. It also reports the prune and the rollback release.
+      - **The preflight:** 18 cases with exit codes in `deploy-preflight.txt`. The exact SHA passes and every other
+        case is refused, including an advanced HEAD in a throwaway clone. The servers are unchanged.
+      - **The request:** it now gives the tested command with the full SHA. Next: review 76, then the owner's beta
+        go-ahead.
     - **Review 74 ACCEPTED candidate `026699b`** for the owner's beta decision, subject to a deploy preflight. The
       preflight found that both deploy scripts refused any branch but `rebuild`, which carries the rejected
       prototype, so the candidate could not be deployed as they stood.

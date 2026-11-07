@@ -93,6 +93,14 @@ Billing has been open since 2026-11-02.
   - **The owner chose (2026-11-07): "Keep it, take the fix".** Today's room stays. The sector-percentile fix (site
     labels in en and ar, the room's pack, the Copilot) is on `rebuild` as `867f944`. Releasing it needs the owner's
     go-ahead.
+  - **The release candidate (reviews 73 to 75):**
+    - **What it is:** a fix-only branch, `release/sector-standing` at
+      `026699b906ea3a513b4f2dbfc37672fa68ee9d42`. It is today's live `b5655a5` plus the fix, eight files, with none
+      of the prototype.
+    - **Review 74 accepted it.**
+    - **The deploy scripts now ship only an exact approved commit** (`DEPLOY_SHA`, review 75's fix).
+    - **What waits:** the beta release waits for the owner's go-ahead, and production is a separate go-ahead after
+      beta is checked (`docs/release-request-sector-standing-2026-11-07.md`).
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

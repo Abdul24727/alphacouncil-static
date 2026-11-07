@@ -1,47 +1,152 @@
-=== the deployment checkout
-$ git -C /c/AlphaCouncil-Staging/deploy-026699b rev-parse HEAD
-026699b906ea3a513b4f2dbfc37672fa68ee9d42
-exit 0
-$ git -C /c/AlphaCouncil-Staging/deploy-026699b status -sb
-## release/sector-standing
-exit 0
+# Read-only deploy preflight after review 75 (2026-11-07). Scripts as committed in c3bcff6 on rebuild.
+# Made by deploy-preflight-harness.sh in this folder. Every --check only reads the server. The refusal cases
+# run without --check point at nobody@deploy-guard.invalid, so even a failed guard could not upload.
+# 'advanced-clone' is a throwaway local clone, deleted afterwards.
 
-=== 1. rebuild's checkout, no DEPLOY_BRANCH (the default is unchanged)
-$ (cd /c/projects/alphacouncil-platform && scripts/deploy-staging.sh --check)
-checkout: C:/projects/alphacouncil-platform
-branch:   rebuild
-HEAD:     f9f4f7c1c8941b90c128e508323ab800b7a931e7
-release:  /opt/alphacouncil-platform/releases/f9f4f7c1c8
-archive:  4238 paths from HEAD (committed files only)
-beta now: /opt/alphacouncil-platform/releases/b5655a5064
-releases: b5655a5064 5c18a3ae46 2e44ee6fbf (the 3 newest are kept after a deploy)
-nothing uploaded, built or switched (--check)
-exit 0
+== checkouts
+rebuild:   rebuild c3bcff69634ce2ac0e7bc850bed179ea4d97bb47
+candidate: release/sector-standing 026699b906ea3a513b4f2dbfc37672fa68ee9d42, status: 0 changed paths
+advanced:  release/sector-standing 643e62ad4f0ff5017831588769012787f7ec40e3 (a throwaway clone whose release/sector-standing is one empty commit past 026699b906ea3a513b4f2dbfc37672fa68ee9d42)
+wrong SHA used below: b5655a50645014b312b875bfb6c2cf5c09460f37 (b5655a5, today's live release)
 
-=== 2. the candidate's checkout, no DEPLOY_BRANCH, with rebuild's updated script
-$ (cd /c/AlphaCouncil-Staging/deploy-026699b && bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check)
-refusing: on branch 'release/sector-standing', expected 'rebuild' (DEPLOY_BRANCH names another reviewed branch)
-exit 1
+== syntax
+bash -n deploy-staging.sh: exit 0
+bash -n deploy-production.sh: exit 0
 
-=== 3. the candidate's checkout, DEPLOY_BRANCH=release/sector-standing
-$ (cd /c/AlphaCouncil-Staging/deploy-026699b && DEPLOY_BRANCH=release/sector-standing bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check)
-checkout: C:/AlphaCouncil-Staging/deploy-026699b
-branch:   release/sector-standing
-HEAD:     026699b906ea3a513b4f2dbfc37672fa68ee9d42
-release:  /opt/alphacouncil-platform/releases/026699b906
-archive:  3837 paths from HEAD (committed files only)
-beta now: /opt/alphacouncil-platform/releases/b5655a5064
-releases: b5655a5064 5c18a3ae46 2e44ee6fbf (the 3 newest are kept after a deploy)
-nothing uploaded, built or switched (--check)
-exit 0
+== staging, --check (read-only)
+### S1 rebuild, default (no DEPLOY_* set)
+$ cd /c/projects/alphacouncil-platform && bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check
+    checkout: C:/projects/alphacouncil-platform
+    branch:   rebuild
+    commit:   c3bcff69634ce2ac0e7bc850bed179ea4d97bb47
+    archive:  4245 paths from c3bcff69634ce2ac0e7bc850bed179ea4d97bb47 (committed files only)
+    release:  /opt/alphacouncil-platform/releases/c3bcff6963
+    beta now: /opt/alphacouncil-platform/releases/b5655a5064
+    releases: b5655a5064 5c18a3ae46 2e44ee6fbf
+    prune:    2e44ee6fbf (a deploy keeps the 3 newest, c3bcff6963 first)
+    nothing uploaded, built or switched (--check)
+    rollback: releases/b5655a5064 (kept)
+    preconditions met (this check approves nothing; deploying needs the owner's go-ahead)
+exit: 0
 
-=== 4. production, from the candidate's checkout, before any beta deploy
-$ (cd /c/AlphaCouncil-Staging/deploy-026699b && DEPLOY_BRANCH=release/sector-standing bash /c/projects/alphacouncil-platform/scripts/deploy-production.sh --check)
-checkout: C:/AlphaCouncil-Staging/deploy-026699b
-branch:   release/sector-standing
-HEAD:     026699b906ea3a513b4f2dbfc37672fa68ee9d42
-release:  /opt/alphacouncil-platform/prod/releases/026699b906
-beta now: b5655a5064 (does NOT match HEAD: a deploy would refuse)
-prod now: /opt/alphacouncil-platform/prod/releases/b5655a5064
-nothing uploaded, built or switched (--check)
-exit 0
+### S2 candidate, no DEPLOY_BRANCH
+$ cd /c/AlphaCouncil-Staging/deploy-026699b && bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check
+    refusing: on branch 'release/sector-standing', expected 'rebuild' (DEPLOY_BRANCH names another reviewed branch)
+exit: 1
+
+### S3 candidate, DEPLOY_BRANCH but no DEPLOY_SHA
+$ cd /c/AlphaCouncil-Staging/deploy-026699b && DEPLOY_BRANCH=release/sector-standing bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check
+    refusing: DEPLOY_BRANCH=release/sector-standing needs DEPLOY_SHA, the full commit approved for it
+exit: 1
+
+### S4 candidate, short DEPLOY_SHA
+$ cd /c/AlphaCouncil-Staging/deploy-026699b && DEPLOY_BRANCH=release/sector-standing DEPLOY_SHA=026699b bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check
+    refusing: DEPLOY_SHA must be a full 40-character commit, got '026699b'
+exit: 1
+
+### S5 candidate, wrong full DEPLOY_SHA
+$ cd /c/AlphaCouncil-Staging/deploy-026699b && DEPLOY_BRANCH=release/sector-standing DEPLOY_SHA=b5655a50645014b312b875bfb6c2cf5c09460f37 bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check
+    refusing: HEAD of 'release/sector-standing' is 026699b906ea3a513b4f2dbfc37672fa68ee9d42, not the approved DEPLOY_SHA b5655a50645014b312b875bfb6c2cf5c09460f37
+exit: 1
+
+### S6 different branch: rebuild checkout with the candidate's DEPLOY_BRANCH and DEPLOY_SHA
+$ cd /c/projects/alphacouncil-platform && DEPLOY_BRANCH=release/sector-standing DEPLOY_SHA=026699b906ea3a513b4f2dbfc37672fa68ee9d42 bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check
+    refusing: on branch 'rebuild', expected 'release/sector-standing' (DEPLOY_BRANCH names another reviewed branch)
+exit: 1
+
+### S7 advanced release-branch HEAD, the approved DEPLOY_SHA
+$ cd /c/Users/Abdul/AppData/Local/Temp/claude/6a590ee495cfdc21/3264648b-12d3-4182-95bf-1b76e1bf3a95/scratchpad/advanced-clone && DEPLOY_BRANCH=release/sector-standing DEPLOY_SHA=026699b906ea3a513b4f2dbfc37672fa68ee9d42 bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check
+    refusing: HEAD of 'release/sector-standing' is 643e62ad4f0ff5017831588769012787f7ec40e3, not the approved DEPLOY_SHA 026699b906ea3a513b4f2dbfc37672fa68ee9d42
+exit: 1
+
+### S8 rebuild pinned to a wrong DEPLOY_SHA
+$ cd /c/projects/alphacouncil-platform && DEPLOY_SHA=b5655a50645014b312b875bfb6c2cf5c09460f37 bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check
+    refusing: HEAD of 'rebuild' is c3bcff69634ce2ac0e7bc850bed179ea4d97bb47, not the approved DEPLOY_SHA b5655a50645014b312b875bfb6c2cf5c09460f37
+exit: 1
+
+### S9 candidate, DEPLOY_BRANCH and the exact DEPLOY_SHA
+$ cd /c/AlphaCouncil-Staging/deploy-026699b && DEPLOY_BRANCH=release/sector-standing DEPLOY_SHA=026699b906ea3a513b4f2dbfc37672fa68ee9d42 bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check
+    checkout: C:/AlphaCouncil-Staging/deploy-026699b
+    branch:   release/sector-standing
+    commit:   026699b906ea3a513b4f2dbfc37672fa68ee9d42 (equals DEPLOY_SHA)
+    archive:  3837 paths from 026699b906ea3a513b4f2dbfc37672fa68ee9d42 (committed files only)
+    release:  /opt/alphacouncil-platform/releases/026699b906
+    beta now: /opt/alphacouncil-platform/releases/b5655a5064
+    releases: b5655a5064 5c18a3ae46 2e44ee6fbf
+    prune:    2e44ee6fbf (a deploy keeps the 3 newest, 026699b906 first)
+    nothing uploaded, built or switched (--check)
+    rollback: releases/b5655a5064 (kept)
+    preconditions met (this check approves nothing; deploying needs the owner's go-ahead)
+exit: 0
+
+== staging, the deploy path itself (no --check), host unreachable: each must refuse before '== upload'
+### S2' candidate, no DEPLOY_BRANCH
+$ cd /c/AlphaCouncil-Staging/deploy-026699b && STAGING_HOST=nobody@deploy-guard.invalid bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh
+    refusing: on branch 'release/sector-standing', expected 'rebuild' (DEPLOY_BRANCH names another reviewed branch)
+exit: 1
+
+### S3' candidate, no DEPLOY_SHA
+$ cd /c/AlphaCouncil-Staging/deploy-026699b && STAGING_HOST=nobody@deploy-guard.invalid DEPLOY_BRANCH=release/sector-standing bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh
+    refusing: DEPLOY_BRANCH=release/sector-standing needs DEPLOY_SHA, the full commit approved for it
+exit: 1
+
+### S5' candidate, wrong DEPLOY_SHA
+$ cd /c/AlphaCouncil-Staging/deploy-026699b && STAGING_HOST=nobody@deploy-guard.invalid DEPLOY_BRANCH=release/sector-standing DEPLOY_SHA=b5655a50645014b312b875bfb6c2cf5c09460f37 bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh
+    refusing: HEAD of 'release/sector-standing' is 026699b906ea3a513b4f2dbfc37672fa68ee9d42, not the approved DEPLOY_SHA b5655a50645014b312b875bfb6c2cf5c09460f37
+exit: 1
+
+### S6' different branch
+$ cd /c/projects/alphacouncil-platform && STAGING_HOST=nobody@deploy-guard.invalid DEPLOY_BRANCH=release/sector-standing DEPLOY_SHA=026699b906ea3a513b4f2dbfc37672fa68ee9d42 bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh
+    refusing: on branch 'rebuild', expected 'release/sector-standing' (DEPLOY_BRANCH names another reviewed branch)
+exit: 1
+
+### S7' advanced HEAD
+$ cd /c/Users/Abdul/AppData/Local/Temp/claude/6a590ee495cfdc21/3264648b-12d3-4182-95bf-1b76e1bf3a95/scratchpad/advanced-clone && STAGING_HOST=nobody@deploy-guard.invalid DEPLOY_BRANCH=release/sector-standing DEPLOY_SHA=026699b906ea3a513b4f2dbfc37672fa68ee9d42 bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh
+    refusing: HEAD of 'release/sector-standing' is 643e62ad4f0ff5017831588769012787f7ec40e3, not the approved DEPLOY_SHA 026699b906ea3a513b4f2dbfc37672fa68ee9d42
+exit: 1
+
+== production, --check (read-only)
+### P1 candidate, DEPLOY_BRANCH and the exact DEPLOY_SHA (beta still runs b5655a5064)
+$ cd /c/AlphaCouncil-Staging/deploy-026699b && DEPLOY_BRANCH=release/sector-standing DEPLOY_SHA=026699b906ea3a513b4f2dbfc37672fa68ee9d42 bash /c/projects/alphacouncil-platform/scripts/deploy-production.sh --check
+    checkout: C:/AlphaCouncil-Staging/deploy-026699b
+    branch:   release/sector-standing
+    commit:   026699b906ea3a513b4f2dbfc37672fa68ee9d42 (equals DEPLOY_SHA)
+    release:  /opt/alphacouncil-platform/prod/releases/026699b906
+    beta now: b5655a5064
+    prod now: /opt/alphacouncil-platform/prod/releases/b5655a5064
+    prune:    2e44ee6fbf (a deploy keeps the 3 newest, 026699b906 first)
+    nothing uploaded, built or switched (--check)
+    rollback: releases/b5655a5064 (kept)
+    NOT READY: beta runs b5655a5064, not 026699b906. Deploy to staging and check it first.
+exit: 1
+
+### P2 candidate, no DEPLOY_SHA
+$ cd /c/AlphaCouncil-Staging/deploy-026699b && DEPLOY_BRANCH=release/sector-standing bash /c/projects/alphacouncil-platform/scripts/deploy-production.sh --check
+    refusing: DEPLOY_BRANCH=release/sector-standing needs DEPLOY_SHA, the full commit approved for it
+exit: 1
+
+### P3 advanced release-branch HEAD
+$ cd /c/Users/Abdul/AppData/Local/Temp/claude/6a590ee495cfdc21/3264648b-12d3-4182-95bf-1b76e1bf3a95/scratchpad/advanced-clone && DEPLOY_BRANCH=release/sector-standing DEPLOY_SHA=026699b906ea3a513b4f2dbfc37672fa68ee9d42 bash /c/projects/alphacouncil-platform/scripts/deploy-production.sh --check
+    refusing: HEAD of 'release/sector-standing' is 643e62ad4f0ff5017831588769012787f7ec40e3, not the approved DEPLOY_SHA 026699b906ea3a513b4f2dbfc37672fa68ee9d42
+exit: 1
+
+### P4 rebuild, default
+$ cd /c/projects/alphacouncil-platform && bash /c/projects/alphacouncil-platform/scripts/deploy-production.sh --check
+    checkout: C:/projects/alphacouncil-platform
+    branch:   rebuild
+    commit:   c3bcff69634ce2ac0e7bc850bed179ea4d97bb47
+    release:  /opt/alphacouncil-platform/prod/releases/c3bcff6963
+    beta now: b5655a5064
+    prod now: /opt/alphacouncil-platform/prod/releases/b5655a5064
+    prune:    2e44ee6fbf (a deploy keeps the 3 newest, c3bcff6963 first)
+    nothing uploaded, built or switched (--check)
+    rollback: releases/b5655a5064 (kept)
+    NOT READY: beta runs b5655a5064, not c3bcff6963. Deploy to staging and check it first.
+exit: 1
+
+== the servers afterwards (read-only)
+beta current: /opt/alphacouncil-platform/releases/b5655a5064
+prod current: /opt/alphacouncil-platform/prod/releases/b5655a5064
+beta releases: b5655a5064 5c18a3ae46 2e44ee6fbf
+prod releases: b5655a5064 5c18a3ae46 2e44ee6fbf
+active: active active active active
