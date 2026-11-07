@@ -33,7 +33,7 @@ It does not mean new things.
 | 1 — Safe footing | ~15 % | DONE 2026-10-22 |
 | 2 — Market data correct at the source | ~25 % | DONE 2026-10-24; later data fixes F-13, F-15 and F-16 all live (F-16 verified 2026-11-06) |
 | 3 — Every known defect fixed, checkout proven | ~30 % | DONE 2026-10-22 |
-| 4 — Launch: settled, checked, then paid | ~30 % | Steps 8, 9, 22, 23, 10 DONE (10's signed-out half re-run on production `b5655a5064` 2026-11-06, all PASS); **Step 7 (lawyer) NOT STARTED**, pack ready (`docs/lawyer-review-pack-2026-11-06.md`); Step 18 (billing) open, item 4 needs a real renewal |
+| 4 — Launch: settled, checked, then paid | ~30 % | Steps 8, 9, 22, 23, 10 DONE (10's signed-out half re-run on production `b5655a5064` 2026-11-06 and on `026699b906` 2026-11-07, all PASS); **Step 7 (lawyer) NOT STARTED**, pack ready (`docs/lawyer-review-pack-2026-11-06.md`); Step 18 (billing) open, item 4 needs a real renewal |
 
 Goal 4's Done-when (verbatim, short):
 1. The owner's written legal advice is in `docs/legal-advisors-<date>.md`, and every change it asks for is live.
@@ -44,8 +44,8 @@ Goal 4's Done-when (verbatim, short):
 
 ## What is left (`PROJECT.md` §9, "What is left, by who"), as of 2026-11-06
 
-**The site is published and live** at alphacouncil.tech, running release `b5655a5064` on production. Beta has run
-`026699b906` (the sector-standing fix) since 2026-11-07.
+**The site is published and live** at alphacouncil.tech. Since 2026-11-07, beta and production both run `026699b906`,
+which is `b5655a5064` plus the sector-standing fix.
 Billing has been open since 2026-11-02.
 
 **Done on 2026-11-06, on the owner's go-aheads:**
@@ -102,7 +102,12 @@ Billing has been open since 2026-11-02.
     - **The deploy scripts now ship only an exact approved commit** (`DEPLOY_SHA`, review 75's fix).
     - **Beta released 2026-11-07** on the owner's go-ahead ("Yes, deploy to beta"). Beta runs `026699b906`, its
       files equal the commit, and its checks pass (`docs/release-beta-sector-standing-2026-11-07.md`).
-    - **What waits:** production, on its own go-ahead. Its `--check` now passes. It still runs `b5655a5064`.
+    - **Production released 2026-11-07** on the owner's go-ahead ("Yes, deploy to production"), after review 77
+      accepted beta. Production's files equal the commit, and the live pages carry the new wording
+      (`docs/release-production-sector-standing-2026-11-07.md`).
+    - **Step 10's signed-out checks** were rerun on it, with the same counts as 2026-11-06
+      (`docs/launch-check-2026-11-07.md`).
+    - **The monitor** shows 15 of 15 ok.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

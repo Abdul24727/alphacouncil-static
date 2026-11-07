@@ -1,0 +1,58 @@
+production checks for 026699b906ea3a513b4f2dbfc37672fa68ee9d42, run 2026-11-07 09:57:55 UTC
+
+### 1. what production and beta run (read-only ssh)
+$ readlink, ls releases, systemctl is-active
+prod: /opt/alphacouncil-platform/prod/releases/026699b906
+prod releases: 026699b906 b5655a5064 5c18a3ae46
+prod services: active active
+beta: /opt/alphacouncil-platform/releases/026699b906
+beta releases: 026699b906 b5655a5064 5c18a3ae46
+beta services: active active
+[exit 0]
+
+### 2. the eight changed files on production equal the commit (sha256)
+$ git cat-file -p $C:<f> | sha256sum  vs  sha256sum on the server
+c0940d093f122dbee89870dbe3237a6f38d256deca9d7f6fa57c4af69299f4bc  api/app/copilot/engine.py
+8706b2b0706793ecbdcd2889f1861fc2547b706fc22e2d0015b4b47c79d29764  api/app/copilot/tools.py
+690b41ab8923202efd92c5fad5b2b7b52a4fa2d3e40bd6bf92334b9267c694c8  api/app/debate/pack.py
+4a3875e2d138af6a5c9c460e6308c34bff9e1e5fdec4081dbc423ba5acc3f7f6  api/app/evidence.py
+afc05e6a2ad43b1013429a26cc61bd14106ebb5354fc7f9bd6104c3a99e8097d  api/tests/test_copilot.py
+79bf10e5a5b4df6553e70fd5a01035fecc84ae2c23d6b1872089f63f06bb2306  api/tests/test_debate.py
+4bdd5ba20a7d20d61b924476979e3afa2bcfecaed282d10885cee3870ec3a693  web/messages/ar.json
+ebdd7d4aa2362d54cf5aacb70d419ab6891c86dffb54c181d95a6ac0cf0b3ddd  web/messages/en.json
+[exit 0]
+
+### 3. every committed file on production equals the commit
+$ the 3,566 paths of beta's tree-sha256.txt (made from the commit), hashed on the server, then diff
+paths: 3566
+commit hashes: 3566, server hashes: 3566
+[exit 0]
+
+### 4. none of the prototype on production
+$ test -e presenter.py; grep debate_engine settings.py
+presenter.py absent
+debate_engine in settings.py: 0
+[exit 0]
+
+### 5. the live site answers
+$ curl -sL https://alphacouncil.tech/<page>
+200  https://alphacouncil.tech/
+200  https://alphacouncil.tech/home
+200  https://alphacouncil.tech/ar
+200  https://alphacouncil.tech/methodology
+200  https://alphacouncil.tech/pricing
+200  https://alphacouncil.tech/t/2222/financials
+200  https://alphacouncil.tech/ar/t/2222/financials
+
+### 6. the live financials pages carry the new wording and not the old
+$ count phrases in the served HTML (before: before-labels.txt)
+https://alphacouncil.tech/t/2222/financials
+  Sector percentile: 0
+  Sector standing: 6
+  المئين: 0
+  الترتيب داخل القطاع: 0
+https://alphacouncil.tech/ar/t/2222/financials
+  Sector percentile: 0
+  Sector standing: 0
+  المئين: 0
+  الترتيب داخل القطاع: 2

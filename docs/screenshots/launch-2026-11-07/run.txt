@@ -1,0 +1,6 @@
+run 2026-11-07 10:01:56 UTC against https://alphacouncil.tech
+check-seo exit 0 | ALL PASS
+check-advisors-visitor exit 0 | all passed
+check-data-fixes exit 0 | all passed
+pages exit 0 | 20 views; every one 200 with no sideways scroll
+done 2026-11-07 10:08:45 UTC

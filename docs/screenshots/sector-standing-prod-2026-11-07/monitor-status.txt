@@ -1,0 +1,19 @@
+$ ssh root@alphacouncil.tech python3 -I /usr/local/lib/acp-monitor/prod-monitor.py status   (read at 2026-11-07 10:02:12 UTC)
+ok      alphacouncil.tech/home: https://alphacouncil.tech/home answered 200 in 32 ms
+ok      alphacouncil.tech/api/v1/health: https://alphacouncil.tech/api/v1/health answered 200 in 11 ms
+ok      market data: the health check reports market data: ok
+ok      acp-prod-api: acp-prod-api is active
+ok      acp-prod-web: acp-prod-web is active
+ok      Pro renewals job: the last run exited 0
+ok      Pro renewals timer: acp-prod-billing.timer is active
+ok      Moyasar for renewals: the run at 2026-11-07 10:00 UTC (13:00 Riyadh) reached Moyasar
+ok      database backup job: the last run exited 0
+ok      database backup timer: acp-db-backup.timer is active
+ok      off-server backup copy: the owner's computer last copied the backups at 2026-11-07 06:00 UTC (09:00 Riyadh), 0.2 days ago (79 files, newest acp_prod-20261107T013253Z.dump)
+ok      disk /: / is 42% full (120.8 GB free)
+ok      disk /boot: /boot is 15% full (0.7 GB free)
+ok      TLS certificate: the certificate for alphacouncil.tech expires on 2027-01-21 16:54 UTC (19:54 Riyadh), in 75 days
+ok      model account credit: $22.85 left on the model account
+alerts emailed: 2 in 24 hours (limit 8), 11 in 30 days (limit 60)
+outside check: PING_URL is set, pinged at the end of every round
+[exit 0]

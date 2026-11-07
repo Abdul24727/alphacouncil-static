@@ -335,6 +335,23 @@ Older entries: `changelog-archive.md`.
       - **`RESULT.md`:** it now separates the invented figures (22 of 23 are P9 data) from the invented statements
         (notes and peer comparisons too).
       - **The new totals:** 209 against 55 wrong claims, and 47 against 2 inventions.
+    - **PRODUCTION RELEASED 2026-11-07 on the owner's go-ahead** ("Yes, deploy to production"): alphacouncil.tech
+      runs `026699b906ea3a513b4f2dbfc37672fa68ee9d42`, the same as beta
+      (`docs/release-production-sector-standing-2026-11-07.md`).
+      - **The run:** the preflight was rerun and passed, then the release's own command ran and exited 0.
+        `2e44ee6fbf` was pruned, and `b5655a5064` is kept on both tiers as the rollback.
+      - **The checks** (`docs/screenshots/sector-standing-prod-2026-11-07/`):
+        - every one of the 3,566 committed files on production equals the commit by sha256, and the prototype is
+          absent;
+        - the live financials pages went from "Sector percentile" 6 / "المئين" 8 to 0 and 0, with the new wording
+          in their place;
+        - the Arabic check passes, 48 views;
+        - the monitor shows 15 of 15 ok, "Moyasar for renewals" included.
+      - **Step 10's signed-out checks, rerun** (`docs/launch-check-2026-11-07.md`): SEO 62/0, advisors visitor 24/0,
+        data fixes 44/0 with a 714-ticker sweep, and 20 page views. The counts equal 2026-11-06's.
+      - **Not seen here:** a Pro member's view of the live panel. Signed out it shows the Pro lock. Beta's captures
+        show the panel, and production's files equal beta's commit. The owner can confirm it signed in.
+      - **Not done:** nothing was pushed, and no model was paid for.
     - **BETA RELEASED 2026-11-07 on the owner's go-ahead** ("Yes, deploy to beta"): beta runs
       `026699b906ea3a513b4f2dbfc37672fa68ee9d42` (`docs/release-beta-sector-standing-2026-11-07.md`).
       - **The run:** the preflight was rerun and passed, then the request's own command ran and exited 0. `2e44ee6fbf`

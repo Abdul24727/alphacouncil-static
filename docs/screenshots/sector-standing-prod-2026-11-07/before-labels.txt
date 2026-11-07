@@ -1,0 +1,11 @@
+the live financials pages BEFORE the switch, read at 2026-11-07 09:45:11 UTC while production ran releases/b5655a5064 (GET only)
+https://alphacouncil.tech/t/2222/financials
+  Sector percentile: 6
+  Sector standing: 0
+  المئين: 0
+  الترتيب داخل القطاع: 0
+https://alphacouncil.tech/ar/t/2222/financials
+  Sector percentile: 0
+  Sector standing: 0
+  المئين: 8
+  الترتيب داخل القطاع: 0
