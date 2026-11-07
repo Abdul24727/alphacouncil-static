@@ -299,8 +299,9 @@ Older entries: `changelog-archive.md`.
     The record and log are in `docs/eval/presenter-comparison/` (`probe-results.jsonl`, `comparison.log`); the
     pilot's and earlier records are unchanged (`git diff --quiet`). No result is reported before the hand audit.
   - **The hand audit is DONE (2026-11-07):**
-    - **The method:** all 59 answers were read, and 15 auditors read the full discussions against the packs. All 265
-      counted claims were checked as exact quotes, with the pack facts verified.
+    - **The method:** all 59 answers were read, and 15 auditors read the full discussions against the packs. The counted
+      claims were checked as exact quotes against their turns: 265 at first, 264 since review 70 took one out
+      (`excluded-claims.json`). The pack facts they turn on were checked against the frozen packs in `docs/eval/packs/`.
     - **The documents:** `docs/eval/presenter-comparison/RESULT.md` and `audit.md`, with `verified-claims.json` and
       `tools/`.
     - **Cost:** option 2 FAILS criterion 4 clearly. It costs 62.4 % of today's room ($0.1454 against $0.2332), 53 %
@@ -322,7 +323,8 @@ Older entries: `changelog-archive.md`.
         `tools/classify_flags.py`, so 122 against 0 reproduces.
       - **The analyst's cost:** with every attempt and the failed session it is $0.1094 a session, 46.9 % of A, not
         the single-attempt $0.086.
-      - **Quotes:** `tools/verify_quotes.py` checks all 265 against their stated turns.
+      - **Quotes:** `tools/verify_quotes.py` checked all 265 against their stated turns. That was the count then; 264
+        are retained since review 70.
     - **Review 69 said FIX:** one definition for both arms. That gave 14 more of today's room's claims, and 2 of option
       2's (both presenter additions), as invented statements about the pack. D7's "0.10" is a hypothetical, not an
       invented figure. So the inventions are 48 against 2, and the figures absent from the data 121 against 0.
@@ -333,6 +335,10 @@ Older entries: `changelog-archive.md`.
       - **`RESULT.md`:** it now separates the invented figures (22 of 23 are P9 data) from the invented statements
         (notes and peer comparisons too).
       - **The new totals:** 209 against 55 wrong claims, and 47 against 2 inventions.
+    - **Review 71 said FIX:** three plan-file references still said 265 claims, and the output overstated what the
+      `why` fields prove. All three now say 264 retained, with 265 labelled as the earlier count. `audit.md` §1 has
+      "The evidence, and its limits": what reproduces by script, and what rests on judging each claim against the
+      frozen packs. Review 72 gets the run record, the flag file, the scripts and the packs in one zip.
     - **Review 70 first could not run** (2026-11-07 02:2x local): the reviewer's ChatGPT usage limit was hit, until about
       05:03 local. Output 63 waits for it.
     - **THE OWNER'S DECISION (2026-11-07, in chat): "Keep it, take the fix"**, in answer to "Which way for the

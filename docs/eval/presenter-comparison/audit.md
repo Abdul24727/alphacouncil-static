@@ -30,6 +30,18 @@ clean. One session failed: P I3 clean. Its analyst's plan was refused on all thr
      per-flag findings.
    - **The record:** the claims are in `verified-claims.json`. `tools/tally.py` reproduces every count in this document
      and in `RESULT.md` from the saved files: the claim categories, the flag classes and the analyst's cost.
+   - **The evidence, and its limits** *(added after review 71)*:
+     - **Reproducible by script from the repository:**
+       - that each quote is in the turn it is attributed to (`verify_quotes.py` over `probe-results.jsonl`);
+       - that the flag classes follow their stated rules (`classify_flags.py`);
+       - every count and cost (`tally.py`).
+     - **Resting on judgment:** whether each claim is wrong on the pack. A claim's `why` field is a short note, and
+       sometimes only a label such as "invented", not the evidence itself.
+     - **How it was checked:** each judgment was made by an auditor and checked by me against the five frozen packs
+       in `docs/eval/packs/`, which are in the repository. The facts that settle each kind of claim are written out
+       in §2 and §5.
+     - **How a reader re-checks one:** read the claim's turn in `probe-results.jsonl` beside its pack. No script
+       does it.
      *(Corrected after review 68: this said the tally reproduced every count while the flag classes were not saved.)*
 5. **The counting rules:**
    - **What counts:** a claim that reaches the reader and is false on the pack. That covers a wrong figure, a false

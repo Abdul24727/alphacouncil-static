@@ -78,8 +78,8 @@ Billing has been open since 2026-11-02.
   owner's go-ahead: "Yes, run it", in answer to "Once ChatGPT accepts the fixes, run the paid comparison (about $11,
   ceiling $167)?". It runs once the reviewer accepts the latest fixes. Every answer is audited by hand before any
   result is reported. Adoption, any beta showing and any release stay the owner's, separately.
-- **It ran on 2026-11-07 from `d7c2091`:** 60 sessions, $11.36. All 60 were audited by hand, and the 265 counted
-  claims were each checked against the session text (`docs/eval/presenter-comparison/RESULT.md`, `audit.md`).
+- **It ran on 2026-11-07 from `d7c2091`:** 60 sessions, $11.36. All 60 were audited by hand, and the counted claims
+  (264 retained; 265 before review 70 took one out) were each checked against the session text (`docs/eval/presenter-comparison/RESULT.md`, `audit.md`).
   - **Option 2 fails the cost criterion clearly:** 62 % of today's room against the 40 % limit. Under the rule written
     before the run, that settles it, and today's room stays.
   - **Option 2's discussion was far more accurate:** 55 wrong claims against 209, none in a final answer against 7,
