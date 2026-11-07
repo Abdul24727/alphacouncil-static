@@ -335,6 +335,15 @@ Older entries: `changelog-archive.md`.
       - **`RESULT.md`:** it now separates the invented figures (22 of 23 are P9 data) from the invented statements
         (notes and peer comparisons too).
       - **The new totals:** 209 against 55 wrong claims, and 47 against 2 inventions.
+    - **The sector-standing fix was verified as a release candidate (review 72's step):**
+      `docs/release-readiness-sector-standing-2026-11-07.md`.
+      - **Checks:** both commits clean, suite 596, the affected tests 129, lint at baseline, web checks and 68 tests
+        clean, `npm run build` exit 0.
+      - **Evidence:** the room now reads Al Rajhi's 22.7 as more debt than most peers. The site was shown in en and ar
+        at 1440 and 390 on beta's data (`docs/screenshots/sector-standing-2026-11-07/`).
+      - **Remaining failures:** none.
+      - **The owner's choice:** release the fix alone on today's release (recommended) or `rebuild` with the inert
+        prototype. Beta first, each on its own go-ahead.
     - **REVIEW 72 ACCEPTED (2026-11-07, GPT-6 at High, in the browser): the comparison audit is CLOSED.**
       - **What it checked:** it unzipped the evidence and ran all three scripts itself, which reproduced 264 claims
         with 0 missing quotes, 209 against 55, 47 against 2, 587 flags (121 against 0) and $11.356014 at 62.4 %. It
