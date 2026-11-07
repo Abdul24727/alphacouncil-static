@@ -231,8 +231,10 @@ The dumps include the card-token ids.
     Anthropic's Claude for the Chair. Production's own setting sits in a server file that also holds passwords and
     keys, so it was not read. *The owner to confirm.*
   - **Who runs a request:** OpenRouter chooses which hosting company runs each request for a model, so the
-    company is not necessarily the model's maker. For the Copilot, the code asks OpenRouter for the fastest host,
-    with fallbacks. Which hosts served the site's requests was not looked up.
+    company is not necessarily the model's maker.
+    - **The code's default:** it asks OpenRouter to prefer the fastest host.
+    - **A setting:** it can name hosts for the Copilot to try first, with the others as fallbacks.
+    - **Not read:** production's values for both, and which hosts served the site's requests.
 - **The hosting provider:** a rented virtual server. *The owner to state which provider and in which
   country.*
 

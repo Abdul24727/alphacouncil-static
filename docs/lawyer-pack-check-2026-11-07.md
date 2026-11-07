@@ -157,8 +157,11 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
    - **What is known:**
      - **The Copilot:** confirmed live.
      - **The seats and the Chair:** only the code's defaults are known.
-     - **Routing:** OpenRouter chooses the hosting company per request. The Copilot's code asks it for the fastest
-       host, with fallbacks (`api/app/copilot/openai_compat.py`, `copilot_provider_sort`).
+     - **Routing:** OpenRouter chooses the hosting company per request (`api/app/copilot/openai_compat.py`,
+       `host_routing`).
+       - **The code's default:** it asks OpenRouter to sort hosts by latency (`copilot_provider_sort = "latency"`).
+       - **A setting:** `COPILOT_PROVIDER_ORDER` can name hosts for the Copilot to try first, with fallbacks.
+       - **Not read:** production's values for both.
    - **Now:** §5.2 keeps the confirmed fact apart from the defaults, marks the seats' and the Chair's models for the
      owner to confirm, and says that the host is not necessarily the model's maker. This bears on question (h).
 6. **What beta shares with production (pack §2).**
