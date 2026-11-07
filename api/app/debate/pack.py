@@ -88,8 +88,8 @@ def no_statements_note(data: dict[str, Any]) -> str | None:
     Five of the six seats' briefs send them to [P9]'s statements. In the 2026-11-07 comparison the
     packs had no P9, nothing said so, and 22 of the room's 23 invented figures were statement data
     the briefs place in P9 (`docs/eval/presenter-comparison/audit.md` §5). A live pack has a P9, but
-    for 50 of 714 companies on 2026-11-07 it holds no statements. In each of these cases the room is
-    told plainly, here, rather than left to notice an absence.
+    for 50 of 714 companies on 2026-11-07 it holds no annual statements (2 of them have quarters).
+    In each of these cases the room is told plainly, here, rather than left to notice an absence.
 
     Held means a reported number (review 79): a statement whose rows are all null holds nothing, and
     a P9 whose only numbers are single quarters is told that, not that it has none."""
@@ -111,10 +111,13 @@ def no_statements_note(data: dict[str, Any]) -> str | None:
         " estimated or recalled from memory is invented, whatever tag it carries."
     )
     if quarters:
+        # Review 80: the quarters are reported income-statement figures, so what is absent is the
+        # full-year or trailing-window statements, not every income-statement figure.
         return (
-            "NO ANNUAL FINANCIAL STATEMENTS IN THIS PACK: [P9] holds single quarters only, and no"
-            " income statement, balance sheet or cash flow statement figure. The quarters in [P9]"
-            " `quarters` are reported: quote each with the quarter it covers. Where a brief sends a"
+            "NO ANNUAL FINANCIAL STATEMENTS IN THIS PACK: [P9] holds single income-statement quarters"
+            " only, and no full-year or trailing-window income statement, balance sheet or cash flow"
+            " statement figure. The quarters in [P9] `quarters` are reported: quote each with the"
+            " quarter it covers, and do not present them as an annual figure. Where a brief sends a"
             " seat to [P9]'s statements, the seat says plainly that the annual statements are not"
             " available and argues from the datasets that are here." + rule
         )

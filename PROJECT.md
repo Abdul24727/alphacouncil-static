@@ -336,8 +336,9 @@ Older entries: `changelog-archive.md`.
         (notes and peer comparisons too).
       - **The new totals:** 209 against 55 wrong claims, and 47 against 2 inventions.
     - **P9 FIXED ON `rebuild` 2026-11-07, not released** (review 78's step; `docs/p9-no-statements-2026-11-07.md`):
-      - **The live reproduction:** 50 of 714 companies have no statements in P9, and one has only a balance sheet.
-        P9 told every one of them it had "an income statement and a balance sheet" and "one window". The
+      - **The live reproduction:** P9 told 51 companies it had "an income statement and a balance sheet" and "one
+        window". Counted by reported numbers (review 80): 48 hold no figure at all, 2 hold only single quarters
+        (ALFIRDOU, TAALEEM), and 1 holds a balance sheet and quarters (232). The
         comparison's packs had no P9 at all, and the briefs send five seats to [P9]'s statements.
       - **The fix:** P9 now says "NO FINANCIAL STATEMENTS" (or "NO INCOME STATEMENT") and nothing false. The pack
         tells every seat, after the header, whenever it holds no statements. Companies with statements read as
@@ -355,6 +356,18 @@ Older entries: `changelog-archive.md`.
           quarters kept, and all-null rows count as no statements.
         - **The tests:** 9 P9 tests, 137 in the named files, and 604 passed, 10 skipped in the suite. Lint is
           unchanged.
+      - **Review 80 said FIX:**
+        - **The wording:** the quarters-only note denied income-statement figures that the quarters are, and the
+          quarters' note pointed at "annual figures above" that did not exist.
+        - **A balance sheet with quarters:** it was told it had no earnings.
+        - **The record:** it misread rows as numbers.
+        - **Fixed:**
+          - what may be missing is now the full-year or trailing-window statements, never the quarters;
+          - `NO ANNUAL INCOME STATEMENT` covers a balance sheet with quarters;
+          - the quarters' note depends on whether an annual figure exists;
+          - the sweep is redone by numbers (`p9-sweep-values.*`).
+        - **A table test:** seven cases, checked word for word.
+        - **The results:** 144 in the named files, and 611 passed, 10 skipped in the suite.
     - **PRODUCTION RELEASED 2026-11-07 on the owner's go-ahead** ("Yes, deploy to production"): alphacouncil.tech
       runs `026699b906ea3a513b4f2dbfc37672fa68ee9d42`, the same as beta
       (`docs/release-production-sector-standing-2026-11-07.md`).

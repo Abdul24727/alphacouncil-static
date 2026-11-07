@@ -19,17 +19,23 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
 - **The result:** the invented figures were statement data, cited to [P1], [P2], [P3], [P7], [P9] or nothing.
   Buffett's D2 opening gave "SAR 16,578 million".
 
-**On the live data today** (`p9-sweep.py`, read through beta's API for all 714 tickers; summary in
-`p9-sweep-summary.txt`):
-- **No statements at all: 50 companies.** 19 are on Tadawul (4330 to 4350 among them). For them, P9's `statements` is
-  empty, `quarters` is null, and 0 of their 348 calculations has a value.
-- **What P9 told every one of those 50,** in its `limitations` (`beta-4330-evidence-before.json`):
-  - "NO CASH FLOW STATEMENT: the source's pages for this company carry an income statement and a balance sheet
-    only … dividend cover can be tested against earnings only";
-  - "ONE INCOME-STATEMENT WINDOW: one window is available … the single quarters are the history there is".
-  - Both are false. They describe statements that do not exist, and nothing said there were none.
-- **A balance sheet and no income statement: one company (232),** which was told the same two things
-  (`beta-232-limitations-before.json`).
+**On the live data today:**
+- **How it was measured:** read through beta's API for all 714 tickers, counting reported numbers, not rows
+  (`p9-sweep-values.py`; the raw data, one line per ticker, is `p9-sweep-values.json`; the classification is
+  `p9-sweep-values-summary.txt`).
+- **A correction (review 80):** the first sweep (`p9-sweep.py` / `p9-sweep.json`) counted rows. On it this record said
+  that all 50 companies with no statement rows also had no quarters. Two of them have reported quarters.
+- **No row anywhere was all null.** No statement row and no quarter row in P9 lacked a number.
+
+| Group | Companies | What they hold | What P9 told every one of them |
+|---|---|---|---|
+| A. No annual statement figure and no quarterly figure | **48** (19 on Tadawul, 4330 to 4350 among them) | nothing: 0 of 334 calculations has a value | "NO CASH FLOW STATEMENT: … carry an income statement and a balance sheet only … dividend cover can be tested against earnings only" and "ONE INCOME-STATEMENT WINDOW: one window is available … the single quarters are the history there is" (`beta-4330-evidence-before.json`) |
+| B. No annual statement figure, reported quarters | **2** (ALFIRDOU, TAALEEM) | 25 quarterly income numbers each, over five quarter-ends | the same two notes |
+| C. A balance sheet and quarters, no annual income statement | **1** (232) | a balance sheet, and 25 quarterly income numbers | the same two notes (`beta-232-limitations-before.json`) |
+| D. An income statement and a balance sheet | 663 | as before | unchanged by this fix |
+
+- **For groups A to C, both notes are false.** They describe annual statements that do not exist, and nothing said
+  there were none.
 - **The pack's own header:** it said that reported figures are "in [P9] under `statements` and `quarters`" for these
   companies too.
 
@@ -49,24 +55,36 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
   elsewhere in the pack is not caught, even when cited to [P9].
 - **What would show whether models invent less:** a model evaluation, and that is paid.
 
-**Held means a reported number** (review 79):
+**Held means a reported number** (reviews 79 and 80):
 - **Statements:** a statement counts as present only where a row carries a number. A section whose rows are all
   null is treated as absent.
-- **Quarters:** the single quarters P9 carries count as reported figures, and are never called missing.
+- **Quarters:** the single quarters P9 carries are reported income-statement figures. What may be missing is the
+  full-year or trailing-window statements, never the quarters, and nothing says otherwise.
 
-1. **`api/app/evidence.py`, `limitations_of`** (now also given the `quarters` the dataset carries):
-   - **No reported statement figure and no quarter:** P9 says "NO FINANCIAL STATEMENTS: the source holds no reported
-     figure from an income statement, balance sheet or cash flow statement for this company, and no quarterly
-     result … Do not state, estimate or recall one, and do not cite [P9] for one: say that the statements are not
-     available."
-   - **Single quarters only:** "NO ANNUAL STATEMENTS: … The single quarters in `quarters` are the only reported
-     figures here: quote each with the quarter it covers. There is no balance-sheet, cash-flow or annual figure in
-     this dataset …"
-   - **The other notes:** the cash-flow note names only the statements that hold a number. A company without an
-     income-statement figure gets "NO INCOME STATEMENT", not "ONE INCOME-STATEMENT WINDOW". The window count uses
-     years with a number, which matches what `statements` shows.
-   - **Unchanged:** a company with an income statement and a balance sheet over two years gets exactly the text it
-     had, asserted word for word in a test.
+1. **`api/app/evidence.py`, `limitations_of`** (now also given the `quarters` the dataset carries) **and
+   `bounded_quarters`:**
+   - **No statement figure and no quarter (group A):** "NO FINANCIAL STATEMENTS: the source holds no reported figure
+     from an income statement, balance sheet or cash flow statement for this company, and no quarterly result …
+     Do not state, estimate or recall one, and do not cite [P9] for one: say that the statements are not available."
+   - **Single quarters only (group B):** "NO ANNUAL STATEMENTS: the source holds no full-year or trailing-window
+     figure … The single quarters in `quarters` are reported income-statement figures and the only reported figures
+     here: quote each with the quarter it covers. There is no annual income-statement figure, and no balance-sheet
+     or cash-flow figure, in this dataset, and the quarters are not one …"
+   - **A balance sheet and quarters (group C):**
+     - "NO ANNUAL INCOME STATEMENT: … The single quarters in `quarters` are its only reported income figures: quote
+       each with the quarter it covers. There is no annual revenue, earnings, margin or earnings per share in this
+       dataset, and the quarters are not one …"
+     - The cash-flow note names "a balance sheet and single income-statement quarters" and says dividend cover
+       "cannot be tested against annual earnings or cash".
+   - **A balance sheet and no income figure at all:** "NO INCOME STATEMENT", with no change from review 79.
+   - **The quarters' own note** (`bounded_quarters`):
+     - **When `statements` has an income-statement number:** it still says "the annual figures above are the sum of
+       four consecutive columns".
+     - **When it has none:** "There is no annual income-statement figure for this company in `statements`, and
+       these quarters are not one: quote each with the quarter it covers".
+   - **The window count:** it uses years with a number, which matches what `statements` shows.
+   - **Unchanged (group D):** a company with an income statement and a balance sheet keeps exactly the text it had,
+     including the quarters' note, asserted word for word.
    - **Who reads it:** the Copilot reads P9 through the same tool (`get_financial_statements`), so it gets the
      same notes.
 2. **`api/app/debate/pack.py`, `no_statements_note`, added to `Pack.prompt()`:**
@@ -77,32 +95,46 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
      seat to [P9]'s statements, the seat says plainly that they are not available and argues from the datasets that
      are here. Every figure a seat quotes must be one these datasets show: a statement figure stated, estimated or
      recalled from memory is invented, whatever tag it carries."
-   - **Single quarters only:** "NO ANNUAL FINANCIAL STATEMENTS IN THIS PACK: [P9] holds single quarters only … The
-     quarters in [P9] `quarters` are reported: quote each with the quarter it covers …"
+   - **Single quarters only:** "NO ANNUAL FINANCIAL STATEMENTS IN THIS PACK: [P9] holds single income-statement
+     quarters only, and no full-year or trailing-window income statement, balance sheet or cash flow statement
+     figure. The quarters in [P9] `quarters` are reported: quote each with the quarter it covers, and do not present
+     them as an annual figure …"
+   - **A balance sheet and quarters (group C):** it gets no pack note, because the pack holds a statement figure. P9's
+     own notes say what is missing.
    - **Why in `prompt()`:** it covers live packs and saved packs alike, including the comparison's five.
    - **Packs with a reported statement figure:** they get no note.
 
 **What it does not change:**
 - **The site:** it never displays P9, so no page or Arabic copy changes.
 - **The room:** the six seats, the rounds, the Chair and the briefs are untouched.
-- **The data:** the pipeline and the data are untouched. Why 50 companies have no statements is a data-coverage
-  question for the pipeline, outside this fix.
+- **The data:** the pipeline and the data are untouched. Why 51 companies have no annual statements is a
+  data-coverage question for the pipeline, outside this fix.
 
 ## The evidence
 
-**After** (`p9-after.txt`, from `p9-after.py`, run on the fixed code), every case review 79 names:
-1. **Empty P9:** the NO FINANCIAL STATEMENTS note and the pack note, with 0 of 7 calculations valued.
-2. **Quarterly-only P9:** the quarter stays (`[['Net Income', 77.0]]`), under NO ANNUAL STATEMENTS. The pack note
-   says to quote it with its quarter.
+**After** (`p9-after.txt`, from `p9-after.py`, run on the fixed code), every case reviews 79 and 80 name:
+1. **Empty P9 (group A):** the NO FINANCIAL STATEMENTS note and the pack note, with 0 of 7 calculations valued.
+2. **Quarterly-only P9 (group B):**
+   - The quarter stays (`[['Net Income', 77.0]]`), and its note says there is no annual figure, not that one is above.
+   - The limitation is NO ANNUAL STATEMENTS, and nothing calls the quarters absent.
+   - The pack note says to quote them with their quarter.
 3. **All-null statement rows:** treated as no statements. There is no window, no cash-flow line and no "tested
    against earnings", and the pack note appears.
 4. **A balance sheet only:** NO INCOME STATEMENT, and "dividend cover cannot be tested against earnings or cash".
-5. **Normal (an income statement and a balance sheet, two years):** the old text, and no pack note.
+   - **4b. A balance sheet and quarters (group C):** the quarter stays, under NO ANNUAL INCOME STATEMENT. The
+     cash-flow note names the quarters, and there is no pack note.
+5. **Normal (group D, two years):** the old text and no pack note.
+   - **5b. With quarters:** the quarters' note is the old one.
 6. **No P9, or a P9 error:** the pack note is line 2, and the data starts at line 3.
 7. **4330's pack with beta's P9 today, and the five comparison packs:** each carries the note.
 
 **Tests** (`tests.txt`):
-- **The P9 tests:** 9 pass, 8 new and 1 extended.
+- **`test_p9_says_exactly_what_it_holds`** (review 80), across seven cases:
+  - **The cases:** empty, quarterly only, all-null rows, balance sheet only, balance sheet and quarters, normal over
+    two years, and normal with quarters.
+  - **What each checks:** the statements and quarter rows kept, the quarters' note, the whole list of limitations
+    and the pack note, all word for word.
+- **The other P9 tests:** 9 pass, 8 new and 1 extended.
   - `test_a_company_with_no_statements_is_told_so_and_supplied_no_figure`:
     - **The fixture:** `Items([], [])`, called as the live route calls it, with a dividend history and the price.
     - **What it checks:** no statements, no quarters, no calculation value and no operand; the note comes first; and
@@ -119,13 +151,13 @@ Evidence: `docs/screenshots/p9-no-statements-2026-11-07/`.
   - `test_the_comparison_packs_now_carry_the_no_statements_note`: the five frozen packs;
   - `test_an_invented_statement_figure_on_a_pack_without_statements_is_flagged`: the audit's "SAR 16,578 million",
     cited to [P9] on a no-statements pack, is listed as unverified.
-- **`test_evidence.py`, `test_debate.py` and `test_copilot.py`:** 137 passed (129 before).
-- **The whole API suite:** 604 passed, 10 skipped (596 before).
+- **`test_evidence.py`, `test_debate.py` and `test_copilot.py`:** 144 passed (129 before).
+- **The whole API suite:** 611 passed, 10 skipped (596 before).
 - **ruff:** in each changed file, the same findings at `73d7140` (before any P9 change) and now. All are
   pre-existing.
 - **The diffs:**
   - `p9-fix.patch` is the whole change since `73d7140`.
-  - `p9-fix-review-79.patch` is review 79's part.
+  - `p9-fix-review-79.patch` and `p9-fix-review-80.patch` are each review's part.
 
 **What this does not prove:** that a model now writes no invented statement figure. The tests show what the
 application supplies and says. They do not show what a model does with it.

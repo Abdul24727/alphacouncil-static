@@ -916,7 +916,7 @@ def _p9_pack(p9):
 def test_a_pack_without_statements_tells_the_room_so():
     """P9 (the 2026-11-07 comparison audit): five of six seats are sent to [P9]'s statements by their
     briefs. The comparison's packs had no P9, nothing said so, and 22 of the room's 23 invented figures
-    were statement data. Live, 50 of 714 companies have a P9 with no statements. Each case is now said
+    were statement data. Live, 50 of 714 companies have a P9 with no annual statements. Each case is now said
     once, beside the header; a pack with statements gets no note."""
     from app.evidence import Items, dataset_of
 

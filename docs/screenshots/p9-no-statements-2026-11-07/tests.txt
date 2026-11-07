@@ -1,21 +1,30 @@
-$ .venv/Scripts/python.exe -m pytest -v <the P9 tests: seven new, and the cash-flow test extended>
+$ .venv/Scripts/python.exe -m pytest -v <the P9 tests: the seven-case table, and the others>
 tests/test_evidence.py::test_no_cash_flow_statement_is_stated_rather_than_left_to_be_noticed PASSED
 tests/test_evidence.py::test_a_company_with_no_statements_is_told_so_and_supplied_no_figure PASSED
 tests/test_evidence.py::test_quarters_alone_stay_reported_and_are_not_called_missing PASSED
 tests/test_evidence.py::test_statement_rows_without_a_number_are_not_a_statement PASSED
 tests/test_evidence.py::test_a_balance_sheet_alone_is_not_described_as_an_income_statement PASSED
+tests/test_evidence.py::test_p9_says_exactly_what_it_holds[empty] PASSED
+tests/test_evidence.py::test_p9_says_exactly_what_it_holds[quarterly only] PASSED
+tests/test_evidence.py::test_p9_says_exactly_what_it_holds[all-null rows] PASSED
+tests/test_evidence.py::test_p9_says_exactly_what_it_holds[balance sheet only] PASSED
+tests/test_evidence.py::test_p9_says_exactly_what_it_holds[balance sheet and quarters] PASSED
+tests/test_evidence.py::test_p9_says_exactly_what_it_holds[normal, two years] PASSED
+tests/test_evidence.py::test_p9_says_exactly_what_it_holds[normal, two years, with quarters] PASSED
+====================== 12 passed, 68 deselected in 0.50s ======================
+[exit 0]
 tests/test_debate.py::test_a_pack_without_statements_tells_the_room_so PASSED
 tests/test_debate.py::test_a_pack_whose_only_figures_are_quarters_keeps_them PASSED
 tests/test_debate.py::test_the_comparison_packs_now_carry_the_no_statements_note PASSED
 tests/test_debate.py::test_an_invented_statement_figure_on_a_pack_without_statements_is_flagged PASSED
-============================== 9 passed in 0.56s ==============================
+====================== 4 passed, 36 deselected in 0.13s =======================
 [exit 0]
 
 $ .venv/Scripts/python.exe -m pytest -q tests/test_evidence.py tests/test_debate.py tests/test_copilot.py
-137 passed in 25.38s
+144 passed in 26.18s
 
 $ .venv/Scripts/python.exe -m pytest -q   (the whole API suite)
-604 passed, 10 skipped in 78.55s (0:01:18)
+611 passed, 10 skipped in 77.95s (0:01:17)
 
 $ ruff check, each changed file: 73d7140 (before any P9 change) against the working tree: findings
   app/evidence.py  before=10 after=10

@@ -1484,10 +1484,16 @@ def bounded_quarters(items: Items) -> QuarterSeries | None:
         rows.append([label, *[by_end.get(e) for e in ends]])
     if not rows:
         return None
+    # The note may point at annual figures only where `statements` holds an income-statement
+    # number; without one it would describe figures that are not there (review 80).
+    annual = any(r.section == "Income Statement" and r.value is not None for r in items.rows)
     return QuarterSeries(
         section="Income Statement",
         note="each column is one quarter as reported, standalone and not cumulative; the annual"
-             " figures above are the sum of four consecutive columns of this kind",
+             " figures above are the sum of four consecutive columns of this kind" if annual else
+             "each column is one quarter as reported, standalone and not cumulative. There is no"
+             " annual income-statement figure for this company in `statements`, and these quarters"
+             " are not one: quote each with the quarter it covers",
         columns=["label", *ends], rows=rows)
 
 
@@ -1512,7 +1518,7 @@ RANKING_NARROWED = (
 # P9 for a company the source holds no statement figures for. Before this, such a company was told
 # it had "an income statement and a balance sheet" and "one window", which sent a seat whose brief
 # says "read [P9]'s income statement" looking for figures that do not exist (P9 in the 2026-11-07
-# comparison audit). 50 of 714 companies on 2026-11-07, read through beta's /evidence.
+# comparison audit). 48 of 714 companies on 2026-11-07, read through beta's /evidence.
 # "Holds" means a reported number, not a section name or a row: a row whose value is null is not a
 # figure (review 79).
 NO_STATEMENTS = (
@@ -1522,14 +1528,30 @@ NO_STATEMENTS = (
     " reported revenue, earnings, asset, liability, equity, cash flow, share count or quarterly"
     " result for this company in this dataset. Do not state, estimate or recall one, and do not"
     " cite [P9] for one: say that the statements are not available.")
-# The same, for a company whose only reported figures are single quarters (review 79): those are
-# reported and stay usable, and must not be described as missing.
+# The same, for a company whose only reported figures are single quarters (reviews 79 and 80): the
+# quarters ARE reported income-statement figures and stay usable, so what is missing is the
+# full-year or trailing-window statements, and nothing here may say otherwise. 2 of 714 companies
+# on 2026-11-07 (ALFIRDOU, TAALEEM).
 QUARTERS_ONLY = (
-    "NO ANNUAL STATEMENTS: the source holds no reported figure from an income statement, balance"
-    " sheet or cash flow statement for this company. The single quarters in `quarters` are the"
-    " only reported figures here: quote each with the quarter it covers. There is no balance-sheet,"
-    " cash-flow or annual figure in this dataset; do not state, estimate or recall one, and do not"
-    " cite [P9] for one.")
+    "NO ANNUAL STATEMENTS: the source holds no full-year or trailing-window figure from an income"
+    " statement, balance sheet or cash flow statement for this company. The single quarters in"
+    " `quarters` are reported income-statement figures and the only reported figures here: quote"
+    " each with the quarter it covers. There is no annual income-statement figure, and no"
+    " balance-sheet or cash-flow figure, in this dataset, and the quarters are not one; do not"
+    " state, estimate or recall one, and do not cite [P9] for one.")
+# No income statement at all: a balance sheet only (unchanged from review 79).
+NO_INCOME_STATEMENT = (
+    "NO INCOME STATEMENT: the source holds no income statement for this company. Its revenue,"
+    " earnings, margins and earnings per share are not in this dataset; do not state, estimate or"
+    " recall them.")
+# A balance sheet and single quarters of the income statement, no annual income statement (review
+# 80): the quarters are its income figures. 1 of 714 companies on 2026-11-07 (232).
+NO_ANNUAL_INCOME_STATEMENT = (
+    "NO ANNUAL INCOME STATEMENT: the source holds no full-year or trailing-window income statement"
+    " for this company. The single quarters in `quarters` are its only reported income figures:"
+    " quote each with the quarter it covers. There is no annual revenue, earnings, margin or"
+    " earnings per share in this dataset, and the quarters are not one; do not state, estimate or"
+    " recall one.")
 
 STATEMENT_NAMES = {"Income Statement": "an income statement", "Balance Sheet": "a balance sheet",
                    "Cash Flow Statement": "a cash flow statement"}
@@ -1549,22 +1571,24 @@ def limitations_of(items: Items, sector: str, peer_class: str | None = None,
     out: list[str] = []
     reported = {r.section for r in items.rows if r.value is not None}
     sections = [s for s in STATEMENT_NAMES if s in reported]
+    quarterly = quarters is not None and has_figure(quarters.rows)
+    has_income = "Income Statement" in sections
     if not sections:
-        out.append(QUARTERS_ONLY if quarters is not None and has_figure(quarters.rows) else NO_STATEMENTS)
+        out.append(QUARTERS_ONLY if quarterly else NO_STATEMENTS)
     if sections and "Cash Flow Statement" not in sections:
-        has_income = "Income Statement" in sections
+        held = [STATEMENT_NAMES[s] for s in sections]
+        if quarterly and not has_income:
+            held.append("single income-statement quarters")
         out.append(
             "NO CASH FLOW STATEMENT: the source's pages for this company carry "
-            + " and ".join(STATEMENT_NAMES[s] for s in sections) + " only. Operating cash flow,"
+            + " and ".join(held) + " only. Operating cash flow,"
             " capital expenditure, free cash flow and cash conversion cannot be computed from"
             " anything here, and dividend cover "
             + ("can be tested against earnings only, never against cash." if has_income
+               else "cannot be tested against annual earnings or cash." if quarterly
                else "cannot be tested against earnings or cash."))
-    if sections and "Income Statement" not in sections:
-        out.append(
-            "NO INCOME STATEMENT: the source holds no income statement for this company. Its"
-            " revenue, earnings, margins and earnings per share are not in this dataset; do not"
-            " state, estimate or recall them.")
+    if sections and not has_income:
+        out.append(NO_ANNUAL_INCOME_STATEMENT if quarterly else NO_INCOME_STATEMENT)
     elif sections and len({r.fiscal_year for r in items.rows
                            if r.section == "Income Statement" and r.value is not None}) < 2:
         p = items.period("Income Statement")

@@ -21,6 +21,8 @@ def show(name, items):
     print(f"\n== {name}")
     print(f"   statements: {[(s.section, s.rows) for s in ds.statements]} | quarters: {quarters}"
           f" | calculations with a value: {sum(c.value is not None for c in ds.calculations)} of {len(ds.calculations)}")
+    if ds.quarters:
+        print("   QUARTERS NOTE:", ds.quarters.note)
     for lim in ds.limitations:
         print("   LIMITATION:", lim)
     print("   PACK NOTE:", no_statements_note({"P9": ds.model_dump()}))
@@ -31,13 +33,16 @@ def cell(label, section, year, value, end=None):
 
 
 show("1. empty P9 (4330's case: no statement rows at all)", Items([], []))
-show("2. quarterly-only P9", Items([], [cell("Net Income", "Income Statement", 2026, 77.0, "2026-06")]))
+show("2. quarterly-only P9 (ALFIRDOU and TAALEEM on 2026-11-07)", Items([], [cell("Net Income", "Income Statement", 2026, 77.0, "2026-06")]))
 show("3. all-null statement rows", Items([cell("Net Income", "Income Statement", 2025, None),
                                           cell("Total Assets", "Balance Sheet", 2025, None)], []))
-show("4. balance-sheet-only P9 (232's case)", Items([cell("Total Assets", "Balance Sheet", 2025, 900.0)], []))
-show("5. normal: an income statement and a balance sheet, two years",
-     Items([cell("Net Income", "Income Statement", 2025, 50.0), cell("Net Income", "Income Statement", 2024, 40.0),
-            cell("Total Assets", "Balance Sheet", 2025, 900.0)], []))
+Q77 = cell("Net Income", "Income Statement", 2026, 77.0, "2026-06")
+TA900 = cell("Total Assets", "Balance Sheet", 2025, 900.0)
+TWO_YEARS = [cell("Net Income", "Income Statement", 2025, 50.0), cell("Net Income", "Income Statement", 2024, 40.0), TA900]
+show("4. balance-sheet-only P9 (no income figure at all)", Items([TA900], []))
+show("4b. a balance sheet and income-statement quarters (232's case on 2026-11-07)", Items([TA900], [Q77]))
+show("5. normal: an income statement and a balance sheet, two years", Items(TWO_YEARS, []))
+show("5b. normal, with quarters (the quarters' note is the one it always was)", Items(TWO_YEARS, [Q77]))
 
 print("\n== 6. packs with no P9, and with a P9 error: the note, and that it comes before the data")
 for name, data in (("no P9", {"P1": {"quote": 1}}), ("P9 error", {"P1": {"quote": 1}, "P9": {"error": "unavailable"}})):

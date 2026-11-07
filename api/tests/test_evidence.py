@@ -364,16 +364,122 @@ def test_statement_rows_without_a_number_are_not_a_statement():
 
 
 def test_a_balance_sheet_alone_is_not_described_as_an_income_statement(conn):
-    """One company on 2026-11-07 (232) had a balance sheet and no income statement, and was told it had
-    both, and one income-statement window."""
+    """A balance sheet and no income-statement figure at all, annual or quarterly, was told it had both
+    statements and one income-statement window. (232, on 2026-11-07, also has quarters: see the table
+    test below.)"""
     items = load_items(conn, "2222_TADAWUL", years=2)
     only = Items([r for r in items.rows if r.section == "Balance Sheet"], [])
-    ds = dataset_of(only, ticker_key="232_TADAWUL", sector="non_bank", currency="SAR")
+    ds = dataset_of(only, ticker_key="X_TADAWUL", sector="non_bank", currency="SAR")
     said = " ".join(ds.limitations)
     assert "NO INCOME STATEMENT" in said
     assert "carry a balance sheet only" in said and "cannot be tested against earnings or cash" in said
     assert "ONE INCOME-STATEMENT WINDOW" not in said and "an income statement and" not in said
     assert NO_STATEMENTS not in ds.limitations
+
+
+def _cell(label, section, year, value, end=None):
+    return Cell(label=label, section=section, fiscal_year=year, value=value, period_end=end)
+
+
+Q77 = _cell("Net Income", "Income Statement", 2026, 77.0, "2026-06")
+TA900 = _cell("Total Assets", "Balance Sheet", 2025, 900.0)
+TWO_YEARS = [_cell("Net Income", "Income Statement", 2025, 50.0), _cell("Net Income", "Income Statement", 2024, 40.0),
+             TA900]
+CASH_FLOW_COMMON = (
+    "NO CASH FLOW STATEMENT: the source's pages for this company carry an income statement and a balance sheet"
+    " only. Operating cash flow, capital expenditure, free cash flow and cash conversion cannot be computed from"
+    " anything here, and dividend cover can be tested against earnings only, never against cash.")
+NOTE_ANNUAL = ("each column is one quarter as reported, standalone and not cumulative; the annual figures above"
+               " are the sum of four consecutive columns of this kind")
+NOTE_NO_ANNUAL = ("each column is one quarter as reported, standalone and not cumulative. There is no annual"
+                  " income-statement figure for this company in `statements`, and these quarters are not one:"
+                  " quote each with the quarter it covers")
+ROOM_RULE = (" Every figure a seat quotes must be one these datasets show: a statement figure stated, estimated or"
+             " recalled from memory is invented, whatever tag it carries.")
+PACK_NONE = (
+    "NO FINANCIAL STATEMENTS IN THIS PACK ([P9] holds no reported statement figure for this company): no income"
+    " statement, balance sheet, cash flow statement or quarterly results for this company. Where a brief sends a"
+    " seat to [P9]'s statements, the seat says plainly that they are not available and argues from the datasets"
+    " that are here." + ROOM_RULE)
+PACK_QUARTERS = (
+    "NO ANNUAL FINANCIAL STATEMENTS IN THIS PACK: [P9] holds single income-statement quarters only, and no"
+    " full-year or trailing-window income statement, balance sheet or cash flow statement figure. The quarters in"
+    " [P9] `quarters` are reported: quote each with the quarter it covers, and do not present them as an annual"
+    " figure. Where a brief sends a seat to [P9]'s statements, the seat says plainly that the annual statements"
+    " are not available and argues from the datasets that are here." + ROOM_RULE)
+LIM_EMPTY = (
+    "NO FINANCIAL STATEMENTS: the source holds no reported figure from an income statement, balance sheet or"
+    " cash flow statement for this company, and no quarterly result, so `statements` and `quarters` carry no"
+    " number and no calculation here has a value. There is no reported revenue, earnings, asset, liability,"
+    " equity, cash flow, share count or quarterly result for this company in this dataset. Do not state,"
+    " estimate or recall one, and do not cite [P9] for one: say that the statements are not available.")
+LIM_QUARTERS = (
+    "NO ANNUAL STATEMENTS: the source holds no full-year or trailing-window figure from an income statement,"
+    " balance sheet or cash flow statement for this company. The single quarters in `quarters` are reported"
+    " income-statement figures and the only reported figures here: quote each with the quarter it covers."
+    " There is no annual income-statement figure, and no balance-sheet or cash-flow figure, in this dataset,"
+    " and the quarters are not one; do not state, estimate or recall one, and do not cite [P9] for one.")
+LIM_CASH_FLOW_BS = (
+    "NO CASH FLOW STATEMENT: the source's pages for this company carry a balance sheet only. Operating cash"
+    " flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and"
+    " dividend cover cannot be tested against earnings or cash.")
+LIM_NO_INCOME = (
+    "NO INCOME STATEMENT: the source holds no income statement for this company. Its revenue, earnings, margins"
+    " and earnings per share are not in this dataset; do not state, estimate or recall them.")
+LIM_CASH_FLOW_BS_QUARTERS = (
+    "NO CASH FLOW STATEMENT: the source's pages for this company carry a balance sheet and single"
+    " income-statement quarters only. Operating cash flow, capital expenditure, free cash flow and cash"
+    " conversion cannot be computed from anything here, and dividend cover cannot be tested against annual"
+    " earnings or cash.")
+LIM_NO_ANNUAL_INCOME = (
+    "NO ANNUAL INCOME STATEMENT: the source holds no full-year or trailing-window income statement for this"
+    " company. The single quarters in `quarters` are its only reported income figures: quote each with the"
+    " quarter it covers. There is no annual revenue, earnings, margin or earnings per share in this dataset,"
+    " and the quarters are not one; do not state, estimate or recall one.")
+P9_CASES = {
+    # case: (items, statements kept, quarter rows kept, quarters note, limitations, pack note)
+    "empty": (Items([], []), [], None, None, [LIM_EMPTY], PACK_NONE),
+    "quarterly only": (Items([], [Q77]), [], [["Net Income", 77.0]], NOTE_NO_ANNUAL, [LIM_QUARTERS], PACK_QUARTERS),
+    "all-null rows": (
+        Items([_cell("Net Income", "Income Statement", 2025, None), _cell("Total Assets", "Balance Sheet", 2025, None)],
+              []),
+        [("Income Statement", [["Net Income"]]), ("Balance Sheet", [["Total Assets"]])], None, None,
+        [LIM_EMPTY], PACK_NONE),
+    "balance sheet only": (Items([TA900], []), [("Balance Sheet", [["Total Assets", 900.0]])], None, None,
+                           [LIM_CASH_FLOW_BS, LIM_NO_INCOME], None),
+    "balance sheet and quarters": (
+        Items([TA900], [Q77]), [("Balance Sheet", [["Total Assets", 900.0]])], [["Net Income", 77.0]], NOTE_NO_ANNUAL,
+        [LIM_CASH_FLOW_BS_QUARTERS, LIM_NO_ANNUAL_INCOME], None),
+    "normal, two years": (
+        Items(TWO_YEARS, []),
+        [("Income Statement", [["Net Income", 50.0, 40.0]]), ("Balance Sheet", [["Total Assets", 900.0]])],
+        None, None, [CASH_FLOW_COMMON], None),
+    "normal, two years, with quarters": (
+        Items(TWO_YEARS, [Q77]),
+        [("Income Statement", [["Net Income", 50.0, 40.0]]), ("Balance Sheet", [["Total Assets", 900.0]])],
+        [["Net Income", 77.0]], NOTE_ANNUAL, [CASH_FLOW_COMMON], None),
+}
+
+
+@pytest.mark.parametrize("case", list(P9_CASES))
+def test_p9_says_exactly_what_it_holds(case):
+    """Review 80: every case checks the figures P9 keeps AND its whole wording: the quarters' note, every
+    limitation, and the note the room reads. Nothing absent is described as present, nothing reported (a
+    quarter included) is described as absent, and the common case reads as it always did."""
+    from app.debate.pack import no_statements_note
+
+    items, statements, quarter_rows, quarter_note, limitations, pack_note = P9_CASES[case]
+    ds = dataset_of(items, ticker_key="X_TADAWUL", sector="unknown", currency="SAR", price=26.16)
+    assert [(s.section, s.rows) for s in ds.statements] == statements
+    if quarter_rows is None:
+        assert ds.quarters is None
+    else:
+        assert ds.quarters.rows == quarter_rows and ds.quarters.columns == ["label", "2026-06"]
+        assert ds.quarters.note == quarter_note
+    assert ds.limitations == limitations
+    assert no_statements_note({"P9": ds.model_dump()}) == pack_note
+    if case != "normal, two years" and case != "normal, two years, with quarters":
+        assert all(c.value is None for c in ds.calculations), "no derived figure without an annual statement"
 
 
 # --- derived figures, and the ones that are withheld -------------------------------------------

@@ -4,24 +4,38 @@
    LIMITATION: NO FINANCIAL STATEMENTS: the source holds no reported figure from an income statement, balance sheet or cash flow statement for this company, and no quarterly result, so `statements` and `quarters` carry no number and no calculation here has a value. There is no reported revenue, earnings, asset, liability, equity, cash flow, share count or quarterly result for this company in this dataset. Do not state, estimate or recall one, and do not cite [P9] for one: say that the statements are not available.
    PACK NOTE: NO FINANCIAL STATEMENTS IN THIS PACK ([P9] holds no reported statement figure for this company): no income statement, balance sheet, cash flow statement or quarterly results for this company. Where a brief sends a seat to [P9]'s statements, the seat says plainly that they are not available and argues from the datasets that are here. Every figure a seat quotes must be one these datasets show: a statement figure stated, estimated or recalled from memory is invented, whatever tag it carries.
 
-== 2. quarterly-only P9
+== 2. quarterly-only P9 (ALFIRDOU and TAALEEM on 2026-11-07)
    statements: [] | quarters: [['Net Income', 77.0]] | calculations with a value: 0 of 7
-   LIMITATION: NO ANNUAL STATEMENTS: the source holds no reported figure from an income statement, balance sheet or cash flow statement for this company. The single quarters in `quarters` are the only reported figures here: quote each with the quarter it covers. There is no balance-sheet, cash-flow or annual figure in this dataset; do not state, estimate or recall one, and do not cite [P9] for one.
-   PACK NOTE: NO ANNUAL FINANCIAL STATEMENTS IN THIS PACK: [P9] holds single quarters only, and no income statement, balance sheet or cash flow statement figure. The quarters in [P9] `quarters` are reported: quote each with the quarter it covers. Where a brief sends a seat to [P9]'s statements, the seat says plainly that the annual statements are not available and argues from the datasets that are here. Every figure a seat quotes must be one these datasets show: a statement figure stated, estimated or recalled from memory is invented, whatever tag it carries.
+   QUARTERS NOTE: each column is one quarter as reported, standalone and not cumulative. There is no annual income-statement figure for this company in `statements`, and these quarters are not one: quote each with the quarter it covers
+   LIMITATION: NO ANNUAL STATEMENTS: the source holds no full-year or trailing-window figure from an income statement, balance sheet or cash flow statement for this company. The single quarters in `quarters` are reported income-statement figures and the only reported figures here: quote each with the quarter it covers. There is no annual income-statement figure, and no balance-sheet or cash-flow figure, in this dataset, and the quarters are not one; do not state, estimate or recall one, and do not cite [P9] for one.
+   PACK NOTE: NO ANNUAL FINANCIAL STATEMENTS IN THIS PACK: [P9] holds single income-statement quarters only, and no full-year or trailing-window income statement, balance sheet or cash flow statement figure. The quarters in [P9] `quarters` are reported: quote each with the quarter it covers, and do not present them as an annual figure. Where a brief sends a seat to [P9]'s statements, the seat says plainly that the annual statements are not available and argues from the datasets that are here. Every figure a seat quotes must be one these datasets show: a statement figure stated, estimated or recalled from memory is invented, whatever tag it carries.
 
 == 3. all-null statement rows
    statements: [('Income Statement', [['Net Income']]), ('Balance Sheet', [['Total Assets']])] | quarters: None | calculations with a value: 0 of 7
    LIMITATION: NO FINANCIAL STATEMENTS: the source holds no reported figure from an income statement, balance sheet or cash flow statement for this company, and no quarterly result, so `statements` and `quarters` carry no number and no calculation here has a value. There is no reported revenue, earnings, asset, liability, equity, cash flow, share count or quarterly result for this company in this dataset. Do not state, estimate or recall one, and do not cite [P9] for one: say that the statements are not available.
    PACK NOTE: NO FINANCIAL STATEMENTS IN THIS PACK ([P9] holds no reported statement figure for this company): no income statement, balance sheet, cash flow statement or quarterly results for this company. Where a brief sends a seat to [P9]'s statements, the seat says plainly that they are not available and argues from the datasets that are here. Every figure a seat quotes must be one these datasets show: a statement figure stated, estimated or recalled from memory is invented, whatever tag it carries.
 
-== 4. balance-sheet-only P9 (232's case)
+== 4. balance-sheet-only P9 (no income figure at all)
    statements: [('Balance Sheet', [['Total Assets', 900.0]])] | quarters: None | calculations with a value: 0 of 7
    LIMITATION: NO CASH FLOW STATEMENT: the source's pages for this company carry a balance sheet only. Operating cash flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and dividend cover cannot be tested against earnings or cash.
    LIMITATION: NO INCOME STATEMENT: the source holds no income statement for this company. Its revenue, earnings, margins and earnings per share are not in this dataset; do not state, estimate or recall them.
    PACK NOTE: None
 
+== 4b. a balance sheet and income-statement quarters (232's case on 2026-11-07)
+   statements: [('Balance Sheet', [['Total Assets', 900.0]])] | quarters: [['Net Income', 77.0]] | calculations with a value: 0 of 7
+   QUARTERS NOTE: each column is one quarter as reported, standalone and not cumulative. There is no annual income-statement figure for this company in `statements`, and these quarters are not one: quote each with the quarter it covers
+   LIMITATION: NO CASH FLOW STATEMENT: the source's pages for this company carry a balance sheet and single income-statement quarters only. Operating cash flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and dividend cover cannot be tested against annual earnings or cash.
+   LIMITATION: NO ANNUAL INCOME STATEMENT: the source holds no full-year or trailing-window income statement for this company. The single quarters in `quarters` are its only reported income figures: quote each with the quarter it covers. There is no annual revenue, earnings, margin or earnings per share in this dataset, and the quarters are not one; do not state, estimate or recall one.
+   PACK NOTE: None
+
 == 5. normal: an income statement and a balance sheet, two years
    statements: [('Income Statement', [['Net Income', 50.0, 40.0]]), ('Balance Sheet', [['Total Assets', 900.0]])] | quarters: None | calculations with a value: 0 of 7
+   LIMITATION: NO CASH FLOW STATEMENT: the source's pages for this company carry an income statement and a balance sheet only. Operating cash flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and dividend cover can be tested against earnings only, never against cash.
+   PACK NOTE: None
+
+== 5b. normal, with quarters (the quarters' note is the one it always was)
+   statements: [('Income Statement', [['Net Income', 50.0, 40.0]]), ('Balance Sheet', [['Total Assets', 900.0]])] | quarters: [['Net Income', 77.0]] | calculations with a value: 0 of 7
+   QUARTERS NOTE: each column is one quarter as reported, standalone and not cumulative; the annual figures above are the sum of four consecutive columns of this kind
    LIMITATION: NO CASH FLOW STATEMENT: the source's pages for this company carry an income statement and a balance sheet only. Operating cash flow, capital expenditure, free cash flow and cash conversion cannot be computed from anything here, and dividend cover can be tested against earnings only, never against cash.
    PACK NOTE: None
 
