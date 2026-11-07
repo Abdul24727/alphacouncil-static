@@ -121,6 +121,8 @@ Billing has been open since 2026-11-02.
       commit, its services restarted from it, its pages answer, and Step 10's signed-out checks give the same counts as
       that morning (`docs/release-production-p9-2026-11-07.md`). P9's notes on production are Pro-only and were not
       read. The advisors' behaviour needs a paid session.
+    - **Review 87 accepted the production release.** Its next step is a read-only check that the lawyer pack still
+      matches the live site, recorded under `docs/`.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

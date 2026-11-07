@@ -98,6 +98,17 @@ read over read-only ssh. No model is called.
   measured in a paid session, and none was run.
 - **The site:** nothing visible changes. `web/` is the previous release's byte for byte (check 3).
 
+## Review 87
+
+**ACCEPTED** (`docs/review-loop/replies/87-p9-fix-released-to-production-ea51de796c.md`). Its three notes are
+non-blocking, and the record already states each:
+- **The advisors' behaviour on production is not proven.** It stays open until an owner-authorised paid test.
+- **The 19:39 connection drop is unexplained.** The incident is kept here, to be looked into if it recurs.
+- **Some scripts were not attached.** The deploy script and the `check-*.mjs` scripts were not in the review's
+  bundle, so it could not audit them.
+
+**Its next step:** a read-only check that the lawyer pack still matches the live site.
+
 ## Rollback (production only)
 
 `026699b906` is kept on both tiers.

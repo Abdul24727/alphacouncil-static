@@ -88,3 +88,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-07 13:33 UTC — **P9: review 83's fixes** — ACCEPT — [84-p9-review-83-s-fixes.md](replies/84-p9-review-83-s-fixes.md)
 - 2026-11-07 13:47 UTC — **P9 fix-only release candidate ea51de796c** — ACCEPT — [85-p9-fix-only-release-candidate-ea51de796c.md](replies/85-p9-fix-only-release-candidate-ea51de796c.md)
 - 2026-11-07 17:59 UTC — **P9 fix released to beta (ea51de796c)** — ACCEPT — [86-p9-fix-released-to-beta-ea51de796c.md](replies/86-p9-fix-released-to-beta-ea51de796c.md)
+- 2026-11-07 19:59 UTC — **P9 fix released to production (ea51de796c)** — ACCEPT — [87-p9-fix-released-to-production-ea51de796c.md](replies/87-p9-fix-released-to-production-ea51de796c.md)

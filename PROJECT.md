@@ -465,6 +465,11 @@ Older entries: `changelog-archive.md`.
             scripts. Both were rerun and passed, and the server logged no error.
           - **Not checked:** P9's notes on production itself, which are Pro-only, and the advisors' behaviour, which
             needs a paid session.
+          - **Review 87 ACCEPTED the production release.** Its three notes are non-blocking: the behaviour stays
+            unproven until an owner-authorised paid test, the drop is unexplained, and some scripts were not attached.
+            **Its next step:** a read-only check that the lawyer pack (`docs/lawyer-review-pack-2026-11-06.md`) still
+            matches the live site on `ea51de796c`, recorded under `docs/`. It does not send, change legal wording,
+            deploy, push or pay.
       - **Review 84 ACCEPTED the P9 fix.**
         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
           cases), and the patch rebuilds the four files byte for byte on production's bytes.
