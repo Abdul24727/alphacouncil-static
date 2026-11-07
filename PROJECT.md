@@ -470,6 +470,17 @@ Older entries: `changelog-archive.md`.
             **Its next step:** a read-only check that the lawyer pack (`docs/lawyer-review-pack-2026-11-06.md`) still
             matches the live site on `ea51de796c`, recorded under `docs/`. It does not send, change legal wording,
             deploy, push or pay.
+          - **DONE 2026-11-07** (`docs/lawyer-pack-check-2026-11-07.md`). Every address in the pack answers, except
+            `/legal/merchant` (404; the notice is at `/legal#merchant`). Four discrepancies were corrected in the pack:
+            - the merchant address;
+            - the council tab, now described as six rule-based seats voting bullish, neutral or bearish, which bears
+              on question (b);
+            - the release, now `ea51de796c`;
+            - question (i), now quoting checkout's renewal wording and the three-day reminder the site sends.
+
+            Two facts were added: `/pricing`'s VAT line, and that `/methodology` says "public market sources" (for
+            question (f)). For the owner to confirm before sending: the 2026-11-06 account and payment counts, and the
+            hosting provider.
       - **Review 84 ACCEPTED the P9 fix.**
         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
           cases), and the patch rebuilds the four files byte for byte on production's bytes.

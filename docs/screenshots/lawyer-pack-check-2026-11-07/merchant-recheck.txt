@@ -1,0 +1,10 @@
+/legal/merchant asked again, GET only, 2026-11-07 20:08:06 UTC
+404  https://alphacouncil.tech/legal/merchant
+404  https://alphacouncil.tech/ar/legal/merchant
+200  https://alphacouncil.tech/legal
+404  https://alphacouncil.tech/legal/merchant
+404  https://alphacouncil.tech/ar/legal/merchant
+200  https://alphacouncil.tech/legal
+404  https://alphacouncil.tech/legal/merchant
+404  https://alphacouncil.tech/ar/legal/merchant
+200  https://alphacouncil.tech/legal

@@ -1,0 +1,216 @@
+https://alphacouncil.tech/en/legal/privacy
+status 200, final https://alphacouncil.tech/legal/privacy
+
+AlphaCouncil
+How it works
+Templates
+Markets
+Pricing
+Methodology
+ع
+Sign in
+Open the terminal
+
+Legal
+·
+Arabic version
+
+Privacy Policy
+
+Version 1.2
+Effective 2026-07-21
+Last updated 2026-07-21
+
+Operator: Insight Lane Establishment, a Saudi sole establishment, Unified National Number 7050149686, trading as AlphaCouncil.
+
+1. Controller and scope
+2. Personal Data we collect
+3. How we collect Personal Data
+4. Purposes and legal bases
+5. AI processing and automated analysis
+6. Disclosure and processors
+7. International transfers
+8. Cookies and local storage
+9. Data retention and deletion
+10. Security
+11. Your rights
+12. Account deletion
+13. Marketing communications
+14. Complaints
+15. Changes to this Policy
+16. Language
+17. Privacy contact
+1. Controller and scope
+
+Insight Lane Establishment, a Saudi sole establishment registered under Unified National Number 7050149686 and trading as AlphaCouncil, is the controller responsible for personal data processed through the Service, except where another party is expressly identified as an independent controller. “Personal Data”, “Processing”, “Controller”, “Processor” and related capitalized data-protection terms have the meanings given under applicable Saudi data-protection law.
+
+This Policy applies to personal data processed through the AlphaCouncil website, applications, Accounts, dashboards, AI Features, portfolio tools, billing, support and related communications. It does not govern a third party’s independent website, service or processing merely because the Service links to or interoperates with it.
+
+The Service is intended for persons aged 18 or older. We do not knowingly offer Accounts to children or intentionally collect personal data from persons who lack legal capacity without a lawful guardian process. If we learn that such data has been collected improperly, we will take appropriate steps to restrict processing and delete it where required.
+
+2. Personal Data we collect
+
+Please provide only Personal Data reasonably necessary for your use of the Service. Portfolio data and uploads are optional, but a feature may not function without the information required to perform the requested analysis. Account, authentication and transaction information may be mandatory to create an Account, secure access or purchase a Paid Subscription.
+
+Do not upload passwords, private keys, full payment-card details, government identification documents, medical records, biometric data or other Sensitive Data unless we expressly request it through a designated secure process. You must have authority and a lawful basis before providing Personal Data about another person.
+
+3. How we collect Personal Data
+Directly from you. When you register, configure the Account, enter portfolio information, submit prompts, upload files, purchase a Subscription, communicate with Support or exercise rights.
+Automatically. When you use the Service, through server logs, security controls, cookies, local storage, diagnostics and similar necessary technologies.
+From service providers. From authentication, payment, communications, infrastructure, security, AI and data providers to the extent needed to provide the Service.
+From public or licensed sources. For Market Data and company information. Such information generally concerns issuers and markets, but may include professional information relating to identifiable individuals.
+4. Purposes and legal bases
+
+Where we rely on legitimate interests, we assess necessity, reasonable expectations, potential effects on Data Subjects and safeguards. We do not rely on legitimate interests to process Sensitive Data where prohibited. Where consent is the legal basis, consent is requested separately, recorded and may be withdrawn as described below without affecting processing that was lawful before withdrawal.
+
+We will not use Personal Data for a materially incompatible new purpose without providing appropriate notice and establishing a lawful basis. We do not sell Personal Data, rent it to data brokers, or use it for third-party behavioral advertising.
+
+5. AI processing and automated analysis
+
+When you use AI Features, we process the prompt, relevant conversation history and the minimum Account, portfolio, preference, Market Data or upload context reasonably needed to generate the requested output. This information may be transmitted to one or more AI infrastructure or model processors. We do not intentionally transmit your password, full payment-card number or card security code to AI processors.
+
+AI providers process submitted content to generate and return outputs, apply safety controls, prevent abuse and maintain service security in accordance with our arrangements and their applicable processor obligations. The specific providers and model routes may change. We select processors that provide appropriate data-protection commitments and assess them proportionately to the nature and risk of the processing.
+
+We do not use identifiable prompts, portfolio data or uploaded documents to train general-purpose AI models unless we first provide clear notice and obtain consent where consent is required. We may use aggregated, anonymized or de-identified information that can no longer reasonably identify you to evaluate and improve the Service. We do not permit AI providers to use Personal Data for their independent advertising purposes.
+
+AI Features produce analysis and information for your review. AlphaCouncil does not use AI Features to make a decision that, by itself, creates legal effects or similarly significant effects concerning you. You decide whether and how to use AI Output. Automated security systems may temporarily restrict suspicious activity; you may contact Support for review of a restriction.
+
+You should avoid including unnecessary Personal Data or confidential third-party information in prompts. Portfolio information may reveal financial circumstances and should be treated as sensitive by you even where it does not fall within a statutory category of Sensitive Data.
+
+6. Disclosure and processors
+
+We disclose Personal Data only where reasonably necessary for the purposes described in this Policy, where you direct us to do so, or where law permits or requires disclosure. Recipient categories include:
+
+Payment services. Moyasar or a successor payment provider processes payment credentials, tokens, transaction status, refunds, fraud signals and disputes. This section does not apply to the current manual-renewal launch. It applies only if a future checkout expressly offers and obtains consent for automatic renewal.
+Hosting and infrastructure. Providers that host applications, databases, backups, content delivery and operational systems.
+AI and model services. Providers that route, host or operate models used to generate AI Output and apply safety controls.
+Authentication services. A third-party sign-in provider, only when you choose that sign-in method.
+Communications services. Providers that deliver verification, password-reset, billing, security and support messages.
+Security and anti-abuse services. Providers used for bot detection, traffic protection, logging, incident response and fraud prevention.
+Professional advisers and authorities. Auditors, accountants, legal advisers, insurers, regulators, courts and public authorities where disclosure is lawful and necessary.
+Corporate transactions. A prospective or actual buyer, investor, lender, successor or restructuring participant, subject to appropriate confidentiality and legal safeguards.
+
+Processors are instructed to process Personal Data only for documented purposes and are required to provide appropriate confidentiality, security, breach-notification, subprocessing and deletion commitments. We remain responsible for selecting and overseeing processors as required by applicable law. A current description of material processor categories and processing locations may be requested through the privacy contact.
+
+7. International transfers
+
+The Service is operated from Saudi Arabia and uses service providers in Saudi Arabia and other countries. Depending on the feature, Personal Data may be stored or processed in the European Economic Area, the United States and other jurisdictions in which our processors or their approved subprocessors operate.
+
+Before transferring Personal Data outside the Kingdom of Saudi Arabia, we assess the purpose, necessity, recipient, country, data categories, risks and minimum data required. We use a transfer basis and appropriate safeguards recognized under the Saudi Personal Data Protection Law and the Regulation on Personal Data Transfer Outside the Kingdom, as applicable. Safeguards may include adequacy decisions, standard contractual clauses or other approved contractual arrangements, binding rules, certifications, or a permitted statutory ground such as necessity for providing a requested service, subject to the applicable conditions.
+
+Where required, we conduct and document transfer risk assessments and apply supplementary technical or organizational measures. No transfer mechanism eliminates all risk, particularly where a foreign authority may have lawful access under its local law. You may contact us for general information about the safeguards applicable to a category of transfer, subject to confidentiality and security restrictions.
+
+8. Cookies and local storage
+
+We use strictly necessary cookies and similar technologies for session management, authentication, security, request integrity and essential preferences. A local-storage item may remember language or interface settings. We do not currently use advertising cookies, cross-site behavioral tracking or analytics cookies. Further details are in the Cookie Policy.
+
+9. Data retention and deletion
+
+We retain Personal Data only for as long as reasonably necessary for the purposes described in this Policy, to provide the Service, comply with legal obligations, resolve disputes, prevent fraud, enforce agreements and maintain security. Retention is determined by the nature and sensitivity of the data, the purpose, the Account relationship, legal requirements and the risk of harm from continued retention.
+
+When retention ends, we securely destroy or irreversibly anonymize Personal Data using methods appropriate to the medium and risk. Where immediate deletion from a resilient backup is not technically feasible, the backup is isolated from ordinary use and the data is deleted when the backup cycles out or is restored, unless law requires preservation.
+
+10. Security
+
+We maintain organizational, administrative and technical measures designed to protect Personal Data against unauthorized access, disclosure, alteration, loss or destruction. Measures are selected based on risk and may include encryption in transit, password hashing, access controls, least-privilege administration, secure session settings, logging and monitoring, network protections, rate limiting, backup controls, vulnerability management, processor due diligence and incident-response procedures.
+
+No system is perfectly secure. You are responsible for using a strong unique password, protecting Account credentials, keeping devices secure and notifying us promptly of suspected compromise. Email and ordinary internet communications may not be secure; do not send sensitive information through an unapproved channel.
+
+If a Personal Data Breach meets the applicable threshold, we will notify the Saudi Data & AI Authority within 72 hours of becoming aware of it, or provide remaining information as soon as possible with reasons for delay, as permitted by law. We will notify affected Data Subjects without undue delay where the breach may cause damage to their data or conflict with their rights or interests, and will provide the information and recommendations required by law.
+
+11. Your rights
+
+Subject to the Saudi Personal Data Protection Law, its Implementing Regulations and lawful exceptions, you may have the right to:
+
+be informed about the legal basis, purpose and manner of processing;
+access Personal Data held by us and obtain a copy in a clear and commonly used electronic format, subject to protection of other persons’ rights, intellectual property and trade secrets;
+request correction, completion or updating of inaccurate or incomplete Personal Data and, where applicable, restriction while accuracy is verified;
+request destruction of Personal Data where the legal conditions are met;
+withdraw consent at any time where consent is the legal basis, without affecting prior lawful processing;
+object or complain through the channels made available by us and, where applicable, to the competent authority.
+
+To exercise a right, use available Account settings or contact the privacy address below. We may verify your identity and authority before acting. We will respond without undue delay and ordinarily within 30 days. Where implementation requires disproportionate effort or multiple requests are received from the same Data Subject, the period may be extended by up to an additional 30 days, and we will notify you in advance with reasons.
+
+A request may be refused or limited where it is repetitive, manifestly unfounded, requires disproportionate effort, would prejudice another person’s rights, conflicts with a legal obligation, or falls within another statutory exception. We will explain a refusal where required. We do not charge for ordinary requests unless a fee is permitted by law and disclosed in advance.
+
+12. Account deletion
+
+You may request Account deletion through available settings or by contacting Support. Deletion terminates access and triggers the retention and deletion process described above. Before deletion, you should export information you wish to retain. We may require you to cancel a Paid Subscription or may cancel it as part of the confirmed deletion flow. Account deletion does not erase transaction records, legal claims, security records or other information that must or may lawfully be retained.
+
+13. Marketing communications
+
+We do not currently send third-party advertising or sell contact lists. If we introduce direct marketing, we will identify the sender, obtain consent where required, maintain evidence of consent and provide a free and simple opt-out. Withdrawal of marketing consent will not stop transactional, security, billing or legal communications needed to operate the Service.
+
+14. Complaints
+
+Please contact us first so that we can investigate and address a privacy concern. You may also submit a complaint to the Saudi Data & AI Authority through its approved complaint channel. Under the Implementing Regulations, a complaint generally should be submitted within 90 days from the incident or from when you became aware of it, subject to acceptance of a late complaint where reasonable grounds exist.
+
+15. Changes to this Policy
+
+We may update this Policy to reflect legal, regulatory, operational, security or Service changes. The revised version will state its effective date. Where a change materially affects your rights or the manner in which Personal Data is processed, we will provide appropriate notice before the change takes effect and obtain consent where required. Previous versions may be retained for compliance and reference.
+
+16. Language
+
+This Policy may be published in Arabic and English. The versions are intended to be consistent. For Data Subjects in the Kingdom of Saudi Arabia, the Arabic version will prevail to the extent required by applicable law or by a competent Saudi authority or court.
+
+17. Privacy contact
+
+Email: privacy@alphacouncil.tech
+
+Contact page: https://alphacouncil.tech/contact.html
+
+Website: https://alphacouncil.tech
+
+Registered business address and current commercial registration details are displayed in the Merchant Information notice on the Site and on transaction records issued where required by applicable law.
+
+The privacy contact receives Data Subject requests and privacy complaints. This contact designation does not state that AlphaCouncil is legally required to appoint a formal Data Protection Officer unless the statutory appointment criteria apply.
+
+This Privacy Policy explains how AlphaCouncil collects, uses, discloses, transfers, retains and protects personal data. It is intended to provide the information required by the Saudi Personal Data Protection Law and its Implementing Regulations. It should be read with the Terms of Service, Cookie Policy and AI & Financial Disclaimer.
+Category	Examples	Source
+Account and identity data	Email address, optional name, preferred language, market preferences, Account identifiers, acceptance records and Account status.	You; generated by the Service.
+Authentication data	Password hash, authentication tokens, login method, recovery information and, if you choose a third-party sign-in option, the basic profile information authorized by you.	You; authentication provider.
+Portfolio and preference data	Securities, tickers, quantities, cost basis, transaction dates, watchlists, objectives, time horizon, risk preferences and other information you choose to provide.	You; extracted from User Content at your direction.
+Prompts, AI interactions and outputs	Questions, instructions, conversation context, AI Output, model-routing information, feedback, safety flags and usage counters.	You; generated by the Service and AI processors.
+Uploads and extracted data	Images, PDFs, screenshots, statements or other files you upload, and information extracted or inferred from them. Uploads may contain account references or information about other persons.	You; automated extraction systems.
+Billing and transaction data	Plan, amount, currency, transaction identifier, payment status, renewal and cancellation dates, refund and chargeback records, tokenized payment reference and masked payment information. We do not intentionally receive or store full card numbers or card security codes.	Moyasar or another payment provider; generated by us.
+Technical, usage and security data	IP address, device and browser information, operating system, timestamps, requested pages or features, errors, performance logs, session identifiers, rate-limit events, login attempts, abuse indicators and security events.	Collected automatically from your device and the Service.
+Communications and support data	Messages, attachments, complaint details, support history, call or correspondence records, and information needed to investigate and respond.	You and our support processes.
+Cookie and local-storage data	Strictly necessary session, authentication and security identifiers, and local storage used for language or interface preferences.	Your browser or device.
+Purpose	Personal Data involved	Principal legal basis
+Create and administer Accounts; authenticate Users; provide dashboards, screening, portfolio tools, AI Features and support.	Account, authentication, portfolio, prompts, uploads, usage and communications data.	Performance of a contract or steps requested before entering a contract.
+Process orders, recurring payments, invoices, cancellations, refunds and payment disputes.	Account, transaction, billing, communications and fraud-prevention data.	Performance of a contract; compliance with legal obligations; legitimate interests in payment administration and fraud prevention.
+Personalize requested analysis using User-provided holdings, preferences and context.	Portfolio, preference, prompt and usage data.	Performance of a contract; your requested use of the relevant feature.
+Protect Accounts and the Service, prevent abuse and fraud, enforce terms, investigate incidents and maintain logs.	Account, technical, usage, security, transaction and communications data.	Legitimate interests in network and information security, fraud prevention and legal protection, following an appropriate balancing assessment; legal obligations where applicable.
+Operate, troubleshoot, maintain and improve the Service and evaluate feature performance.	Technical, usage, error, support and, where appropriate, aggregated or de-identified interaction data.	Legitimate interests in reliable and secure service operation; consent where required.
+Send transactional communications and legally required notices.	Account, contact, billing and service data.	Performance of a contract; compliance with legal obligations; legitimate interests in service integrity.
+Send marketing communications, where introduced and requested.	Contact details and communication preferences.	Consent or another lawful basis expressly permitted by law; you may opt out at any time.
+Comply with law, respond to lawful requests, maintain records, establish or defend legal claims.	Relevant categories depending on the request or dispute.	Legal obligations; legitimate interests in legal compliance and protection of rights.
+Data category	General retention approach
+Account, profile, portfolio and preference data	Retained while the Account is active. After Account deletion, removed from active systems or anonymized without undue delay, subject to legal holds, unresolved disputes, fraud prevention and backup cycles.
+Prompts, AI interactions and uploaded files	Retained while available in the Account or as needed to provide the requested feature. You may delete supported history or the Account. Temporary processing copies may persist for a limited operational period.
+Transaction, billing, tax and invoice records	Retained for the period required by applicable tax, accounting, commercial, payment and e-commerce laws and for the defence of payment disputes.
+Security, access and abuse-prevention logs	Retained for a limited rolling period proportionate to security and fraud risk, and longer where linked to an incident, investigation, legal claim or blocked account.
+Support and complaint records	Retained for as long as needed to address the matter, demonstrate compliance, improve support and manage legal claims.
+Consent and policy-acceptance records	Retained for as long as needed to demonstrate valid consent, contract formation or compliance, including applicable limitation periods.
+Backups	Operational backups are maintained on a rolling cycle, currently up to 14 days. Deleted data may remain inaccessible in backups until the relevant backup expires or is securely overwritten, unless preservation is legally required.
+
+Merchant Information — Insight Lane Establishment, a Saudi sole establishment, Commercial Registration / Unified National Number 7050149686, trading as AlphaCouncil. Registered address: Building 8128, Abdullah Ibn Rawaha Street, Ar Rawdah District (Secondary No. 3628), Postal Code 15571, Shaqra, Kingdom of Saudi Arabia (Short Address: LSSA8128). Telephone: +966 55 409 4014. Support: support@alphacouncil.tech · Privacy: privacy@alphacouncil.tech
+
+AlphaCouncil is not currently charging VAT. Any applicable taxes will be disclosed before payment if this changes.
+
+AlphaCouncil
+
+AlphaCouncil is research software. Nothing on this site is investment advice.
+
+© Insight Lane Establishment, trading as AlphaCouncil
+
+Methodology
+Pricing
+Markets
+Templates
+Terms
+Privacy
+Refunds
+Cookies
+AI & financial disclaimer
+Merchant information

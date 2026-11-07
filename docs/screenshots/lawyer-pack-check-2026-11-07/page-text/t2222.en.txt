@@ -1,0 +1,189 @@
+https://alphacouncil.tech/en/t/2222
+status 200, final https://alphacouncil.tech/t/2222
+
+AlphaCouncil
+Search
+Ctrl K
+Home
+My Portfolio
+Screener
+Markets
+Templates
+My dashboards
+Settings
+Sign in
+EN
+/
+ع
+2222
+Saudi Aramco
+TADAWUL
+26.16
+SAR
+-0.30%
+As of 5 Nov 2026
+Overview
+Financials
+Council
+Advisors
+Ownership
+Calendar
+2222
+Price
+Line
+Candles
+1M
+3M
+6M
+1Y
+5Y
+
+
+
+
+
+5 Nov 2026
+O
+26.12
+H
+26.18
+L
+26.02
+C
+26.16
+-0.30%
+V
+6.92M
+2222
+Key metrics
+TRADING
+Market cap
+6.33T SAR
+Volume
+6.92M
+Value traded
+180.54M SAR
+VALUATION
+P/E
+13.92x
+P/B
+3.87x
+EV/EBITDA
+N/A
+Dividend yield
+5.09%
+ROE
+28.61%
+ROA
+16.97%
+EPS (TTM)
+1.88 SAR
+Book value / share
+6.76 SAR
+RETURNS AND RISK
+Return 1M
++1.2%
+Return 3M
+-1.7%
+Return 6M
+-5.8%
+Return 12M
++2.0%
+Volatility 1Y
+14.6%
+Max drawdown
+-40.1%
+RSI 14
+57.9
+From 52-week high
+-6.4%
+2222
+Council
+PRO
+This is part of AlphaCouncil Pro.
+See what Pro includes
+2222
+Peers
+
+SAME SECTOR, SAME EXCHANGE
+
+SYMBOL	NAME	PRICE	CHG
+4030
+The National Shipping Company of Saudi Arabia
+	34.90	-1.69%
+2380
+Petro Rabigh
+	14.55	-5.34%
+2382
+ADES Holding Company
+	8.50	+1.67%
+2381
+Arabian Drilling Company
+	92.85	+1.87%
+2030
+Saudi Arabian Refineries Company
+	47.02	-0.04%
+2222
+News
+3 Nov 2026
+NEWS
+Aramco seeks new overseas storage capacity, alternative routes as uncertainty, attacks worsen energy crisis: Nasser
+25 May 2026
+DISCLOSURE
+Saudi Aramco transfers PRefChem ownership to PETRONAS
+10 Mar 2026
+DISCLOSURE
+Saudi Aramco to buy back 350M shares for employee plan
+3 Feb 2026
+DISCLOSURE
+Aramco completes $4B bond issuance
+
+Saudi Aramco announced the successful completion of a $4 billion bond issuance across four tranches under its Global Medium Term Note Program. The offering is US dollar-denominated and includes 20,000 bonds with a nominal value of $200,000. The returns for the bonds are set at 4% for 3-year maturities, 4.375% for 5 years, 5% for 10 years, and 6% for 30 years. The bonds will be offered according to applicable US laws and listed in international financial markets.
+
+26 Jan 2026
+DISCLOSURE
+Saudi Aramco launches USD-denominated bond issue
+
+Saudi Aramco launched today, January 26, 2026, the sale of international bonds under its Global Medium Term Note Programme. The proposed bonds are USD-denominated, direct, general, unconditional, and unsecured obligations. The offer value will be determined based on market conditions. The subscription period starts from January 26, 2026, to February 2, 2026, with a minimum subscription limit of $200,000. The bonds will be issued in accordance with the U.S. Securities Act, and the redemption terms will depend on market conditions.
+
+9 Oct 2025
+DISCLOSURE
+Aramco closes acquisition of 22.5% of Petro Rabigh
+
+Saudi Aramco announced the completion of its acquisition of 375.97 million Class A ordinary shares in Petro Rabigh, representing about 22.5% of its capital, from Japan’s Sumitomo Chemical. Aramco financed the transaction from its own cash, increasing its ownership of Class A shares to approximately 60%. A payment of SAR 2.63 billion (SAR 7 per share) was made for the acquisition. The deal aims to strengthen Petro Rabigh's financial position and support its long-term strategy through joint investment by Aramco and Sumitomo.
+
+18 Sept 2025
+DISCLOSURE
+Aramco completes $3B international sukuk issuance
+
+Saudi Aramco completed the issuance of $3 billion international sukuk under SA Global Sukuk Limited’s Trust Certificate Issuance Program. The sukuk will trade on the London Stock Exchange’s Main Market. This issuance includes a total of 15,000 certificates with a nominal value of $200,000 each, offering returns of 4.125% for 5 years and 4.625% for 10 years. The issuance complies with relevant legal requirements and FCA stabilization rules.
+
+10 Sept 2025
+DISCLOSURE
+Saudi Aramco issues USD-denominated sukuk
+
+Saudi Aramco announced the start of issuing USD-denominated international sukuk under its trust certificate issuance program, set to begin on September 10, 2025, and end on September 17, 2025. The sukuk will be direct, unsubordinated, unsecured, and limited recourse obligations targeting institutional investors. The minimum subscription value is $200,000, subject to market conditions. Funds will be used for general corporate purposes.
+
+14 Aug 2025
+DISCLOSURE
+Aramco signs $11B deal for Jafurah gas processing projects
+
+Saudi Aramco signed an $11 billion lease and leaseback deal for its Jafurah gas processing facilities with a consortium of international investors led by Global Infrastructure Partners (GIP), part of BlackRock. The transaction involves the creation of Jafurah Midstream Gas Company (JMGC), which will lease rights for the Jafurah Field Gas Plant and Riyas NGL Fractionation Facility back to Aramco for 20 years. JMGC will receive tariffs from Aramco for processing raw gas and will be 51% owned by Aramco and 49% by GIP-led investors. The deal is expected to close soon, subject to customary closing conditions.
+
+2 Jun 2025
+DISCLOSURE
+Saudi Aramco completes issuance of $5B international bonds
+
+Saudi Aramco announced the completion of a $5 billion international bond issuance under its Global Medium-Term Note Programme. The bonds are divided into 25,000 bonds with maturity periods of five, ten, and thirty years. This includes $1.5 billion in senior notes maturing in 2030 at a coupon rate of 4.750%, $1.25 billion maturing in 2035 at 5.375%, and $2.25 billion maturing in 2055 at 6.375%. The issuance adheres to financial market laws for listing. This reflects Aramco's strength and position in the financial market.
+
+Copilot
+CONTEXT
+No panels attached · Type @ to attach a panel
+
+Ask about the panels you attach. Answers use only attached panels and our database, and cite where each figure came from.
+
+Is the dividend sustainable?
+How does the valuation compare with peers?
+What does the council say?
+
+Sign in to ask the Copilot: it runs on an AI model that answers account holders. Sign in

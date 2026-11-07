@@ -1,0 +1,23 @@
+lawyer-pack API facts, 2026-11-07 20:06:16 UTC
+
+$ GET https://alphacouncil.tech/api/v1/health
+{"status":"ok","market_data":"ok","universe_size":714,"universe_as_of":"2026-11-07"}
+
+$ GET https://alphacouncil.tech/api/v1/tickers   (companies and exchanges)
+714 companies on 7 exchanges: TADAWUL 269, KSE 128, ADX 101, DFM 64, MSM 58, QSE 55, BSE 39
+
+$ GET https://alphacouncil.tech/api/v1/copilot/status   (the Copilot's model)
+{"model":"deepseek/deepseek-v3.2","stand_in":false,"sign_in_required":true}
+
+$ GET https://alphacouncil.tech/api/v1/debate/status   (the room's seats and Pro's monthly sessions; signed out)
+plan free | signed_in False | limit 0 | pro_limit 20
+  advisor  Warren Buffett / وارن بافيت | /advisors/buffett.webp
+  advisor  Peter Lynch / بيتر لينش | /advisors/lynch.webp
+  advisor  Ray Dalio / راي داليو | /advisors/dalio.webp
+  advisor  Howard Marks / هوارد ماركس | /advisors/marks.webp
+  advisor  Prince Alwaleed bin Talal / الأمير الوليد بن طلال | /advisors/alwaleed.webp
+  advisor  Yasir Al-Rumayyan / ياسر الرميان | /advisors/alrumayyan.webp
+  chair    Chair / رئيس الجلسة | /advisors/chair.webp
+
+$ GET https://alphacouncil.tech/api/capabilities   (the address Moyasar was shown, legal questions (c))
+404

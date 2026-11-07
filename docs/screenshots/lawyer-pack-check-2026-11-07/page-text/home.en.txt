@@ -1,0 +1,144 @@
+https://alphacouncil.tech/en/home
+status 200, final https://alphacouncil.tech/home
+
+AlphaCouncil
+Search
+Ctrl K
+Home
+My Portfolio
+Screener
+Markets
+Templates
+My dashboards
+Settings
+Sign in
+EN
+/
+ع
+Home
+Markets
+EXCHANGE	INDEX	CHG	ADVANCERS / DECLINERS	WITH PRICES	AS OF
+Tadawul
+10,095.42
+	+0.56%
+177
+83
+	269/269	5 Nov 2026
+ADX
+9,392.60
+	-1.34%
+18
+44
+	89/101	6 Nov 2026
+DFM
+6,025.55
+	-0.28%
+8
+33
+	58/64	6 Nov 2026
+QSE	N/A
+41
+10
+	55/55	5 Nov 2026
+Boursa Kuwait	N/A
+88
+20
+	127/128	5 Nov 2026
+BHB	N/A
+2
+3
+	33/39	5 Nov 2026
+MSX	N/A
+22
+13
+	58/58	5 Nov 2026
+Top gainers
+MAZAYA
+Mazaya
+	0.919	+12.48%
+
+8010
+The Company for Cooperative Insurance
+	88.75	+9.98%
+
+4147
+Consolidated Grunenfelder Saady Holding Company
+	6.75	+9.93%
+
+SHPS
+Sohar Power
+	0.262	+8.71%
+
+EIBANK
+Emirates Investment Bank
+	52.00	+8.33%
+
+806
+QIC
+	0.134	+8.06%
+Top losers
+SPSI
+Salalah Port Services
+	0.475	-18.52%
+
+MSPW
+Musandam Power
+	0.299	-12.06%
+
+8170
+Al-Etihad Cooperative Insurance Company
+	5.43	-7.34%
+
+2050
+Savola Group
+	23.54	-5.65%
+
+RCCI
+Raysut Cement
+	0.153	-5.56%
+
+CMII
+Construction Materials Ind
+	0.070	-5.41%
+Latest news
+6 Nov 2026
+RAKWCT
+RAK White Cement Board Meeting Results Announced
+6 Nov 2026
+QEWS
+Nebras Power Announces Capital Restructuring of a Subsidiary Through Capital Reduction
+6 Nov 2026
+QFBQ
+Lisha Bank Announces Additional Investment in Lisha Qatar Equity Fund by Doha Investment
+5 Nov 2026
+GFH.DU
+GFH Bank Advances Board Meeting Date for Q3 Financial Results to November 11
+5 Nov 2026
+GFH.DU
+Bahrain Bourse: GFH Shares Sold by Key Individual
+5 Nov 2026
+307
+Wethaq Takaful Insurance Board to Discuss Q3 2026 Financials on November 11
+5 Nov 2026
+KFH
+Kuwait Finance House: Local Real Estate Trading Reaches KWD 1 Billion in Q3
+5 Nov 2026
+512
+Aseeco Board to Discuss Q3 2026 Financials on November 8
+5 Nov 2026
+833
+Trolley General Trading Announces Q3 2026 Analyst and Investor Conference Presentation
+5 Nov 2026
+821
+Warba Bank Issues Supplementary Disclosure on Early Redemption Notice for Tier 1 Sukuk Holders
+Copilot
+CONTEXT
+No panels attached · Type @ to attach a panel
+
+Ask about the panels you attach. Answers use only attached panels and our database, and cite where each figure came from.
+
+Is the dividend sustainable?
+How does the valuation compare with peers?
+What does the council say?
+
+Sign in to ask the Copilot: it runs on an AI model that answers account holders. Sign in

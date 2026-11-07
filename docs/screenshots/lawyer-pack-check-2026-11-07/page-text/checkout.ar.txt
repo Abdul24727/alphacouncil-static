@@ -1,0 +1,9 @@
+https://alphacouncil.tech/ar/checkout
+status 200, final https://alphacouncil.tech/ar/checkout
+
+AlphaCouncil
+اشتراك برو في AlphaCouncil
+
+سجّل الدخول أو أنشئ حسابًا أولًا: يرتبط اشتراك برو بحسابك.
+
+تسجيل الدخول

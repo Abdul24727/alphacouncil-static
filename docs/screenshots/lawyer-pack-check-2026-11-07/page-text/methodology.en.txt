@@ -1,0 +1,79 @@
+https://alphacouncil.tech/en/methodology
+status 200, final https://alphacouncil.tech/methodology
+
+AlphaCouncil
+How it works
+Templates
+Markets
+Pricing
+Methodology
+ع
+Sign in
+Open the terminal
+Methodology
+
+How the council votes, where the data comes from and how we decide it is fresh. The rules and numbers on this page are read from the code and database the terminal runs on.
+
+How the council votes
+
+Each seat applies one fixed rule to figures from our database and votes bullish, neutral or bearish. A seat without the data it needs abstains; nothing is estimated. There is no blended score: you see every seat, its inputs and the count of votes.
+
+SEAT	READS	RULE
+Value	P/E	P/E below 10 bullish, below 16 neutral, else bearish. No or negative earnings: abstains.
+Quality	ROE	ROE above 20% bullish, above 12% neutral, else bearish.
+Income	Dividend yield	Dividend yield above 5% bullish, above 2.5% neutral, else bearish. No dividend: abstains.
+Momentum	Trend regime · 50-day above 200-day	Trend regime above 65 with the 50-day average above the 200-day bullish, above 45 neutral, else bearish.
+Risk	Volatility 1Y · Dividend yield	1-year volatility below 15% with a yield above 3% bullish, below 25% neutral, else bearish.
+News	Positive news · Negative news · Rated news items	Rated news of the last 30 days: a majority positive bullish, a majority negative bearish, otherwise neutral. No rated news: abstains.
+Where the data comes from
+
+Every night a pipeline collects prices, financial statements, ratios, dividends, disclosures and news for each listed equity from public market sources and writes them to our database. The terminal reads that database directly and never fills a gap with an estimate: missing data is labelled as missing.
+
+The nightly run starts at 00:00 UTC.
+
+MARKET	EXCHANGE	EQUITIES	CLOSED ON
+Saudi Arabia	Tadawul	269	Friday, Saturday
+Kuwait	Boursa Kuwait	128	Friday, Saturday
+UAE · Abu Dhabi	ADX	101	Saturday, Sunday
+UAE · Dubai	DFM	64	Saturday, Sunday
+Oman	MSX	58	Friday, Saturday
+Qatar	QSE	55	Friday, Saturday
+Bahrain	BHB	39	Friday, Saturday
+
+714 equities in total.
+
+On Tadawul, sectors are the Saudi Exchange's own classification, as its Main Market Watch listed them on 18 Oct 2026. A company it does not list shows no sector. On the other markets, sectors come from the nightly pipeline.
+
+How we decide data is fresh
+
+Every dataset has an allowed age. A panel's light is green while its data is within that age, amber once it is older, and grey when we have no date for it. Prices and technical indicators age in trading days, so a weekend is never late. News and disclosures age from the date of their newest item, and also turn amber when the nightly fetch is late. Datasets other than prices and technical indicators age in calendar days.
+
+DATASET	ALLOWED AGE	COUNTED IN	EQUITIES TRACKED
+Disclosures	120	calendar days	716
+Fundamentals	100	calendar days	708
+News	30	calendar days	714
+Prices	2	trading days	691
+Technical indicators	2	trading days	691
+
+An equity without a freshness record falls back to the price rule: 2 trading days.
+
+What AlphaCouncil is not
+
+AlphaCouncil is research software. It is not investment advice, not a broker and does not execute trades. Council votes and Copilot answers are rule outputs and summaries of our data, not recommendations. Read the AI and financial disclaimer.
+
+AlphaCouncil
+
+AlphaCouncil is research software. Nothing on this site is investment advice.
+
+© Insight Lane Establishment, trading as AlphaCouncil
+
+Methodology
+Pricing
+Markets
+Templates
+Terms
+Privacy
+Refunds
+Cookies
+AI & financial disclaimer
+Merchant information

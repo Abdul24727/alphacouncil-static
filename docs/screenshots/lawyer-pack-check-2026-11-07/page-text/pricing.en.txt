@@ -1,0 +1,61 @@
+https://alphacouncil.tech/en/pricing
+status 200, final https://alphacouncil.tech/pricing
+
+AlphaCouncil
+How it works
+Templates
+Markets
+Pricing
+Methodology
+ع
+Sign in
+Open the terminal
+Pricing
+
+Two plans, priced in Saudi riyals. The prices below are read from the same plan configuration our payment provider, Moyasar, charges.
+
+Free
+
+0 SAR a month
+
+Market data and research for every GCC investor.
+
+Markets overview, screener and templates
+Every stock page: price chart, key metrics, peers and news
+My Portfolio with up to 20 holdings and 5 price alerts
+The Copilot: 10 questions a day, with answers that cite their sources
+Pro
+
+79 SAR a month
+
+Everything in Free, plus:
+
+Get Pro
+Full financial statements, ownership, dividends and the corporate calendar
+The council's vote and each seat's reasoning on every equity
+The advisors' room: 20 sessions a month in which simulated advisors debate your question about a stock and score the options against our data
+Technical indicators on charts: moving averages, Bollinger Bands, RSI and MACD
+The Copilot: up to 60 questions an hour, with tables and charts you can pin to My dashboards
+Up to 200 holdings and 100 price alerts
+Start free
+
+Payments are processed by Moyasar. AlphaCouncil is not currently charging VAT; any applicable tax will be shown before payment.
+
+Read the refund and cancellation policy.
+
+AlphaCouncil
+
+AlphaCouncil is research software. Nothing on this site is investment advice.
+
+© Insight Lane Establishment, trading as AlphaCouncil
+
+Methodology
+Pricing
+Markets
+Templates
+Terms
+Privacy
+Refunds
+Cookies
+AI & financial disclaimer
+Merchant information

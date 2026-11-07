@@ -1,0 +1,109 @@
+https://alphacouncil.tech/en/legal/cookies
+status 200, final https://alphacouncil.tech/legal/cookies
+
+AlphaCouncil
+How it works
+Templates
+Markets
+Pricing
+Methodology
+ع
+Sign in
+Open the terminal
+
+Legal
+·
+Arabic version
+
+Cookie Policy
+
+Version 1.0
+Effective 2026-07-21
+Last updated 2026-07-21
+
+Operator: Insight Lane Establishment, a Saudi sole establishment, Unified National Number 7050149686, trading as AlphaCouncil.
+
+1. Scope
+2. What cookies and local storage are
+3. Essential technologies we use
+4. Third-party sign-in and payment pages
+5. No analytics or advertising cookies
+6. Your controls
+7. Retention and security
+8. Changes to this Policy
+9. Contact
+1. Scope
+
+This Cookie Policy explains how AlphaCouncil uses cookies, browser storage and similar technologies on the Service. It should be read with the Privacy Policy. Capitalized terms have the meanings given in the Terms of Service or Privacy Policy.
+
+2. What cookies and local storage are
+
+A cookie is a small text file or identifier stored by a browser when a website is used. Cookies may be session cookies, which expire when the browser session ends, or persistent cookies, which remain until their expiry or deletion. Local storage is a browser function that stores limited information on a device without automatically sending it with every request.
+
+Similar technologies may include session identifiers, anti-forgery tokens and security signals used to authenticate a User, preserve request integrity, prevent abuse or remember an essential preference. In this Policy, “essential technologies” refers collectively to those technologies.
+
+3. Essential technologies we use
+
+The exact name, format and duration of an essential identifier may change when we update security, authentication or infrastructure components. We will not use such a change to introduce a materially different purpose without updating this Policy and, where required, obtaining consent.
+
+4. Third-party sign-in and payment pages
+
+If you choose a third-party sign-in method, the authentication provider may use cookies on its own domain to complete login, prevent fraud and apply your provider settings. If a payment flow redirects to or embeds a payment provider’s secure interface, that provider may use technologies necessary to process and secure the transaction. Those technologies are controlled by the relevant provider and governed by its own privacy and cookie notices.
+
+We do not authorize authentication or payment providers to use AlphaCouncil transaction data for unrelated behavioral advertising through the Service.
+
+5. No analytics or advertising cookies
+
+AlphaCouncil does not currently deploy cookies for audience analytics, advertising measurement, retargeting, social-media tracking or cross-site behavioral profiling. We do not display third-party behavioral advertisements. If we introduce a non-essential category in the future, we will update this Policy and implement a consent or preference mechanism where required before activating it.
+
+6. Your controls
+
+Most browsers allow you to view, delete or block cookies and clear local storage. Blocking strictly necessary cookies may prevent Account creation, login, secure billing, preference storage or other core functions. Clearing cookies may sign you out. Clearing local storage may reset the selected language or interface settings.
+
+Because we currently use only essential technologies, the Service may not display a consent banner for optional cookies. This does not limit your browser controls or your rights under the Privacy Policy.
+
+7. Retention and security
+
+Essential identifiers are retained only for their stated purpose and expire, rotate or are deleted according to their function. Authentication and security identifiers are protected through measures such as secure transmission, restricted scope and browser security attributes where appropriate. Local-storage preferences remain on the device until changed or cleared.
+
+8. Changes to this Policy
+
+We may update this Policy when technologies, providers, law or the Service change. The revised version will state its effective date. We will provide notice and request consent before using a new non-essential technology where applicable law requires consent.
+
+9. Contact
+
+Email: privacy@alphacouncil.tech
+
+Contact page: https://alphacouncil.tech/contact.html
+
+Website: https://alphacouncil.tech
+
+Registered business address and current commercial registration details are displayed in the Merchant Information notice on the Site and on transaction records issued where required by applicable law.
+
+AlphaCouncil currently uses only technologies that are strictly necessary to provide, secure and remember essential settings for the Service. We do not currently use advertising cookies, cross-site behavioral tracking or analytics cookies.
+Purpose	Technology	Typical duration	Why it is necessary
+Authentication and session management	First-party session or authentication cookie.	Session-only by default; up to approximately 30 days when a “remember me” option is selected.	Keeps a User signed in, associates requests with the correct Account and supports secure logout.
+Request integrity and security	First-party anti-forgery or CSRF cookie/token and related security identifiers.	Session or short-lived.	Helps confirm that requests originate from the legitimate session and reduces unauthorized actions.
+Bot and abuse prevention	Security signals and, where technically necessary, short-lived identifiers used by our traffic-protection service.	Short-lived and risk-based.	Protects sign-up, login and other endpoints against bots, abuse and automated attacks.
+Language and interface preference	Browser local storage.	Until changed or cleared by the User.	Remembers the selected language or essential interface preference on the device.
+
+Merchant Information — Insight Lane Establishment, a Saudi sole establishment, Commercial Registration / Unified National Number 7050149686, trading as AlphaCouncil. Registered address: Building 8128, Abdullah Ibn Rawaha Street, Ar Rawdah District (Secondary No. 3628), Postal Code 15571, Shaqra, Kingdom of Saudi Arabia (Short Address: LSSA8128). Telephone: +966 55 409 4014. Support: support@alphacouncil.tech · Privacy: privacy@alphacouncil.tech
+
+AlphaCouncil is not currently charging VAT. Any applicable taxes will be disclosed before payment if this changes.
+
+AlphaCouncil
+
+AlphaCouncil is research software. Nothing on this site is investment advice.
+
+© Insight Lane Establishment, trading as AlphaCouncil
+
+Methodology
+Pricing
+Markets
+Templates
+Terms
+Privacy
+Refunds
+Cookies
+AI & financial disclaimer
+Merchant information

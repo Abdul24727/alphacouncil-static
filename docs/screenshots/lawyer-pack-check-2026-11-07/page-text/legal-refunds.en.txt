@@ -1,0 +1,133 @@
+https://alphacouncil.tech/en/legal/refunds
+status 200, final https://alphacouncil.tech/legal/refunds
+
+AlphaCouncil
+How it works
+Templates
+Markets
+Pricing
+Methodology
+ع
+Sign in
+Open the terminal
+
+Legal
+·
+Arabic version
+
+Refund and Cancellation Policy
+
+Version 1.2
+Effective 2026-07-21
+Last updated 2026-07-21
+
+Operator: Insight Lane Establishment, a Saudi sole establishment, Unified National Number 7050149686, trading as AlphaCouncil.
+
+1. Scope and definitions
+2. Contractual 14-day money-back guarantee
+3. How to request a refund
+4. Effect of an approved refund
+5. Cancellation of automatic renewal
+6. Renewal charges
+7. Saudi statutory rights
+8. Duplicate, unauthorized and erroneous charges
+9. Failed payments and reversals
+10. Fair use and refund abuse
+11. Changes to this Policy
+12. Contact
+1. Scope and definitions
+
+Capitalized terms not defined here have the meanings given in the Terms of Service. This Policy applies to Paid Subscriptions purchased directly from AlphaCouncil through the Service. Purchases made through a third-party marketplace or reseller may be subject to that provider’s billing and refund process, without limiting non-waivable statutory rights.
+
+2. Contractual 14-day money-back guarantee
+
+AlphaCouncil provides a contractual 14-day money-back guarantee for the first qualifying Paid Subscription purchased by a User. You may request a full refund of the qualifying subscription charge collected during the 14-day period beginning on the date the Paid Subscription first becomes active.
+
+The guarantee applies even if you have sampled paid features, subject to the fair-use and abuse provisions below. It is intended to supplement, not replace, any non-waivable right under applicable consumer law.
+
+Starting date. The 14-day period starts when your first Paid Subscription becomes active, not when you first use a particular feature.
+Upgrades. An upgrade made during the original 14-day period does not restart or extend the period. A qualifying request may include the most recent subscription charge collected during that original period, subject to any prior refund.
+Renewals. A renewal after the original 14-day period is not covered by the contractual guarantee merely because a new billing period has begun.
+Related Accounts. Creating a new, related or replacement Account does not create a new guarantee where the same person or organization has already used the guarantee or materially equivalent paid access.
+3. How to request a refund
+
+Submit a refund request through the billing settings while the self-service option is available or contact Support using the details in Section 12. The request should identify the Account email, transaction date, amount and reason. We may request reasonable information to verify identity, Account control, payment ownership and eligibility.
+
+A request is treated as received when it enters our billing system or Support channel. If a technical issue prevents self-service submission, a timely written request to Support will preserve the request date.
+
+4. Effect of an approved refund
+
+When a full subscription refund is approved, paid access ends when the refund is processed or at another time stated in the confirmation, and the Account may move to the available free tier. Usage allowances, paid-only data and features may become unavailable immediately. Account data is not automatically deleted; deletion is governed by the Privacy Policy.
+
+A refund is normally returned through the same payment method used for the original charge, unless you expressly agree to another lawful method. We submit approved refunds without undue delay and within any period required by applicable law. Moyasar, the card network, your bank or another payment intermediary controls the time required for the credit to appear after submission. Displayed posting estimates are not guarantees.
+
+No refund will exceed the amount actually received for the relevant charge. Payment-processing fees, foreign-exchange differences or bank fees will be handled as required by law and the applicable payment scheme. We do not charge a separate fee to process a valid consumer refund.
+
+5. Cancellation of automatic renewal
+
+You may cancel a Paid Subscription at any time through the billing settings or by contacting Support. Cancellation stops future automatic renewals. Unless a refund is approved or law requires otherwise, you retain paid access until the end of the Subscription Period already paid, after which the Account moves to the available free tier or loses access to paid features. This section does not apply to the current manual-renewal launch. It applies only if a future checkout expressly offers and obtains consent for automatic renewal.
+
+To avoid the next renewal charge, cancellation must be completed before the renewal is processed. A cancellation request received after a renewal may stop later renewals but does not automatically refund the renewal already processed. We will provide an electronic confirmation of cancellation or reflect the cancellation status in the Account.
+
+Deleting the mobile application, ceasing use, removing a payment card or sending a general message does not cancel a Paid Subscription unless the billing system or Support confirms cancellation. Account deletion may cancel an active Paid Subscription only where the deletion flow expressly states that consequence.
+
+6. Renewal charges
+
+Recurring Paid Subscriptions renew at the frequency, price and currency disclosed at checkout and in the Account. Renewal charges outside the initial 14-day guarantee are generally non-refundable because access is made available for the new Subscription Period. This rule does not apply to duplicate charges, unauthorized charges, billing errors, a valid statutory termination right, or another remedy required by law. This section does not apply to the current manual-renewal launch. It applies only if a future checkout expressly offers and obtains consent for automatic renewal.
+
+If you did not intend to renew, contact Support promptly. We may, at our discretion and without creating an ongoing obligation, provide a goodwill refund where there has been minimal use after renewal and the circumstances are reasonable. A discretionary refund in one case does not amend this Policy or require the same result in another case.
+
+7. Saudi statutory rights
+
+Nothing in this Policy limits a non-waivable right under the Saudi E-Commerce Law, its Executive Regulations or another applicable consumer-protection rule. Saudi law may permit a consumer to terminate a service contract within seven days from contracting where the consumer has not used, benefited from or obtained the service, subject to statutory exceptions. AlphaCouncil’s contractual 14-day guarantee is intended to be more favorable for the qualifying initial subscription and applies as stated above.
+
+Where the Service is not supplied, is materially defective, is materially inconsistent with the description provided before purchase, or is delayed beyond a period that gives rise to a statutory termination right, we will provide the remedy required by law. The remedy may include correction, re-performance, cancellation, a pro-rata adjustment or refund, depending on the circumstances and legal requirements.
+
+8. Duplicate, unauthorized and erroneous charges
+
+Contact Support promptly if a charge is duplicated, unauthorized, incorrectly calculated or applied after a confirmed cancellation. We will investigate using Account, acceptance, payment and usage records. Where an error is confirmed, we will void or refund the charge as appropriate. We may require the cardholder to complete verification or work with the issuing bank for an unauthorized transaction.
+
+9. Failed payments and reversals
+
+A failed or reversed payment may result in restriction or suspension of paid features. If a bank reverses a payment after access was provided, the Paid Subscription may be cancelled and the Account may remain restricted until the balance and any lawful costs are resolved. This does not limit a User’s right to raise a good-faith payment dispute.
+
+10. Fair use and refund abuse
+
+We may decline the contractual guarantee, limit repeated refund requests or suspend related Accounts where objective evidence shows fraud or abuse, including repeated subscribe-use-refund cycles, creation of related Accounts to obtain multiple guarantees, extensive automated extraction before refund, false payment claims or chargebacks filed after an agreed refund. We will not rely on this section to deny a valid statutory right or a good-faith complaint.
+
+11. Changes to this Policy
+
+We may update this Policy prospectively. A change will not reduce a refund or cancellation right that accrued before the effective date of the change. Material changes will be notified as described in the Terms of Service.
+
+12. Contact
+
+Email: support@alphacouncil.tech
+
+Contact page: https://alphacouncil.tech/contact.html
+
+Website: https://alphacouncil.tech
+
+Registered business address and current commercial registration details are displayed in the Merchant Information notice on the Site and on transaction records issued where required by applicable law.
+
+This Policy governs cancellation of Paid Subscriptions and refunds processed by AlphaCouncil. It forms part of the Terms of Service. A cancellation stops future renewal; a refund returns an eligible payment. These are separate actions.
+
+Merchant Information — Insight Lane Establishment, a Saudi sole establishment, Commercial Registration / Unified National Number 7050149686, trading as AlphaCouncil. Registered address: Building 8128, Abdullah Ibn Rawaha Street, Ar Rawdah District (Secondary No. 3628), Postal Code 15571, Shaqra, Kingdom of Saudi Arabia (Short Address: LSSA8128). Telephone: +966 55 409 4014. Support: support@alphacouncil.tech · Privacy: privacy@alphacouncil.tech
+
+AlphaCouncil is not currently charging VAT. Any applicable taxes will be disclosed before payment if this changes.
+
+AlphaCouncil
+
+AlphaCouncil is research software. Nothing on this site is investment advice.
+
+© Insight Lane Establishment, trading as AlphaCouncil
+
+Methodology
+Pricing
+Markets
+Templates
+Terms
+Privacy
+Refunds
+Cookies
+AI & financial disclaimer
+Merchant information

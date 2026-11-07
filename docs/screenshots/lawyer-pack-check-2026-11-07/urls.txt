@@ -1,0 +1,52 @@
+lawyer-pack address check, 2026-11-07 20:01:06 UTC
+production: {"status":"ok","market_data":"ok","universe_size":714,"universe_as_of":"2026-11-07"}
+
+address (as the pack names it)               first redirect to                                  final
+alphacouncil.tech                            200                                                200 /
+alphacouncil.tech/ar                         200                                                200 /ar
+alphacouncil.tech/home                       200                                                200 /home
+alphacouncil.tech/ar/home                    200                                                200 /ar/home
+alphacouncil.tech/markets                    200                                                200 /markets
+alphacouncil.tech/ar/markets                 200                                                200 /ar/markets
+alphacouncil.tech/screener                   200                                                200 /screener
+alphacouncil.tech/ar/screener                200                                                200 /ar/screener
+alphacouncil.tech/t/2222                     200                                                200 /t/2222
+alphacouncil.tech/ar/t/2222                  200                                                200 /ar/t/2222
+alphacouncil.tech/t/2222/financials          200                                                200 /t/2222/financials
+alphacouncil.tech/ar/t/2222/financials       200                                                200 /ar/t/2222/financials
+alphacouncil.tech/t/2222/ownership           200                                                200 /t/2222/ownership
+alphacouncil.tech/ar/t/2222/ownership        200                                                200 /ar/t/2222/ownership
+alphacouncil.tech/t/2222/calendar            200                                                200 /t/2222/calendar
+alphacouncil.tech/ar/t/2222/calendar         200                                                200 /ar/t/2222/calendar
+alphacouncil.tech/t/2222/council             200                                                200 /t/2222/council
+alphacouncil.tech/ar/t/2222/council          200                                                200 /ar/t/2222/council
+alphacouncil.tech/t/2222/advisors            200                                                200 /t/2222/advisors
+alphacouncil.tech/ar/t/2222/advisors         200                                                200 /ar/t/2222/advisors
+alphacouncil.tech/legal                      200                                                200 /legal
+alphacouncil.tech/ar/legal                   200                                                200 /ar/legal
+alphacouncil.tech/legal/terms                200                                                200 /legal/terms
+alphacouncil.tech/ar/legal/terms             200                                                200 /ar/legal/terms
+alphacouncil.tech/legal/privacy              200                                                200 /legal/privacy
+alphacouncil.tech/ar/legal/privacy           200                                                200 /ar/legal/privacy
+alphacouncil.tech/legal/refunds              200                                                200 /legal/refunds
+alphacouncil.tech/ar/legal/refunds           200                                                200 /ar/legal/refunds
+alphacouncil.tech/legal/ai-financial-disclaimer 200                                                200 /legal/ai-financial-disclaimer
+alphacouncil.tech/ar/legal/ai-financial-disclaimer 200                                                200 /ar/legal/ai-financial-disclaimer
+alphacouncil.tech/legal/cookies              200                                                200 /legal/cookies
+alphacouncil.tech/ar/legal/cookies           200                                                200 /ar/legal/cookies
+alphacouncil.tech/legal/merchant             200                                                404 /legal/merchant
+alphacouncil.tech/ar/legal/merchant          200                                                404 /ar/legal/merchant
+alphacouncil.tech/pricing                    200                                                200 /pricing
+alphacouncil.tech/ar/pricing                 200                                                200 /ar/pricing
+alphacouncil.tech/methodology                200                                                200 /methodology
+alphacouncil.tech/ar/methodology             200                                                200 /ar/methodology
+alphacouncil.tech/signup                     200                                                200 /signup
+alphacouncil.tech/ar/signup                  200                                                200 /ar/signup
+alphacouncil.tech/login                      200                                                200 /login
+alphacouncil.tech/ar/login                   200                                                200 /ar/login
+alphacouncil.tech/checkout                   200                                                200 /checkout
+alphacouncil.tech/ar/checkout                200                                                200 /ar/checkout
+alphacouncil.tech/settings                   200                                                200 /settings
+alphacouncil.tech/ar/settings                200                                                200 /ar/settings
+beta.alphacouncil.tech                       401                                                401 https://beta.alphacouncil.tech/
+www.alphacouncil.tech                        301   /                                            200 /

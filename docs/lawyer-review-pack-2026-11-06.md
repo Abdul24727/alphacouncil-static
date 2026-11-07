@@ -14,6 +14,15 @@ are added, (f)–(i).
 Nothing here is legal advice. It is the operator's own account of the product, written so that advice
 can be given and acted on in one visit.
 
+**Updated 2026-11-07**, after a read-only check of every address and description in this pack against the live
+site (`docs/lawyer-pack-check-2026-11-07.md`). What changed:
+- the release the site runs (§2);
+- the council tab, described as the site describes it: rule-based seats that vote bullish, neutral or bearish (§1);
+- the merchant information's address (§4);
+- what checkout already says about renewal, and the reminder the site sends (§6 (i)).
+
+The account and payment counts in §2 are as of 2026-11-06 and were not counted again.
+
 ## 1. The site and who runs it
 
 - **Operator:** Insight Lane Establishment, a Saudi sole establishment, Unified National Number
@@ -29,8 +38,15 @@ can be given and acted on in one visit.
 - **Two features use a language model:**
   - the **Copilot**, which answers questions about the page's own data with citations;
   - the **advisors' room**, where six simulated advisors answer a member's question about one company in
-    three rounds and a neutral Chair writes the room's answer. The company page's **council** tab shows
-    each seat's view of the company.
+    three rounds and a neutral Chair writes the room's answer.
+- **A third feature uses no language model: the council.** The company page's **council** tab is not the
+  advisors' room. It is six rule-based seats: Value (P/E), Quality (return on equity), Income (dividend yield),
+  Momentum (trend), Risk (volatility and yield) and News (the last 30 days' rated news). Each applies one fixed rule
+  to the company's figures and **votes bullish, neutral or bearish**; a seat without the
+  data it needs abstains. The tab shows every seat, its inputs and the count of votes, with no blended score.
+  The rules are published at `/methodology` ("How the council votes"). `/pricing` sells it as "The council's vote
+  and each seat's reasoning on every equity", and the landing page (`/`) calls it "a council of rule-based
+  seats that votes in the open". This bears on question (b).
 - **Plans:**
 
 | | Free | Pro, SAR 79 a month |
@@ -41,12 +57,19 @@ can be given and acted on in one visit.
 | Council, Financials, Ownership, Calendar, indicators | locked | included |
 
 Pro renews monthly on the saved card until it is cancelled. A failed renewal is retried for 3 days, and
-Pro stays on in the meantime.
+Pro stays on in the meantime. `/pricing` says: "AlphaCouncil is not currently charging VAT; any applicable tax
+will be shown before payment."
 
 ## 2. Where things stand on 2026-11-06
 
-- **Live** at `alphacouncil.tech`, running release **`b5655a5064`**, which went out on 2026-11-06 to beta and
-  then production.
+- **Live** at `alphacouncil.tech`. *Updated 2026-11-07:* it runs release **`ea51de796c`**, released on 2026-11-07.
+  It is the 2026-11-06 release `b5655a5064` plus two fixes:
+  - **a label:** the Pro Financials panel's "Sector percentile" now reads "Sector standing";
+  - **the AI's data notes:** the notes the advisors' room and the Copilot are given now say plainly which
+    financial statements a company has. Nothing visible changed.
+
+  The signed-out checks below were run again on both 2026-11-07 releases, with the same results
+  (`launch-check-2026-11-07.md`).
 - **Billing has been open since 2026-11-02.** The owner opened it before this review, waiving the plan's
   order; Step 7 comes after the launch check.
 - **One payment has ever been taken.** It was the owner's own, on 2026-11-02, and was refunded the same
@@ -124,7 +147,7 @@ place.
 | Refund and Cancellation Policy | 1.2 | `/legal/refunds` | at checkout |
 | AI and Financial Disclaimer | 1.0 | `/legal/ai-financial-disclaimer` | at checkout |
 | Cookie Policy | 1.0 | `/legal/cookies` | linked, not accepted |
-| Merchant information | — | `/legal/merchant` | linked, not accepted |
+| Merchant information | — | `/legal#merchant`, and at the foot of every legal document | linked, not accepted |
 
 **What is recorded:** each acceptance is stored with the account, as its kind, wording version, document
 versions and time:
@@ -248,7 +271,8 @@ Updates since that file:
   (§3 step 6).
 
 **(f) The data's source.** The site republishes, for a fee, data and news its pipeline collects from
-Argaam (through an Argaam account) and from the exchanges.
+Argaam (through an Argaam account) and from the exchanges. *Added 2026-11-07:* the site's own `/methodology`
+page describes this as collected "from public market sources", and does not name Argaam.
 1. Does Argaam's agreement for that account, and do the exchanges' terms, allow commercial
    republication?
 2. If not, what licence is needed, and from whom?
@@ -264,7 +288,15 @@ MailerSend (§5.2). Under the Personal Data Protection Law, what do the Privacy 
 or the contracts with those providers need for that?
 
 **(i) Monthly renewal.** Pro renews automatically on the saved card. What must checkout say about it,
-and must a reminder go out before each renewal? The site can already send one.
+and must a reminder go out before each renewal?
+
+What the site does today:
+- **Checkout says:** "Renews automatically every month on the same day, at the same price, until you cancel."
+  and "Cancel any time in Settings; Pro stays on until the end of the month you paid for."
+- **Reminders:** the site emails a reminder three days before each renewal. No renewal has fallen due yet, so
+  none has been sent.
+
+`/pricing`, read signed out, says "79 SAR a month" and does not mention renewal.
 
 ## 7. What the lawyer delivers, and how it lands
 

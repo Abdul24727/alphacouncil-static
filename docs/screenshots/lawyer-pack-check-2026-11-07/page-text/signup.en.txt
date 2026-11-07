@@ -1,0 +1,17 @@
+https://alphacouncil.tech/en/signup
+status 200, final https://alphacouncil.tech/signup
+
+AlphaCouncil
+Create your account
+Continue with Google
+
+or
+
+NAME (OPTIONAL)
+EMAIL
+PASSWORD
+At least 10 characters.
+I agree to the Terms of Service and acknowledge the Privacy Policy.
+Create account
+
+Already have an account? Sign in

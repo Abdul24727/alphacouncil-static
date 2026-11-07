@@ -92,8 +92,13 @@ read over read-only ssh. No model is called.
   - **The code:** production's files are the commit's byte for byte (checks 4 and 5), and the running processes were
     started from them (check 2).
   - **The comparison:** beta runs the same commit, and its notes were compared word for word for all 714 tickers before
-    and after (`docs/release-beta-p9-2026-11-07.md`, check 7). Production has its own database, so its notes are the
-    same only if its statement data is; that was not read here.
+    and after (`docs/release-beta-p9-2026-11-07.md`, check 7).
+  - **The data:** production's accounts database is its own, but its market-data settings (`EVIDENCE_DB` and the rest)
+    were copied from beta's when production was set up (`scripts/deploy-production.sh`, lines 80–83;
+    `docs/production.md`, "Market data: the same files, read-only"). So both tiers read the same statement data, and
+    with the same code they write the same notes. That the settings are unchanged since setup was not re-read: they
+    sit in a file with credentials. *(Corrected after review 87: this line said production "has its own database"
+    for its notes, which is true only of its accounts.)*
 - **The room's and the Copilot's behaviour:** whether the advisors now stop inventing statement figures can only be
   measured in a paid session, and none was run.
 - **The site:** nothing visible changes. `web/` is the previous release's byte for byte (check 3).
