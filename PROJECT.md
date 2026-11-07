@@ -481,6 +481,17 @@ Older entries: `changelog-archive.md`.
             Two facts were added: `/pricing`'s VAT line, and that `/methodology` says "public market sources" (for
             question (f)). For the owner to confirm before sending: the 2026-11-06 account and payment counts, and the
             hosting provider.
+          - **Review 88 said FIX; fixed the same evening.** Its four points:
+            - **The models:** the room's models were stated as confirmed; only the Copilot's is. The pack now marks
+              the seats' and the Chair's models for the owner to confirm.
+            - **The data:** "beta and production use the same data" is true at setup only. It is now qualified in the
+              pack and the P9 production record.
+            - **Missed issues:** the legal texts' "Contact page" (`/contact.html`, which redirects to `/legal`) and
+              the Arabic merchant notice's missing privacy email. Both are now under question (e), with the texts
+              left alone.
+            - **The plan files:** their diff is shown to be status-only (`plan-diffs.txt`).
+
+            Give the lawyer two documents: the pack and `docs/legal-questions-2026-10-27.md`.
       - **Review 84 ACCEPTED the P9 fix.**
         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
           cases), and the patch rebuilds the four files byte for byte on production's bytes.

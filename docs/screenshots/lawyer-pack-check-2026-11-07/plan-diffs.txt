@@ -1,0 +1,110 @@
+The plan files' changes from 5a44457 (the last commit before the owner's 'Yes, deploy to production') to the working tree (trailing spaces removed, so blank context lines show as empty), 2026-11-07 20:21:51 UTC
+$ git diff 5a44457 -- PROJECT.md docs/review-loop/MASTER-PLAN.md
+
+diff --git a/PROJECT.md b/PROJECT.md
+index ab7a62b..1be2e04 100644
+--- a/PROJECT.md
++++ b/PROJECT.md
+@@ -1,5 +1,5 @@
+ # PROJECT — alphacouncil-platform launch
+-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-06   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `eeb9a9d` on 2026-11-06, the owner's twelfth go-ahead in chat ("Yes, push")** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, three on 2026-11-02 took it `3aafa82` → `c1198ca` → `b61876d` → `12aafcc`, one on 2026-11-03 took it `6acce45..c046236`, and three on 2026-11-06 took it `c046236..ccfe063`, `ccfe063..b5655a5` and `b5655a5..eeb9a9d`; every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **production `026699b906`** (the sector-standing fix over `b5655a5064`, released 2026-11-07 on the owner's go-ahead "Yes, deploy to production") and **beta `ea51de796c`** (the P9 fix over `026699b906`, released 2026-11-07 on "Yes, deploy to beta"). Each is a fix-only commit on a local release branch (`release/sector-standing`, `release/p9-no-statements`), **not pushed**; `b5655a5064`, on the public branch since the 2026-11-06 push, is kept on both tiers. *(Until 2026-11-07 this line named `b5655a5064` on both tiers, released 2026-11-06; before that `5c18a3ae46`.)* *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
++**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-06   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `eeb9a9d` on 2026-11-06, the owner's twelfth go-ahead in chat ("Yes, push")** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, three on 2026-11-02 took it `3aafa82` → `c1198ca` → `b61876d` → `12aafcc`, one on 2026-11-03 took it `6acce45..c046236`, and three on 2026-11-06 took it `c046236..ccfe063`, `ccfe063..b5655a5` and `b5655a5..eeb9a9d`; every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **production and beta both `ea51de796c`** (the P9 fix over the sector-standing fix `026699b906`, which is over `b5655a5064`). Beta got it 2026-11-07 on "Yes, deploy to beta", production at 19:35 UTC the same day on "Yes, deploy to production". Both are fix-only commits on local release branches (`release/sector-standing`, `release/p9-no-statements`), **not pushed**; `026699b906` and `b5655a5064`, the last on the public branch since the 2026-11-06 push, are kept on both tiers. *(Earlier on 2026-11-07 this line named production `026699b906`; until then `b5655a5064` on both tiers, released 2026-11-06; before that `5c18a3ae46`.)* *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
+
+ ## 1. Objective
+ alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
+@@ -450,6 +450,48 @@ Older entries: `changelog-archive.md`.
+             - **Production's preflight, rerun 18:00 UTC:** every step exit 0, with HEAD equal to `DEPLOY_SHA`, prune
+               `5c18a3ae46` and rollback `026699b906` (`docs/screenshots/p9-beta-2026-11-07/production-preflight.txt`).
+             - **Put to the owner:** the production go-ahead for `ea51de796cf3bbdbea21a45f35682335eab5a2f8`.
++        - **THE OWNER SAID "Yes, deploy to production" (2026-11-07).**
++        - **PRODUCTION RELEASED 2026-11-07:** alphacouncil.tech runs `ea51de796c`, the same as beta
++          (`docs/release-production-p9-2026-11-07.md`).
++          - **The run:** the preflight was rerun at 19:21 UTC and passed. The release's own command then exited 0 at
++            19:35 UTC. `5c18a3ae46` was pruned, and `026699b906` is kept on both tiers as the rollback.
++          - **The checks** (`docs/screenshots/p9-production-2026-11-07/prod-checks.txt`, every step exit 0):
++            - **The files:** the four changed files and all 3,566 equal the commit, and the prototype is absent.
++            - **The processes:** both production services were restarted from the new release.
++            - **The pages:** they answer 200, and the evidence endpoint is still Pro-only.
++            - **The monitor:** 14 ok and one with nothing to check (no renewal run since the last round).
++          - **Step 10's signed-out checks, rerun:** every count equals this morning's (SEO 62, Arabic 48 views, advisors
++            24, data fixes 44 with the same sweep, 20 page views). A connection drop at about 19:39 UTC cut off two
++            scripts. Both were rerun and passed, and the server logged no error.
++          - **Not checked:** P9's notes on production itself, which are Pro-only, and the advisors' behaviour, which
++            needs a paid session.
++          - **Review 87 ACCEPTED the production release.** Its three notes are non-blocking: the behaviour stays
++            unproven until an owner-authorised paid test, the drop is unexplained, and some scripts were not attached.
++            **Its next step:** a read-only check that the lawyer pack (`docs/lawyer-review-pack-2026-11-06.md`) still
++            matches the live site on `ea51de796c`, recorded under `docs/`. It does not send, change legal wording,
++            deploy, push or pay.
++          - **DONE 2026-11-07** (`docs/lawyer-pack-check-2026-11-07.md`). Every address in the pack answers, except
++            `/legal/merchant` (404; the notice is at `/legal#merchant`). Four discrepancies were corrected in the pack:
++            - the merchant address;
++            - the council tab, now described as six rule-based seats voting bullish, neutral or bearish, which bears
++              on question (b);
++            - the release, now `ea51de796c`;
++            - question (i), now quoting checkout's renewal wording and the three-day reminder the site sends.
++
++            Two facts were added: `/pricing`'s VAT line, and that `/methodology` says "public market sources" (for
++            question (f)). For the owner to confirm before sending: the 2026-11-06 account and payment counts, and the
++            hosting provider.
++          - **Review 88 said FIX; fixed the same evening.** Its four points:
++            - **The models:** the room's models were stated as confirmed; only the Copilot's is. The pack now marks
++              the seats' and the Chair's models for the owner to confirm.
++            - **The data:** "beta and production use the same data" is true at setup only. It is now qualified in the
++              pack and the P9 production record.
++            - **Missed issues:** the legal texts' "Contact page" (`/contact.html`, which redirects to `/legal`) and
++              the Arabic merchant notice's missing privacy email. Both are now under question (e), with the texts
++              left alone.
++            - **The plan files:** their diff is shown to be status-only (`plan-diffs.txt`).
++
++            Give the lawyer two documents: the pack and `docs/legal-questions-2026-10-27.md`.
+       - **Review 84 ACCEPTED the P9 fix.**
+         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
+           cases), and the patch rebuilds the four files byte for byte on production's bytes.
+diff --git a/docs/review-loop/MASTER-PLAN.md b/docs/review-loop/MASTER-PLAN.md
+index 385f52f..3fbfa64 100644
+--- a/docs/review-loop/MASTER-PLAN.md
++++ b/docs/review-loop/MASTER-PLAN.md
+@@ -33,7 +33,7 @@ It does not mean new things.
+ | 1 — Safe footing | ~15 % | DONE 2026-10-22 |
+ | 2 — Market data correct at the source | ~25 % | DONE 2026-10-24; later data fixes F-13, F-15 and F-16 all live (F-16 verified 2026-11-06) |
+ | 3 — Every known defect fixed, checkout proven | ~30 % | DONE 2026-10-22 |
+-| 4 — Launch: settled, checked, then paid | ~30 % | Steps 8, 9, 22, 23, 10 DONE (10's signed-out half re-run on production `b5655a5064` 2026-11-06 and on `026699b906` 2026-11-07, all PASS); **Step 7 (lawyer) NOT STARTED**, pack ready (`docs/lawyer-review-pack-2026-11-06.md`); Step 18 (billing) open, item 4 needs a real renewal |
++| 4 — Launch: settled, checked, then paid | ~30 % | Steps 8, 9, 22, 23, 10 DONE (10's signed-out half re-run on production `b5655a5064` 2026-11-06, and on `026699b906` and `ea51de796c` 2026-11-07, all PASS); **Step 7 (lawyer) NOT STARTED**, pack ready (`docs/lawyer-review-pack-2026-11-06.md`); Step 18 (billing) open, item 4 needs a real renewal |
+
+ Goal 4's Done-when (verbatim, short):
+ 1. The owner's written legal advice is in `docs/legal-advisors-<date>.md`, and every change it asks for is live.
+@@ -44,8 +44,8 @@ Goal 4's Done-when (verbatim, short):
+
+ ## What is left (`PROJECT.md` §9, "What is left, by who"), as of 2026-11-06
+
+-**The site is published and live** at alphacouncil.tech. Since 2026-11-07, production runs `026699b906`, which is
+-`b5655a5064` plus the sector-standing fix, and beta runs `ea51de796c`, which is `026699b906` plus the P9 fix.
++**The site is published and live** at alphacouncil.tech. Since 2026-11-07, production and beta both run
++`ea51de796c`: `b5655a5064` plus the sector-standing fix (`026699b906`) plus the P9 fix.
+ Billing has been open since 2026-11-02.
+
+ **Done on 2026-11-06, on the owner's go-aheads:**
+@@ -116,8 +116,21 @@ Billing has been open since 2026-11-02.
+     - **Beta released 2026-11-07** on the owner's go-ahead ("Yes, deploy to beta"). Beta runs `ea51de796c`, its files
+       equal the commit, and P9's notes changed for exactly the 76 companies the fix names; the other 638 are unchanged
+       word for word (`docs/release-beta-p9-2026-11-07.md`).
+-    - **Review 86 accepted the beta release,** and production's read-only preflight passes again. **What waits:**
+-      production, on its own go-ahead from the owner.
++    - **Review 86 accepted the beta release,** and production's read-only preflight passes again.
++    - **Production released 2026-11-07** on the owner's go-ahead ("Yes, deploy to production"). Its files equal the
++      commit, its services restarted from it, its pages answer, and Step 10's signed-out checks give the same counts as
++      that morning (`docs/release-production-p9-2026-11-07.md`). P9's notes on production are Pro-only and were not
++      read. The advisors' behaviour needs a paid session.
++    - **Review 87 accepted the production release.** Its next step is a read-only check that the lawyer pack still
++      matches the live site, recorded under `docs/`.
++    - **That check is done** (`docs/lawyer-pack-check-2026-11-07.md`). The pack is corrected in place: four
++      discrepancies and two facts added.
++      - **Review 88 said FIX, and its four points are fixed:**
++        - the room's models are marked unconfirmed;
++        - "the same data" is qualified;
++        - two known issues in the legal texts are added under (e);
++        - the plan-file diff is shown to be status-only.
++      - **For the owner:** confirm three facts the pack marks, then send it with `docs/legal-questions-2026-10-27.md`.
+
+ ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)

@@ -1,0 +1,24 @@
+the legal texts' contact address, 2026-11-07 20:19:42 UTC
+
+Where the legal texts give it (page-text/, lines after the two-line header):
+  legal-terms.en.txt:298: Contact page: https://alphacouncil.tech/contact.html
+  legal-terms.ar.txt:272: صفحة التواصل: https://alphacouncil.tech/contact.html
+  legal-privacy.en.txt:160: Contact page: https://alphacouncil.tech/contact.html
+  legal-privacy.ar.txt:144: صفحة التواصل: https://alphacouncil.tech/contact.html
+  legal-refunds.en.txt:106: Contact page: https://alphacouncil.tech/contact.html
+  legal-refunds.ar.txt:95: صفحة التواصل: https://alphacouncil.tech/contact.html
+  legal-ai.en.txt:130: Contact page: https://alphacouncil.tech/contact.html
+  legal-ai.ar.txt:116: صفحة التواصل: https://alphacouncil.tech/contact.html
+  legal-cookies.en.txt:77: Contact page: https://alphacouncil.tech/contact.html
+  legal-cookies.ar.txt:69: صفحة التواصل: https://alphacouncil.tech/contact.html
+
+What the addresses answer (curl, first answer, then after redirects):
+  /contact.html  first 301 https://alphacouncil.tech/legal  final 200 https://alphacouncil.tech/legal
+  /ar/contact.html  first 404  final 404 https://alphacouncil.tech/ar/contact.html
+  /contact  first 404  final 404 https://alphacouncil.tech/contact
+
+What /legal shows a visitor (the redirect's target), lines naming a contact detail:
+  /en/legal: status 200, 1261 chars; email addresses on the page: 2
+    Merchant Information — Insight Lane Establishment, a Saudi sole establishment, Commercial Registration / Unified National Number 7050149686, trading as AlphaCou
+  /ar/legal: status 200, 1140 chars; email addresses on the page: 1
+    معلومات المنشأة — مؤسسة إنسايت لين، مؤسسة فردية سعودية، السجل التجاري / الرقم الوطني الموحّد 7050149686، تعمل باسم AlphaCouncil. العنوان المسجّل: مبنى 8128، شار

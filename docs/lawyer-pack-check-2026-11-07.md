@@ -3,23 +3,42 @@
 **What this is:** review 87's next step. It is a read-only check that `docs/lawyer-review-pack-2026-11-06.md` still
 matches the live site, so that the owner can send it.
 
-**The result:** the site answers at every address but one. The pack is corrected in place, and it is ready to send.
-- **What was wrong in the pack:** one wrong address, one feature described too loosely, an outdated release, and one
-  question that understated what the site already does.
-- **What was added:** two facts the lawyer should have.
+**The result:** the site answers at every address but one. The pack is corrected in place.
+- **What was wrong in the pack:**
+  - one wrong address;
+  - one feature described too loosely;
+  - an outdated release;
+  - one question that understated what the site already does;
+  - after review 88, two claims stated as confirmed that were not.
+- **What was added:** two facts the lawyer should have, and two known issues in the imported legal texts (review
+  88).
 - **Not done:** nothing was sent, no legal text on the site was changed, and nothing was deployed, pushed or paid
   for.
 
 ## The handoff, for the owner
 
+**Give the lawyer exactly two documents:**
+1. `docs/lawyer-review-pack-2026-11-06.md`, as updated 2026-11-07. The update note is at its top.
+2. `docs/legal-questions-2026-10-27.md`: questions (a)–(e), which the pack refers to and does not repeat.
+
 | | |
 |---|---|
-| **The pack** | `docs/lawyer-review-pack-2026-11-06.md`, updated 2026-11-07 (the update note is at its top) |
-| **With it** | `docs/legal-questions-2026-10-27.md`: questions (a)–(e), which the pack refers to and does not repeat |
 | **The live site** | https://alphacouncil.tech (English) and https://alphacouncil.tech/ar (Arabic) |
 | **The release it runs** | production `ea51de796c`, since 2026-11-07 19:35 UTC (`docs/release-production-p9-2026-11-07.md`) |
-| **The beta copy** | https://beta.alphacouncil.tech answers 401 without its password. The owner gives the lawyer the password (pack §3 step 8) |
-| **For the owner to confirm before sending** | the counts in pack §2 (four accounts; one payment, the owner's own, refunded; no paying customer). They are as of 2026-11-06 and were not counted again. Also the hosting provider and its country (§5.2), which the pack leaves to the owner |
+| **The beta copy** | https://beta.alphacouncil.tech answers 401 without its password. The owner gives the lawyer the password privately (pack §3 step 8) |
+
+**Facts still waiting on the owner's confirmation before sending** (the pack marks each one):
+1. **The counts in pack §2:** four accounts; one payment, the owner's own, refunded; no paying customer. They are as
+   of 2026-11-06 and were not counted again.
+2. **The hosting provider and its country** (§5.2), which the pack leaves to the owner.
+3. **The AI models the six seats and the Chair use on production** (§5.2). Only the Copilot's was confirmed live.
+
+**Kinds of statement in the pack:**
+- **Confirmed live on 2026-11-07:** the addresses, page wording, plans, legal versions, the Copilot's model, the
+  seats and the universe.
+- **Read from the released code:** the renewal reminder, the retries and grace period, and the routing request
+  sent to OpenRouter. These are marked as what the code does.
+- **For the owner to confirm:** the three facts above.
 
 ## How it was checked
 
@@ -31,6 +50,12 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
   sees them at 1440 px. `index.txt` lists the status of each.
 - **`api-facts.txt`** (`api-facts.sh`, 20:06 UTC): the public API's health, the company list, the Copilot's model,
   the room's seats, and the address Moyasar was once shown.
+- **`contact-check.txt`** (`contact-check.mjs`, 20:19 UTC, after review 88):
+  - every site address inside the five legal texts, in both languages;
+  - what the contact address answers;
+  - what its target, `/legal`, shows. Its text is `page-text/legal-index.{en,ar}.txt`.
+- **`plan-diffs.txt`** (after review 88): the plan files' full diff since `5a44457`, the last commit before the
+  owner's "Yes, deploy to production".
 
 ## Every address in the pack (`urls.txt`)
 
@@ -90,8 +115,9 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
 **Other facts (pack §1, §5.2, and question (c)):**
 - **The universe:** 714 companies on seven exchanges.
 - **The Copilot's model:** `deepseek/deepseek-v3.2`, read from the live `/api/v1/copilot/status`.
-- **The room's models:** the code's defaults are DeepSeek for the six seats and Anthropic's Claude for the Chair.
-  Production's own setting is in a file that also holds credentials, so it was not read.
+- **The room's models:** not confirmed. The code's defaults are DeepSeek for the six seats and Anthropic's Claude
+  for the Chair. Production's own setting is in a file that also holds credentials, so it was not read. See
+  discrepancy 5.
 - **`/api/capabilities`** still answers 404, as question (c) says.
 
 ## Discrepancies found, and how the pack now reads
@@ -124,6 +150,44 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
      than 2026-12-02, and its reminder no earlier than 2026-11-29.
    - **Now:** (i) states both, and adds that `/pricing`, read signed out, does not mention renewal.
 
+**Found by review 88, two claims the pack stated as confirmed that were not:**
+
+5. **The AI models (pack §5.2).**
+   - **The pack said:** "DeepSeek models for the Copilot and the six seats; Anthropic's Claude for the Chair", as fact.
+   - **What is known:**
+     - **The Copilot:** confirmed live.
+     - **The seats and the Chair:** only the code's defaults are known.
+     - **Routing:** OpenRouter chooses the hosting company per request. The Copilot's code asks it for the fastest
+       host, with fallbacks (`api/app/copilot/openai_compat.py`, `copilot_provider_sort`).
+   - **Now:** §5.2 keeps the confirmed fact apart from the defaults, marks the seats' and the Chair's models for the
+     owner to confirm, and says that the host is not necessarily the model's maker. This bears on question (h).
+6. **What beta shares with production (pack §2).**
+   - **The pack said:** beta "runs the same release on the same data".
+   - **What is known:** the same release, yes. Production's market-data settings were copied from beta's at setup
+     (`scripts/deploy-production.sh`, lines 80–83). That they still match was not checked again.
+   - **Now:** §2 says exactly that.
+   - **Also corrected:** the same claim in `docs/release-production-p9-2026-11-07.md`, which now says production's
+     P9 notes are not established to equal beta's.
+
+**Known issues in the imported legal texts, found by review 88** (now listed under question (e); the texts
+themselves are left alone until the lawyer advises):
+
+7. **The contact page** (`contact-check.txt`).
+   - **What the texts say:** all five documents, in English and Arabic, say "Contact page:
+     https://alphacouncil.tech/contact.html".
+   - **Where it leads:** the rebuilt site has no contact page. nginx redirects that address with a 301 to `/legal`
+     (`deploy/nginx-production.conf`: `location = /contact.html { return 301 /legal; }`).
+   - **What `/legal` shows:** the merchant notice, with the registered address, a telephone number and the emails. It
+     has no contact form.
+   - **Other addresses:** `/ar/contact.html` and `/contact` answer 404.
+   - **The only other site address in the texts** is the bare `https://alphacouncil.tech`.
+8. **The merchant notice differs by language.**
+   - **English:** "Support: support@alphacouncil.tech · Privacy: privacy@alphacouncil.tech".
+   - **Arabic:** gives only the support email.
+   - **Where it shows:** the notice shows on `/legal` and at the foot of every legal document, so the Arabic
+     documents' foot lacks the privacy email.
+   - **Not affected:** the Arabic Privacy Policy's own text does carry it (`page-text/legal-privacy.ar.txt`).
+
 **Added, because the lawyer should have them:**
 - **VAT (pack §1):** `/pricing` says "AlphaCouncil is not currently charging VAT; any applicable tax will be shown
   before payment."
@@ -136,7 +200,7 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
 - **The signed-in walk-through (pack §3, steps 4–8):** Claude makes no accounts on the live site. That includes
   sign-up, the Copilot, holdings, Settings, checkout, and a room session.
 - **The legal texts' content:** what the texts say was not reviewed; that is the lawyer's work. Only their
-  addresses, versions and dates were compared.
+  addresses, versions and dates were compared. After review 88, so were the site addresses and emails inside them.
 - **The account and payment counts:** not counted again (above).
 
 ## The repository after this check
@@ -146,4 +210,21 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
   - the pack;
   - the plan files (`PROJECT.md`, `docs/review-loop/MASTER-PLAN.md`);
   - a correction in `docs/release-production-p9-2026-11-07.md`, about which data production's notes are made from.
-- **Not changed:** anything outside `docs/` and `PROJECT.md`. `git diff --check` is clean.
+- **Not changed:** anything outside `docs/` and `PROJECT.md`.
+- **`git diff --check` is clean,** after two whitespace-only edits:
+  - review 88's saved reply lost one trailing space at the end of a line;
+  - `plan-diffs.txt` lost the single spaces that mark blank context lines.
+
+  The reply was copied with its length and SHA-256 checked against the page before saving.
+
+**The plan files' changes are status updates only** (`plan-diffs.txt`, from `5a44457` to this commit). Every
+removed line was replaced by its updated form. The hunks touch:
+- **`PROJECT.md`:**
+  - line 2's "Deployed" sentence;
+  - new bullets in the P9 history under §5: the go-ahead, the release, its checks, reviews 87 and 88, and this check.
+- **`docs/review-loop/MASTER-PLAN.md`:**
+  - Goal 4's state cell, adding the evening's launch-check rerun;
+  - the "site is published" sentence, naming the release;
+  - new P9 bullets.
+- **Untouched:** the objective, the out-of-scope list, the four goals' Done-when, §4's rules and approvals, the
+  owner's directions and the settled decisions.

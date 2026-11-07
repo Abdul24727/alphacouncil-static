@@ -123,8 +123,14 @@ Billing has been open since 2026-11-02.
       read. The advisors' behaviour needs a paid session.
     - **Review 87 accepted the production release.** Its next step is a read-only check that the lawyer pack still
       matches the live site, recorded under `docs/`.
-    - **That check is done** (`docs/lawyer-pack-check-2026-11-07.md`). The pack is corrected in place (four
-      discrepancies, two facts added) and is ready for the owner to send.
+    - **That check is done** (`docs/lawyer-pack-check-2026-11-07.md`). The pack is corrected in place: four
+      discrepancies and two facts added.
+      - **Review 88 said FIX, and its four points are fixed:**
+        - the room's models are marked unconfirmed;
+        - "the same data" is qualified;
+        - two known issues in the legal texts are added under (e);
+        - the plan-file diff is shown to be status-only.
+      - **For the owner:** confirm three facts the pack marks, then send it with `docs/legal-questions-2026-10-27.md`.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

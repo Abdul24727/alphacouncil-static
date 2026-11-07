@@ -19,9 +19,15 @@ site (`docs/lawyer-pack-check-2026-11-07.md`). What changed:
 - the release the site runs (§2);
 - the council tab, described as the site describes it: rule-based seats that vote bullish, neutral or bearish (§1);
 - the merchant information's address (§4);
-- what checkout already says about renewal, and the reminder the site sends (§6 (i)).
+- what checkout already says about renewal, and the reminder the site sends (§6 (i));
+- which AI models are confirmed live and which are only the code's defaults (§5.2);
+- what the beta copy shares with production (§2);
+- two known issues in the imported legal texts: the contact page, and the Arabic merchant notice (§6 (e)).
 
-The account and payment counts in §2 are as of 2026-11-06 and were not counted again.
+**Not checked again, for the owner to confirm before sending:**
+- the account and payment counts in §2, which are as of 2026-11-06;
+- the hosting provider and its country (§5.2);
+- the AI models the six seats and the Chair use on production (§5.2).
 
 ## 1. The site and who runs it
 
@@ -85,8 +91,12 @@ will be shown before payment."
     [desktop](screenshots/launch-2026-11-06/pages/contact-sheet-1440.png) and
     [phone](screenshots/launch-2026-11-06/pages/contact-sheet-390.png).
 - **What a signed-out check cannot see on production:** the Pro-only financial statements. They were checked on
-  the beta copy, which runs the same release on the same data: all 714 companies, with every statement line in
-  English on English pages ([beta's checks](screenshots/release-b5655a5064/beta-checks.txt)).
+  the beta copy: all 714 companies, with every statement line in English on English pages
+  ([beta's checks](screenshots/release-b5655a5064/beta-checks.txt)).
+  - **Why beta stands in:** it runs the same release. Production was also set up to read the same market-data
+    files: its settings were copied from beta's at setup.
+  - **The limit:** that the settings still match was not checked again on 2026-11-07. *(Until 2026-11-07 this said
+    "on the same data".)*
 - **Open items the lawyer may see** (one was resolved the same day):
   - ~~**The AI features' credit.** The model account that pays for the Copilot and the advisors' room was at
     $7.83 on 2026-11-06, below the site's own $10 alert. If it runs out before the visit, those two features
@@ -213,9 +223,16 @@ The dumps include the card-token ids.
 - **MailerSend:** sends the site's emails (verification, password reset, billing).
 - **Google:** only for a member who chooses "Sign in with Google".
 - **OpenRouter, and the AI model providers it routes to:** the member's Copilot and room questions,
-  together with the company's data, go to language models outside the Kingdom:
-  - DeepSeek models for the Copilot and the six seats;
-  - Anthropic's Claude for the Chair.
+  together with the company's data, go to language models outside the Kingdom. *Corrected 2026-11-07*, to keep
+  what was confirmed apart from what was not:
+  - **The Copilot, confirmed live:** a DeepSeek model, `deepseek/deepseek-v3.2`. The site's own public status
+    address reported it on 2026-11-07.
+  - **The six seats and the Chair, not confirmed:** the code's defaults are a DeepSeek model for the seats and
+    Anthropic's Claude for the Chair. Production's own setting sits in a server file that also holds passwords and
+    keys, so it was not read. *The owner to confirm.*
+  - **Who runs a request:** OpenRouter chooses which hosting company runs each request for a model, so the
+    company is not necessarily the model's maker. For the Copilot, the code asks OpenRouter for the fastest host,
+    with fallbacks. Which hosts served the site's requests was not looked up.
 - **The hosting provider:** a rented virtual server. *The owner to state which provider and in which
   country.*
 
@@ -269,6 +286,15 @@ Updates since that file:
   own, refunded.
 - **(e):** the "imported, not hand-written" texts are unchanged. Self-service account deletion exists
   (§3 step 6).
+- **(e), known issues in the imported texts** (found 2026-11-07; the texts are left as they are until the lawyer
+  advises):
+  - **The contact page.** All five documents, in English and Arabic, give "Contact page:
+    https://alphacouncil.tech/contact.html". The rebuilt site has no contact page.
+    - **Where the address leads:** the server redirects it to `/legal`, the legal index. There the merchant notice
+      gives the registered address, a telephone number and the support email, with no form.
+    - **The Arabic address:** `/ar/contact.html` answers "not found".
+  - **The merchant notice differs between the languages.** The English notice gives a support and a privacy email.
+    The Arabic gives only the support email.
 
 **(f) The data's source.** The site republishes, for a fee, data and news its pipeline collects from
 Argaam (through an Argaam account) and from the exchanges. *Added 2026-11-07:* the site's own `/methodology`
