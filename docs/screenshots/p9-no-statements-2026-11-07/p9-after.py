@@ -1,28 +1,55 @@
-"""What the fixed code (branch `rebuild`) gives for the reproduced cases. No network, no model.
-Run from api/: .venv/Scripts/python.exe ../docs/screenshots/p9-no-statements-2026-11-07/p9-after.py"""
-import json, sys
+"""What the fixed code (branch `rebuild`) gives for every case review 79 names. No network, no model.
+Run from api/: .venv/Scripts/python.exe -X utf8 ../docs/screenshots/p9-no-statements-2026-11-07/p9-after.py"""
+import json
+import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path.cwd()))
-from app.debate.pack import Pack, Source  # noqa: E402
-from app.evidence import Items, dataset_of  # noqa: E402
+from app.debate.pack import Pack, Source, no_statements_note  # noqa: E402
+from app.evidence import Cell, Items, dataset_of  # noqa: E402
 
 here = Path(__file__).resolve().parent
-print("1. P9 for a company with no statement rows (4330's case), from the fixed evidence.dataset_of:")
-ds = dataset_of(Items([], []), ticker_key="4330_TADAWUL", sector="unknown", currency="SAR")
-print("   statements:", ds.statements, "| quarters:", ds.quarters,
-      "| calculations with a value:", sum(c.value is not None for c in ds.calculations), "of", len(ds.calculations))
-for lim in ds.limitations:
-    print("   LIMITATION:", lim)
 
-print("\n2. The pack the room reads for 4330, with beta's P9 as it is today (before the fix reaches it):")
+
+def p9_of(items):
+    return dataset_of(items, ticker_key="X_TADAWUL", sector="unknown", currency="SAR", price=26.16)
+
+
+def show(name, items):
+    ds = p9_of(items)
+    quarters = ds.quarters.rows if ds.quarters else None
+    print(f"\n== {name}")
+    print(f"   statements: {[(s.section, s.rows) for s in ds.statements]} | quarters: {quarters}"
+          f" | calculations with a value: {sum(c.value is not None for c in ds.calculations)} of {len(ds.calculations)}")
+    for lim in ds.limitations:
+        print("   LIMITATION:", lim)
+    print("   PACK NOTE:", no_statements_note({"P9": ds.model_dump()}))
+
+
+def cell(label, section, year, value, end=None):
+    return Cell(label=label, section=section, fiscal_year=year, value=value, period_end=end)
+
+
+show("1. empty P9 (4330's case: no statement rows at all)", Items([], []))
+show("2. quarterly-only P9", Items([], [cell("Net Income", "Income Statement", 2026, 77.0, "2026-06")]))
+show("3. all-null statement rows", Items([cell("Net Income", "Income Statement", 2025, None),
+                                          cell("Total Assets", "Balance Sheet", 2025, None)], []))
+show("4. balance-sheet-only P9 (232's case)", Items([cell("Total Assets", "Balance Sheet", 2025, 900.0)], []))
+show("5. normal: an income statement and a balance sheet, two years",
+     Items([cell("Net Income", "Income Statement", 2025, 50.0), cell("Net Income", "Income Statement", 2024, 40.0),
+            cell("Total Assets", "Balance Sheet", 2025, 900.0)], []))
+
+print("\n== 6. packs with no P9, and with a P9 error: the note, and that it comes before the data")
+for name, data in (("no P9", {"P1": {"quote": 1}}), ("P9 error", {"P1": {"quote": 1}, "P9": {"error": "unavailable"}})):
+    pack = Pack(ticker_key="X", slug="x", header="DATA PACK.", fetched_at="2026-11-07", data=data,
+                sources={t: Source(title_en=t, title_ar=t, ok=True) for t in data})
+    lines = pack.prompt().split("\n")
+    first_data = next(i for i, line in enumerate(lines, 1) if line.startswith("[P"))
+    print(f"   {name}: line 2 = {lines[1][:110]}... | the data starts at line {first_data}")
+
+print("\n== 7. 4330's pack with beta's P9 as it is today, and the comparison's five frozen packs")
 before = json.loads((here / "beta-4330-evidence-before.json").read_text(encoding="utf-8"))
-pack = Pack(ticker_key="4330_TADAWUL", slug="4330", header="DATA PACK. (header as built live)",
-            fetched_at="2026-11-07", data={"P9": before}, sources={"P9": Source(title_en="P9", title_ar="P9", ok=True)})
-print("   " + pack.prompt().split("\n")[1])
-
-print("\n3. The comparison's frozen packs (P1 to P8, no P9):")
+print("   4330:", no_statements_note({"P9": before})[:120], "...")
 for path in sorted((here.parents[2] / "docs" / "eval" / "packs").glob("*.json")):
     p = Pack.model_validate_json(path.read_text(encoding="utf-8"))
-    line = p.prompt().split("\n")[1]
-    print(f"   {path.name}: {line[:80]}...")
+    print(f"   {path.name}: {p.prompt().split(chr(10))[1][:90]}...")

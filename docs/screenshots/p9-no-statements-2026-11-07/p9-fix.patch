@@ -1,8 +1,16 @@
 diff --git a/api/app/debate/pack.py b/api/app/debate/pack.py
-index 34abca7..a876447 100644
+index 34abca7..394285c 100644
 --- a/api/app/debate/pack.py
 +++ b/api/app/debate/pack.py
-@@ -69,6 +69,9 @@ class Pack(BaseModel):
+@@ -15,6 +15,7 @@ from pydantic import BaseModel
+ from starlette.concurrency import run_in_threadpool
+ 
+ from ..copilot.context import numbers_in
++from ..evidence import has_figure
+ from ..universe import Ticker
+ 
+ DATASET_CHARS = 12_000  # per dataset, after JSON encoding (the Copilot's PANEL_CHARS)
+@@ -69,6 +70,9 @@ class Pack(BaseModel):
  
      def prompt(self) -> str:
          lines = [self.header]
@@ -12,7 +20,7 @@ index 34abca7..a876447 100644
          for tag, value in self.data.items():
              text = json.dumps(value, ensure_ascii=False, default=str)
              budget = DATASET_CHARS_BY_TAG.get(tag, DATASET_CHARS)
-@@ -78,6 +81,33 @@ class Pack(BaseModel):
+@@ -78,6 +82,50 @@ class Pack(BaseModel):
          return "\n".join(lines)
  
  
@@ -23,23 +31,40 @@ index 34abca7..a876447 100644
 +    packs had no P9, nothing said so, and 22 of the room's 23 invented figures were statement data
 +    the briefs place in P9 (`docs/eval/presenter-comparison/audit.md` §5). A live pack has a P9, but
 +    for 50 of 714 companies on 2026-11-07 it holds no statements. In each of these cases the room is
-+    told plainly, here, rather than left to notice an absence."""
++    told plainly, here, rather than left to notice an absence.
++
++    Held means a reported number (review 79): a statement whose rows are all null holds nothing, and
++    a P9 whose only numbers are single quarters is told that, not that it has none."""
 +    p9 = data.get("P9")
++    statements = quarters = False
 +    if p9 is None:
 +        why = "the pack has no [P9]"
-+    elif isinstance(p9, dict) and "error" in p9:
++    elif not isinstance(p9, dict) or "error" in p9:
 +        why = "[P9] holds an error, not statements"
-+    elif isinstance(p9, dict) and not p9.get("statements"):
-+        why = "[P9] holds none for this company"
 +    else:
++        statements = any(isinstance(s, dict) and has_figure(s.get("rows") or []) for s in p9.get("statements") or [])
++        q = p9.get("quarters")
++        quarters = isinstance(q, dict) and has_figure(q.get("rows") or [])
++        why = "[P9] holds no reported statement figure for this company"
++    if statements:
 +        return None
++    rule = (
++        " Every figure a seat quotes must be one these datasets show: a statement figure stated,"
++        " estimated or recalled from memory is invented, whatever tag it carries."
++    )
++    if quarters:
++        return (
++            "NO ANNUAL FINANCIAL STATEMENTS IN THIS PACK: [P9] holds single quarters only, and no"
++            " income statement, balance sheet or cash flow statement figure. The quarters in [P9]"
++            " `quarters` are reported: quote each with the quarter it covers. Where a brief sends a"
++            " seat to [P9]'s statements, the seat says plainly that the annual statements are not"
++            " available and argues from the datasets that are here." + rule
++        )
 +    return (
 +        f"NO FINANCIAL STATEMENTS IN THIS PACK ({why}): no income statement, balance sheet, cash"
 +        " flow statement or quarterly results for this company. Where a brief sends a seat to"
 +        " [P9]'s statements, the seat says plainly that they are not available and argues from the"
-+        " datasets that are here. Every figure a seat quotes must be one these datasets show: a"
-+        " statement figure stated, estimated or recalled from memory is invented, whatever tag it"
-+        " carries."
++        " datasets that are here." + rule
 +    )
 +
 +
@@ -47,42 +72,66 @@ index 34abca7..a876447 100644
      if not isinstance(overview, dict) or not isinstance(overview.get("returns"), dict):
          return overview
 diff --git a/api/app/evidence.py b/api/app/evidence.py
-index 03d3a26..bed2b49 100644
+index 03d3a26..12ee540 100644
 --- a/api/app/evidence.py
 +++ b/api/app/evidence.py
-@@ -1509,17 +1509,45 @@ RANKING_NARROWED = (
+@@ -1509,17 +1509,64 @@ RANKING_NARROWED = (
  )
  
  
-+# P9 for a company the source holds no statements for. Before this, such a company was told it had
-+# "an income statement and a balance sheet" and "one window", which sent a seat whose brief says
-+# "read [P9]'s income statement" looking for figures that do not exist (P9 in the 2026-11-07
+-def limitations_of(items: Items, sector: str, peer_class: str | None = None) -> list[str]:
++# P9 for a company the source holds no statement figures for. Before this, such a company was told
++# it had "an income statement and a balance sheet" and "one window", which sent a seat whose brief
++# says "read [P9]'s income statement" looking for figures that do not exist (P9 in the 2026-11-07
 +# comparison audit). 50 of 714 companies on 2026-11-07, read through beta's /evidence.
++# "Holds" means a reported number, not a section name or a row: a row whose value is null is not a
++# figure (review 79).
 +NO_STATEMENTS = (
-+    "NO FINANCIAL STATEMENTS: the source holds no income statement, balance sheet or cash flow"
-+    " statement for this company, so `statements` and `quarters` are empty and no calculation"
-+    " here has a value. There is no reported revenue, earnings, asset, liability, equity, cash"
-+    " flow, share count or quarterly result for this company in this dataset. Do not state,"
-+    " estimate or recall one, and do not cite [P9] for one: say that the statements are not"
-+    " available.")
++    "NO FINANCIAL STATEMENTS: the source holds no reported figure from an income statement,"
++    " balance sheet or cash flow statement for this company, and no quarterly result, so"
++    " `statements` and `quarters` carry no number and no calculation here has a value. There is no"
++    " reported revenue, earnings, asset, liability, equity, cash flow, share count or quarterly"
++    " result for this company in this dataset. Do not state, estimate or recall one, and do not"
++    " cite [P9] for one: say that the statements are not available.")
++# The same, for a company whose only reported figures are single quarters (review 79): those are
++# reported and stay usable, and must not be described as missing.
++QUARTERS_ONLY = (
++    "NO ANNUAL STATEMENTS: the source holds no reported figure from an income statement, balance"
++    " sheet or cash flow statement for this company. The single quarters in `quarters` are the"
++    " only reported figures here: quote each with the quarter it covers. There is no balance-sheet,"
++    " cash-flow or annual figure in this dataset; do not state, estimate or recall one, and do not"
++    " cite [P9] for one.")
 +
 +STATEMENT_NAMES = {"Income Statement": "an income statement", "Balance Sheet": "a balance sheet",
 +                   "Cash Flow Statement": "a cash flow statement"}
 +
 +
- def limitations_of(items: Items, sector: str, peer_class: str | None = None) -> list[str]:
++def has_figure(rows: list[list[Any]]) -> bool:
++    """Does any row carry a reported number after its label? A row of nulls is not a figure."""
++    return any(isinstance(v, (int, float)) and not isinstance(v, bool) for row in rows for v in row[1:])
++
++
++def limitations_of(items: Items, sector: str, peer_class: str | None = None,
++                   quarters: QuarterSeries | None = None) -> list[str]:
      """What this evidence cannot answer. Said plainly, because a seat that does not know a gap
 -    exists will argue around it."""
-+    exists will argue around it. Each statement the source does not hold is named as missing, and
-+    none is described as present unless its rows are."""
++    exists will argue around it. A statement counts as held only where it has a reported number,
++    each one that does not is named as missing, and none is described as present without one.
++    `quarters` is the series this dataset carries, so its figures are never called absent."""
      out: list[str] = []
 -    if "Cash Flow Statement" not in set(items.sections()):
-+    sections = [s for s in items.sections() if s in STATEMENT_NAMES]
++    reported = {r.section for r in items.rows if r.value is not None}
++    sections = [s for s in STATEMENT_NAMES if s in reported]
 +    if not sections:
-+        out.append(NO_STATEMENTS)
++        out.append(QUARTERS_ONLY if quarters is not None and has_figure(quarters.rows) else NO_STATEMENTS)
 +    if sections and "Cash Flow Statement" not in sections:
 +        has_income = "Income Statement" in sections
-+        out.append(
+         out.append(
+-            "NO CASH FLOW STATEMENT: the source's pages for this company carry an income"
+-            " statement and a balance sheet only. Operating cash flow, capital expenditure, free"
+-            " cash flow and cash conversion cannot be computed from anything here, and dividend"
+-            " cover can be tested against earnings only, never against cash.")
+-    if len({r.fiscal_year for r in items.rows if r.section == "Income Statement"}) < 2:
 +            "NO CASH FLOW STATEMENT: the source's pages for this company carry "
 +            + " and ".join(STATEMENT_NAMES[s] for s in sections) + " only. Operating cash flow,"
 +            " capital expenditure, free cash flow and cash conversion cannot be computed from"
@@ -90,24 +139,39 @@ index 03d3a26..bed2b49 100644
 +            + ("can be tested against earnings only, never against cash." if has_income
 +               else "cannot be tested against earnings or cash."))
 +    if sections and "Income Statement" not in sections:
-         out.append(
--            "NO CASH FLOW STATEMENT: the source's pages for this company carry an income"
--            " statement and a balance sheet only. Operating cash flow, capital expenditure, free"
--            " cash flow and cash conversion cannot be computed from anything here, and dividend"
--            " cover can be tested against earnings only, never against cash.")
--    if len({r.fiscal_year for r in items.rows if r.section == "Income Statement"}) < 2:
++        out.append(
 +            "NO INCOME STATEMENT: the source holds no income statement for this company. Its"
 +            " revenue, earnings, margins and earnings per share are not in this dataset; do not"
 +            " state, estimate or recall them.")
-+    elif sections and len({r.fiscal_year for r in items.rows if r.section == "Income Statement"}) < 2:
++    elif sections and len({r.fiscal_year for r in items.rows
++                           if r.section == "Income Statement" and r.value is not None}) < 2:
          p = items.period("Income Statement")
          out.append(
              f"ONE INCOME-STATEMENT WINDOW: {window_label(p) or 'one window'} is available and the"
+@@ -1590,6 +1637,7 @@ def dataset_of(
+     price: float | None = None,
+     budget: int = DATASET_BUDGET,
+ ) -> EvidenceDataset:
++    quarters = bounded_quarters(items)
+     return fit(EvidenceDataset(
+         ticker=ticker_key,
+         currency=currency,
+@@ -1605,8 +1653,8 @@ def dataset_of(
+                " the quarter-end columns added together.",
+         sector=sector,
+         statements=bounded_statements(items),
+-        quarters=bounded_quarters(items),
++        quarters=quarters,
+         calculations=calculations(items, sector=sector, dividends=dividends, price=price,
+                                   currency=currency),
+-        limitations=limitations_of(items, sector, peer_class),
++        limitations=limitations_of(items, sector, peer_class, quarters=quarters),
+     ), budget)
 diff --git a/api/tests/test_debate.py b/api/tests/test_debate.py
-index ea02a57..7662729 100644
+index ea02a57..5e5bf70 100644
 --- a/api/tests/test_debate.py
 +++ b/api/tests/test_debate.py
-@@ -900,3 +900,68 @@ def test_the_room_reads_the_sector_percentile_as_a_standing_where_higher_is_bett
+@@ -900,3 +900,82 @@ def test_the_room_reads_the_sector_percentile_as_a_standing_where_higher_is_bett
      header = pack.header_of(t, "2026-11-07 00:00 UTC")
      assert "HIGHER IS BETTER for every metric" in header and "a high standing means a LOW value" in header
      assert {d[0]: d[3] for d in pack.DATASETS}["P2"].endswith("sector standing where the peer group supports one")
@@ -133,12 +197,14 @@ index ea02a57..7662729 100644
 +
 +    # The no-statements fixture: what /evidence returns for a company with no statement rows.
 +    empty = dataset_of(Items([], []), ticker_key="4330_TADAWUL", sector="unknown", currency="SAR").model_dump()
++    # Review 79: statement rows with no number are not statements.
++    all_null = {**empty, "statements": [{"section": "Income Statement", "rows": [["Net Income"], ["Revenue", None]]}]}
 +    cases = {
 +        "the pack has no [P9]": None,
 +        "[P9] holds an error, not statements": {"error": "Market data unavailable"},
-+        "[P9] holds none for this company": empty,
++        "[P9] holds no reported statement figure for this company": empty,
 +    }
-+    for why, p9 in cases.items():
++    for why, p9 in [*cases.items(), ("[P9] holds no reported statement figure for this company", all_null)]:
 +        prompt = _p9_pack(p9).prompt()
 +        assert f"NO FINANCIAL STATEMENTS IN THIS PACK ({why})" in prompt, why
 +        assert prompt.index("NO FINANCIAL STATEMENTS IN THIS PACK") < prompt.index("[P1]"), "said before the data"
@@ -147,6 +213,18 @@ index ea02a57..7662729 100644
 +    with_statements = {**empty, "limitations": [],
 +                       "statements": [{"section": "Income Statement", "rows": [["Revenue", 100.0]]}]}
 +    assert "NO FINANCIAL STATEMENTS" not in _p9_pack(with_statements).prompt()
++
++
++def test_a_pack_whose_only_figures_are_quarters_keeps_them():
++    """Review 79: single quarters are reported figures. A pack holding only those is told the annual
++    statements are absent and the quarters are there to quote, not that it has no quarterly results."""
++    p9 = {"statements": [], "quarters": {"section": "Income Statement", "columns": ["label", "2026-06"],
++                                         "rows": [["Net Income", 77.0]]}, "limitations": []}
++    prompt = _p9_pack(p9).prompt()
++    assert "NO ANNUAL FINANCIAL STATEMENTS IN THIS PACK" in prompt
++    assert "quote each with the quarter it covers" in prompt
++    assert "NO FINANCIAL STATEMENTS IN THIS PACK" not in prompt and "quarterly results for this company" not in prompt
++    assert prompt.index("NO ANNUAL FINANCIAL STATEMENTS") < prompt.index("[P1]")
 +
 +
 +def test_the_comparison_packs_now_carry_the_no_statements_note():
@@ -177,18 +255,20 @@ index ea02a57..7662729 100644
 +    c.text("Net income was SAR 16,578 million [P9], so the payout is covered.")
 +    assert c.flags()["unverified"] == ["16,578"]
 diff --git a/api/tests/test_evidence.py b/api/tests/test_evidence.py
-index 439df97..ac1f7d1 100644
+index 439df97..1bbfb5d 100644
 --- a/api/tests/test_evidence.py
 +++ b/api/tests/test_evidence.py
-@@ -21,6 +21,7 @@ from app.evidence import (
+@@ -21,6 +21,9 @@ from app.evidence import (
      DISPUTED_PEER_NOTE,
      EPS_BASES_SUPPORTED,
      EQUITY_COMMON,
 +    NO_STATEMENTS,
++    QUARTERS_ONLY,
++    Cell,
      Items,
      bounded_statements,
      calculations,
-@@ -302,6 +303,42 @@ def test_no_cash_flow_statement_is_stated_rather_than_left_to_be_noticed(conn):
+@@ -302,6 +305,75 @@ def test_no_cash_flow_statement_is_stated_rather_than_left_to_be_noticed(conn):
      ds = dataset(conn, "2222_TADAWUL")
      assert any("NO CASH FLOW STATEMENT" in lim for lim in ds.limitations)
      assert any("never against cash" in lim for lim in ds.limitations)
@@ -201,12 +281,19 @@ index 439df97..ac1f7d1 100644
 +    ) in ds.limitations
 +
 +
-+def test_a_company_with_no_statements_is_told_so_and_supplied_no_figure():
++def test_a_company_with_no_statements_is_told_so_and_supplied_no_figure(conn):
 +    """P9 (the 2026-11-07 comparison audit): for a company the source holds no statements for,
 +    this dataset used to say it carried "an income statement and a balance sheet" and that "one
 +    window is available", which sent a seat looking for figures that do not exist. 50 of 714
 +    companies on beta had no statement rows that day (4330 among them)."""
-+    ds = dataset_of(Items([], []), ticker_key="4330_TADAWUL", sector="unknown", currency="SAR")
++    # Called as the live route calls it, with a dividend history (read as the route reads it) and the
++    # price: the note says no calculation has a value, so that must hold where the company pays dividends.
++    divs = [dict(d) for d in conn.execute(
++        "SELECT announce_date, ex_date, pay_date, dps, amount_mn, note FROM dividends WHERE ticker_key = ?",
++        ("2222_TADAWUL",))]
++    assert divs, "the fixture's dividend history"
++    ds = dataset_of(Items([], []), ticker_key="4330_TADAWUL", sector="unknown", currency="SAR",
++                    dividends=divs, price=26.16)
 +    assert ds.statements == [] and ds.quarters is None
 +    assert ds.calculations and all(c.value is None and c.missing for c in ds.calculations)
 +    assert all(not c.operands for c in ds.calculations), "no operand may carry a statement figure"
@@ -214,6 +301,32 @@ index 439df97..ac1f7d1 100644
 +    said = " ".join(ds.limitations)
 +    for false_claim in ("ONE INCOME-STATEMENT WINDOW", "carry an income statement", "single quarters",
 +                        "tested against earnings"):
++        assert false_claim not in said, false_claim
++
++
++def test_quarters_alone_stay_reported_and_are_not_called_missing():
++    """Review 79: a company whose only reported figures are single quarters was told "no quarterly
++    result". Its quarters are reported and stay usable; only the annual statements are absent."""
++    q = Cell(label="Net Income", section="Income Statement", fiscal_year=2026, value=77.0, period_end="2026-06")
++    ds = dataset_of(Items([], [q]), ticker_key="4330_TADAWUL", sector="unknown", currency="SAR")
++    assert ds.quarters is not None and ds.quarters.rows == [["Net Income", 77.0]]
++    assert ds.limitations[0] == QUARTERS_ONLY
++    said = " ".join(ds.limitations)
++    assert NO_STATEMENTS not in ds.limitations and "no quarterly result" not in said
++    assert "ONE INCOME-STATEMENT WINDOW" not in said and "tested against earnings" not in said
++
++
++def test_statement_rows_without_a_number_are_not_a_statement():
++    """Review 79: a section whose rows are all null was counted as a statement, so the company was told
++    it had an income-statement window and that dividend cover could be tested against earnings."""
++    rows = [Cell(label="Net Income", section="Income Statement", fiscal_year=2025, value=None),
++            Cell(label="Total Assets", section="Balance Sheet", fiscal_year=2025, value=None)]
++    ds = dataset_of(Items(rows, []), ticker_key="4330_TADAWUL", sector="unknown", currency="SAR")
++    assert all(c.value is None for c in ds.calculations)
++    assert ds.limitations[0] == NO_STATEMENTS
++    said = " ".join(ds.limitations)
++    for false_claim in ("ONE INCOME-STATEMENT WINDOW", "carry an income statement", "tested against earnings",
++                        "NO CASH FLOW STATEMENT"):
 +        assert false_claim not in said, false_claim
 +
 +

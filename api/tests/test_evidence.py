@@ -22,6 +22,8 @@ from app.evidence import (
     EPS_BASES_SUPPORTED,
     EQUITY_COMMON,
     NO_STATEMENTS,
+    QUARTERS_ONLY,
+    Cell,
     Items,
     bounded_statements,
     calculations,
@@ -312,12 +314,19 @@ def test_no_cash_flow_statement_is_stated_rather_than_left_to_be_noticed(conn):
     ) in ds.limitations
 
 
-def test_a_company_with_no_statements_is_told_so_and_supplied_no_figure():
+def test_a_company_with_no_statements_is_told_so_and_supplied_no_figure(conn):
     """P9 (the 2026-11-07 comparison audit): for a company the source holds no statements for,
     this dataset used to say it carried "an income statement and a balance sheet" and that "one
     window is available", which sent a seat looking for figures that do not exist. 50 of 714
     companies on beta had no statement rows that day (4330 among them)."""
-    ds = dataset_of(Items([], []), ticker_key="4330_TADAWUL", sector="unknown", currency="SAR")
+    # Called as the live route calls it, with a dividend history (read as the route reads it) and the
+    # price: the note says no calculation has a value, so that must hold where the company pays dividends.
+    divs = [dict(d) for d in conn.execute(
+        "SELECT announce_date, ex_date, pay_date, dps, amount_mn, note FROM dividends WHERE ticker_key = ?",
+        ("2222_TADAWUL",))]
+    assert divs, "the fixture's dividend history"
+    ds = dataset_of(Items([], []), ticker_key="4330_TADAWUL", sector="unknown", currency="SAR",
+                    dividends=divs, price=26.16)
     assert ds.statements == [] and ds.quarters is None
     assert ds.calculations and all(c.value is None and c.missing for c in ds.calculations)
     assert all(not c.operands for c in ds.calculations), "no operand may carry a statement figure"
@@ -325,6 +334,32 @@ def test_a_company_with_no_statements_is_told_so_and_supplied_no_figure():
     said = " ".join(ds.limitations)
     for false_claim in ("ONE INCOME-STATEMENT WINDOW", "carry an income statement", "single quarters",
                         "tested against earnings"):
+        assert false_claim not in said, false_claim
+
+
+def test_quarters_alone_stay_reported_and_are_not_called_missing():
+    """Review 79: a company whose only reported figures are single quarters was told "no quarterly
+    result". Its quarters are reported and stay usable; only the annual statements are absent."""
+    q = Cell(label="Net Income", section="Income Statement", fiscal_year=2026, value=77.0, period_end="2026-06")
+    ds = dataset_of(Items([], [q]), ticker_key="4330_TADAWUL", sector="unknown", currency="SAR")
+    assert ds.quarters is not None and ds.quarters.rows == [["Net Income", 77.0]]
+    assert ds.limitations[0] == QUARTERS_ONLY
+    said = " ".join(ds.limitations)
+    assert NO_STATEMENTS not in ds.limitations and "no quarterly result" not in said
+    assert "ONE INCOME-STATEMENT WINDOW" not in said and "tested against earnings" not in said
+
+
+def test_statement_rows_without_a_number_are_not_a_statement():
+    """Review 79: a section whose rows are all null was counted as a statement, so the company was told
+    it had an income-statement window and that dividend cover could be tested against earnings."""
+    rows = [Cell(label="Net Income", section="Income Statement", fiscal_year=2025, value=None),
+            Cell(label="Total Assets", section="Balance Sheet", fiscal_year=2025, value=None)]
+    ds = dataset_of(Items(rows, []), ticker_key="4330_TADAWUL", sector="unknown", currency="SAR")
+    assert all(c.value is None for c in ds.calculations)
+    assert ds.limitations[0] == NO_STATEMENTS
+    said = " ".join(ds.limitations)
+    for false_claim in ("ONE INCOME-STATEMENT WINDOW", "carry an income statement", "tested against earnings",
+                        "NO CASH FLOW STATEMENT"):
         assert false_claim not in said, false_claim
 
 

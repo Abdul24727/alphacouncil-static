@@ -80,3 +80,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-07 01:34 UTC — **Exact-commit deploy guard** — ACCEPT — [76-exact-commit-deploy-guard.md](replies/76-exact-commit-deploy-guard.md)
 - 2026-11-07 09:21 UTC — **Beta release of the sector-standing fix (026699b906)** — ACCEPT — [77-beta-release-of-the-sector-standing-fix-026699b906.md](replies/77-beta-release-of-the-sector-standing-fix-026699b906.md)
 - 2026-11-07 10:17 UTC — **Production release of the sector-standing fix (026699b906)** — ACCEPT — [78-production-release-of-the-sector-standing-fix-0266.md](replies/78-production-release-of-the-sector-standing-fix-0266.md)
+- 2026-11-07 10:49 UTC — **P9: the room is told when a company has no statements** — FIX — [79-p9-the-room-is-told-when-a-company-has-no-statemen.md](replies/79-p9-the-room-is-told-when-a-company-has-no-statemen.md)

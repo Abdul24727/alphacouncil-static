@@ -15,6 +15,7 @@ from pydantic import BaseModel
 from starlette.concurrency import run_in_threadpool
 
 from ..copilot.context import numbers_in
+from ..evidence import has_figure
 from ..universe import Ticker
 
 DATASET_CHARS = 12_000  # per dataset, after JSON encoding (the Copilot's PANEL_CHARS)
@@ -88,23 +89,40 @@ def no_statements_note(data: dict[str, Any]) -> str | None:
     packs had no P9, nothing said so, and 22 of the room's 23 invented figures were statement data
     the briefs place in P9 (`docs/eval/presenter-comparison/audit.md` §5). A live pack has a P9, but
     for 50 of 714 companies on 2026-11-07 it holds no statements. In each of these cases the room is
-    told plainly, here, rather than left to notice an absence."""
+    told plainly, here, rather than left to notice an absence.
+
+    Held means a reported number (review 79): a statement whose rows are all null holds nothing, and
+    a P9 whose only numbers are single quarters is told that, not that it has none."""
     p9 = data.get("P9")
+    statements = quarters = False
     if p9 is None:
         why = "the pack has no [P9]"
-    elif isinstance(p9, dict) and "error" in p9:
+    elif not isinstance(p9, dict) or "error" in p9:
         why = "[P9] holds an error, not statements"
-    elif isinstance(p9, dict) and not p9.get("statements"):
-        why = "[P9] holds none for this company"
     else:
+        statements = any(isinstance(s, dict) and has_figure(s.get("rows") or []) for s in p9.get("statements") or [])
+        q = p9.get("quarters")
+        quarters = isinstance(q, dict) and has_figure(q.get("rows") or [])
+        why = "[P9] holds no reported statement figure for this company"
+    if statements:
         return None
+    rule = (
+        " Every figure a seat quotes must be one these datasets show: a statement figure stated,"
+        " estimated or recalled from memory is invented, whatever tag it carries."
+    )
+    if quarters:
+        return (
+            "NO ANNUAL FINANCIAL STATEMENTS IN THIS PACK: [P9] holds single quarters only, and no"
+            " income statement, balance sheet or cash flow statement figure. The quarters in [P9]"
+            " `quarters` are reported: quote each with the quarter it covers. Where a brief sends a"
+            " seat to [P9]'s statements, the seat says plainly that the annual statements are not"
+            " available and argues from the datasets that are here." + rule
+        )
     return (
         f"NO FINANCIAL STATEMENTS IN THIS PACK ({why}): no income statement, balance sheet, cash"
         " flow statement or quarterly results for this company. Where a brief sends a seat to"
         " [P9]'s statements, the seat says plainly that they are not available and argues from the"
-        " datasets that are here. Every figure a seat quotes must be one these datasets show: a"
-        " statement figure stated, estimated or recalled from memory is invented, whatever tag it"
-        " carries."
+        " datasets that are here." + rule
     )
 
 

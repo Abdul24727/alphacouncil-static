@@ -922,12 +922,14 @@ def test_a_pack_without_statements_tells_the_room_so():
 
     # The no-statements fixture: what /evidence returns for a company with no statement rows.
     empty = dataset_of(Items([], []), ticker_key="4330_TADAWUL", sector="unknown", currency="SAR").model_dump()
+    # Review 79: statement rows with no number are not statements.
+    all_null = {**empty, "statements": [{"section": "Income Statement", "rows": [["Net Income"], ["Revenue", None]]}]}
     cases = {
         "the pack has no [P9]": None,
         "[P9] holds an error, not statements": {"error": "Market data unavailable"},
-        "[P9] holds none for this company": empty,
+        "[P9] holds no reported statement figure for this company": empty,
     }
-    for why, p9 in cases.items():
+    for why, p9 in [*cases.items(), ("[P9] holds no reported statement figure for this company", all_null)]:
         prompt = _p9_pack(p9).prompt()
         assert f"NO FINANCIAL STATEMENTS IN THIS PACK ({why})" in prompt, why
         assert prompt.index("NO FINANCIAL STATEMENTS IN THIS PACK") < prompt.index("[P1]"), "said before the data"
@@ -936,6 +938,18 @@ def test_a_pack_without_statements_tells_the_room_so():
     with_statements = {**empty, "limitations": [],
                        "statements": [{"section": "Income Statement", "rows": [["Revenue", 100.0]]}]}
     assert "NO FINANCIAL STATEMENTS" not in _p9_pack(with_statements).prompt()
+
+
+def test_a_pack_whose_only_figures_are_quarters_keeps_them():
+    """Review 79: single quarters are reported figures. A pack holding only those is told the annual
+    statements are absent and the quarters are there to quote, not that it has no quarterly results."""
+    p9 = {"statements": [], "quarters": {"section": "Income Statement", "columns": ["label", "2026-06"],
+                                         "rows": [["Net Income", 77.0]]}, "limitations": []}
+    prompt = _p9_pack(p9).prompt()
+    assert "NO ANNUAL FINANCIAL STATEMENTS IN THIS PACK" in prompt
+    assert "quote each with the quarter it covers" in prompt
+    assert "NO FINANCIAL STATEMENTS IN THIS PACK" not in prompt and "quarterly results for this company" not in prompt
+    assert prompt.index("NO ANNUAL FINANCIAL STATEMENTS") < prompt.index("[P1]")
 
 
 def test_the_comparison_packs_now_carry_the_no_statements_note():

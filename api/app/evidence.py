@@ -1509,30 +1509,48 @@ RANKING_NARROWED = (
 )
 
 
-# P9 for a company the source holds no statements for. Before this, such a company was told it had
-# "an income statement and a balance sheet" and "one window", which sent a seat whose brief says
-# "read [P9]'s income statement" looking for figures that do not exist (P9 in the 2026-11-07
+# P9 for a company the source holds no statement figures for. Before this, such a company was told
+# it had "an income statement and a balance sheet" and "one window", which sent a seat whose brief
+# says "read [P9]'s income statement" looking for figures that do not exist (P9 in the 2026-11-07
 # comparison audit). 50 of 714 companies on 2026-11-07, read through beta's /evidence.
+# "Holds" means a reported number, not a section name or a row: a row whose value is null is not a
+# figure (review 79).
 NO_STATEMENTS = (
-    "NO FINANCIAL STATEMENTS: the source holds no income statement, balance sheet or cash flow"
-    " statement for this company, so `statements` and `quarters` are empty and no calculation"
-    " here has a value. There is no reported revenue, earnings, asset, liability, equity, cash"
-    " flow, share count or quarterly result for this company in this dataset. Do not state,"
-    " estimate or recall one, and do not cite [P9] for one: say that the statements are not"
-    " available.")
+    "NO FINANCIAL STATEMENTS: the source holds no reported figure from an income statement,"
+    " balance sheet or cash flow statement for this company, and no quarterly result, so"
+    " `statements` and `quarters` carry no number and no calculation here has a value. There is no"
+    " reported revenue, earnings, asset, liability, equity, cash flow, share count or quarterly"
+    " result for this company in this dataset. Do not state, estimate or recall one, and do not"
+    " cite [P9] for one: say that the statements are not available.")
+# The same, for a company whose only reported figures are single quarters (review 79): those are
+# reported and stay usable, and must not be described as missing.
+QUARTERS_ONLY = (
+    "NO ANNUAL STATEMENTS: the source holds no reported figure from an income statement, balance"
+    " sheet or cash flow statement for this company. The single quarters in `quarters` are the"
+    " only reported figures here: quote each with the quarter it covers. There is no balance-sheet,"
+    " cash-flow or annual figure in this dataset; do not state, estimate or recall one, and do not"
+    " cite [P9] for one.")
 
 STATEMENT_NAMES = {"Income Statement": "an income statement", "Balance Sheet": "a balance sheet",
                    "Cash Flow Statement": "a cash flow statement"}
 
 
-def limitations_of(items: Items, sector: str, peer_class: str | None = None) -> list[str]:
+def has_figure(rows: list[list[Any]]) -> bool:
+    """Does any row carry a reported number after its label? A row of nulls is not a figure."""
+    return any(isinstance(v, (int, float)) and not isinstance(v, bool) for row in rows for v in row[1:])
+
+
+def limitations_of(items: Items, sector: str, peer_class: str | None = None,
+                   quarters: QuarterSeries | None = None) -> list[str]:
     """What this evidence cannot answer. Said plainly, because a seat that does not know a gap
-    exists will argue around it. Each statement the source does not hold is named as missing, and
-    none is described as present unless its rows are."""
+    exists will argue around it. A statement counts as held only where it has a reported number,
+    each one that does not is named as missing, and none is described as present without one.
+    `quarters` is the series this dataset carries, so its figures are never called absent."""
     out: list[str] = []
-    sections = [s for s in items.sections() if s in STATEMENT_NAMES]
+    reported = {r.section for r in items.rows if r.value is not None}
+    sections = [s for s in STATEMENT_NAMES if s in reported]
     if not sections:
-        out.append(NO_STATEMENTS)
+        out.append(QUARTERS_ONLY if quarters is not None and has_figure(quarters.rows) else NO_STATEMENTS)
     if sections and "Cash Flow Statement" not in sections:
         has_income = "Income Statement" in sections
         out.append(
@@ -1547,7 +1565,8 @@ def limitations_of(items: Items, sector: str, peer_class: str | None = None) -> 
             "NO INCOME STATEMENT: the source holds no income statement for this company. Its"
             " revenue, earnings, margins and earnings per share are not in this dataset; do not"
             " state, estimate or recall them.")
-    elif sections and len({r.fiscal_year for r in items.rows if r.section == "Income Statement"}) < 2:
+    elif sections and len({r.fiscal_year for r in items.rows
+                           if r.section == "Income Statement" and r.value is not None}) < 2:
         p = items.period("Income Statement")
         out.append(
             f"ONE INCOME-STATEMENT WINDOW: {window_label(p) or 'one window'} is available and the"
@@ -1618,6 +1637,7 @@ def dataset_of(
     price: float | None = None,
     budget: int = DATASET_BUDGET,
 ) -> EvidenceDataset:
+    quarters = bounded_quarters(items)
     return fit(EvidenceDataset(
         ticker=ticker_key,
         currency=currency,
@@ -1633,8 +1653,8 @@ def dataset_of(
                " the quarter-end columns added together.",
         sector=sector,
         statements=bounded_statements(items),
-        quarters=bounded_quarters(items),
+        quarters=quarters,
         calculations=calculations(items, sector=sector, dividends=dividends, price=price,
                                   currency=currency),
-        limitations=limitations_of(items, sector, peer_class),
+        limitations=limitations_of(items, sector, peer_class, quarters=quarters),
     ), budget)

@@ -346,6 +346,15 @@ Older entries: `changelog-archive.md`.
         Lint is unchanged.
       - **What the tests cannot show:** how a model behaves; that needs a paid run (the owner's go-ahead).
       - **A release** needs a fix-only branch and the owner's go-ahead.
+      - **Review 79 said FIX:**
+        - **The two cases:** a quarterly-only P9 was told "no quarterly result", and a section of all-null rows
+          counted as a statement.
+        - **The wording:** call it an instruction plus the existing unverified-figure marking, not guaranteed
+          suppression.
+        - **Fixed:** "held" now means a reported number. Quarters-only gets "NO ANNUAL STATEMENTS", with the
+          quarters kept, and all-null rows count as no statements.
+        - **The tests:** 9 P9 tests, 137 in the named files, and 604 passed, 10 skipped in the suite. Lint is
+          unchanged.
     - **PRODUCTION RELEASED 2026-11-07 on the owner's go-ahead** ("Yes, deploy to production"): alphacouncil.tech
       runs `026699b906ea3a513b4f2dbfc37672fa68ee9d42`, the same as beta
       (`docs/release-production-sector-standing-2026-11-07.md`).
