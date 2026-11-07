@@ -20,17 +20,22 @@ site (`docs/lawyer-pack-check-2026-11-07.md`). What changed:
 - the council tab, described as the site describes it: rule-based seats that vote bullish, neutral or bearish (§1);
 - the merchant information's address (§4);
 - what checkout already says about renewal, and the reminder the site sends (§6 (i));
-- which AI models are confirmed live and which are only the code's defaults, and that where the AI data is processed
-  was not verified (§5.2, (h));
+- the AI services (§5.2, (h)):
+  - **Set up on production:** the models, as its public status addresses report them.
+  - **The code's defaults:** what the code does unless production's settings say otherwise.
+  - **Not verified:** where the data is processed, and whether a request reaches an outside provider. No question
+    was asked to test that.
 - what the beta copy shares with production (§2);
 - two known issues in the imported legal texts: the contact page, and the Arabic merchant notice (§6 (e)).
 
 **Not checked again, for the owner to confirm before sending:**
 - the account and payment counts in §2, which are as of 2026-11-06;
 - the hosting provider and its country (§5.2);
-- the AI models the six seats and the Chair use on production (§5.2);
 - where the AI services process the data, if the owner can find out, for example from OpenRouter's account
-  (§5.2, (h)).
+  (§5.2, (h)). If it cannot be found out, the pack leaves it marked as not verified.
+
+*(Until review 91 this list also asked the owner to confirm the six seats' and the Chair's production models. They are
+now read from production's public status address, as configured: §5.2.)*
 
 ## 1. The site and who runs it
 
@@ -229,25 +234,29 @@ The dumps include the card-token ids.
   the room uses an externally hosted model, the member's question goes to the configured AI service, together with
   the company's data. *Corrected 2026-11-07*, to keep what production confirms apart from what the code does by
   default and what was not verified:
-  - **What production confirms** (its public status addresses, read 2026-11-07):
-    - **Both features use a model, not the stand-in.** The code can fall back to a labelled, rule-based stand-in
-      that sends nothing out. Both status addresses report `"stand_in": false`.
-    - **The Copilot's model:** `deepseek/deepseek-v3.2`.
-    - **The room:** in this code, "not the stand-in" means an OpenRouter key is set on production. The room then
-      sends its requests to the service the settings name.
-  - **What the code does by default** (`api/app/settings.py`; production's values were not read):
+  - **What production's configuration reports** (its two public status addresses, read signed out on 2026-11-07
+    at 20:52 UTC, `status-endpoints.txt`). They report how the service is set up, and they run no model:
+    - **Both features are set to use a model, not the stand-in.** The code can fall back to a labelled, rule-based
+      stand-in that sends nothing out. Both addresses report `"stand_in": false`.
+    - **The Copilot's configured model:** `deepseek/deepseek-v3.2`.
+    - **The room's configured models:** the six seats use `deepseek/deepseek-v4-pro`, and the Chair uses
+      `anthropic/claude-sonnet-5.5`.
+    - **What "not the stand-in" means for the room:** in this code, an OpenRouter key is set on production, and the
+      room is set to send its requests to the service the settings name.
+  - **Not tested:** no signed-in question was asked during this check. So no request was seen reaching an outside
+    provider, and the configured models above were not seen answering.
+  - **What the code does by default** (`api/app/settings.py`, and the request code in `api/app/copilot/` and
+    `api/app/debate/llm.py`). Production's values for these were not read:
     - **The Copilot** chooses its service with `COPILOT_PROVIDER=auto`. That means OpenRouter when an OpenRouter key
       is set, otherwise Anthropic when an Anthropic key is set, otherwise the stand-in. It can also be fixed to one of
       them.
     - **The room** uses the same OpenRouter client and key.
     - **The service's address** defaults to OpenRouter's, and any OpenAI-compatible endpoint can stand in for it.
-  - **The six seats and the Chair, not confirmed:** the code's defaults are a DeepSeek model for the seats and
-    Anthropic's Claude for the Chair. Production's own setting sits in a server file that also holds passwords and
-    keys, so it was not read. *The owner to confirm.*
   - **Where the data is processed:** it may be processed outside the Kingdom. Three things were not verified: which
     companies serve the requests, the countries where they process them, and production's routing settings.
   - **Who runs a request, when OpenRouter is used:** OpenRouter chooses which hosting company runs each request for
-    a model, so the company is not necessarily the model's maker.
+    a model, so the company is not necessarily the model's maker. What follows is what the settings and code
+    define, not what production was seen doing:
     - **The code's default:** it asks OpenRouter to prefer the fastest host.
     - **A setting:** it can name hosts for the Copilot to try first, with the others as fallbacks.
     - **Not read:** production's values for both, and which hosts served the site's requests.

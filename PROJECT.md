@@ -507,7 +507,19 @@ Older entries: `changelog-archive.md`.
               - **what production confirms:** both features report `"stand_in": false`, and the Copilot's model;
               - **what the code does by default:** `COPILOT_PROVIDER=auto`, and any OpenAI-compatible endpoint;
               - **what is unverified.**
-            - **The diff:** the full `git diff ac35f28..HEAD` is recorded, not only a path-filtered one.
+            - **The diff:** the full-range checks over `ac35f28..e521082` are recorded in `full-diff-check.txt`:
+              `git diff --check`, `--name-status`, `--stat`, and the complete diff of `PROJECT.md` only. *(Corrected
+              after review 91, which found that this line had said the full diff was recorded.)*
+          - **Review 91 said FIX; fixed.**
+            - **The room's status:** both public AI status addresses are now captured in full
+              (`status-endpoints.txt`). The room's `"stand_in": false` and its configured models are now on record:
+              the seats use `deepseek/deepseek-v4-pro` and the Chair uses `anthropic/claude-sonnet-5.5`. That takes one
+              fact off the owner's list, which is now three: the counts, the hosting provider, and where the AI data
+              is processed.
+            - **Configuration, not tested requests:** pack §5.2 now calls these configuration. No signed-in question
+              was asked, so no request was seen reaching a provider.
+            - **Routing:** it is attributed to the settings and code.
+            - **The diff:** this record's diff wording is corrected.
       - **Review 84 ACCEPTED the P9 fix.**
         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
           cases), and the patch rebuilds the four files byte for byte on production's bytes.

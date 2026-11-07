@@ -34,17 +34,21 @@ matches the live site, so that the owner can send it.
 1. **The counts in pack §2:** four accounts; one payment, the owner's own, refunded; no paying customer. They are as
    of 2026-11-06 and were not counted again.
 2. **The hosting provider and its country** (§5.2), which the pack leaves to the owner.
-3. **The AI models the six seats and the Chair use on production** (§5.2). Only the Copilot's was confirmed live.
-4. **Where the AI services process the data** (§5.2, (h)), if the owner can find out. Otherwise the pack leaves it
+3. **Where the AI services process the data** (§5.2, (h)), if the owner can find out. Otherwise the pack leaves it
    marked as not verified.
 
+*(A fourth fact, the seats' and the Chair's production models, is no longer the owner's to confirm. After review 91
+they were read from production's public `/api/v1/debate/status`, as configured: `status-endpoints.txt`.)*
+
 **Kinds of statement in the pack:**
-- **Confirmed live on 2026-11-07:** the addresses, page wording, plans, legal versions, the Copilot's model, the
+- **Configuration the AI status addresses report** (not a tested request): the Copilot's and the room's models,
+  and that neither is set to the stand-in.
+- **Confirmed live on 2026-11-07:** the addresses, page wording, plans, legal versions, the
   seats and the universe.
 - **Read from the released code:** the renewal reminder, the retries and grace period, the AI services' defaults
   and routing, and what the deploy script is written to copy at setup. These are marked as what the code does, not
   as what production is confirmed to do.
-- **For the owner to confirm:** the four facts above.
+- **For the owner to confirm:** the three facts above.
 
 ## How it was checked
 
@@ -120,10 +124,10 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
 
 **Other facts (pack §1, §5.2, and question (c)):**
 - **The universe:** 714 companies on seven exchanges.
-- **The Copilot's model:** `deepseek/deepseek-v3.2`, read from the live `/api/v1/copilot/status`.
-- **The room's models:** not confirmed. The code's defaults are DeepSeek for the six seats and Anthropic's Claude
-  for the Chair. Production's own setting is in a file that also holds credentials, so it was not read. See
-  discrepancy 5.
+- **The Copilot's model:** `deepseek/deepseek-v3.2`, as configured, read from the live `/api/v1/copilot/status`.
+- **The room's models:** as configured, read from the live `/api/v1/debate/status` after review 91: the seats use
+  `deepseek/deepseek-v4-pro` and the Chair uses `anthropic/claude-sonnet-5.5`. Until then this line said "not
+  confirmed", because the earlier capture had left out the `models` field. See discrepancy 5.
 - **`/api/capabilities`** still answers 404, as question (c) says.
 
 ## Discrepancies found, and how the pack now reads
@@ -161,11 +165,15 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
 5. **The AI models (pack §5.2).**
    - **The pack said:** "DeepSeek models for the Copilot and the six seats; Anthropic's Claude for the Chair", as fact.
    - **What is known:**
-     - **The Copilot:** confirmed live: `deepseek/deepseek-v3.2`, `"stand_in": false`.
-     - **The room:** confirmed live not on the stand-in (`/api/v1/debate/status`, `"stand_in": false`). In this code
-       that means an OpenRouter key is set and `COPILOT_PROVIDER` is not `standin` (`api/app/routers/debate.py`,
-       `uses_models`). *(Added after review 90.)*
-     - **The seats and the Chair:** only the code's defaults are known.
+     - **What production's status addresses report** (`status-endpoints.txt`, signed out, 20:52 UTC; review 91).
+       They are computed from production's settings and keys, and run no model:
+       - **The Copilot:** `"stand_in": false`, configured model `deepseek/deepseek-v3.2`.
+       - **The room:** `"stand_in": false`, configured models `{"advisors": "deepseek/deepseek-v4-pro", "chair":
+         "anthropic/claude-sonnet-5.5"}`, the same as the code's defaults.
+       - **What `"stand_in": false` means for the room:** in this code, an OpenRouter key is set and
+         `COPILOT_PROVIDER` is not `standin` (`api/app/routers/debate.py`, `uses_models` and `models_of`).
+     - **Not tested:** no signed-in question was asked. So no request was seen reaching a provider, and no
+       configured model was seen answering.
      - **Routing** (`api/app/settings.py` lines 34–54; `api/app/copilot/openai_compat.py`, `host_routing`):
        - **The service:** OpenRouter by the code's default. `COPILOT_PROVIDER=auto` picks OpenRouter when its key is
          set, otherwise Anthropic when its key is set, otherwise the stand-in. Any OpenAI-compatible endpoint can stand

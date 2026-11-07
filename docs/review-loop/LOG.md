@@ -92,3 +92,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-07 20:18 UTC — **Lawyer pack checked against the live site** — FIX — [88-lawyer-pack-checked-against-the-live-site.md](replies/88-lawyer-pack-checked-against-the-live-site.md)
 - 2026-11-07 20:32 UTC — **Lawyer pack: review 88's fixes** — FIX — [89-lawyer-pack-review-88-s-fixes.md](replies/89-lawyer-pack-review-88-s-fixes.md)
 - 2026-11-07 20:42 UTC — **Lawyer pack: review 89's fixes** — FIX — [90-lawyer-pack-review-89-s-fixes.md](replies/90-lawyer-pack-review-89-s-fixes.md)
+- 2026-11-07 20:52 UTC — **Lawyer pack: review 90's fixes** — FIX — [91-lawyer-pack-review-90-s-fixes.md](replies/91-lawyer-pack-review-90-s-fixes.md)
