@@ -56,9 +56,15 @@ requests only, and no model is called. Raw output with exit codes is in `beta-ch
 
 ### Check 7: the notes before and after, word for word
 
-The two sweeps read the same 714 tickers, every one answering 200. The statement data itself is the same in both:
-0 tickers differ in sections, rows, quarter rows or calculations with a value. So every change below is the release's,
-not the data's.
+The two sweeps read the same 714 tickers, every one answering 200.
+- **What was compared:** the statement data's shape is the same in both. 0 tickers differ in statement sections, row
+  count, quarter-row count or the number of calculations with a value. The compare script's line "statement data
+  itself differs" means exactly these four counts.
+- **What was not compared:** the figures themselves, and which years they fall in. The sweeps keep the notes, not the
+  values (review 86). So equal counts do not prove identical data.
+- **Why the changes are the release's:** every changed note below is one of the texts the fix writes, on a company in
+  the group that text is for, and no other note changed. The market data's `as_of` was 2026-11-07 in both sweeps, and
+  both ran between two nightly refreshes (17:22 to 17:46 UTC; the nightly runs near 01:50 UTC).
 
 - **Unchanged word for word:** 638 tickers: every company whose income statement covers two years or comes with
   quarters, 2222 among them, and every company with no note about its statements.
@@ -99,7 +105,11 @@ cd /c/AlphaCouncil-Staging/deploy-p9 && DEPLOY_BRANCH=release/p9-no-statements D
 ```
 
 - **Before:** Claude reruns `git diff --quiet c3bcff6 -- scripts/deploy-production.sh` and the same command with
-  `--check`. It passes now (check 9).
+  `--check`.
+  - **Review 86 accepted the beta release.** The preflight was rerun at 18:00 UTC as its DONE WHEN, and each step exits
+    0 (`production-preflight.txt`): the script equals `c3bcff6`'s, HEAD equals `DEPLOY_SHA`, beta runs `ea51de796c`,
+    production runs `026699b906`, and the `--check` would prune `5c18a3ae46` and keep `026699b906`.
+  - **It is run once more before the deploy itself.**
 - **Upload and build:** the same upload, to `/opt/alphacouncil-platform/prod/releases/ea51de796c`, then the build on
   the server. Production keeps serving `026699b906` until the switch.
 - **Switch:** `prod/current` points at the new release, and `acp-prod-api` and `acp-prod-web` restart.

@@ -1,0 +1,31 @@
+production preflight for ea51de796cf3bbdbea21a45f35682335eab5a2f8, run 2026-11-07 18:00:32 UTC (review 86's DONE WHEN; read-only, approves nothing)
+
+$ git -C /c/projects/alphacouncil-platform diff --quiet c3bcff6 -- scripts/deploy-production.sh
+[exit 0]
+
+$ git status -sb; git rev-parse HEAD   (in C:/AlphaCouncil-Staging/deploy-p9)
+## release/p9-no-statements
+ea51de796cf3bbdbea21a45f35682335eab5a2f8
+HEAD equals DEPLOY_SHA
+
+$ ssh root@alphacouncil.tech readlink, ls releases, systemctl is-active
+beta: /opt/alphacouncil-platform/releases/ea51de796c
+beta releases: ea51de796c 026699b906 b5655a5064
+beta services: active active
+prod: /opt/alphacouncil-platform/prod/releases/026699b906
+prod releases: 026699b906 b5655a5064 5c18a3ae46
+prod services: active active
+[exit 0]
+
+$ DEPLOY_BRANCH=release/p9-no-statements DEPLOY_SHA=ea51de796cf3bbdbea21a45f35682335eab5a2f8 bash /c/projects/alphacouncil-platform/scripts/deploy-production.sh --check
+checkout: C:/AlphaCouncil-Staging/deploy-p9
+branch:   release/p9-no-statements
+commit:   ea51de796cf3bbdbea21a45f35682335eab5a2f8 (equals DEPLOY_SHA)
+release:  /opt/alphacouncil-platform/prod/releases/ea51de796c
+beta now: ea51de796c
+prod now: /opt/alphacouncil-platform/prod/releases/026699b906
+prune:    5c18a3ae46 (a deploy keeps the 3 newest, ea51de796c first)
+nothing uploaded, built or switched (--check)
+rollback: releases/026699b906 (kept)
+preconditions met (this check approves nothing; deploying needs the owner's go-ahead)
+[exit 0]

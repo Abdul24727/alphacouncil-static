@@ -442,8 +442,14 @@ Older entries: `changelog-archive.md`.
             - **Unchanged:** 638 of 714.
             - **Changed:** 76, exactly the fix's groups: 48 with no statements, 25 with one year and no quarters, the
               2 with quarters only, and 232.
-            - **Nothing else moved:** no other note, and no statement data.
-          - **Next:** review of the beta release, then the production go-ahead put to the owner.
+            - **Nothing else moved:** no other note, and no statement section, row count, quarter-row count or
+              valued calculation. The figures themselves were not compared (review 86).
+          - **Review 86 ACCEPTED the beta release.**
+            - **Its one correction:** the record said the statement data was unchanged, but the sweeps compare only
+              its shape. The wording is narrowed.
+            - **Production's preflight, rerun 18:00 UTC:** every step exit 0, with HEAD equal to `DEPLOY_SHA`, prune
+              `5c18a3ae46` and rollback `026699b906` (`docs/screenshots/p9-beta-2026-11-07/production-preflight.txt`).
+            - **Put to the owner:** the production go-ahead for `ea51de796cf3bbdbea21a45f35682335eab5a2f8`.
       - **Review 84 ACCEPTED the P9 fix.**
         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
           cases), and the patch rebuilds the four files byte for byte on production's bytes.

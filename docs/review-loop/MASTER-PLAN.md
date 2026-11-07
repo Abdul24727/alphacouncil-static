@@ -116,7 +116,8 @@ Billing has been open since 2026-11-02.
     - **Beta released 2026-11-07** on the owner's go-ahead ("Yes, deploy to beta"). Beta runs `ea51de796c`, its files
       equal the commit, and P9's notes changed for exactly the 76 companies the fix names; the other 638 are unchanged
       word for word (`docs/release-beta-p9-2026-11-07.md`).
-    - **What waits:** production, on its own go-ahead from the owner.
+    - **Review 86 accepted the beta release,** and production's read-only preflight passes again. **What waits:**
+      production, on its own go-ahead from the owner.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 
