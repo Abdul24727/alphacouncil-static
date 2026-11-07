@@ -335,6 +335,18 @@ Older entries: `changelog-archive.md`.
       - **`RESULT.md`:** it now separates the invented figures (22 of 23 are P9 data) from the invented statements
         (notes and peer comparisons too).
       - **The new totals:** 209 against 55 wrong claims, and 47 against 2 inventions.
+    - **BETA RELEASED 2026-11-07 on the owner's go-ahead** ("Yes, deploy to beta"): beta runs
+      `026699b906ea3a513b4f2dbfc37672fa68ee9d42` (`docs/release-beta-sector-standing-2026-11-07.md`).
+      - **The run:** the preflight was rerun and passed, then the request's own command ran and exited 0. `2e44ee6fbf`
+        was pruned, and `b5655a5064` is kept as the rollback.
+      - **The checks** (`beta-checks.txt`, exit codes):
+        - every one of the 3,566 committed files on beta equals the commit by sha256, and the prototype is absent;
+        - the API and the pages answer;
+        - the en and ar captures at 1440 and 390 carry the new labels, with no sideways scroll;
+        - production's `--check` now exits 0.
+      - **The numbers:** three moved from the candidate's captures (28 → 27, 82 → 81, 47 → 45). That is the nightly's
+        01:48 UTC data refresh. The serving code is identical, and the page equals beta's API.
+      - **Production is unchanged** (`b5655a5064`) and needs its own go-ahead. Nothing was pushed.
     - **Review 75 said FIX:** the scripts checked the branch but not the commit, so a moved branch would have shipped
       whatever its HEAD was. Fixed on `rebuild` in `724e742`, `8e53826` and `c3bcff6`:
       - **The commit is pinned:** a branch other than `rebuild` needs `DEPLOY_SHA`, the full approved commit. A

@@ -44,7 +44,8 @@ Goal 4's Done-when (verbatim, short):
 
 ## What is left (`PROJECT.md` §9, "What is left, by who"), as of 2026-11-06
 
-**The site is published and live** at alphacouncil.tech, running release `b5655a5064` on beta and production.
+**The site is published and live** at alphacouncil.tech, running release `b5655a5064` on production. Beta has run
+`026699b906` (the sector-standing fix) since 2026-11-07.
 Billing has been open since 2026-11-02.
 
 **Done on 2026-11-06, on the owner's go-aheads:**
@@ -99,8 +100,9 @@ Billing has been open since 2026-11-02.
       of the prototype.
     - **Review 74 accepted it.**
     - **The deploy scripts now ship only an exact approved commit** (`DEPLOY_SHA`, review 75's fix).
-    - **What waits:** the beta release waits for the owner's go-ahead, and production is a separate go-ahead after
-      beta is checked (`docs/release-request-sector-standing-2026-11-07.md`).
+    - **Beta released 2026-11-07** on the owner's go-ahead ("Yes, deploy to beta"). Beta runs `026699b906`, its
+      files equal the commit, and its checks pass (`docs/release-beta-sector-standing-2026-11-07.md`).
+    - **What waits:** production, on its own go-ahead. Its `--check` now passes. It still runs `b5655a5064`.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

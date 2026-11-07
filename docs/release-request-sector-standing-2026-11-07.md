@@ -100,5 +100,7 @@ cd /c/AlphaCouncil-Staging/deploy-026699b && DEPLOY_BRANCH=release/sector-standi
 ssh root@alphacouncil.tech "ln -sfn /opt/alphacouncil-platform/releases/b5655a5064 /opt/alphacouncil-platform/current.new && mv -T /opt/alphacouncil-platform/current.new /opt/alphacouncil-platform/current && systemctl restart acp-api acp-web"
 ```
 
-**State now:** beta and production both run `b5655a5064`. **Nothing has been deployed or pushed**, pending the owner's
-go-ahead.
+**State when this request was made:** beta and production both ran `b5655a5064`. Nothing had been deployed or pushed.
+
+**Since then (2026-11-07):** the owner said "Yes, deploy to beta". Beta runs `026699b906`, and production still runs
+`b5655a5064`. The record and the production request are in `docs/release-beta-sector-standing-2026-11-07.md`.

@@ -1,0 +1,58 @@
+[
+ {
+  "locale": "en",
+  "viewport": {
+   "width": 390,
+   "height": 844
+  },
+  "file": "en-390-2222.png",
+  "innerWidth": 390,
+  "scrollWidth": 390,
+  "sideways": false,
+  "tooltip": "Sector standing, 0 to 100: higher is better on every measure. Where a lower value is better, such as debt to equity, a high standing means a low value.",
+  "standings": "Standing 27 | 27 | Standing 82 | 87 | 78 | 81 | Standing 74 | 57 | 69 | 96 | Standing 45 | 45",
+  "oldLabel": false
+ },
+ {
+  "locale": "en",
+  "viewport": {
+   "width": 1440,
+   "height": 1000
+  },
+  "file": "en-1440-2222.png",
+  "innerWidth": 1440,
+  "scrollWidth": 1440,
+  "sideways": false,
+  "tooltip": "Sector standing, 0 to 100: higher is better on every measure. Where a lower value is better, such as debt to equity, a high standing means a low value.",
+  "standings": "Standing 27 | 27 | Standing 82 | 87 | 78 | 81 | Standing 74 | 57 | 69 | 96 | Standing 45 | 45",
+  "oldLabel": false
+ },
+ {
+  "locale": "ar",
+  "viewport": {
+   "width": 390,
+   "height": 844
+  },
+  "file": "ar-390-2222.png",
+  "innerWidth": 390,
+  "scrollWidth": 390,
+  "sideways": false,
+  "tooltip": "الترتيب داخل القطاع، من 0 إلى 100: الأعلى أفضل في كل مقياس. حين تكون القيمة الأقل أفضل، كالدين إلى حقوق الملكية، يعني الترتيب المرتفع قيمة منخفضة.",
+  "standings": "الترتيب 27 | 27 | الترتيب 82 | 87 | 78 | 81 | الترتيب 74 | 57 | 69 | 96 | الترتيب 45 | 45",
+  "oldLabel": false
+ },
+ {
+  "locale": "ar",
+  "viewport": {
+   "width": 1440,
+   "height": 1000
+  },
+  "file": "ar-1440-2222.png",
+  "innerWidth": 1440,
+  "scrollWidth": 1440,
+  "sideways": false,
+  "tooltip": "الترتيب داخل القطاع، من 0 إلى 100: الأعلى أفضل في كل مقياس. حين تكون القيمة الأقل أفضل، كالدين إلى حقوق الملكية، يعني الترتيب المرتفع قيمة منخفضة.",
+  "standings": "الترتيب 27 | 27 | الترتيب 82 | 87 | 78 | 81 | الترتيب 74 | 57 | 69 | 96 | الترتيب 45 | 45",
+  "oldLabel": false
+ }
+]

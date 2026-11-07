@@ -1,0 +1,80 @@
+beta checks for 026699b906ea3a513b4f2dbfc37672fa68ee9d42, run 2026-11-07 09:08:18 UTC
+
+### 1. what beta and production run (read-only ssh)
+$ readlink, ls releases, systemctl is-active
+beta: /opt/alphacouncil-platform/releases/026699b906
+beta releases: 026699b906 b5655a5064 5c18a3ae46
+beta services: active active
+prod: /opt/alphacouncil-platform/prod/releases/b5655a5064
+prod releases: b5655a5064 5c18a3ae46 2e44ee6fbf
+prod services: active active
+[exit 0]
+
+### 2. the eight changed files on beta equal the commit (sha256)
+$ git cat-file -p $C:<f> | sha256sum  vs  sha256sum on the server
+c0940d093f122dbee89870dbe3237a6f38d256deca9d7f6fa57c4af69299f4bc  api/app/copilot/engine.py
+8706b2b0706793ecbdcd2889f1861fc2547b706fc22e2d0015b4b47c79d29764  api/app/copilot/tools.py
+690b41ab8923202efd92c5fad5b2b7b52a4fa2d3e40bd6bf92334b9267c694c8  api/app/debate/pack.py
+4a3875e2d138af6a5c9c460e6308c34bff9e1e5fdec4081dbc423ba5acc3f7f6  api/app/evidence.py
+afc05e6a2ad43b1013429a26cc61bd14106ebb5354fc7f9bd6104c3a99e8097d  api/tests/test_copilot.py
+79bf10e5a5b4df6553e70fd5a01035fecc84ae2c23d6b1872089f63f06bb2306  api/tests/test_debate.py
+4bdd5ba20a7d20d61b924476979e3afa2bcfecaed282d10885cee3870ec3a693  web/messages/ar.json
+ebdd7d4aa2362d54cf5aacb70d419ab6891c86dffb54c181d95a6ac0cf0b3ddd  web/messages/en.json
+[exit 0]
+
+### 3. every committed file on beta equals the commit
+$ sha256 of each non-symlink path in git ls-tree, both sides, then diff
+paths: 3566
+local hashes: 3566, server hashes: 3566
+[exit 0]
+
+### 4. none of the prototype on beta
+$ test -e presenter.py; grep debate_engine settings.py
+presenter.py absent
+debate_engine in settings.py: 0
+[exit 0]
+
+### 5. the code that serves the values is unchanged
+$ git diff --quiet b5655a5 $C -- api/app/routers web/src
+[exit 0]
+
+### 6. beta answers (through the tunnel)
+$ curl api health and six pages
+{"status":"ok","market_data":"ok","universe_size":714,"universe_as_of":"2026-11-07"}
+200  http://localhost:3201/home
+307  http://localhost:3201/en
+200  http://localhost:3201/ar
+307  http://localhost:3201/en/t/2222/financials
+200  http://localhost:3201/ar/t/2222/financials
+200  http://localhost:3201/methodology
+
+### 7. beta's API values for 2222 (what the panel shows, rounded)
+$ GET /v1/tickers/2222/fundamentals
+fundamentals as_of: 2026-11-07T01:48:43.094362+00:00
+valuation: score 27.3 [('ps', 27.3)]
+profitability: score 82.13333333333334 [('roic', 87.0), ('net_margin', 78.0), ('gross_margin', 81.4)]
+health: score 74.2 [('debt_equity', 57.0), ('current_ratio', 69.4), ('interest_coverage', 96.2)]
+income: score 45.2 [('payout', 45.2)]
+
+### 8. the candidate captures were taken before tonight's data refresh
+$ file times of the review-74 captures
+2026-11-07 00:50:47 UTC  sector-standing-2026-11-07/viewports.json
+2026-11-07 00:50:47 UTC  sector-standing-2026-11-07/en-1440-2222.png
+
+### 9. P9's notes on beta use the new wording
+$ GET /v1/tickers/2222/evidence, count phrases
+"sector standing": 1 | "sector percentile": 0
+
+### 10. production's preflight now (read-only; approves nothing)
+$ DEPLOY_BRANCH=release/sector-standing DEPLOY_SHA=$C deploy-production.sh --check
+checkout: C:/AlphaCouncil-Staging/deploy-026699b
+branch:   release/sector-standing
+commit:   026699b906ea3a513b4f2dbfc37672fa68ee9d42 (equals DEPLOY_SHA)
+release:  /opt/alphacouncil-platform/prod/releases/026699b906
+beta now: 026699b906
+prod now: /opt/alphacouncil-platform/prod/releases/b5655a5064
+prune:    2e44ee6fbf (a deploy keeps the 3 newest, 026699b906 first)
+nothing uploaded, built or switched (--check)
+rollback: releases/b5655a5064 (kept)
+preconditions met (this check approves nothing; deploying needs the owner's go-ahead)
+[exit 0]
