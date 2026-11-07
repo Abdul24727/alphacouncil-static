@@ -1,0 +1,902 @@
+diff --git a/PROJECT.md b/PROJECT.md
+index 1be2e04..0625daa 100644
+--- a/PROJECT.md
++++ b/PROJECT.md
+@@ -492,6 +492,34 @@ Older entries: `changelog-archive.md`.
+             - **The plan files:** their diff is shown to be status-only (`plan-diffs.txt`).
+
+             Give the lawyer two documents: the pack and `docs/legal-questions-2026-10-27.md`.
++          - **Review 89 said FIX: two claims went further than the evidence.** Both are corrected in the pack, the
++            check record and the P9 production record.
++            - **Where the AI data is processed:** the data may be processed outside the Kingdom. The serving
++              companies, their countries and production's routing settings were not verified.
++            - **Production's data settings:** the deploy script is written to copy beta's at first setup, but neither
++              that the copy ran nor that the settings match today is established.
++
++            A fourth fact is added for the owner to confirm: where the AI data is processed.
++            `docs/review-loop/MASTER-PLAN.md` is unchanged in this pass, as the review asked.
++          - **Review 90 said FIX.** Review 89's correction on production's data settings is accepted. Two points:
++            - **The AI wording was still too categorical.** The code can fall back to a stand-in, so pack §5.2 now
++              separates three things:
++              - **what production confirms:** both features report `"stand_in": false`, and the Copilot's model;
++              - **what the code does by default:** `COPILOT_PROVIDER=auto`, and any OpenAI-compatible endpoint;
++              - **what is unverified.**
++            - **The diff:** the full-range checks over `ac35f28..e521082` are recorded in `full-diff-check.txt`:
++              `git diff --check`, `--name-status`, `--stat`, and the complete diff of `PROJECT.md` only. *(Corrected
++              after review 91, which found that this line had said the full diff was recorded.)*
++          - **Review 91 said FIX; fixed.**
++            - **The room's status:** both public AI status addresses are now captured in full
++              (`status-endpoints.txt`). The room's `"stand_in": false` and its configured models are now on record:
++              the seats use `deepseek/deepseek-v4-pro` and the Chair uses `anthropic/claude-sonnet-5.5`. That takes one
++              fact off the owner's list, which is now three: the counts, the hosting provider, and where the AI data
++              is processed.
++            - **Configuration, not tested requests:** pack §5.2 now calls these configuration. No signed-in question
++              was asked, so no request was seen reaching a provider.
++            - **Routing:** it is attributed to the settings and code.
++            - **The diff:** this record's diff wording is corrected.
+       - **Review 84 ACCEPTED the P9 fix.**
+         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
+           cases), and the patch rebuilds the four files byte for byte on production's bytes.
+diff --git a/docs/lawyer-pack-check-2026-11-07.md b/docs/lawyer-pack-check-2026-11-07.md
+index ae6eb3a..d00f715 100644
+--- a/docs/lawyer-pack-check-2026-11-07.md
++++ b/docs/lawyer-pack-check-2026-11-07.md
+@@ -9,7 +9,10 @@ matches the live site, so that the owner can send it.
+   - one feature described too loosely;
+   - an outdated release;
+   - one question that understated what the site already does;
+-  - after review 88, two claims stated as confirmed that were not.
++  - claims stated as confirmed that were not, found by reviews 88 and 89:
++    - the room's AI models;
++    - where the AI data is processed and how it is routed;
++    - what beta shares with production.
+ - **What was added:** two facts the lawyer should have, and two known issues in the imported legal texts (review
+   88).
+ - **Not done:** nothing was sent, no legal text on the site was changed, and nothing was deployed, pushed or paid
+@@ -31,13 +34,20 @@ matches the live site, so that the owner can send it.
+ 1. **The counts in pack §2:** four accounts; one payment, the owner's own, refunded; no paying customer. They are as
+    of 2026-11-06 and were not counted again.
+ 2. **The hosting provider and its country** (§5.2), which the pack leaves to the owner.
+-3. **The AI models the six seats and the Chair use on production** (§5.2). Only the Copilot's was confirmed live.
++3. **Where the AI services process the data** (§5.2, (h)), if the owner can find out. Otherwise the pack leaves it
++   marked as not verified.
++
++*(A fourth fact, the seats' and the Chair's production models, is no longer the owner's to confirm. After review 91
++they were read from production's public `/api/v1/debate/status`, as configured: `status-endpoints.txt`.)*
+
+ **Kinds of statement in the pack:**
+-- **Confirmed live on 2026-11-07:** the addresses, page wording, plans, legal versions, the Copilot's model, the
++- **Configuration the AI status addresses report** (not a tested request): the Copilot's and the room's models,
++  and that neither is set to the stand-in.
++- **Confirmed live on 2026-11-07:** the addresses, page wording, plans, legal versions, the
+   seats and the universe.
+-- **Read from the released code:** the renewal reminder, the retries and grace period, and the routing request
+-  sent to OpenRouter. These are marked as what the code does.
++- **Read from the released code:** the renewal reminder, the retries and grace period, the AI services' defaults
++  and routing, and what the deploy script is written to copy at setup. These are marked as what the code does, not
++  as what production is confirmed to do.
+ - **For the owner to confirm:** the three facts above.
+
+ ## How it was checked
+@@ -114,10 +124,10 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
+
+ **Other facts (pack §1, §5.2, and question (c)):**
+ - **The universe:** 714 companies on seven exchanges.
+-- **The Copilot's model:** `deepseek/deepseek-v3.2`, read from the live `/api/v1/copilot/status`.
+-- **The room's models:** not confirmed. The code's defaults are DeepSeek for the six seats and Anthropic's Claude
+-  for the Chair. Production's own setting is in a file that also holds credentials, so it was not read. See
+-  discrepancy 5.
++- **The Copilot's model:** `deepseek/deepseek-v3.2`, as configured, read from the live `/api/v1/copilot/status`.
++- **The room's models:** as configured, read from the live `/api/v1/debate/status` after review 91: the seats use
++  `deepseek/deepseek-v4-pro` and the Chair uses `anthropic/claude-sonnet-5.5`. Until then this line said "not
++  confirmed", because the earlier capture had left out the `models` field. See discrepancy 5.
+ - **`/api/capabilities`** still answers 404, as question (c) says.
+
+ ## Discrepancies found, and how the pack now reads
+@@ -155,19 +165,35 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
+ 5. **The AI models (pack §5.2).**
+    - **The pack said:** "DeepSeek models for the Copilot and the six seats; Anthropic's Claude for the Chair", as fact.
+    - **What is known:**
+-     - **The Copilot:** confirmed live.
+-     - **The seats and the Chair:** only the code's defaults are known.
+-     - **Routing:** OpenRouter chooses the hosting company per request (`api/app/copilot/openai_compat.py`,
+-       `host_routing`).
+-       - **The code's default:** it asks OpenRouter to sort hosts by latency (`copilot_provider_sort = "latency"`).
+-       - **A setting:** `COPILOT_PROVIDER_ORDER` can name hosts for the Copilot to try first, with fallbacks.
+-       - **Not read:** production's values for both.
+-   - **Now:** §5.2 keeps the confirmed fact apart from the defaults, marks the seats' and the Chair's models for the
+-     owner to confirm, and says that the host is not necessarily the model's maker. This bears on question (h).
++     - **What production's status addresses report** (`status-endpoints.txt`, signed out, 20:52 UTC; review 91).
++       They are computed from production's settings and keys, and run no model:
++       - **The Copilot:** `"stand_in": false`, configured model `deepseek/deepseek-v3.2`.
++       - **The room:** `"stand_in": false`, configured models `{"advisors": "deepseek/deepseek-v4-pro", "chair":
++         "anthropic/claude-sonnet-5.5"}`, the same as the code's defaults.
++       - **What `"stand_in": false` means for the room:** in this code, an OpenRouter key is set and
++         `COPILOT_PROVIDER` is not `standin` (`api/app/routers/debate.py`, `uses_models` and `models_of`).
++     - **Not tested:** no signed-in question was asked. So no request was seen reaching a provider, and no
++       configured model was seen answering.
++     - **Routing** (`api/app/settings.py` lines 34–54; `api/app/copilot/openai_compat.py`, `host_routing`):
++       - **The service:** OpenRouter by the code's default. `COPILOT_PROVIDER=auto` picks OpenRouter when its key is
++         set, otherwise Anthropic when its key is set, otherwise the stand-in. Any OpenAI-compatible endpoint can stand
++         in for OpenRouter.
++       - **When OpenRouter is used:** it chooses the hosting company per request. The code's default asks it to sort
++         hosts by latency, and `COPILOT_PROVIDER_ORDER` can name hosts for the Copilot to try first, with fallbacks.
++       - **Not read:** production's values for all of these.
++     - **Where the data is processed:** not verified. Neither the serving companies nor their countries are known
++       from this check.
++   - **Now:** §5.2 and (h) keep the confirmed fact apart from the code's defaults. They mark the seats' and the
++     Chair's models for the owner to confirm. They say the data *may* be processed outside the Kingdom, and that the
++     companies, the countries and production's routing were not verified (review 89).
+ 6. **What beta shares with production (pack §2).**
+    - **The pack said:** beta "runs the same release on the same data".
+-   - **What is known:** the same release, yes. Production's market-data settings were copied from beta's at setup
+-     (`scripts/deploy-production.sh`, lines 80–83). That they still match was not checked again.
++   - **What is known:**
++     - **The release:** the same.
++     - **The setup:** the deploy script is written to copy beta's market-data settings when it first creates
++       production's settings file, and to leave an existing file alone (`scripts/deploy-production.sh`, lines 79–99).
++     - **Not established** (review 89): that the copy ran, since no output of that first setup is on record, and that
++       the settings match today.
+    - **Now:** §2 says exactly that.
+    - **Also corrected:** the same claim in `docs/release-production-p9-2026-11-07.md`, which now says production's
+      P9 notes are not established to equal beta's.
+diff --git a/docs/lawyer-review-pack-2026-11-06.md b/docs/lawyer-review-pack-2026-11-06.md
+index 0ee3c58..abbb726 100644
+--- a/docs/lawyer-review-pack-2026-11-06.md
++++ b/docs/lawyer-review-pack-2026-11-06.md
+@@ -20,14 +20,22 @@ site (`docs/lawyer-pack-check-2026-11-07.md`). What changed:
+ - the council tab, described as the site describes it: rule-based seats that vote bullish, neutral or bearish (§1);
+ - the merchant information's address (§4);
+ - what checkout already says about renewal, and the reminder the site sends (§6 (i));
+-- which AI models are confirmed live and which are only the code's defaults (§5.2);
++- the AI services (§5.2, (h)):
++  - **Set up on production:** the models, as its public status addresses report them.
++  - **The code's defaults:** what the code does unless production's settings say otherwise.
++  - **Not verified:** where the data is processed, and whether a request reaches an outside provider. No question
++    was asked to test that.
+ - what the beta copy shares with production (§2);
+ - two known issues in the imported legal texts: the contact page, and the Arabic merchant notice (§6 (e)).
+
+ **Not checked again, for the owner to confirm before sending:**
+ - the account and payment counts in §2, which are as of 2026-11-06;
+ - the hosting provider and its country (§5.2);
+-- the AI models the six seats and the Chair use on production (§5.2).
++- where the AI services process the data, if the owner can find out, for example from OpenRouter's account
++  (§5.2, (h)). If it cannot be found out, the pack leaves it marked as not verified.
++
++*(Until review 91 this list also asked the owner to confirm the six seats' and the Chair's production models. They are
++now read from production's public status address, as configured: §5.2.)*
+
+ ## 1. The site and who runs it
+
+@@ -93,10 +101,10 @@ will be shown before payment."
+ - **What a signed-out check cannot see on production:** the Pro-only financial statements. They were checked on
+   the beta copy: all 714 companies, with every statement line in English on English pages
+   ([beta's checks](screenshots/release-b5655a5064/beta-checks.txt)).
+-  - **Why beta stands in:** it runs the same release. Production was also set up to read the same market-data
+-    files: its settings were copied from beta's at setup.
+-  - **The limit:** that the settings still match was not checked again on 2026-11-07. *(Until 2026-11-07 this said
+-    "on the same data".)*
++  - **Why beta stands in:** it runs the same release. The deploy script is also written to copy beta's market-data
++    settings when it first creates production's settings file.
++  - **The limit:** two things are not established: that the copy ran, and that the two tiers' settings match today.
++    *(Until 2026-11-07 this said "on the same data".)*
+ - **Open items the lawyer may see** (one was resolved the same day):
+   - ~~**The AI features' credit.** The model account that pays for the Copilot and the advisors' room was at
+     $7.83 on 2026-11-06, below the site's own $10 alert. If it runs out before the visit, those two features
+@@ -222,16 +230,33 @@ The dumps include the card-token ids.
+   never sees the card number.
+ - **MailerSend:** sends the site's emails (verification, password reset, billing).
+ - **Google:** only for a member who chooses "Sign in with Google".
+-- **OpenRouter, and the AI model providers it routes to:** the member's Copilot and room questions,
+-  together with the company's data, go to language models outside the Kingdom. *Corrected 2026-11-07*, to keep
+-  what was confirmed apart from what was not:
+-  - **The Copilot, confirmed live:** a DeepSeek model, `deepseek/deepseek-v3.2`. The site's own public status
+-    address reported it on 2026-11-07.
+-  - **The six seats and the Chair, not confirmed:** the code's defaults are a DeepSeek model for the seats and
+-    Anthropic's Claude for the Chair. Production's own setting sits in a server file that also holds passwords and
+-    keys, so it was not read. *The owner to confirm.*
+-  - **Who runs a request:** OpenRouter chooses which hosting company runs each request for a model, so the
+-    company is not necessarily the model's maker.
++- **The AI services (OpenRouter by the code's default, and the model providers behind it):** when the Copilot or
++  the room uses an externally hosted model, the member's question goes to the configured AI service, together with
++  the company's data. *Corrected 2026-11-07*, to keep what production confirms apart from what the code does by
++  default and what was not verified:
++  - **What production's configuration reports** (its two public status addresses, read signed out on 2026-11-07
++    at 20:52 UTC, `status-endpoints.txt`). They report how the service is set up, and they run no model:
++    - **Both features are set to use a model, not the stand-in.** The code can fall back to a labelled, rule-based
++      stand-in that sends nothing out. Both addresses report `"stand_in": false`.
++    - **The Copilot's configured model:** `deepseek/deepseek-v3.2`.
++    - **The room's configured models:** the six seats use `deepseek/deepseek-v4-pro`, and the Chair uses
++      `anthropic/claude-sonnet-5.5`.
++    - **What "not the stand-in" means for the room:** in this code, an OpenRouter key is set on production, and the
++      room is set to send its requests to the service the settings name.
++  - **Not tested:** no signed-in question was asked during this check. So no request was seen reaching an outside
++    provider, and the configured models above were not seen answering.
++  - **What the code does by default** (`api/app/settings.py`, and the request code in `api/app/copilot/` and
++    `api/app/debate/llm.py`). Production's values for these were not read:
++    - **The Copilot** chooses its service with `COPILOT_PROVIDER=auto`. That means OpenRouter when an OpenRouter key
++      is set, otherwise Anthropic when an Anthropic key is set, otherwise the stand-in. It can also be fixed to one of
++      them.
++    - **The room** uses the same OpenRouter client and key.
++    - **The service's address** defaults to OpenRouter's, and any OpenAI-compatible endpoint can stand in for it.
++  - **Where the data is processed:** it may be processed outside the Kingdom. Three things were not verified: which
++    companies serve the requests, the countries where they process them, and production's routing settings.
++  - **Who runs a request, when OpenRouter is used:** OpenRouter chooses which hosting company runs each request for
++    a model, so the company is not necessarily the model's maker. What follows is what the settings and code
++    define, not what production was seen doing:
+     - **The code's default:** it asks OpenRouter to prefer the fastest host.
+     - **A setting:** it can name hosts for the Copilot to try first, with the others as fallbacks.
+     - **Not read:** production's values for both, and which hosts served the site's requests.
+@@ -311,8 +336,9 @@ page describes this as collected "from public market sources", and does not name
+ 2. Does an "impact" read on a listed company's news come closer to advice than the rest of the site
+    (see (b))?
+
+-**(h) Sending data outside the Kingdom.** Questions go to AI providers abroad, and emails through
+-MailerSend (§5.2). Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow
++**(h) Sending data outside the Kingdom.** Questions go to outside AI providers, which may process them
++outside the Kingdom, and emails go through MailerSend (§5.2). *Qualified 2026-11-07:* where those companies process
++the data was not verified. Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow
+ or the contracts with those providers need for that?
+
+ **(i) Monthly renewal.** Pro renews automatically on the saved card. What must checkout say about it,
+diff --git a/docs/release-production-p9-2026-11-07.md b/docs/release-production-p9-2026-11-07.md
+index 16545a0..a54a71d 100644
+--- a/docs/release-production-p9-2026-11-07.md
++++ b/docs/release-production-p9-2026-11-07.md
+@@ -93,12 +93,13 @@ read over read-only ssh. No model is called.
+     started from them (check 2).
+   - **The comparison:** beta runs the same commit, and its notes were compared word for word for all 714 tickers before
+     and after (`docs/release-beta-p9-2026-11-07.md`, check 7).
+-  - **The data:** production's accounts database is its own, but its market-data settings (`EVIDENCE_DB` and the rest)
+-    were copied from beta's when production was set up (`scripts/deploy-production.sh`, lines 80–83;
+-    `docs/production.md`, "Market data: the same files, read-only"). So both tiers were set up to read the same
+-    statement data, and with the same code they would write the same notes. That the settings still match today
+-    was not checked again: they sit in a file with credentials. So it is not established that production's notes
+-    equal beta's (review 88). *(Corrected after review 87: this line said production "has its own database"
++  - **The data:** production's accounts database is its own.
++    - **Its market-data settings** (`EVIDENCE_DB` and the rest): the deploy script is written to copy beta's when it
++      first creates production's settings file, and leaves an existing file alone (`scripts/deploy-production.sh`,
++      lines 79–99). `docs/production.md` records "the same files, read-only".
++    - **Not established:** that the copy ran, since no output of that first setup is on record, and that the two
++      tiers' settings match today, since they sit in a file with credentials.
++    - **So:** it is not established that production's notes equal beta's (reviews 88 and 89). *(Corrected after review 87: this line said production "has its own database"
+     for its notes, which is true only of its accounts.)*
+ - **The room's and the Copilot's behaviour:** whether the advisors now stop inventing statement figures can only be
+   measured in a paid session, and none was run.
+diff --git a/docs/review-loop/LOG.md b/docs/review-loop/LOG.md
+index 8f5a001..26fbd98 100644
+--- a/docs/review-loop/LOG.md
++++ b/docs/review-loop/LOG.md
+@@ -90,3 +90,6 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
+ - 2026-11-07 17:59 UTC — **P9 fix released to beta (ea51de796c)** — ACCEPT — [86-p9-fix-released-to-beta-ea51de796c.md](replies/86-p9-fix-released-to-beta-ea51de796c.md)
+ - 2026-11-07 19:59 UTC — **P9 fix released to production (ea51de796c)** — ACCEPT — [87-p9-fix-released-to-production-ea51de796c.md](replies/87-p9-fix-released-to-production-ea51de796c.md)
+ - 2026-11-07 20:18 UTC — **Lawyer pack checked against the live site** — FIX — [88-lawyer-pack-checked-against-the-live-site.md](replies/88-lawyer-pack-checked-against-the-live-site.md)
++- 2026-11-07 20:32 UTC — **Lawyer pack: review 88's fixes** — FIX — [89-lawyer-pack-review-88-s-fixes.md](replies/89-lawyer-pack-review-88-s-fixes.md)
++- 2026-11-07 20:42 UTC — **Lawyer pack: review 89's fixes** — FIX — [90-lawyer-pack-review-89-s-fixes.md](replies/90-lawyer-pack-review-89-s-fixes.md)
++- 2026-11-07 20:52 UTC — **Lawyer pack: review 90's fixes** — FIX — [91-lawyer-pack-review-90-s-fixes.md](replies/91-lawyer-pack-review-90-s-fixes.md)
+diff --git a/docs/review-loop/outputs/84-lawyer-pack-review-89-fixes.md b/docs/review-loop/outputs/84-lawyer-pack-review-89-fixes.md
+new file mode 100644
+index 0000000..f586aa4
+--- /dev/null
++++ b/docs/review-loop/outputs/84-lawyer-pack-review-89-fixes.md
+@@ -0,0 +1,49 @@
++# Output 84: review 89's two points, fixed (the lawyer pack and its records)
++
++**Review 89 said FIX**, with two claims that went further than the evidence. Its step: one documentation-only
++correction in the pack, the check record and the P9 production record. Nothing to be sent, released, pushed or
++paid for.
++
++**What was done** (committed on `rebuild` as `48c6693`). The exact diff from the reviewed `ac35f28` is
++`docs/screenshots/lawyer-pack-check-2026-11-07/review-89-diff.txt`.
++
++1. **Where the AI data is processed, and how it is routed** (pack §5.2 and question (h)).
++   - **Now:** the data "may be processed outside the Kingdom". Three things are stated as not verified: which companies
++     serve the requests, the countries where they process them, and production's routing settings.
++   - **The code's defaults, marked as defaults** (`api/app/settings.py` lines 34–54): OpenRouter, with a latency sort,
++     and an optional host order for the Copilot. The Copilot can be set to Anthropic directly, and any compatible
++     service can stand in for OpenRouter.
++   - **Confirmed live:** only the Copilot's model id.
++   - **For the owner:** where the data is processed is added as a fourth fact to confirm, if they can find out.
++2. **Production's data settings** (pack §2, the check record's discrepancy 6, the P9 production record).
++   - **Now:** the deploy script is written to copy beta's market-data settings when it first creates production's
++     settings file, and to leave an existing file alone (`scripts/deploy-production.sh` lines 79–99).
++   - **Not established:** that the copy ran (no output of that setup is on record), and that the settings match today.
++   - **Kept:** the P9 record still says production's notes are not established to equal beta's.
++
++**Kept unchanged, as review 89 asked:**
++- the contact-page issue;
++- the Arabic privacy-email issue;
++- the model defaults;
++- release `ea51de796c`;
++- the renewal facts.
++
++**Checks:**
++- **`git diff --check`:** clean.
++- **Files changed:** only documents under `docs/` and `PROJECT.md`. No application code and no server files.
++- **The plan files:**
++  - **`docs/review-loop/MASTER-PLAN.md`:** unchanged in this pass.
++  - **`PROJECT.md`:** one new status bullet, recording review 89 and its fix. It touches no objective, rule, approval or
++    decision, and its diff is in `review-89-diff.txt`. The owner's standing instruction is to write each step's
++    outcome to the plan file as it finishes, so that bullet is required.
++
++**Attachments:** this prompt and two zips.
++- **`review-84-docs.zip`** (from `rebuild` at `48c6693`, by repository path):
++  - the pack, the check record and the P9 production record;
++  - `review-89-diff.txt`;
++  - `scripts/deploy-production.sh`.
++- **`review-84-code.zip`** (from `ea51de796c`): `api/app/settings.py` and `api/app/copilot/openai_compat.py`.
++
++**The question for the review:**
++- Are both points fixed, and is the pack ready for the owner to send once they confirm the four marked facts?
++- Which step is next on the plan?
+diff --git a/docs/review-loop/outputs/85-lawyer-pack-review-90-fixes.md b/docs/review-loop/outputs/85-lawyer-pack-review-90-fixes.md
+new file mode 100644
+index 0000000..893de73
+--- /dev/null
++++ b/docs/review-loop/outputs/85-lawyer-pack-review-90-fixes.md
+@@ -0,0 +1,58 @@
++# Output 85: review 90's two points, fixed (the lawyer pack's AI wording, and the full diff)
++
++**Review 90 said FIX.** It accepted the production-data-settings correction, and asked for two things:
++1. AI wording in pack §5.2 that separates production's behaviour, the code's defaults and unverified processing.
++2. The full `git diff --check` and `--name-status` from `ac35f28`.
++
++**1. Pack §5.2, now in three parts** (commit `e521082`):
++- **What production confirms** (`api-facts.txt`, read from the live site 2026-11-07):
++  - **Not the stand-in:** both `/api/v1/copilot/status` and `/api/v1/debate/status` report `"stand_in": false`, so
++    neither feature runs on the labelled rule-based stand-in.
++  - **The Copilot's model:** `deepseek/deepseek-v3.2`.
++  - **The room:** by `api/app/routers/debate.py` `uses_models`, `stand_in: false` means an OpenRouter key is set on
++    production and `COPILOT_PROVIDER` is not `standin`.
++- **What the code does by default** (`api/app/settings.py`):
++  - **The Copilot's service:** `COPILOT_PROVIDER=auto` picks OpenRouter when its key is set, otherwise Anthropic, otherwise
++    the stand-in.
++  - **The room:** it uses the same OpenRouter client and key.
++  - **The address:** `openrouter_base_url` defaults to OpenRouter's, and "any OpenAI-compatible endpoint" can stand in.
++  - **Host routing:** OpenRouter picks the host, with a latency sort by default and an optional host order for the
++    Copilot.
++- **Not verified:**
++  - the seats' and the Chair's production models;
++  - the serving companies;
++  - the processing countries;
++  - production's routing settings.
++- **The opening sentence:** it now reads "when the Copilot or the room uses an externally hosted model, the member's
++  question goes to the configured AI service, together with the company's data".
++- **Question (h):** unchanged in substance, as the review said.
++
++**2. The full-range checks** (`docs/screenshots/lawyer-pack-check-2026-11-07/full-diff-check.txt`, range
++`ac35f28..e521082`):
++- **`git diff --check ac35f28..e521082`:** exit 0.
++- **`git diff --name-status`:** 11 paths, all under `docs/` or `PROJECT.md`.
++  - **Modified:** the pack, the check record, the P9 production record, `LOG.md` and `PROJECT.md`.
++  - **Added:** two browser prompts, output 84, replies 89 and 90, and `review-89-diff.txt`.
++- **Not in the range:** no file under `api/`, `web/`, `scripts/` or `deploy/`, and not `docs/review-loop/MASTER-PLAN.md`.
++- **`PROJECT.md` in the range:** 16 added lines and 0 removed. They are the status bullets recording reviews 89 and 90,
++  shown in full in the file.
++
++**Kept intact:**
++- review 89's corrections, including the production market-data limitation;
++- the contact-page and Arabic privacy-email issues;
++- release `ea51de796c`;
++- the renewal facts;
++- the four owner facts;
++- `docs/legal-questions-2026-10-27.md` as the companion document.
++
++**Attachments:** this prompt and two zips.
++- **`review-85-docs.zip`** (from `rebuild` at the commit of this output, by repository path):
++  - the pack, the check record and the P9 production record;
++  - `full-diff-check.txt` and `api-facts.txt`;
++  - `PROJECT.md` and `docs/review-loop/MASTER-PLAN.md`, in full.
++- **`review-85-code.zip`** (from `ea51de796c`): `api/app/settings.py`, `api/app/routers/debate.py` and
++  `api/app/routers/copilot.py`.
++
++**The question for the review:**
++- Is the pack now accurate and ready for the owner to confirm the four facts and send?
++- Which step is next on the plan?
+diff --git a/docs/review-loop/replies/89-lawyer-pack-review-88-s-fixes.md b/docs/review-loop/replies/89-lawyer-pack-review-88-s-fixes.md
+new file mode 100644
+index 0000000..4e1479b
+--- /dev/null
++++ b/docs/review-loop/replies/89-lawyer-pack-review-88-s-fixes.md
+@@ -0,0 +1,70 @@
++# Review 89: Lawyer pack: review 88's fixes
++
++2026-11-07 20:32 UTC. Reviewer: ChatGPT on chatgpt.com in the owner's browser, model GPT-6, thinking effort High (chatgpt.com), with the attached files.
++Output reviewed: `83-lawyer-pack-review-88-fixes.md`.
++
++VERDICT: FIX
++
++ISSUES:
++
++Review 88's four requested corrections are substantially present. I checked the lawyer pack, check record, contact evidence, merchant JSON files, routing code and plan diff. The contact-page and Arabic privacy-email discrepancies are correctly documented, and the plan diff contains status updates rather than changes to the objective, approvals or settled decisions.
++
++Two remaining factual qualifications should be fixed before the owner sends the pack.
++
++1. AI processing location and routing are still presented as confirmed facts.
++
++File: docs/lawyer-review-pack-2026-11-06.md, lines 225–237 and 314–316.
++
++The pack states that questions and company data go to language models outside Saudi Arabia and that OpenRouter chooses the serving host.
++
++Checked: api/app/settings.py, lines 34–54, permits different providers and OpenAI-compatible endpoints. api/app/copilot/openai_compat.py, lines 113–126, applies OpenRouter routing settings conditionally. The live API evidence confirms the Copilot's configured model, not its actual serving host or processing jurisdiction.
++
++Fix: Distinguish the released code's default routing from production-confirmed routing. State that data may be processed outside Saudi Arabia, but the actual serving providers, processing countries and production routing settings were not verified. Qualify question (h) accordingly. Do not assert a particular jurisdiction without evidence.
++
++2. The historical beta-to-production data-copy claim exceeds the attached proof.
++
++Files: docs/lawyer-review-pack-2026-11-06.md, lines 93–99; docs/lawyer-pack-check-2026-11-07.md, lines 167–173; docs/release-production-p9-2026-11-07.md, lines 96–101.
++
++Checked: scripts/deploy-production.sh, lines 79–99, copies market-data settings from staging only when the production environment file does not already exist.
++
++The script demonstrates the intended first-setup behavior, but the attachments do not include the original setup execution evidence or current production environment values.
++
++Fix: Say that the deployment script is configured to copy staging's market-data settings when first creating production's environment file. Whether that copy executed, and whether the production and beta settings currently match, are not established by this evidence. Preserve the existing qualification that identical P9 notes on production remain unverified.
++
++No new site feature, legal document or production change is needed for either correction. The inherited billing and signed-in behavior claims rely partly on files not included in these bundles; this review does not independently reverify them.
++
++DRIFT:
++
++No scope drift. The work remains within the original launch plan's Step 7 legal handoff. The established room design, live release ea51de796c, legal texts, approval gates and owner's decisions remain unchanged.
++
++NEXT STEP:
++
++On branch rebuild, perform one final documentation-only factual correction to the two claims above in the lawyer pack, the check record and the P9 production record.
++
++This is the highest-value pre-approved step because it removes the remaining unsupported statements from material the lawyer will use to assess data protection and regulatory obligations. Do not change the site's legal texts, deploy, push, send documents or make paid calls.
++
++DONE WHEN:
++
++Claude provides the precise documentation diff showing both corrections and confirms:
++
++git diff --check passes.
++
++git diff -- PROJECT.md docs/review-loop/MASTER-PLAN.md shows no new changes to the master plan.
++
++The lawyer pack no longer asserts unverified production routing, processing jurisdiction or executed environment-copy behavior as fact.
++
++The existing contact-page issue, Arabic privacy-email issue, model defaults, production release and renewal facts remain intact.
++
++No application code or production files changed.
++
++OWNER ITEMS:
++
++Confirm the lawyer pack's outstanding facts: the account/payment counts, production hosting provider and country, and the actual production models used by the six advisors and Chair. Confirm AI routing and processing jurisdiction where evidence is available; otherwise keep them explicitly unverified for the lawyer.
++
++Send the two documents to the lawyer: docs/lawyer-review-pack-2026-11-06.md and docs/legal-questions-2026-10-27.md, after the final corrections and confirmations. Provide beta access privately. The lawyer must review the running site and address questions (a)–(i).
++
++Record the lawyer's written advice in docs/legal-advisors-<date>.md and authorize any resulting changes that require an owner checkpoint.
++
++Step 18, item 4: await and verify a real customer's first renewal. The optional duplicate Moyasar webhook and server hardening remain owner-controlled but are not prerequisites for sending the lawyer pack.
++
++Response complete
+diff --git a/docs/review-loop/replies/90-lawyer-pack-review-89-s-fixes.md b/docs/review-loop/replies/90-lawyer-pack-review-89-s-fixes.md
+new file mode 100644
+index 0000000..f1eea10
+--- /dev/null
++++ b/docs/review-loop/replies/90-lawyer-pack-review-89-s-fixes.md
+@@ -0,0 +1,72 @@
++# Review 90: Lawyer pack: review 89's fixes
++
++2026-11-07 20:42 UTC. Reviewer: ChatGPT on chatgpt.com in the owner's browser, model GPT-6, thinking effort High (chatgpt.com), with the attached files.
++Output reviewed: `84-lawyer-pack-review-89-fixes.md`.
++
++VERDICT: FIX
++
++ISSUES:
++
++docs/lawyer-review-pack-2026-11-06.md, lines 228–235 — The AI data-transfer wording remains too categorical.
++
++The pack says Copilot and advisors' room questions, together with company data, go to externally operated language models. However, api/app/settings.py, lines 34–40 and 65–67, establishes that the Copilot can fall back to a local rule-based stand-in and that the advisors' room uses a stand-in without an OpenRouter API key.
++
++Production's actual provider configuration has not been verified. Therefore, the pack cannot establish that every such request reaches an external provider.
++
++Fix: Say that when externally hosted AI services are used, questions and relevant company data are transmitted to the configured provider. Explain that COPILOT_PROVIDER=auto prefers OpenRouter when its key is available, otherwise Anthropic when configured, otherwise the stand-in. Replace “any service that accepts OpenRouter's requests” with the code's precise term, “any OpenAI-compatible endpoint.”
++
++Preserve the existing qualifications that the actual serving companies, processing countries and production routing remain unverified.
++
++Question (h) already uses appropriately conditional wording and need not change substantively.
++
++review-89-diff.txt, lines 1–23 — Repository-wide verification is incomplete.
++
++The supplied diff supports Claude's claim that the shown PROJECT.md change is a status update. However, it is a path-filtered diff. Neither the complete PROJECT.md, docs/review-loop/MASTER-PLAN.md, nor an unfiltered repository diff is attached.
++
++Consequently, the claims that no application or server files changed, that the master plan remained unchanged, and that the complete repository diff passes git diff --check cannot be independently established from these attachments.
++
++Fix: Claude should run the full commit comparison locally and record its results. This requires no additional development.
++
++Confirmed: Review 89's second substantive correction is valid. scripts/deploy-production.sh, lines 79–99, confirms that the initial setup copies selected settings only if production's api.env does not already exist. The pack, check record and P9 production record correctly distinguish that script behavior from unverified historical execution and current configuration.
++
++DRIFT:
++
++The output stays within the master plan. The work is documentation-only, preserves release ea51de796c, does not reopen the settled advisors' room decision, and introduces no features, paid calls or deployments.
++
++NEXT STEP:
++
++On branch rebuild, make one final documentation-only correction to the AI provider wording in docs/lawyer-review-pack-2026-11-06.md and its check record. Verify the complete diff against ac35f28, then present the existing two-document lawyer handoff to the owner for factual confirmation.
++
++This is the highest-value pre-approved step because it removes the remaining unsupported legal-pack assertion and directly unblocks Goal 4, Step 7, without altering production.
++
++DONE WHEN:
++
++Claude provides evidence that:
++
++Pack §5.2 distinguishes actual production behavior, code defaults and unverified third-party processing.
++
++The two review-89 corrections remain intact, including the production market-data configuration limitation.
++
++These commands pass:
++
++Bash
++git diff --check ac35f28..HEAD
++git diff --name-status ac35f28..HEAD
++
++The complete diff shows only the approved documentation and status updates, with no application, deployment-script or master-plan rule changes.
++
++The final pack identifies the four outstanding owner facts and continues to identify docs/legal-questions-2026-10-27.md as its companion document.
++
++No release, push, paid session or external sending is required.
++
++OWNER ITEMS:
++
++Confirm the four marked facts: account/payment counts; hosting provider and country; production models for the six advisors and Chair; and actual AI processing locations where ascertainable. Any location that cannot be established must remain explicitly unverified, not guessed.
++
++Start Step 7: once the documentation correction is verified, send the updated docs/lawyer-review-pack-2026-11-06.md and docs/legal-questions-2026-10-27.md to the lawyer. Provide the live-site address and beta access privately where needed.
++
++Obtain written legal advice: have the lawyer evaluate the live site and answer questions (a)–(i). Record the resulting advice in docs/legal-advisors-<date>.md before implementing the required changes.
++
++The production-data-settings correction is accepted. The lawyer pack needs only the remaining AI-routing qualification and final diff verification before owner handoff.
++
++Response complete
+diff --git a/docs/review-loop/replies/91-lawyer-pack-review-90-s-fixes.md b/docs/review-loop/replies/91-lawyer-pack-review-90-s-fixes.md
+new file mode 100644
+index 0000000..387b7e8
+--- /dev/null
++++ b/docs/review-loop/replies/91-lawyer-pack-review-90-s-fixes.md
+@@ -0,0 +1,97 @@
++# Review 91: Lawyer pack: review 90's fixes
++
++2026-11-07 20:52 UTC. Reviewer: ChatGPT on chatgpt.com in the owner's browser, model GPT-6, thinking effort High (chatgpt.com), with the attached files.
++Output reviewed: `85-lawyer-pack-review-90-fixes.md`.
++
++VERDICT: FIX
++
++ISSUES:
++
++The room's production status is claimed but not captured in the attached evidence.
++
++docs/lawyer-review-pack-2026-11-06.md, lines 232–237, states that both status endpoints report "stand_in": false.
++
++docs/lawyer-pack-check-2026-11-07.md, lines 164–167, repeats that claim.
++
++However, api-facts.txt, lines 12–20, records the room's plan, seats and portraits but does not record its stand_in value.
++
++api/app/routers/debate.py, lines 156–177, confirms that the endpoint exposes this field, but it cannot establish what production returned on November 7.
++
++Fix: Read /api/v1/debate/status again, without signing in, and record its actual stand_in and models values. Do not infer them from the Copilot's status.
++
++The pack still conflates configuration with successful model execution.
++
++Pack §5.2, lines 232–235, says both features use a model rather than the stand-in.
++
++api/app/routers/copilot.py, lines 44–50, and api/app/routers/debate.py, lines 156–177, calculate their status fields from configuration and available credentials. Neither status endpoint executes an inference request.
++
++Therefore, "stand_in": false establishes that the service is configured to select the model-backed path, not that an external provider successfully processed a request.
++
++Likewise, the Copilot's reported model ID establishes its configured model, not a successfully completed inference.
++
++Fix: Qualify the production section accordingly. Explicitly state that no signed-in inference was tested during this check.
++
++The actual host-routing implementation cannot be independently verified from these attachments.
++
++Pack §5.2, lines 242–253, describes the OpenRouter client, host selection and routing preferences.
++
++api/app/settings.py, lines 34–69, supports the documented defaults and intended routing configuration.
++
++However, api/app/debate/llm.py and api/app/copilot/openai_compat.py, which implement the relevant model requests and routing, are not attached.
++
++The defaults are supported, but their complete operational implementation cannot be checked here.
++
++Fix: Keep these statements explicitly attributed to the settings and code-defined defaults. Do not present actual serving hosts, routing decisions or processing locations as established. Attach the implementation files if the operational claims are to be independently verified.
++
++The plan record overstates the scope of the captured diff.
++
++PROJECT.md, line 510, says the full git diff ac35f28..HEAD was recorded.
++
++full-diff-check.txt, lines 3–72, actually contains git diff --check, --name-status, --stat, and the complete diff for PROJECT.md only.
++
++This supports the reported 11 changed paths, five modified and six added, with no application or deployment paths in the recorded list. It does not establish that the complete patch for all 11 files was preserved.
++
++Fix: Correct the wording in PROJECT.md to describe the checks actually recorded, or preserve the complete diff.
++
++Evidence limitation: docs/legal-questions-2026-10-27.md, the companion document the owner must send, is not attached. Its five original questions and its consistency with the updated pack therefore cannot be independently checked in this review.
++
++DRIFT: No substantive scope drift. The changes remain within the master plan's legal-review preparation work; no new features, releases, paid calls or previously settled decisions are introduced. The recorded full-range diff checks report only documentation and PROJECT.md changes.
++
++NEXT STEP: Claude should complete one final lawyer-pack evidence reconciliation on branch rebuild, before the owner sends the documents.
++
++Use a read-only request to the live room-status endpoint, record the missing status values, and correct §5.2's configuration-versus-execution wording. Align the check record and PROJECT.md with the verified evidence, retaining the production-data limitations and the four owner-confirmation items.
++
++This is the highest-value pre-approved step because Step 7, the lawyer's review, is the main outstanding launch dependency. Resolving these documentary inaccuracies directly supports sending a reliable factual pack without changing production.
++
++No paid inference, production deployment, push, or external sending is authorized by this step.
++
++DONE WHEN:
++
++A dated, read-only capture of both public status endpoints is retained under docs/screenshots/lawyer-pack-check-2026-11-07/, with the room's actual stand_in and models fields visible.
++
++Pack §5.2 distinguishes configured model selection from successfully tested external processing and preserves the unverified production-routing and processing-location facts.
++
++PROJECT.md describes the actual diff evidence accurately.
++
++Run:
++
++Bash
++git diff --check ac35f28..HEAD
++git diff --name-status ac35f28..HEAD
++git diff ac35f28..HEAD -- PROJECT.md
++
++The whitespace check exits 0; all changes are limited to the approved documentation scope; the PROJECT.md diff remains status-only.
++
++Claude supplies the updated pack, read-only API evidence and diff results for final review.
++
++OWNER ITEMS:
++
++Confirm the four facts identified in the pack: the November 6 account/payment counts; hosting provider and country; production models configured for the six advisors and Chair; and actual AI processing locations where ascertainable. If a fact cannot be established, retain an explicit unverified qualification rather than guessing.
++
++Send Step 7 to the lawyer once the evidence reconciliation is accepted: docs/lawyer-review-pack-2026-11-06.md together with docs/legal-questions-2026-10-27.md. Ask the lawyer to evaluate the running site and return written advice covering questions (a)–(i).
++
++Record the legal advice in docs/legal-advisors-<date>.md, then separately authorize any beta and production releases required to implement it.
++
++Step 18, item 4: the first real customer renewal remains unverified. Its completion depends on an actual renewal, not a simulated success. No extra paid test is authorized here.
++
++Response complete
+diff --git a/docs/screenshots/lawyer-pack-check-2026-11-07/review-89-diff.txt b/docs/screenshots/lawyer-pack-check-2026-11-07/review-89-diff.txt
+new file mode 100644
+index 0000000..6312eac
+--- /dev/null
++++ b/docs/screenshots/lawyer-pack-check-2026-11-07/review-89-diff.txt
+@@ -0,0 +1,194 @@
++Review 89's corrections: the documentation diff from ac35f28, 2026-11-07 20:33:40 UTC (trailing spaces removed)
++$ git diff --cached ac35f28 -- docs/lawyer-review-pack-2026-11-06.md docs/lawyer-pack-check-2026-11-07.md docs/release-production-p9-2026-11-07.md PROJECT.md docs/review-loop/MASTER-PLAN.md
++
++diff --git a/PROJECT.md b/PROJECT.md
++index 1be2e04..b920586 100644
++--- a/PROJECT.md
+++++ b/PROJECT.md
++@@ -492,6 +492,15 @@ Older entries: `changelog-archive.md`.
++             - **The plan files:** their diff is shown to be status-only (`plan-diffs.txt`).
++
++             Give the lawyer two documents: the pack and `docs/legal-questions-2026-10-27.md`.
+++          - **Review 89 said FIX: two claims went further than the evidence.** Both are corrected in the pack, the
+++            check record and the P9 production record.
+++            - **Where the AI data is processed:** the data may be processed outside the Kingdom. The serving
+++              companies, their countries and production's routing settings were not verified.
+++            - **Production's data settings:** the deploy script is written to copy beta's at first setup, but neither
+++              that the copy ran nor that the settings match today is established.
+++
+++            A fourth fact is added for the owner to confirm: where the AI data is processed.
+++            `docs/review-loop/MASTER-PLAN.md` is unchanged in this pass, as the review asked.
++       - **Review 84 ACCEPTED the P9 fix.**
++         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
++           cases), and the patch rebuilds the four files byte for byte on production's bytes.
++diff --git a/docs/lawyer-pack-check-2026-11-07.md b/docs/lawyer-pack-check-2026-11-07.md
++index ae6eb3a..bd65781 100644
++--- a/docs/lawyer-pack-check-2026-11-07.md
+++++ b/docs/lawyer-pack-check-2026-11-07.md
++@@ -9,7 +9,10 @@ matches the live site, so that the owner can send it.
++   - one feature described too loosely;
++   - an outdated release;
++   - one question that understated what the site already does;
++-  - after review 88, two claims stated as confirmed that were not.
+++  - claims stated as confirmed that were not, found by reviews 88 and 89:
+++    - the room's AI models;
+++    - where the AI data is processed and how it is routed;
+++    - what beta shares with production.
++ - **What was added:** two facts the lawyer should have, and two known issues in the imported legal texts (review
++   88).
++ - **Not done:** nothing was sent, no legal text on the site was changed, and nothing was deployed, pushed or paid
++@@ -32,13 +35,16 @@ matches the live site, so that the owner can send it.
++    of 2026-11-06 and were not counted again.
++ 2. **The hosting provider and its country** (§5.2), which the pack leaves to the owner.
++ 3. **The AI models the six seats and the Chair use on production** (§5.2). Only the Copilot's was confirmed live.
+++4. **Where the AI services process the data** (§5.2, (h)), if the owner can find out. Otherwise the pack leaves it
+++   marked as not verified.
++
++ **Kinds of statement in the pack:**
++ - **Confirmed live on 2026-11-07:** the addresses, page wording, plans, legal versions, the Copilot's model, the
++   seats and the universe.
++-- **Read from the released code:** the renewal reminder, the retries and grace period, and the routing request
++-  sent to OpenRouter. These are marked as what the code does.
++-- **For the owner to confirm:** the three facts above.
+++- **Read from the released code:** the renewal reminder, the retries and grace period, the AI services' defaults
+++  and routing, and what the deploy script is written to copy at setup. These are marked as what the code does, not
+++  as what production is confirmed to do.
+++- **For the owner to confirm:** the four facts above.
++
++ ## How it was checked
++
++@@ -157,17 +163,25 @@ code was read at the released commit. Evidence: `docs/screenshots/lawyer-pack-ch
++    - **What is known:**
++      - **The Copilot:** confirmed live.
++      - **The seats and the Chair:** only the code's defaults are known.
++-     - **Routing:** OpenRouter chooses the hosting company per request (`api/app/copilot/openai_compat.py`,
++-       `host_routing`).
++-       - **The code's default:** it asks OpenRouter to sort hosts by latency (`copilot_provider_sort = "latency"`).
++-       - **A setting:** `COPILOT_PROVIDER_ORDER` can name hosts for the Copilot to try first, with fallbacks.
++-       - **Not read:** production's values for both.
++-   - **Now:** §5.2 keeps the confirmed fact apart from the defaults, marks the seats' and the Chair's models for the
++-     owner to confirm, and says that the host is not necessarily the model's maker. This bears on question (h).
+++     - **Routing** (`api/app/settings.py` lines 34–54; `api/app/copilot/openai_compat.py`, `host_routing`):
+++       - **The service:** OpenRouter by the code's default; the Copilot can also be set to Anthropic directly, and any
+++         OpenAI-compatible service can stand in for OpenRouter.
+++       - **When OpenRouter is used:** it chooses the hosting company per request. The code's default asks it to sort
+++         hosts by latency, and `COPILOT_PROVIDER_ORDER` can name hosts for the Copilot to try first, with fallbacks.
+++       - **Not read:** production's values for all of these.
+++     - **Where the data is processed:** not verified. Neither the serving companies nor their countries are known
+++       from this check.
+++   - **Now:** §5.2 and (h) keep the confirmed fact apart from the code's defaults. They mark the seats' and the
+++     Chair's models for the owner to confirm. They say the data *may* be processed outside the Kingdom, and that the
+++     companies, the countries and production's routing were not verified (review 89).
++ 6. **What beta shares with production (pack §2).**
++    - **The pack said:** beta "runs the same release on the same data".
++-   - **What is known:** the same release, yes. Production's market-data settings were copied from beta's at setup
++-     (`scripts/deploy-production.sh`, lines 80–83). That they still match was not checked again.
+++   - **What is known:**
+++     - **The release:** the same.
+++     - **The setup:** the deploy script is written to copy beta's market-data settings when it first creates
+++       production's settings file, and to leave an existing file alone (`scripts/deploy-production.sh`, lines 79–99).
+++     - **Not established** (review 89): that the copy ran, since no output of that first setup is on record, and that
+++       the settings match today.
++    - **Now:** §2 says exactly that.
++    - **Also corrected:** the same claim in `docs/release-production-p9-2026-11-07.md`, which now says production's
++      P9 notes are not established to equal beta's.
++diff --git a/docs/lawyer-review-pack-2026-11-06.md b/docs/lawyer-review-pack-2026-11-06.md
++index 0ee3c58..ad572e9 100644
++--- a/docs/lawyer-review-pack-2026-11-06.md
+++++ b/docs/lawyer-review-pack-2026-11-06.md
++@@ -20,14 +20,17 @@ site (`docs/lawyer-pack-check-2026-11-07.md`). What changed:
++ - the council tab, described as the site describes it: rule-based seats that vote bullish, neutral or bearish (§1);
++ - the merchant information's address (§4);
++ - what checkout already says about renewal, and the reminder the site sends (§6 (i));
++-- which AI models are confirmed live and which are only the code's defaults (§5.2);
+++- which AI models are confirmed live and which are only the code's defaults, and that where the AI data is processed
+++  was not verified (§5.2, (h));
++ - what the beta copy shares with production (§2);
++ - two known issues in the imported legal texts: the contact page, and the Arabic merchant notice (§6 (e)).
++
++ **Not checked again, for the owner to confirm before sending:**
++ - the account and payment counts in §2, which are as of 2026-11-06;
++ - the hosting provider and its country (§5.2);
++-- the AI models the six seats and the Chair use on production (§5.2).
+++- the AI models the six seats and the Chair use on production (§5.2);
+++- where the AI services process the data, if the owner can find out, for example from OpenRouter's account
+++  (§5.2, (h)).
++
++ ## 1. The site and who runs it
++
++@@ -93,10 +96,10 @@ will be shown before payment."
++ - **What a signed-out check cannot see on production:** the Pro-only financial statements. They were checked on
++   the beta copy: all 714 companies, with every statement line in English on English pages
++   ([beta's checks](screenshots/release-b5655a5064/beta-checks.txt)).
++-  - **Why beta stands in:** it runs the same release. Production was also set up to read the same market-data
++-    files: its settings were copied from beta's at setup.
++-  - **The limit:** that the settings still match was not checked again on 2026-11-07. *(Until 2026-11-07 this said
++-    "on the same data".)*
+++  - **Why beta stands in:** it runs the same release. The deploy script is also written to copy beta's market-data
+++    settings when it first creates production's settings file.
+++  - **The limit:** two things are not established: that the copy ran, and that the two tiers' settings match today.
+++    *(Until 2026-11-07 this said "on the same data".)*
++ - **Open items the lawyer may see** (one was resolved the same day):
++   - ~~**The AI features' credit.** The model account that pays for the Copilot and the advisors' room was at
++     $7.83 on 2026-11-06, below the site's own $10 alert. If it runs out before the visit, those two features
++@@ -223,15 +226,20 @@ The dumps include the card-token ids.
++ - **MailerSend:** sends the site's emails (verification, password reset, billing).
++ - **Google:** only for a member who chooses "Sign in with Google".
++ - **OpenRouter, and the AI model providers it routes to:** the member's Copilot and room questions,
++-  together with the company's data, go to language models outside the Kingdom. *Corrected 2026-11-07*, to keep
++-  what was confirmed apart from what was not:
+++  together with the company's data, go to language models that outside companies run. *Corrected 2026-11-07*, to
+++  keep what was confirmed apart from what was not:
+++  - **Where the data is processed:** it may be processed outside the Kingdom. Three things were not verified: which
+++    companies serve the requests, the countries where they process them, and production's routing settings.
+++  - **Which service is used:** the code uses OpenRouter by default. Its settings also allow two alternatives: the
+++    Copilot can use Anthropic directly, and any service that accepts OpenRouter's requests can stand in for it.
+++    Production's choice was not read.
++   - **The Copilot, confirmed live:** a DeepSeek model, `deepseek/deepseek-v3.2`. The site's own public status
++     address reported it on 2026-11-07.
++   - **The six seats and the Chair, not confirmed:** the code's defaults are a DeepSeek model for the seats and
++     Anthropic's Claude for the Chair. Production's own setting sits in a server file that also holds passwords and
++     keys, so it was not read. *The owner to confirm.*
++-  - **Who runs a request:** OpenRouter chooses which hosting company runs each request for a model, so the
++-    company is not necessarily the model's maker.
+++  - **Who runs a request, when OpenRouter is used:** OpenRouter chooses which hosting company runs each request for
+++    a model, so the company is not necessarily the model's maker.
++     - **The code's default:** it asks OpenRouter to prefer the fastest host.
++     - **A setting:** it can name hosts for the Copilot to try first, with the others as fallbacks.
++     - **Not read:** production's values for both, and which hosts served the site's requests.
++@@ -311,8 +319,9 @@ page describes this as collected "from public market sources", and does not name
++ 2. Does an "impact" read on a listed company's news come closer to advice than the rest of the site
++    (see (b))?
++
++-**(h) Sending data outside the Kingdom.** Questions go to AI providers abroad, and emails through
++-MailerSend (§5.2). Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow
+++**(h) Sending data outside the Kingdom.** Questions go to outside AI providers, which may process them
+++outside the Kingdom, and emails go through MailerSend (§5.2). *Qualified 2026-11-07:* where those companies process
+++the data was not verified. Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow
++ or the contracts with those providers need for that?
++
++ **(i) Monthly renewal.** Pro renews automatically on the saved card. What must checkout say about it,
++diff --git a/docs/release-production-p9-2026-11-07.md b/docs/release-production-p9-2026-11-07.md
++index 16545a0..a54a71d 100644
++--- a/docs/release-production-p9-2026-11-07.md
+++++ b/docs/release-production-p9-2026-11-07.md
++@@ -93,12 +93,13 @@ read over read-only ssh. No model is called.
++     started from them (check 2).
++   - **The comparison:** beta runs the same commit, and its notes were compared word for word for all 714 tickers before
++     and after (`docs/release-beta-p9-2026-11-07.md`, check 7).
++-  - **The data:** production's accounts database is its own, but its market-data settings (`EVIDENCE_DB` and the rest)
++-    were copied from beta's when production was set up (`scripts/deploy-production.sh`, lines 80–83;
++-    `docs/production.md`, "Market data: the same files, read-only"). So both tiers were set up to read the same
++-    statement data, and with the same code they would write the same notes. That the settings still match today
++-    was not checked again: they sit in a file with credentials. So it is not established that production's notes
++-    equal beta's (review 88). *(Corrected after review 87: this line said production "has its own database"
+++  - **The data:** production's accounts database is its own.
+++    - **Its market-data settings** (`EVIDENCE_DB` and the rest): the deploy script is written to copy beta's when it
+++      first creates production's settings file, and leaves an existing file alone (`scripts/deploy-production.sh`,
+++      lines 79–99). `docs/production.md` records "the same files, read-only".
+++    - **Not established:** that the copy ran, since no output of that first setup is on record, and that the two
+++      tiers' settings match today, since they sit in a file with credentials.
+++    - **So:** it is not established that production's notes equal beta's (reviews 88 and 89). *(Corrected after review 87: this line said production "has its own database"
++     for its notes, which is true only of its accounts.)*
++ - **The room's and the Copilot's behaviour:** whether the advisors now stop inventing statement figures can only be
++   measured in a paid session, and none was run.
+diff --git a/docs/screenshots/lawyer-pack-check-2026-11-07/status-endpoints.sh b/docs/screenshots/lawyer-pack-check-2026-11-07/status-endpoints.sh
+new file mode 100644
+index 0000000..6d312e8
+--- /dev/null
++++ b/docs/screenshots/lawyer-pack-check-2026-11-07/status-endpoints.sh
+@@ -0,0 +1,24 @@
++#!/usr/bin/env bash
++# Review 91's capture: both public AI status addresses, in full, signed out, GET only. They report the service's
++# configuration (computed from settings and whether a key is present); neither runs a model.
++set -u
++B=https://alphacouncil.tech
++UA="AlphaCouncil lawyer-pack check"
++echo "public AI status addresses, $(TZ=UTC date '+%Y-%m-%d %H:%M:%S UTC'), signed out"
++for p in /api/v1/copilot/status /api/v1/debate/status; do
++  echo
++  echo "\$ GET $B$p"
++  curl -sS -A "$UA" --max-time 30 -w '\n[http %{http_code}]\n' "$B$p"
++done
++echo
++echo "the fields that matter here:"
++curl -sS -A "$UA" --max-time 30 "$B/api/v1/copilot/status" | python -X utf8 -c "
++import json, sys
++d = json.load(sys.stdin)
++print(f\"  copilot: stand_in={d['stand_in']}  model={d['model']}  sign_in_required={d['sign_in_required']}\")
++"
++curl -sS -A "$UA" --max-time 30 "$B/api/v1/debate/status" | python -X utf8 -c "
++import json, sys
++d = json.load(sys.stdin)
++print(f\"  room:    stand_in={d['stand_in']}  models={d['models']}  rounds={d['rounds']}  seats={len(d['seats'])}\")
++"
+diff --git a/docs/screenshots/lawyer-pack-check-2026-11-07/status-endpoints.txt b/docs/screenshots/lawyer-pack-check-2026-11-07/status-endpoints.txt
+new file mode 100644
+index 0000000..54f4b91
+--- /dev/null
++++ b/docs/screenshots/lawyer-pack-check-2026-11-07/status-endpoints.txt
+@@ -0,0 +1,13 @@
++public AI status addresses, 2026-11-07 20:52:53 UTC, signed out
++
++$ GET https://alphacouncil.tech/api/v1/copilot/status
++{"model":"deepseek/deepseek-v3.2","stand_in":false,"sign_in_required":true}
++[http 200]
++
++$ GET https://alphacouncil.tech/api/v1/debate/status
++{"plan":"free","signed_in":false,"stand_in":false,"limit":0,"used":0,"resets_at":"2026-12-01T00:00:00Z","pro_limit":20,"running":null,"seats":[{"id":"buffett","role":"advisor","name_en":"Warren Buffett","name_ar":"وارن بافيت","initials":"WB","lens_en":"Durable advantage at a sensible price","lens_ar":"ميزة دائمة بسعر معقول","portrait":"/advisors/buffett.webp","short_en":"Buffett","short_ar":"بافيت","recuse":[],"owns":["P2","P9"]},{"id":"lynch","role":"advisor","name_en":"Peter Lynch","name_ar":"بيتر لينش","initials":"PL","lens_en":"Know the story, check the numbers","lens_ar":"افهم القصة وتحقق من الأرقام","portrait":"/advisors/lynch.webp","short_en":"Lynch","short_ar":"لينش","recuse":[],"owns":["P7","P9"]},{"id":"dalio","role":"advisor","name_en":"Ray Dalio","name_ar":"راي داليو","initials":"RD","lens_en":"Cycles, scenarios and balance","lens_ar":"الدورات والسيناريوهات والتوازن","portrait":"/advisors/dalio.webp","short_en":"Dalio","short_ar":"داليو","recuse":[],"owns":["P2","P9"]},{"id":"marks","role":"advisor","name_en":"Howard Marks","name_ar":"هوارد ماركس","initials":"HM","lens_en":"Risk, cycles and what is priced in","lens_ar":"المخاطر والدورات وما يعكسه السعر","portrait":"/advisors/marks.webp","short_en":"Marks","short_ar":"ماركس","recuse":[],"owns":["P1","P8","P9"]},{"id":"alwaleed","role":"advisor","name_en":"Prince Alwaleed bin Talal","name_ar":"الأمير الوليد بن طلال","initials":"AW","lens_en":"Global brands bought in a crisis","lens_ar":"علامات كبرى تُشترى وقت الأزمات","portrait":"/advisors/alwaleed.webp","short_en":"Alwaleed","short_ar":"الوليد","recuse":["4280_TADAWUL"],"owns":["P3","P9"]},{"id":"alrumayyan","role":"advisor","name_en":"Yasir Al-Rumayyan","name_ar":"ياسر الرميان","initials":"YR","lens_en":"Patient capital that builds sectors","lens_ar":"رأس مال صبور يبني القطاعات","portrait":"/advisors/alrumayyan.webp","short_en":"Al-Rumayyan","short_ar":"الرميان","recuse":[],"owns":["P5","P6"]},{"id":"chair","role":"chair","name_en":"Chair","name_ar":"رئيس الجلسة","initials":"CH","lens_en":"Runs the rounds, writes the answer","lens_ar":"يدير الجولات ويكتب الإجابة","portrait":"/advisors/chair.webp","short_en":"Chair","short_ar":"الجلسة","recuse":[],"owns":[]}],"rounds":3,"models":{"advisors":"deepseek/deepseek-v4-pro","chair":"anthropic/claude-sonnet-5.5"}}
++[http 200]
++
++the fields that matter here:
++  copilot: stand_in=False  model=deepseek/deepseek-v3.2  sign_in_required=True
++  room:    stand_in=False  models={'advisors': 'deepseek/deepseek-v4-pro', 'chair': 'anthropic/claude-sonnet-5.5'}  rounds=3  seats=7

@@ -1,0 +1,73 @@
+Review 91's DONE WHEN, run 2026-11-07 20:54:09 UTC on branch rebuild, range ac35f28..83704b0 (the commit before this file)
+
+$ git diff --check ac35f28..83704b0
+[exit 0]
+
+$ git diff --name-status ac35f28..83704b0
+M	PROJECT.md
+M	docs/lawyer-pack-check-2026-11-07.md
+M	docs/lawyer-review-pack-2026-11-06.md
+M	docs/release-production-p9-2026-11-07.md
+M	docs/review-loop/LOG.md
+A	docs/review-loop/browser-prompts/83-lawyer-pack-review-88-fixes.prompt.md
+A	docs/review-loop/browser-prompts/84-lawyer-pack-review-89-fixes.prompt.md
+A	docs/review-loop/browser-prompts/85-lawyer-pack-review-90-fixes.prompt.md
+A	docs/review-loop/outputs/84-lawyer-pack-review-89-fixes.md
+A	docs/review-loop/outputs/85-lawyer-pack-review-90-fixes.md
+A	docs/review-loop/replies/89-lawyer-pack-review-88-s-fixes.md
+A	docs/review-loop/replies/90-lawyer-pack-review-89-s-fixes.md
+A	docs/review-loop/replies/91-lawyer-pack-review-90-s-fixes.md
+A	docs/screenshots/lawyer-pack-check-2026-11-07/full-diff-check.txt
+A	docs/screenshots/lawyer-pack-check-2026-11-07/review-89-diff.txt
+A	docs/screenshots/lawyer-pack-check-2026-11-07/status-endpoints.sh
+A	docs/screenshots/lawyer-pack-check-2026-11-07/status-endpoints.txt
+[exit 0]
+
+$ paths outside docs/ and PROJECT.md
+(none)
+$ paths under api/ web/ scripts/ deploy/, or docs/review-loop/MASTER-PLAN.md
+(end of list)
+
+$ git diff ac35f28..83704b0 -- PROJECT.md | grep -c '^-[^-]'   (removed lines)
+0
+
+$ git diff ac35f28..83704b0 -- PROJECT.md   (trailing spaces removed)
+diff --git a/PROJECT.md b/PROJECT.md
+index 1be2e04..0625daa 100644
+--- a/PROJECT.md
++++ b/PROJECT.md
+@@ -492,6 +492,34 @@ Older entries: `changelog-archive.md`.
+             - **The plan files:** their diff is shown to be status-only (`plan-diffs.txt`).
+
+             Give the lawyer two documents: the pack and `docs/legal-questions-2026-10-27.md`.
++          - **Review 89 said FIX: two claims went further than the evidence.** Both are corrected in the pack, the
++            check record and the P9 production record.
++            - **Where the AI data is processed:** the data may be processed outside the Kingdom. The serving
++              companies, their countries and production's routing settings were not verified.
++            - **Production's data settings:** the deploy script is written to copy beta's at first setup, but neither
++              that the copy ran nor that the settings match today is established.
++
++            A fourth fact is added for the owner to confirm: where the AI data is processed.
++            `docs/review-loop/MASTER-PLAN.md` is unchanged in this pass, as the review asked.
++          - **Review 90 said FIX.** Review 89's correction on production's data settings is accepted. Two points:
++            - **The AI wording was still too categorical.** The code can fall back to a stand-in, so pack §5.2 now
++              separates three things:
++              - **what production confirms:** both features report `"stand_in": false`, and the Copilot's model;
++              - **what the code does by default:** `COPILOT_PROVIDER=auto`, and any OpenAI-compatible endpoint;
++              - **what is unverified.**
++            - **The diff:** the full-range checks over `ac35f28..e521082` are recorded in `full-diff-check.txt`:
++              `git diff --check`, `--name-status`, `--stat`, and the complete diff of `PROJECT.md` only. *(Corrected
++              after review 91, which found that this line had said the full diff was recorded.)*
++          - **Review 91 said FIX; fixed.**
++            - **The room's status:** both public AI status addresses are now captured in full
++              (`status-endpoints.txt`). The room's `"stand_in": false` and its configured models are now on record:
++              the seats use `deepseek/deepseek-v4-pro` and the Chair uses `anthropic/claude-sonnet-5.5`. That takes one
++              fact off the owner's list, which is now three: the counts, the hosting provider, and where the AI data
++              is processed.
++            - **Configuration, not tested requests:** pack §5.2 now calls these configuration. No signed-in question
++              was asked, so no request was seen reaching a provider.
++            - **Routing:** it is attributed to the settings and code.
++            - **The diff:** this record's diff wording is corrected.
+       - **Review 84 ACCEPTED the P9 fix.**
+         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
+           cases), and the patch rebuilds the four files byte for byte on production's bytes.
