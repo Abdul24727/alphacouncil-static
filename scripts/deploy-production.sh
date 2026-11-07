@@ -3,6 +3,10 @@
 #
 #   scripts/deploy-production.sh            # deploy HEAD (on branch `rebuild`, already live on beta)
 #   scripts/deploy-production.sh --setup    # first time: env files, units and the app database
+#   scripts/deploy-production.sh --check    # read-only: say what would be deployed and from where, then stop
+#
+# Another reviewed branch is deployed only when named explicitly (DEPLOY_BRANCH=<branch>), from a checkout of it,
+# and only once beta runs that same HEAD.
 #
 # Production only gets what staging already runs: HEAD must be the release behind
 # beta.alphacouncil.tech. Pointing alphacouncil.tech at this app (nginx) is a separate,
@@ -15,14 +19,25 @@ ENVDIR=/etc/alphacouncil-platform/prod
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
 
+expected="${DEPLOY_BRANCH:-rebuild}"
 branch="$(git rev-parse --abbrev-ref HEAD)"
-[[ "$branch" == "rebuild" ]] || { echo "refusing: on branch '$branch', expected 'rebuild'" >&2; exit 1; }
+[[ "$branch" == "$expected" ]] || { echo "refusing: on branch '$branch', expected '$expected' (DEPLOY_BRANCH names another reviewed branch)" >&2; exit 1; }
 [[ -z "$(git status --porcelain --untracked-files=no)" ]] || { echo "refusing: uncommitted changes" >&2; exit 1; }
 sha="$(git rev-parse --short=10 HEAD)"
 rel="$BASE/releases/$sha"
 ssh_() { ssh -o BatchMode=yes "$HOST" "$@"; }
 
 staged="$(ssh_ 'basename "$(readlink -f /opt/alphacouncil-platform/current)"')"
+if [[ "${1:-}" == "--check" ]]; then
+  echo "checkout: $ROOT"
+  echo "branch:   $branch"
+  echo "HEAD:     $(git rev-parse HEAD)"
+  echo "release:  $rel"
+  echo "beta now: $staged ($([[ "$staged" == "$sha" ]] && echo "matches HEAD" || echo "does NOT match HEAD: a deploy would refuse"))"
+  echo "prod now: $(ssh_ 'readlink -f /opt/alphacouncil-platform/prod/current')"
+  echo "nothing uploaded, built or switched (--check)"
+  exit 0
+fi
 [[ "$staged" == "$sha" ]] || { echo "refusing: beta runs $staged, HEAD is $sha. Deploy to staging and check it first." >&2; exit 1; }
 
 if [[ "${1:-}" == "--setup" ]]; then

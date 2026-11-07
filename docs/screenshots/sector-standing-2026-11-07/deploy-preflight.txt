@@ -1,0 +1,47 @@
+=== the deployment checkout
+$ git -C /c/AlphaCouncil-Staging/deploy-026699b rev-parse HEAD
+026699b906ea3a513b4f2dbfc37672fa68ee9d42
+exit 0
+$ git -C /c/AlphaCouncil-Staging/deploy-026699b status -sb
+## release/sector-standing
+exit 0
+
+=== 1. rebuild's checkout, no DEPLOY_BRANCH (the default is unchanged)
+$ (cd /c/projects/alphacouncil-platform && scripts/deploy-staging.sh --check)
+checkout: C:/projects/alphacouncil-platform
+branch:   rebuild
+HEAD:     f9f4f7c1c8941b90c128e508323ab800b7a931e7
+release:  /opt/alphacouncil-platform/releases/f9f4f7c1c8
+archive:  4238 paths from HEAD (committed files only)
+beta now: /opt/alphacouncil-platform/releases/b5655a5064
+releases: b5655a5064 5c18a3ae46 2e44ee6fbf (the 3 newest are kept after a deploy)
+nothing uploaded, built or switched (--check)
+exit 0
+
+=== 2. the candidate's checkout, no DEPLOY_BRANCH, with rebuild's updated script
+$ (cd /c/AlphaCouncil-Staging/deploy-026699b && bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check)
+refusing: on branch 'release/sector-standing', expected 'rebuild' (DEPLOY_BRANCH names another reviewed branch)
+exit 1
+
+=== 3. the candidate's checkout, DEPLOY_BRANCH=release/sector-standing
+$ (cd /c/AlphaCouncil-Staging/deploy-026699b && DEPLOY_BRANCH=release/sector-standing bash /c/projects/alphacouncil-platform/scripts/deploy-staging.sh --check)
+checkout: C:/AlphaCouncil-Staging/deploy-026699b
+branch:   release/sector-standing
+HEAD:     026699b906ea3a513b4f2dbfc37672fa68ee9d42
+release:  /opt/alphacouncil-platform/releases/026699b906
+archive:  3837 paths from HEAD (committed files only)
+beta now: /opt/alphacouncil-platform/releases/b5655a5064
+releases: b5655a5064 5c18a3ae46 2e44ee6fbf (the 3 newest are kept after a deploy)
+nothing uploaded, built or switched (--check)
+exit 0
+
+=== 4. production, from the candidate's checkout, before any beta deploy
+$ (cd /c/AlphaCouncil-Staging/deploy-026699b && DEPLOY_BRANCH=release/sector-standing bash /c/projects/alphacouncil-platform/scripts/deploy-production.sh --check)
+checkout: C:/AlphaCouncil-Staging/deploy-026699b
+branch:   release/sector-standing
+HEAD:     026699b906ea3a513b4f2dbfc37672fa68ee9d42
+release:  /opt/alphacouncil-platform/prod/releases/026699b906
+beta now: b5655a5064 (does NOT match HEAD: a deploy would refuse)
+prod now: /opt/alphacouncil-platform/prod/releases/b5655a5064
+nothing uploaded, built or switched (--check)
+exit 0

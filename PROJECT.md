@@ -335,6 +335,16 @@ Older entries: `changelog-archive.md`.
       - **`RESULT.md`:** it now separates the invented figures (22 of 23 are P9 data) from the invented statements
         (notes and peer comparisons too).
       - **The new totals:** 209 against 55 wrong claims, and 47 against 2 inventions.
+    - **Review 74 ACCEPTED candidate `026699b`** for the owner's beta decision, subject to a deploy preflight. The
+      preflight found that both deploy scripts refused any branch but `rebuild`, which carries the rejected
+      prototype, so the candidate could not be deployed as they stood.
+      - **The script change:** `DEPLOY_BRANCH=<branch>` is now an explicit opt-in, the default is unchanged, and a
+        read-only `--check` mode was added.
+      - **The four `--check` runs:** `rebuild` unchanged; the candidate without the opt-in refuses; with it, the
+        candidate would be archived from `C:/AlphaCouncil-Staging/deploy-026699b` (HEAD `026699b906…`); production
+        would refuse until beta runs it.
+      - **The request:** `docs/release-request-sector-standing-2026-11-07.md`. Next: review 75 of the script change,
+        then the owner's beta go-ahead.
     - **Review 73 said FIX:** do not ship `rebuild` (it carries the rejected prototype). Build and test a fix-only
       candidate, capture native 1440 and 390 screenshots, and record the git output. Done, in the same report:
       - **The candidate:** **`026699b`** on local branch `release/sector-standing`, which is `b5655a5` plus `cae5578`

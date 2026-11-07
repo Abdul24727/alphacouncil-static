@@ -1,0 +1,23 @@
+$ git show --check 867f944 --format=   (prints nothing when clean)
+exit 0
+$ git show --check e2eecc3 --format=   (prints nothing when clean)
+exit 0
+$ git show --check cae5578 --format=   (prints nothing when clean)
+exit 0
+$ git show --check 026699b --format=   (prints nothing when clean)
+exit 0
+$ git diff --check b5655a5 026699b   (prints nothing when clean)
+exit 0
+$ git -C /c/AlphaCouncil-Staging/deploy-026699b status -sb
+## release/sector-standing
+exit 0
+$ git diff --name-status b5655a5 026699b
+M	api/app/copilot/engine.py
+M	api/app/copilot/tools.py
+M	api/app/debate/pack.py
+M	api/app/evidence.py
+M	api/tests/test_copilot.py
+M	api/tests/test_debate.py
+M	web/messages/ar.json
+M	web/messages/en.json
+exit 0

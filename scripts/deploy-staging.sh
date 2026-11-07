@@ -3,6 +3,11 @@
 #
 #   scripts/deploy-staging.sh            # deploy HEAD (must be on branch `rebuild`)
 #   scripts/deploy-staging.sh --setup    # first time: also install units, env files and the nginx site
+#   scripts/deploy-staging.sh --check    # read-only: say what would be deployed and from where, then stop
+#
+# Another reviewed branch (such as a fix-only release branch) is deployed only when named explicitly:
+#   DEPLOY_BRANCH=release/sector-standing scripts/deploy-staging.sh --check   # then without --check
+# run from a checkout of that branch. HEAD of the checkout you run in is what is archived and built.
 #
 # Never touches the live site, its backend, the old staging or the pipeline.
 set -euo pipefail
@@ -12,11 +17,25 @@ BASE=/opt/alphacouncil-platform
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
 
+expected="${DEPLOY_BRANCH:-rebuild}"
 branch="$(git rev-parse --abbrev-ref HEAD)"
-[[ "$branch" == "rebuild" ]] || { echo "refusing: on branch '$branch', expected 'rebuild'" >&2; exit 1; }
+[[ "$branch" == "$expected" ]] || { echo "refusing: on branch '$branch', expected '$expected' (DEPLOY_BRANCH names another reviewed branch)" >&2; exit 1; }
 sha="$(git rev-parse --short=10 HEAD)"
 rel="$BASE/releases/$sha"
 ssh_() { ssh -o BatchMode=yes "$HOST" "$@"; }
+
+if [[ "${1:-}" == "--check" ]]; then
+  echo "checkout: $ROOT"
+  echo "branch:   $branch"
+  echo "HEAD:     $(git rev-parse HEAD)"
+  echo "release:  $rel"
+  echo "archive:  $(git archive --format=tar HEAD | tar -t | wc -l) paths from HEAD (committed files only)"
+  echo "beta now: $(ssh_ 'readlink -f /opt/alphacouncil-platform/current')"
+  echo "releases: $(ssh_ "ls -1t $BASE/releases | tr '
+' ' '")(the 3 newest are kept after a deploy)"
+  echo "nothing uploaded, built or switched (--check)"
+  exit 0
+fi
 
 if [[ "${1:-}" == "--setup" ]]; then
   echo "== one-time setup"
