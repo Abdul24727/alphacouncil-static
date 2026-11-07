@@ -30,7 +30,8 @@ site (`docs/lawyer-pack-check-2026-11-07.md`). What changed:
 
 **Not checked again, for the owner to confirm before sending:**
 - the account and payment counts in §2, which are as of 2026-11-06;
-- the hosting provider and its country (§5.2);
+- the hosting provider and its data centre's country (§5.2). Public records point to Hostinger, with the IP network
+  registered in France; the owner confirms;
 - where the AI services process the data, if the owner can find out, for example from OpenRouter's account
   (§5.2, (h)). If it cannot be found out, the pack leaves it marked as not verified.
 
@@ -260,8 +261,13 @@ The dumps include the card-token ids.
     - **The code's default:** it asks OpenRouter to prefer the fastest host.
     - **A setting:** it can name hosts for the Copilot to try first, with the others as fallbacks.
     - **Not read:** production's values for both, and which hosts served the site's requests.
-- **The hosting provider:** a rented virtual server. *The owner to state which provider and in which
-  country.*
+- **The hosting provider:** a rented virtual server. *Added 2026-11-08 from public records* (`docs/screenshots/
+  lawyer-pack-check-2026-11-07/hosting-public-records.txt`):
+  - **Reverse DNS:** the site's address, 72.60.91.24, has the name `srv1556505.hstgr.cloud`, Hostinger's domain.
+  - **The IP registry (RIPE):** it lists the network as `HOSTINGER-HOSTING` with country `FR`. Its contacts are
+    Hostinger's, in Vilnius, Lithuania.
+  - **What a registry record does not prove:** where the server physically sits. *The owner to confirm the provider
+    and the data centre's country*, for example from the provider's control panel.
 
 ### 5.3 Cookies
 

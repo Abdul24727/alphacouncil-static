@@ -32,8 +32,11 @@ matches the live site, so that the owner can send it.
 
 **Facts still waiting on the owner's confirmation before sending** (the pack marks each one):
 1. **The counts in pack §2:** four accounts; one payment, the owner's own, refunded; no paying customer. They are as
-   of 2026-11-06 and were not counted again.
-2. **The hosting provider and its country** (§5.2), which the pack leaves to the owner.
+   of 2026-11-06 and were not counted again. After review 93, Claude tried to count them read-only, aggregates only,
+   but the session's permission check refused a read of production's database.
+2. **The hosting provider and its data centre's country** (§5.2). Public records point to Hostinger: the reverse
+   DNS is `srv1556505.hstgr.cloud`, and RIPE lists the network as `HOSTINGER-HOSTING`, country `FR`
+   (`hosting-public-records.txt`). A registry record does not prove where the server sits, so the owner confirms.
 3. **Where the AI services process the data** (§5.2, (h)), if the owner can find out. Otherwise the pack leaves it
    marked as not verified.
 
@@ -228,6 +231,23 @@ themselves are left alone until the lawyer advises):
 - **The data's source (question (f)):** the site's `/methodology` says the pipeline collects "from public market
   sources", and no English page read here names Argaam. The pack's own account is that the data comes mainly from
   Argaam, through an account. That gap is part of what (f) asks.
+
+## After review 93: the owner's facts, read-only (2026-11-08)
+
+Review 93 accepted the pack for the handoff. Its step was to settle what read-only, non-secret evidence could settle.
+- **The hosting provider** (`hosting-public-records.txt`, from `hosting-public-records.sh`, 2026-11-07 21:10 UTC;
+  public DNS and RDAP only, no server access):
+  - **The address:** `alphacouncil.tech` resolves to 72.60.91.24.
+  - **Its reverse DNS:** `srv1556505.hstgr.cloud`.
+  - **RIPE's record:** the network 72.60.88.0–72.60.95.255 is `HOSTINGER-HOSTING`, country `FR`. Its
+    administrative, technical and abuse contacts are Hostinger's, in Vilnius, Lithuania.
+  - **In the pack:** §5.2 now gives these as public records. It notes that they do not prove the data centre's
+    location, which the owner confirms.
+- **The account and payment counts:** not read. An aggregate, read-only count on production's accounts database was
+  refused by the session's permission check ("Production Reads"), and it was not tried another way. The pack keeps the
+  2026-11-06 counts, dated, for the owner to confirm. The owner can confirm them, or allow the read.
+- **Where the AI data is processed:** not established, and left marked as not verified. Review 93 said not to delay
+  the handoff for it.
 
 ## What this check did not cover
 

@@ -530,6 +530,15 @@ Older entries: `changelog-archive.md`.
 
             The review added that the remaining limitations need no further technical review or paid test before the
             legal handoff.
+          - **Review 93 ACCEPTED: "The lawyer pack is ready for the owner's Step 7 handoff, subject to the three
+            stated factual confirmations."**
+            - **Its step, done 2026-11-08, read-only:** public records point to Hostinger as the host.
+              - **The evidence:** reverse DNS `srv1556505.hstgr.cloud`, and RIPE's `HOSTINGER-HOSTING` with country FR.
+              - **What the pack says:** it gives these as public records, with the owner to confirm the data centre's
+                country.
+            - **The account and payment counts:** not read. A read-only aggregate query on production's database was
+              refused by the session's permission check, so they stay the owner's to confirm.
+            - **Where the AI data is processed:** stays not verified.
       - **Review 84 ACCEPTED the P9 fix.**
         - **What it reproduced:** both review-83 cases are fixed, the trim keeps every year (150 more generated
           cases), and the patch rebuilds the four files byte for byte on production's bytes.
