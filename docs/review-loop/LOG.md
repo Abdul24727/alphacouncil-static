@@ -99,3 +99,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-08 10:35 UTC — **The push of eeb9a9d..dcc4189** — ACCEPT — [95-the-push-of-eeb9a9d-dcc4189.md](replies/95-the-push-of-eeb9a9d-dcc4189.md)
 - 2026-11-08 10:43 UTC — **Review 95's fixes: the Argaam checkpoint and the PNG wording** — FIX — [96-review-95-s-fixes-the-argaam-checkpoint-and-the-pn.md](replies/96-review-95-s-fixes-the-argaam-checkpoint-and-the-pn.md)
 - 2026-11-08 10:54 UTC — **Review 96's fixes: the exact-value count script** — FIX — [97-review-96-s-fixes-the-exact-value-count-script.md](replies/97-review-96-s-fixes-the-exact-value-count-script.md)
+- 2026-11-08 11:08 UTC — **Review 97's fixes: the exact-value check reads raw objects** — FIX — [98-review-97-s-fixes-the-exact-value-check-reads-raw-.md](replies/98-review-97-s-fixes-the-exact-value-check-reads-raw-.md)

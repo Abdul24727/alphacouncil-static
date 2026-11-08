@@ -27,8 +27,13 @@ git config user.email test@example.invalid
 git config user.name test
 git config core.autocrlf false
 echo base > base.txt
-git add base.txt && git commit -q -m base
+echo "keep dummy.deleted-41 here" > prior.txt                         # review 98: content the range deletes
+echo z > "user-dummy.deleted-name-91.txt"                               # review 98: a name the range deletes
+echo "line with dummy.edited-63" > edited.txt                           # a line the range edits away
+git add . && git commit -q -m base
 git tag base
+git rm -q prior.txt "user-dummy.deleted-name-91.txt" && echo "line" > edited.txt && git add edited.txt
+git commit -q -m "delete and edit what the base had"
 echo "contact: Dummy.Account-42 for the feed" > notes.txt
 echo x > "dummy.account-42.txt"
 git add . && git commit -q -m "add notes"
@@ -108,6 +113,18 @@ out=$("$script" base..tip "$v" 2>&1); rc=$?
 
 v=$(val spaces '   ')
 "$script" base..tip "$v" > /dev/null 2>&1; check "value of spaces only" 2 $? 0
+
+v=$(val deleted 'dummy.deleted-41')
+out=$("$script" base..tip "$v" 2>&1); rc=$?
+[ "$(get "$out" file-contents)" -ge 1 ] && only_counts "$out"; check "base content the range deletes: found" 3 $rc $?
+
+v=$(val deletedname 'dummy.deleted-name-91')
+out=$("$script" base..tip "$v" 2>&1); rc=$?
+[ "$(get "$out" file-names)" -ge 1 ] && only_counts "$out"; check "base file name the range deletes: found" 3 $rc $?
+
+v=$(val edited 'dummy.edited-63')
+out=$("$script" base..tip "$v" 2>&1); rc=$?
+[ "$(get "$out" file-contents)" -ge 1 ] && only_counts "$out"; check "base line the range edits away: found" 3 $rc $?
 
 v=$(val short 'ab')
 "$script" base..tip "$v" > /dev/null 2>&1; check "value shorter than 3 characters" 2 $? 0

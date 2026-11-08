@@ -142,6 +142,8 @@ Billing has been open since 2026-11-02.
         `scripts/push-checks/count-exact-value.sh`. It prints three counts only; its test passes with a dummy value.
       - **Review 97 said FIX.** It found two values the script missed: a non-ASCII file name, and a deleted binary.
         The script now reads git's raw objects, and 24 tests pass, both cases included.
+      - **Review 98 said FIX.** It found that content and names the range deletes from the base were missed. The
+        script now reads the full tree at every commit and at the boundary, and 27 tests pass.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

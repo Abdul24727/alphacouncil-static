@@ -9,10 +9,14 @@
 #
 # It reads git's raw objects, not formatted output, so nothing is escaped, quoted or summarised away:
 #   commits <n>        occurrences in the raw commit objects of the range (messages, authors, committers)
-#   file-contents <n>  occurrences in every file version the range adds - including binary files and files deleted
-#                      again inside the range (`git rev-list --objects <range>`) - plus every file in the tip
-#   file-names <n>     paths (files and folders) in the full tree of every commit in the range that contain it,
-#                      read with `ls-tree -z`, which never quotes non-ASCII names
+#   file-contents <n>  occurrences in every file version in the full tree of every commit in the range, of each
+#                      boundary commit (the range's start) and of the tip: binary files, files deleted again inside
+#                      the range, and content the range deletes or changes from the base all included
+#   file-names <n>     paths (files and folders) in those same trees that contain it, read with `ls-tree -z`, which
+#                      never quotes non-ASCII names
+# Every version a patch in the range shows, before or after a change, is in one of those trees: an older version
+# is either at the boundary or inside the range. So anything already in the base also stops the push: the patch
+# that deletes or edits it would show it again.
 # Matching is byte-exact under LC_ALL=C, ignoring ASCII case only; file contents are searched with NUL bytes
 # removed, so UTF-16 text is found for an ASCII value. It prints exactly those three lines: no matching text and
 # no file name.
@@ -61,17 +65,23 @@ count() {
 
 # 1. the range's commits, raw
 git rev-list "$range" > "$tmp/commits" || fail "git rev-list failed"
+# the boundary: parents of range commits that are outside the range (rev-list marks them with "-")
+git rev-list --boundary "$range" > "$tmp/with-boundary" || fail "git rev-list --boundary failed"
+sed -n 's/^-//p' "$tmp/with-boundary" > "$tmp/boundary"
 git cat-file --batch < "$tmp/commits" > "$tmp/commit-objects" || fail "git cat-file failed on commits"
 count "$tmp/commit-objects" commits
 c=$COUNT
 
-# 2. every blob the range adds, plus every blob in the tip
-git rev-list --objects --no-object-names "$range" > "$tmp/objects" || fail "git rev-list --objects failed"
-git cat-file --batch-check='%(objecttype) %(objectname)' < "$tmp/objects" > "$tmp/types" \
-  || fail "git cat-file failed on object types"
-awk '$1 == "blob" { print $2 }' "$tmp/types" > "$tmp/blobs"
-git ls-tree -r "$tip" > "$tmp/tip-tree" || fail "git ls-tree failed on the tip"
-awk '$2 == "blob" { print $3 }' "$tmp/tip-tree" >> "$tmp/blobs"
+# 2 and 3. the full tree of every commit in the range, of each boundary commit, and of the tip
+{ cat "$tmp/commits" "$tmp/boundary"; git rev-parse "$tip^{commit}"; } | sort -u > "$tmp/snapshots"
+: > "$tmp/blobs"
+: > "$tmp/names"
+while read -r sha; do
+  git ls-tree -r "$sha" > "$tmp/tree" || fail "git ls-tree failed on a commit"
+  awk '$2 == "blob" { print $3 }' "$tmp/tree" >> "$tmp/blobs"
+  git ls-tree -r -t -z --name-only "$sha" >> "$tmp/names" || fail "git ls-tree -z failed on a commit"
+done < "$tmp/snapshots"
+
 sort -u "$tmp/blobs" -o "$tmp/blobs"
 git cat-file --batch < "$tmp/blobs" > "$tmp/blob-data0" || fail "git cat-file failed on blobs"
 # NUL bytes removed, so text saved as UTF-16 is found too (for an ASCII value); in UTF-8 text this changes nothing
@@ -79,12 +89,7 @@ tr -d '\000' < "$tmp/blob-data0" > "$tmp/blob-data" || fail "tr failed on blobs"
 count "$tmp/blob-data" file-contents
 f=$COUNT
 
-# 3. every path in every commit of the range, raw and NUL-separated
-: > "$tmp/names"
-while read -r sha; do
-  git ls-tree -r -t -z --name-only "$sha" >> "$tmp/names" || fail "git ls-tree failed on a commit"
-done < "$tmp/commits"
-tr '\0' '\n' < "$tmp/names" | sort -u > "$tmp/names.txt"
+tr '\000' '\n' < "$tmp/names" | sort -u > "$tmp/names.txt"
 COUNT=$(grep -c -i -F -f "$tmp/pat" "$tmp/names.txt"; exit $?)
 [ $? -le 1 ] || fail "grep failed on file names"
 n=$COUNT
