@@ -28,8 +28,10 @@
 #
 # WHAT IT CANNOT SEE: text drawn in images (screenshots), text inside compressed files (zip, docx, PDF streams,
 # PNG text chunks), encoded forms (URL %40, HTML entities, base64), another Unicode normalisation (NFC/NFD) of a
-# non-ASCII value, UTF-16 text of a non-ASCII value, or a value spanning a "/" in a path (names are searched per
-# folder level). Screenshots need a person's eyes; run it once per variant if one is plausible.
+# non-ASCII value, a non-ASCII value stored in any encoding but UTF-8 (UTF-16, Latin-1 or Windows-1252 files,
+# commit messages with a non-UTF-8 encoding header), or a value spanning a "/" in a path (names are searched per
+# folder level). An ASCII value is found in UTF-8, Latin-1, Windows-1252 and UTF-16 text alike. Screenshots need
+# a person's eyes; run it once per variant if one is plausible.
 # A tree object also holds binary object ids, so a very short value can match one by chance (a false stop, never
 # a false pass).
 #
