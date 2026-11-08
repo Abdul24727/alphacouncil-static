@@ -1,0 +1,178 @@
+# Step 2 outgoing-diff scan over eeb9a9d..dcc4189, run 2026-11-08 before the push
+# command: git diff origin/rebuild..rebuild | grep -nEi '<Step 2 regex>' | grep '^[0-9]*:+'
+# hits: 86  (hits not containing 'moyasar': 0)
+# each hit: file, then the matched text with up to 70 characters either side
+== PROJECT.md
+   +        - the monitor shows 15 of 15 ok, "Moyasar for renewals" included.
+== PROJECT.md
+   +      - **Diff scan:** 2 hits, both prose naming Moyasar's dashboard and webhook.
+== PROJECT.md
+   e OpenRouter top-up (balance $7.83 after the pilot); F-12's duplicate Moyasar webhook; and, before the decision-grade run, D5's markers and the $42
+== docs/launch-check-2026-11-07.md
+   +- **Renewals:** "Moyasar for renewals" reads ok for the first time in these records: "the run 
+== docs/launch-check-2026-11-07.md
+   +  … reached Moyasar". It was "–" on 2026-11-06.
+== docs/lawyer-pack-check-2026-11-07.md
+   +  the room's seats, and the address Moyasar was once shown.
+== docs/release-production-p9-2026-11-07.md
+   ves and sends nothing) | 14 checks ok and one with nothing to check ("Moyasar for renewals": no renewal run since the last round). The site and API
+== docs/release-production-sector-standing-2026-11-07.md
+   site and API, market data, both services, the renewals job, timer and Moyasar, the
+== docs/release-production-sector-standing-2026-11-07.md
+   +- **Renewals:** "Moyasar for renewals" now reads ok ("the run at 2026-11-07 10:00 UTC … reac
+   hed Moyasar"). It showed
+== docs/review-loop/MASTER-PLAN.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/63-review-69-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/63-review-69-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/65-review-70-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/65-review-70-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/66-audit-closeout.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/66-audit-closeout.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/67-sector-standing-release-candidate.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/67-sector-standing-release-candidate.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/68-isolated-candidate.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/68-isolated-candidate.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/69-deploy-preflight.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/69-deploy-preflight.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/70-exact-commit-guard.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/70-exact-commit-guard.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/71-beta-release-sector-standing.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/71-beta-release-sector-standing.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/72-production-release-sector-standing.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/72-production-release-sector-standing.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/72-production-release-sector-standing.prompt.md
+   +  - **15 of 15 ok**, including "Moyasar for renewals", which was "–" on 2026-11-06.
+== docs/review-loop/browser-prompts/73-p9-no-statements.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/73-p9-no-statements.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/74-p9-review-79-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/74-p9-review-79-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/75-p9-review-80-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/75-p9-review-80-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/76-p9-review-81-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/76-p9-review-81-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/77-p9-review-82-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/77-p9-review-82-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/78-p9-review-83-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/78-p9-review-83-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/79-p9-release-candidate.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/79-p9-release-candidate.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/80-p9-beta-release.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/80-p9-beta-release.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/81-p9-production-release.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/81-p9-production-release.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/82-lawyer-pack-check.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/82-lawyer-pack-check.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/83-lawyer-pack-review-88-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/83-lawyer-pack-review-88-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/84-lawyer-pack-review-89-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/84-lawyer-pack-review-89-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/85-lawyer-pack-review-90-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/85-lawyer-pack-review-90-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/86-lawyer-pack-review-91-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/86-lawyer-pack-review-91-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/87-lawyer-pack-review-92-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/87-lawyer-pack-review-92-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/88-lawyer-pack-owner-facts.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/88-lawyer-pack-owner-facts.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/outputs/72-production-release-sector-standing.md
+   +  - **15 of 15 ok**, including "Moyasar for renewals", which was "–" on 2026-11-06.
+== docs/review-loop/replies/78-production-release-of-the-sector-standing-fix-0266.md
+   +3. Step 18, item 4 — real renewal. The monitor confirms Moyasar was reached successfully on November 7, but this does not establish a
+== docs/review-loop/replies/87-p9-fix-released-to-production-ea51de796c.md
+   +5. Optional, non-blocking: F-12 duplicate webhook cleanup in Moyasar and optional server hardening remain owner-controlled. Neither is req
+== docs/review-loop/replies/88-lawyer-pack-checked-against-the-live-site.md
+   ation, commercial market-data rights, the named advisors' likenesses, Moyasar disclosures, Saudi data-protection obligations, and recurring billing
+== docs/review-loop/replies/89-lawyer-pack-review-88-s-fixes.md
+   it and verify a real customer's first renewal. The optional duplicate Moyasar webhook and server hardening remain owner-controlled but are not prer
+== docs/review-loop/replies/92-lawyer-pack-review-91-s-fixes.md
+   -<date>.md. Claude may prepare required changes, but releases and any Moyasar action still require separate owner approval.
+== docs/review-loop/replies/94-lawyer-pack-the-owner-s-facts-read-only.md
+   +The optional Moyasar duplicate-webhook cleanup and server hardening remain lower prioritie
+== docs/screenshots/lawyer-pack-check-2026-11-07/api-facts.sh
+   +echo "\$ GET $B/api/capabilities   (the address Moyasar was shown, legal questions (c))"
+== docs/screenshots/lawyer-pack-check-2026-11-07/api-facts.txt
+   +$ GET https://alphacouncil.tech/api/capabilities   (the address Moyasar was shown, legal questions (c))
+== docs/screenshots/lawyer-pack-check-2026-11-07/page-text/legal-privacy.en.txt
+   +Payment services. Moyasar or a successor payment provider processes payment credentials, tokens
+== docs/screenshots/lawyer-pack-check-2026-11-07/page-text/legal-privacy.en.txt
+   entionally receive or store full card numbers or card security codes.	Moyasar or another payment provider; generated by us.
+== docs/screenshots/lawyer-pack-check-2026-11-07/page-text/legal-refunds.en.txt
+   without undue delay and within any period required by applicable law. Moyasar, the card network, your bank or another payment intermediary controls
+== docs/screenshots/lawyer-pack-check-2026-11-07/page-text/legal-terms.en.txt
+   +Payments are processed by Moyasar or a successor payment service provider. Payment-card information is 
+== docs/screenshots/lawyer-pack-check-2026-11-07/page-text/pricing.en.txt
+   below are read from the same plan configuration our payment provider, Moyasar, charges.
+== docs/screenshots/lawyer-pack-check-2026-11-07/page-text/pricing.en.txt
+   +Payments are processed by Moyasar. AlphaCouncil is not currently charging VAT; any applicable tax will 
+== docs/screenshots/lawyer-pack-check-2026-11-07/range-ac35f28-83704b0.diff
+   it and verify a real customer's first renewal. The optional duplicate Moyasar webhook and server hardening remain owner-controlled but are not prer
+== docs/screenshots/p9-beta-2026-11-07/beta-checks.txt
+   +-       Moyasar for renewals: no renewal run since the last round
+== docs/screenshots/p9-beta-2026-11-07/tree-sha256.txt
+   c69d647f18ef4f5189d0f08adf16d1c50acf9489e209388  docs/qa-beta-2026-10/moyasar-checkout-interview-prompt.md
+== docs/screenshots/p9-beta-2026-11-07/tree-sha256.txt
+   581cc0cf397fed61b4bc44d5f9191588a0  docs/screenshots/accounts-billing/moyasar-3ds-emulator.png
+== docs/screenshots/p9-beta-2026-11-07/tree-sha256.txt
+   8be9bb22fa571e99ab65c3eb9d2fe670f9c249dd1991b5522fb641  web/src/types/moyasar-payment-form.d.ts
+== docs/screenshots/p9-production-2026-11-07/prod-checks.txt
+   +-       Moyasar for renewals: no renewal run since the last round
+== docs/screenshots/sector-standing-beta-2026-11-07/tree-sha256.txt
+   c69d647f18ef4f5189d0f08adf16d1c50acf9489e209388  docs/qa-beta-2026-10/moyasar-checkout-interview-prompt.md
+== docs/screenshots/sector-standing-beta-2026-11-07/tree-sha256.txt
+   581cc0cf397fed61b4bc44d5f9191588a0  docs/screenshots/accounts-billing/moyasar-3ds-emulator.png
+== docs/screenshots/sector-standing-beta-2026-11-07/tree-sha256.txt
+   8be9bb22fa571e99ab65c3eb9d2fe670f9c249dd1991b5522fb641  web/src/types/moyasar-payment-form.d.ts
+== docs/screenshots/sector-standing-prod-2026-11-07/monitor-status.txt
+   +ok      Moyasar for renewals: the run at 2026-11-07 10:00 UTC (13:00 Riyadh) reached 
+   Moyasar

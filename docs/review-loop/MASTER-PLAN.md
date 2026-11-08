@@ -133,6 +133,10 @@ Billing has been open since 2026-11-02.
       - **For the owner:** confirm three facts the pack marks, then send it with `docs/legal-questions-2026-10-27.md`.
       - **Reviews 89 to 92 tightened the AI and data wording; review 93 ACCEPTED the pack for the owner's Step 7
         handoff.** Public records point to Hostinger as the host, and the owner confirms the data centre's country.
+    - **Pushed 2026-11-08** on the owner's go-ahead: `eeb9a9d..dcc4189`, 97 commits.
+      - **Before:** scanned, with every hit read.
+      - **After:** publication verified by hash.
+      - **Not run:** the Argaam account check by its exact value (`docs/screenshots/push-2026-11-08/other-checks.md`).
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

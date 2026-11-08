@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-06   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `eeb9a9d` on 2026-11-06, the owner's twelfth go-ahead in chat ("Yes, push")** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, three on 2026-11-02 took it `3aafa82` → `c1198ca` → `b61876d` → `12aafcc`, one on 2026-11-03 took it `6acce45..c046236`, and three on 2026-11-06 took it `c046236..ccfe063`, `ccfe063..b5655a5` and `b5655a5..eeb9a9d`; every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **production and beta both `ea51de796c`** (the P9 fix over the sector-standing fix `026699b906`, which is over `b5655a5064`). Beta got it 2026-11-07 on "Yes, deploy to beta", production at 19:35 UTC the same day on "Yes, deploy to production". Both are fix-only commits on local release branches (`release/sector-standing`, `release/p9-no-statements`), **not pushed**; `026699b906` and `b5655a5064`, the last on the public branch since the 2026-11-06 push, are kept on both tiers. *(Earlier on 2026-11-07 this line named production `026699b906`; until then `b5655a5064` on both tiers, released 2026-11-06; before that `5c18a3ae46`.)* *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-08   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `dcc4189` on 2026-11-08, the owner's thirteenth go-ahead in chat ("Yes, scan and push")** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, three on 2026-11-02 took it `3aafa82` → `c1198ca` → `b61876d` → `12aafcc`, one on 2026-11-03 took it `6acce45..c046236`, three on 2026-11-06 took it `c046236..ccfe063`, `ccfe063..b5655a5` and `b5655a5..eeb9a9d`, and one on 2026-11-08 took it `eeb9a9d..dcc4189` (97 commits); every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **production and beta both `ea51de796c`** (the P9 fix over the sector-standing fix `026699b906`, which is over `b5655a5064`). Beta got it 2026-11-07 on "Yes, deploy to beta", production at 19:35 UTC the same day on "Yes, deploy to production". Both are fix-only commits on local release branches (`release/sector-standing`, `release/p9-no-statements`), **not pushed**; `026699b906` and `b5655a5064`, the last on the public branch since the 2026-11-06 push, are kept on both tiers. *(Earlier on 2026-11-07 this line named production `026699b906`; until then `b5655a5064` on both tiers, released 2026-11-06; before that `5c18a3ae46`.)* *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -677,8 +677,10 @@ Older entries: `changelog-archive.md`.
         prose naming key shapes).
       - **Other checks:** value-shaped keys in the added lines 0; the `git ls-files` check clean.
       - **Not yet run:** the Argaam account check. It needs the server's session-gate line copied, unprinted, into
-        a scratch file, and is left for push time.
-      - **Still needs:** the owner's push go-ahead.
+        a scratch file, and is left for push time. **Not run at push time either (2026-11-08):** I missed it before
+        the push, and the permission check refused the read-only log read I tried after it
+        (`docs/screenshots/push-2026-11-08/other-checks.md`).
+      - ~~**Still needs:** the owner's push go-ahead.~~ **PUSHED 2026-11-08** inside `eeb9a9d..dcc4189`.
     - **THE OWNER'S RULE ON REVIEWS (2026-11-07):** reviews now run in ChatGPT in the owner's browser on the max model
       (GPT-6, thinking effort High), not through the Codex CLI. The owner's words: "for chatgpt reviews you should use the
       broswer and set chatgpt on max model that part does not use credit and we will still have usage so set this as a
@@ -691,6 +693,19 @@ Older entries: `changelog-archive.md`.
     - **Next:** the reviewer's acceptance, then the owner's choice. The options are to keep today's room and fix the
       percentile and the P9 question, to screen a one-model option 2, or to stop.
   - **Before the app may use it:** the app's session total must count the calls a fallback superseded.
+
+- 2026-11-08 — **Pushed `eeb9a9d..dcc4189` (97 commits, 372 files) on the owner's go-ahead ("Yes, scan and push").**
+  Evidence: `docs/screenshots/push-2026-11-08/`.
+  - **Before the push:** Step 2's diff scan gave 86 hits, every one read. All are the word "Moyasar" in prose,
+    in public legal text or in file names; none is a value. The history scan found only the standing false
+    positives.
+  - **Wider checks:** the push added no new email address, no password value and no key. The PNGs are signed-out
+    pages.
+  - **After the push:** a fast-forward, `0 0`, with the other five heads untouched. Six anonymous sha-pinned
+    fetches hash-equal `git cat-file`.
+  - **Not run:** the Argaam account check by its exact value. I missed it before the push, and the permission
+    check refused the read-only log read afterwards. The owner can run the count (`other-checks.md`).
+  - Nothing was deployed and nothing was paid for. This entry is itself unpushed, by construction.
 
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
@@ -932,6 +947,18 @@ Older entries: `changelog-archive.md`.
     **sha256-identical to `git cat-file -p 12aafcc:<path>`**, with `def room_flags` at line 205 of
     the published `probe_run.py` and the `PRIORITY TWO AND THREE` heading at line 269 of the
     published `probe_report.py`.
+  - *Done (2026-11-08):* `eeb9a9d..dcc4189` (97 commits, 372 files) on the owner's go-ahead in chat ("Yes, scan and
+    push"). Evidence: `docs/screenshots/push-2026-11-08/`.
+    - **The push:** a fast-forward, nothing forced, `rebuild` the only refspec, and no CI files in the range. The
+      other five heads sit at the hashes recorded before.
+    - **The git checks:** local, remote-tracking and anonymous `ls-remote` all read `dcc4189`; left/right `0 0`.
+    - **The diff scan:** 86 hits, every one read. All are the word "Moyasar" in prose, in public legal-page text,
+      or in file names in a hash listing; none is a value.
+    - **The history scan:** only the standing false positives. Neither env template changed in the range.
+    - **Published:** six anonymous sha-pinned fetches answer 200 and hash-equal `git cat-file`.
+    - **Not run:** the Argaam account check by its exact value. I missed it before the push, and the permission
+      check refused the read-only log read I tried afterwards. What covers it and what does not is in
+      `other-checks.md`.
   - *Ruling (2026-10-29):* **this step's third Done-when is now failing, and the push went ahead
     anyway.** The two tests used on 2026-10-22 to prove the repository private - anonymous `git -c
     credential.helper= ls-remote`, and `api.github.com/repos/…` - have both reversed: the first

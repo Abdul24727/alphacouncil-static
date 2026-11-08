@@ -1,0 +1,28 @@
+# Push of rebuild, 2026-11-08, on the owner's go-ahead in chat ("Yes, scan and push")
+$ git push origin rebuild
+To https://github.com/Abdul24727/alphacouncil-static
+   eeb9a9d..dcc4189  rebuild -> rebuild
+(exit 0; fast-forward, nothing forced, rebuild the only refspec, no CI files in the range, default branch master)
+
+# git state after the push
+rebuild         dcc4189784765ed92fd32ce0fbe1d1bec39b47c2
+origin/rebuild  dcc4189784765ed92fd32ce0fbe1d1bec39b47c2
+ls-remote       dcc4189784765ed92fd32ce0fbe1d1bec39b47c2	refs/heads/rebuild  (anonymous)
+left/right      0	0
+range           97 commits,  372 files changed, 70241 insertions(+), 142 deletions(-)
+
+# the remote's other heads (untouched)
+6009e79b37f95d9d30fa9028c952acc7a5bc3cad	refs/heads/claude/affectionate-visvesvaraya-15c98d
+2a8d9e59108c06625f695231ed63ff156747dde1	refs/heads/feat/settings-market-multiselect
+3d485885fccfafefa326d009c8ff4169840328a5	refs/heads/master
+1be3c0badcb16f717b910a6c66d95e87c57a4938	refs/heads/staging-option-a
+8d4dbaf25ed4cf81e82a82feb4323efd6b610a32	refs/heads/vps-production-sync-20260714
+
+# publication: anonymous sha-pinned fetch vs the committed blob
+# curl -fsS https://raw.githubusercontent.com/Abdul24727/alphacouncil-static/dcc4189784765ed92fd32ce0fbe1d1bec39b47c2/<path>  vs  git cat-file -p dcc4189784765ed92fd32ce0fbe1d1bec39b47c2:<path> | sha256sum
+http 200 558930 bytes  MATCH  e77355dd08c3852ed3f4e5fc2556e443855fefc67af3b3ff7bd49d75e8350dd8  PROJECT.md
+http 200 24367 bytes  MATCH  0ef1c5cb262a0e53237b6a07a8ec80aef91265da800785a4dfe5f37325138cf4  docs/lawyer-review-pack-2026-11-06.md
+http 200 19123 bytes  MATCH  ecb6a29dd4a642fb32cb74d258531a1ff12fc94c986b417ac33f360e2817e9dd  docs/lawyer-pack-check-2026-11-07.md
+http 200 9764 bytes  MATCH  7cf1c5a92fed87809a747282e2adc2cccf8974fcdcc0eb3e75a22d26f360d3bf  docs/release-production-p9-2026-11-07.md
+http 200 3225 bytes  MATCH  2ae5f713b60bda4ac0c11bf31ab51a545ed9e9f25b37a72f7f886a302ec2aa25  docs/review-loop/replies/94-lawyer-pack-the-owner-s-facts-read-only.md
+http 200 162043 bytes  MATCH  d70359c6948d604fe24b94a37a40ff2a848bce2bc3009d1fb512687cde008334  docs/screenshots/sector-standing-beta-2026-11-07/en-1440-2222.png

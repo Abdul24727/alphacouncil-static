@@ -1,0 +1,7 @@
+# History scan, run 2026-11-08 before the push
+# command: git log -p eeb9a9d..dcc4189 | grep -nE 'sk_live_|sk_test_|pk_live_|BEGIN [A-Z ]*PRIVATE KEY|OPENROUTER_API_KEY=.+'
+66569:+        `sk_test_x` fixture, the `startswith("sk_test_")` check, the commented `# OPENROUTER_API_KEY=` line, and
+
+# git log --all -p, distinct hit lines: 51
+# tracked env-shaped files: api/.env.example deploy/api.env.example 
+# changed in the pushed range: 0
