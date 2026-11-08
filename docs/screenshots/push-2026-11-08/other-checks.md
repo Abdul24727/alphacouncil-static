@@ -53,6 +53,11 @@ The checks below go beyond Step 2's two scans (`scan-diff-hits.txt`, `scan-histo
 - **What remains unverified:** if the account name is not an email address and appears in a line that does not mention
   Argaam, these checks would not see it.
 - **For the owner:**
-  - **Option 1:** run the count yourself, e.g. `git log -p eeb9a9d..dcc4189 | grep -cF '<the account name>'`, plus the
-    same over `git ls-files`.
+  - **Option 1:** run the count yourself:
+    `scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file holding the name>`.
+    - **What it prints:** three counts and nothing else.
+    - **The file:** keep it outside the repository and delete it after.
+    - **The result:** three zeros (exit 0) clears this push.
+    - *(Until review 96 this option gave raw `grep -cF` and `git ls-files` commands. Those could print file names, or
+      nothing at all instead of 0, and `git ls-files` reads the index rather than the pushed tip.)*
   - **Option 2:** allow the log read, and Claude runs it.

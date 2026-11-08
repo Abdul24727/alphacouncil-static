@@ -138,6 +138,8 @@ Billing has been open since 2026-11-02.
       - **After:** publication verified by hash.
       - **Not run:** the Argaam account check by its exact value (`docs/screenshots/push-2026-11-08/other-checks.md`).
       - **Review 95 ACCEPTED it.** Step 2 now names the Argaam check as the owner's checkpoint before every push.
+      - **Review 96 said FIX.** Step 2 no longer claims the name is absent, and the check is now
+        `scripts/push-checks/count-exact-value.sh`. It prints three counts only; its test passes with a dummy value.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

@@ -97,3 +97,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-07 21:09 UTC — **Lawyer pack: review 92's fixes** — ACCEPT — [93-lawyer-pack-review-92-s-fixes.md](replies/93-lawyer-pack-review-92-s-fixes.md)
 - 2026-11-07 21:18 UTC — **Lawyer pack: the owner's facts, read-only** — ACCEPT — [94-lawyer-pack-the-owner-s-facts-read-only.md](replies/94-lawyer-pack-the-owner-s-facts-read-only.md)
 - 2026-11-08 10:35 UTC — **The push of eeb9a9d..dcc4189** — ACCEPT — [95-the-push-of-eeb9a9d-dcc4189.md](replies/95-the-push-of-eeb9a9d-dcc4189.md)
+- 2026-11-08 10:43 UTC — **Review 95's fixes: the Argaam checkpoint and the PNG wording** — FIX — [96-review-95-s-fixes-the-argaam-checkpoint-and-the-pn.md](replies/96-review-95-s-fixes-the-argaam-checkpoint-and-the-pn.md)

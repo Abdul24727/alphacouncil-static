@@ -1,0 +1,34 @@
+# count-exact-value.sh, tested 2026-11-08 (review 96's DONE WHEN)
+
+$ bash scripts/push-checks/test-count-exact-value.sh   # throwaway repo, dummy value
+PASS  absent value: three zeros
+PASS  present value: nonzero counts, exit 3
+PASS  present value: value not printed
+PASS  present value: no file names printed
+PASS  present value: exactly three lines
+PASS  message-only commit: history counts it
+PASS  CRLF value file: CR stripped
+PASS  git error (bad range start)
+PASS  git error (bad tip)
+PASS  not a range
+PASS  missing value file
+PASS  empty value file
+PASS  blank line only
+PASS  two lines
+failures: 0
+exit 0
+
+# smoke runs on this repository; the value files sat in the session scratch folder and were deleted after
+$ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: a value known to be absent>
+history 0
+tracked-files 0
+file-names 0
+exit 0
+$ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: "moyasar", a word known to be present>
+history 91
+tracked-files 521
+file-names 3
+exit 3
+$ scripts/push-checks/count-exact-value.sh nosuchref..dcc4189 <file: the absent value>   # a git error
+error: git log failed
+exit 2
