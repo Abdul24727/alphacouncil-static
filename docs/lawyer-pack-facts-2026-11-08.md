@@ -88,5 +88,12 @@ for the past month, grouped by model and provider, plus the Privacy and Routing 
   - **Not opened:** neither payment's details (card or customer), so nothing personal was read. Dates are as the
     dashboard shows them (day/month/year).
 - **Accounts:** **PENDING.** The session's permission check refused a counts-only query of production's accounts
-  database again on 2026-11-08, even with the owner's instruction. The owner can run the same query, counts only, in
-  their own terminal.
+  database again on 2026-11-08, even with the owner's instruction. The owner can run the same query in their own Git
+  Bash. It prints counts only, never a name, an email or card data:
+
+  ```bash
+  ssh root@alphacouncil.tech "docker exec acp-postgres psql -U acp -d acp_prod -At -F ' ' -c \"SELECT 'accounts', count(*) FROM users UNION ALL SELECT 'accounts_since_2026-11-06', count(*) FROM users WHERE created_at >= '2026-11-06' UNION ALL SELECT 'payments', count(*) FROM billing_payments UNION ALL SELECT 'payment_' || status, count(*) FROM billing_payments GROUP BY status UNION ALL SELECT 'subscription_' || status, count(*) FROM subscriptions GROUP BY status;\""
+  ```
+
+  The site's own payment records (`billing_payments`) began with this rebuild. So they should hold the 2026-11-02
+  payment, and not the 2026-08-12 one, which Moyasar holds.
