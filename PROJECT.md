@@ -859,6 +859,12 @@ Older entries: `changelog-archive.md`.
       - **Review 108 said FIX, on the record only:** two lines still said "uncommitted", and the record commit's
         contents were not shown. Both are fixed: the wording now says the entries were held, then committed, and
         `record-commit-check.txt` shows `git show --stat` and `--check` of `e797dd6` with the local and remote refs.
+      - **Review 109 ACCEPTED the record fixes.** Its step was the Step 7 owner handoff note,
+        `docs/step7-lawyer-handoff-2026-11-08.md`. It covers:
+        - the three facts to confirm, with how to check each and no answers filled in;
+        - the two documents, with their links pinned to `7b32e2d`, each hash-checked against the commit;
+        - access, including the beta password given privately;
+        - where the advice lands.
     - **Against the previous script:** both of review 97's cases gave three zeros and exit 0 there. Here they give
       exit 3.
 
