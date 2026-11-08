@@ -39,6 +39,7 @@ echo x > "user-مستخدم-42.txt"                                        # a n
 printf 'PNG\000\001 dummy.binary-77 \000\377' > blob.bin                # a binary file, deleted below
 echo "secret dummy.text-55 here" > gone.txt                             # a text file, deleted below
 mkdir "dir-folder-31" && echo y > "dir-folder-31/inner.txt"             # a folder name
+printf 'x dummy.utf16-88 y' | iconv -f UTF-8 -t UTF-16LE > u16.txt      # text saved as UTF-16
 git add . && git commit -q -m "scenario files"
 git rm -q blob.bin gone.txt && git commit -q -m "delete the binary and text files"
 git mv base.txt "renamed-name-99.txt" && git commit -q -m "rename an old file"  # old blob, new name
@@ -96,6 +97,17 @@ out=$("$script" base..tip "$v" 2>&1); rc=$?
 v=$(val folder 'dir-folder-31')
 out=$("$script" base..tip "$v" 2>&1); rc=$?
 [ "$(get "$out" file-names)" -ge 1 ] && only_counts "$out"; check "folder name: found" 3 $rc $?
+
+v=$(val utf16 'dummy.utf16-88')
+out=$("$script" base..tip "$v" 2>&1); rc=$?
+[ "$(get "$out" file-contents)" -ge 1 ] && only_counts "$out"; check "UTF-16 text file: found" 3 $rc $?
+
+v=$(val spaced '  dummy.account-42 ')
+out=$("$script" base..tip "$v" 2>&1); rc=$?
+[ "$(get "$out" file-contents)" -eq 1 ]; check "value file with surrounding spaces: trimmed" 3 $rc $?
+
+v=$(val spaces '   ')
+"$script" base..tip "$v" > /dev/null 2>&1; check "value of spaces only" 2 $? 0
 
 v=$(val short 'ab')
 "$script" base..tip "$v" > /dev/null 2>&1; check "value shorter than 3 characters" 2 $? 0

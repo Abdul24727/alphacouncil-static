@@ -13,8 +13,12 @@
 #                      again inside the range (`git rev-list --objects <range>`) - plus every file in the tip
 #   file-names <n>     paths (files and folders) in the full tree of every commit in the range that contain it,
 #                      read with `ls-tree -z`, which never quotes non-ASCII names
-# Matching is byte-exact under LC_ALL=C, ignoring ASCII case only. It prints exactly those three lines: no
-# matching text and no file name.
+# Matching is byte-exact under LC_ALL=C, ignoring ASCII case only; file contents are searched with NUL bytes
+# removed, so UTF-16 text is found for an ASCII value. It prints exactly those three lines: no matching text and
+# no file name.
+# It CANNOT see: text drawn in images (screenshots), text inside compressed files (zip, docx, PDF streams, PNG
+# text chunks), or encoded forms (URL %40, HTML entities, base64). Screenshots need a person's eyes; run it once
+# per encoded variant if one is plausible.
 # Exit 0: all three are 0. Exit 3: any is not (stop the push). Exit 2: bad input or a git error (stop).
 set -u
 export LC_ALL=C
@@ -35,9 +39,9 @@ esac
 tmp=$(mktemp -d) || fail "mktemp failed"
 trap 'rm -rf "$tmp"' EXIT
 
-# One pattern, exactly: strip a trailing CR, refuse an empty value or more than one line,
+# One pattern, exactly: strip CR and surrounding spaces, refuse an empty value or more than one line,
 # because an empty line in a grep -f file would match everything.
-tr -d '\r' < "$vf" > "$tmp/pat"
+tr -d '\r' < "$vf" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' > "$tmp/pat"
 lines=$(grep -c '' "$tmp/pat")
 [ "$lines" -eq 1 ] || fail "value file must hold exactly one line"
 [ -n "$(head -c 1 "$tmp/pat")" ] || fail "value is empty"
@@ -69,7 +73,9 @@ awk '$1 == "blob" { print $2 }' "$tmp/types" > "$tmp/blobs"
 git ls-tree -r "$tip" > "$tmp/tip-tree" || fail "git ls-tree failed on the tip"
 awk '$2 == "blob" { print $3 }' "$tmp/tip-tree" >> "$tmp/blobs"
 sort -u "$tmp/blobs" -o "$tmp/blobs"
-git cat-file --batch < "$tmp/blobs" > "$tmp/blob-data" || fail "git cat-file failed on blobs"
+git cat-file --batch < "$tmp/blobs" > "$tmp/blob-data0" || fail "git cat-file failed on blobs"
+# NUL bytes removed, so text saved as UTF-16 is found too (for an ASCII value); in UTF-8 text this changes nothing
+tr -d '\000' < "$tmp/blob-data0" > "$tmp/blob-data" || fail "tr failed on blobs"
 count "$tmp/blob-data" file-contents
 f=$COUNT
 

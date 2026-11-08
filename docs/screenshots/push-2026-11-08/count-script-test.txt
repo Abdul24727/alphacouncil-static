@@ -20,12 +20,15 @@ PASS  binary file added then deleted: found, only counts printed
 PASS  text file added then deleted: found
 PASS  old file renamed to the value: found
 PASS  folder name: found
+PASS  UTF-16 text file: found
+PASS  value file with surrounding spaces: trimmed
+PASS  value of spaces only
 PASS  value shorter than 3 characters
 PASS  three-dot range refused
 failures: 0
 exit 0
 
-# review 97's two bypasses, run against the previous version (9dbf448) and this one, in a throwaway repo:
+# review 97's two bypasses, run against the previous version (9dbf448) and the raw-object version, in a throwaway repo:
 # a file named user-<arabic>-42.txt, and a binary file holding dummy.binary-77 added then deleted
 --- the non-ASCII file name
 old (9dbf448):
