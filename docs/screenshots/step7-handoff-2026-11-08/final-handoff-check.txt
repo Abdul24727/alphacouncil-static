@@ -17,13 +17,13 @@ docs/lawyer-review-pack-2026-11-06.md
 docs/legal-questions-2026-10-27.md
   sha256 8e938378d4c2f42138efc4a7ca1336347845a33fbeb2ccd1a452d7bd8884ccb9   bytes 12066   matches HEAD: yes   blob b62976b489d14d5b807b1a5ade5a10f49b543d57
 
-# the confirmed facts, as each document states them (matching lines counted)
-fact                                 pack  facts  handoff questions
-four accounts                           1      1        1     38
-two refunded owner-test payments        1      1        1     38
-no paying customer                      1      2        1      1
-Hostinger in Paris                      2      1        1     38
-AI location not verified                5      2        1     38
+# the confirmed facts, as each document states them (matching lines counted; '-' = the document does not state it)
+fact                                 pack  facts  handoff  questions
+four accounts                           1      1        1          -
+two refunded owner-test payments        1      1        1          -
+no paying customer                      1      2        1          1
+Hostinger in Paris                      2      1        1          -
+AI location not verified                5      2        1          -
 (the questions file, written 2026-10-27, states only 'As of 2026-11-02 no customer has paid' and 'The merchant
  account was approved in August 2026'; it does not state accounts, hosting or AI processing, so nothing in it contradicts)
 
