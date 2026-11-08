@@ -137,6 +137,7 @@ Billing has been open since 2026-11-02.
       - **Before:** scanned, with every hit read.
       - **After:** publication verified by hash.
       - **Not run:** the Argaam account check by its exact value (`docs/screenshots/push-2026-11-08/other-checks.md`).
+      - **Review 95 ACCEPTED it.** Step 2 now names the Argaam check as the owner's checkpoint before every push.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

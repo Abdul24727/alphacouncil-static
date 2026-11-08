@@ -32,6 +32,7 @@ The checks below go beyond Step 2's two scans (`scan-diff-hits.txt`, `scan-histo
   - **The signed-out launch check:** 74 PNGs, of production as a visitor.
   - **Stock 2222's Financials tab:** 8 PNGs, 4 from the release candidate's check and 4 from beta. I opened one of
     each: neither shows any account detail, and the beta one shows "Sign in".
+  - **Not opened:** the other six. So this file does not show that all 82 are signed out.
 - **CI:** no CI or deploy configuration in the range, so the push starts nothing.
 - **Default branch:** `master`, not `rebuild`.
 
