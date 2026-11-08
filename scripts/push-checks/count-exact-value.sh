@@ -58,9 +58,43 @@ tmp=$(mktemp -d) || fail "mktemp failed"
 [ -n "$tmp" ] && [ -d "$tmp" ] || fail "mktemp gave no folder"
 trap 'rm -rf "$tmp"' EXIT
 
+# utf8_ok <string>: 0 when every byte sequence is well-formed UTF-8 (no overlongs, no surrogates, nothing above
+# U+10FFFF) and no C1 control (U+0080-U+009F) appears. Pure bash, one byte at a time under LC_ALL=C.
+utf8_ok() {
+  local s=$1 n=${#1} i=0 b c j k lo hi
+  while (( i < n )); do
+    printf -v b '%d' "'${s:i:1}"
+    if (( b < 0x80 )); then (( i += 1 )); continue; fi
+    lo=0x80; hi=0xBF
+    if   (( b >= 0xC2 && b <= 0xDF )); then k=1
+    elif (( b == 0xE0 )); then k=2; lo=0xA0
+    elif (( b >= 0xE1 && b <= 0xEC )) || (( b == 0xEE || b == 0xEF )); then k=2
+    elif (( b == 0xED )); then k=2; hi=0x9F
+    elif (( b == 0xF0 )); then k=3; lo=0x90
+    elif (( b >= 0xF1 && b <= 0xF3 )); then k=3
+    elif (( b == 0xF4 )); then k=3; hi=0x8F
+    else return 1
+    fi
+    (( i + k < n )) || return 1
+    printf -v c '%d' "'${s:i+1:1}"
+    (( c >= lo && c <= hi )) || return 1
+    (( b == 0xC2 && c <= 0x9F )) && return 1
+    for (( j = 2; j <= k; j++ )); do
+      printf -v c '%d' "'${s:i+j:1}"
+      (( c >= 0x80 && c <= 0xBF )) || return 1
+    done
+    (( i += k + 1 ))
+  done
+  return 0
+}
+
 # The value: exactly one line of UTF-8; a UTF-8 byte-order mark (Notepad may add one), CR and surrounding spaces
-# stripped, in bash. A UTF-16 file is refused, and so is any control character left in the value: either would
-# make the pattern unmatchable, and a pattern that cannot match would report "none found".
+# stripped, in bash. Refused: a NUL byte anywhere in the file (UTF-16 or other wide text), a UTF-16 byte-order
+# mark, bytes that are not well-formed UTF-8 (Latin-1, Windows-1252, UTF-16 without a mark), and any control
+# character. Each would make the pattern unmatchable, and a pattern that cannot match would report "none found".
+# A file written in another encoding whose bytes happen to be valid UTF-8 (for example a value encoded twice)
+# cannot be told apart by its bytes; for a non-ASCII value, run a second check with a variant if in doubt.
+if IFS= read -r -d '' _ < "$vf"; then fail "the value file holds a NUL byte; save it as UTF-8"; fi
 mapfile -t vlines < "$vf" || fail "reading the value failed"
 [ "${#vlines[@]}" -ge 1 ] || fail "value file must hold exactly one line"
 case "${vlines[0]}" in
@@ -74,6 +108,7 @@ v=${v##+([[:space:]])}
 v=${v%%+([[:space:]])}
 [ -n "$v" ] || fail "value is empty"
 [[ $v == *[[:cntrl:]]* ]] && fail "value holds a control character"
+utf8_ok "$v" || fail "the value is not valid UTF-8; save the file as UTF-8"
 [ "${#v}" -ge 3 ] || fail "value is too short to search for"
 
 # Pattern files. names: the value. contents: the value, and for a printable-ASCII value also the value with a

@@ -45,6 +45,7 @@ printf 'PNG\000\001 dummy.binary-77 \000\377' > blob.bin                # a bina
 echo "secret dummy.text-55 here" > gone.txt                             # a text file, deleted below
 mkdir "dir-folder-31" && echo y > "dir-folder-31/inner.txt"             # a folder name
 printf 'x dummy.utf16-88 y' | iconv -f UTF-8 -t UTF-16LE > u16.txt      # text saved as UTF-16
+printf 'caf\303\251 and \344\270\255\346\226\207\346\265\213\350\257\225\n' > intl.txt  # UTF-8 "café" and "中文测试"
 git add . && git commit -q -m "scenario files"
 git rm -q blob.bin gone.txt && git commit -q -m "delete the binary and text files"
 git mv base.txt "renamed-name-99.txt" && git commit -q -m "rename an old file"  # old blob, new name
@@ -133,6 +134,29 @@ u16="$work/u16.txt"; { printf '\377\376'; printf 'dummy.account-42\r\n' | iconv 
 "$script" base..tip "$u16" > /dev/null 2>&1; check "UTF-16 value file refused" 2 $? 0
 ctl="$work/ctl.txt"; printf 'dummy\001account-42\n' > "$ctl"
 "$script" base..tip "$ctl" > /dev/null 2>&1; check "control character in the value refused" 2 $? 0
+
+# review 101: a value file in another encoding must be refused, not read as an unmatchable value
+enc() { printf "$2" > "$work/enc-$1.txt"; echo "$work/enc-$1.txt"; }
+f=$(enc zh8 '\344\270\255\346\226\207\346\265\213\350\257\225\n')                  # "中文测试", UTF-8
+out=$("$script" base..tip "$f" 2>&1); rc=$?
+[ "$(get "$out" file-contents)" -ge 1 ] && only_counts "$out"; check "UTF-8 Chinese value: found" 3 $rc $?
+f=$(enc cafe8 'caf\303\251\n')                                                     # "café", UTF-8
+out=$("$script" base..tip "$f" 2>&1); rc=$?
+[ "$(get "$out" file-contents)" -ge 1 ] && only_counts "$out"; check "UTF-8 accented value: found" 3 $rc $?
+f="$work/enc-zh16be.txt"; printf '\344\270\255\346\226\207\346\265\213\350\257\225' | iconv -f UTF-8 -t UTF-16BE > "$f"
+"$script" base..tip "$f" > /dev/null 2>&1; check "UTF-16BE value without a mark refused (review 101)" 2 $? 0
+f=$(enc cafe1 'caf\351\n')                                                         # "café", Latin-1
+"$script" base..tip "$f" > /dev/null 2>&1; check "Latin-1 value refused (review 101)" 2 $? 0
+f="$work/enc-ascii16le.txt"; printf 'dummy.account-42' | iconv -f UTF-8 -t UTF-16LE > "$f"
+"$script" base..tip "$f" > /dev/null 2>&1; check "UTF-16LE value without a mark refused" 2 $? 0
+f=$(enc nul 'dummy.account-42\000')
+"$script" base..tip "$f" > /dev/null 2>&1; check "value file ending in a NUL byte refused" 2 $? 0
+f=$(enc overlong '\300\257dummy\n')
+"$script" base..tip "$f" > /dev/null 2>&1; check "overlong UTF-8 refused" 2 $? 0
+f=$(enc c1 'dum\302\205my\n')
+"$script" base..tip "$f" > /dev/null 2>&1; check "C1 control character refused" 2 $? 0
+f=$(enc cut 'dummy\344\270\n')
+"$script" base..tip "$f" > /dev/null 2>&1; check "UTF-8 cut short refused" 2 $? 0
 
 v=$(val short 'ab')
 "$script" base..tip "$v" > /dev/null 2>&1; check "value shorter than 3 characters" 2 $? 0

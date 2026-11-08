@@ -1,4 +1,4 @@
-# count-exact-value.sh after review 100 (git and grep only), tested 2026-11-08
+# count-exact-value.sh after review 101 (git and grep only; value file must be UTF-8), tested 2026-11-08
 
 $ bash -n scripts/push-checks/count-exact-value.sh && bash -n scripts/push-checks/test-count-exact-value.sh
 exit 0
@@ -32,6 +32,15 @@ PASS  base line the range edits away: found
 PASS  value file with a UTF-8 byte-order mark: found
 PASS  UTF-16 value file refused
 PASS  control character in the value refused
+PASS  UTF-8 Chinese value: found
+PASS  UTF-8 accented value: found
+PASS  UTF-16BE value without a mark refused (review 101)
+PASS  Latin-1 value refused (review 101)
+PASS  UTF-16LE value without a mark refused
+PASS  value file ending in a NUL byte refused
+PASS  overlong UTF-8 refused
+PASS  C1 control character refused
+PASS  UTF-8 cut short refused
 PASS  value shorter than 3 characters
 PASS  three-dot range refused
 PASS  grep fail, value present: exit 2
@@ -52,6 +61,26 @@ PASS  text tools broken, value dummy.deleted-41: same result
 PASS  text tools broken, value dummy.deleted-name-91: same result
 failures: 0
 exit 0
+
+# review 101's two cases: a value file in another encoding, against 6a68598 (previous) and this version (now)
+--- "中文测试" saved as UTF-16BE without a mark; the repo holds it as UTF-8
+previous (6a68598):
+commits 0
+file-contents 0
+file-names 0
+exit 0
+now:
+error: the value is not valid UTF-8; save the file as UTF-8
+exit 2
+--- "café" saved as Latin-1; the repo holds it as UTF-8
+previous (6a68598):
+commits 0
+file-contents 0
+file-names 0
+exit 0
+now:
+error: the value is not valid UTF-8; save the file as UTF-8
+exit 2
 
 # review 100's two cases, reproduced as it described them, against 2e98f72 (previous) and this version (now)
 --- an awk silent only for the base snapshot (the base-only blob holds the value)
