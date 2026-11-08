@@ -105,3 +105,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-08 12:02 UTC — **Review 100's fix: only git and grep touch the data** — FIX — [101-review-100-s-fix-only-git-and-grep-touch-the-data.md](replies/101-review-100-s-fix-only-git-and-grep-touch-the-data.md)
 - 2026-11-08 12:16 UTC — **Review 101's fix: the value must be well-formed UTF-8** — FIX — [102-review-101-s-fix-the-value-must-be-well-formed-utf.md](replies/102-review-101-s-fix-the-value-must-be-well-formed-utf.md)
 - 2026-11-08 12:30 UTC — **Review 102's fix: both ends of the range are read** — FIX — [103-review-102-s-fix-both-ends-of-the-range-are-read.md](replies/103-review-102-s-fix-both-ends-of-the-range-are-read.md)
+- 2026-11-08 12:44 UTC — **Review 103's fixes: real objects only, no tags or submodules** — FIX — [104-review-103-s-fixes-real-objects-only-no-tags-or-su.md](replies/104-review-103-s-fixes-real-objects-only-no-tags-or-su.md)

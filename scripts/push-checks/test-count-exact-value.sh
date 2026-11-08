@@ -200,7 +200,10 @@ echo y > pub.txt && git add pub.txt && git commit -q -m pub
 git tag -a pubtag -m "tag message with dummy.tagmsg-55"
 git config push.followTags true
 bare="$work/bare.git"; git init -q --bare "$bare"
-git push -q --no-follow-tags "$bare" pubtest 2> /dev/null
+pubtip=$(git rev-parse pubtest)
+git push -q --no-follow-tags --recurse-submodules=no "$bare" "$pubtip:refs/heads/pubtest" 2> /dev/null; prc=$?
+[ $prc -eq 0 ] && [ "$(git -C "$bare" rev-parse refs/heads/pubtest)" = "$pubtip" ]
+check "Step 2's push succeeded and the remote branch is at the pushed hash (review 104)" 0 0 $?
 [ -z "$(git -C "$bare" tag)" ]; check "push --no-follow-tags with followTags on: no tag published" 0 0 $?
 git -C "$bare" cat-file --batch-all-objects --batch | grep -a -q -F 'dummy.tagmsg-55'
 [ $? -eq 1 ]; check "push --no-follow-tags: the tag's message is not in the remote" 0 0 $?
@@ -208,6 +211,28 @@ bare2="$work/bare2.git"; git init -q --bare "$bare2"
 git push -q "$bare2" pubtest 2> /dev/null
 [ -n "$(git -C "$bare2" tag)" ]; check "plain push with followTags on: the tag IS published (the flag matters)" 0 0 $?
 git config --unset push.followTags
+git checkout -q -
+
+# review 104: pin, check, then push the checked hash. A commit made after the check must not go up.
+git checkout -q -b pinned tip
+bare3="$work/bare3.git"; git init -q --bare "$bare3"
+git push -q "$bare3" pinned 2> /dev/null
+echo safe > safe.txt && git add safe.txt && git commit -q -m safe
+B=$(git -C "$bare3" rev-parse refs/heads/pinned)
+T=$(git rev-parse pinned)
+v=$(val late 'dummy.late-commit-31')
+"$script" "$B..$T" "$v" > /dev/null 2>&1; check "pinned range checks clean" 0 $? 0
+echo "dummy.late-commit-31" > late.txt && git add late.txt && git commit -q -m "late, after the check"
+[ "$(git ls-remote "$bare3" refs/heads/pinned | cut -f1)" = "$B" ]; check "the remote has not moved since the pin" 0 0 $?
+git push -q --no-follow-tags --recurse-submodules=no "$bare3" "$T:refs/heads/pinned" 2> /dev/null; prc=$?
+[ $prc -eq 0 ] && [ "$(git -C "$bare3" rev-parse refs/heads/pinned)" = "$T" ]
+check "pinned push succeeded; the remote is at the checked hash" 0 0 $?
+git -C "$bare3" cat-file --batch-all-objects --batch | grep -a -q -F 'dummy.late-commit-31'
+[ $? -eq 1 ]; check "pinned push: the late commit's value is not in the remote" 0 0 $?
+bare4="$work/bare4.git"; git init -q --bare "$bare4"
+git push -q "$bare4" pinned 2> /dev/null
+git -C "$bare4" cat-file --batch-all-objects --batch | grep -a -q -F 'dummy.late-commit-31'
+check "a push naming the branch does send the late commit (why the pin matters)" 0 $? 0
 git checkout -q -
 
 # --- reviews 99 and 100: failing or lying helper tools.

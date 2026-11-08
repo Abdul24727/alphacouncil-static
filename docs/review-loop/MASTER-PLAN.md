@@ -154,6 +154,8 @@ Billing has been open since 2026-11-02.
         tests pass.
       - **Review 103 said FIX.** Replacement refs and auto-pushed tags could publish a value unscanned. The script
         ignores replace refs, Step 2 pushes with `--no-follow-tags`, and 63 tests pass.
+      - **Review 104 said FIX.** The checks and the push were not tied to one commit. Step 2 now pins `$BASE..$TIP`,
+        checks that range, and pushes `$TIP` itself. 69 tests pass.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

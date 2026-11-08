@@ -1,4 +1,4 @@
-# count-exact-value.sh after review 103 (git and grep only; real objects; tags not pushed), tested 2026-11-08
+# count-exact-value.sh after review 104 (git and grep only; real objects; pinned push), tested 2026-11-08
 
 $ bash -n scripts/push-checks/count-exact-value.sh && bash -n scripts/push-checks/test-count-exact-value.sh
 exit 0
@@ -48,9 +48,15 @@ PASS  diverged range, value only at its end: found
 PASS  setup: plain git now reads the replacement
 PASS  replaced blob: the real content is found
 PASS  grafts file refused
+PASS  Step 2's push succeeded and the remote branch is at the pushed hash (review 104)
 PASS  push --no-follow-tags with followTags on: no tag published
 PASS  push --no-follow-tags: the tag's message is not in the remote
 PASS  plain push with followTags on: the tag IS published (the flag matters)
+PASS  pinned range checks clean
+PASS  the remote has not moved since the pin
+PASS  pinned push succeeded; the remote is at the checked hash
+PASS  pinned push: the late commit's value is not in the remote
+PASS  a push naming the branch does send the late commit (why the pin matters)
 PASS  grep fail, value present: exit 2
 PASS  grep fail, value absent: exit 2
 PASS  grep silent, value present: exit 2
@@ -69,6 +75,10 @@ PASS  text tools broken, value dummy.deleted-41: same result
 PASS  text tools broken, value dummy.deleted-name-91: same result
 failures: 0
 exit 0
+
+# review 104's case is in the tests above: after a clean check of the pinned range, a later commit holding the
+# value is not sent by the pinned push (git push origin <checked-sha>:refs/heads/<branch>), while a push naming
+# the branch sends it.
 
 # review 103's replacement-object case, against 1e8382f (previous) and this version (now).
 # Its tag case is in the tests above: push --no-follow-tags publishes no tag even with push.followTags on.
@@ -233,7 +243,7 @@ $ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: a value known
 commits 0
 file-contents 0
 file-names 0
-exit 0  (4 s)
+exit 0  (3 s)
 $ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: "moyasar", a word known to be present>   # counts are matching lines
 commits 0
 file-contents 4129
