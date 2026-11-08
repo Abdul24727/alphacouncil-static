@@ -16,21 +16,25 @@ The pack marks each one. Claude could not settle them read-only; no answer is fi
 
 If any answer differs from what the pack says, tell Claude before sending, and the pack is corrected first.
 
+**Where they stand** (2026-11-08). Claude read them in the owner's own accounts, with the owner signed in
+(`docs/lawyer-pack-facts-2026-11-08.md`), and the pack is corrected:
+1. **Payments: done.** Moyasar's live account shows two payments, both the owner's own tests and both refunded. The
+   pack said one, and is corrected. **Accounts: still the owner's.** Run the counts-only query from that file in your
+   own terminal; Claude's permission check refuses it.
+2. **Hosting: done.** Hostinger, with the server in Paris, France.
+3. **The AI services: done as far as the account shows.** The pack now lists the companies that served the requests,
+   including two based in China, and notes that nothing on the account limits providers or regions. The country of
+   each request is still not shown, so that part stays not verified.
+
 ## 2. Send exactly two documents
 
-1. **`docs/lawyer-review-pack-2026-11-06.md`**, as updated 2026-11-07; the update note is at its top.
+1. **`docs/lawyer-review-pack-2026-11-06.md`**, as updated 2026-11-08; the update notes are at its top.
 2. **`docs/legal-questions-2026-10-27.md`**: questions (a) to (e), which the pack refers to and does not repeat.
 
-Attach the files, or send these public links. Both files are pinned to commit `7b32e2d`, so the text cannot change
-under the lawyer. Checked 2026-11-08: each published copy is hash-equal to the committed file.
-- https://github.com/Abdul24727/alphacouncil-static/blob/7b32e2d9b80186814a44294ce57eed3288192739/docs/lawyer-review-pack-2026-11-06.md
-- https://github.com/Abdul24727/alphacouncil-static/blob/7b32e2d9b80186814a44294ce57eed3288192739/docs/legal-questions-2026-10-27.md
-
-**If section 1 led to a correction, these links still show the old text.** In that case, either:
-- send the corrected files as attachments; or
-- after a new push you approve (with its checks), use links pinned to that new commit.
-
-Never send the `7b32e2d` links as the corrected version.
+**Attach the files.** The pack was corrected on 2026-11-08, after the commit `7b32e2d` that the public links
+pointed to. Those links show the old text, so they are removed here: never send them. If you want links, they come
+from the next push you approve, pinned to that commit and checked. The same holds after any later correction: send
+the files as they stand, never a link to an older commit.
 
 ## 3. Give the lawyer access
 

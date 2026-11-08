@@ -28,12 +28,20 @@ site (`docs/lawyer-pack-check-2026-11-07.md`). What changed:
 - what the beta copy shares with production (§2);
 - two known issues in the imported legal texts: the contact page, and the Arabic merchant notice (§6 (e)).
 
+**Updated 2026-11-08**, after the owner's facts were read in the owner's own accounts, read-only, with the owner
+signed in (`docs/lawyer-pack-facts-2026-11-08.md`):
+- **Payments (§2):** Moyasar's live account shows **two** payments ever, both the owner's own tests and both
+  refunded. This pack said one.
+- **Hosting (§5.2):** Hostinger, with the server in **Paris, France**, from the owner's hosting panel.
+- **The AI services (§5.2, (h)):**
+  - **Which companies served the requests over the past month:** from the owner's OpenRouter account. They include
+    two companies based in China.
+  - **Limits:** none on the account limits providers or regions.
+  - **Still not shown:** the country where each request was processed.
+
 **Not checked again, for the owner to confirm before sending:**
-- the account and payment counts in §2, which are as of 2026-11-06;
-- the hosting provider and its data centre's country (§5.2). Public records point to Hostinger, with the IP network
-  registered in France; the owner confirms;
-- where the AI services process the data, if the owner can find out, for example from OpenRouter's account
-  (§5.2, (h)). If it cannot be found out, the pack leaves it marked as not verified.
+- the number of accounts in §2, which is as of 2026-11-06. Counting it needs a read of production's database, which
+  the owner runs.
 
 *(Until review 91 this list also asked the owner to confirm the six seats' and the Chair's production models. They are
 now read from production's public status address, as configured: §5.2.)*
@@ -87,9 +95,14 @@ will be shown before payment."
   (`launch-check-2026-11-07.md`).
 - **Billing has been open since 2026-11-02.** The owner opened it before this review, waiving the plan's
   order; Step 7 comes after the launch check.
-- **One payment has ever been taken.** It was the owner's own, on 2026-11-02, and was refunded the same
-  evening. There is **no paying customer**.
-- **Four accounts.** Every test account the site's automated checks had made was deleted on 2026-11-06.
+- **Two payments have ever been taken, both the owner's own tests, and both were refunded.**
+  - **2026-08-12:** on the earlier version of the site.
+  - **2026-11-02:** refunded the same evening.
+
+  There is **no paying customer**. *(Corrected 2026-11-08 from Moyasar's live dashboard and the owner's answer.
+  Until then this said one payment.)*
+- **Four accounts**, as of 2026-11-06; the owner recounts them before sending. Every test account the site's
+  automated checks had made was deleted on 2026-11-06.
 - **Checked as it stands, on 2026-11-06, signed out on production** ([the launch check](launch-check-2026-11-06.md)),
   all passing:
   - the search-engine checks;
@@ -253,21 +266,39 @@ The dumps include the card-token ids.
       them.
     - **The room** uses the same OpenRouter client and key.
     - **The service's address** defaults to OpenRouter's, and any OpenAI-compatible endpoint can stand in for it.
-  - **Where the data is processed:** it may be processed outside the Kingdom. Three things were not verified: which
-    companies serve the requests, the countries where they process them, and production's routing settings.
+  - **Where the data is processed:** outside the Kingdom, by the companies listed below. *Updated 2026-11-08 from
+    the owner's OpenRouter account* (Activity, past month, by model and provider; Privacy and Routing settings).
+    - **The key:** one API key carried all of the account's traffic. That traffic includes the site's three models,
+      other work (image and Gemini models), and most likely the paid evaluation runs. Visitors' requests are not
+      separated out.
+    - **The companies that served the requests:**
+      - **The Chair's model (Claude Sonnet 5.5):** Microsoft Azure, Amazon (Claude Platform on AWS), and a little
+        directly by Anthropic.
+      - **The seats' model (DeepSeek V4 Pro):** Relace, DigitalOcean, Nebius, Crusoe, Baidu, Reka, DeepInfra,
+        Parasail and Cloudflare.
+      - **The Copilot's model (DeepSeek V3.2):** Phala, GMICloud, DeepInfra, Friendli, SiliconFlow, Google, Venice,
+        AtlasCloud, SambaNova, DigitalOcean and Baidu.
+      - **Based in China:** Baidu and SiliconFlow.
+    - **The account's settings:**
+      - **Limits:** no allowed or blocked list of providers, and no regional routing. EU-only or US-only routing
+        needs OpenRouter's Business plan.
+      - **Zero Data Retention:** off.
+      - **Training:** paid providers that train on request data are excluded.
+    - **Still not shown:** the country where each request was processed. OpenRouter does not report it.
   - **Who runs a request, when OpenRouter is used:** OpenRouter chooses which hosting company runs each request for
     a model, so the company is not necessarily the model's maker. What follows is what the settings and code
     define, not what production was seen doing:
     - **The code's default:** it asks OpenRouter to prefer the fastest host.
     - **A setting:** it can name hosts for the Copilot to try first, with the others as fallbacks.
-    - **Not read:** production's values for both, and which hosts served the site's requests.
+    - **Not read:** production's values for both. Fallbacks to other hosts are always allowed, so the account-wide
+      list of companies above applies to the site.
 - **The hosting provider:** a rented virtual server. *Added 2026-11-08 from public records* (`docs/screenshots/
   lawyer-pack-check-2026-11-07/hosting-public-records.txt`):
   - **Reverse DNS:** the site's address, 72.60.91.24, has the name `srv1556505.hstgr.cloud`, Hostinger's domain.
   - **The IP registry (RIPE):** it lists the network as `HOSTINGER-HOSTING` with country `FR`. Its contacts are
     Hostinger's, in Vilnius, Lithuania.
-  - **What a registry record does not prove:** where the server physically sits. *The owner to confirm the provider
-    and the data centre's country*, for example from the provider's control panel.
+  - **Confirmed 2026-11-08 in the owner's Hostinger panel:** the provider is Hostinger, and the server's location is
+    **Paris, France**. The account has one server, `srv1556505.hstgr.cloud`.
 
 ### 5.3 Cookies
 
@@ -315,8 +346,8 @@ These are built into the product (`docs/legal-questions-2026-10-27.md` (a) and (
 - (e) which legal papers the site needs.
 
 Updates since that file:
-- **(b) and (c):** "no customer has paid" is still true on 2026-11-06. The only payment was the owner's
-  own, refunded.
+- **(b) and (c):** "no customer has paid" is still true, checked in Moyasar on 2026-11-08. Both payments ever
+  taken were the owner's own tests, and both were refunded (§2).
 - **(e):** the "imported, not hand-written" texts are unchanged. Self-service account deletion exists
   (§3 step 6).
 - **(e), known issues in the imported texts** (found 2026-11-07; the texts are left as they are until the lawyer
@@ -343,9 +374,14 @@ page describes this as collected "from public market sources", and does not name
    (see (b))?
 
 **(h) Sending data outside the Kingdom.** When an AI feature calls an externally hosted model, the member's
-question and the company's data are sent to the configured AI service. Three things were not verified (§5.2):
-that requests are delivered, which companies serve them, and where those companies process them. Emails go
-through MailerSend. Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow or the
+question and the company's data are sent to the configured AI service.
+- **Shown by the owner's OpenRouter account (§5.2, 2026-11-08):** which companies served the requests over the past
+  month. They are about twenty, including two based in China, and nothing on the account limits providers or
+  regions.
+- **Not shown:** the country where each request was processed.
+- **Not tested:** that a request from the site is delivered.
+
+Emails go through MailerSend. Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow or the
 contracts with those providers need for that?
 
 **(i) Monthly renewal.** Pro renews automatically on the saved card. What must checkout say about it,

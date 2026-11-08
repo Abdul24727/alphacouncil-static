@@ -40,6 +40,13 @@ matches the live site, so that the owner can send it.
 3. **Where the AI services process the data** (§5.2, (h)), if the owner can find out. Otherwise the pack leaves it
    marked as not verified.
 
+*Update 2026-11-08:* Claude read all three in the owner's own accounts, with the owner signed in
+(`docs/lawyer-pack-facts-2026-11-08.md`), and the pack is corrected:
+- **Payments:** two, both the owner's own tests, both refunded.
+- **Hosting:** Paris, France.
+- **The AI services:** the serving companies are now listed. The country of each request is still not shown.
+- **Accounts:** the count is still the owner's to run.
+
 *(A fourth fact, the seats' and the Chair's production models, is no longer the owner's to confirm. After review 91
 they were read from production's public `/api/v1/debate/status`, as configured: `status-endpoints.txt`.)*
 

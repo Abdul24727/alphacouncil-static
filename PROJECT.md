@@ -874,6 +874,16 @@ Older entries: `changelog-archive.md`.
       - **Review 111 ACCEPTED the note: "ISSUES: none."** Its next step is the owner's: confirm the three facts, then
         send the two documents. Step 7 now waits on the owner, and nothing further is to be built, pushed or
         published for it.
+      - **The owner's three facts, read 2026-11-08 by Claude in the owner's own accounts** (owner: "check it ur self i
+        log you in where ever nedded"), read-only (`docs/lawyer-pack-facts-2026-11-08.md`):
+        - **Hosting:** Hostinger, with the server in Paris, France, from hPanel.
+        - **Payments:** Moyasar live shows two, both refunded. The owner says the 2026-08-12 one was "Mine, a test".
+          The pack said one.
+        - **The AI services:** OpenRouter shows about 20 serving companies, including Baidu and SiliconFlow (China),
+          with no provider or region limits and Zero Data Retention off. The country of each request is not shown.
+        - **Accounts:** the permission check refused the counts-only database query again, so the owner runs it.
+        - **The pack is corrected:** the update note at the top, §2, §5.2 and (h), plus (b)/(c). The handoff note's
+          `7b32e2d` links are removed, because they show the old text; attach the files.
     - **Against the previous script:** both of review 97's cases gave three zeros and exit 0 there. Here they give
       exit 3.
 
