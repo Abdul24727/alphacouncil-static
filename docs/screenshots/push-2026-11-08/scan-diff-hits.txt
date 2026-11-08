@@ -2,6 +2,7 @@
 # command: git diff origin/rebuild..rebuild | grep -nEi '<Step 2 regex>' | grep '^[0-9]*:+'
 # hits: 86  (hits not containing 'moyasar': 0)
 # each hit: file, then the matched text with up to 70 characters either side
+# trailing spaces at the end of a context were stripped for git diff --check
 == PROJECT.md
    +        - the monitor shows 15 of 15 ok, "Moyasar for renewals" included.
 == PROJECT.md
@@ -9,7 +10,7 @@
 == PROJECT.md
    e OpenRouter top-up (balance $7.83 after the pilot); F-12's duplicate Moyasar webhook; and, before the decision-grade run, D5's markers and the $42
 == docs/launch-check-2026-11-07.md
-   +- **Renewals:** "Moyasar for renewals" reads ok for the first time in these records: "the run 
+   +- **Renewals:** "Moyasar for renewals" reads ok for the first time in these records: "the run
 == docs/launch-check-2026-11-07.md
    +  … reached Moyasar". It was "–" on 2026-11-06.
 == docs/lawyer-pack-check-2026-11-07.md
@@ -150,11 +151,11 @@
 == docs/screenshots/lawyer-pack-check-2026-11-07/page-text/legal-refunds.en.txt
    without undue delay and within any period required by applicable law. Moyasar, the card network, your bank or another payment intermediary controls
 == docs/screenshots/lawyer-pack-check-2026-11-07/page-text/legal-terms.en.txt
-   +Payments are processed by Moyasar or a successor payment service provider. Payment-card information is 
+   +Payments are processed by Moyasar or a successor payment service provider. Payment-card information is
 == docs/screenshots/lawyer-pack-check-2026-11-07/page-text/pricing.en.txt
    below are read from the same plan configuration our payment provider, Moyasar, charges.
 == docs/screenshots/lawyer-pack-check-2026-11-07/page-text/pricing.en.txt
-   +Payments are processed by Moyasar. AlphaCouncil is not currently charging VAT; any applicable tax will 
+   +Payments are processed by Moyasar. AlphaCouncil is not currently charging VAT; any applicable tax will
 == docs/screenshots/lawyer-pack-check-2026-11-07/range-ac35f28-83704b0.diff
    it and verify a real customer's first renewal. The optional duplicate Moyasar webhook and server hardening remain owner-controlled but are not prer
 == docs/screenshots/p9-beta-2026-11-07/beta-checks.txt
@@ -174,5 +175,5 @@
 == docs/screenshots/sector-standing-beta-2026-11-07/tree-sha256.txt
    8be9bb22fa571e99ab65c3eb9d2fe670f9c249dd1991b5522fb641  web/src/types/moyasar-payment-form.d.ts
 == docs/screenshots/sector-standing-prod-2026-11-07/monitor-status.txt
-   +ok      Moyasar for renewals: the run at 2026-11-07 10:00 UTC (13:00 Riyadh) reached 
+   +ok      Moyasar for renewals: the run at 2026-11-07 10:00 UTC (13:00 Riyadh) reached
    Moyasar
