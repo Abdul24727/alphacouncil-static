@@ -1,0 +1,41 @@
+# Review 110's two corrections to docs/step7-lawyer-handoff-2026-11-08.md, before committing
+# (blank diff context lines, a single space each, were stripped so git diff --check passes)
+
+$ git diff --check; echo exit $?
+exit 0
+
+$ git diff -- docs/step7-lawyer-handoff-2026-11-08.md
+diff --git a/docs/step7-lawyer-handoff-2026-11-08.md b/docs/step7-lawyer-handoff-2026-11-08.md
+index ceccd64..5d47fbe 100644
+--- a/docs/step7-lawyer-handoff-2026-11-08.md
++++ b/docs/step7-lawyer-handoff-2026-11-08.md
+@@ -26,6 +26,12 @@ under the lawyer. Checked 2026-11-08: each published copy is hash-equal to the c
+ - https://github.com/Abdul24727/alphacouncil-static/blob/7b32e2d9b80186814a44294ce57eed3288192739/docs/lawyer-review-pack-2026-11-06.md
+ - https://github.com/Abdul24727/alphacouncil-static/blob/7b32e2d9b80186814a44294ce57eed3288192739/docs/legal-questions-2026-10-27.md
+
++**If section 1 led to a correction, these links still show the old text.** In that case, either:
++- send the corrected files as attachments; or
++- after a new push you approve (with its checks), use links pinned to that new commit.
++
++Never send the `7b32e2d` links as the corrected version.
++
+ ## 3. Give the lawyer access
+
+ - **The live site:** https://alphacouncil.tech (English) and https://alphacouncil.tech/ar (Arabic). It runs
+@@ -37,7 +43,10 @@ under the lawyer. Checked 2026-11-08: each published copy is hash-equal to the c
+
+ ## 4. When the advice comes back
+
+-- Save the lawyer's written advice as `docs/legal-advisors-<date>.md`, or send it to Claude to save there.
++- **The owner writes a summary** into `docs/legal-advisors-<date>.md`, as the pack's §7 and the questions' "After the
++  visit" say. It holds the points of advice, each with the change it requires, and no client names, personal data
++  or fees. The repository is public: never commit the lawyer's own letters, emails or documents, and do not hand
++  them to Claude to save. Claude works from the summary.
+ - Claude then prepares the required changes on `rebuild`. Each release to beta and to production needs its own
+   go-ahead from the owner, as always (pack §7 says what the lawyer delivers and how it lands).
+
+
+$ git diff --stat   # the note, plus the review log's line for reply 110
+ docs/review-loop/LOG.md                 |  1 +
+ docs/step7-lawyer-handoff-2026-11-08.md | 11 ++++++++++-
+ 2 files changed, 11 insertions(+), 1 deletion(-)

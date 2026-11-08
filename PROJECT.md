@@ -865,6 +865,12 @@ Older entries: `changelog-archive.md`.
         - the two documents, with their links pinned to `7b32e2d`, each hash-checked against the commit;
         - access, including the beta password given privately;
         - where the advice lands.
+      - **Review 110 said FIX on two points of the note, both fixed** (`step7-handoff-2026-11-08/review-110-fixes.txt`):
+        1. **The advice:** the note had the advice saved as received. It now has the owner write a summary into
+           `legal-advisors-<date>.md`, with points of advice only and no names, personal data or fees, as the pack's
+           §7 says. The lawyer's own correspondence is never committed, because the repository is public.
+        2. **The links:** the pinned links would show old text after a correction. The note now says to send
+           corrected files as attachments, or links to a new, approved push, never the `7b32e2d` links.
     - **Against the previous script:** both of review 97's cases gave three zeros and exit 0 there. Here they give
       exit 3.
 
