@@ -827,11 +827,13 @@ Older entries: `changelog-archive.md`.
       against the pin.
     - **This commit** records reviews 95 to 105. The pin is taken on it, and the verification's results stay
       uncommitted until after a push, so that the pinned tip does not move.
-  - **The pinned pre-push verification is done, and reviews 106 and 107 accepted it.** This entry is uncommitted on
-    purpose: it is written after the pin.
+  - **The pinned pre-push verification is done, and reviews 106 and 107 accepted it.** This entry and its evidence
+    were written after the pin and held uncommitted while the pin stood. They were committed locally in `e797dd6`
+    after the push.
     - **The pin:** `BASE=dcc4189784765ed92fd32ce0fbe1d1bec39b47c2`, `TIP=7b32e2d9b80186814a44294ce57eed3288192739`.
       That is 19 commits, a fast-forward.
-    - **The evidence:** `docs/screenshots/push-pin-2026-11-08/`, uncommitted.
+    - **The evidence:** `docs/screenshots/push-pin-2026-11-08/`, held uncommitted until the push, then committed in
+      `e797dd6`.
     - **The diff scan:** 130 hits, all classified; 128 are the word Moyasar and 2 are quoted scan patterns.
     - **The history scan:** 33 hits in the range and 84 distinct lines over all history, all of the standing kinds.
     - **A strict value-shape scan over every hit:** 0.
@@ -852,8 +854,11 @@ Older entries: `changelog-archive.md`.
       - **The other refs:** all remote refs before and after differ only in `rebuild`. No tag was added.
       - **Published:** six anonymous sha-pinned fetches answer 200 and hash-equal `git cat-file`
         (`docs/screenshots/push-pin-2026-11-08/push-verify.txt`).
-      - **This commit** records the push, with the results held back while the pin stood. It is unpushed by
-        construction.
+      - **The record commit:** `e797dd6` records the push, with the results held back while the pin stood. It is
+        unpushed by construction.
+      - **Review 108 said FIX, on the record only:** two lines still said "uncommitted", and the record commit's
+        contents were not shown. Both are fixed: the wording now says the entries were held, then committed, and
+        `record-commit-check.txt` shows `git show --stat` and `--check` of `e797dd6` with the local and remote refs.
     - **Against the previous script:** both of review 97's cases gave three zeros and exit 0 there. Here they give
       exit 3.
 

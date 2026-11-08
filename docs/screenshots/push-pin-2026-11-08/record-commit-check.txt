@@ -1,0 +1,40 @@
+# The record commit e797dd6, checked read-only 2026-11-08T14:21Z (review 108)
+
+$ git show --stat --format="%H%n%an <%ae>%n%s" e797dd6
+e797dd65bcfa82e289af781446824a43fe60275b
+Abdulaziz Al-Tamimi <attmimi.abdul@gmail.com>
+Record the pinned push dcc4189..7b32e2d and its verification
+
+ PROJECT.md                                         |  39 +-
+ docs/review-loop/LOG.md                            |   2 +
+ docs/review-loop/MASTER-PLAN.md                    |   2 +
+ .../100-pinned-prepush-verification.prompt.md      | 295 ++++++++++++++
+ ...pinned-verification-complete-evidence.prompt.md | 294 ++++++++++++++
+ .../outputs/100-pinned-prepush-verification.md     |  55 +++
+ .../101-pinned-verification-complete-evidence.md   |  49 +++
+ .../106-the-pinned-pre-push-verification.md        |  56 +++
+ ...-the-pinned-verification-s-complete-evidence.md |  78 ++++
+ .../push-pin-2026-11-08/classification.txt         |  17 +
+ .../push-pin-2026-11-08/diff-hits-full.txt         | 393 +++++++++++++++++++
+ .../push-pin-2026-11-08/history-all-full.txt       | 255 ++++++++++++
+ .../push-pin-2026-11-08/history-range-full.txt     | 102 +++++
+ .../push-pin-2026-11-08/push-verify.txt            |  26 ++
+ .../push-pin-2026-11-08/tests-at-tip.txt           |  77 ++++
+ docs/screenshots/push-pin-2026-11-08/verify.txt    | 427 +++++++++++++++++++++
+ 16 files changed, 2166 insertions(+), 1 deletion(-)
+
+$ git show --check e797dd6; echo exit $?
+exit 0
+
+$ git log -2 --oneline
+e797dd6 Record the pinned push dcc4189..7b32e2d and its verification
+7b32e2d Review 105 accepts the exact-value checkpoint and the pinned push
+$ git status -sb | head -1
+## rebuild...origin/rebuild [ahead 1]
+
+$ git -c credential.helper= ls-remote origin refs/heads/rebuild   # the remote is still the pushed 7b32e2d
+7b32e2d9b80186814a44294ce57eed3288192739	refs/heads/rebuild
+$ git merge-base --is-ancestor 7b32e2d e797dd6 && echo "e797dd6 builds on 7b32e2d"
+e797dd6 builds on 7b32e2d
+$ git branch -r --contains e797dd6 | wc -l   # 0 = on no remote branch
+0
