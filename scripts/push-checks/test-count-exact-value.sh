@@ -126,6 +126,14 @@ v=$(val edited 'dummy.edited-63')
 out=$("$script" base..tip "$v" 2>&1); rc=$?
 [ "$(get "$out" file-contents)" -ge 1 ] && only_counts "$out"; check "base line the range edits away: found" 3 $rc $?
 
+bom="$work/bom.txt"; printf '\357\273\277dummy.account-42\r\n' > "$bom"           # UTF-8 with a byte-order mark
+out=$("$script" base..tip "$bom" 2>&1); rc=$?
+[ "$(get "$out" file-contents)" -eq 1 ] && only_counts "$out"; check "value file with a UTF-8 byte-order mark: found" 3 $rc $?
+u16="$work/u16.txt"; { printf '\377\376'; printf 'dummy.account-42\r\n' | iconv -f UTF-8 -t UTF-16LE; } > "$u16"
+"$script" base..tip "$u16" > /dev/null 2>&1; check "UTF-16 value file refused" 2 $? 0
+ctl="$work/ctl.txt"; printf 'dummy\001account-42\n' > "$ctl"
+"$script" base..tip "$ctl" > /dev/null 2>&1; check "control character in the value refused" 2 $? 0
+
 v=$(val short 'ab')
 "$script" base..tip "$v" > /dev/null 2>&1; check "value shorter than 3 characters" 2 $? 0
 "$script" base...tip "$dummy" > /dev/null 2>&1; check "three-dot range refused" 2 $? 0

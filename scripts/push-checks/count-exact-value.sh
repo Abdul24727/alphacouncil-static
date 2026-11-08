@@ -58,14 +58,22 @@ tmp=$(mktemp -d) || fail "mktemp failed"
 [ -n "$tmp" ] && [ -d "$tmp" ] || fail "mktemp gave no folder"
 trap 'rm -rf "$tmp"' EXIT
 
-# The value: exactly one line; CR and surrounding spaces stripped, in bash.
+# The value: exactly one line of UTF-8; a UTF-8 byte-order mark (Notepad may add one), CR and surrounding spaces
+# stripped, in bash. A UTF-16 file is refused, and so is any control character left in the value: either would
+# make the pattern unmatchable, and a pattern that cannot match would report "none found".
 mapfile -t vlines < "$vf" || fail "reading the value failed"
+[ "${#vlines[@]}" -ge 1 ] || fail "value file must hold exactly one line"
+case "${vlines[0]}" in
+  $'\xff\xfe'* | $'\xfe\xff'*) fail "the value file is UTF-16; save it as UTF-8" ;;
+esac
 [ "${#vlines[@]}" -eq 1 ] || fail "value file must hold exactly one line"
 shopt -s extglob
-v=${vlines[0]%$'\r'}
+v=${vlines[0]#$'\xef\xbb\xbf'}
+v=${v%$'\r'}
 v=${v##+([[:space:]])}
 v=${v%%+([[:space:]])}
 [ -n "$v" ] || fail "value is empty"
+[[ $v == *[[:cntrl:]]* ]] && fail "value holds a control character"
 [ "${#v}" -ge 3 ] || fail "value is too short to search for"
 
 # Pattern files. names: the value. contents: the value, and for a printable-ASCII value also the value with a

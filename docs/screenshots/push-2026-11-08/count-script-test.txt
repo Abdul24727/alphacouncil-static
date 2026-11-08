@@ -29,6 +29,9 @@ PASS  value of spaces only
 PASS  base content the range deletes: found
 PASS  base file name the range deletes: found
 PASS  base line the range edits away: found
+PASS  value file with a UTF-8 byte-order mark: found
+PASS  UTF-16 value file refused
+PASS  control character in the value refused
 PASS  value shorter than 3 characters
 PASS  three-dot range refused
 PASS  grep fail, value present: exit 2
@@ -72,6 +75,19 @@ now:
 commits 0
 file-contents 0
 file-names 1
+exit 3
+
+# found while checking review 100's fix: a value file saved with a UTF-8 byte-order mark (Notepad may add one)
+# made the pattern unmatchable, so a present value read as clean. bec0746 is the commit before this fix.
+bec0746:
+commits 0
+file-contents 0
+file-names 0
+exit 0
+now:
+commits 0
+file-contents 1
+file-names 0
 exit 3
 
 # review 99's table: each tool replaced for one run, a dummy value in the outgoing patch.
@@ -154,7 +170,7 @@ commits 0
 file-contents 0
 file-names 0
 exit 0  (4 s)
-$ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: "moyasar", a word known to be present>   # counts are matching lines now
+$ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: "moyasar", a word known to be present>   # counts are matching lines
 commits 0
 file-contents 4129
 file-names 3
