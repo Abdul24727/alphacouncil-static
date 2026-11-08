@@ -1,0 +1,17 @@
+# classification of every hit, pinned range dcc4189784765ed92fd32ce0fbe1d1bec39b47c2..7b32e2d9b80186814a44294ce57eed3288192739
+diff             128  the word Moyasar: prose, legal text or a file name
+diff               2  a scan pattern or command, quoted
+history-range     31  a scan pattern or command, quoted
+history-range      2  the standing test fixture or prefix check
+history-all       57  a scan pattern or command, quoted
+history-all       12  the standing test fixture or prefix check
+history-all        8  the empty env-template line, or prose naming it
+history-all        4  the word Moyasar: prose, legal text or a file name
+history-all        1  OTHER (read by hand)
+history-all        2  prose naming key prefixes
+
+value-shaped hits (strict credential shapes): 0
+
+read by hand:
+  history-all distinct 61 [OTHER]: a commit message line (indented), prose describing "the # OPENROUTER_API_KEY=
+  template line with nothing" after it; it matches OPENROUTER_API_KEY=.+ because words follow the "=". Not a value.

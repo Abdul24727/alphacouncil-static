@@ -1,0 +1,393 @@
+# every '+' line of git diff dcc4189784765ed92fd32ce0fbe1d1bec39b47c2..7b32e2d9b80186814a44294ce57eed3288192739 matching Step 2's diff regex; whole lines, untruncated
+
+== hit 1: PROJECT.md:699  [the word Moyasar: prose, legal text or a file name]
+  - **Before the push:** Step 2's diff scan gave 86 hits, every one read. All are the word "Moyasar" in prose,
+
+== hit 2: PROJECT.md:955  [a scan pattern or command, quoted]
+- **How:** **first pin the range** (since review 104, 2026-11-08), so that what is checked is exactly what is pushed: `git fetch origin`, then `BASE=$(git rev-parse origin/rebuild)` and `TIP=$(git rev-parse rebuild)`, and record both hashes. Every check below runs over `$BASE..$TIP`, never over the moving names. **Before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff "$BASE..$TIP" | grep -nEi '(sk-[a-zA-Z0-9]{12,}|sk-or-v1|ghp_[a-zA-Z0-9]{20,}|AKIA[0-9A-Z]{10,}|BEGIN [A-Z ]*PRIVATE KEY|Bearer [A-Za-z0-9._-]{20,}|moyasar|pk_live|sk_live|postgres(ql)?://[^ ]*:[^ @]*@)' | grep '^[0-9]*:+'` — then **read every hit**. The known false positives are this file's own prose naming these patterns (§4, and the 2026-10-29 and 10-30 changelog entries), so a hit whose line is prose about the rules is expected; **a hit that is not stops the push**. Do not write the count into this step: it moves with what the diff happens to touch. On 2026-10-30 it was 2 for one push (both this file quoting itself) and **0** for the next, so neither number is the test - any count is a pass once every hit is read and none is a value. Then the original scan: `git ls-files` check from the goal's Done-when, and `git log --all -p | grep -E 'sk_live_|sk_test_|pk_live_|BEGIN [A-Z ]*PRIVATE KEY|OPENROUTER_API_KEY=.+'`, where **no hit may be a value**. It has never printed nothing and cannot: this file quotes the regex it greps for, so it finds itself (the step's Outcome has recorded that since 2026-10-19). The standing hits are this file's own prose, a `startswith("sk_test_")` prefix check, a fixture set to the literal `sk_test_x`, a comment naming key prefixes, and the `# OPENROUTER_API_KEY=` template line with nothing after the `=`. **Read each one; a hit that is a real value stops the push.** **Then the Argaam account check, by exact value: the owner's checkpoint before every push (since 2026-11-08).** The account name must appear **0** times in the outgoing range's commits (messages, authors), and in the file contents and file and folder names of the full tree of every commit in the range, of each commit at its boundary, and of both ends of the range by name (its start and its tip), even when they have diverged. That covers every version any outgoing patch shows, before or after a change: binary files, files deleted inside the range, and content or names the range deletes from the base. So a value already anywhere in the base's tree also stops the push. **Claude has no trusted copy of the name from the repository, so whether it is absent from what a push publishes stays unverified until this check runs.** The trusted value is in the server's nightly log (the session-gate line), and on 2026-11-08 the session's permission check refused Claude's read-only read of that line. So before Claude pushes, the owner either runs `scripts/push-checks/count-exact-value.sh "$BASE..$TIP" <file holding the name>` privately and says its three counts in chat, or allows that read for Claude. The script reads the value from a file, never from the command line; the file must be UTF-8. A byte-order mark, which Notepad may add, is stripped. Refused, because each would make the value unmatchable: a NUL byte, a UTF-16 mark, bytes that are not well-formed UTF-8 (Latin-1, Windows-1252, UTF-16 without a mark), and any control character. A file in another encoding whose bytes happen to be valid UTF-8 cannot be told apart, so for a non-ASCII value a variant may need its own run. Git lists every object in those trees once (`git rev-list --objects --no-walk`), and the script searches git's raw objects rather than formatted output: the range's commit objects, every blob, and every tree object - tree objects hold each file and folder name raw, so non-ASCII names are never escaped. It matches bytes exactly, ignoring ASCII case; for a printable-ASCII value it also matches the value with NUL bytes between its characters, as UTF-16 text stores it. It prints exactly `commits <n>`, `file-contents <n>` and `file-names <n>` (matching lines) - no matching text, no file name, never the value. **Only git and grep do work; everything else is bash builtins.** No `awk`, `sed`, `sort`, `tr`, `wc` or `cat` touches the data, so none can drop part of it, and grep must find the value in a copy of itself before any zero is believed. git itself is trusted, and made to read the real objects a push sends: replacement refs are ignored (`GIT_NO_REPLACE_OBJECTS=1`) and a grafts file is refused. **It cannot see** text drawn in images (screenshots), text inside compressed files (zip, docx, PDF streams), encoded forms (URL `%40`, HTML entities, base64), another Unicode normalisation (NFC/NFD) of a non-ASCII value, a non-ASCII value stored in any encoding but UTF-8 (UTF-16, Latin-1 or Windows-1252 files, commit messages with a non-UTF-8 encoding header), or a value spanning a `/` in a path: screenshots in the range need a person's look, and a plausible variant needs its own run. *(Until review 97 it read `git log -p`, which hides binary files, and quoted file names, which escape non-ASCII; until review 100 it passed its lists through text tools, and one that dropped a single snapshot's data passed as clean.)* It exits 0 only when all three are 0, 3 when any is not, and 2 on bad input or any failed step. `scripts/push-checks/test-count-exact-value.sh` proves this with dummy values in a throwaway repository, both of review 97's cases included. Keep the value file outside the repository and delete it after. Never print or commit the name; record only the three counts. **Anything but three explicit zeros (exit 0) stops the push.** On 2026-11-08 this check was missed before the push and could not be run after it; that exception stands in the Outcome until the owner runs it. Then, **immediately before pushing**, confirm the remote has not moved: `git -c credential.helper= ls-remote origin refs/heads/rebuild` must print `$BASE`; if it does not, stop and run every check again on a new pin. **Push the checked hash, not the branch name:** `git push --no-follow-tags --recurse-submodules=no origin "$TIP:refs/heads/rebuild"`. A commit made after the checks is not in `$TIP`, so it cannot go up (review 104 reproduced one going up when the push named the branch). The push is a fast-forward or it fails; never force it. The first push of all, on 2026-10-22, was `git remote add origin <URL>` and `git push -u origin rebuild`. **Both flags always** (since review 103, 2026-11-08): the checks scan the branch's commits and trees, not tag objects or submodules, and a plain branch push would also publish any annotated tag pointing into it when `push.followTags` is on, and submodule commits when `push.recurseSubmodules` is set. Name only the branch; never push tags from here. (This repository has no submodules and neither setting is on; the flags keep it so if that changes.) Git for Windows' credential manager opens GitHub's sign-in for the owner: the owner signs in; Claude never types a password or token. **After the push, verify that it published** - the git checks prove a hash arrived, not that anyone can read it. Fetch a file the push changed, anonymously, **with the commit sha in the URL**: `curl -fsS -o /tmp/pub.md -w 'http %{http_code}  %{size_download} bytes\n' https://raw.githubusercontent.com/Abdul24727/alphacouncil-static/<sha>/<path>`, and check both that it answers 200 **and** that what came back is what went up. Compare it against the **committed blob**, never the working copy: `git cat-file -p <sha>:<path> | sha256sum` against `sha256sum` of the download. **Use the sha, never the branch name, and never `wc -c` of the working file.** This clause said `wc -c < <path>` for one push, on 2026-11-02, and that operand is wrong here: this repo's `.gitattributes` is `* text=auto eol=lf`, so a CRLF working file is normalized to LF in the index and the file on disk is **one byte per line larger than the object that was pushed** (measured the same day: 37,387 on disk against a 36,792-byte blob over 595 lines, and 29,383 against 28,894 over 489). It passed the first time only because the file it was tried on had been written LF by a record script, so the mismatch depends on which tool last wrote the file - a check that passes for a reason unrelated to what it claims. A hash is also stronger than a count, which cannot see content. The branch URL is served through a CDN cache: on 2026-11-02 it returned the *previous* version of a file, byte-identical to a fetch made minutes earlier in the same session, while a file whose path had not been fetched before came back correct. Read as "the push failed" that is wrong, and a branch-URL fetch made *before* a push would wrongly confirm the new content afterwards. A sha-pinned URL cannot be stale and proves the stronger claim: the content **at** the pushed commit.
+
+== hit 3: PROJECT.md:1078  [the word Moyasar: prose, legal text or a file name]
+    - **The diff scan:** 86 hits, every one read. All are the word "Moyasar" in prose, in public legal-page text,
+
+== hit 4: docs/review-loop/browser-prompts/89-push-eeb9a9d-dcc4189.prompt.md:95  [the word Moyasar: prose, legal text or a file name]
+  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 5: docs/review-loop/browser-prompts/89-push-eeb9a9d-dcc4189.prompt.md:204  [the word Moyasar: prose, legal text or a file name]
+  - credentials, payments, Moyasar;
+
+== hit 6: docs/review-loop/browser-prompts/89-push-eeb9a9d-dcc4189.prompt.md:232  [the word Moyasar: prose, legal text or a file name]
+   - **The hits:** 86, every one read. All are the word "Moyasar":
+
+== hit 7: docs/review-loop/browser-prompts/90-push-review-95-fixes.prompt.md:92  [the word Moyasar: prose, legal text or a file name]
+  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 8: docs/review-loop/browser-prompts/90-push-review-95-fixes.prompt.md:202  [the word Moyasar: prose, legal text or a file name]
+  - credentials, payments, Moyasar;
+
+== hit 9: docs/review-loop/browser-prompts/91-push-review-96-fixes.prompt.md:95  [the word Moyasar: prose, legal text or a file name]
+  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 10: docs/review-loop/browser-prompts/91-push-review-96-fixes.prompt.md:207  [the word Moyasar: prose, legal text or a file name]
+  - credentials, payments, Moyasar;
+
+== hit 11: docs/review-loop/browser-prompts/91-push-review-96-fixes.prompt.md:258  [the word Moyasar: prose, legal text or a file name]
+     - "moyasar", known to be present: `91 / 521 / 3`, exit 3;
+
+== hit 12: docs/review-loop/browser-prompts/92-push-review-97-fixes.prompt.md:95  [the word Moyasar: prose, legal text or a file name]
+  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 13: docs/review-loop/browser-prompts/92-push-review-97-fixes.prompt.md:209  [the word Moyasar: prose, legal text or a file name]
+  - credentials, payments, Moyasar;
+
+== hit 14: docs/review-loop/browser-prompts/92-push-review-97-fixes.prompt.md:278  [the word Moyasar: prose, legal text or a file name]
+   - **"moyasar":** `0 / 5141 / 3`, exit 3.
+
+== hit 15: docs/review-loop/browser-prompts/93-push-review-98-fixes.prompt.md:95  [the word Moyasar: prose, legal text or a file name]
+  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 16: docs/review-loop/browser-prompts/93-push-review-98-fixes.prompt.md:211  [the word Moyasar: prose, legal text or a file name]
+  - credentials, payments, Moyasar;
+
+== hit 17: docs/review-loop/browser-prompts/93-push-review-98-fixes.prompt.md:267  [the word Moyasar: prose, legal text or a file name]
+   - **"moyasar":** `0 / 5261 / 3`, exit 3. It was 5141 before, because the base's versions are now read too.
+
+== hit 18: docs/review-loop/browser-prompts/94-push-review-99-fixes.prompt.md:95  [the word Moyasar: prose, legal text or a file name]
+  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 19: docs/review-loop/browser-prompts/94-push-review-99-fixes.prompt.md:213  [the word Moyasar: prose, legal text or a file name]
+  - credentials, payments, Moyasar;
+
+== hit 20: docs/review-loop/browser-prompts/94-push-review-99-fixes.prompt.md:271  [the word Moyasar: prose, legal text or a file name]
+   - **"moyasar":** `0 / 5261 / 3`, exit 3.
+
+== hit 21: docs/review-loop/browser-prompts/95-push-review-100-fixes.prompt.md:95  [the word Moyasar: prose, legal text or a file name]
+  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 22: docs/review-loop/browser-prompts/95-push-review-100-fixes.prompt.md:215  [the word Moyasar: prose, legal text or a file name]
+  - credentials, payments, Moyasar;
+
+== hit 23: docs/review-loop/browser-prompts/95-push-review-100-fixes.prompt.md:285  [the word Moyasar: prose, legal text or a file name]
+   - **"moyasar":** `0 / 4129 / 3`, exit 3. These are now matching lines, not occurrences.
+
+== hit 24: docs/review-loop/browser-prompts/96-push-review-101-fixes.prompt.md:95  [the word Moyasar: prose, legal text or a file name]
+  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 25: docs/review-loop/browser-prompts/96-push-review-101-fixes.prompt.md:217  [the word Moyasar: prose, legal text or a file name]
+  - credentials, payments, Moyasar;
+
+== hit 26: docs/review-loop/browser-prompts/97-push-review-102-fixes.prompt.md:95  [the word Moyasar: prose, legal text or a file name]
+  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 27: docs/review-loop/browser-prompts/97-push-review-102-fixes.prompt.md:219  [the word Moyasar: prose, legal text or a file name]
+  - credentials, payments, Moyasar;
+
+== hit 28: docs/review-loop/browser-prompts/98-push-review-103-fixes.prompt.md:95  [the word Moyasar: prose, legal text or a file name]
+  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 29: docs/review-loop/browser-prompts/98-push-review-103-fixes.prompt.md:221  [the word Moyasar: prose, legal text or a file name]
+  - credentials, payments, Moyasar;
+
+== hit 30: docs/review-loop/browser-prompts/99-push-review-104-fixes.prompt.md:95  [the word Moyasar: prose, legal text or a file name]
+  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 31: docs/review-loop/browser-prompts/99-push-review-104-fixes.prompt.md:223  [the word Moyasar: prose, legal text or a file name]
+  - credentials, payments, Moyasar;
+
+== hit 32: docs/review-loop/outputs/89-push-eeb9a9d-dcc4189.md:10  [the word Moyasar: prose, legal text or a file name]
+   - **The hits:** 86, every one read. All are the word "Moyasar":
+
+== hit 33: docs/review-loop/outputs/91-push-review-96-fixes.md:33  [the word Moyasar: prose, legal text or a file name]
+     - "moyasar", known to be present: `91 / 521 / 3`, exit 3;
+
+== hit 34: docs/review-loop/outputs/92-push-review-97-fixes.md:51  [the word Moyasar: prose, legal text or a file name]
+   - **"moyasar":** `0 / 5141 / 3`, exit 3.
+
+== hit 35: docs/review-loop/outputs/93-push-review-98-fixes.md:38  [the word Moyasar: prose, legal text or a file name]
+   - **"moyasar":** `0 / 5261 / 3`, exit 3. It was 5141 before, because the base's versions are now read too.
+
+== hit 36: docs/review-loop/outputs/94-push-review-99-fixes.md:40  [the word Moyasar: prose, legal text or a file name]
+   - **"moyasar":** `0 / 5261 / 3`, exit 3.
+
+== hit 37: docs/review-loop/outputs/95-push-review-100-fixes.md:52  [the word Moyasar: prose, legal text or a file name]
+   - **"moyasar":** `0 / 4129 / 3`, exit 3. These are now matching lines, not occurrences.
+
+== hit 38: docs/review-loop/replies/102-review-101-s-fix-the-value-must-be-well-formed-utf.md:68  [the word Moyasar: prose, legal text or a file name]
+The optional Moyasar duplicate-webhook cleanup and server hardening remain lower priority.
+
+== hit 39: docs/review-loop/replies/95-the-push-of-eeb9a9d-dcc4189.md:28  [the word Moyasar: prose, legal text or a file name]
+Step 18, item 4. Verify the first real customer renewal when one occurs. Reaching Moyasar successfully is not proof of renewal.
+
+== hit 40: docs/screenshots/push-2026-11-08/count-script-test.txt:247  [the word Moyasar: prose, legal text or a file name]
+$ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: "moyasar", a word known to be present>   # counts are matching lines
+
+== hit 41: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:3  [the word Moyasar: prose, legal text or a file name]
+# hits: 86  (hits not containing 'moyasar': 0)
+
+== hit 42: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:7  [the word Moyasar: prose, legal text or a file name]
+   +        - the monitor shows 15 of 15 ok, "Moyasar for renewals" included.
+
+== hit 43: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:9  [the word Moyasar: prose, legal text or a file name]
+   +      - **Diff scan:** 2 hits, both prose naming Moyasar's dashboard and webhook.
+
+== hit 44: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:11  [the word Moyasar: prose, legal text or a file name]
+   e OpenRouter top-up (balance $7.83 after the pilot); F-12's duplicate Moyasar webhook; and, before the decision-grade run, D5's markers and the $42
+
+== hit 45: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:13  [the word Moyasar: prose, legal text or a file name]
+   +- **Renewals:** "Moyasar for renewals" reads ok for the first time in these records: "the run
+
+== hit 46: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:15  [the word Moyasar: prose, legal text or a file name]
+   +  … reached Moyasar". It was "–" on 2026-11-06.
+
+== hit 47: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:17  [the word Moyasar: prose, legal text or a file name]
+   +  the room's seats, and the address Moyasar was once shown.
+
+== hit 48: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:19  [the word Moyasar: prose, legal text or a file name]
+   ves and sends nothing) | 14 checks ok and one with nothing to check ("Moyasar for renewals": no renewal run since the last round). The site and API
+
+== hit 49: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:21  [the word Moyasar: prose, legal text or a file name]
+   site and API, market data, both services, the renewals job, timer and Moyasar, the
+
+== hit 50: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:23  [the word Moyasar: prose, legal text or a file name]
+   +- **Renewals:** "Moyasar for renewals" now reads ok ("the run at 2026-11-07 10:00 UTC … reac
+
+== hit 51: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:24  [the word Moyasar: prose, legal text or a file name]
+   hed Moyasar"). It showed
+
+== hit 52: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:26  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 53: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:28  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 54: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:30  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 55: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:32  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 56: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:34  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 57: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:36  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 58: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:38  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 59: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:40  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 60: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:42  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 61: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:44  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 62: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:46  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 63: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:48  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 64: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:50  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 65: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:52  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 66: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:54  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 67: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:56  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 68: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:58  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 69: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:60  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 70: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:62  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 71: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:64  [the word Moyasar: prose, legal text or a file name]
+   +  - **15 of 15 ok**, including "Moyasar for renewals", which was "–" on 2026-11-06.
+
+== hit 72: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:66  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 73: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:68  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 74: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:70  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 75: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:72  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 76: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:74  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 77: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:76  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 78: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:78  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 79: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:80  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 80: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:82  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 81: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:84  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 82: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:86  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 83: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:88  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 84: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:90  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 85: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:92  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 86: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:94  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 87: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:96  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 88: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:98  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 89: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:100  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 90: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:102  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 91: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:104  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 92: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:106  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 93: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:108  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 94: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:110  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 95: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:112  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 96: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:114  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 97: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:116  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 98: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:118  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 99: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:120  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 100: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:122  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 101: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:124  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 102: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:126  [the word Moyasar: prose, legal text or a file name]
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+
+== hit 103: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:128  [the word Moyasar: prose, legal text or a file name]
+   +  - credentials, payments, Moyasar;
+
+== hit 104: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:130  [the word Moyasar: prose, legal text or a file name]
+   +  - **15 of 15 ok**, including "Moyasar for renewals", which was "–" on 2026-11-06.
+
+== hit 105: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:132  [the word Moyasar: prose, legal text or a file name]
+   +3. Step 18, item 4 — real renewal. The monitor confirms Moyasar was reached successfully on November 7, but this does not establish a
+
+== hit 106: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:134  [the word Moyasar: prose, legal text or a file name]
+   +5. Optional, non-blocking: F-12 duplicate webhook cleanup in Moyasar and optional server hardening remain owner-controlled. Neither is req
+
+== hit 107: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:136  [the word Moyasar: prose, legal text or a file name]
+   ation, commercial market-data rights, the named advisors' likenesses, Moyasar disclosures, Saudi data-protection obligations, and recurring billing
+
+== hit 108: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:138  [the word Moyasar: prose, legal text or a file name]
+   it and verify a real customer's first renewal. The optional duplicate Moyasar webhook and server hardening remain owner-controlled but are not prer
+
+== hit 109: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:140  [the word Moyasar: prose, legal text or a file name]
+   -<date>.md. Claude may prepare required changes, but releases and any Moyasar action still require separate owner approval.
+
+== hit 110: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:142  [the word Moyasar: prose, legal text or a file name]
+   +The optional Moyasar duplicate-webhook cleanup and server hardening remain lower prioritie
+
+== hit 111: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:144  [the word Moyasar: prose, legal text or a file name]
+   +echo "\$ GET $B/api/capabilities   (the address Moyasar was shown, legal questions (c))"
+
+== hit 112: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:146  [the word Moyasar: prose, legal text or a file name]
+   +$ GET https://alphacouncil.tech/api/capabilities   (the address Moyasar was shown, legal questions (c))
+
+== hit 113: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:148  [the word Moyasar: prose, legal text or a file name]
+   +Payment services. Moyasar or a successor payment provider processes payment credentials, tokens
+
+== hit 114: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:150  [the word Moyasar: prose, legal text or a file name]
+   entionally receive or store full card numbers or card security codes.	Moyasar or another payment provider; generated by us.
+
+== hit 115: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:152  [the word Moyasar: prose, legal text or a file name]
+   without undue delay and within any period required by applicable law. Moyasar, the card network, your bank or another payment intermediary controls
+
+== hit 116: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:154  [the word Moyasar: prose, legal text or a file name]
+   +Payments are processed by Moyasar or a successor payment service provider. Payment-card information is
+
+== hit 117: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:156  [the word Moyasar: prose, legal text or a file name]
+   below are read from the same plan configuration our payment provider, Moyasar, charges.
+
+== hit 118: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:158  [the word Moyasar: prose, legal text or a file name]
+   +Payments are processed by Moyasar. AlphaCouncil is not currently charging VAT; any applicable tax will
+
+== hit 119: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:160  [the word Moyasar: prose, legal text or a file name]
+   it and verify a real customer's first renewal. The optional duplicate Moyasar webhook and server hardening remain owner-controlled but are not prer
+
+== hit 120: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:162  [the word Moyasar: prose, legal text or a file name]
+   +-       Moyasar for renewals: no renewal run since the last round
+
+== hit 121: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:164  [the word Moyasar: prose, legal text or a file name]
+   c69d647f18ef4f5189d0f08adf16d1c50acf9489e209388  docs/qa-beta-2026-10/moyasar-checkout-interview-prompt.md
+
+== hit 122: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:166  [the word Moyasar: prose, legal text or a file name]
+   581cc0cf397fed61b4bc44d5f9191588a0  docs/screenshots/accounts-billing/moyasar-3ds-emulator.png
+
+== hit 123: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:168  [the word Moyasar: prose, legal text or a file name]
+   8be9bb22fa571e99ab65c3eb9d2fe670f9c249dd1991b5522fb641  web/src/types/moyasar-payment-form.d.ts
+
+== hit 124: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:170  [the word Moyasar: prose, legal text or a file name]
+   +-       Moyasar for renewals: no renewal run since the last round
+
+== hit 125: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:172  [the word Moyasar: prose, legal text or a file name]
+   c69d647f18ef4f5189d0f08adf16d1c50acf9489e209388  docs/qa-beta-2026-10/moyasar-checkout-interview-prompt.md
+
+== hit 126: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:174  [the word Moyasar: prose, legal text or a file name]
+   581cc0cf397fed61b4bc44d5f9191588a0  docs/screenshots/accounts-billing/moyasar-3ds-emulator.png
+
+== hit 127: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:176  [the word Moyasar: prose, legal text or a file name]
+   8be9bb22fa571e99ab65c3eb9d2fe670f9c249dd1991b5522fb641  web/src/types/moyasar-payment-form.d.ts
+
+== hit 128: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:178  [the word Moyasar: prose, legal text or a file name]
+   +ok      Moyasar for renewals: the run at 2026-11-07 10:00 UTC (13:00 Riyadh) reached
+
+== hit 129: docs/screenshots/push-2026-11-08/scan-diff-hits.txt:179  [the word Moyasar: prose, legal text or a file name]
+   Moyasar
+
+== hit 130: docs/screenshots/push-2026-11-08/scan-history.txt:2  [a scan pattern or command, quoted]
+# command: git log -p eeb9a9d..dcc4189 | grep -nE 'sk_live_|sk_test_|pk_live_|BEGIN [A-Z ]*PRIVATE KEY|OPENROUTER_API_KEY=.+'
+
+# total: 130

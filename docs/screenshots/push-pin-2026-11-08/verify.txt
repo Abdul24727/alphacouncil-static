@@ -1,0 +1,427 @@
+# Pinned pre-push verification, 2026-11-08T12:58Z (review 105's step). Read-only; nothing pushed.
+BASE=dcc4189784765ed92fd32ce0fbe1d1bec39b47c2   # origin/rebuild after git fetch
+TIP=7b32e2d9b80186814a44294ce57eed3288192739    # rebuild
+range: 19 commits,  43 files changed, 5753 insertions(+), 4 deletions(-)
+left/right (BASE...TIP): 0	19   # 0 behind = fast-forward
+
+$ git diff --check "$BASE..$TIP"; echo exit $?
+exit 0
+
+$ git -c credential.helper= ls-remote origin refs/heads/rebuild   # must equal BASE
+dcc4189784765ed92fd32ce0fbe1d1bec39b47c2  = BASE
+
+# Step 2 diff scan over BASE..TIP: 130 hits; not containing 'moyasar': 1
+== PROJECT.md
+   s diff scan gave 86 hits, every one read. All are the word "Moyasar" in prose,
+== PROJECT.md
+   : `git diff "$BASE..$TIP" | grep -nEi '(sk-[a-zA-Z0-9]{12,}|sk-or-v1|ghp_[a-zA-Z0-9]{20,}|AKIA[0-9A-Z]{10,}|BEGIN [A-Z ]*PRIVATE
+    KEY|Bearer [A-Za-z0-9._-]{20,}|moyasar|pk_live|sk_live|postgres(ql)?://[^ ]*:[^ @]*@)' | grep '^[0-9]*:+'` — the
+   from the goal's Done-when, and `git log --all -p | grep -E 'sk_live_|sk_test_|pk_live_|BEGIN [A-Z ]*PRIVATE KEY|OPENROUTER_API_
+== PROJECT.md
+   The diff scan:** 86 hits, every one read. All are the word "Moyasar" in prose, in public legal-page text,
+== docs/review-loop/browser-prompts/89-push-eeb9a9d-dcc4189.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/89-push-eeb9a9d-dcc4189.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/89-push-eeb9a9d-dcc4189.prompt.md
+   +   - **The hits:** 86, every one read. All are the word "Moyasar":
+== docs/review-loop/browser-prompts/90-push-review-95-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/90-push-review-95-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/91-push-review-96-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/91-push-review-96-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/91-push-review-96-fixes.prompt.md
+   +     - "moyasar", known to be present: `91 / 521 / 3`, exit 3;
+== docs/review-loop/browser-prompts/92-push-review-97-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/92-push-review-97-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/92-push-review-97-fixes.prompt.md
+   +   - **"moyasar":** `0 / 5141 / 3`, exit 3.
+== docs/review-loop/browser-prompts/93-push-review-98-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/93-push-review-98-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/93-push-review-98-fixes.prompt.md
+   +   - **"moyasar":** `0 / 5261 / 3`, exit 3. It was 5141 before, because the
+== docs/review-loop/browser-prompts/94-push-review-99-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/94-push-review-99-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/94-push-review-99-fixes.prompt.md
+   +   - **"moyasar":** `0 / 5261 / 3`, exit 3.
+== docs/review-loop/browser-prompts/95-push-review-100-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/95-push-review-100-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/95-push-review-100-fixes.prompt.md
+   +   - **"moyasar":** `0 / 4129 / 3`, exit 3. These are now matching lines, n
+== docs/review-loop/browser-prompts/96-push-review-101-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/96-push-review-101-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/97-push-review-102-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/97-push-review-102-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/98-push-review-103-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/98-push-review-103-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/browser-prompts/99-push-review-104-fixes.prompt.md
+   +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/review-loop/browser-prompts/99-push-review-104-fixes.prompt.md
+   +  - credentials, payments, Moyasar;
+== docs/review-loop/outputs/89-push-eeb9a9d-dcc4189.md
+   +   - **The hits:** 86, every one read. All are the word "Moyasar":
+== docs/review-loop/outputs/91-push-review-96-fixes.md
+   +     - "moyasar", known to be present: `91 / 521 / 3`, exit 3;
+== docs/review-loop/outputs/92-push-review-97-fixes.md
+   +   - **"moyasar":** `0 / 5141 / 3`, exit 3.
+== docs/review-loop/outputs/93-push-review-98-fixes.md
+   +   - **"moyasar":** `0 / 5261 / 3`, exit 3. It was 5141 before, because the
+== docs/review-loop/outputs/94-push-review-99-fixes.md
+   +   - **"moyasar":** `0 / 5261 / 3`, exit 3.
+== docs/review-loop/outputs/95-push-review-100-fixes.md
+   +   - **"moyasar":** `0 / 4129 / 3`, exit 3. These are now matching lines, n
+== docs/review-loop/replies/102-review-101-s-fix-the-value-must-be-well-formed-utf.md
+   +The optional Moyasar duplicate-webhook cleanup and server hardening remain lower
+== docs/review-loop/replies/95-the-push-of-eeb9a9d-dcc4189.md
+   y the first real customer renewal when one occurs. Reaching Moyasar successfully is not proof of renewal.
+== docs/screenshots/push-2026-11-08/count-script-test.txt
+   s/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: "moyasar", a word known to be present>   # counts are matching lines
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +# hits: 86  (hits not containing 'moyasar': 0)
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +        - the monitor shows 15 of 15 ok, "Moyasar for renewals" included.
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +      - **Diff scan:** 2 hits, both prose naming Moyasar's dashboard and webhook.
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   er top-up (balance $7.83 after the pilot); F-12's duplicate Moyasar webhook; and, before the decision-grade run, D5's markers a
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +- **Renewals:** "Moyasar for renewals" reads ok for the first time in these records:
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  … reached Moyasar". It was "–" on 2026-11-06.
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  the room's seats, and the address Moyasar was once shown.
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   nds nothing) | 14 checks ok and one with nothing to check ("Moyasar for renewals": no renewal run since the last round). The si
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   PI, market data, both services, the renewals job, timer and Moyasar, the
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +- **Renewals:** "Moyasar for renewals" now reads ok ("the run at 2026-11-07 10:00 UT
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   hed Moyasar"). It showed
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - **15 of 15 ok**, including "Moyasar for renewals", which was "–" on 2026-11-06.
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+      +  - F-12's duplicate webhook, optional and harmless, in Moyasar's dashboard;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - credentials, payments, Moyasar;
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +  - **15 of 15 ok**, including "Moyasar for renewals", which was "–" on 2026-11-06.
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+    +3. Step 18, item 4 — real renewal. The monitor confirms Moyasar was reached successfully on November 7, but this does not e
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   . Optional, non-blocking: F-12 duplicate webhook cleanup in Moyasar and optional server hardening remain owner-controlled. Neit
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   mercial market-data rights, the named advisors' likenesses, Moyasar disclosures, Saudi data-protection obligations, and recurri
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   ify a real customer's first renewal. The optional duplicate Moyasar webhook and server hardening remain owner-controlled but ar
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   . Claude may prepare required changes, but releases and any Moyasar action still require separate owner approval.
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +The optional Moyasar duplicate-webhook cleanup and server hardening remain lower
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +echo "\$ GET $B/api/capabilities   (the address Moyasar was shown, legal questions (c))"
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   T https://alphacouncil.tech/api/capabilities   (the address Moyasar was shown, legal questions (c))
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +Payment services. Moyasar or a successor payment provider processes payment credentia
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+    receive or store full card numbers or card security codes.	Moyasar or another payment provider; generated by us.
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   due delay and within any period required by applicable law. Moyasar, the card network, your bank or another payment intermediar
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +Payments are processed by Moyasar or a successor payment service provider. Payment-card infor
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   read from the same plan configuration our payment provider, Moyasar, charges.
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +Payments are processed by Moyasar. AlphaCouncil is not currently charging VAT; any applicable
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   ify a real customer's first renewal. The optional duplicate Moyasar webhook and server hardening remain owner-controlled but ar
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +-       Moyasar for renewals: no renewal run since the last round
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   ef4f5189d0f08adf16d1c50acf9489e209388  docs/qa-beta-2026-10/moyasar-checkout-interview-prompt.md
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   7fed61b4bc44d5f9191588a0  docs/screenshots/accounts-billing/moyasar-3ds-emulator.png
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   571e99ab65c3eb9d2fe670f9c249dd1991b5522fb641  web/src/types/moyasar-payment-form.d.ts
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +-       Moyasar for renewals: no renewal run since the last round
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   ef4f5189d0f08adf16d1c50acf9489e209388  docs/qa-beta-2026-10/moyasar-checkout-interview-prompt.md
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   7fed61b4bc44d5f9191588a0  docs/screenshots/accounts-billing/moyasar-3ds-emulator.png
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   571e99ab65c3eb9d2fe670f9c249dd1991b5522fb641  web/src/types/moyasar-payment-form.d.ts
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   +ok      Moyasar for renewals: the run at 2026-11-07 10:00 UTC (13:00 Riyadh
+== docs/screenshots/push-2026-11-08/scan-diff-hits.txt
+   +   Moyasar
+== docs/screenshots/push-2026-11-08/scan-history.txt
+   +# command: git log -p eeb9a9d..dcc4189 | grep -nE 'sk_live_|sk_test_|pk_live_|BEGIN [A-Z ]*PRIVATE KEY|OPENROUTER_API_
+
+# Step 2 history scan, outgoing commits (git log -p BASE..TIP):
+524:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(s
+525:+- **How:** **first pin the range** (since review 104, 2026-11-08), so that what is checked is exactly what is pushed: `git fetch origin`, then `BASE=$(git rev-parse origin/rebuild)` and `TIP=$(gi
+1091:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+1092:+- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+1147:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+1148:+- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+1752:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+1753:+- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+2350:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+2351:+- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+2428:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+2429:+- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+3155:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+3156:+- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+3303:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+3304:+- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+4290:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+4291:+- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+5109:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+5110:+- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+5162:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+5163:+- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+5887:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+5888:+- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+6051:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+6052:+- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+6842:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+6843:+- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+7485:-- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+7486:+- **How:** **before every push, now that each one publishes** (owner's decision 2026-10-30), paste this over the outgoing diff and read the hits: `git diff origin/rebuild..rebuild | grep -nEi '(
+7964: 66569:+        `sk_test_x` fixture, the `startswith("sk_test_")` check, the commented `# OPENROUTER_API_KEY=` line, and
+8353:+# command: git log -p eeb9a9d..dcc4189 | grep -nE 'sk_live_|sk_test_|pk_live_|BEGIN [A-Z ]*PRIVATE KEY|OPENROUTER_API_KEY=.+'
+8354:+66569:+        `sk_test_x` fixture, the `startswith("sk_test_")` check, the commented `# OPENROUTER_API_KEY=` line, and
+# git log --all -p distinct hit lines: 84
+# tracked env-shaped files: api/.env.example deploy/api.env.example (changed in range: 0)
+
+# Wider checks over the added lines of BASE..TIP
+emails (distinct):
+        1 test@example.invalid
+        1 root@alphacouncil.tech
+        1 privacy@alphacouncil.tech
+        1 noreply@anthropic.com
+        1 nobody@deploy-guard.invalid
+commit author/committer/co-author emails in the range:
+       38 attmimi.abdul@gmail.com
+       19 noreply@anthropic.com
+value-shaped assignments (password|secret|token|api key|cookie|authorization = value): 0
+local user paths (AppData / Users/Abdul): 1
+binary files in the range: 0
+files changed by top folder:
+      1   PROJECT.md
+     35   docs/review-loop
+      5   docs/screenshots
+      2   scripts/push-checks
+Argaam-mentioning added lines: 173
+   On rebuild, update PROJECT.md Step 2's How to explicitly require the Argaam account exact-value check before every future public push, identifyin
+   does not:** a non-email account name in a line that does not mention Argaam.
+   removes a remaining unsafe clearance path before the owner's private Argaam check and next public push.
+   reports the immutable hashes and results, explicitly identifying the Argaam exact-value check as pending. No push occurs.
+  +        Argaam count on that pin and a push go-ahead.
+  +      - **Not run:** the Argaam account check by its exact value (`docs/screenshots/push-2026-11-08/o
+  +      - **Review 95 ACCEPTED it.** Step 2 now names the Argaam check as the owner's checkpoint before every push.
+  +    - **Not run:** the Argaam account check by its exact value. I missed it before the push, and th
+  +    1. **The Argaam check:** Step 2's *How* now names it as the owner's checkpoint before
+  +    account of the data source, and file names under `scripts/argaam_ar_labels/`.
+  +   - **Argaam:** no line that mentions it names an account.
+  +  - **Argaam lines:** every added line that mentions Argaam was read, and none names an account.
+  +  - **Not run:** the Argaam account check by its exact value. I missed it before the push, and th
+  +  - every added line that mentions Argaam was read.
+  +  - the Argaam count for `eeb9a9d..dcc4189`;
+  +  - the Argaam count;
+  +  - the push of these 3 local commits, which waits on the Argaam count under the new rule.
+  +  Argaam, these checks would not see it.
+  +# <value-file> holds the value on one line, UTF-8 (for example the Argaam account name). Keep it outside the
+  +# Output 91: review 96's fixes to Step 2's Argaam check
+  +# Review 96: Review 95's fixes: the Argaam checkpoint and the PNG wording
+  +## Not run: the Argaam account check by its exact value
+  +- **Argaam lines:**
+  +- **The check:** the Argaam account name, matched by its exact value. The 2026-11-07 pre-push aud
+  +- 2026-11-08 10:43 UTC — **Review 95's fixes: the Argaam checkpoint and the PNG wording** — FIX — [96-review-95-s-fixes-th
+  +- Is the missed Argaam check handled right: recorded, not worked around, and left to the own
+  +- Never record the Argaam account name in committed files; the repository is public.
+  +- Never sign in to Argaam anywhere; it signs the nightly's single session out.
+  +- Never sign in to Argaam; never get around a bot check.
+  +- make Step 2's *How* require the Argaam account check, by exact value, before every future push, as an
+  +1. Argaam exact-value check incomplete — other-checks.md, lines 38–57. The
+  +2. Argaam verification: Privately perform the exact-value check for the already
+  +=== CLAUDE'S OUTPUT: Review 95's fixes: the Argaam checkpoint and the PNG wording ===
+  +Argaam checkpoint. Privately run count-exact-value.sh "$BASE..$TIP" <value-f
+  +Argaam checkpoint. Privately verify the historical eeb9a9d..dcc4189 range, w
+  +Argaam checkpoint: After the encoding fix passes review, privately check the
+  +Argaam checkpoint: After the fix, privately run the corrected exact-value ch
+  +Argaam checkpoint: After the scanner fix, privately run the exact-value chec
+  +Argaam checkpoint: After the script correction, privately run the exact-valu
+  +Argaam checkpoint: Once the script is accepted, privately run the exact-valu
+  +Argaam checkpoint: Privately run the exact-value check against eeb9a9d..dcc4
+  +Argaam exact-value check. Personally run the private comparison against eeb9
+  +Argaam privacy checkpoint. After the script is fixed, privately run the exac
+  e-argaam-checkpoint-and-the-pn.md](replies/96-review-95-s-fixes-the-argaam-checkpoint-and-the-pn.md)
+  ead each one; a hit that is a real value stops the push.** **Then the Argaam account check, by exact value: the owner's checkpoint before every pu
+  is closes the demonstrated false-pass path before the owner's private Argaam checkpoint. Commit locally; do not push.
+  pe drift. The changes remain focused on the owner's existing pre-push Argaam confidentiality checkpoint. No new site functionality, paid activity,
+  rove the push only after the corrected scanner passes, the applicable Argaam checkpoint is cleared, and the existing secret scans have been review
+  the exact pinned range and non-sensitive results to the owner for the Argaam checkpoint. Do not push or make further commits against that pin.
+
+# the check scripts at TIP
+$ bash scripts/push-checks/test-count-exact-value.sh | tail -1
+failures: 0
+PASS lines: 69
+
+# still pending: the Argaam account check by exact value, over this pin. It is the owner's:
+#   scripts/push-checks/count-exact-value.sh dcc4189784765ed92fd32ce0fbe1d1bec39b47c2..7b32e2d9b80186814a44294ce57eed3288192739 <file holding the name>
+# and, for the earlier push: scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <same file>
+# Only three explicit zeros (exit 0) clears each.
+
+$ git -c credential.helper= ls-remote origin refs/heads/rebuild   # rechecked at 13:00Z
+dcc4189784765ed92fd32ce0fbe1d1bec39b47c2	refs/heads/rebuild
+$ git rev-parse rebuild
+7b32e2d9b80186814a44294ce57eed3288192739
+
+# Addendum after review 106 (2026-11-08T13:12Z): complete evidence is in the files beside this one
+#   diff-hits-full.txt      all 130 diff hits: file, new-file line number, class, whole line
+#   history-range-full.txt  all 33 history hits in BASE..TIP: commit, file, class, whole line
+#   history-all-full.txt    all 84 distinct history lines over --all: count, first commit and file, class, whole line
+#   classification.txt      counts per class; strict value-shape scan over every hit line: 0
+#   tests-at-tip.txt        the tests run from the bytes extracted out of TIP: 69 PASS, 0 FAIL, exit code 0
+# The lines above in this file that were cut short (cut -c) are superseded by those files.
+
+$ git diff --check "$BASE..$TIP"; echo exit $?
+exit 0
+$ git rev-parse rebuild
+7b32e2d9b80186814a44294ce57eed3288192739
+  = TIP
+$ git -c credential.helper= ls-remote origin refs/heads/rebuild
+dcc4189784765ed92fd32ce0fbe1d1bec39b47c2  = BASE
+
+# OWNER PENDING: the Argaam account check by exact value, over BASE..TIP and over eeb9a9d..dcc4189.
+# No commit and no push since the pin.
+
+# The owner's private Argaam checks, run 2026-11-08 in the owner's own Git Bash and pasted in chat (counts only).
+# Value used: the Argaam login email. The username was not checked: seeing it needs an Argaam sign-in, which
+# signs the nightly scraper's session out (standing rule: never sign in to Argaam).
+count-exact-value.sh dcc4189784765ed92fd32ce0fbe1d1bec39b47c2..7b32e2d9b80186814a44294ce57eed3288192739 <value file>   -> commits 0 / file-contents 0 / file-names 0, exit 0
+count-exact-value.sh eeb9a9d..dcc4189 <value file>   -> commits 0 / file-contents 0 / file-names 0, exit 0
+
+$ git rev-parse rebuild
+7b32e2d9b80186814a44294ce57eed3288192739
+  = TIP
+$ git -c credential.helper= ls-remote origin refs/heads/rebuild
+dcc4189784765ed92fd32ce0fbe1d1bec39b47c2  = BASE

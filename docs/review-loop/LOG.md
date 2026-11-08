@@ -107,3 +107,5 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-08 12:30 UTC — **Review 102's fix: both ends of the range are read** — FIX — [103-review-102-s-fix-both-ends-of-the-range-are-read.md](replies/103-review-102-s-fix-both-ends-of-the-range-are-read.md)
 - 2026-11-08 12:44 UTC — **Review 103's fixes: real objects only, no tags or submodules** — FIX — [104-review-103-s-fixes-real-objects-only-no-tags-or-su.md](replies/104-review-103-s-fixes-real-objects-only-no-tags-or-su.md)
 - 2026-11-08 12:58 UTC — **Review 104's fixes: the checked hash is the pushed hash** — ACCEPT — [105-review-104-s-fixes-the-checked-hash-is-the-pushed-.md](replies/105-review-104-s-fixes-the-checked-hash-is-the-pushed-.md)
+- 2026-11-08 13:10 UTC — **The pinned pre-push verification** — FIX — [106-the-pinned-pre-push-verification.md](replies/106-the-pinned-pre-push-verification.md)
+- 2026-11-08 13:23 UTC — **The pinned verification's complete evidence** — ACCEPT — [107-the-pinned-verification-s-complete-evidence.md](replies/107-the-pinned-verification-s-complete-evidence.md)

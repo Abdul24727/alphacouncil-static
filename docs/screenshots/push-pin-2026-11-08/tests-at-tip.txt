@@ -1,0 +1,77 @@
+# The tests, run from the bytes in the pinned commit 7b32e2d9b80186814a44294ce57eed3288192739
+
+count-exact-value.sh: blob at TIP 35286020dc62c11ef625d4ae4db67621a1096be4  extracted copy hashes to 35286020dc62c11ef625d4ae4db67621a1096be4  working copy hashes to 35286020dc62c11ef625d4ae4db67621a1096be4
+test-count-exact-value.sh: blob at TIP 1c3c6a8276ec830b013406b032b4dc961d9864b0  extracted copy hashes to 1c3c6a8276ec830b013406b032b4dc961d9864b0  working copy hashes to 1c3c6a8276ec830b013406b032b4dc961d9864b0
+
+$ bash <extracted>/test-count-exact-value.sh   # full, unfiltered output
+PASS  absent value: three zeros
+PASS  present value: nonzero counts, exit 3
+PASS  present value: value not printed
+PASS  present value: no file names printed
+PASS  present value: exactly three lines
+PASS  message-only commit: commits counts it
+PASS  CRLF value file: CR stripped
+PASS  git error (bad range start)
+PASS  git error (bad tip)
+PASS  not a range
+PASS  missing value file
+PASS  empty value file
+PASS  blank line only
+PASS  two lines
+PASS  non-ASCII file name: found, only counts printed
+PASS  binary file added then deleted: found, only counts printed
+PASS  text file added then deleted: found
+PASS  old file renamed to the value: found
+PASS  folder name: found
+PASS  UTF-16 text file: found
+PASS  value file with surrounding spaces: trimmed
+PASS  value of spaces only
+PASS  base content the range deletes: found
+PASS  base file name the range deletes: found
+PASS  base line the range edits away: found
+PASS  value file with a UTF-8 byte-order mark: found
+PASS  UTF-16 value file refused
+PASS  control character in the value refused
+PASS  UTF-8 Chinese value: found
+PASS  UTF-8 accented value: found
+PASS  UTF-16BE value without a mark refused (review 101)
+PASS  Latin-1 value refused (review 101)
+PASS  UTF-16LE value without a mark refused
+PASS  value file ending in a NUL byte refused
+PASS  overlong UTF-8 refused
+PASS  C1 control character refused
+PASS  UTF-8 cut short refused
+PASS  value shorter than 3 characters
+PASS  three-dot range refused
+PASS  diverged range, value only at its start: found
+PASS  diverged range, value only at its end: found
+PASS  setup: plain git now reads the replacement
+PASS  replaced blob: the real content is found
+PASS  grafts file refused
+PASS  Step 2's push succeeded and the remote branch is at the pushed hash (review 104)
+PASS  push --no-follow-tags with followTags on: no tag published
+PASS  push --no-follow-tags: the tag's message is not in the remote
+PASS  plain push with followTags on: the tag IS published (the flag matters)
+PASS  pinned range checks clean
+PASS  the remote has not moved since the pin
+PASS  pinned push succeeded; the remote is at the checked hash
+PASS  pinned push: the late commit's value is not in the remote
+PASS  a push naming the branch does send the late commit (why the pin matters)
+PASS  grep fail, value present: exit 2
+PASS  grep fail, value absent: exit 2
+PASS  grep silent, value present: exit 2
+PASS  grep silent, value absent: exit 2
+PASS  grep late, value present: correct result
+PASS  grep late, value absent: correct result
+PASS  mktemp fail, value present: exit 2
+PASS  mktemp fail, value absent: exit 2
+PASS  mktemp silent, value present: exit 2
+PASS  mktemp silent, value absent: exit 2
+PASS  mktemp late, value present: exit 2
+PASS  mktemp late, value absent: exit 2
+PASS  text tools broken, value dummy.account-42: same result
+PASS  text tools broken, value NotPresentValue: same result
+PASS  text tools broken, value dummy.deleted-41: same result
+PASS  text tools broken, value dummy.deleted-name-91: same result
+failures: 0
+exit code: 0

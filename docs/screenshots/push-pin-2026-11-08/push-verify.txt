@@ -1,0 +1,26 @@
+# Push of the pinned commit, 2026-11-08T14:10Z, on the owner's go-ahead in chat ("Yes, push 7b32e2d")
+$ git push --no-follow-tags --recurse-submodules=no origin "7b32e2d9b80186814a44294ce57eed3288192739:refs/heads/rebuild"
+To https://github.com/Abdul24727/alphacouncil-static
+   dcc4189..7b32e2d  7b32e2d9b80186814a44294ce57eed3288192739 -> rebuild
+(exit 0; a fast-forward, nothing forced; the remote was at BASE immediately before)
+
+# git state after
+ls-remote rebuild (anonymous): 7b32e2d9b80186814a44294ce57eed3288192739
+origin/rebuild after fetch:    7b32e2d9b80186814a44294ce57eed3288192739
+local rebuild:                 7b32e2d9b80186814a44294ce57eed3288192739
+left/right origin/rebuild...rebuild: 0	0
+
+# all remote refs, before and after (only rebuild may change; no tag added)
+4c4
+< dcc4189784765ed92fd32ce0fbe1d1bec39b47c2	refs/heads/rebuild
+---
+> 7b32e2d9b80186814a44294ce57eed3288192739	refs/heads/rebuild
+diff exit 1 (1 = differences, shown above)
+
+# publication: anonymous sha-pinned fetch vs the committed blob
+http 200 12041 bytes  MATCH  7add09b0a8bc92905b9e25ba23a48ea452199c9aae29dc6abb485cb486b6960a  scripts/push-checks/count-exact-value.sh
+http 200 15806 bytes  MATCH  0d4279edb0cd3e6afca56f98c8406e71412e2138bd861ae9559d29ebc7a40f62  scripts/push-checks/test-count-exact-value.sh
+http 200 576071 bytes  MATCH  493e88887887c26e05c4a98b3c6798074ddecd88a16c5df1cf3f96acbe55fa5e  PROJECT.md
+http 200 9901 bytes  MATCH  396d28120773d39eea2d6ac458fea8409350645510d46faad34386d3b19e3539  docs/screenshots/push-2026-11-08/count-script-test.txt
+http 200 3425 bytes  MATCH  4c1f1a1834ad747a046c41ced8e120ebb7e5f32787f6f0368840feb2303e0109  docs/review-loop/replies/105-review-104-s-fixes-the-checked-hash-is-the-pushed-.md
+http 200 14936 bytes  MATCH  26130e1d7378f3c7d46ba155ff2eb6805f3f1c13e6b3e4a53f816380713f15bf  docs/review-loop/MASTER-PLAN.md

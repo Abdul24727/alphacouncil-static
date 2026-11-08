@@ -158,6 +158,8 @@ Billing has been open since 2026-11-02.
         checks that range, and pushes `$TIP` itself. 69 tests pass.
       - **Review 105 ACCEPTED** the checkpoint. Next: a read-only pinned pre-push verification; then the owner's
         Argaam count on that pin and a push go-ahead.
+      - **Reviews 106 and 107 accepted the pinned verification.** The owner's Argaam checks (email) gave zeros for
+        both ranges. **Pushed 2026-11-08:** `dcc4189..7b32e2d`, pinned, fast-forward, and verified by hash.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

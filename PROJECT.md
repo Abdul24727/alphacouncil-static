@@ -1,5 +1,5 @@
 # PROJECT — alphacouncil-platform launch
-**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-08   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `dcc4189` on 2026-11-08, the owner's thirteenth go-ahead in chat ("Yes, scan and push")** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, three on 2026-11-02 took it `3aafa82` → `c1198ca` → `b61876d` → `12aafcc`, one on 2026-11-03 took it `6acce45..c046236`, three on 2026-11-06 took it `c046236..ccfe063`, `ccfe063..b5655a5` and `b5655a5..eeb9a9d`, and one on 2026-11-08 took it `eeb9a9d..dcc4189` (97 commits); every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **production and beta both `ea51de796c`** (the P9 fix over the sector-standing fix `026699b906`, which is over `b5655a5064`). Beta got it 2026-11-07 on "Yes, deploy to beta", production at 19:35 UTC the same day on "Yes, deploy to production". Both are fix-only commits on local release branches (`release/sector-standing`, `release/p9-no-statements`), **not pushed**; `026699b906` and `b5655a5064`, the last on the public branch since the 2026-11-06 push, are kept on both tiers. *(Earlier on 2026-11-07 this line named production `026699b906`; until then `b5655a5064` on both tiers, released 2026-11-06; before that `5c18a3ae46`.)* *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
+**File:** C:\projects\alphacouncil-platform\PROJECT.md   **Updated:** 2026-11-08   **At version:** the tip of branch `rebuild`, **pushed: `origin/rebuild` reached `7b32e2d` on 2026-11-08, the owner's fourteenth go-ahead in chat ("Yes, push 7b32e2d"), a pinned push of the checked hash** — five pushes on 2026-10-30 took the remote `bdec8d8` → `19453f6` → `6729395` → `16a10f1` → `3aafa82`, three on 2026-11-02 took it `3aafa82` → `c1198ca` → `b61876d` → `12aafcc`, one on 2026-11-03 took it `6acce45..c046236`, three on 2026-11-06 took it `c046236..ccfe063`, `ccfe063..b5655a5` and `b5655a5..eeb9a9d`, and two on 2026-11-08 took it `eeb9a9d..dcc4189` (97 commits) and `dcc4189..7b32e2d` (19 commits, pinned); every one fast-forward. *The commit that writes this line is itself unpushed when it is made, and further records may follow it, so this hash is **at least one** commit behind the branch by construction - it was two within the hour. Never reconstruct the tip from it; read the live state with `git status -sb`.* **The repository is PUBLIC, by the owner's decision of 2026-10-30** (asked after the push found it public rather than private; answer in chat: "Leave it public"). Everything pushed to `rebuild` is published the moment it goes up - see the 2026-10-30 changelog entry, Step 2 and §4. Deployed: **production and beta both `ea51de796c`** (the P9 fix over the sector-standing fix `026699b906`, which is over `b5655a5064`). Beta got it 2026-11-07 on "Yes, deploy to beta", production at 19:35 UTC the same day on "Yes, deploy to production". Both are fix-only commits on local release branches (`release/sector-standing`, `release/p9-no-statements`), **not pushed**; `026699b906` and `b5655a5064`, the last on the public branch since the 2026-11-06 push, are kept on both tiers. *(Earlier on 2026-11-07 this line named production `026699b906`; until then `b5655a5064` on both tiers, released 2026-11-06; before that `5c18a3ae46`.)* *No local commit hash is written in this line on purpose — the commit that updates this file changes the hash, so any hash here is stale the moment it is written; read the local state with `git log --oneline -1` and `git status -sb`. The deployed hashes are safe to name, because they change only at a release.*
 
 ## 1. Objective
 alphacouncil.tech is fully built — everything already on the site works and is right, the market data is right at its source, the named advisors, portraits and `www` address are settled, checkout is proven, and the code is safe off this computer — and only then does Pro billing open and advertising start.
@@ -827,6 +827,33 @@ Older entries: `changelog-archive.md`.
       against the pin.
     - **This commit** records reviews 95 to 105. The pin is taken on it, and the verification's results stay
       uncommitted until after a push, so that the pinned tip does not move.
+  - **The pinned pre-push verification is done, and reviews 106 and 107 accepted it.** This entry is uncommitted on
+    purpose: it is written after the pin.
+    - **The pin:** `BASE=dcc4189784765ed92fd32ce0fbe1d1bec39b47c2`, `TIP=7b32e2d9b80186814a44294ce57eed3288192739`.
+      That is 19 commits, a fast-forward.
+    - **The evidence:** `docs/screenshots/push-pin-2026-11-08/`, uncommitted.
+    - **The diff scan:** 130 hits, all classified; 128 are the word Moyasar and 2 are quoted scan patterns.
+    - **The history scan:** 33 hits in the range and 84 distinct lines over all history, all of the standing kinds.
+    - **A strict value-shape scan over every hit:** 0.
+    - **The tests:** run from the bytes extracted out of TIP, 69 PASS, 0 FAIL, exit code 0.
+    - **Review 106 said FIX:** cut-short hit lines, and tests not shown from TIP's bytes. Fixed.
+    - **Review 107 ACCEPTED,** and said this is not clearance to push.
+    - **The owner's Argaam checks, done 2026-11-08 in the owner's own Git Bash:** both `BASE..TIP` and the earlier
+      push `eeb9a9d..dcc4189` gave `commits 0`, `file-contents 0`, `file-names 0`, exit 0.
+      - **The value used:** the Argaam login email.
+      - **The username:** not checked. Seeing it needs an Argaam sign-in, which signs the nightly scraper out, and
+        the standing rule is never to sign in to Argaam.
+      - **The earlier push's exception:** now closed for the email.
+      - **Afterwards:** `rebuild` = TIP and `ls-remote` = BASE, rechecked.
+    - **PUSHED 2026-11-08 14:10 UTC** on the owner's go-ahead ("Yes, push 7b32e2d"):
+      `git push --no-follow-tags --recurse-submodules=no origin "7b32e2d…:refs/heads/rebuild"` printed
+      `dcc4189..7b32e2d`, a fast-forward. The remote was at BASE immediately before.
+      - **The git checks:** `ls-remote`, `origin/rebuild` and local `rebuild` all read `7b32e2d`; left/right `0 0`.
+      - **The other refs:** all remote refs before and after differ only in `rebuild`. No tag was added.
+      - **Published:** six anonymous sha-pinned fetches answer 200 and hash-equal `git cat-file`
+        (`docs/screenshots/push-pin-2026-11-08/push-verify.txt`).
+      - **This commit** records the push, with the results held back while the pin stood. It is unpushed by
+        construction.
     - **Against the previous script:** both of review 97's cases gave three zeros and exit 0 there. Here they give
       exit 3.
 
@@ -1082,6 +1109,16 @@ Older entries: `changelog-archive.md`.
     - **Not run:** the Argaam account check by its exact value. I missed it before the push, and the permission
       check refused the read-only log read I tried afterwards. What covers it and what does not is in
       `other-checks.md`.
+  - *Done (2026-11-08), second push, the first pinned one:* `dcc4189..7b32e2d` (19 commits) on the owner's go-ahead
+    ("Yes, push 7b32e2d"), by the pinned procedure in *How*. Evidence: `docs/screenshots/push-pin-2026-11-08/`.
+    - **The checks over the pin:** the diff scan gave 130 hits and the history scan 33 (84 distinct over all history),
+      all classified, with 0 value-shaped. The tests ran from TIP's bytes: 69 pass, exit 0. Reviews 106 and 107
+      accepted this.
+    - **The owner's Argaam checks (login email):** `BASE..TIP` and `eeb9a9d..dcc4189` both gave three zeros and
+      exit 0. This closes the earlier push's exception for the email; the username was not checked, because seeing it
+      needs an Argaam sign-in.
+    - **The push and its verification:** a fast-forward, with only `rebuild` changed among the remote refs and no
+      tag added. Six sha-pinned anonymous fetches hash-equal `git cat-file`.
   - *Ruling (2026-10-29):* **this step's third Done-when is now failing, and the push went ahead
     anyway.** The two tests used on 2026-10-22 to prove the repository private - anonymous `git -c
     credential.helper= ls-remote`, and `api.github.com/repos/…` - have both reversed: the first
