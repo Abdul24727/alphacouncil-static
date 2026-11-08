@@ -164,6 +164,8 @@ Billing has been open since 2026-11-02.
         `docs/step7-lawyer-handoff-2026-11-08.md`.
       - **Reviews 110 and 111:** the note now keeps the lawyer's advice out of the public repository and prevents
         stale links from being sent. It is ACCEPTED, and Step 7 waits on the owner.
+      - **2026-11-08:** the owner's facts were read in the owner's accounts and the pack was corrected (reviews 112 to
+        114). It is ready to send once the owner confirms the account count.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

@@ -890,6 +890,16 @@ Older entries: `changelog-archive.md`.
         3. The key's other work was stated as certain. It is now "appears to".
         4. The August payment was said to be on the earlier site. That is now "suggests …, not verified".
         5. The handoff note's checklist was stale. It now shows the current status, with only the account count left.
+      - **Review 113** found two stale lines in the facts file; fixed in `0777f71`. **Review 114 ACCEPTED: "The pack is
+        ready for owner handoff once the account count is confirmed."**
+        - **Its read-only preflight passes:**
+          - `git show --check HEAD` passes;
+          - the pack and the questions exist and match HEAD;
+          - the pack records the two refunded owner-test payments, Hostinger in Paris, and the qualified OpenRouter
+            observations, and marks the account count for the owner;
+          - the handoff note has no `7b32e2d` links and says to attach the files.
+        - **The state:** `rebuild` is ahead of the remote, which is still at `7b32e2d`. Nothing was pushed or sent.
+        - **Step 7 now needs from the owner:** the account count, then the sending.
         - **Accounts:** the permission check refused the counts-only database query again, so the owner runs it.
         - **The pack is corrected:** the update note at the top, §2, §5.2 and (h), plus (b)/(c). The handoff note's
           `7b32e2d` links are removed, because they show the old text; attach the files.
