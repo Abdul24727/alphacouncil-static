@@ -1,0 +1,33 @@
+# Final Step 7 handoff check, read-only, 2026-11-08T20:23Z (review 115's step)
+
+$ git diff --check; echo exit $?
+exit 0
+$ git branch --show-current; git status -sb | head -1; git status --porcelain | wc -l
+rebuild
+## rebuild...origin/rebuild [ahead 12]
+1
+$ git log -1 --oneline
+1e423bb Review 115 accepts the confirmed account count; the pack is ready for the owner's handoff
+$ git -c credential.helper= ls-remote origin refs/heads/rebuild   # the remote: unchanged, no push
+7b32e2d9b80186814a44294ce57eed3288192739	refs/heads/rebuild
+
+# the two files to attach (working copy = HEAD for both)
+docs/lawyer-review-pack-2026-11-06.md
+  sha256 27e9fc72501fabcc8dcabc9bce775bf666a7261ea06c6e0bf517d44d99bed536   bytes 27513   matches HEAD: yes   blob 2e6f2dfbcbb8c9d5ebaf52034f8febfd5259ac30
+docs/legal-questions-2026-10-27.md
+  sha256 8e938378d4c2f42138efc4a7ca1336347845a33fbeb2ccd1a452d7bd8884ccb9   bytes 12066   matches HEAD: yes   blob b62976b489d14d5b807b1a5ade5a10f49b543d57
+
+# the confirmed facts, as each document states them (matching lines counted)
+fact                                 pack  facts  handoff questions
+four accounts                           1      1        1     38
+two refunded owner-test payments        1      1        1     38
+no paying customer                      1      2        1      1
+Hostinger in Paris                      2      1        1     38
+AI location not verified                5      2        1     38
+(the questions file, written 2026-10-27, states only 'As of 2026-11-02 no customer has paid' and 'The merchant
+ account was approved in August 2026'; it does not state accounts, hosting or AI processing, so nothing in it contradicts)
+
+# stale public links in the handoff note and the pack (blob/7b32e2d or raw.githubusercontent):
+  handoff: 0   pack: 0
+
+# nothing was sent: Claude sent no message or file to anyone; the owner sends.
