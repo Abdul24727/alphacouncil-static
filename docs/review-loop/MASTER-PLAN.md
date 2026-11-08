@@ -140,6 +140,8 @@ Billing has been open since 2026-11-02.
       - **Review 95 ACCEPTED it.** Step 2 now names the Argaam check as the owner's checkpoint before every push.
       - **Review 96 said FIX.** Step 2 no longer claims the name is absent, and the check is now
         `scripts/push-checks/count-exact-value.sh`. It prints three counts only; its test passes with a dummy value.
+      - **Review 97 said FIX.** It found two values the script missed: a non-ASCII file name, and a deleted binary.
+        The script now reads git's raw objects, and 21 tests pass, both cases included.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

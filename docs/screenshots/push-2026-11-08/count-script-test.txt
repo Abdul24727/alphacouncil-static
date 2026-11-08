@@ -1,12 +1,12 @@
-# count-exact-value.sh, tested 2026-11-08 (review 96's DONE WHEN)
+# count-exact-value.sh after review 97, tested 2026-11-08
 
-$ bash scripts/push-checks/test-count-exact-value.sh   # throwaway repo, dummy value
+$ bash scripts/push-checks/test-count-exact-value.sh   # throwaway repo, dummy values
 PASS  absent value: three zeros
 PASS  present value: nonzero counts, exit 3
 PASS  present value: value not printed
 PASS  present value: no file names printed
 PASS  present value: exactly three lines
-PASS  message-only commit: history counts it
+PASS  message-only commit: commits counts it
 PASS  CRLF value file: CR stripped
 PASS  git error (bad range start)
 PASS  git error (bad tip)
@@ -15,20 +15,52 @@ PASS  missing value file
 PASS  empty value file
 PASS  blank line only
 PASS  two lines
+PASS  non-ASCII file name: found, only counts printed
+PASS  binary file added then deleted: found, only counts printed
+PASS  text file added then deleted: found
+PASS  old file renamed to the value: found
+PASS  folder name: found
+PASS  value shorter than 3 characters
+PASS  three-dot range refused
 failures: 0
 exit 0
 
-# smoke runs on this repository; the value files sat in the session scratch folder and were deleted after
-$ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: a value known to be absent>
+# review 97's two bypasses, run against the previous version (9dbf448) and this one, in a throwaway repo:
+# a file named user-<arabic>-42.txt, and a binary file holding dummy.binary-77 added then deleted
+--- the non-ASCII file name
+old (9dbf448):
 history 0
 tracked-files 0
 file-names 0
 exit 0
+new:
+commits 0
+file-contents 0
+file-names 1
+exit 3
+--- the binary file added then deleted
+old (9dbf448):
+history 0
+tracked-files 0
+file-names 0
+exit 0
+new:
+commits 0
+file-contents 1
+file-names 0
+exit 3
+
+# smoke runs on this repository; the value files sat in the session scratch folder and were deleted after
+$ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: a value known to be absent>
+commits 0
+file-contents 0
+file-names 0
+exit 0
 $ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: "moyasar", a word known to be present>
-history 91
-tracked-files 521
+commits 0
+file-contents 5141
 file-names 3
 exit 3
 $ scripts/push-checks/count-exact-value.sh nosuchref..dcc4189 <file: the absent value>   # a git error
-error: git log failed
+error: range start is not a commit
 exit 2
