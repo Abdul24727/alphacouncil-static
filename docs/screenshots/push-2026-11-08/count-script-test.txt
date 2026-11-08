@@ -1,4 +1,4 @@
-# count-exact-value.sh after review 102 (git and grep only; both range ends read), tested 2026-11-08
+# count-exact-value.sh after review 103 (git and grep only; real objects; tags not pushed), tested 2026-11-08
 
 $ bash -n scripts/push-checks/count-exact-value.sh && bash -n scripts/push-checks/test-count-exact-value.sh
 exit 0
@@ -45,6 +45,12 @@ PASS  value shorter than 3 characters
 PASS  three-dot range refused
 PASS  diverged range, value only at its start: found
 PASS  diverged range, value only at its end: found
+PASS  setup: plain git now reads the replacement
+PASS  replaced blob: the real content is found
+PASS  grafts file refused
+PASS  push --no-follow-tags with followTags on: no tag published
+PASS  push --no-follow-tags: the tag's message is not in the remote
+PASS  plain push with followTags on: the tag IS published (the flag matters)
 PASS  grep fail, value present: exit 2
 PASS  grep fail, value absent: exit 2
 PASS  grep silent, value present: exit 2
@@ -63,6 +69,20 @@ PASS  text tools broken, value dummy.deleted-41: same result
 PASS  text tools broken, value dummy.deleted-name-91: same result
 failures: 0
 exit 0
+
+# review 103's replacement-object case, against 1e8382f (previous) and this version (now).
+# Its tag case is in the tests above: push --no-follow-tags publishes no tag even with push.followTags on.
+--- a replacement ref hides the real blob from plain git; a push still sends the real one
+previous (1e8382f):
+commits 0
+file-contents 0
+file-names 0
+exit 0
+now:
+commits 0
+file-contents 1
+file-names 0
+exit 3
 
 # review 102's case: diverged range ends, against ec45135 (previous) and this version (now)
 --- the value only in the range's start (side), diverged from its end (main-end); git diff side..main-end shows it removed

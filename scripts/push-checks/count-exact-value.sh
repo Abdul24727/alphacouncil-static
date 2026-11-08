@@ -25,7 +25,12 @@
 # touches the data, so none of them can drop part of it. grep must pass a positive control first: it must find
 # the value in a copy of itself, so a grep that fails or stays silent cannot pass as "none found". Every git and
 # grep exit status is checked, every count must be a number, and the lists bash writes are read back and counted.
-# git itself is trusted: a git that returns wrong data with exit 0 is outside what this can detect.
+# git itself is trusted: a git that returns wrong data with exit 0 is outside what this can detect. Git is made
+# to read the real objects, the ones a push sends: replacement refs are ignored (GIT_NO_REPLACE_OBJECTS=1), and a
+# repository with a grafts file is refused (review 103).
+#
+# WHAT IT DOES NOT COVER: tags. It scans the range's commits and trees, not annotated tag objects, so Step 2 pushes
+# with --no-follow-tags and names only the branch; then no tag is published (review 103).
 #
 # WHAT IT CANNOT SEE: text drawn in images (screenshots), text inside compressed files (zip, docx, PDF streams,
 # PNG text chunks), encoded forms (URL %40, HTML entities, base64), another Unicode normalisation (NFC/NFD) of a
@@ -42,6 +47,7 @@
 set -u
 set -o pipefail
 export LC_ALL=C
+export GIT_NO_REPLACE_OBJECTS=1
 
 fail() { echo "error: $1" >&2; exit 2; }
 is_count() { case "$1" in ''|*[!0-9]*) return 1 ;; *) return 0 ;; esac; }
@@ -148,6 +154,9 @@ search "$tmp/pat-contents" "$tmp/pat-contents" control
 search "$tmp/pat-names" "$tmp/pat-names" control
 [ "$HITS" -eq 1 ] || fail "the search failed its control"
 
+grafts=$(git rev-parse --git-path info/grafts) || fail "git rev-parse failed"
+[ -n "$grafts" ] || fail "git rev-parse gave no path"
+[ -e "$grafts" ] && fail "this repository has a grafts file, which changes what git reads; remove it first"
 basesha=$(git rev-parse --verify --quiet "$base^{commit}") || fail "range start is not a commit"
 [ -n "$basesha" ] || fail "range start is not a commit"
 tipsha=$(git rev-parse --verify --quiet "$tip^{commit}") || fail "range end is not a commit"

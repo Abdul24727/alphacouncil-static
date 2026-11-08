@@ -174,6 +174,42 @@ out=$("$script" side..tip "$v" 2>&1); rc=$?
 out=$("$script" tip..side "$v" 2>&1); rc=$?
 [ "$(get "$out" file-contents)" -ge 1 ] && only_counts "$out"; check "diverged range, value only at its end: found" 3 $rc $?
 
+# review 103: a replacement ref must not hide the real object, the one a push sends
+git checkout -q -b rep tip
+echo "dummy.replaced-73 is in the real blob" > rep.txt
+git add rep.txt && git commit -q -m "rep"
+realblob=$(git rev-parse rep:rep.txt)
+fakeblob=$(echo "harmless" | git hash-object -w --stdin)
+git replace "$realblob" "$fakeblob"
+git checkout -q -
+[ "$(git cat-file -p "$realblob")" = harmless ]; check "setup: plain git now reads the replacement" 0 0 $?
+v=$(val replaced 'dummy.replaced-73')
+out=$("$script" tip..rep "$v" 2>&1); rc=$?
+[ "$(get "$out" file-contents)" -ge 1 ] && only_counts "$out"; check "replaced blob: the real content is found" 3 $rc $?
+git replace -d "$realblob" > /dev/null
+
+# review 103: a grafts file changes what git reads, so it is refused
+gf=$(git rev-parse --git-path info/grafts)
+mkdir -p "$(dirname "$gf")" && : > "$gf"
+"$script" base..tip "$dummy" > /dev/null 2>&1; check "grafts file refused" 2 $? 0
+rm -f "$gf"
+
+# review 103: Step 2's push command must not publish an annotated tag, even with push.followTags on
+git checkout -q -b pubtest tip
+echo y > pub.txt && git add pub.txt && git commit -q -m pub
+git tag -a pubtag -m "tag message with dummy.tagmsg-55"
+git config push.followTags true
+bare="$work/bare.git"; git init -q --bare "$bare"
+git push -q --no-follow-tags "$bare" pubtest 2> /dev/null
+[ -z "$(git -C "$bare" tag)" ]; check "push --no-follow-tags with followTags on: no tag published" 0 0 $?
+git -C "$bare" cat-file --batch-all-objects --batch | grep -a -q -F 'dummy.tagmsg-55'
+[ $? -eq 1 ]; check "push --no-follow-tags: the tag's message is not in the remote" 0 0 $?
+bare2="$work/bare2.git"; git init -q --bare "$bare2"
+git push -q "$bare2" pubtest 2> /dev/null
+[ -n "$(git -C "$bare2" tag)" ]; check "plain push with followTags on: the tag IS published (the flag matters)" 0 0 $?
+git config --unset push.followTags
+git checkout -q -
+
 # --- reviews 99 and 100: failing or lying helper tools.
 # Each stand-in sits first on PATH for one run. "fail" exits 1 with no output, "silent" exits 0 with no output,
 # "late" runs the real tool and then exits 1.

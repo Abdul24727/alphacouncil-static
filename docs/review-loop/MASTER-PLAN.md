@@ -152,6 +152,8 @@ Billing has been open since 2026-11-02.
         UTF-8, and 55 tests pass.
       - **Review 102 said FIX.** Diverged range ends: the start's tree was not read. Both ends are now read, and 57
         tests pass.
+      - **Review 103 said FIX.** Replacement refs and auto-pushed tags could publish a value unscanned. The script
+        ignores replace refs, Step 2 pushes with `--no-follow-tags`, and 63 tests pass.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 
