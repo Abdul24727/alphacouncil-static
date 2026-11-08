@@ -101,3 +101,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-08 10:54 UTC — **Review 96's fixes: the exact-value count script** — FIX — [97-review-96-s-fixes-the-exact-value-count-script.md](replies/97-review-96-s-fixes-the-exact-value-count-script.md)
 - 2026-11-08 11:08 UTC — **Review 97's fixes: the exact-value check reads raw objects** — FIX — [98-review-97-s-fixes-the-exact-value-check-reads-raw-.md](replies/98-review-97-s-fixes-the-exact-value-check-reads-raw-.md)
 - 2026-11-08 11:23 UTC — **Review 98's fixes: every full tree, boundary included** — FIX — [99-review-98-s-fixes-every-full-tree-boundary-include.md](replies/99-review-98-s-fixes-every-full-tree-boundary-include.md)
+- 2026-11-08 11:39 UTC — **Review 99's fix: the exact-value check fails closed** — FIX — [100-review-99-s-fix-the-exact-value-check-fails-closed.md](replies/100-review-99-s-fix-the-exact-value-check-fails-closed.md)

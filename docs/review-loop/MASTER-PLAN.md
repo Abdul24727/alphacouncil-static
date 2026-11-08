@@ -146,6 +146,8 @@ Billing has been open since 2026-11-02.
         script now reads the full tree at every commit and at the boundary, and 27 tests pass.
       - **Review 99 said FIX.** A failing `sort` could still give a clean result. The script now fails closed, and
         69 tests pass, 42 of them injected tool failures.
+      - **Review 100 said FIX.** A tool dropping one snapshot's data still passed. Now only git and grep touch the
+        data, and 43 tests pass.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 

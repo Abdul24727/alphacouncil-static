@@ -62,7 +62,7 @@ out=$("$script" base..tip "$absent" 2>&1); rc=$?
 [ "$out" = $'commits 0\nfile-contents 0\nfile-names 0' ]; check "absent value: three zeros" 0 $rc $?
 
 out=$("$script" base..tip "$dummy" 2>&1); rc=$?
-[ "$(get "$out" commits)" -gt 0 ] && [ "$(get "$out" file-contents)" -eq 1 ] && [ "$(get "$out" file-names)" -eq 1 ]
+[ "$(get "$out" commits)" -gt 0 ] && [ "$(get "$out" file-contents)" -eq 1 ] && [ "$(get "$out" file-names)" -ge 1 ]
 check "present value: nonzero counts, exit 3" 3 $rc $?
 echo "$out" | grep -qiF 'dummy.account'; [ $? -eq 1 ]; check "present value: value not printed" 3 $rc $?
 echo "$out" | grep -qF '.txt'; [ $? -eq 1 ]; check "present value: no file names printed" 3 $rc $?
@@ -130,11 +130,13 @@ v=$(val short 'ab')
 "$script" base..tip "$v" > /dev/null 2>&1; check "value shorter than 3 characters" 2 $? 0
 "$script" base...tip "$dummy" > /dev/null 2>&1; check "three-dot range refused" 2 $? 0
 
-# --- review 99: a tool that fails, or exits 0 with no output, must give exit 2, never a result.
+# --- reviews 99 and 100: failing or lying helper tools.
 # Each stand-in sits first on PATH for one run. "fail" exits 1 with no output, "silent" exits 0 with no output,
 # "late" runs the real tool and then exits 1.
+# grep and mktemp do work in the script: when they fail or stay silent the result must be exit 2. "late" grep
+# exits 1 after a correct answer, which is grep's ordinary "none found" status, so its result must be correct.
 fakes="$work/fakes"
-for tool in sort awk sed tr grep wc mktemp; do
+for tool in grep mktemp; do
   realtool=$(command -v "$tool")
   for mode in fail silent late; do
     d="$fakes/$tool-$mode"
@@ -148,9 +150,30 @@ for tool in sort awk sed tr grep wc mktemp; do
     for which in present absent; do
       [ $which = present ] && vfile=$dummy || vfile=$absent
       PATH="$d:$PATH" "$script" base..tip "$vfile" > "$work/out" 2>&1; rc=$?
-      check "$tool $mode, value $which: exit 2" 2 $rc 0
+      if [ "$tool $mode" = "grep late" ]; then
+        [ $which = present ] && want=3 || want=0
+        check "$tool $mode, value $which: correct result" $want $rc 0
+      else
+        check "$tool $mode, value $which: exit 2" 2 $rc 0
+      fi
     done
   done
+done
+
+# The script uses no other text tool, so none can drop data. With every common one broken (each exits 1 with no
+# output) the results must be unchanged. That includes review 100's two cases: a selectively silent awk dropping a
+# base-only blob, and a selectively incomplete sort dropping a base-only name.
+poison="$fakes/poison"
+mkdir -p "$poison"
+for tool in awk sort sed tr wc cat head tail cut uniq comm xargs find; do
+  printf '#!/bin/sh\nexit 1\n' > "$poison/$tool"
+  chmod +x "$poison/$tool"
+done
+for case in "dummy.account-42 3" "NotPresentValue 0" "dummy.deleted-41 3" "dummy.deleted-name-91 3"; do
+  set -- $case
+  vfile=$(val "poison-$1" "$1")
+  PATH="$poison:$PATH" "$script" base..tip "$vfile" > "$work/out" 2>&1; rc=$?
+  only_counts "$(cat "$work/out")"; check "text tools broken, value $1: same result" "$2" $rc $?
 done
 
 echo "failures: $fails"

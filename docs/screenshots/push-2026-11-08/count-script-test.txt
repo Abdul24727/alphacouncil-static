@@ -1,9 +1,9 @@
-# count-exact-value.sh after review 99 (fails closed), tested 2026-11-08
+# count-exact-value.sh after review 100 (git and grep only), tested 2026-11-08
 
 $ bash -n scripts/push-checks/count-exact-value.sh && bash -n scripts/push-checks/test-count-exact-value.sh
 exit 0
 
-$ bash scripts/push-checks/test-count-exact-value.sh   # throwaway repo, dummy values, injected tool failures
+$ bash scripts/push-checks/test-count-exact-value.sh   # throwaway repo, dummy values, broken tools
 PASS  absent value: three zeros
 PASS  present value: nonzero counts, exit 3
 PASS  present value: value not printed
@@ -31,54 +31,53 @@ PASS  base file name the range deletes: found
 PASS  base line the range edits away: found
 PASS  value shorter than 3 characters
 PASS  three-dot range refused
-PASS  sort fail, value present: exit 2
-PASS  sort fail, value absent: exit 2
-PASS  sort silent, value present: exit 2
-PASS  sort silent, value absent: exit 2
-PASS  sort late, value present: exit 2
-PASS  sort late, value absent: exit 2
-PASS  awk fail, value present: exit 2
-PASS  awk fail, value absent: exit 2
-PASS  awk silent, value present: exit 2
-PASS  awk silent, value absent: exit 2
-PASS  awk late, value present: exit 2
-PASS  awk late, value absent: exit 2
-PASS  sed fail, value present: exit 2
-PASS  sed fail, value absent: exit 2
-PASS  sed silent, value present: exit 2
-PASS  sed silent, value absent: exit 2
-PASS  sed late, value present: exit 2
-PASS  sed late, value absent: exit 2
-PASS  tr fail, value present: exit 2
-PASS  tr fail, value absent: exit 2
-PASS  tr silent, value present: exit 2
-PASS  tr silent, value absent: exit 2
-PASS  tr late, value present: exit 2
-PASS  tr late, value absent: exit 2
 PASS  grep fail, value present: exit 2
 PASS  grep fail, value absent: exit 2
 PASS  grep silent, value present: exit 2
 PASS  grep silent, value absent: exit 2
-PASS  grep late, value present: exit 2
-PASS  grep late, value absent: exit 2
-PASS  wc fail, value present: exit 2
-PASS  wc fail, value absent: exit 2
-PASS  wc silent, value present: exit 2
-PASS  wc silent, value absent: exit 2
-PASS  wc late, value present: exit 2
-PASS  wc late, value absent: exit 2
+PASS  grep late, value present: correct result
+PASS  grep late, value absent: correct result
 PASS  mktemp fail, value present: exit 2
 PASS  mktemp fail, value absent: exit 2
 PASS  mktemp silent, value present: exit 2
 PASS  mktemp silent, value absent: exit 2
 PASS  mktemp late, value present: exit 2
 PASS  mktemp late, value absent: exit 2
+PASS  text tools broken, value dummy.account-42: same result
+PASS  text tools broken, value NotPresentValue: same result
+PASS  text tools broken, value dummy.deleted-41: same result
+PASS  text tools broken, value dummy.deleted-name-91: same result
 failures: 0
 exit 0
 
-# review 99's case and its neighbours: each tool replaced for one run, a dummy value present in the outgoing patch.
+# review 100's two cases, reproduced as it described them, against 2e98f72 (previous) and this version (now)
+--- an awk silent only for the base snapshot (the base-only blob holds the value)
+previous (2e98f72):
+commits 0
+file-contents 0
+file-names 0
+exit 0
+now:
+commits 0
+file-contents 1
+file-names 0
+exit 3
+--- a sort that drops only the base-only file name
+previous (2e98f72):
+commits 0
+file-contents 0
+file-names 0
+exit 0
+now:
+commits 0
+file-contents 0
+file-names 1
+exit 3
+
+# review 99's table: each tool replaced for one run, a dummy value in the outgoing patch.
 # fail = exits 1 with no output; silent = exits 0 with no output; late = runs the real tool, then exits 1.
-# 'previous' is 94e191e; 'now' is this version. Bash's own messages under previous name a scratch path, shortened here.
+# 'previous' is 94e191e and 'now' is 2e98f72 (the version review 100 reviewed). This version no longer runs
+# sort, awk, sed, tr or wc; its grep and mktemp cases are in the tests above.
 sort    fail    previous: exit 0 commits 0 file-contents 0 file-names 0   | now: exit 2 error: sorting the blob list failed
 sort    silent  previous: exit 0 commits 0 file-contents 0 file-names 0   | now: exit 2 error: the name list is incomplete
 sort    late    previous: exit 3 commits 0 file-contents 1 file-names 0   | now: exit 2 error: sorting the blob list failed
@@ -154,10 +153,10 @@ $ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: a value known
 commits 0
 file-contents 0
 file-names 0
-exit 0  (18 s)
-$ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: "moyasar", a word known to be present>
+exit 0  (4 s)
+$ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: "moyasar", a word known to be present>   # counts are matching lines now
 commits 0
-file-contents 5261
+file-contents 4129
 file-names 3
 exit 3
 $ scripts/push-checks/count-exact-value.sh nosuchref..dcc4189 <file: the absent value>   # a git error
