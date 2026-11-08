@@ -21,8 +21,8 @@
 # removed, so UTF-16 text is found for an ASCII value. It prints exactly those three lines: no matching text and
 # no file name.
 # It CANNOT see: text drawn in images (screenshots), text inside compressed files (zip, docx, PDF streams, PNG
-# text chunks), or encoded forms (URL %40, HTML entities, base64). Screenshots need a person's eyes; run it once
-# per encoded variant if one is plausible.
+# text chunks), encoded forms (URL %40, HTML entities, base64), or another Unicode normalisation (NFC/NFD) of a
+# non-ASCII value. Screenshots need a person's eyes; run it once per variant if one is plausible.
 # Exit 0: all three are 0. Exit 3: any is not (stop the push). Exit 2: bad input or a git error (stop).
 set -u
 export LC_ALL=C
