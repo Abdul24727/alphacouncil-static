@@ -821,6 +821,12 @@ Older entries: `changelog-archive.md`.
     - **The tag test** now also asserts that the push succeeded and that the remote branch is at the pushed hash.
     - **The tests:** 6 new ones, so 69 pass. With a local bare remote, a commit made after a clean check of the pin is
       not sent by the pinned push, while a push naming the branch does send it.
+  - **Review 105 ACCEPTED: "ISSUES: none."** It reran the 69 tests (69 pass) and matched both scripts' blob hashes.
+    It found no further bypass for a correctly supplied UTF-8 value, assuming git and grep return correct data.
+    - **Its next step:** a read-only, pinned pre-push verification of the unpushed commits, with no push and no commit
+      against the pin.
+    - **This commit** records reviews 95 to 105. The pin is taken on it, and the verification's results stay
+      uncommitted until after a push, so that the pinned tip does not move.
     - **Against the previous script:** both of review 97's cases gave three zeros and exit 0 there. Here they give
       exit 3.
 

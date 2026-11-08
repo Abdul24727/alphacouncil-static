@@ -156,6 +156,8 @@ Billing has been open since 2026-11-02.
         ignores replace refs, Step 2 pushes with `--no-follow-tags`, and 63 tests pass.
       - **Review 104 said FIX.** The checks and the push were not tied to one commit. Step 2 now pins `$BASE..$TIP`,
         checks that range, and pushes `$TIP` itself. 69 tests pass.
+      - **Review 105 ACCEPTED** the checkpoint. Next: a read-only pinned pre-push verification; then the owner's
+        Argaam count on that pin and a push go-ahead.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 
