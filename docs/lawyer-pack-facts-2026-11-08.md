@@ -94,13 +94,31 @@ for the past month, grouped by model and provider, plus the Privacy and Routing 
   - **So:** two payments ever, both the owner's own tests, both refunded, and no paying customer.
   - **Not opened:** neither payment's details (card or customer), so nothing personal was read. Dates are as the
     dashboard shows them (day/month/year).
-- **Accounts:** **PENDING.** The session's permission check refused a counts-only query of production's accounts
-  database again on 2026-11-08, even with the owner's instruction. The owner can run the same query in their own Git
-  Bash. It prints counts only, never a name, an email or card data:
+- **Accounts: confirmed, four.** The session's permission check refused a counts-only query of production's accounts
+  database again on 2026-11-08, even with the owner's instruction, so the owner ran it.
+  - **Where:** the owner's own terminal, 2026-11-08, pasted in chat. The output was counts only, with no name, email
+    or card data.
+  - **The results:**
+    - accounts: **4**;
+    - accounts created since 2026-11-06: **0**;
+    - the site's own payment records: **1**, status `refunded`;
+    - subscriptions: **1**, status `expired`.
+  - **What they mean:** they agree with the pack's four accounts and with Moyasar. The site's records began with this
+    rebuild, so they hold the 2026-11-02 test payment (refunded), and its subscription has expired. The 2026-08-12
+    test is only in Moyasar, as expected. There is no paying customer.
+  - **The command that ran:** the one below failed in Windows Command Prompt, which handles its nested quotes
+    differently, so this version ran instead:
+
+    ```
+    ssh root@alphacouncil.tech "docker exec acp-postgres psql -U acp -d acp_prod -At -c 'SELECT count(*) FROM users' -c 'SELECT count(*) FROM users WHERE created_at >= make_date(2026,11,6)' -c 'SELECT count(*) FROM billing_payments' -c 'SELECT status, count(*) FROM billing_payments GROUP BY status' -c 'SELECT status, count(*) FROM subscriptions GROUP BY status'"
+    ```
+
+  - **The first version, for Git Bash:**
 
   ```bash
   ssh root@alphacouncil.tech "docker exec acp-postgres psql -U acp -d acp_prod -At -F ' ' -c \"SELECT 'accounts', count(*) FROM users UNION ALL SELECT 'accounts_since_2026-11-06', count(*) FROM users WHERE created_at >= '2026-11-06' UNION ALL SELECT 'payments', count(*) FROM billing_payments UNION ALL SELECT 'payment_' || status, count(*) FROM billing_payments GROUP BY status UNION ALL SELECT 'subscription_' || status, count(*) FROM subscriptions GROUP BY status;\""
   ```
 
-  The site's own payment records (`billing_payments`) began with this rebuild. So they should hold the 2026-11-02
-  payment, and not the 2026-08-12 one, which Moyasar holds.
+  - **The expectation, written before the count:** the site's own payment records (`billing_payments`) began with
+    this rebuild, so they should hold the 2026-11-02 payment and not the 2026-08-12 one, which Moyasar holds. The
+    count bore that out.

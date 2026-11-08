@@ -900,6 +900,12 @@ Older entries: `changelog-archive.md`.
           - the handoff note has no `7b32e2d` links and says to attach the files.
         - **The state:** `rebuild` is ahead of the remote, which is still at `7b32e2d`. Nothing was pushed or sent.
         - **Step 7 now needs from the owner:** the account count, then the sending.
+      - **The account count, 2026-11-08:** the owner ran the counts-only query in their own terminal.
+        - **The result:** 4 accounts and 0 since 2026-11-06. The site's own records hold 1 payment (refunded) and 1
+          subscription (expired).
+        - **It matches:** the pack's four, and Moyasar.
+        - **The pack now says:** "Nothing is left for the owner to confirm". All four handoff rows are done.
+        - **Step 7 now needs from the owner:** only the sending.
         - **Accounts:** the permission check refused the counts-only database query again, so the owner runs it.
         - **The pack is corrected:** the update note at the top, §2, §5.2 and (h), plus (b)/(c). The handoff note's
           `7b32e2d` links are removed, because they show the old text; attach the files.

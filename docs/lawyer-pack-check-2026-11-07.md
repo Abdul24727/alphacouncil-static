@@ -46,7 +46,7 @@ matches the live site, so that the owner can send it.
 - **Hosting:** Paris, France.
 - **The AI services:** the providers observed on the shared OpenRouter account are now listed. No site request was
   traced, and where requests were processed is not verified.
-- **Accounts:** the count is still the owner's to run.
+- **Accounts:** four, recounted by the owner on 2026-11-08, with none created since 2026-11-06.
 
 *(A fourth fact, the seats' and the Chair's production models, is no longer the owner's to confirm. After review 91
 they were read from production's public `/api/v1/debate/status`, as configured: `status-endpoints.txt`.)*

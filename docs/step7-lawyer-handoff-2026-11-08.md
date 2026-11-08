@@ -7,16 +7,16 @@ pack, which was corrected on 2026-11-08 with the facts below. The full context i
 ## 1. The three facts, as they stand (2026-11-08)
 
 Claude read them in the owner's own accounts, with the owner signed in (`docs/lawyer-pack-facts-2026-11-08.md`), and
-the pack is corrected. One item is left for the owner.
+the pack is corrected. All four are settled; what is left is sending.
 
 | # | The fact | Where in the pack | Status |
 |---|---|---|---|
 | 1a | Payments | §2 | **Done.** Moyasar's live account shows two payments ever, both the owner's own tests and both refunded. No paying customer. |
-| 1b | The number of accounts (four as of 2026-11-06) | §2 | **The owner's.** Run the counts-only query in the facts file in your own terminal; Claude's permission check refuses it. If the count is not four, tell Claude, and §2 is corrected before sending. |
+| 1b | The number of accounts | §2 | **Done.** The owner ran the counts-only query on 2026-11-08: four accounts, none created since 2026-11-06, as the pack says. |
 | 2 | Hosting | §5.2 | **Done.** Hostinger, with the server in Paris, France, from hPanel. |
 | 3 | The AI services | §5.2, (h) | **Recorded; location not verified.** The pack lists the providers observed on the shared OpenRouter account for the site's models, including two companies based in China. No site request was traced, and where requests were processed is not shown. The pack says so. |
 
-If the account count differs from the pack, tell Claude before sending, and the pack is corrected first.
+If anything changes before sending, tell Claude, and the pack is corrected first.
 
 ## 2. Send exactly two documents
 

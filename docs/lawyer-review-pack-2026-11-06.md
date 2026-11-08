@@ -39,9 +39,9 @@ signed in (`docs/lawyer-pack-facts-2026-11-08.md`):
   - **Limits:** none on the account limits providers or regions.
   - **Not verified:** where the requests were processed.
 
-**Not checked again, for the owner to confirm before sending:**
-- the number of accounts in §2, which is as of 2026-11-06. Counting it needs a read of production's database, which
-  the owner runs.
+**Nothing is left for the owner to confirm.**
+- **The account count in §2:** recounted on 2026-11-08 by the owner, with a counts-only query of production's
+  database. It is four, and no account was created since 2026-11-06.
 
 *(Until review 91 this list also asked the owner to confirm the six seats' and the Chair's production models. They are
 now read from production's public status address, as configured: §5.2.)*
@@ -102,7 +102,7 @@ will be shown before payment."
 
   There is **no paying customer**. *(Corrected 2026-11-08 from Moyasar's live dashboard and the owner's answer.
   Until then this said one payment.)*
-- **Four accounts**, as of 2026-11-06; the owner recounts them before sending. Every test account the site's
+- **Four accounts**, recounted on 2026-11-08; none was created since 2026-11-06. Every test account the site's
   automated checks had made was deleted on 2026-11-06.
 - **Checked as it stands, on 2026-11-06, signed out on production** ([the launch check](launch-check-2026-11-06.md)),
   all passing:
