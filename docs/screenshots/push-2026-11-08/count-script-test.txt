@@ -1,6 +1,9 @@
-# count-exact-value.sh after review 98, tested 2026-11-08
+# count-exact-value.sh after review 99 (fails closed), tested 2026-11-08
 
-$ bash scripts/push-checks/test-count-exact-value.sh   # throwaway repo, dummy values
+$ bash -n scripts/push-checks/count-exact-value.sh && bash -n scripts/push-checks/test-count-exact-value.sh
+exit 0
+
+$ bash scripts/push-checks/test-count-exact-value.sh   # throwaway repo, dummy values, injected tool failures
 PASS  absent value: three zeros
 PASS  present value: nonzero counts, exit 3
 PASS  present value: value not printed
@@ -28,10 +31,77 @@ PASS  base file name the range deletes: found
 PASS  base line the range edits away: found
 PASS  value shorter than 3 characters
 PASS  three-dot range refused
+PASS  sort fail, value present: exit 2
+PASS  sort fail, value absent: exit 2
+PASS  sort silent, value present: exit 2
+PASS  sort silent, value absent: exit 2
+PASS  sort late, value present: exit 2
+PASS  sort late, value absent: exit 2
+PASS  awk fail, value present: exit 2
+PASS  awk fail, value absent: exit 2
+PASS  awk silent, value present: exit 2
+PASS  awk silent, value absent: exit 2
+PASS  awk late, value present: exit 2
+PASS  awk late, value absent: exit 2
+PASS  sed fail, value present: exit 2
+PASS  sed fail, value absent: exit 2
+PASS  sed silent, value present: exit 2
+PASS  sed silent, value absent: exit 2
+PASS  sed late, value present: exit 2
+PASS  sed late, value absent: exit 2
+PASS  tr fail, value present: exit 2
+PASS  tr fail, value absent: exit 2
+PASS  tr silent, value present: exit 2
+PASS  tr silent, value absent: exit 2
+PASS  tr late, value present: exit 2
+PASS  tr late, value absent: exit 2
+PASS  grep fail, value present: exit 2
+PASS  grep fail, value absent: exit 2
+PASS  grep silent, value present: exit 2
+PASS  grep silent, value absent: exit 2
+PASS  grep late, value present: exit 2
+PASS  grep late, value absent: exit 2
+PASS  wc fail, value present: exit 2
+PASS  wc fail, value absent: exit 2
+PASS  wc silent, value present: exit 2
+PASS  wc silent, value absent: exit 2
+PASS  wc late, value present: exit 2
+PASS  wc late, value absent: exit 2
+PASS  mktemp fail, value present: exit 2
+PASS  mktemp fail, value absent: exit 2
+PASS  mktemp silent, value present: exit 2
+PASS  mktemp silent, value absent: exit 2
+PASS  mktemp late, value present: exit 2
+PASS  mktemp late, value absent: exit 2
 failures: 0
 exit 0
 
-# review 98's two cases against the previous version (d55db6e) and this one, in a throwaway repo
+# review 99's case and its neighbours: each tool replaced for one run, a dummy value present in the outgoing patch.
+# fail = exits 1 with no output; silent = exits 0 with no output; late = runs the real tool, then exits 1.
+# 'previous' is 94e191e; 'now' is this version. Bash's own messages under previous name a scratch path, shortened here.
+sort    fail    previous: exit 0 commits 0 file-contents 0 file-names 0   | now: exit 2 error: sorting the blob list failed
+sort    silent  previous: exit 0 commits 0 file-contents 0 file-names 0   | now: exit 2 error: the name list is incomplete
+sort    late    previous: exit 3 commits 0 file-contents 1 file-names 0   | now: exit 2 error: sorting the blob list failed
+awk     fail    previous: exit 0 commits 0 file-contents 0 file-names 0   | now: exit 2 error: listing blobs failed
+awk     silent  previous: exit 0 commits 0 file-contents 0 file-names 0   | now: exit 2 error: the blob list is missing a file from the tip
+awk     late    previous: exit 3 commits 0 file-contents 1 file-names 0   | now: exit 2 error: listing blobs failed
+sed     fail    previous: exit 2 error: value file must hold exactly one  | now: exit 2 error: reading the value failed
+sed     silent  previous: exit 2 error: value file must hold exactly one  | now: exit 2 error: value file must hold exactly one line
+sed     late    previous: exit 3 commits 0 file-contents 1 file-names 0   | now: exit 2 error: reading the value failed
+tr      fail    previous: exit 2 error: value file must hold exactly one  | now: exit 2 error: reading the value failed
+tr      silent  previous: exit 2 error: value file must hold exactly one  | now: exit 2 error: value file must hold exactly one line
+tr      late    previous: exit 2 error: tr failed on blobs                | now: exit 2 error: reading the value failed
+grep    fail    previous: exit 2 <scratch path> | now: exit 2 error: the search failed its control
+grep    silent  previous: exit 2 <scratch path> | now: exit 2 error: the search failed its control
+grep    late    previous: exit 3 commits 0 file-contents 1 file-names 0   | now: exit 2 error: the name search failed its control
+wc      fail    previous: exit 2 <scratch path> | now: exit 2 error: the search of control failed
+wc      silent  previous: exit 2 <scratch path> | now: exit 2 error: the search of control gave no count
+wc      late    previous: exit 3 commits 0 file-contents 1 file-names 0   | now: exit 2 error: the search of control failed
+mktemp  fail    previous: exit 2 error: mktemp failed                     | now: exit 2 error: mktemp failed
+mktemp  silent  previous: exit 2 <scratch path> | now: exit 2 error: mktemp gave no folder
+mktemp  late    previous: exit 2 error: mktemp failed                     | now: exit 2 error: mktemp failed
+
+# review 98's two cases against d55db6e and 8598c26 ('now'), in a throwaway repo (also in the tests above)
 --- base content the range deletes
 previous (d55db6e):
 commits 0
@@ -55,8 +125,7 @@ file-contents 0
 file-names 1
 exit 3
 
-# review 97's two cases against the version before that (9dbf448) and the first raw-object version (3517fbe)
-# (both are also in the test suite above)
+# review 97's two cases against 9dbf448 and 3517fbe, in a throwaway repo (also in the tests above)
 --- the non-ASCII file name
 old (9dbf448):
 history 0
@@ -81,11 +150,11 @@ file-names 0
 exit 3
 
 # smoke runs on this repository; the value files sat in the session scratch folder and were deleted after
-$ time scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: a value known to be absent>
+$ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: a value known to be absent>
 commits 0
 file-contents 0
 file-names 0
-exit 0  (15 s)
+exit 0  (18 s)
 $ scripts/push-checks/count-exact-value.sh eeb9a9d..dcc4189 <file: "moyasar", a word known to be present>
 commits 0
 file-contents 5261

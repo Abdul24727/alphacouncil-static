@@ -130,5 +130,28 @@ v=$(val short 'ab')
 "$script" base..tip "$v" > /dev/null 2>&1; check "value shorter than 3 characters" 2 $? 0
 "$script" base...tip "$dummy" > /dev/null 2>&1; check "three-dot range refused" 2 $? 0
 
+# --- review 99: a tool that fails, or exits 0 with no output, must give exit 2, never a result.
+# Each stand-in sits first on PATH for one run. "fail" exits 1 with no output, "silent" exits 0 with no output,
+# "late" runs the real tool and then exits 1.
+fakes="$work/fakes"
+for tool in sort awk sed tr grep wc mktemp; do
+  realtool=$(command -v "$tool")
+  for mode in fail silent late; do
+    d="$fakes/$tool-$mode"
+    mkdir -p "$d"
+    case $mode in
+      fail)   printf '#!/bin/sh\nexit 1\n' > "$d/$tool" ;;
+      silent) printf '#!/bin/sh\nexit 0\n' > "$d/$tool" ;;
+      late)   printf '#!/bin/sh\n"%s" "$@"\nexit 1\n' "$realtool" > "$d/$tool" ;;
+    esac
+    chmod +x "$d/$tool"
+    for which in present absent; do
+      [ $which = present ] && vfile=$dummy || vfile=$absent
+      PATH="$d:$PATH" "$script" base..tip "$vfile" > "$work/out" 2>&1; rc=$?
+      check "$tool $mode, value $which: exit 2" 2 $rc 0
+    done
+  done
+done
+
 echo "failures: $fails"
 [ $fails -eq 0 ]

@@ -144,6 +144,8 @@ Billing has been open since 2026-11-02.
         The script now reads git's raw objects, and 24 tests pass, both cases included.
       - **Review 98 said FIX.** It found that content and names the range deletes from the base were missed. The
         script now reads the full tree at every commit and at the boundary, and 27 tests pass.
+      - **Review 99 said FIX.** A failing `sort` could still give a clean result. The script now fails closed, and
+        69 tests pass, 42 of them injected tool failures.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 
