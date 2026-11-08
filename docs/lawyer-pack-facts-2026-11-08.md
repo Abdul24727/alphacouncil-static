@@ -81,13 +81,15 @@ for the past month, grouped by model and provider, plus the Privacy and Routing 
 
 ## Fact 1: the counts as of 2026-11-06 (pack §2)
 
-- **Payments and refunds: two live payments ever, both refunded. The pack says one.**
+- **Payments and refunds: two live payments ever, both refunded.** The pack as accepted on 2026-11-07 said one; the
+  corrected pack (§2) now records both.
   - **The source:** the owner's Moyasar dashboard, read 2026-11-08 after the owner signed in. It was the
     **Live Environment**, Payments, with no filter: "Showing 1 to 2".
   - **2026-11-02, 10:24 PM:** 79.00, REFUNDED, "AlphaCouncil Pro, monthly, account …". This is the owner's own
-    payment, which the pack describes.
-  - **2026-08-12, 01:07 AM:** 79.00, REFUNDED, "AlphaCouncil Pro — monthly". The pack does not mention it. The
-    different description format suggests the earlier version of the site, before this rebuild. **The owner, in
+    payment, which the pack has always described.
+  - **2026-08-12, 01:07 AM:** 79.00, REFUNDED, "AlphaCouncil Pro — monthly". The pack as accepted on
+    2026-11-07 did not mention it; the corrected pack now does. The different description format suggests an earlier
+    version of the site, which is not verified. **The owner, in
     chat, 2026-11-08:** "Mine, a test".
   - **So:** two payments ever, both the owner's own tests, both refunded, and no paying customer.
   - **Not opened:** neither payment's details (card or customer), so nothing personal was read. Dates are as the
