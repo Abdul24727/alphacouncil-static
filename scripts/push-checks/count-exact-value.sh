@@ -7,9 +7,10 @@
 # <value-file> holds the value on one line, UTF-8 (for example the Argaam account name). Keep it outside the
 # repository and delete it afterwards. The value is never printed and never passed on a command line.
 #
-# WHAT IT READS. The snapshots are every commit in the range, each boundary commit (the range's start: parents
-# outside the range) and the tip. Every version any patch in the range shows, before or after a change, is in
-# one of their trees: an older version is either at the boundary or inside the range. Git lists every object in
+# WHAT IT READS. The snapshots are every commit in the range, each boundary commit (parents outside the range),
+# and both ends of the range by name, A and B, even when they have diverged. Every version any patch in the range
+# shows, before or after a change, is in one of their trees: an older version is either at the boundary or inside
+# the range, and `git diff A..B` compares the two ends' trees. Git lists every object in
 # those trees once (`git rev-list --objects --no-walk`), and the script searches git's raw objects:
 #   commits <n>        matching lines in the raw commit objects of the range (messages, authors, committers)
 #   file-contents <n>  matching lines in every blob of every snapshot: binary files, files deleted inside the range,
@@ -147,15 +148,18 @@ search "$tmp/pat-contents" "$tmp/pat-contents" control
 search "$tmp/pat-names" "$tmp/pat-names" control
 [ "$HITS" -eq 1 ] || fail "the search failed its control"
 
-git rev-parse --verify --quiet "$base^{commit}" > /dev/null || fail "range start is not a commit"
+basesha=$(git rev-parse --verify --quiet "$base^{commit}") || fail "range start is not a commit"
+[ -n "$basesha" ] || fail "range start is not a commit"
 tipsha=$(git rev-parse --verify --quiet "$tip^{commit}") || fail "range end is not a commit"
 [ -n "$tipsha" ] || fail "range end is not a commit"
 
-# The range's commits and its boundary, from git; parsed in bash.
+# The range's commits and its boundary, from git; parsed in bash. The snapshots always include both ends of the
+# range by name: when the two ends have diverged, the start is not on the boundary, but `git diff A..B` still
+# shows its tree (review 102).
 git rev-list --boundary "$range" > "$tmp/with-boundary" || fail "git rev-list --boundary failed"
 mapfile -t marked < "$tmp/with-boundary" || fail "reading the commit list failed"
 commits=()
-snaps=("$tipsha")
+snaps=("$tipsha" "$basesha")
 for line in "${marked[@]}"; do
   case "$line" in
     -*) snaps+=("${line#-}") ;;

@@ -1,4 +1,4 @@
-# count-exact-value.sh after review 101 (git and grep only; value file must be UTF-8), tested 2026-11-08
+# count-exact-value.sh after review 102 (git and grep only; both range ends read), tested 2026-11-08
 
 $ bash -n scripts/push-checks/count-exact-value.sh && bash -n scripts/push-checks/test-count-exact-value.sh
 exit 0
@@ -43,6 +43,8 @@ PASS  C1 control character refused
 PASS  UTF-8 cut short refused
 PASS  value shorter than 3 characters
 PASS  three-dot range refused
+PASS  diverged range, value only at its start: found
+PASS  diverged range, value only at its end: found
 PASS  grep fail, value present: exit 2
 PASS  grep fail, value absent: exit 2
 PASS  grep silent, value present: exit 2
@@ -61,6 +63,19 @@ PASS  text tools broken, value dummy.deleted-41: same result
 PASS  text tools broken, value dummy.deleted-name-91: same result
 failures: 0
 exit 0
+
+# review 102's case: diverged range ends, against ec45135 (previous) and this version (now)
+--- the value only in the range's start (side), diverged from its end (main-end); git diff side..main-end shows it removed
+previous (ec45135):
+commits 0
+file-contents 0
+file-names 0
+exit 0
+now:
+commits 0
+file-contents 1
+file-names 0
+exit 3
 
 # review 101's two cases: a value file in another encoding, against 6a68598 (previous) and this version (now)
 --- "中文测试" saved as UTF-16BE without a mark; the repo holds it as UTF-8

@@ -50,6 +50,11 @@ git add . && git commit -q -m "scenario files"
 git rm -q blob.bin gone.txt && git commit -q -m "delete the binary and text files"
 git mv base.txt "renamed-name-99.txt" && git commit -q -m "rename an old file"  # old blob, new name
 git tag tip
+# review 102: a side branch from base that diverges from tip; only the side holds the value
+git checkout -q -b side base
+echo "dummy.secret-987 lives only on the side" > side.txt
+git add side.txt && git commit -q -m "side only"
+git checkout -q -
 
 dummy=$(val dummy 'dummy.account-42')
 absent=$(val absent 'NotPresentValue')
@@ -161,6 +166,13 @@ f=$(enc cut 'dummy\344\270\n')
 v=$(val short 'ab')
 "$script" base..tip "$v" > /dev/null 2>&1; check "value shorter than 3 characters" 2 $? 0
 "$script" base...tip "$dummy" > /dev/null 2>&1; check "three-dot range refused" 2 $? 0
+
+# review 102: diverged ends. `git diff side..tip` shows side.txt being removed, so the value must be found.
+v=$(val diverged 'dummy.secret-987')
+out=$("$script" side..tip "$v" 2>&1); rc=$?
+[ "$(get "$out" file-contents)" -ge 1 ] && only_counts "$out"; check "diverged range, value only at its start: found" 3 $rc $?
+out=$("$script" tip..side "$v" 2>&1); rc=$?
+[ "$(get "$out" file-contents)" -ge 1 ] && only_counts "$out"; check "diverged range, value only at its end: found" 3 $rc $?
 
 # --- reviews 99 and 100: failing or lying helper tools.
 # Each stand-in sits first on PATH for one run. "fail" exits 1 with no output, "silent" exits 0 with no output,

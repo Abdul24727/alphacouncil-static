@@ -103,3 +103,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-08 11:23 UTC — **Review 98's fixes: every full tree, boundary included** — FIX — [99-review-98-s-fixes-every-full-tree-boundary-include.md](replies/99-review-98-s-fixes-every-full-tree-boundary-include.md)
 - 2026-11-08 11:39 UTC — **Review 99's fix: the exact-value check fails closed** — FIX — [100-review-99-s-fix-the-exact-value-check-fails-closed.md](replies/100-review-99-s-fix-the-exact-value-check-fails-closed.md)
 - 2026-11-08 12:02 UTC — **Review 100's fix: only git and grep touch the data** — FIX — [101-review-100-s-fix-only-git-and-grep-touch-the-data.md](replies/101-review-100-s-fix-only-git-and-grep-touch-the-data.md)
+- 2026-11-08 12:16 UTC — **Review 101's fix: the value must be well-formed UTF-8** — FIX — [102-review-101-s-fix-the-value-must-be-well-formed-utf.md](replies/102-review-101-s-fix-the-value-must-be-well-formed-utf.md)

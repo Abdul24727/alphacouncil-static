@@ -150,6 +150,8 @@ Billing has been open since 2026-11-02.
         data, and 43 tests pass.
       - **Review 101 said FIX.** A value file in another encoding read as clean. The value must now be well-formed
         UTF-8, and 55 tests pass.
+      - **Review 102 said FIX.** Diverged range ends: the start's tree was not read. Both ends are now read, and 57
+        tests pass.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 
