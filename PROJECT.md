@@ -871,6 +871,9 @@ Older entries: `changelog-archive.md`.
            §7 says. The lawyer's own correspondence is never committed, because the repository is public.
         2. **The links:** the pinned links would show old text after a correction. The note now says to send
            corrected files as attachments, or links to a new, approved push, never the `7b32e2d` links.
+      - **Review 111 ACCEPTED the note: "ISSUES: none."** Its next step is the owner's: confirm the three facts, then
+        send the two documents. Step 7 now waits on the owner, and nothing further is to be built, pushed or
+        published for it.
     - **Against the previous script:** both of review 97's cases gave three zeros and exit 0 there. Here they give
       exit 3.
 

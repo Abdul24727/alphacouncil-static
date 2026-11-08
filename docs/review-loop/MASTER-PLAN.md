@@ -162,6 +162,8 @@ Billing has been open since 2026-11-02.
         both ranges. **Pushed 2026-11-08:** `dcc4189..7b32e2d`, pinned, fast-forward, and verified by hash.
       - **Reviews 108 and 109** settled the push record. **Step 7's owner handoff note:**
         `docs/step7-lawyer-handoff-2026-11-08.md`.
+      - **Reviews 110 and 111:** the note now keeps the lawyer's advice out of the public repository and prevents
+        stale links from being sent. It is ACCEPTED, and Step 7 waits on the owner.
 
 ## The owner's direction of 2026-11-06 on the advisors' room (in chat, verbatim)
 
