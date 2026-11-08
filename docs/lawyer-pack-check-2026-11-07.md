@@ -44,7 +44,8 @@ matches the live site, so that the owner can send it.
 (`docs/lawyer-pack-facts-2026-11-08.md`), and the pack is corrected:
 - **Payments:** two, both the owner's own tests, both refunded.
 - **Hosting:** Paris, France.
-- **The AI services:** the serving companies are now listed. The country of each request is still not shown.
+- **The AI services:** the providers observed on the shared OpenRouter account are now listed. No site request was
+  traced, and where requests were processed is not verified.
 - **Accounts:** the count is still the owner's to run.
 
 *(A fourth fact, the seats' and the Chair's production models, is no longer the owner's to confirm. After review 91

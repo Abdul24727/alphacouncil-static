@@ -34,10 +34,10 @@ signed in (`docs/lawyer-pack-facts-2026-11-08.md`):
   refunded. This pack said one.
 - **Hosting (§5.2):** Hostinger, with the server in **Paris, France**, from the owner's hosting panel.
 - **The AI services (§5.2, (h)):**
-  - **Which companies served the requests over the past month:** from the owner's OpenRouter account. They include
-    two companies based in China.
+  - **Providers observed on the owner's shared OpenRouter account** for the site's three configured models over the
+    past month, including two companies based in China. No site request was traced to a provider.
   - **Limits:** none on the account limits providers or regions.
-  - **Still not shown:** the country where each request was processed.
+  - **Not verified:** where the requests were processed.
 
 **Not checked again, for the owner to confirm before sending:**
 - the number of accounts in §2, which is as of 2026-11-06. Counting it needs a read of production's database, which
@@ -96,7 +96,8 @@ will be shown before payment."
 - **Billing has been open since 2026-11-02.** The owner opened it before this review, waiving the plan's
   order; Step 7 comes after the launch check.
 - **Two payments have ever been taken, both the owner's own tests, and both were refunded.**
-  - **2026-08-12:** on the earlier version of the site.
+  - **2026-08-12:** 79 SAR, refunded. The owner confirms it was a test. Its description suggests an earlier version
+    of the site, which is not verified.
   - **2026-11-02:** refunded the same evening.
 
   There is **no paying customer**. *(Corrected 2026-11-08 from Moyasar's live dashboard and the owner's answer.
@@ -266,32 +267,37 @@ The dumps include the card-token ids.
       them.
     - **The room** uses the same OpenRouter client and key.
     - **The service's address** defaults to OpenRouter's, and any OpenAI-compatible endpoint can stand in for it.
-  - **Where the data is processed:** outside the Kingdom, by the companies listed below. *Updated 2026-11-08 from
-    the owner's OpenRouter account* (Activity, past month, by model and provider; Privacy and Routing settings).
-    - **The key:** one API key carried all of the account's traffic. That traffic includes the site's three models,
-      other work (image and Gemini models), and most likely the paid evaluation runs. Visitors' requests are not
-      separated out.
-    - **The companies that served the requests:**
+  - **Where the data is processed:** it may be processed outside the Kingdom; the actual locations are **not
+    verified**. *Updated 2026-11-08 from the owner's OpenRouter account* (Activity, past month, by model and provider;
+    Privacy and Routing settings). These are observations on a shared account, not traced site requests:
+    - **The key:** one API key carried all of the account's traffic, and that traffic is not separated by source.
+      - **What it includes:** the site's three configured models, and also models the site is not configured to use
+        (image and Gemini models). So the key appears to serve other work too.
+      - **The evaluation runs:** most likely on it as well.
+    - **Providers observed on the account for the site's three configured models.** No site request was traced to a
+      provider:
       - **The Chair's model (Claude Sonnet 5.5):** Microsoft Azure, Amazon (Claude Platform on AWS), and a little
         directly by Anthropic.
       - **The seats' model (DeepSeek V4 Pro):** Relace, DigitalOcean, Nebius, Crusoe, Baidu, Reka, DeepInfra,
         Parasail and Cloudflare.
       - **The Copilot's model (DeepSeek V3.2):** Phala, GMICloud, DeepInfra, Friendli, SiliconFlow, Google, Venice,
         AtlasCloud, SambaNova, DigitalOcean and Baidu.
-      - **Based in China:** Baidu and SiliconFlow.
+      - **Companies based in China among them:** Baidu and SiliconFlow. Where a company is based does not show where
+        a request was processed.
     - **The account's settings:**
       - **Limits:** no allowed or blocked list of providers, and no regional routing. EU-only or US-only routing
         needs OpenRouter's Business plan.
       - **Zero Data Retention:** off.
       - **Training:** paid providers that train on request data are excluded.
-    - **Still not shown:** the country where each request was processed. OpenRouter does not report it.
+    - **Not shown:** the country where each request was processed. OpenRouter does not report it.
   - **Who runs a request, when OpenRouter is used:** OpenRouter chooses which hosting company runs each request for
     a model, so the company is not necessarily the model's maker. What follows is what the settings and code
     define, not what production was seen doing:
     - **The code's default:** it asks OpenRouter to prefer the fastest host.
     - **A setting:** it can name hosts for the Copilot to try first, with the others as fallbacks.
-    - **Not read:** production's values for both. Fallbacks to other hosts are always allowed, so the account-wide
-      list of companies above applies to the site.
+    - **Not read:** production's values for both. The Copilot's routing code allows fallbacks to other hosts whenever
+      it names hosts. That was not established for every production request, so the companies above are the ones
+      observed on the account, not confirmed recipients of the site's visitors' data.
 - **The hosting provider:** a rented virtual server. *Added 2026-11-08 from public records* (`docs/screenshots/
   lawyer-pack-check-2026-11-07/hosting-public-records.txt`):
   - **Reverse DNS:** the site's address, 72.60.91.24, has the name `srv1556505.hstgr.cloud`, Hostinger's domain.
@@ -375,10 +381,10 @@ page describes this as collected "from public market sources", and does not name
 
 **(h) Sending data outside the Kingdom.** When an AI feature calls an externally hosted model, the member's
 question and the company's data are sent to the configured AI service.
-- **Shown by the owner's OpenRouter account (§5.2, 2026-11-08):** which companies served the requests over the past
-  month. They are about twenty, including two based in China, and nothing on the account limits providers or
-  regions.
-- **Not shown:** the country where each request was processed.
+- **Observed on the owner's shared OpenRouter account (§5.2, 2026-11-08):** about twenty providers served the
+  site's three configured models over the past month, including two companies based in China. Nothing on the account
+  limits providers or regions. The account also carries other work, and no site request was traced to a provider.
+- **Not verified:** where any request was processed. Requests may be processed outside the Kingdom.
 - **Not tested:** that a request from the site is delivered.
 
 Emails go through MailerSend. Under the Personal Data Protection Law, what do the Privacy Policy, the sign-up flow or the

@@ -113,3 +113,4 @@ Each line: when, the output reviewed, ChatGPT's verdict, its reply.
 - 2026-11-08 14:29 UTC — **Review 108's record fixes** — ACCEPT — [109-review-108-s-record-fixes.md](replies/109-review-108-s-record-fixes.md)
 - 2026-11-08 14:39 UTC — **The Step 7 owner handoff note** — FIX — [110-the-step-7-owner-handoff-note.md](replies/110-the-step-7-owner-handoff-note.md)
 - 2026-11-08 14:49 UTC — **Review 110's fixes to the Step 7 handoff note** — ACCEPT — [111-review-110-s-fixes-to-the-step-7-handoff-note.md](replies/111-review-110-s-fixes-to-the-step-7-handoff-note.md)
+- 2026-11-08 19:35 UTC — **The lawyer pack's owner facts, read and corrected** — FIX — [112-the-lawyer-pack-s-owner-facts-read-and-corrected.md](replies/112-the-lawyer-pack-s-owner-facts-read-and-corrected.md)

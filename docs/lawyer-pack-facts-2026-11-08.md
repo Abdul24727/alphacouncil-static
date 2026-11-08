@@ -14,10 +14,12 @@ for the past month, grouped by model and provider, plus the Privacy and Routing 
   - **The site's three configured models:** DeepSeek V3.2 (Copilot), DeepSeek V4 Pro (advisors) and Claude Sonnet
     5.5 (Chair).
   - **Other models on the same key:** Gemini 2.5 Flash, Nano Banana 2 (image generation) and GPT-5.2. These are not
-    the site's configured models, so the key appears to be shared with other work; the owner can confirm.
+    the site's configured models, so the key appears to serve other work too; the owner can confirm. The traffic is
+    not separated by source.
   - **The evaluation runs:** the traffic most likely also includes the paid evaluation runs of 2026-11-06 and
     2026-11-07, which ran on the same server. They are not separated from visitors' requests here.
-- **The companies that served the requests, by model** (OpenRouter's "provider", share of the month's spend):
+- **The providers observed on the account, by model** (OpenRouter's "provider", share of the month's spend). This is
+  the whole account; no site request was traced to a provider:
   - **Claude Sonnet 5.5:**
     - Azure: $16.00, 32.6%;
     - Claude Platform on AWS: $6.88, 14.0%;
@@ -48,16 +50,19 @@ for the past month, grouped by model and provider, plus the Privacy and Routing 
     requests.
   - **Provider sort:** the default, balanced.
   - **Regional routing (EU or US only):** not in use. It needs OpenRouter's Business plan.
-- **The site's code** (`api/app/copilot/openai_compat.py`, `host_routing`): it may name preferred providers for the
-  Copilot, but always with `allow_fallbacks=True`. So the account-wide picture above applies to the site.
+- **The site's code** (`api/app/copilot/openai_compat.py`, `host_routing`): when it names preferred providers for
+  the Copilot, it sets `allow_fallbacks=True`. That was not established for every production request, so the
+  providers above are the ones observed on the account, not confirmed recipients of the site's visitors' data.
 
 **What this establishes for the pack:**
-- **Which companies:** the AI requests are served by many third-party providers, chosen per request by OpenRouter.
-- **Including Chinese companies:** Baidu and SiliconFlow, both companies based in China, served some DeepSeek requests
-  this month.
+- **Which companies:** on the account, requests for the site's three configured models were served by many
+  third-party providers, chosen per request by OpenRouter. No site request was traced.
+- **Including companies based in China:** Baidu and SiliconFlow served some DeepSeek requests on the account this
+  month. Where a company is based does not show where a request was processed.
 - **Not shown:** OpenRouter does not show the country where each request was processed. So the processing location
-  stays **not verified per request**. What *is* verified: the providers used, and that nothing on the account limits
-  them by provider or region.
+  stays **not verified**, and requests may be processed outside the Kingdom.
+- **What *is* verified:** the providers used on the account, and that nothing on the account limits them by provider
+  or region.
 - **Options for the owner and the lawyer, not taken here:** limit providers (an allowed or ignored list), turn on
   Zero Data Retention, or use regional routing on the Business plan. Each is a settings change, and the owner's
   decision.

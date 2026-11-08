@@ -879,8 +879,17 @@ Older entries: `changelog-archive.md`.
         - **Hosting:** Hostinger, with the server in Paris, France, from hPanel.
         - **Payments:** Moyasar live shows two, both refunded. The owner says the 2026-08-12 one was "Mine, a test".
           The pack said one.
-        - **The AI services:** OpenRouter shows about 20 serving companies, including Baidu and SiliconFlow (China),
-          with no provider or region limits and Zero Data Retention off. The country of each request is not shown.
+        - **The AI services:** the shared OpenRouter account shows about 20 providers for the site's three models,
+          including Baidu and SiliconFlow (based in China), with no provider or region limits and Zero Data Retention
+          off. No site request was traced, and the country of each request is not shown.
+      - **Review 112 said FIX: five overstatements, all corrected.**
+        1. The pack said the data is processed "outside the Kingdom". It now says it "may be", with locations not
+           verified.
+        2. The account-wide providers were presented as the site's. They are now "observed on the shared account,
+           not traced site requests".
+        3. The key's other work was stated as certain. It is now "appears to".
+        4. The August payment was said to be on the earlier site. That is now "suggests …, not verified".
+        5. The handoff note's checklist was stale. It now shows the current status, with only the account count left.
         - **Accounts:** the permission check refused the counts-only database query again, so the owner runs it.
         - **The pack is corrected:** the update note at the top, §2, §5.2 and (h), plus (b)/(c). The handoff note's
           `7b32e2d` links are removed, because they show the old text; attach the files.
