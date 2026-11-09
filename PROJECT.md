@@ -1908,6 +1908,11 @@ Older entries: `changelog-archive.md`.
     - Monitor: 14 ok + renewals "–".
     - The owner's own account is Free again.
   - *Not verifiable from here:* that Moyasar deleted the saved card on its side. `_refunded` sends `DELETE /tokens/<id>` but neither checks nor logs the answer (`billing.py:385`, as `:273` and `:463` do not; only `:337` logs a failure). Our database no longer holds the token, so nothing here can charge that card. Verifier: the owner, in Moyasar's dashboard if they wish. Logging that answer is a small change to payments code, so it is the owner's call.
+  - *Monitor reading, 2026-11-09* (read-only `prod-monitor.py status`): 14 checks ok, plus "Moyasar for renewals: no renewal run since the last round". No customer renewal has happened yet, so Done-when item 4 still waits on one. Also read:
+    - model account credit $19.97, above the site's $10 alert;
+    - disk `/` 43% full;
+    - off-server backup copied at 06:00 UTC;
+    - TLS valid to 2027-01-21.
   - *Resume here (after the refund):* F-12's webhook tidy is now safe (the owner, in the dashboard), and Done-when item 4 waits on the first real renewal. Before both, the record kept below, which this replaced:
   - *Resume here (as it stood before the refund):*
     1. The owner cancels the renewal in Settings → Billing. Cancel keeps `current_period_end`, so the refund still matches it, the order check-checkout proved on beta, cases 6 then 7.
