@@ -902,9 +902,21 @@
       "lead": "One screen for the Gulf stocks you own or watch: price, fundamentals, the news that touches your holdings, a council of rule-based seats that votes in the open, and a Copilot that cites the panel behind every answer. In English and Arabic.",
       "start": "Start free",
       "how": "See how it works",
-      "coverage": "<n>{exchanges}</n> exchanges · <n>{equities}</n> equities · EN / ع",
       "shotAlt": "The AlphaCouncil terminal: Saudi Aramco's stock page with linked panels and the Copilot open",
       "shotCaption": "A real screen from the app, with the data of the day it was taken. Not investment advice."
+    },
+    "trust": {
+      "label": "Coverage",
+      "exchanges": "Gulf exchanges",
+      "equities": "Equities covered",
+      "languages": {
+        "value": "English and Arabic",
+        "label": "Every page in both languages"
+      },
+      "sources": {
+        "value": "Cited answers",
+        "label": "Copilot answers cite their sources"
+      }
     },
     "how": {
       "title": "Built like a terminal. Honest like a ledger.",

@@ -20,6 +20,7 @@ export async function Landing({ locale }: Props) {
   return (
     <>
       <Hero locale={locale} />
+      <Trust locale={locale} />
       <Shot locale={locale} />
       <How locale={locale} />
       <Templates locale={locale} />
@@ -44,23 +45,69 @@ async function Hero({ locale }: Props) {
             {t("how")}
           </ButtonLink>
         </div>
-        <Suspense fallback={<p className="label-caps h-4 text-[11.5px] text-muted" />}>
-          <Coverage locale={locale} />
-        </Suspense>
       </div>
     </section>
   );
 }
 
-async function Coverage({ locale }: Props) {
-  const t = await getTranslations({ locale, namespace: "site" });
-  const exchanges = await getExchanges();
-  if (!exchanges) return <Unavailable>{t("unavailable")}</Unavailable>;
-  const equities = exchanges.reduce((n, e) => n + e.equities, 0);
+const FACT = "flex flex-col-reverse justify-end gap-1.5 py-5 md:px-7 md:first:ps-0";
+const FACT_VALUE = "text-[clamp(24px,2.2vw,30px)] font-bold leading-tight [font-stretch:85%]";
+const FACT_LABEL = "text-[15px] leading-snug text-text-soft";
+
+/**
+ * Trust band under the hero (design fix 2, owner 2026-11-21): only facts the product can
+ * stand behind. The two counts are read from the API (the same /v1/market/exchanges the
+ * markets table uses); the other two are properties of the app itself. No quotes, logos or
+ * user counts.
+ */
+async function Trust({ locale }: Props) {
+  const t = await getTranslations({ locale, namespace: "site.trust" });
   return (
-    <p className="label-caps text-[11.5px] text-muted" data-coverage>
-      {t.rich("hero.coverage", { n: db, exchanges: String(exchanges.length), equities: String(equities) })}
-    </p>
+    <section aria-label={t("label")} className={`${WRAP} pb-10`}>
+      <dl className="grid grid-cols-2 border-y border-line md:grid-cols-4" data-coverage>
+        <Suspense fallback={<CountFacts counts={undefined} locale={locale} />}>
+          <LoadedCounts locale={locale} />
+        </Suspense>
+        <div className={`${FACT} border-t border-line ps-0 md:border-t-0 md:border-s`}>
+          <dt className={FACT_LABEL}>{t("languages.label")}</dt>
+          <dd className={FACT_VALUE}>{t("languages.value")}</dd>
+        </div>
+        <div className={`${FACT} border-t border-s border-line ps-5 md:border-t-0`}>
+          <dt className={FACT_LABEL}>{t("sources.label")}</dt>
+          <dd className={FACT_VALUE}>{t("sources.value")}</dd>
+        </div>
+      </dl>
+    </section>
+  );
+}
+
+async function LoadedCounts({ locale }: Props) {
+  const exchanges = await getExchanges();
+  return (
+    <CountFacts
+      counts={exchanges && { exchanges: exchanges.length, equities: exchanges.reduce((n, e) => n + e.equities, 0) }}
+      locale={locale}
+    />
+  );
+}
+
+/** The two counts check-phase6 compares with the API ([data-coverage] [data-db], in this order).
+ * counts: undefined while loading (no numbers), null when the API could not answer. */
+async function CountFacts({ counts, locale }: { counts: { exchanges: number; equities: number } | null | undefined; locale: string }) {
+  const t = await getTranslations({ locale, namespace: "site" });
+  const value = (n: number | undefined) =>
+    counts === undefined ? <span className="block h-[1em]" /> : n == null ? <Unavailable>{t("unavailable")}</Unavailable> : <Db>{n}</Db>;
+  return (
+    <>
+      <div className={`${FACT} ps-0`}>
+        <dt className={FACT_LABEL}>{t("trust.exchanges")}</dt>
+        <dd className={FACT_VALUE}>{value(counts?.exchanges)}</dd>
+      </div>
+      <div className={`${FACT} border-s border-line ps-5`}>
+        <dt className={FACT_LABEL}>{t("trust.equities")}</dt>
+        <dd className={FACT_VALUE}>{value(counts?.equities)}</dd>
+      </div>
+    </>
   );
 }
 
