@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { HeaderCta } from "./HeaderCta";
 import { SiteLocaleSwitch } from "./SiteLocaleSwitch";
 import { WRAP } from "./ui";
 
@@ -42,12 +43,7 @@ export async function SiteHeader() {
         <Link href="/login" className="hover:text-signal">
           {t("signIn")}
         </Link>
-        <Link
-          href="/home"
-          className="rounded-panel bg-signal px-4 py-2.5 font-semibold leading-none text-signal-ink transition-colors hover:bg-text"
-        >
-          {t("open")}
-        </Link>
+        <HeaderCta />
       </div>
     </header>
   );
