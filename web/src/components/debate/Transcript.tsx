@@ -477,10 +477,8 @@ export function VerdictView({ room }: { room: Room }) {
             ))}
           </p>
         )}
-        <p>
-          {room.seconds != null && <>{t("took", { time: fmtElapsed(room.seconds) ?? "" })} · </>}
-          {t("models", { advisors: s.models.advisors ?? "", chair: s.models.chair ?? "" })}
-        </p>
+        {/* No model or provider names on screen (owner, 2026-11-21): only how long the room took. */}
+        {room.seconds != null && <p>{t("took", { time: fmtElapsed(room.seconds) ?? "" })}</p>}
       </div>
     </div>
   );

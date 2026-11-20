@@ -180,7 +180,6 @@
     "notAdvice": "An assessment of AlphaCouncil data by simulated advisors. Not advice to buy, sell or hold, and not personal advice.",
     "dataRead": "Data read:",
     "took": "Took {time}",
-    "models": "Advisors: {advisors} · Chair: {chair}",
     "keyPoints": "Key points",
     "kpEmpty": "Key points appear here as each step lands.",
     "kp": {
