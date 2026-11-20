@@ -31,9 +31,14 @@ export function ButtonLink({
   href: LinkHref;
   children: React.ReactNode;
   variant?: "primary" | "outline";
-  size?: "md" | "lg";
+  size?: "sm" | "md" | "lg";
 }) {
-  const pad = size === "lg" ? "px-6 py-4 text-[16px]" : "px-5 py-3.5 text-[15px]";
+  const pad =
+    size === "lg"
+      ? "px-6 py-4 text-[16px]"
+      : size === "sm"
+        ? "px-3 py-2 text-[13px] sm:px-4 sm:py-2.5 sm:text-[14px]"
+        : "px-5 py-3.5 text-[15px]";
   const look =
     variant === "primary"
       ? "bg-signal font-semibold text-signal-ink hover:bg-text"

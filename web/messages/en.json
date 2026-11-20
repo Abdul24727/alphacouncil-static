@@ -995,6 +995,10 @@
     "pricing": {
       "title": "Pricing",
       "lead": "Two plans, priced in Saudi riyals. The prices below are read from the same plan configuration our payment provider, Moyasar, charges.",
+      "compare": "Free and Pro compared",
+      "feature": "Feature",
+      "included": "Included",
+      "notIncluded": "Not included",
       "price": "<n>{price}</n> {currency} a month",
       "free": {
         "lead": "Market data and research for every GCC investor.",
@@ -1020,7 +1024,30 @@
       "payments": "Payments are processed by Moyasar. AlphaCouncil is not currently charging VAT; any applicable tax will be shown before payment.",
       "refunds": "Read the <link>refund and cancellation policy</link>.",
       "start": "Start free",
-      "getPro": "Get Pro"
+      "getPro": "Get Pro",
+      "faq": {
+        "title": "Common questions",
+        "card": {
+          "q": "Do I need a card to start?",
+          "a": "No. A Free account needs only an email address and a password. Card details are asked for only at the Pro checkout, and they go straight to Moyasar, our payment provider."
+        },
+        "copilot": {
+          "q": "How many questions can I ask the Copilot?",
+          "free": "Free:",
+          "pro": "Pro:"
+        },
+        "cancel": {
+          "q": "How do I cancel Pro?",
+          "renews": "Pro renews automatically every month, at the same price, until you cancel."
+        },
+        "delete": {
+          "q": "Can I delete my account?",
+          "a": "Yes. “{action}” in {settings} deletes your account, portfolio, alerts and saved settings. This cannot be undone."
+        },
+        "advice": {
+          "q": "Is AlphaCouncil investment advice?"
+        }
+      }
     },
     "methodology": {
       "title": "Methodology",
