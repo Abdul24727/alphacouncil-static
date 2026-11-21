@@ -912,7 +912,7 @@ Older entries: `changelog-archive.md`.
     - **Against the previous script:** both of review 97's cases gave three zeros and exit 0 there. Here they give
       exit 3.
 - 2026-11-21 — **Nine design fixes from the 21 Nov design review, approved by the owner on 2026-11-21 ("for the 9
-  fixes, yes, take them in"); committed on `rebuild` (`d7267ca`..`f123467`), not released, not pushed.**
+  fixes, yes, take them in"); committed on `rebuild` (`d7267ca`..`f123467`); released 2026-11-21 as `2f62fa6d4e` to beta then production on that approval, checked live (every public page 200, /pricing English under an Arabic cookie, no model name, markets dashes and Screener links). The oldest release `b5655a5064` was moved to `/opt/alphacouncil-platform-archive/` (staging and prod) before deploying, so the prune deleted nothing; rollback = point `prod/current` at `releases/ea51de796c` and restart `acp-prod-web acp-prod-api`. Not pushed.**
   (1) No model or provider name on screen; landing and template screens retaken from beta data of 19 Nov 2026.
   Beta's Copilot answered "The AI service returned an error (403)", so the hero shows the Copilot open at rest
   (`capture-screens.mjs` `COPILOT_ASK=0`), no made-up answer. (2) Trust band under the hero: exchange and equity
