@@ -5,7 +5,7 @@
       "width": 1440,
       "height": 900
     },
-    "takenAt": "2026-10-17T18:17:09.801Z"
+    "takenAt": "2026-11-21T00:12:53.928Z"
   },
   "app-phone.en": {
     "route": "/t/2222",
@@ -13,7 +13,7 @@
       "width": 390,
       "height": 844
     },
-    "takenAt": "2026-10-17T18:17:13.592Z"
+    "takenAt": "2026-11-21T00:12:56.780Z"
   },
   "tadawul-stock.en": {
     "route": "/t/2222",
@@ -21,7 +21,7 @@
       "width": 1440,
       "height": 900
     },
-    "takenAt": "2026-10-17T18:17:17.988Z"
+    "takenAt": "2026-11-21T00:12:59.743Z"
   },
   "earnings-season.en": {
     "route": "/templates/earnings-season",
@@ -29,7 +29,7 @@
       "width": 1440,
       "height": 900
     },
-    "takenAt": "2026-10-17T18:17:22.018Z"
+    "takenAt": "2026-11-21T00:13:02.154Z"
   },
   "dividend-hunter.en": {
     "route": "/templates/dividend-hunter",
@@ -37,7 +37,7 @@
       "width": 1440,
       "height": 900
     },
-    "takenAt": "2026-10-17T18:17:26.047Z"
+    "takenAt": "2026-11-21T00:13:04.713Z"
   },
   "sector-vs-sector.en": {
     "route": "/templates/sector-vs-sector",
@@ -45,7 +45,7 @@
       "width": 1440,
       "height": 900
     },
-    "takenAt": "2026-10-17T18:17:30.080Z"
+    "takenAt": "2026-11-21T00:13:07.381Z"
   },
   "app-desktop.ar": {
     "route": "/ar/t/2222",
@@ -53,7 +53,7 @@
       "width": 1440,
       "height": 900
     },
-    "takenAt": "2026-10-17T18:18:23.806Z"
+    "takenAt": "2026-11-21T00:13:11.405Z"
   },
   "app-phone.ar": {
     "route": "/ar/t/2222",
@@ -61,7 +61,7 @@
       "width": 390,
       "height": 844
     },
-    "takenAt": "2026-10-17T18:18:27.756Z"
+    "takenAt": "2026-11-21T00:13:14.322Z"
   },
   "tadawul-stock.ar": {
     "route": "/ar/t/2222",
@@ -69,7 +69,7 @@
       "width": 1440,
       "height": 900
     },
-    "takenAt": "2026-10-17T18:18:31.985Z"
+    "takenAt": "2026-11-21T00:13:17.243Z"
   },
   "earnings-season.ar": {
     "route": "/ar/templates/earnings-season",
@@ -77,7 +77,7 @@
       "width": 1440,
       "height": 900
     },
-    "takenAt": "2026-10-17T18:18:36.142Z"
+    "takenAt": "2026-11-21T00:13:19.686Z"
   },
   "dividend-hunter.ar": {
     "route": "/ar/templates/dividend-hunter",
@@ -85,7 +85,7 @@
       "width": 1440,
       "height": 900
     },
-    "takenAt": "2026-10-17T18:18:40.292Z"
+    "takenAt": "2026-11-21T00:13:22.233Z"
   },
   "sector-vs-sector.ar": {
     "route": "/ar/templates/sector-vs-sector",
@@ -93,6 +93,6 @@
       "width": 1440,
       "height": 900
     },
-    "takenAt": "2026-10-17T18:18:44.449Z"
+    "takenAt": "2026-11-21T00:13:24.952Z"
   }
 }

@@ -5,6 +5,11 @@
 //
 // When a real AI model answers, the Copilot needs an account: the script signs up a
 // throwaway one (run it against beta or a dev server, never production).
+//
+//   COPILOT_ASK=0 node scripts/capture-screens.mjs   # no question, no account
+// shows the hero's Copilot open in its resting state (intro and example questions) as a
+// signed-out visitor sees it after "Ask the Copilot": for when the server's AI model cannot
+// answer (beta, 2026-11-21: "The AI service returned an error (403)"). Never a made-up answer.
 // Every number in these images comes from our database on the day they are taken; re-run
 // after a data refresh or a UI change and commit the new files. Uses the local Chrome.
 import { mkdir, writeFile } from "node:fs/promises";
@@ -56,6 +61,16 @@ const askCopilot = (locale) => async (page) => {
   await page.waitForTimeout(800);
 };
 
+// A signed-out visitor's Copilot starts closed (design fix 7); open it the way they would.
+const openCopilot = async (page) => {
+  await settle(page);
+  const ask = page.locator("[data-ask-copilot]:visible");
+  if (await ask.count()) await ask.first().click();
+  // Signed out, the composer is replaced by the sign-in line once /v1/copilot/status answers.
+  await page.locator("[data-copilot-pane] textarea:visible, [data-copilot-signin]:visible").first().waitFor({ timeout: 30000 });
+  await page.waitForTimeout(800);
+};
+
 const withoutCopilot = (locale) => async (page) => {
   const close = page.getByRole("button", { name: CLOSE_COPILOT[locale] });
   if (await close.isVisible()) await close.click();
@@ -66,7 +81,7 @@ const withoutCopilot = (locale) => async (page) => {
 const SHOTS = (locale) => {
   const p = locale === "ar" ? "/ar" : "";
   return [
-    [`app-desktop.${locale}`, `${p}/t/2222`, DESKTOP, 2, askCopilot(locale)],
+    [`app-desktop.${locale}`, `${p}/t/2222`, DESKTOP, 2, process.env.COPILOT_ASK === "0" ? openCopilot : askCopilot(locale)],
     [`app-phone.${locale}`, `${p}/t/2222`, PHONE, 2, settle],
     [`tadawul-stock.${locale}`, `${p}/t/2222`, DESKTOP, 1.5, withoutCopilot(locale)],
     [`earnings-season.${locale}`, `${p}/templates/earnings-season`, DESKTOP, 1.5, withoutCopilot(locale)],
