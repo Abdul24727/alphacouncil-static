@@ -911,6 +911,22 @@ Older entries: `changelog-archive.md`.
           `7b32e2d` links are removed, because they show the old text; attach the files.
     - **Against the previous script:** both of review 97's cases gave three zeros and exit 0 there. Here they give
       exit 3.
+- 2026-11-21 — **Nine design fixes from the 21 Nov design review, approved by the owner on 2026-11-21 ("for the 9
+  fixes, yes, take them in"); committed on `rebuild` (`d7267ca`..`f123467`), not released, not pushed.**
+  (1) No model or provider name on screen; landing and template screens retaken from beta data of 19 Nov 2026.
+  Beta's Copilot answered "The AI service returned an error (403)", so the hero shows the Copilot open at rest
+  (`capture-screens.mjs` `COPILOT_ASK=0`), no made-up answer. (2) Trust band under the hero: exchange and equity
+  counts from the API in `<Db>`, English and Arabic, cited Copilot answers. (3) /pricing as a Free-vs-Pro table
+  (every feature line verbatim, Pro column tinted) with a five-question FAQ built from facts the site already states.
+  (4–5) Missing values on Markets and Screener as a muted dash, labelled "Data unavailable" on hover and for screen
+  readers. The orange per-exchange lines were Screener links, not a disclosure: the market names now carry the links,
+  with one muted line. Sticky ticker column and a "More columns" hint. (6) The URL decides the language; the locale
+  cookie steers only the bare "/". (7) Copilot closed by default for signed-out visitors, with "Ask the Copilot";
+  members' persisted and synced layout unchanged. (8) Sign-up shows the Free plan's lines beside the form. (9) Header
+  button "Start free" when signed out. Checks (local production build, beta's API through the tunnel): typecheck,
+  lint, 68/68 tests, `next build`, check-phase 1/2/3/5/6/7, check-arabic signed out (24 views) and in (15), check-seo
+  ALL PASS. check-phase4 fails on beta's Copilot 403; check-billing-public expects billing open, and beta has it
+  closed. Screens: `workspace/fleet/out/ACDESIGN/2026-11-21/after/` on the owner's PC.
 
 ## 6. Current State
 - **The statement repair is LIVE since the 2026-11-03 05:03 UTC publish, and its data checks all pass**
