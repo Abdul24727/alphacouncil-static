@@ -42,7 +42,7 @@ if [[ "${1:-}" == "--check" ]]; then
   echo "checkout: $ROOT"
   echo "branch:   $branch"
   echo "commit:   $commit${DEPLOY_SHA:+ (equals DEPLOY_SHA)}"
-  echo "archive:  $(git archive --format=tar "$commit" | tar -t | wc -l) paths from $commit (committed files only)"
+  echo "archive:  $(git archive --format=tar "$commit" -- . ":(exclude)docs" | tar -t | wc -l) paths from $commit (committed files only)"
   echo "release:  $rel"
   echo "beta now: $now"
   echo "releases: $(paste -sd ' ' - <<<"$existing")"
@@ -78,7 +78,12 @@ if [[ "${1:-}" == "--setup" ]]; then
 fi
 
 echo "== upload $sha ($commit)"
-git archive --format=tar "$commit" | ssh_ "rm -rf $rel && mkdir -p $rel && tar -x -C $rel"
+# 21 Nov 2026: the archive is written to a file and copied with scp, without docs/ (509 MB of screenshots the server never
+# uses; the release builds api/ and web/ only). Piped over ssh from Windows it took 20+ minutes and looked hung.
+TARF="$(mktemp -u)-acp.tar"
+git archive --format=tar -o "$TARF" "$commit" -- . ":(exclude)docs"
+scp -q "$TARF" "$HOST:/tmp/acp-release.tar" && rm -f "$TARF"
+ssh_ "rm -rf $rel && mkdir -p $rel && tar -x -f /tmp/acp-release.tar -C $rel && rm -f /tmp/acp-release.tar"
 
 echo "== build"
 ssh_ "bash -s" <<EOF
