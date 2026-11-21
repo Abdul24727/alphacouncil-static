@@ -33,12 +33,12 @@ export function TickerCell({ ticker }: { ticker: TickerRef }) {
   );
 }
 
-export function PriceCell({ price, currency }: { price: LastClose; currency: string | null | undefined }) {
-  return <Num value={fmtNumber(price.close, priceDigits(currency, price.close))} />;
+export function PriceCell({ price, currency, dash }: { price: LastClose; currency: string | null | undefined; dash?: boolean }) {
+  return <Num value={fmtNumber(price.close, priceDigits(currency, price.close))} dash={dash} />;
 }
 
-export function ChangeCell({ value }: { value: number | null | undefined }) {
-  return <Num value={fmtPct(value, 2, true)} className={signClass(value)} />;
+export function ChangeCell({ value, dash }: { value: number | null | undefined; dash?: boolean }) {
+  return <Num value={fmtPct(value, 2, true)} className={signClass(value)} dash={dash} />;
 }
 
 /** A clickable table row that opens the ticker's stock page. */

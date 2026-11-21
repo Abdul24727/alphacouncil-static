@@ -3,15 +3,12 @@
 import { useTranslations } from "next-intl";
 import { Panel } from "@/components/panel/Panel";
 import { QueryState, toTsv } from "@/components/stock/common";
-import { Link } from "@/i18n/navigation";
 import { useExchanges } from "@/lib/queries-app";
 import { ExchangesTable } from "./HomeView";
-import { useExchangeName } from "./shared";
 
 /** The seven exchanges we cover, with a way into each one's equities. */
 export function MarketsView() {
   const t = useTranslations("market");
-  const name = useExchangeName();
   const q = useExchanges();
   const rows = q.data ?? [];
 
@@ -35,13 +32,9 @@ export function MarketsView() {
               })}
             </p>
             <ExchangesTable rows={rows} />
-            <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
-              {rows.map((e) => (
-                <Link key={e.exchange} href={`/screener?exchange=${e.exchange}`} className="text-signal hover:underline">
-                  {t("browse", { exchange: name(e.exchange), n: e.equities })}
-                </Link>
-              ))}
-            </p>
+            {/* These were seven orange "Tadawul: 269 equities" links into the Screener. The count is
+                the table's own total (with prices / equities) and the market names now link there. */}
+            <p className="mt-3 text-[11.5px] text-muted">{t("browseNote")}</p>
           </QueryState>
         </Panel>
       </div>

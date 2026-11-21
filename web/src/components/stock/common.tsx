@@ -31,20 +31,38 @@ export function LangTag({ lang, className = "" }: { lang: "en" | "ar"; className
 }
 
 /**
- * A formatted number, or a labelled "n/a" when the database has no value. With `reason` (what
- * the data says about the gap, e.g. "Not in our price data") the reason is shown instead,
- * and `detail` explains it on hover.
+ * A muted dash for a value the database does not have: still a labelled placeholder, with
+ * "Data unavailable" (or `detail`) on hover and for screen readers. Used in wide tables
+ * (Markets, Screener), where a word in every empty cell read as broken data (design fix 4/5).
+ */
+export function NoValue({ detail }: { detail?: string }) {
+  const tp = useTranslations("placeholder");
+  const label = detail ?? tp("unavailable");
+  return (
+    <span className="text-muted" title={label} data-no-value>
+      <span aria-hidden>—</span>
+      <span className="sr-only">{label}</span>
+    </span>
+  );
+}
+
+/**
+ * A formatted number, or a labelled "n/a" when the database has no value (`dash`: the muted
+ * dash of NoValue instead). With `reason` (what the data says about the gap, e.g. "Not in
+ * our price data") the reason is shown instead, and `detail` explains it on hover.
  */
 export function Num({
   value,
   className = "",
   reason,
   detail,
+  dash = false,
 }: {
   value: string | null | undefined;
   className?: string;
   reason?: string | null;
   detail?: string;
+  dash?: boolean;
 }) {
   const t = useTranslations("stock");
   const tp = useTranslations("placeholder");
@@ -55,6 +73,7 @@ export function Num({
       </span>
     );
   }
+  if (value == null && dash) return <NoValue detail={detail} />;
   if (value == null) {
     return (
       <span className="label-caps text-muted" title={tp("unavailable")}>

@@ -718,14 +718,13 @@
     "breadth": "Advancers / decliners",
     "equities": "With prices",
     "asOf": "As of",
-    "na": "n/a",
     "noIndex": "No index level is collected for this exchange",
     "gainers": "Top gainers",
     "losers": "Top losers",
     "news": "Latest news",
     "noMovers": "No movers on the latest trading day",
     "noNews": "No news in the database",
-    "browse": "{exchange}: {n} equities",
+    "browseNote": "Select a market's name to see its equities in the Screener.",
     "total": "<n>{equities}</n> equities on <n>{exchanges}</n> exchanges"
   },
   "screener": {
@@ -753,7 +752,9 @@
       "roe": "ROE",
       "r12": "12M",
       "rsi": "RSI"
-    }
+    },
+    "scrollHint": "More columns",
+    "scrollHintLabel": "Scroll the table to see more columns"
   },
   "portfolio": {
     "holdings": "Holdings",

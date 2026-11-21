@@ -2,7 +2,8 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { FreshnessLight, Panel } from "@/components/panel/Panel";
-import { LangTag, QueryState, toTsv } from "@/components/stock/common";
+import { LangTag, NoValue, QueryState, toTsv } from "@/components/stock/common";
+import { Link } from "@/i18n/navigation";
 import { newsDate } from "@/components/stock/overview-panels";
 import type { components } from "@/lib/api/schema";
 import { fmtDate, fmtNumber, fmtPct, signClass } from "@/lib/format";
@@ -34,7 +35,7 @@ export function ExchangesTable({ rows }: { rows: Exchange[] }) {
   const locale = useLocale();
   const name = useExchangeName();
   return (
-    <div className="overflow-x-auto">
+    <div className="relative overflow-x-auto">
       <table className="w-full min-w-[560px]">
         <thead>
           <tr>
@@ -49,7 +50,12 @@ export function ExchangesTable({ rows }: { rows: Exchange[] }) {
         <tbody>
           {rows.map((e) => (
             <tr key={e.exchange} className="border-t border-line" data-exchange={e.exchange}>
-              <td className="py-1.5 text-text">{name(e.exchange)}</td>
+              <td className="py-1.5">
+                {/* Each market opens its equities in the Screener (?exchange=, read by ScreenerView). */}
+                <Link href={`/screener?exchange=${e.exchange}`} className="text-text hover:text-signal hover:underline">
+                  {name(e.exchange)}
+                </Link>
+              </td>
               <td className="py-1.5 text-end">
                 {e.index ? (
                   <span className="inline-flex items-center gap-2">
@@ -57,13 +63,11 @@ export function ExchangesTable({ rows }: { rows: Exchange[] }) {
                     <span className="num">{fmtNumber(e.index.level)}</span>
                   </span>
                 ) : (
-                  <span className="label-caps text-muted" title={t("noIndex")}>
-                    {t("na")}
-                  </span>
+                  <NoValue detail={t("noIndex")} />
                 )}
               </td>
               <td className="py-1.5 text-end">
-                {e.index ? <span className={`num ${signClass(e.index.change_pct)}`}>{fmtPct(e.index.change_pct, 2, true)}</span> : null}
+                {e.index ? <span className={`num ${signClass(e.index.change_pct)}`}>{fmtPct(e.index.change_pct, 2, true)}</span> : <NoValue detail={t("noIndex")} />}
               </td>
               <td className="py-1.5 ps-4">
                 <Breadth b={e.breadth} />

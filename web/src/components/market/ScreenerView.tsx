@@ -2,9 +2,10 @@
 
 import { createColumnHelper, createSortedRowModel, rowSortingFeature, sortFns, tableFeatures, useTable } from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { ArrowRightIcon } from "@radix-ui/react-icons";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel } from "@/components/panel/Panel";
-import { Num, QueryState, toTsv } from "@/components/stock/common";
+import { NoValue, Num, QueryState, toTsv } from "@/components/stock/common";
 import type { components } from "@/lib/api/schema";
 import { fmtCompact, fmtNumber, fmtPct, fmtRatioPct, signClass } from "@/lib/format";
 import { useScreener } from "@/lib/queries-app";
@@ -55,6 +56,61 @@ function matches(r: Row, f: Filters): boolean {
   return true;
 }
 
+/** The ticker column stays in view while the wide table scrolls sideways (either direction),
+ * with a 1px rule on its inner edge. */
+const STICKY = "sticky start-0 after:pointer-events-none after:absolute after:inset-y-0 after:end-0 after:w-px after:bg-line";
+
+/**
+ * "Scroll for more columns" above the table while columns are out of view (design fix 5):
+ * a small button that scrolls the table one screen towards the hidden columns. No edge fade:
+ * BRAND.md bans gradients. Its row keeps its height once shown, so the table does not jump.
+ */
+function ScrollHint({ scroller, deps }: { scroller: React.RefObject<HTMLDivElement | null>; deps: unknown }) {
+  const t = useTranslations("screener");
+  const [state, setState] = useState({ wide: false, atEnd: false });
+  const measure = useCallback(() => {
+    const el = scroller.current;
+    if (!el) return;
+    // scrollLeft runs negative in RTL: its size is the distance from the start edge.
+    const wide = el.scrollWidth > el.clientWidth + 1;
+    const atEnd = Math.abs(el.scrollLeft) + el.clientWidth >= el.scrollWidth - 1;
+    setState((s) => (s.wide === wide && s.atEnd === atEnd ? s : { wide, atEnd }));
+  }, [scroller]);
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    if (el.firstElementChild) ro.observe(el.firstElementChild);
+    el.addEventListener("scroll", measure, { passive: true });
+    return () => {
+      ro.disconnect();
+      el.removeEventListener("scroll", measure);
+    };
+  }, [scroller, measure, deps]);
+  if (!state.wide) return null;
+  const more = () => {
+    const el = scroller.current;
+    if (!el) return;
+    const rtl = getComputedStyle(el).direction === "rtl";
+    el.scrollBy({ left: (rtl ? -1 : 1) * el.clientWidth * 0.8, behavior: "smooth" });
+  };
+  return (
+    <div className="flex h-7 shrink-0 items-center justify-end border-b border-line px-2" data-scroll-hint>
+      <button
+        type="button"
+        onClick={more}
+        aria-label={t("scrollHintLabel")}
+        className={`label-caps flex items-center gap-1.5 text-[11px] text-muted hover:text-text ${state.atEnd ? "invisible" : ""}`}
+      >
+        {t("scrollHint")}
+        <ArrowRightIcon aria-hidden className="rtl:-scale-x-100" />
+      </button>
+    </div>
+  );
+}
+
 /** `initialExchange` comes from ?exchange= (the Markets page links here per exchange). */
 export function ScreenerView({ initialExchange }: { initialExchange?: string }) {
   const t = useTranslations("screener");
@@ -78,20 +134,21 @@ export function ScreenerView({ initialExchange }: { initialExchange?: string }) 
       col.columns([
         col.accessor((r) => r.ticker.symbol, { id: "ticker", header: t("cols.ticker"), cell: (c) => <TickerCell ticker={c.row.original.ticker} /> }),
         col.accessor((r) => r.ticker.exchange, { id: "exchange", header: t("cols.exchange"), cell: (c) => <span className="label-caps text-muted">{exName(c.getValue())}</span> }),
-        col.accessor((r) => (locale === "ar" ? r.ticker.sector_ar : r.ticker.sector_en) ?? "", { id: "sector", header: t("cols.sector"), cell: (c) => c.getValue() ? <span className="truncate text-text-soft">{c.getValue()}</span> : <span className="truncate text-muted">{t("sectorUnknown")}</span> }),
-        col.accessor((r) => r.price.close ?? undefined, { id: "price", header: t("cols.price"), sortUndefined: "last", meta: { end: true }, cell: (c) => <PriceCell price={c.row.original.price} currency={c.row.original.ticker.currency} /> }),
-        col.accessor((r) => r.price.change_pct ?? undefined, { id: "change", header: t("cols.change"), sortUndefined: "last", meta: { end: true }, cell: (c) => <ChangeCell value={c.getValue()} /> }),
-        col.accessor((r) => r.market_cap_mn ?? undefined, { id: "mcap", header: t("cols.mcap"), sortUndefined: "last", meta: { end: true }, cell: (c) => <Num value={c.getValue() != null ? fmtCompact(c.getValue()! * 1e6) : null} /> }),
-        col.accessor((r) => r.pe ?? undefined, { id: "pe", header: t("cols.pe"), sortUndefined: "last", meta: { end: true }, cell: (c) => <Num value={c.getValue() != null ? `${fmtNumber(c.getValue(), 1)}x` : null} /> }),
-        col.accessor((r) => r.dividend_yield_pct ?? undefined, { id: "yield", header: t("cols.yield"), sortUndefined: "last", meta: { end: true }, cell: (c) => <Num value={fmtPct(c.getValue(), 2)} /> }),
-        col.accessor((r) => r.roe_pct ?? undefined, { id: "roe", header: t("cols.roe"), sortUndefined: "last", meta: { end: true }, cell: (c) => <Num value={fmtPct(c.getValue(), 1)} /> }),
-        col.accessor((r) => r.return_12m ?? undefined, { id: "r12", header: t("cols.r12"), sortUndefined: "last", meta: { end: true }, cell: (c) => <Num value={fmtRatioPct(c.getValue(), 1, true)} className={signClass(c.getValue())} /> }),
-        col.accessor((r) => r.rsi_14 ?? undefined, { id: "rsi", header: t("cols.rsi"), sortUndefined: "last", meta: { end: true }, cell: (c) => <Num value={fmtNumber(c.getValue(), 0)} /> }),
+        col.accessor((r) => (locale === "ar" ? r.ticker.sector_ar : r.ticker.sector_en) ?? "", { id: "sector", header: t("cols.sector"), cell: (c) => c.getValue() ? <span className="truncate text-text-soft">{c.getValue()}</span> : <NoValue detail={t("sectorUnknown")} /> }),
+        col.accessor((r) => r.price.close ?? undefined, { id: "price", header: t("cols.price"), sortUndefined: "last", meta: { end: true }, cell: (c) => <PriceCell price={c.row.original.price} currency={c.row.original.ticker.currency} dash /> }),
+        col.accessor((r) => r.price.change_pct ?? undefined, { id: "change", header: t("cols.change"), sortUndefined: "last", meta: { end: true }, cell: (c) => <ChangeCell value={c.getValue()} dash /> }),
+        col.accessor((r) => r.market_cap_mn ?? undefined, { id: "mcap", header: t("cols.mcap"), sortUndefined: "last", meta: { end: true }, cell: (c) => <Num value={c.getValue() != null ? fmtCompact(c.getValue()! * 1e6) : null} dash /> }),
+        col.accessor((r) => r.pe ?? undefined, { id: "pe", header: t("cols.pe"), sortUndefined: "last", meta: { end: true }, cell: (c) => <Num value={c.getValue() != null ? `${fmtNumber(c.getValue(), 1)}x` : null} dash /> }),
+        col.accessor((r) => r.dividend_yield_pct ?? undefined, { id: "yield", header: t("cols.yield"), sortUndefined: "last", meta: { end: true }, cell: (c) => <Num value={fmtPct(c.getValue(), 2)} dash /> }),
+        col.accessor((r) => r.roe_pct ?? undefined, { id: "roe", header: t("cols.roe"), sortUndefined: "last", meta: { end: true }, cell: (c) => <Num value={fmtPct(c.getValue(), 1)} dash /> }),
+        col.accessor((r) => r.return_12m ?? undefined, { id: "r12", header: t("cols.r12"), sortUndefined: "last", meta: { end: true }, cell: (c) => <Num value={fmtRatioPct(c.getValue(), 1, true)} className={signClass(c.getValue())} dash /> }),
+        col.accessor((r) => r.rsi_14 ?? undefined, { id: "rsi", header: t("cols.rsi"), sortUndefined: "last", meta: { end: true }, cell: (c) => <Num value={fmtNumber(c.getValue(), 0)} dash /> }),
       ]),
     [t, exName, locale],
   );
 
   const table = useTable({ features, columns, data: rows });
+  const scroller = useRef<HTMLDivElement>(null);
 
   const input = "h-8 rounded-panel border border-line bg-bg px-2 text-text outline-none focus:border-muted";
   const numInput = `${input} num w-20 text-[12px]`;
@@ -151,19 +208,21 @@ export function ScreenerView({ initialExchange }: { initialExchange?: string }) 
             {t("count", { shown: rows.length, total: q.data?.length ?? 0 })}
           </span>
         </div>
-        <div className="min-h-0 flex-1 overflow-auto">
+        <ScrollHint scroller={scroller} deps={rows.length} />
+        {/* relative: the dashes' screen-reader text (sr-only, absolute) must not escape the scroller. */}
+        <div ref={scroller} className="relative min-h-0 flex-1 overflow-auto" data-screener-scroller>
           <QueryState isPending={q.isPending} error={q.error} rows={12} empty={!!q.data && rows.length === 0} emptyText={t("none")}>
             <table className="w-full min-w-[960px]">
               <thead className="sticky top-0 z-10 bg-panel">
                 {table.getHeaderGroups().map((hg) => (
                   <tr key={hg.id}>
-                    {hg.headers.map((h) => {
+                    {hg.headers.map((h, i) => {
                       const sorted = h.column.getIsSorted();
                       const end = (h.column.columnDef.meta as { end?: boolean } | undefined)?.end;
                       return (
                         <th
                           key={h.id}
-                          className={`label-caps cursor-pointer select-none px-2 py-2 font-normal text-muted hover:text-text ${end ? "text-end" : "text-start"}`}
+                          className={`label-caps cursor-pointer select-none px-2 py-2 font-normal text-muted hover:text-text ${end ? "text-end" : "text-start"} ${i === 0 ? `${STICKY} z-20 bg-panel` : ""}`}
                           onClick={h.column.getToggleSortingHandler()}
                           aria-sort={sorted === "asc" ? "ascending" : sorted === "desc" ? "descending" : "none"}
                         >
@@ -183,10 +242,15 @@ export function ScreenerView({ initialExchange }: { initialExchange?: string }) 
                     data-ticker-row={row.original.ticker.slug}
                     onClick={() => open(row.original.ticker)}
                     onKeyDown={(e) => e.key === "Enter" && open(row.original.ticker)}
-                    className="cursor-pointer border-t border-line hover:bg-panel-raised focus-visible:bg-panel-raised"
+                    className="group cursor-pointer border-t border-line hover:bg-panel-raised focus-visible:bg-panel-raised"
                   >
-                    {row.getAllCells().map((cell) => (
-                      <td key={cell.id} className={`px-2 py-1.5 ${(cell.column.columnDef.meta as { end?: boolean } | undefined)?.end ? "text-end" : ""}`}>
+                    {row.getAllCells().map((cell, i) => (
+                      <td
+                        key={cell.id}
+                        className={`px-2 py-1.5 ${(cell.column.columnDef.meta as { end?: boolean } | undefined)?.end ? "text-end" : ""} ${
+                          i === 0 ? `${STICKY} z-[1] max-w-[11.5rem] bg-panel group-hover:bg-panel-raised group-focus-visible:bg-panel-raised sm:max-w-[18rem]` : ""
+                        }`}
+                      >
                         <table.FlexRender cell={cell} />
                       </td>
                     ))}
