@@ -27,6 +27,7 @@
   "copilot": {
     "title": "Copilot",
     "open": "Open Copilot",
+    "ask": "Ask the Copilot",
     "close": "Close Copilot",
     "fullscreen": "Full screen",
     "exitFullscreen": "Exit full screen",

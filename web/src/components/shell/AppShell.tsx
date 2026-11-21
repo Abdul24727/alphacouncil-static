@@ -3,7 +3,8 @@
 import { useEffect } from "react";
 import { VerifyEmailBanner } from "@/components/auth/VerifyEmailView";
 import { useChartPrefs } from "@/lib/chart-prefs";
-import { applyLayoutToDocument, useLayout } from "@/lib/layout-store";
+import { useMe } from "@/lib/auth";
+import { applyLayoutToDocument, setMemberMark, useLayout } from "@/lib/layout-store";
 import { usePrefsSync } from "@/lib/prefs-sync";
 import { applySettingsToDocument, useSettings } from "@/lib/settings-store";
 import { CopilotPane } from "./CopilotPane";
@@ -14,6 +15,7 @@ import { Sidebar } from "./Sidebar";
 /** Signed-in shell: sidebar · work area · Copilot, mirrored in Arabic. */
 export function AppShell({ children }: { children: React.ReactNode }) {
   useLayoutSync();
+  useMemberSync();
   usePrefsSync();
   useShortcuts();
 
@@ -44,6 +46,17 @@ function useLayoutSync() {
       unsubSettings();
     };
   }, []);
+}
+
+/** Tells the layout whether this is a member or a signed-out visitor (whose Copilot starts closed). */
+function useMemberSync() {
+  const me = useMe();
+  const member = me.isPending ? null : !!me.data;
+  useEffect(() => {
+    if (member === null) return;
+    setMemberMark(member);
+    useLayout.getState().setMember(member);
+  }, [member]);
 }
 
 function useShortcuts() {
