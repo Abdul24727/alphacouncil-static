@@ -636,6 +636,8 @@
   "auth": {
     "loginTitle": "Sign in",
     "signupTitle": "Create your account",
+    "freeTitle": "Your free account includes",
+    "comparePlans": "Compare Free and Pro",
     "name": "Name (optional)",
     "email": "Email",
     "password": "Password",

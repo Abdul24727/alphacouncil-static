@@ -2,7 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 
-/** Sign-in and sign-up: a narrow column on graphite, outside the app shell. */
+/** Sign-in and sign-up: a narrow column on graphite, outside the app shell (sign-up adds a side panel). */
 export default async function AuthLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
   // Every segment sets the locale so next-intl never falls back to request headers while prerendering.
@@ -13,7 +13,8 @@ export default async function AuthLayout({ children, params }: LayoutProps<"/[lo
         <span aria-hidden className="block size-3 rounded-[2px] bg-signal" />
         <span className="headline text-[19px] leading-none">AlphaCouncil</span>
       </Link>
-      <main className="w-full max-w-sm">{children}</main>
+      {/* A page that brings a side panel (sign-up's "what you get") marks itself data-auth-wide. */}
+      <main className="w-full max-w-sm has-[[data-auth-wide]]:max-w-[880px]">{children}</main>
     </div>
   );
 }
