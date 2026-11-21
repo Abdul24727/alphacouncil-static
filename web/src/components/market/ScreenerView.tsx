@@ -3,7 +3,7 @@
 import { createColumnHelper, createSortedRowModel, rowSortingFeature, sortFns, tableFeatures, useTable } from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Panel } from "@/components/panel/Panel";
 import { NoValue, Num, QueryState, toTsv } from "@/components/stock/common";
 import type { components } from "@/lib/api/schema";
@@ -68,18 +68,16 @@ const STICKY = "sticky start-0 after:pointer-events-none after:absolute after:in
 function ScrollHint({ scroller, deps }: { scroller: React.RefObject<HTMLDivElement | null>; deps: unknown }) {
   const t = useTranslations("screener");
   const [state, setState] = useState({ wide: false, atEnd: false });
-  const measure = useCallback(() => {
-    const el = scroller.current;
-    if (!el) return;
-    // scrollLeft runs negative in RTL: its size is the distance from the start edge.
-    const wide = el.scrollWidth > el.clientWidth + 1;
-    const atEnd = Math.abs(el.scrollLeft) + el.clientWidth >= el.scrollWidth - 1;
-    setState((s) => (s.wide === wide && s.atEnd === atEnd ? s : { wide, atEnd }));
-  }, [scroller]);
   useEffect(() => {
     const el = scroller.current;
     if (!el) return;
-    measure();
+    const measure = () => {
+      // scrollLeft runs negative in RTL: its size is the distance from the start edge.
+      const wide = el.scrollWidth > el.clientWidth + 1;
+      const atEnd = Math.abs(el.scrollLeft) + el.clientWidth >= el.scrollWidth - 1;
+      setState((s) => (s.wide === wide && s.atEnd === atEnd ? s : { wide, atEnd }));
+    };
+    // A ResizeObserver reports once as soon as it observes, so this also takes the first reading.
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     if (el.firstElementChild) ro.observe(el.firstElementChild);
@@ -88,7 +86,7 @@ function ScrollHint({ scroller, deps }: { scroller: React.RefObject<HTMLDivEleme
       ro.disconnect();
       el.removeEventListener("scroll", measure);
     };
-  }, [scroller, measure, deps]);
+  }, [scroller, deps]);
   if (!state.wide) return null;
   const more = () => {
     const el = scroller.current;
